@@ -152,7 +152,7 @@ export const CreateComplaint: FC = () => {
 
       applyComplaintData(model);
     }
-  }, [complaintData, currentDate, userid]);
+  }, [agency, complaintData, currentDate, userid]);
 
   // files to add to COMS when complaint is saved
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);

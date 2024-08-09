@@ -10,3 +10,11 @@ export interface ActionTaken {
   details: string; //--> acton_details_text
   isUpdate: boolean; //-- flag_UAT === "Yes"
 }
+export interface ActionTakenDto {
+  actionTakenGuid: string;
+  complaintIdentifier?: string;
+  complaintUpdateGuid?: string;
+  actionDetailsTxt?: string;
+  loggedByTxt?: string;
+  actionUtcTimestamp?: Date;
+}

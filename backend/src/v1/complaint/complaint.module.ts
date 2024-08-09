@@ -28,6 +28,7 @@ import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates
 import { ComplaintUpdatesModule } from "../complaint_updates/complaint_updates.module";
 import { StagingComplaintService } from "../staging_complaint/staging_complaint.service";
 import { StagingComplaintModule } from "../staging_complaint/staging_complaint.module";
+import { ActionTaken } from "../complaint_updates/entities/action_taken.entity";
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { StagingComplaintModule } from "../staging_complaint/staging_complaint.m
     TypeOrmModule.forFeature([GirComplaint]),
     TypeOrmModule.forFeature([ComplaintUpdate]),
     TypeOrmModule.forFeature([GirComplaint]),
+    TypeOrmModule.forFeature([ActionTaken]),
     CodeTableModule,
     PersonComplaintXrefModule,
     AttractantHwcrXrefModule,
