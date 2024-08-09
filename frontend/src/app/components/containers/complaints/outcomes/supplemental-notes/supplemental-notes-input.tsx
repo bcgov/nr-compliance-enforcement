@@ -10,6 +10,7 @@ import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
 import { upsertNote, getCaseFile } from "../../../../../store/reducers/case-thunks";
 import { BsExclamationCircleFill } from "react-icons/bs";
+import { ToggleError } from "../../../../../common/toast";
 
 type props = {
   id: string;
@@ -75,6 +76,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
       });
     } else {
       setNotesError("Additional notes required");
+      ToggleError("Error updating additional notes");
     }
   };
 
