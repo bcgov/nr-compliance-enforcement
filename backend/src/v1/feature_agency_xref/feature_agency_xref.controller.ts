@@ -4,9 +4,9 @@ import { CreateFeatureAgencyXrefDto } from "./dto/create-feature_agency_xref.dto
 import { UpdateFeatureAgencyXrefDto } from "./dto/update-feature_agency_xref.dto";
 import { ApiTags } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { Roles } from "src/auth/decorators/roles.decorator";
-import { Role } from "src/enum/role.enum";
-import { JwtRoleGuard } from "src/auth/jwtrole.guard";
+import { Roles } from "../../auth/decorators/roles.decorator";
+import { Role } from "../../enum/role.enum";
+import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("feature-agency-xref")

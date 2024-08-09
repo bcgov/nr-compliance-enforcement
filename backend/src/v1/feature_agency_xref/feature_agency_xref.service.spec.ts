@@ -23,7 +23,7 @@ describe("FeatureAgencyXrefService", () => {
       ],
     }).compile();
 
-    service = module.get<FeatureAgencyXrefService>(FeatureAgencyXref);
+    service = module.get<FeatureAgencyXrefService>(FeatureAgencyXrefService);
   });
 
   it("should be defined", () => {

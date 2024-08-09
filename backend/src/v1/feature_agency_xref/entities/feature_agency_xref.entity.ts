@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { FeatureCode } from "../../feature_code/entities/feature_code.entity";
-import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
+import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 
 @Entity()
 export class FeatureAgencyXref {

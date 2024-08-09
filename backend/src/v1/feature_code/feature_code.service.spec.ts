@@ -29,12 +29,12 @@ describe("FeatureCodeService", () => {
   });
 
   it("should return a single value", async () => {
-    const featureCode = "AINVSPC";
+    const featureCode = "EXPERMFTRS";
 
     let response = await service.findOne(featureCode);
 
-    expect(response.feature_code).toBe("AINVSPC");
-    expect(response.short_description).toBe("Aquatic: Invasive Species");
+    expect(response.feature_code).toBe("EXPERMFTRS");
+    expect(response.short_description).toBe("Experimental Features");
   });
 
   it("should return all the values", async () => {
@@ -48,7 +48,7 @@ describe("FeatureCodeService", () => {
       feature_code: "NEWCODE",
       short_description: "New description",
       long_description: "New long description",
-      display_order: "10",
+      display_order: "40",
       active_ind: "Y",
     };
 
@@ -60,12 +60,12 @@ describe("FeatureCodeService", () => {
   });
 
   it("should be able to update a value", async () => {
-    const featureCode = "AINVSPC";
+    const featureCode = "EXPERMFTRS";
     const featureCodeDto = {
-      feature_code: "AINVSPC",
+      feature_code: "EXPERMFTRS",
       short_description: "Updated Value",
-      long_description: "Aquatic: Invasive Species",
-      display_order: "1",
+      long_description: "Experimental Features",
+      display_order: "10",
       active_ind: "Y",
     };
 
@@ -74,7 +74,7 @@ describe("FeatureCodeService", () => {
   });
 
   it("should be able to remove a value if it exists", async () => {
-    const goodFeatureCode = "AINVSPC";
+    const goodFeatureCode = "EXPERMFTRS";
     const badFeatureCode = "BADVALUE";
 
     let response = await service.remove(goodFeatureCode);
