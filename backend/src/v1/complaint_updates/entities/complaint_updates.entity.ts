@@ -14,6 +14,13 @@ export class ComplaintUpdate {
   complaintUpdateGuid: string;
 
   @ApiProperty({
+    example: "24-00001",
+    description: "unique complaint_identifier from webeoc.",
+  })
+  @Column("text", { name: "complaint_identifier", nullable: false })
+  complaintId: string;
+
+  @ApiProperty({
     example: "2",
     description:
       "An integer that is used to reflect the order that complaint updates were entered into the call center system.",
@@ -94,6 +101,14 @@ export class ComplaintUpdate {
     nullable: true,
   })
   updateUtcTimestamp: Date | null;
+
+  @ApiProperty({
+    example: "123455",
+    description:
+      "Unique identifier from the webeoc source system to identify a complaint. This is required as the natural key is not avaialble in all webeoc apis",
+  })
+  @Column({ length: 20 })
+  webeoc_identifier: string;
 
   @ManyToOne(() => Complaint, (complaint) => complaint.complaint_identifier)
   @JoinColumn([

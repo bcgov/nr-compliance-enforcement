@@ -1472,3 +1472,9 @@ INSERT INTO public.gir_complaint
 (gir_complaint_guid, gir_type_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, complaint_identifier)
 VALUES('eafd661b-4c18-4aa6-a39e-a70a5462d4af'::uuid, 'QUERY', 'FLYWAY', '2024-07-11 21:18:23.336', 'FLYWAY', '2024-07-11 21:18:23.336', '23-900005')
 ON CONFLICT DO NOTHING;
+
+
+INSERT INTO public.action_taken
+(action_taken_guid, complaint_identifier,complaint_update_guid, action_details_txt, logged_by_txt,action_utc_timestamp, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('eafd661b-4c18-4aa6-a39e-170a5462d4ad'::uuid, '24-000261','bafd661b-4c18-4aa6-a39e-a70a5462d4ad'::uuid,'action_details_txt','Logged by','2024-07-25 21:18:23.336', 'FLYWAY', '2024-07-11 21:18:23.336', 'FLYWAY', '2024-07-11 21:18:23.336')
+ON CONFLICT DO NOTHING;

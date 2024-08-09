@@ -5,6 +5,7 @@ import { WildlifeComplaint as WildlifeComplaintDto } from "../app/complaints/wil
 import { AllegationComplaint as AllegationComplaintDto } from "../app/complaints/allegation-complaint";
 import { GeneralIncidentComplaint as GeneralInformationComplaintDto } from "../app/complaints/general-complaint";
 import { WebEOCComplaintUpdateDTO } from "../app/complaints/webeoc-complaint-update";
+import { ActionTaken } from "../app/complaints/action-taken";
 
 export interface ComplaintState {
   complaintItems: ComplaintCollection;
@@ -14,6 +15,7 @@ export interface ComplaintState {
   complaintLocation: Feature | null;
   mappedItems: MappedComplaintsState;
   webeocUpdates: WebEOCComplaintUpdateDTO[];
+  actions: ActionTaken[];
   webeocChangeCount: number;
 }
 

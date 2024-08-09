@@ -39,6 +39,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             </Badge>
           </div>
           <div className="comp-map-popup-header-meta">
+
             {complaintType === "HWCR" && (
               <div>
                 <span className="comp-box-species-type">{species}</span> • <span>{natureOfComplaint}</span>

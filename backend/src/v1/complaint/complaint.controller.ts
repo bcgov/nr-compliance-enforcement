@@ -11,7 +11,14 @@ import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
 import { ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
 import { GeneralIncidentComplaintDto } from "src/types/models/complaints/gir-complaint";
+import { ApiKeyGuard } from "src/auth/apikey.guard";
+import { ActionTaken } from "../../types/models/complaints/action-taken";
+import { Public } from "src/auth/decorators/public.decorator";
+import { StagingComplaintService } from "../staging_complaint/staging_complaint.service";
 import { dtoAlias } from "../../types/models/complaints/dtoAlias-type";
+
+import { RelatedDataDto } from "src/types/models/complaints/related-data";
+
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -20,7 +27,7 @@ import { dtoAlias } from "../../types/models/complaints/dtoAlias-type";
   version: "1",
 })
 export class ComplaintController {
-  constructor(private readonly service: ComplaintService) {}
+  constructor(private readonly service: ComplaintService, private readonly stagingService: StagingComplaintService) {}
   private readonly logger = new Logger(ComplaintController.name);
 
   @Get(":complaintType")
@@ -71,11 +78,15 @@ export class ComplaintController {
     @Param("id") id: string,
   ): Promise<dtoAlias> {
     return (await this.service.findById(id, complaintType)) as
-      | WildlifeComplaintDto
+      WildlifeComplaintDto
       | AllegationComplaintDto
       | GeneralIncidentComplaintDto;
   }
-
+  @Get("/related-data/:id")
+  @Roles(Role.COS_OFFICER)
+  async findRelatedDataById(@Param("id") id: string): Promise<RelatedDataDto> {
+    return (await this.service.findRelatedDataById(id));
+  }
   @Post("/create/:complaintType")
   @Roles(Role.COS_OFFICER, Role.CEEB)
   async create(
@@ -92,5 +103,33 @@ export class ComplaintController {
     @Param("zone") zone: string,
   ): Promise<ZoneAtAGlanceStats> {
     return this.service.getZoneAtAGlanceStatistics(complaintType, zone);
+  }
+
+  @Public()
+  @Post("/staging/action-taken")
+  @UseGuards(ApiKeyGuard)
+  stageNewActionTaken(@Body() action: ActionTaken) {
+    this.stagingService.stageObject("ACTION-TAKEN", action);
+  }
+
+  @Public()
+  @Post("/process/action-taken/:id")
+  @UseGuards(ApiKeyGuard)
+  processNewActionTaken(@Param("id") id: string) {
+    this.stagingService.processObject("ACTION-TAKEN", id);
+  }
+
+  @Public()
+  @Post("/staging/action-taken-update")
+  @UseGuards(ApiKeyGuard)
+  stageNewActionTakenUpdate(@Body() action: ActionTaken) {
+    this.stagingService.stageObject("ACTION-TAKEN-UPDATE", action);
+  }
+
+  @Public()
+  @Post("/process/action-taken-update/:id")
+  @UseGuards(ApiKeyGuard)
+  processNewActionTakenUpdate(@Param("id") id: string) {
+    this.stagingService.processObject("ACTION-TAKEN-UPDATE", id);
   }
 }
