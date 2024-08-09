@@ -1059,12 +1059,11 @@ values
     ) ON CONFLICT DO NOTHING;
 
 insert into
-    public.team (
+    public.team_code (
         team_code,
         short_description,
         long_description,
         display_order,
-        agency_code,
         active_ind,
         create_user_id,
         create_utc_timestamp,
@@ -1077,7 +1076,6 @@ values
         'Heavy Industry',
         'Heavy Industry',
         10,
-        'EPO',
         true,
         'FLYWAY',
         CURRENT_TIMESTAMP,
@@ -1086,12 +1084,11 @@ values
     ) ON CONFLICT DO NOTHING;
 
 insert into
-    public.team (
+    public.team_code (
         team_code,
         short_description,
         long_description,
         display_order,
-        agency_code,
         active_ind,
         create_user_id,
         create_utc_timestamp,
@@ -1104,7 +1101,6 @@ values
         'Operations',
         'Operations',
         20,
-        'EPO',
         true,
         'FLYWAY',
         CURRENT_TIMESTAMP,
@@ -1113,12 +1109,11 @@ values
     ) ON CONFLICT DO NOTHING;
 
 insert into
-    public.team (
+    public.team_code (
         team_code,
         short_description,
         long_description,
         display_order,
-        agency_code,
         active_ind,
         create_user_id,
         create_utc_timestamp,
@@ -1131,7 +1126,6 @@ values
         'REACTIVE',
         'REACTIVE',
         30,
-        'EPO',
         true,
         'FLYWAY',
         CURRENT_TIMESTAMP,
@@ -1140,12 +1134,11 @@ values
     ) ON CONFLICT DO NOTHING;
 
 insert into
-    public.team (
+    public.team_code (
         team_code,
         short_description,
         long_description,
         display_order,
-        agency_code,
         active_ind,
         create_user_id,
         create_utc_timestamp,
@@ -1158,7 +1151,6 @@ values
         'Recycling Integrated Pest Management',
         'Recycling Integrated Pest Management',
         40,
-        'EPO',
         true,
         'FLYWAY',
         CURRENT_TIMESTAMP,
@@ -1167,12 +1159,11 @@ values
     ) ON CONFLICT DO NOTHING;
 
 insert into
-    public.team (
+    public.team_code (
         team_code,
         short_description,
         long_description,
         display_order,
-        agency_code,
         active_ind,
         create_user_id,
         create_utc_timestamp,
@@ -1185,6 +1176,26 @@ values
         'Planned',
         'Planned',
         50,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team (
+        team_code,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'HI',
         'EPO',
         true,
         'FLYWAY',
@@ -1193,8 +1204,89 @@ values
         CURRENT_TIMESTAMP
     ) ON CONFLICT DO NOTHING;
 
+insert into
+    public.team (
+        team_code,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'OPS',
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
 
+insert into
+    public.team (
+        team_code,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'PLAN',
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
 
+insert into
+    public.team (
+        team_code,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'REACTIVE',
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team (
+        team_code,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'RIPM',
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
 
 --------------------------
 -- New Changes above this line
