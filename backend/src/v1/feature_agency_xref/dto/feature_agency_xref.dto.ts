@@ -53,5 +53,5 @@ export class FeatureAgencyXrefDto {
     example: "true",
     description: "A boolean indicating if this is an active feature for the agency",
   })
-  public active_ind: Boolean;
+  public active_ind: boolean;
 }

@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { HwcrComplaint } from "../../hwcr_complaint/entities/hwcr_complaint.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { FeatureCode } from "../../feature_code/entities/feature_code.entity";
 import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
@@ -66,5 +65,5 @@ export class FeatureAgencyXref {
     description: "A boolean indicating if this is an active feature for agency",
   })
   @Column()
-  public active_ind: Boolean;
+  public active_ind: boolean;
 }

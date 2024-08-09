@@ -71,8 +71,8 @@ export const FeatureManagement: FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {featureData &&
-                  featureData?.map((item, i) => {
+                {featureData ? (
+                  featureData.map((item, i) => {
                     return (
                       <tr key={item.feature_agency_xref_guid}>
                         <td>{i + 1}</td>
@@ -90,7 +90,10 @@ export const FeatureManagement: FC = () => {
                         </td>
                       </tr>
                     );
-                  })}
+                  })
+                ) : (
+                  <></>
+                )}
               </tbody>
             </Table>
           </div>

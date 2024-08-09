@@ -1,7 +1,14 @@
 import { ChangeEvent, FC, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { profileDisplayName, profileIdir, profileInitials, selectModalData, userId } from "../../../store/reducers/app";
+import {
+  profileDisplayName,
+  profileIdir,
+  profileInitials,
+  selectModalData,
+  userId,
+  checkFeatureActive,
+} from "../../../store/reducers/app";
 import {
   assignCurrentUserToComplaint,
   searchOfficers,
@@ -11,9 +18,7 @@ import {
 import { UUID } from "crypto";
 import { BsPerson } from "react-icons/bs";
 import { from } from "linq-to-typescript";
-import config from "../../../../config";
 import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
-import { checkFeatureActive } from "../../../store/reducers/app";
 
 type AssignOfficerModalProps = {
   close: () => void;

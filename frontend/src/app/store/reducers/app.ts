@@ -6,7 +6,7 @@ import Profile from "../../types/app/profile";
 import { UUID } from "crypto";
 import { Officer } from "../../types/person/person";
 import config from "../../../config";
-import { generateApiParameters, get, patch } from "../../common/api";
+import { generateApiParameters, get } from "../../common/api";
 import { AUTH_TOKEN, getUserAgency } from "../../service/user-service";
 
 import { DropdownOption } from "../../types/app/drop-down-option";
@@ -16,7 +16,7 @@ import { ConfigurationType } from "../../types/configurations/configuration";
 import { from } from "linq-to-typescript";
 import { ConfigurationState } from "../../types/state/configuration-state";
 import { NotificationState } from "../../types/state/notification-state";
-import { ToggleError, ToggleSuccess } from "../../common/toast";
+import { ToggleError } from "../../common/toast";
 import { CodeTableVersionState } from "../../types/state/code-table-version-state";
 import { fetchCaseCodeTables, fetchComplaintCodeTables } from "./code-table";
 import { Action, ThunkAction } from "@reduxjs/toolkit";
