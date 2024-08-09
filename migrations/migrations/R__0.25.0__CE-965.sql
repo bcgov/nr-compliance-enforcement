@@ -16,7 +16,7 @@ BEGIN
         RETURN '+' || left(formatted_phone_number, 14);
     ELSE
         -- Add '+1' in front of the phone number
-        RETURN '+1' || formatted_phone_number;
+        RETURN '+1' || left(formatted_phone_number,13);
     END IF;
 END;
 $function$
