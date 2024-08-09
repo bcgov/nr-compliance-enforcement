@@ -3,16 +3,18 @@ import logoSm from "../../../../assets/images/branding/BCgov-vert-sm.png";
 import logoLg from "../../../../assets/images/branding/BCgov-lg.png";
 import { NavDropdown, Badge } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { alertCount, getTokenProfile, profileInitials } from "../../../store/reducers/app";
+import { alertCount, getTokenProfile, profileInitials, checkFeatureActive } from "../../../store/reducers/app";
 import { Link } from "react-router-dom";
 import config from "../../../../config";
 import EnvironmentBanner from "./environment-banner";
+import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
 
 export const Header: FC = () => {
   const dispatch = useAppDispatch();
 
   const initials = useAppSelector(profileInitials);
   const alerts = useAppSelector(alertCount);
+  const showExperimentalFeature = useAppSelector(checkFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   useEffect(() => {
     if (!initials) {
@@ -61,7 +63,7 @@ export const Header: FC = () => {
           <div className="comp-header-right">
             {/* Notifications */}
             <div className="widget-content-left">
-              {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+              {showExperimentalFeature && (
                 <div className="comp-alert-badge">
                   <i className="bi bi-bell"></i>
                   {alerts > 0 && renderBadge()}
@@ -72,7 +74,7 @@ export const Header: FC = () => {
             {/* User Profile Avatar and Menu */}
             <div className="comp-header-profile-menu">
               {/* <!-- placeholder menu --> */}
-              {config.SHOW_EXPERIMENTAL_FEATURES === "true" ? (
+              {showExperimentalFeature ? (
                 <NavDropdown
                   title={
                     <div

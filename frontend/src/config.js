@@ -12,8 +12,6 @@ const config = {
   COMS_URL: window.REACT_APP_COMS_URL || process.env.REACT_APP_COMS_URL,
   COMS_BUCKET: window.REACT_APP_COMS_BUCKET || process.env.REACT_APP_COMS_BUCKET,
   ENVIRONMENT_NAME: (window.REACT_APP_ENVIRONMENT_NAME || process.env.REACT_APP_ENVIRONMENT_NAME) ?? "production",
-  SHOW_EXPERIMENTAL_FEATURES:
-    (window.REACT_APP_SHOW_EXPERIMENTAL_FEATURES || process.env.REACT_APP_SHOW_EXPERIMENTAL_FEATURES) ?? false,
 };
 
 export default config;

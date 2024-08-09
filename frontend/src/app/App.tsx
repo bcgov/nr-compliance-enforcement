@@ -1,7 +1,7 @@
 import { FC, useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes, useParams } from "react-router-dom";
 
-import Roles from "./constants/roles";
+import Roles from "./types/app/roles";
 import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
 import NotAuthorized, { NotFound } from "./components/containers/pages";
@@ -10,26 +10,32 @@ import ColorReference, { MiscReference, SpaceReference } from "./components/refe
 import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
-import { fetchAllCodeTables } from "./store/reducers/code-table";
+import { fetchAllCodeTables, fetchComplaintCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
 import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
 import COMPLAINT_TYPES from "./types/app/complaint-types";
-import { getCodeTableVersion, getConfigurations, getOfficerDefaultZone } from "./store/reducers/app";
+import { getCodeTableVersion, getConfigurations, getFeatureFlag, getOfficerDefaultZone } from "./store/reducers/app";
 import { CreateComplaint } from "./components/containers/complaints/details/complaint-details-create";
 import { UserManagement } from "./components/containers/admin/user-management";
 import GenericErrorBoundary from "./components/error-handling/generic-error-boundary";
 import { VerifyAccess } from "./components/containers/pages/verify-access";
+import { FeatureManagement } from "./components/containers/admin/feature-management";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(getOfficerDefaultZone());
-    dispatch(fetchAllCodeTables());
+    if (Roles.CEEB) {
+      dispatch(fetchComplaintCodeTables);
+    } else {
+      dispatch(fetchAllCodeTables());
+    }
     dispatch(getOfficers());
     dispatch(getConfigurations());
     dispatch(getCodeTableVersion());
+    dispatch(getFeatureFlag());
   }, [dispatch]);
 
   return (
@@ -65,6 +71,12 @@ const App: FC = () => {
             <Route
               path="/admin/user"
               element={<UserManagement />}
+            />
+          </Route>
+          <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+            <Route
+              path="/admin/feature"
+              element={<FeatureManagement />}
             />
           </Route>
           <Route

@@ -10,10 +10,11 @@ import { ComplaintList } from "./complaint-list";
 import { ComplaintFilterBar } from "./complaint-filter-bar";
 import { ComplaintFilterContext, ComplaintFilterProvider } from "../../../providers/complaint-filter-provider";
 import { resetFilters, ComplaintFilterPayload } from "../../../store/reducers/complaint-filters";
-import { selectDefaultZone } from "../../../store/reducers/app";
+import { selectDefaultZone, checkFeatureActive } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
 import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
 import { useNavigate } from "react-router-dom";
+import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
 
 type Props = {
   defaultComplaintType: string;
@@ -31,6 +32,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const totalComplaintsOnMap = useAppSelector(selectTotalMappedComplaints);
 
   const defaultZone = useAppSelector(selectDefaultZone);
+  const showGIRFeature = useAppSelector(checkFeatureActive(FEATURE_TYPES.GIR_COMPLAINT));
 
   //-- this is used to apply the search to the pager component
   const [search, setSearch] = useState("");
@@ -99,6 +101,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         <Nav className="nav nav-tabs">
           {/* <!-- dynamic tabs --> */}
           {complaintTypes.map(({ id, code, name }) => {
+            if (!showGIRFeature && code === "GIR") return <></>;
             return (
               <Nav.Item
                 className={`nav-item comp-tab comp-tab-${complaintType === code ? "active" : "inactive"}`}

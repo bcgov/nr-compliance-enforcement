@@ -3,7 +3,9 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { complaintTypeToName } from "../../../types/app/complaint-types";
 import { Row, Col } from "react-bootstrap";
-import config from "../../../../config";
+import { useAppSelector } from "../../../hooks/hooks";
+import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
+import { checkFeatureActive } from "../../../store/reducers/app";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -32,6 +34,8 @@ export const OpenComplaints: FC<Props> = ({
   unassigned,
   background: { assignedColor, unassignedColor },
 }) => {
+  const showExperimentalFeature = useAppSelector(checkFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+
   const data = {
     labels: [],
     datasets: [
@@ -73,7 +77,7 @@ export const OpenComplaints: FC<Props> = ({
           <Col className="comp-zag-legend-label">Assigned</Col>
           <Col className="comp-zag-legend-value">{assigned}</Col>
         </Row>
-        {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+        {showExperimentalFeature && (
           <Row>
             <Col>View Complaints</Col>
           </Row>
