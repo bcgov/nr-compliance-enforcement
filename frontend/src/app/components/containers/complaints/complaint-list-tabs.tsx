@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Nav } from "react-bootstrap";
-import COMPLAINT_TYPES, { complaintTypeToName } from "../../../types/app/complaint-types";
+import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { NavigationTab } from "../../../types/app/complaints/navigation-tabs";
 import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
 import { useAppSelector } from "../../../hooks/hooks";
@@ -11,10 +11,11 @@ import Roles from "../../../types/app/roles";
 type props = {
   complaintType: string;
   viewType: string;
+  complaintTypes: Array<string>;
   onTabChange: Function;
 };
 
-export const ComplaintListTabs: FC<props> = ({ complaintType, viewType, onTabChange }) => {
+export const ComplaintListTabs: FC<props> = ({ complaintType, viewType, complaintTypes, onTabChange }) => {
   const totalComplaints = useAppSelector(selectTotalComplaintsByType(complaintType));
   const totalComplaintsOnMap = useAppSelector(selectTotalMappedComplaints);
 
@@ -36,8 +37,8 @@ export const ComplaintListTabs: FC<props> = ({ complaintType, viewType, onTabCha
   //-- provide an alternate label based on the users role if they are
   //-- a CEEB user
   //--
-  const tabs = (): Array<NavigationTab> => {
-    return Object.keys(COMPLAINT_TYPES).map((item) => {
+  const tabs = (types: Array<string>): Array<NavigationTab> => {
+    return types.map((item) => {
       let name = "";
       let record = { name: "", id: `${item.toLocaleLowerCase()}-tab`, code: item };
 
@@ -67,7 +68,7 @@ export const ComplaintListTabs: FC<props> = ({ complaintType, viewType, onTabCha
 
   return (
     <Nav className="nav nav-tabs">
-      {tabs().map(({ id, code, name }) => {
+      {tabs(complaintTypes).map(({ id, code, name }) => {
         return (
           <Nav.Item
             className={`nav-item comp-tab comp-tab-${complaintType === code ? "active" : "inactive"}`}

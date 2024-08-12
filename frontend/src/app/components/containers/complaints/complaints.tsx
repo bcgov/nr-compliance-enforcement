@@ -12,6 +12,7 @@ import { selectDefaultZone } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
+import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 
 type Props = {
   defaultComplaintType: string;
@@ -72,29 +73,11 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         {/* <!-- create list of complaint types --> */}
 
         <ComplaintListTabs
-          complaintType={defaultComplaintType}
+          complaintType={complaintType}
           viewType={viewType}
+          complaintTypes={Object.keys(COMPLAINT_TYPES)}
           onTabChange={handleComplaintTabChange}
-          // complaintTotal={renderComplaintTotal}
         />
-        {/* <Nav className="nav nav-tabs">
-          {complaintTypes.map(({ id, code, name }) => {
-            return (
-              <Nav.Item
-                className={`nav-item comp-tab comp-tab-${complaintType === code ? "active" : "inactive"}`}
-                key={`${code}-tab-item`}
-              >
-                <div
-                  className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
-                  id={id}
-                  onClick={() => handleComplaintTabChange(code)}
-                >
-                  {name} {renderComplaintTotal(code)}
-                </div>
-              </Nav.Item>
-            );
-          })}
-        </Nav> */}
 
         <ComplaintFilterBar
           viewType={viewType}
