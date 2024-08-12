@@ -132,10 +132,10 @@ BEGIN
     -- Check if the first character is '1'
     IF left(formatted_phone_number, 1) = '1' THEN
         -- Add '+' in front of the phone number
-        RETURN '+' || left(formatted_phone_number, 15);
+        RETURN '+' || left(formatted_phone_number, 14);
     ELSE
         -- Add '+1' in front of the phone number
-        RETURN '+1' || formatted_phone_number;
+        RETURN '+1' || left(formatted_phone_number,13);
     END IF;
 END;
 $function$
@@ -153,7 +153,7 @@ BEGIN
     IF (formatted_coordinate_field IS NULL or (length(formatted_coordinate_field) = 0)) then
 		return NULL;
 	-- Valid match so return the value entered
-	else return coordinate_field;
+	else return formatted_coordinate_field;
     END IF;
 END;
 $function$
