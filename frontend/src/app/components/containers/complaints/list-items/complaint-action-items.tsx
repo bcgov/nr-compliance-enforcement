@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { BsSend } from "react-icons/bs";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { checkFeatureActive, openModal } from "../../../../store/reducers/app";
+import { isFeatureActive, openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { getAssessment } from "../../../../store/reducers/case-thunks";
@@ -23,7 +23,7 @@ export const ComplaintActionItems: FC<Props> = ({
   complaint_status,
 }) => {
   const dispatch = useAppDispatch();
-  const showExperimentalFeature = useAppSelector(checkFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+  const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   const openAsignOfficerModal = () => {
     document.body.click();

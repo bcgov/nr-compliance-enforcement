@@ -7,7 +7,7 @@ import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "../
 
 import { Badge, Button, Dropdown } from "react-bootstrap";
 
-import { checkFeatureActive, openModal } from "../../../../store/reducers/app";
+import { isFeatureActive, openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
 import { exportComplaint } from "../../../../store/reducers/documents-thunks";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
@@ -43,7 +43,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     complaintAgency,
     girType,
   } = useAppSelector(selectComplaintHeader(complaintType));
-  const showExperimentalFeature = useAppSelector(checkFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+  const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";

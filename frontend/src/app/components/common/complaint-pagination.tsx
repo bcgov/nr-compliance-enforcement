@@ -4,7 +4,7 @@ import Select from "react-select";
 import Pagination from "react-bootstrap/Pagination";
 import Option from "../../types/app/option";
 import { useAppSelector } from "../../hooks/hooks";
-import { checkFeatureActive } from "../../store/reducers/app";
+import { isFeatureActive } from "../../store/reducers/app";
 import { FEATURE_TYPES } from "../../constants/feature-flag-types";
 
 interface ComplaintPaginationProps {
@@ -26,7 +26,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
   onPageChange,
   resultsPerPage,
 }) => {
-  const showExperimentalFeature = useAppSelector(checkFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+  const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   const [specificPage, setSpecificPage] = useState<string>("");
   const pageSizeOptions: Option[] = [{ label: `${resultsPerPage} / page`, value: `${resultsPerPage}` }];

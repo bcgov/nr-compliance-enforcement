@@ -7,14 +7,14 @@ import chevronDown from "../../../../assets/images/chevron-down.png";
 import chevronUp from "../../../../assets/images/chevron-up.png";
 import { useAppSelector } from "../../../hooks/hooks";
 import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
-import { checkFeatureActive } from "../../../store/reducers/app";
+import { isFeatureActive } from "../../../store/reducers/app";
 
 type Props = {
   hwcrOpenComplaintsOfficeStat: OfficeStats;
   allegationOpenComplaintsOfficeStat: OfficeStats;
 };
 export const OfficeContainer: FC<Props> = ({ hwcrOpenComplaintsOfficeStat, allegationOpenComplaintsOfficeStat }) => {
-  const showExperimentalFeature = useAppSelector(checkFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+  const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
   let hwcrUnassigned: number = 0;

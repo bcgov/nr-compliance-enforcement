@@ -17,12 +17,6 @@ import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 export class FeatureAgencyXrefController {
   constructor(private readonly featureAgencyXrefService: FeatureAgencyXrefService) {}
 
-  @Post()
-  create(@Body() createFeatureAgencyXrefDto: CreateFeatureAgencyXrefDto) {
-    //this endpoint should not be implemented.
-    return "create";
-  }
-
   @Get("/all")
   @Roles(Role.TEMPORARY_TEST_ADMIN)
   findAll() {
@@ -35,19 +29,9 @@ export class FeatureAgencyXrefController {
     return await this.featureAgencyXrefService.findByAgency(agencyCode);
   }
 
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.featureAgencyXrefService.findOne(+id);
-  }
-
   @Patch(":id")
   @Roles(Role.TEMPORARY_TEST_ADMIN)
   update(@Param("id") id: UUID, @Body() updateAttractantHwcrXrefDto: UpdateFeatureAgencyXrefDto) {
     return this.featureAgencyXrefService.update(id, updateAttractantHwcrXrefDto);
-  }
-
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.featureAgencyXrefService.remove(+id);
   }
 }

@@ -2,7 +2,7 @@ import { FC } from "react";
 import { OfficerStats } from "../../../types/complaints/zone-at-a-glance-stats";
 import { Row, Col } from "react-bootstrap";
 import config from "../../../../config";
-import { checkFeatureActive } from "../../../store/reducers/app";
+import { isFeatureActive } from "../../../store/reducers/app";
 import { useAppSelector } from "../../../hooks/hooks";
 import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
 
@@ -12,7 +12,7 @@ type Props = {
 };
 
 export const OfficeUserContainer: FC<Props> = ({ hwcrOfficers, allegationOfficers }) => {
-  const showExperimentalFeature = useAppSelector(checkFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+  const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   if (
     hwcrOfficers !== undefined &&
     hwcrOfficers.length !== 0 &&

@@ -3,7 +3,7 @@ import logoSm from "../../../../assets/images/branding/BCgov-vert-sm.png";
 import logoLg from "../../../../assets/images/branding/BCgov-lg.png";
 import { NavDropdown, Badge } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { alertCount, getTokenProfile, profileInitials, checkFeatureActive } from "../../../store/reducers/app";
+import { alertCount, getTokenProfile, profileInitials, isFeatureActive } from "../../../store/reducers/app";
 import { Link } from "react-router-dom";
 import config from "../../../../config";
 import EnvironmentBanner from "./environment-banner";
@@ -14,7 +14,7 @@ export const Header: FC = () => {
 
   const initials = useAppSelector(profileInitials);
   const alerts = useAppSelector(alertCount);
-  const showExperimentalFeature = useAppSelector(checkFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+  const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   useEffect(() => {
     if (!initials) {

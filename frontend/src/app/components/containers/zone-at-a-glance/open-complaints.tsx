@@ -5,7 +5,7 @@ import { complaintTypeToName } from "../../../types/app/complaint-types";
 import { Row, Col } from "react-bootstrap";
 import { useAppSelector } from "../../../hooks/hooks";
 import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
-import { checkFeatureActive } from "../../../store/reducers/app";
+import { isFeatureActive } from "../../../store/reducers/app";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -34,7 +34,7 @@ export const OpenComplaints: FC<Props> = ({
   unassigned,
   background: { assignedColor, unassignedColor },
 }) => {
-  const showExperimentalFeature = useAppSelector(checkFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+  const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   const data = {
     labels: [],

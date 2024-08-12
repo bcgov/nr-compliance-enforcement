@@ -251,7 +251,7 @@ export const selectOfficerAgency = (state: RootState): string => {
   return agency;
 };
 
-export const checkFeatureActive =
+export const isFeatureActive =
   (featureCode: string) =>
   (state: RootState): boolean => {
     const features = state.app.featureFlags;

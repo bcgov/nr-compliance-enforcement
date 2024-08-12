@@ -7,7 +7,7 @@ import {
   profileInitials,
   selectModalData,
   userId,
-  checkFeatureActive,
+  isFeatureActive,
 } from "../../../store/reducers/app";
 import {
   assignCurrentUserToComplaint,
@@ -42,7 +42,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
 
   const officersJson = useAppSelector(selectOfficersByZoneAndAgency(modalData?.agency_code, zone));
   const searchResults = useAppSelector(searchOfficers(searchInput));
-  const showExperimentalFeature = useAppSelector(checkFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+  const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   // stores the state of the officer that was clicked
   const handleAssigneeClick = (personId: string) => {
