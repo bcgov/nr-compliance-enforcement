@@ -1,5 +1,7 @@
+team_h
 person_h
 person_complaint_xref_h
+officer_team_xref_h
 officer_h
 office_h
 hwcr_complaint_h
@@ -15,7 +17,7 @@ allegation_complaint_h
 staging_complaint
 person_complaint_xref
 geo_org_unit_structure
-officer
+officer_team_xref
 gir_complaint
 attractant_hwcr_xref
 allegation_complaint
@@ -23,10 +25,13 @@ staging_metadata_mapping
 complaint_update
 complaint_type_code
 hwcr_complaint
+team
+officer
 violation_code
 office
 complaint
 geo_organization_unit_code
+team_code
 staging_status_code
 staging_activity_code
 species_code

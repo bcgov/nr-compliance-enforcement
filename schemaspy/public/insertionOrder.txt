@@ -12,10 +12,13 @@ reported_by_code
 species_code
 staging_activity_code
 staging_status_code
+team_code
 geo_organization_unit_code
 complaint
 office
 violation_code
+officer
+team
 hwcr_complaint
 complaint_type_code
 complaint_update
@@ -23,7 +26,7 @@ staging_metadata_mapping
 allegation_complaint
 attractant_hwcr_xref
 gir_complaint
-officer
+officer_team_xref
 geo_org_unit_structure
 person_complaint_xref
 staging_complaint
@@ -39,5 +42,7 @@ gir_complaint_h
 hwcr_complaint_h
 office_h
 officer_h
+officer_team_xref_h
 person_complaint_xref_h
 person_h
+team_h
