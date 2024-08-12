@@ -111,8 +111,8 @@ BEGIN
     _edit_location_detailed_text := edit_complaint_data ->> 'cos_location_description';
     _edit_incident_utc_datetime := ( edit_complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _edit_incident_reported_utc_timestmp := ( edit_complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-	_edit_address_coordinates_lat := edit_complaint_data ->> 'address_coordinates_lat';
-    _edit_address_coordinates_long := edit_complaint_data ->> 'address_coordinates_long';
+	_edit_address_coordinates_lat := validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_lat');
+    _edit_address_coordinates_long := validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_long');
    
     -- Create a geometry point based on the latitude and longitude
     IF _edit_address_coordinates_lat IS NOT NULL AND _edit_address_coordinates_lat <> '' AND

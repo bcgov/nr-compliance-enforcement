@@ -141,6 +141,25 @@ END;
 $function$
 ;
 
+CREATE OR REPLACE FUNCTION public.validate_coordinate_field(coordinate_field text)
+ RETURNS text
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+    formatted_coordinate_field TEXT;
+BEGIN
+    -- Confirm the coordinate_field is a valid value 
+    formatted_coordinate_field := regexp_matches(coordinate_field, '^[-+]?([0-9]{1,2}|1[0-7][0-9]|180)(\.[0-9]{1,10})', 'g');
+    IF (formatted_coordinate_field IS NULL or (length(formatted_coordinate_field) = 0)) then
+		return NULL;
+	-- Valid match so return the value entered
+	else return coordinate_field;
+    END IF;
+END;
+$function$
+;
+
+
 CREATE OR REPLACE FUNCTION public.insert_complaint_from_staging(_complaint_identifier character varying)
  RETURNS void
  LANGUAGE plpgsql
@@ -270,8 +289,8 @@ AS $function$
     _location_detailed_text := complaint_data ->> 'cos_location_description';
     _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-	_address_coordinates_lat := complaint_data ->> 'address_coordinates_lat';
-    _address_coordinates_long := complaint_data ->> 'address_coordinates_long';
+	_address_coordinates_lat := validate_coordinate_field(complaint_data ->> 'address_coordinates_lat');
+    _address_coordinates_long := validate_coordinate_field(complaint_data ->> 'address_coordinates_long');
    
     -- Create a geometry point based on the latitude and longitude
     IF _address_coordinates_lat IS NOT NULL AND _address_coordinates_lat <> '' AND
