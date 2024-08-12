@@ -27,11 +27,7 @@ const App: FC = () => {
 
   useEffect(() => {
     dispatch(getOfficerDefaultZone());
-    if (Roles.CEEB) {
-      dispatch(fetchComplaintCodeTables);
-    } else {
-      dispatch(fetchAllCodeTables());
-    }
+    dispatch(fetchAllCodeTables());
     dispatch(getOfficers());
     dispatch(getConfigurations());
     dispatch(getCodeTableVersion());
