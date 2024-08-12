@@ -8,6 +8,8 @@ import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { useAppSelector } from "../../../../hooks/hooks";
 import { selectCodeTable } from "../../../../store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "../../../../constants/code-table-types";
+import UserService from "../../../../service/user-service";
+import Roles from "../../../../types/app/roles";
 
 type Props = {
   type: string;
@@ -134,24 +136,27 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
         >
           {getViolationDescription(violation)}
         </td>
-        <td
-          className={`${isExpandedClass}`}
-          onClick={toggleExpand}
-        >
-          {isInProgress && (
-            <div
-              id="comp-details-status-text-id"
-              className="comp-box-violation-in-progress"
-            >
-              <FontAwesomeIcon
-                id="violation-in-progress-icon"
-                className="comp-cell-violation-in-progress-icon"
-                icon={faExclamationCircle}
-              />
-              {inProgressFlag}
-            </div>
-          )}
-        </td>
+        {/* customization 1:, if there are more than 2 of these exceptions create a new listview item */}
+        {!UserService.hasRole(Roles.CEEB_COMPLIANCE_COORDINATOR) && (
+          <td
+            className={`${isExpandedClass}`}
+            onClick={toggleExpand}
+          >
+            {isInProgress && (
+              <div
+                id="comp-details-status-text-id"
+                className="comp-box-violation-in-progress"
+              >
+                <FontAwesomeIcon
+                  id="violation-in-progress-icon"
+                  className="comp-cell-violation-in-progress-icon"
+                  icon={faExclamationCircle}
+                />
+                {inProgressFlag}
+              </div>
+            )}
+          </td>
+        )}
         <td
           className={`sortableHeader ${isExpandedClass}`}
           onClick={toggleExpand}

@@ -1,9 +1,7 @@
 import { FC, useState, useContext, useCallback } from "react";
 import { shallowEqual } from "react-redux";
-import { Button, Collapse, Nav, Offcanvas } from "react-bootstrap";
-import COMPLAINT_TYPES, { complaintTypeToName } from "../../../types/app/complaint-types";
+import { Button, Collapse, Offcanvas } from "react-bootstrap";
 import { useAppSelector } from "../../../hooks/hooks";
-import { selectTotalComplaintsByType, selectTotalMappedComplaints } from "../../../store/reducers/complaints";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
 
@@ -12,8 +10,8 @@ import { ComplaintFilterContext, ComplaintFilterProvider } from "../../../provid
 import { resetFilters, ComplaintFilterPayload } from "../../../store/reducers/complaint-filters";
 import { selectDefaultZone } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
-import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
 import { useNavigate } from "react-router-dom";
+import { ComplaintListTabs } from "./complaint-list-tabs";
 
 type Props = {
   defaultComplaintType: string;
@@ -26,33 +24,10 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const [viewType, setViewType] = useState<"map" | "list">("list");
 
-  const totalComplaints = useAppSelector(selectTotalComplaintsByType(complaintType));
-
-  const totalComplaintsOnMap = useAppSelector(selectTotalMappedComplaints);
-
   const defaultZone = useAppSelector(selectDefaultZone);
 
   //-- this is used to apply the search to the pager component
   const [search, setSearch] = useState("");
-
-  const complaintTypes: Array<{ name: string; id: string; code: string }> = Object.keys(COMPLAINT_TYPES).map((item) => {
-    return {
-      name: complaintTypeToName(item),
-      id: `${item.toLocaleLowerCase()}-tab`,
-      code: item,
-    };
-  });
-
-  // renders the complaint count on the list and map views, for the selected complaint type
-  const renderComplaintTotal = (selectedComplaintType: string): string | undefined => {
-    if (COMPLAINT_VIEW_TYPES.MAP === viewType) {
-      if (complaintType === selectedComplaintType) {
-        return `(${totalComplaintsOnMap})`;
-      }
-    } else if (complaintType === selectedComplaintType) {
-      return `(${totalComplaints})`;
-    }
-  };
 
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
@@ -96,8 +71,13 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         </div>
         {/* <!-- create list of complaint types --> */}
 
-        <Nav className="nav nav-tabs">
-          {/* <!-- dynamic tabs --> */}
+        <ComplaintListTabs
+          complaintType={defaultComplaintType}
+          viewType={viewType}
+          onTabChange={handleComplaintTabChange}
+          // complaintTotal={renderComplaintTotal}
+        />
+        {/* <Nav className="nav nav-tabs">
           {complaintTypes.map(({ id, code, name }) => {
             return (
               <Nav.Item
@@ -114,9 +94,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
               </Nav.Item>
             );
           })}
-
-          {/* <!-- dynamic tabs end --> */}
-        </Nav>
+        </Nav> */}
 
         <ComplaintFilterBar
           viewType={viewType}

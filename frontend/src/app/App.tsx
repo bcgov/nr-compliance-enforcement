@@ -1,7 +1,6 @@
 import { FC, useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes, useParams } from "react-router-dom";
 
-import Roles from "./constants/roles";
 import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
 import NotAuthorized, { NotFound } from "./components/containers/pages";
@@ -20,6 +19,7 @@ import { CreateComplaint } from "./components/containers/complaints/details/comp
 import { UserManagement } from "./components/containers/admin/user-management";
 import GenericErrorBoundary from "./components/error-handling/generic-error-boundary";
 import { VerifyAccess } from "./components/containers/pages/verify-access";
+import Roles from "./types/app/roles";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();

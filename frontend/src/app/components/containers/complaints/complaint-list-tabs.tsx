@@ -1,0 +1,88 @@
+import { FC } from "react";
+import { Nav } from "react-bootstrap";
+import COMPLAINT_TYPES, { complaintTypeToName } from "../../../types/app/complaint-types";
+import { NavigationTab } from "../../../types/app/complaints/navigation-tabs";
+import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
+import { useAppSelector } from "../../../hooks/hooks";
+import { selectTotalComplaintsByType, selectTotalMappedComplaints } from "../../../store/reducers/complaints";
+import UserService from "../../../service/user-service";
+import Roles from "../../../types/app/roles";
+
+type props = {
+  complaintType: string;
+  viewType: string;
+  onTabChange: Function;
+};
+
+export const ComplaintListTabs: FC<props> = ({ complaintType, viewType, onTabChange }) => {
+  const totalComplaints = useAppSelector(selectTotalComplaintsByType(complaintType));
+  const totalComplaintsOnMap = useAppSelector(selectTotalMappedComplaints);
+
+  // renders the complaint count on the list and map views, for the selected complaint type
+  const complaintTotal = (selectedComplaintType: string): string | undefined => {
+    if (COMPLAINT_VIEW_TYPES.MAP === viewType) {
+      if (complaintType === selectedComplaintType) {
+        return `(${totalComplaintsOnMap})`;
+      }
+    } else if (complaintType === selectedComplaintType) {
+      return `(${totalComplaints})`;
+    }
+  };
+
+  //--
+  //-- Return a list of navigation tabs from COMPLAINT_TYPES enum
+  //-- this will allow some customization of the label used to
+  //-- identify each tab. for example for the ERS tab we want to
+  //-- provide an alternate label based on the users role if they are
+  //-- a CEEB user
+  //--
+  const tabs = (): Array<NavigationTab> => {
+    return Object.keys(COMPLAINT_TYPES).map((item) => {
+      let name = "";
+      let record = { name: "", id: `${item.toLocaleLowerCase()}-tab`, code: item };
+
+      switch (item) {
+        case COMPLAINT_TYPES.ERS:
+          if (UserService.hasRole(Roles.CEEB_COMPLIANCE_COORDINATOR)) {
+            name = "Waste and Pesticides";
+          } else {
+            name = "Enforcement";
+          }
+
+          record = { ...record, name };
+          break;
+        case COMPLAINT_TYPES.HWCR:
+          record = { ...record, name: "Human Wildlife Conflict" };
+          break;
+        case COMPLAINT_TYPES.GIR:
+          record = { ...record, name: "General Incidents" };
+          break;
+        default:
+          record = { ...record, name: "default" };
+      }
+
+      return record;
+    });
+  };
+
+  return (
+    <Nav className="nav nav-tabs">
+      {tabs().map(({ id, code, name }) => {
+        return (
+          <Nav.Item
+            className={`nav-item comp-tab comp-tab-${complaintType === code ? "active" : "inactive"}`}
+            key={`${code}-tab-item`}
+          >
+            <div
+              className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
+              id={id}
+              onClick={() => onTabChange(code)}
+            >
+              {name} {complaintTotal(code)}
+            </div>
+          </Nav.Item>
+        );
+      })}
+    </Nav>
+  );
+};
