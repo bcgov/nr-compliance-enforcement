@@ -10,10 +10,16 @@ import { ComplaintList } from "./complaint-list";
 import { ComplaintFilterBar } from "./complaint-filter-bar";
 import { ComplaintFilterContext, ComplaintFilterProvider } from "../../../providers/complaint-filter-provider";
 import { resetFilters, ComplaintFilterPayload } from "../../../store/reducers/complaint-filters";
-import { selectDefaultZone } from "../../../store/reducers/app";
+import {
+  selectDefaultZone,
+  profilePersonalGuid,
+  profileDisplayName,
+  selectOfficerAgency,
+} from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
 import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
 import { useNavigate } from "react-router-dom";
+import { DropdownOption } from "../../../types/app/drop-down-option";
 
 type Props = {
   defaultComplaintType: string;
@@ -177,10 +183,26 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
 export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
   const defaultZone = useAppSelector(selectDefaultZone, shallowEqual);
+
+  const userPersonalGuid = useAppSelector(profilePersonalGuid, shallowEqual);
+  const userDisplayName = useAppSelector(profileDisplayName, shallowEqual);
+  const userAgency = useAppSelector(selectOfficerAgency, shallowEqual);
+  let officer: DropdownOption | null = null;
+  let zone: DropdownOption | null = null;
+
+  if (userAgency === "EPO") {
+    officer = { value: userPersonalGuid, label: userDisplayName };
+  } else {
+    zone = defaultZone;
+  }
+
   return (
     <>
       {defaultZone && (
-        <ComplaintFilterProvider zone={defaultZone}>
+        <ComplaintFilterProvider
+          zone={zone}
+          officer={officer}
+        >
           <Complaints defaultComplaintType={defaultComplaintType} />
         </ComplaintFilterProvider>
       )}
