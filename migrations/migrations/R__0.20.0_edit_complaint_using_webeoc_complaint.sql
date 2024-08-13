@@ -95,9 +95,9 @@ BEGIN
     -- These fields are retrieved to potentially update an existing complaint record
 	_edit_detail_text := edit_complaint_data ->> 'cos_call_details';
     _edit_caller_name := edit_complaint_data ->> 'cos_caller_name';
-    _edit_caller_phone_1 := edit_complaint_data ->> 'cos_primary_phone';
-    _edit_caller_phone_2 := edit_complaint_data ->> 'cos_alt_phone';
-    _edit_caller_phone_3 := edit_complaint_data ->> 'cos_alt_phone_2';
+    _edit_caller_phone_1 := format_phone_number(edit_complaint_data ->> 'cos_primary_phone');
+    _edit_caller_phone_2 := format_phone_number(edit_complaint_data ->> 'cos_alt_phone');
+    _edit_caller_phone_3 := format_phone_number(edit_complaint_data ->> 'cos_alt_phone_2');
     _edit_caller_email := edit_complaint_data ->> 'cos_caller_email';
     _edit_caller_address := edit_complaint_data ->> 'caller_address';
     _edit_address := edit_complaint_data ->> 'address';
