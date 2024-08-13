@@ -108,28 +108,28 @@ export class ComplaintController {
   @Public()
   @Post("/staging/action-taken")
   @UseGuards(ApiKeyGuard)
-  stageNewActionTaken(@Body() action: ActionTaken) {
+  stageActionTaken(@Body() action: ActionTaken) {
     this.stagingService.stageObject("ACTION-TAKEN", action);
   }
 
   @Public()
   @Post("/process/action-taken/:id")
   @UseGuards(ApiKeyGuard)
-  processNewActionTaken(@Param("id") id: string) {
+  processActionTaken(@Param("id") id: string) {
     this.stagingService.processObject("ACTION-TAKEN", id);
   }
 
   @Public()
   @Post("/staging/action-taken-update")
   @UseGuards(ApiKeyGuard)
-  stageNewActionTakenUpdate(@Body() action: ActionTaken) {
+  stageActionTakenUpdate(@Body() action: ActionTaken) {
     this.stagingService.stageObject("ACTION-TAKEN-UPDATE", action);
   }
 
   @Public()
   @Post("/process/action-taken-update/:id")
   @UseGuards(ApiKeyGuard)
-  processNewActionTakenUpdate(@Param("id") id: string) {
+  processActionTakenUpdate(@Param("id") id: string) {
     this.stagingService.processObject("ACTION-TAKEN-UPDATE", id);
   }
 }

@@ -99,6 +99,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
         action_datetime: actionTimestamp,
         action_details: details,
         fk_table_345: webeocId,
+        dataid,
       } = action;
 
       const record: ActionTakenDto = {
@@ -108,6 +109,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
         actionTimestamp,
         details,
         isUpdate: false,
+        dataId: dataid,
       };
 
       this.logger.debug("post message to complaint api for staging");
@@ -129,6 +131,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
         action_datetime: actionTimestamp,
         action_details: details,
         fk_table_346: webeocId,
+        dataid,
       } = action;
 
       const record: ActionTakenDto = {
@@ -138,6 +141,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
         actionTimestamp,
         details,
         isUpdate: true,
+        dataId: dataid,
       };
 
       this.logger.debug("post message to complaint api for staging");

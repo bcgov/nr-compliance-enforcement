@@ -12,6 +12,7 @@ import { WebEOCComplaintUpdate } from "../../types/webeoc-complaint-update";
 import { isEqual, omit } from "lodash";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
+import { ActionTaken } from "../../types/models/complaints/action-taken";
 
 @Injectable()
 export class StagingComplaintService {
@@ -241,13 +242,16 @@ export class StagingComplaintService {
   //-- staging and processing functionality
   //-- add any type of object to the staging table so that it can be processed and added to the correct type
   stageObject = async (type: string, entity: any) => {
-    const _hasExistingActionTaken = async (complaintId, type: string): Promise<boolean> => {
+    const _hasExistingActionTaken = async (complaintId: string, dataId: number, type: string): Promise<boolean> => {
       try {
-        const result = await this.repository
+        const result: StagingComplaint = await this.repository
           .createQueryBuilder("staging")
           .where("staging.complaint_identifier = :complaintId", { complaintId })
           .andWhere("staging.staging_activity_code = :status", { status: type })
+          .andWhere(`staging.complaint_jsonb ->> 'dataId' = :dataId`, { dataId })
           .getOne();
+
+        const test = 0;
 
         if (result === null) {
           return false;
@@ -306,22 +310,32 @@ export class StagingComplaintService {
     };
 
     try {
+      const { dataId } = entity;
+
       if (type === ACTION_TAKEN_TYPES.ACTION_TAKEN) {
         //-- check to see if there is a duplicate action-taken
         const complaintId = await this._findComplaintIdByWebeocId(entity["webeocId"]);
         this.logger.log("webeocId: ", entity["webeocId"]);
 
         if (complaintId !== undefined) {
-          const hasExisting = await _hasExistingActionTaken(complaintId, ACTION_TAKEN_ACTION_TYPES.CREATE_ACTION_TAKEN);
+          const hasExisting = await _hasExistingActionTaken(
+            complaintId,
+            dataId,
+            ACTION_TAKEN_ACTION_TYPES.CREATE_ACTION_TAKEN,
+          );
 
           //-- I'm not sure this is right the original story CE-618 isn't
           //-- exactly clear on how to handle an edit
           if (hasExisting) {
             //-- do we update the existing action taken?
           } else {
+            console.log(`hasExisting: ${hasExisting}`);
             const actionTaken = { ...entity, complaintId };
             const result = await _stageActionTaken(actionTaken, ACTION_TAKEN_ACTION_TYPES.CREATE_ACTION_TAKEN);
             if (result) {
+              //-- when an action is staged a message should be sent back to the webeoc project
+              //-- to fire off the next task, to promote the action-taken from staging table to
+              //-- action-taken table
             }
           }
         }
@@ -330,16 +344,24 @@ export class StagingComplaintService {
         const complaintUpdateGuid = await _findComplaintUpdateGuidByWebeocId(entity["webeocId"]);
 
         if (complaintId !== undefined) {
-          const hasExisting = await _hasExistingActionTaken(complaintId, ACTION_TAKEN_ACTION_TYPES.UPDATE_ACTION_TAKEN);
+          const hasExisting = await _hasExistingActionTaken(
+            complaintId,
+            dataId,
+            ACTION_TAKEN_ACTION_TYPES.UPDATE_ACTION_TAKEN,
+          );
 
           //-- I'm not sure this is right the original story CE-618 isn't
           //-- exactly clear on how to handle an edit
           if (hasExisting) {
             //-- do we update the existing action taken?
           } else {
+            console.log(`hasExisting: ${hasExisting}`);
             const actionTaken = { ...entity, complaintId, complaintUpdateGuid };
             const result = await _stageActionTaken(actionTaken, ACTION_TAKEN_ACTION_TYPES.UPDATE_ACTION_TAKEN);
             if (result) {
+              //-- when an action is staged a message should be sent back to the webeoc project
+              //-- to fire off the next task, to promote the action-taken-update from staging table to
+              //-- action-taken table
             }
           }
         }

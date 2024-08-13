@@ -2,6 +2,7 @@ import { UUID } from "crypto";
 
 export interface ActionTakenDto {
   actionTakenId: UUID;
+  dataId: number; //-- webeoid unique id
   complaintId?: string;
   complaintUpdateGuid?: UUID;
 
