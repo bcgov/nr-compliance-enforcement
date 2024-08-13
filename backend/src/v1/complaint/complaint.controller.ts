@@ -19,7 +19,6 @@ import { dtoAlias } from "../../types/models/complaints/dtoAlias-type";
 
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 
-
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
 @Controller({
@@ -78,15 +77,16 @@ export class ComplaintController {
     @Param("id") id: string,
   ): Promise<dtoAlias> {
     return (await this.service.findById(id, complaintType)) as
-      WildlifeComplaintDto
+      | WildlifeComplaintDto
       | AllegationComplaintDto
       | GeneralIncidentComplaintDto;
   }
   @Get("/related-data/:id")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async findRelatedDataById(@Param("id") id: string): Promise<RelatedDataDto> {
-    return (await this.service.findRelatedDataById(id));
+    return await this.service.findRelatedDataById(id);
   }
+
   @Post("/create/:complaintType")
   @Roles(Role.COS_OFFICER, Role.CEEB)
   async create(
