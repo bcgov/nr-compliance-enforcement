@@ -147,17 +147,20 @@ CREATE OR REPLACE FUNCTION public.validate_coordinate_field(coordinate_field tex
 AS $function$
 DECLARE
     formatted_coordinate_field TEXT;
+   confirmed_valid bool;
 BEGIN
     -- Confirm the coordinate_field is a valid value 
-    formatted_coordinate_field := regexp_matches(coordinate_field, '^[-+]?([0-9]{1,2}|1[0-7][0-9]|180)(\.[0-9]{1,10})', 'g');
+    formatted_coordinate_field := regexp_substr(coordinate_field, '^[-+]?([0-9]{1,2}|1[0-7][0-9]|180)(\.[0-9]{1,10})');
     IF (formatted_coordinate_field IS NULL or (length(formatted_coordinate_field) = 0)) then
 		return NULL;
-	-- Valid match so return the value entered
+	-- Valid match so return the formatted_coordinate_field
 	else return formatted_coordinate_field;
     END IF;
 END;
 $function$
 ;
+
+
 
 
 CREATE OR REPLACE FUNCTION public.insert_complaint_from_staging(_complaint_identifier character varying)
