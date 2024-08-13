@@ -147,7 +147,6 @@ CREATE OR REPLACE FUNCTION public.validate_coordinate_field(coordinate_field tex
 AS $function$
 DECLARE
     formatted_coordinate_field TEXT;
-   confirmed_valid bool;
 BEGIN
     -- Confirm the coordinate_field is a valid value 
     formatted_coordinate_field := regexp_substr(coordinate_field, '^[-+]?([0-9]{1,2}|1[0-7][0-9]|180)(\.[0-9]{1,10})');
