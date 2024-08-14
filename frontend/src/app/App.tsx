@@ -10,7 +10,7 @@ import ColorReference, { MiscReference, SpaceReference } from "./components/refe
 import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
-import { fetchAllCodeTables, fetchComplaintCodeTables } from "./store/reducers/code-table";
+import { fetchAllCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
 import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
