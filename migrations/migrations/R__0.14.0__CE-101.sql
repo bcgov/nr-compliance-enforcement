@@ -5,6 +5,7 @@ AS $function$
 DECLARE
     new_code VARCHAR(10);  -- used in case we're creating a new code
     truncated_code varchar(10); -- if we're creating a new code, base it off of the webeoc_value.  We'll truncate this and get rid of spaces, and possibly append a number to make it unique
+    truncated_short_description varchar(50); -- if we're creating a new short description, truncate this to 50 characters just in case it is too long
     live_code_value VARCHAR;
     current_utc_timestamp TIMESTAMP WITH TIME ZONE := NOW();
     target_code_table VARCHAR;
@@ -23,6 +24,8 @@ BEGIN
     IF truncated_code IS NULL OR truncated_code = '' THEN
         RETURN NULL;
     END IF;
+
+    truncated_short_description := LEFT(webeoc_value, 50);
 
     -- Resolve the target code table and column name based on code_table_type
     CASE code_table_type
@@ -94,7 +97,7 @@ BEGIN
            
             -- Insert new code into the specific code table
             EXECUTE format('INSERT INTO %I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', $6, $4, $6, $4, $5)', target_code_table, column_name)
-            USING new_code, webeoc_value, webeoc_value, current_utc_timestamp, new_display_order, webeoc_user_id;
+            USING new_code, truncated_short_description, webeoc_value, current_utc_timestamp, new_display_order, webeoc_user_id;
 
             -- Update configuration_value by 1 to nofity front-end to update
             UPDATE configuration
