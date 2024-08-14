@@ -1,7 +1,14 @@
 import { ChangeEvent, FC, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { profileDisplayName, profileIdir, profileInitials, selectModalData, userId } from "../../../store/reducers/app";
+import {
+  profileDisplayName,
+  profileIdir,
+  profileInitials,
+  selectModalData,
+  userId,
+  isFeatureActive,
+} from "../../../store/reducers/app";
 import {
   assignCurrentUserToComplaint,
   searchOfficers,
@@ -11,7 +18,7 @@ import {
 import { UUID } from "crypto";
 import { BsPerson } from "react-icons/bs";
 import { from } from "linq-to-typescript";
-import config from "../../../../config";
+import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
 
 type AssignOfficerModalProps = {
   close: () => void;
@@ -35,6 +42,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
 
   const officersJson = useAppSelector(selectOfficersByZoneAndAgency(modalData?.agency_code, zone));
   const searchResults = useAppSelector(searchOfficers(searchInput));
+  const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   // stores the state of the officer that was clicked
   const handleAssigneeClick = (personId: string) => {
@@ -129,9 +137,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
               </div>
               <div className="assign_officer_modal_profile_card_column">
                 <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
-                {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
-                  <div className="assign_officer_modal_profile_card_row_2">Officer</div>
-                )}
+                {showExperimentalFeature && <div className="assign_officer_modal_profile_card_row_2">Officer</div>}
               </div>
               <div className="assign_officer_modal_profile_card_column"></div>
             </div>
@@ -174,9 +180,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
           </div>
           <div className="assign_officer_modal_profile_card_column">
             <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
-            {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
-              <div className="assign_officer_modal_profile_card_row_2">Officer</div>
-            )}
+            {showExperimentalFeature && <div className="assign_officer_modal_profile_card_row_2">Officer</div>}
           </div>
           <div className="assign_officer_modal_profile_card_column">
             <Button

@@ -22,8 +22,7 @@
              window.REACT_APP_API_URL="/api";
              window.REACT_APP_COMS_URL="{$COMS_URL}";
              window.REACT_APP_COMS_BUCKET="{$COMS_BUCKET}";
-             window.REACT_APP_ENVIRONMENT_NAME="{$ENVIRONMENT_NAME}";
-             window.REACT_APP_SHOW_EXPERIMENTAL_FEATURES="{$SHOW_EXPERIMENTAL_FEATURES}"`
+             window.REACT_APP_ENVIRONMENT_NAME="{$ENVIRONMENT_NAME}"`
   }
 
   root * /app/dist
