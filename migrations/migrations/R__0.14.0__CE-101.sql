@@ -47,6 +47,9 @@ BEGIN
         WHEN 'violatncd' THEN
             target_code_table := 'violation_code';
             column_name := 'violation_code';
+        WHEN 'girtypecd' THEN
+            target_code_table := 'gir_type_code';
+            column_name := 'gir_type_code';
 
         ELSE RAISE EXCEPTION 'Invalid code_table_type provided: %', code_table_type;
     END CASE;
@@ -119,6 +122,7 @@ BEGIN
 END;
 $function$
 ;
+
 
 CREATE OR REPLACE FUNCTION public.format_phone_number(phone_number text)
  RETURNS text
@@ -204,6 +208,8 @@ AS $function$
     _observed_ind_bool bool;
     _suspect_witnesss_dtl_text VARCHAR(4000);
     _violation_code            VARCHAR(10);
+    _gir_type_code             VARCHAR(10);
+    _gir_type_description      VARCHAR(50);
     -- used to generate a uuid.  We use this to create the PK in hwcr_complaint, but
     -- we need to also use it when creating the attractants
     generated_uuid uuid;
@@ -430,6 +436,36 @@ AS $function$
         
         END IF;
       END LOOP;
+
+    ELSIF _report_type = 'GIR' then
+    
+      -- Prepare data for 'gir_complaint' table
+      _gir_type_description := complaint_data ->> 'call_type_gir';
+      SELECT *
+      FROM   PUBLIC.insert_and_return_code( _gir_type_description, 'girtypecd' )
+      INTO   _gir_type_code;
+      -- Insert data into 'gir_complaint' table
+      INSERT INTO PUBLIC.gir_complaint
+                  (
+                              gir_complaint_guid,
+                              create_user_id,
+                              create_utc_timestamp,
+                              update_user_id,
+                              update_utc_timestamp,
+                              complaint_identifier,
+                              gir_type_code
+                  )
+                  VALUES
+                  (
+                              uuid_generate_v4(),
+                              _create_userid,
+                              _create_utc_timestamp,
+                              _create_userid,
+                              _update_utc_timestamp,
+                              _complaint_identifier,
+                              _gir_type_code
+                  );
+      
     ELSIF _report_type = 'ERS' THEN
       -- Extract and prepare data for 'allegation_complaint' table
       _in_progress_ind := (complaint_data->>'violation_in_progress');
