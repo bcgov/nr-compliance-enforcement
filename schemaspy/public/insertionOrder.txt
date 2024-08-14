@@ -4,6 +4,7 @@ spatial_ref_sys
 attractant_code
 complaint_status_code
 entity_code
+feature_code
 geo_org_unit_type_code
 gir_type_code
 hwcr_complaint_nature_code
@@ -25,6 +26,7 @@ complaint_update
 staging_metadata_mapping
 allegation_complaint
 attractant_hwcr_xref
+feature_agency_xref
 gir_complaint
 officer_team_xref
 geo_org_unit_structure

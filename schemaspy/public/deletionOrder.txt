@@ -19,6 +19,7 @@ person_complaint_xref
 geo_org_unit_structure
 officer_team_xref
 gir_complaint
+feature_agency_xref
 attractant_hwcr_xref
 allegation_complaint
 staging_metadata_mapping
@@ -40,6 +41,7 @@ person_complaint_xref_code
 hwcr_complaint_nature_code
 gir_type_code
 geo_org_unit_type_code
+feature_code
 entity_code
 complaint_status_code
 attractant_code

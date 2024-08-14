@@ -7,6 +7,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_code" nullable="false" remarks="A human readable code used to identify an agency." size="10" type="varchar" typeCode="12">
             <child column="owned_by_agency_code" foreignKey="FK_complaint_owned_by_agencycode" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
             <child column="agency_code" foreignKey="FK_complaint_type_code_agency_code" implied="false" onDeleteCascade="false" schema="public" table="complaint_type_code"/>
+            <child column="agency_code" foreignKey="FK_agencycode" implied="false" onDeleteCascade="false" schema="public" table="feature_agency_xref"/>
             <child column="agency_code" foreignKey="FK_gorgustrct_agencycode" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_structure"/>
             <child column="agency_code" foreignKey="team_agency_code_fk" implied="false" onDeleteCascade="false" schema="public" table="team"/>
             <child column="agency_code" foreignKey="FK_violation_code_agency_code" implied="false" onDeleteCascade="false" schema="public" table="violation_code"/>
@@ -286,6 +287,41 @@
          <primaryKey column="entity_code" sequenceNumberInPK="1"/>
          <index name="PK_entity_code" unique="true">
             <column ascending="true" name="entity_code"/>
+         </index>
+      </table>
+      <table name="feature_agency_xref" remarks="Maintains a mapping between FEATURES and AGENCIES that allow for features to be displayed or hidden as required." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="feature_agency_xref_guid" nullable="false" remarks="System generated unique key for a FEATURE_AGENCY_XREF ecord.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="feature_code" nullable="false" remarks="A human readable code used to identify a FEATURE that is controlled by the FEATURE_AGENCY_XREF table." size="10" type="varchar" typeCode="12">
+            <parent column="feature_code" foreignKey="FK_featurecd" implied="false" onDeleteCascade="false" schema="public" table="feature_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code" nullable="false" remarks="A human readable code used to identify an AGENCY." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_agencycode" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the FEATURE should be rendered the for users in the given AGENCY" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the FEATURE / AGENCY mapping." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the FEATURE / AGENCY mapping was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="The id of the user that updated the FEATURE / AGENCY mapping" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the FEATURE / AGENCY mapping was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="feature_agency_xref_guid" sequenceNumberInPK="1"/>
+         <index name="PK_featagcyxr" unique="true">
+            <column ascending="true" name="feature_agency_xref_guid"/>
+         </index>
+      </table>
+      <table name="feature_code" remarks="A list of FEATUREs that can be enabled or disabled on a per agency basis." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="feature_code" nullable="false" remarks="A human readable code used to identify a FEATURE that is controlled by the FEATURE_AGENCY_XREF table." size="10" type="varchar" typeCode="12">
+            <child column="feature_code" foreignKey="FK_featurecd" implied="false" onDeleteCascade="false" schema="public" table="feature_agency_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the FEATURE controlled by the flag." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the FEATURE controlled by the flag." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of  the FEATUREs should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the FEATURE is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the FEATURE." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the FEATURE was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the FEATURE" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the FEATURE was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="feature_code" sequenceNumberInPK="1"/>
+         <index name="PK_featurecd" unique="true">
+            <column ascending="true" name="feature_code"/>
          </index>
       </table>
       <table name="flyway_schema_history" remarks="" schema="public" type="TABLE">

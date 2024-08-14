@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>geo_org_unit_structure - default.public</title>
+        <title>feature_agency_xref - default.public</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>geo_org_unit_structure</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <h1>feature_agency_xref</h1><p><span id="recordNumber">-1</span> rows</p><br />
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <i class="fa fa-file-text-o"></i>
@@ -84,7 +84,7 @@
                             </div>
                         </div><!-- /.box-header -->
                         <div class="box-body clearfix">
-                            <p>A geographical organization unit structure is a parent/child relationship between two geographical organization units.</p>
+                            <p>Maintains a mapping between FEATURES and AGENCIES that allow for features to be displayed or hidden as required.</p>
                         </div><!-- /.box-body -->
                     </div>
                 </section>
@@ -122,7 +122,7 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="geo_org_unit_structure_guid">geo_org_unit_structure_guid</span></td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="feature_agency_xref_guid">feature_agency_xref_guid</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
                                     <td title=''></td>
@@ -136,12 +136,56 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>System generated unique key for a geographical organization unit structure. This key should never be exposed to users via any system utilizing the tables.</p></td>
+                                    <td><p>System generated unique key for a FEATURE_AGENCY_XREF ecord.  This key should never be exposed to users via any system utilizing the tables.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="effective_date">effective_date</span></td>
-                                    <td>timestamp</td>
-                                    <td>29,6</td>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="feature_code">feature_code</span></td>
+                                    <td>varchar</td>
+                                    <td>10</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="feature_agency_xref.feature_code references feature_code.feature_code via FK_featurecd"><a href='feature_code.html'>feature_code</a><span class='relatedKey'>.feature_code</span></td>
+                                                <td class="constraint detail">FK_featurecd</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>A human readable code used to identify a FEATURE that is controlled by the FEATURE_AGENCY_XREF table.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="agency_code">agency_code</span></td>
+                                    <td>varchar</td>
+                                    <td>10</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="feature_agency_xref.agency_code references agency_code.agency_code via FK_agencycode"><a href='agency_code.html'>agency_code</a><span class='relatedKey'>.agency_code</span></td>
+                                                <td class="constraint detail">FK_agencycode</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>A human readable code used to identify an AGENCY.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="active_ind">active_ind</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
                                     <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -153,24 +197,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The date the Geographical Organizational Unit Structure becomes effective as a valid relationship within the Ministry organizational structure.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="expiry_date">expiry_date</span></td>
-                                    <td>timestamp</td>
-                                    <td>29,6</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The date the Geographical Organizational Unit Structure is no longer recognized as a valid relationship within the Ministry organizational structure.</p></td>
+                                    <td><p>A boolean indicator to determine if the FEATURE should be rendered the for users in the given AGENCY</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -187,7 +214,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that created the geographical organization unit structure.</p></td>
+                                    <td><p>The id of the user that created the FEATURE / AGENCY mapping.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_utc_timestamp">create_utc_timestamp</span></td>
@@ -204,7 +231,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the geographical organization unit structure was created.  The timestamp is stored in UTC with no Offset.</p></td>
+                                    <td><p>The timestamp when the FEATURE / AGENCY mapping was created.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_id">update_user_id</span></td>
@@ -221,7 +248,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that updated the geographical organization unit structure.</p></td>
+                                    <td><p>The id of the user that updated the FEATURE / AGENCY mapping</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_utc_timestamp">update_utc_timestamp</span></td>
@@ -238,73 +265,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the geographical organization unit structure was updated.  The timestamp is stored in UTC with no Offset.</p></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="agency_code">agency_code</span></td>
-                                    <td>varchar</td>
-                                    <td>10</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="geo_org_unit_structure.agency_code references agency_code.agency_code via FK_gorgustrct_agencycode"><a href='agency_code.html'>agency_code</a><span class='relatedKey'>.agency_code</span></td>
-                                                <td class="constraint detail">FK_gorgustrct_agencycode</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td><p>A human readable code used to identify an agency.  The agency that defines the geographical organization unit structural relationship.</p></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="parent_geo_org_unit_code">parent_geo_org_unit_code</span></td>
-                                    <td>varchar</td>
-                                    <td>10</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="geo_org_unit_structure.parent_geo_org_unit_code references geo_organization_unit_code.geo_organization_unit_code via FK_gorgustrct_parent_geoorgutcd"><a href='geo_organization_unit_code.html'>geo_organization_unit_code</a><span class='relatedKey'>.geo_organization_unit_code</span></td>
-                                                <td class="constraint detail">FK_gorgustrct_parent_geoorgutcd</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td><p>The geographical organization that contains the child geographical organization unit.</p></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="child_geo_org_unit_code">child_geo_org_unit_code</span></td>
-                                    <td>varchar</td>
-                                    <td>10</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="geo_org_unit_structure.child_geo_org_unit_code references geo_organization_unit_code.geo_organization_unit_code via FK_gorgustrct_child_geoorgutcd"><a href='geo_organization_unit_code.html'>geo_organization_unit_code</a><span class='relatedKey'>.geo_organization_unit_code</span></td>
-                                                <td class="constraint detail">FK_gorgustrct_child_geoorgutcd</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td><p>The geographical organization that is contained by the parent geographical organization unit.</p></td>
+                                    <td><p>The timestamp when the FEATURE / AGENCY mapping was updated.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -337,16 +298,10 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_gorgustrct</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_featagcyxr</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>geo_org_unit_structure_guid</td>
-                                </tr>
-                                <tr>
-                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> UQ_gorgustrct</td>
-                                    <td>Must be unique</td>
-                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
-                                    <td>parent_geo_org_unit_code + child_geo_org_unit_code</td>
+                                    <td>feature_agency_xref_guid</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -371,26 +326,24 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="348,5,755,368">
-<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="39,137,271,255">
-<area shape="rect" id="node3" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,272,304,419">
+<area shape="rect" id="node1" href="feature_agency_xref.html" target="_top" title="feature_agency_xref" alt="" coords="281,27,667,331">
+<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,140,237,257">
+<area shape="rect" id="node3" href="feature_code.html" target="_top" title="feature_code" alt="" coords="5,5,237,123">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/geo_org_unit_structure.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/feature_agency_xref.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="782,491,942,579">
-<area shape="rect" id="node2" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="316,363,615,509">
-<area shape="rect" id="node3" href="agency_code.html" target="_top" title="agency_code" alt="" coords="349,647,581,764">
-<area shape="rect" id="node7" href="geo_org_unit_type_code.html" target="_top" title="geo_org_unit_type_code" alt="" coords="5,395,272,483">
-<area shape="rect" id="node4" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="739,701,985,789">
-<area shape="rect" id="node5" href="feature_agency_xref.html" target="_top" title="feature_agency_xref" alt="" coords="742,807,982,895">
-<area shape="rect" id="node6" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="659,111,1065,473">
-<area shape="rect" id="node8" href="office.html" target="_top" title="office" alt="" coords="800,5,924,93">
-<area shape="rect" id="node9" href="team.html" target="_top" title="team" alt="" coords="801,912,923,1000">
-<area shape="rect" id="node10" href="violation_code.html" target="_top" title="violation_code" alt="" coords="765,596,959,684">
+<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="394,321,554,409">
+<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,267,237,384">
+<area shape="rect" id="node3" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="351,427,597,515">
+<area shape="rect" id="node4" href="feature_agency_xref.html" target="_top" title="feature_agency_xref" alt="" coords="281,532,667,836">
+<area shape="rect" id="node5" href="feature_code.html" target="_top" title="feature_code" alt="" coords="5,564,237,681">
+<area shape="rect" id="node6" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="343,5,605,93">
+<area shape="rect" id="node7" href="team.html" target="_top" title="team" alt="" coords="413,111,535,199">
+<area shape="rect" id="node8" href="violation_code.html" target="_top" title="violation_code" alt="" coords="377,216,571,304">
 </map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/geo_org_unit_structure.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/feature_agency_xref.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>
