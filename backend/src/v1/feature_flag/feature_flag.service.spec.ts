@@ -1,19 +1,17 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { FeatureAgencyXrefController } from "./feature_agency_xref.controller";
-import { FeatureAgencyXrefService } from "./feature_agency_xref.service";
+import { FeatureFlagService } from "./feature_flag.service";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { FeatureAgencyXref } from "./entities/feature_agency_xref.entity";
 import { DataSource } from "typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 
-describe("FeatureAgencyXrefController", () => {
-  let controller: FeatureAgencyXrefController;
+describe("FeatureFlagService", () => {
+  let service: FeatureFlagService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [FeatureAgencyXrefController],
       providers: [
-        FeatureAgencyXrefService,
+        FeatureFlagService,
         {
           provide: getRepositoryToken(FeatureAgencyXref),
           useValue: {},
@@ -25,10 +23,10 @@ describe("FeatureAgencyXrefController", () => {
       ],
     }).compile();
 
-    controller = module.get<FeatureAgencyXrefController>(FeatureAgencyXrefController);
+    service = module.get<FeatureFlagService>(FeatureFlagService);
   });
 
   it("should be defined", () => {
-    expect(controller).toBeDefined();
+    expect(service).toBeDefined();
   });
 });

@@ -401,9 +401,7 @@ export const getCodeTableVersion = (): AppThunk => async (dispatch) => {
 export const getFeatureFlag = (): AppThunk => async (dispatch) => {
   try {
     const agency = getUserAgency();
-    const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/feature-agency-xref/features-by-agency/${agency}`,
-    );
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-flag/features-by-agency/${agency}`);
     const response: any = await get(dispatch, parameters);
     if (response) {
       dispatch(setFeatureFlag(response));

@@ -8,8 +8,8 @@ import { REQUEST } from "@nestjs/core";
 import { UUID } from "crypto";
 
 @Injectable()
-export class FeatureAgencyXrefService {
-  private readonly logger = new Logger(FeatureAgencyXrefService.name);
+export class FeatureFlagService {
+  private readonly logger = new Logger(FeatureFlagService.name);
   @InjectRepository(FeatureAgencyXref)
   private featureAgencyXrefRepository: Repository<FeatureAgencyXref>;
 

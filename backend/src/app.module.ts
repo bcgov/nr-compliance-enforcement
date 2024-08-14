@@ -46,7 +46,7 @@ import { DocumentModule } from "./v1/document/document.module";
 import { CdogsModule } from "./external_api/cdogs/cdogs.module";
 import { GirTypeCodeModule } from "./v1/gir_type_code/gir_type_code.module";
 import { GeneralIncidentComplaintModule } from "./v1/gir_complaint/gir_complaint.module";
-import { FeatureAgencyXrefModule } from "./v1/feature_agency_xref/feature_agency_xref.module";
+import { FeatureFlagModule } from "./v1/feature_flag/feature_flag.module";
 import { FeatureCodeModule } from "./v1/feature_code/feature_code.module";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
@@ -116,7 +116,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     CdogsModule,
     GirTypeCodeModule,
     GeneralIncidentComplaintModule,
-    FeatureAgencyXrefModule,
+    FeatureFlagModule,
     FeatureCodeModule,
   ],
   controllers: [AppController],

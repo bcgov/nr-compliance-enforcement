@@ -12,7 +12,7 @@ export const FeatureManagement: FC = () => {
   const [featureData, setFeatureData] = useState<any[]>([]);
 
   const getAllFeatureFlags = async () => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-agency-xref/all`);
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-flag/all`);
     const response: any = await get(dispatch, parameters);
     if (response) {
       setFeatureData(response);
@@ -25,7 +25,7 @@ export const FeatureManagement: FC = () => {
         feature_agency_xref_guid: id,
         active_ind: active_ind,
       };
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-agency-xref/${id}`, update);
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-flag/${id}`, update);
       const response = await patch(dispatch, parameters);
       if (response) {
         ToggleSuccess("Feature has been updated");
