@@ -4,7 +4,7 @@ import { Repository } from "typeorm";
 import { ComplaintUpdate } from "./entities/complaint_updates.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 import { ComplaintChangeCount } from "./entities/complaint_change_count";
-import { ActionTaken } from "./entities/action_taken.entity";
+import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 
 @Injectable()

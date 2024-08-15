@@ -12,7 +12,6 @@ import { WebEOCComplaintUpdate } from "../../types/webeoc-complaint-update";
 import { isEqual, omit } from "lodash";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
-import { ActionTaken } from "../../types/models/complaints/action-taken";
 
 @Injectable()
 export class StagingComplaintService {

@@ -64,8 +64,7 @@ import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
-import { ActionTakenDto } from "src/types/models/complaints/action-taken";
-import { ActionTaken } from "../complaint_updates/entities/action_taken.entity";
+import { ActionTaken } from "./entities/action_taken.entity";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })

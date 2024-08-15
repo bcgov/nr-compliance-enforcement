@@ -1,6 +1,6 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne, Point } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
-import { Complaint } from "../../../v1/complaint/entities/complaint.entity";
+import { Complaint } from "./complaint.entity";
 
 @Index("action_taken_pk", ["actionTakenGuid"], { unique: true })
 @Entity("action_taken", { schema: "public" })

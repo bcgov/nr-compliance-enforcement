@@ -26,9 +26,8 @@ import { AutomapperModule } from "@automapper/nestjs";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { ComplaintUpdatesModule } from "../complaint_updates/complaint_updates.module";
-import { StagingComplaintService } from "../staging_complaint/staging_complaint.service";
 import { StagingComplaintModule } from "../staging_complaint/staging_complaint.module";
-import { ActionTaken } from "../complaint_updates/entities/action_taken.entity";
+import { ActionTaken } from "./entities/action_taken.entity";
 
 @Module({
   imports: [
