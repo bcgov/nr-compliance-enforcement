@@ -59,11 +59,6 @@ spec:
                 secretKeyRef:
                   name: react-app
                   key: coms-bucket
-            - name: SHOW_EXPERIMENTAL_FEATURES
-              valueFrom:
-                secretKeyRef:
-                  name: react-app
-                  key: show-experimental-features
             - name: ENVIRONMENT_NAME
               valueFrom:
                     secretKeyRef:
