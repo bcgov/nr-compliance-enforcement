@@ -328,7 +328,6 @@ export class StagingComplaintService {
           if (hasExisting) {
             //-- do we update the existing action taken?
           } else {
-            console.log(`hasExisting: ${hasExisting}`);
             const actionTaken = { ...entity, complaintId };
             const result = await _stageActionTaken(actionTaken, ACTION_TAKEN_ACTION_TYPES.CREATE_ACTION_TAKEN);
             if (result) {
@@ -354,7 +353,6 @@ export class StagingComplaintService {
           if (hasExisting) {
             //-- do we update the existing action taken?
           } else {
-            console.log(`hasExisting: ${hasExisting}`);
             const actionTaken = { ...entity, complaintId, complaintUpdateGuid };
             const result = await _stageActionTaken(actionTaken, ACTION_TAKEN_ACTION_TYPES.UPDATE_ACTION_TAKEN);
             if (result) {
