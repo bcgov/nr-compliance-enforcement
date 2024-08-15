@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>format_phone_number(phone_number text)</h1><br />
+                    <h1>validate_coordinate_field(coordinate_field text)</h1><br />
                 </section>
                 <!-- Main content -->
                 <section class="content">
@@ -97,7 +97,7 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td>phone_number</td>
+                                    <td>coordinate_field</td>
                                     <td>text</td>
                                     <td>IN</td>
                                 </tr>
@@ -115,7 +115,7 @@
                             </div>
                         </div>
                         <div class="box-body">
-                            <textarea id="sql-script-codemirror" name="sql-script-codemirror" rows="" style="display: none;">DECLARE&#10;    formatted_phone_number TEXT;&#10;BEGIN&#10;    -- Remove all non-digit characters&#10;    formatted_phone_number :&#61; regexp_replace(phone_number, &#39;[^0-9]&#39;, &#39;&#39;, &#39;g&#39;);&#10;    IF (formatted_phone_number IS NULL or (length(formatted_phone_number) &#61; 0)) then&#10;&#9;&#9;return null;&#10;    END IF;&#10;    -- Check if the first character is &#39;1&#39;&#10;    IF left(formatted_phone_number, 1) &#61; &#39;1&#39; THEN&#10;        -- Add &#39;+&#39; in front of the phone number&#10;        RETURN &#39;+&#39; || left(formatted_phone_number, 14);&#10;    ELSE&#10;        -- Add &#39;+1&#39; in front of the phone number&#10;        RETURN &#39;+1&#39; || left(formatted_phone_number,13);&#10;    END IF;&#10;END;</textarea>
+                            <textarea id="sql-script-codemirror" name="sql-script-codemirror" rows="" style="display: none;">DECLARE&#10;    formatted_coordinate_field TEXT;&#10;BEGIN&#10;    -- Confirm the coordinate_field is a valid value &#10;    formatted_coordinate_field :&#61; regexp_substr(coordinate_field, &#39;^[-+]?([0-9]{1,2}|1[0-7][0-9]|180)(\.[0-9]{1,10})&#39;);&#10;    IF (formatted_coordinate_field IS NULL or (length(formatted_coordinate_field) &#61; 0)) then&#10;&#9;&#9;return NULL;&#10;&#9;-- Valid match so return the formatted_coordinate_field&#10;&#9;else return formatted_coordinate_field;&#10;    END IF;&#10;END;</textarea>
                         </div>
                     </div>
                 </section>

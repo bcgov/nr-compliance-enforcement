@@ -2141,9 +2141,9 @@ BEGIN
     -- These fields are retrieved to potentially update an existing complaint record
 	_edit_detail_text := edit_complaint_data ->> 'cos_call_details';
     _edit_caller_name := edit_complaint_data ->> 'cos_caller_name';
-    _edit_caller_phone_1 := edit_complaint_data ->> 'cos_primary_phone';
-    _edit_caller_phone_2 := edit_complaint_data ->> 'cos_alt_phone';
-    _edit_caller_phone_3 := edit_complaint_data ->> 'cos_alt_phone_2';
+    _edit_caller_phone_1 := format_phone_number(edit_complaint_data ->> 'cos_primary_phone');
+    _edit_caller_phone_2 := format_phone_number(edit_complaint_data ->> 'cos_alt_phone');
+    _edit_caller_phone_3 := format_phone_number(edit_complaint_data ->> 'cos_alt_phone_2');
     _edit_caller_email := edit_complaint_data ->> 'cos_caller_email';
     _edit_caller_address := edit_complaint_data ->> 'caller_address';
     _edit_address := edit_complaint_data ->> 'address';
@@ -2157,8 +2157,8 @@ BEGIN
     _edit_location_detailed_text := edit_complaint_data ->> 'cos_location_description';
     _edit_incident_utc_datetime := ( edit_complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _edit_incident_reported_utc_timestmp := ( edit_complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-	_edit_address_coordinates_lat := edit_complaint_data ->> 'address_coordinates_lat';
-    _edit_address_coordinates_long := edit_complaint_data ->> 'address_coordinates_long';
+	_edit_address_coordinates_lat := validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_lat');
+    _edit_address_coordinates_long := validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_long');
    
     -- Create a geometry point based on the latitude and longitude
     IF _edit_address_coordinates_lat IS NOT NULL AND _edit_address_coordinates_lat <> '' AND
@@ -2585,10 +2585,10 @@ BEGIN
     -- Check if the first character is '1'
     IF left(formatted_phone_number, 1) = '1' THEN
         -- Add '+' in front of the phone number
-        RETURN '+' || left(formatted_phone_number, 15);
+        RETURN '+' || left(formatted_phone_number, 14);
     ELSE
         -- Add '+1' in front of the phone number
-        RETURN '+1' || formatted_phone_number;
+        RETURN '+1' || left(formatted_phone_number,13);
     END IF;
 END;]]></definition>
          <parameters>
@@ -3885,8 +3885,8 @@ END;]]></definition>
     _location_detailed_text := complaint_data ->> 'cos_location_description';
     _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-	_address_coordinates_lat := complaint_data ->> 'address_coordinates_lat';
-    _address_coordinates_long := complaint_data ->> 'address_coordinates_long';
+	_address_coordinates_lat := validate_coordinate_field(complaint_data ->> 'address_coordinates_lat');
+    _address_coordinates_long := validate_coordinate_field(complaint_data ->> 'address_coordinates_long');
    
     -- Create a geometry point based on the latitude and longitude
     IF _address_coordinates_lat IS NOT NULL AND _address_coordinates_lat <> '' AND
@@ -4423,8 +4423,8 @@ BEGIN
     _upd_detail_text := update_complaint_data ->> 'update_call_details';
     _upd_location_summary_text := update_complaint_data ->> 'update_address';
     _upd_location_detailed_text := update_complaint_data ->> 'update_location_description';
-    _update_address_coordinates_lat := update_complaint_data ->> 'update_address_coordinates_lat';
-    _update_address_coordinates_long := update_complaint_data ->> 'update_address_coordinates_long';
+    _update_address_coordinates_lat := validate_coordinate_field(update_complaint_data ->> 'update_address_coordinates_lat');
+    _update_address_coordinates_long := validate_coordinate_field(update_complaint_data ->> 'update_address_coordinates_long');
     _create_userid := substring(update_complaint_data ->> USERNAME_TXT from 1 for 32);
     _update_userid := substring(update_complaint_data ->> USERNAME_TXT from 1 for 32);
 
@@ -10106,9 +10106,9 @@ END;]]></definition>
 BEGIN
     -- These fields are retrieved to potentially update an existing complaint record
     _update_caller_name := update_complaint_data ->> 'update_caller_name';
-    _update_caller_phone_1 := update_complaint_data ->> 'update_primary_phone';
-    _update_caller_phone_2 := update_complaint_data ->> 'update_alt_phone';
-    _update_caller_phone_3 := update_complaint_data ->> 'update_alt_phone_2';
+    _update_caller_phone_1 := format_phone_number(update_complaint_data ->> 'update_primary_phone');
+    _update_caller_phone_2 := format_phone_number(update_complaint_data ->> 'update_alt_phone');
+    _update_caller_phone_3 := format_phone_number(update_complaint_data ->> 'update_alt_phone_2');
     _update_caller_email := update_complaint_data ->> 'update_caller_email';
     _update_caller_address := update_complaint_data ->> 'update_caller_address';
     _update_webeoc_reported_by_code := update_complaint_data ->> 'update_reffered_by_lst';
@@ -10140,9 +10140,9 @@ BEGIN
    
    -- Parse the variables out of the original complaint history record
     _original_caller_name := original_complaint_record ->> 'caller_name';
-    _original_caller_phone_1 := original_complaint_record ->> 'caller_phone_1';
-    _original_caller_phone_2 := original_complaint_record ->> 'caller_phone_2';
-    _original_caller_phone_3 := original_complaint_record ->> 'caller_phone_3';
+    _original_caller_phone_1 := format_phone_number(original_complaint_record ->> 'caller_phone_1');
+    _original_caller_phone_2 := format_phone_number(original_complaint_record ->> 'caller_phone_2');
+    _original_caller_phone_3 := format_phone_number(original_complaint_record ->> 'caller_phone_3');
     _original_caller_email := original_complaint_record ->> 'caller_email';
     _original_caller_address := original_complaint_record ->> 'caller_address';
     -- need to get from hrc/allegation history table
@@ -10491,6 +10491,23 @@ END;]]></definition>
          <definition language="c"><![CDATA[uuid_ns_x500]]></definition>
          <parameters>
             <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="validate_coordinate_field(coordinate_field text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="plpgsql"><![CDATA[DECLARE
+    formatted_coordinate_field TEXT;
+BEGIN
+    -- Confirm the coordinate_field is a valid value 
+    formatted_coordinate_field := regexp_substr(coordinate_field, '^[-+]?([0-9]{1,2}|1[0-7][0-9]|180)(\.[0-9]{1,10})');
+    IF (formatted_coordinate_field IS NULL or (length(formatted_coordinate_field) = 0)) then
+		return NULL;
+	-- Valid match so return the formatted_coordinate_field
+	else return formatted_coordinate_field;
+    END IF;
+END;]]></definition>
+         <parameters>
+            <parameter mode="IN" name="coordinate_field" type="text"/>
          </parameters>
       </routine>
    </routines>
