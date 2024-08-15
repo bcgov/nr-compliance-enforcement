@@ -3,6 +3,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { ComplaintUpdatesService } from "./complaint_updates.service";
 import { ComplaintUpdate } from "./entities/complaint_updates.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
+import { ActionTaken } from "../complaint/entities/action_taken.entity";
 
 describe("ConfigurationService", () => {
   let service: ComplaintUpdatesService;
@@ -17,6 +18,10 @@ describe("ConfigurationService", () => {
         },
         {
           provide: getRepositoryToken(StagingComplaint),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(ActionTaken),
           useValue: {},
         },
       ],

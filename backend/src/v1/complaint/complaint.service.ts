@@ -64,7 +64,6 @@ import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
-import { ActionTaken } from "./entities/action_taken.entity";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -82,8 +81,6 @@ export class ComplaintService {
   private _girComplaintRepository: Repository<GirComplaint>;
   @InjectRepository(ComplaintUpdate)
   private _complaintUpdateRepository: Repository<ComplaintUpdate>;
-  @InjectRepository(ActionTaken)
-  private _actionTakenRepository: Repository<ActionTaken>;
   @InjectRepository(Officer)
   private _officertRepository: Repository<Officer>;
   @InjectRepository(Office)
