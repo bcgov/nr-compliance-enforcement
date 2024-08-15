@@ -1,11 +1,11 @@
 import { FC } from "react";
 import { BsSend } from "react-icons/bs";
-import { useAppDispatch } from "../../../../hooks/hooks";
-import { openModal } from "../../../../store/reducers/app";
+import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
+import { isFeatureActive, openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
-import config from "../../../../../config";
 import { getAssessment } from "../../../../store/reducers/case-thunks";
+import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
 
 type Props = {
   complaint_identifier: string;
@@ -23,6 +23,7 @@ export const ComplaintActionItems: FC<Props> = ({
   complaint_status,
 }) => {
   const dispatch = useAppDispatch();
+  const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   const openAsignOfficerModal = () => {
     document.body.click();
@@ -86,7 +87,7 @@ export const ComplaintActionItems: FC<Props> = ({
           ></i>
         </Button>
       </OverlayTrigger>
-      {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+      {showExperimentalFeature && (
         <>
           <OverlayTrigger
             placement="top"
