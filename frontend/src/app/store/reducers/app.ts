@@ -148,11 +148,6 @@ export const profileIdir = (state: RootState): UUID => {
   return `${profile.idir}`;
 };
 
-export const profilePersonalGuid = (state: RootState): string => {
-  const { profile } = state.app;
-  return `${profile.personGuid}`;
-};
-
 export const profileZone = (state: RootState): string => {
   const { profile } = state.app;
   return profile.zone;
