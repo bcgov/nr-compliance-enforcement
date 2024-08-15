@@ -73,10 +73,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         } = currentOfficer;
         payload = [{ filter: "officer", value: { value: id, label: `${lastName}, ${firstName}` } }];
       }
-    } else {
-      if (defaultZone) {
-        payload = [{ filter: "zone", value: defaultZone }];
-      }
+    } else if (defaultZone) {
+      payload = [{ filter: "zone", value: defaultZone }];
     }
 
     payload = [...payload, { filter: "status", value: { value: "OPEN", label: "Open" } }];
