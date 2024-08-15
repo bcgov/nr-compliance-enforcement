@@ -1058,6 +1058,259 @@ values
         CURRENT_TIMESTAMP
     ) ON CONFLICT DO NOTHING;
 
+-------------------------
+-- Insert Feature Codes
+-------------------------
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EXPERMFTRS',
+  'Experimental Features',
+  'Features that were included as early prototypes or placeholders , may be used to solicit feedback from user groups.',
+  10,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+  INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'GIRCMPLNTS',
+  'GIR Complaints',
+  'Load and display general Incident Report (GIR)  incidents from webEOC.',
+  20,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACTONSTKEN',
+  'Actions Taken',
+  'Load and display actions taken for incidents and updates from webEOC.',
+  30,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+
+-------------------------
+-- Insert Feature / Agency XREF
+-------------------------
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EXPERMFTRS',
+  'COS',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EXPERMFTRS',
+  'EPO',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EXPERMFTRS',
+  'PARKS',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+  INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'GIRCMPLNTS',
+  'COS',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'GIRCMPLNTS',
+  'PARKS',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+    INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'GIRCMPLNTS',
+  'EPO',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACTONSTKEN',
+  'COS',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACTONSTKEN',
+  'EPO',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACTONSTKEN',
+  'PARKS',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+-------------------------
+-- Insert Team Codes
+-------------------------
+
 insert into
     public.team_code (
         team_code,
