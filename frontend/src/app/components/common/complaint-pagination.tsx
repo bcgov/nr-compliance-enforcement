@@ -3,7 +3,9 @@ import { Form } from "react-bootstrap";
 import Select from "react-select";
 import Pagination from "react-bootstrap/Pagination";
 import Option from "../../types/app/option";
-import config from "../../../config";
+import { useAppSelector } from "../../hooks/hooks";
+import { isFeatureActive } from "../../store/reducers/app";
+import { FEATURE_TYPES } from "../../constants/feature-flag-types";
 
 interface ComplaintPaginationProps {
   currentPage: number;
@@ -24,6 +26,8 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
   onPageChange,
   resultsPerPage,
 }) => {
+  const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+
   const [specificPage, setSpecificPage] = useState<string>("");
   const pageSizeOptions: Option[] = [{ label: `${resultsPerPage} / page`, value: `${resultsPerPage}` }];
   const defaultOption: Option = {
@@ -142,7 +146,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
 
           <div className="pagination_controls_end">
             {/* Select total viewable records */}
-            {config.SHOW_EXPERIMENTAL_FEATURES === "true" && (
+            {showExperimentalFeature && (
               <Select
                 menuPlacement="top"
                 id="resultsPerPageSelect"

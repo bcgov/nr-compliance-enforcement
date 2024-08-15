@@ -218,7 +218,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
     <Card className="comp-drug-form">
       <Card.Header className="comp-card-header px-0">
         <div className="comp-card-header-title">
-          <h5>{drug ? <>{drug}</> : <>Add Drug</>}</h5>
+          <h5>Add Drug</h5>
         </div>
         <div className="comp-card-header-actions">
           <Button
