@@ -56,8 +56,8 @@ BEGIN
     _upd_detail_text := update_complaint_data ->> 'update_call_details';
     _upd_location_summary_text := update_complaint_data ->> 'update_address';
     _upd_location_detailed_text := update_complaint_data ->> 'update_location_description';
-    _update_address_coordinates_lat := update_complaint_data ->> 'update_address_coordinates_lat';
-    _update_address_coordinates_long := update_complaint_data ->> 'update_address_coordinates_long';
+    _update_address_coordinates_lat := validate_coordinate_field(update_complaint_data ->> 'update_address_coordinates_lat');
+    _update_address_coordinates_long := validate_coordinate_field(update_complaint_data ->> 'update_address_coordinates_long');
     _create_userid := substring(update_complaint_data ->> USERNAME_TXT from 1 for 32);
     _update_userid := substring(update_complaint_data ->> USERNAME_TXT from 1 for 32);
 

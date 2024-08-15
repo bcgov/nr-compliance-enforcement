@@ -51,9 +51,9 @@ declare
 BEGIN
     -- These fields are retrieved to potentially update an existing complaint record
     _update_caller_name := update_complaint_data ->> 'update_caller_name';
-    _update_caller_phone_1 := update_complaint_data ->> 'update_primary_phone';
-    _update_caller_phone_2 := update_complaint_data ->> 'update_alt_phone';
-    _update_caller_phone_3 := update_complaint_data ->> 'update_alt_phone_2';
+    _update_caller_phone_1 := format_phone_number(update_complaint_data ->> 'update_primary_phone');
+    _update_caller_phone_2 := format_phone_number(update_complaint_data ->> 'update_alt_phone');
+    _update_caller_phone_3 := format_phone_number(update_complaint_data ->> 'update_alt_phone_2');
     _update_caller_email := update_complaint_data ->> 'update_caller_email';
     _update_caller_address := update_complaint_data ->> 'update_caller_address';
     _update_webeoc_reported_by_code := update_complaint_data ->> 'update_reffered_by_lst';
@@ -85,9 +85,9 @@ BEGIN
    
    -- Parse the variables out of the original complaint history record
     _original_caller_name := original_complaint_record ->> 'caller_name';
-    _original_caller_phone_1 := original_complaint_record ->> 'caller_phone_1';
-    _original_caller_phone_2 := original_complaint_record ->> 'caller_phone_2';
-    _original_caller_phone_3 := original_complaint_record ->> 'caller_phone_3';
+    _original_caller_phone_1 := format_phone_number(original_complaint_record ->> 'caller_phone_1');
+    _original_caller_phone_2 := format_phone_number(original_complaint_record ->> 'caller_phone_2');
+    _original_caller_phone_3 := format_phone_number(original_complaint_record ->> 'caller_phone_3');
     _original_caller_email := original_complaint_record ->> 'caller_email';
     _original_caller_address := original_complaint_record ->> 'caller_address';
     -- need to get from hrc/allegation history table
