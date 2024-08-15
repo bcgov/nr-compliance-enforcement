@@ -10,6 +10,7 @@ interface ComplaintFilterContextType {
 type ProviderProps = {
   children: React.ReactNode;
   zone: any;
+  officer: any;
 };
 
 let initialState: ComplaintFilters = {
@@ -31,9 +32,12 @@ const ComplaintFilterContext = createContext<ComplaintFilterContextType>({
   dispatch: () => {},
 });
 
-const ComplaintFilterProvider: FC<ProviderProps> = ({ children, zone }) => {
+const ComplaintFilterProvider: FC<ProviderProps> = ({ children, zone, officer }) => {
   if (zone) {
     initialState = { ...initialState, zone };
+  }
+  if (officer) {
+    initialState = { ...initialState, officer };
   }
 
   const [state, dispatch] = useReducer(complaintFilterReducer, initialState);
