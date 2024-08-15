@@ -41,7 +41,6 @@ import { WebEOCComplaintUpdateDTO } from "../../types/app/complaints/webeoc-comp
 import { RelatedData } from "../../types/app/complaints/related-data";
 import { ActionTaken } from "../../types/app/complaints/action-taken";
 
-
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../../types/app/complaints/general-complaint";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
@@ -220,9 +219,6 @@ export const complaintSlice = createSlice({
       } = action;
       return { ...state, webeocUpdates, actions };
     },
-    // setRelatedData: (state, action: PayloadAction<RelatedData[]>) => {
-    //   state.relatedData = action.payload;
-    // },
     setActions: (state, action: PayloadAction<ActionTaken[]>) => {
       state.actions = action.payload;
     },
