@@ -1,4 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { UUID } from "crypto";
 import { connect, headers, JetStreamClient, JSONCodec } from "nats";
 import { STREAM_TOPICS } from "src/common/constants";
 import { ActionTaken } from "src/types/actions-taken/action-taken";
@@ -69,10 +70,10 @@ export class ActionsTakenPublisherService {
   //-- the id thats used is the unique identifier for the action-taken due to the lack of
   //-- complaint-id at this point
   //--
-  publishActionTaken = async (id: string): Promise<void> => {
+  publishActionTaken = async (guid: UUID, id: string): Promise<void> => {
     try {
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
-      natsHeaders.set("Nats-Msg-Id", `action-taken-process-${id}`);
+      natsHeaders.set("Nats-Msg-Id", `action-taken-process-${guid}-${id}`);
       const ack = await this.jsClient.publish(STREAM_TOPICS.ACTION_TAKEN, id, {
         headers: natsHeaders,
       });
@@ -88,10 +89,10 @@ export class ActionsTakenPublisherService {
     }
   };
 
-  publishActionTakenUpdate = async (id: string): Promise<void> => {
+  publishActionTakenUpdate = async (guid: UUID, id: string): Promise<void> => {
     try {
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
-      natsHeaders.set("Nats-Msg-Id", `action-taken-update-process-${id}`);
+      natsHeaders.set("Nats-Msg-Id", `action-taken-update-process-${guid}-${id}`);
       const ack = await this.jsClient.publish(STREAM_TOPICS.UPDATE_ACTION_TAKEN, id, {
         headers: natsHeaders,
       });

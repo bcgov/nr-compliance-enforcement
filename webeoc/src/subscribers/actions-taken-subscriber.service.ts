@@ -115,7 +115,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
       this.logger.debug("post message to complaint api for staging");
       await this.service.stageActionTaken(record);
       //-- this shouldn't happen here, it should be happening in the backend
-      await this.publisher.publishActionTaken(webeocId);
+      await this.publisher.publishActionTaken(actionTakenId, webeocId);
     }
   };
 
@@ -147,7 +147,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
       this.logger.debug("post message to complaint api for staging");
       await this.service.stageActionTakenUpdate(record);
       //-- this shouldn't happen here, it should be happening in the backend
-      await this.publisher.publishActionTakenUpdate(webeocId);
+      await this.publisher.publishActionTakenUpdate(actionTakenId, webeocId);
     }
   };
 
