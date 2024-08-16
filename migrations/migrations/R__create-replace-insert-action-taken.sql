@@ -1,7 +1,7 @@
--- DROP FUNCTION public.process_staging_activity_taken(varchar);
+-- DROP FUNCTION public.process_staging_activity_taken(uuid, varchar);
 CREATE
 OR REPLACE FUNCTION public.process_staging_activity_taken (
-  complaint_id character varying,
+  staging_id uuid,
   action_taken_type character varying
 ) RETURNS void LANGUAGE plpgsql AS $function$
 DECLARE
@@ -17,6 +17,7 @@ DECLARE
 
   _action_taken_id        UUID;
   _complaint_update_id    UUID;
+  _complaint_id			  VARCHAR(20);
   _logged_by              VARCHAR(250);
   _action_timestamp       TIMESTAMP;
   _details                TEXT;
@@ -24,18 +25,22 @@ DECLARE
  
 BEGIN
 
+RAISE notice 'EXECUTING FUNCTION';
+
   SELECT sc.complaint_jsonb
   INTO   staged_data
   FROM   staging_complaint sc
-  WHERE  sc.complaint_identifier = complaint_id
+  WHERE  sc.staging_complaint_guid = staging_id
   AND    sc.staging_status_code = STAGING_STATUS_CODE_PENDING 
   AND    sc.staging_activity_code = action_taken_type; 
     
   IF staged_data IS NULL THEN
+	RAISE notice 'NO COMPLAINT FOUND';
     RETURN;
   END IF;
 
   _action_taken_id := staged_data ->> 'actionTakenId';
+  _complaint_id := staged_data ->> 'complaintId';
   _complaint_update_id := staged_data ->> 'complaintUpdateGuid';
   _logged_by := staged_data ->> 'loggedBy';
   _action_timestamp := (staged_data ->> 'actionTimestamp')::timestamp AT TIME ZONE 'America/Vancouver';
@@ -53,7 +58,7 @@ BEGIN
   )
   VALUES (
     _action_taken_id, 
-    complaint_id, 
+    _complaint_id, 
     _complaint_update_id, 
     _details, 
     _logged_by, 
@@ -64,7 +69,7 @@ BEGIN
   -- update the staging table
   UPDATE staging_complaint
   SET    staging_status_code = STAGING_STATUS_CODE_SUCCESS
-  WHERE  complaint_identifier = complaint_id
+  WHERE  staging_complaint_guid = staging_id
   AND    staging_status_code = STAGING_STATUS_CODE_PENDING 
   AND    staging_activity_code = action_taken_type;
 
@@ -73,17 +78,10 @@ BEGIN
     RAISE notice 'An unexpected error occurred: %', SQLERRM;
     UPDATE staging_complaint
     SET    staging_status_code = STAGING_STATUS_CODE_ERROR
-    WHERE  complaint_identifier = complaint_id
+    WHERE  staging_complaint_guid = staging_id
     AND    staging_status_code = STAGING_STATUS_CODE_PENDING 
     AND    staging_activity_code = action_taken_type;
   
-
-RAISE notice 'complaint_id: %', complaint_id;
-RAISE notice '_action_taken_id: %', _action_taken_id;
-RAISE notice '_complaint_update_id: %', _complaint_update_id;
-RAISE notice '_details: %', _details;
-RAISE notice '_logged_by: %', _logged_by;
-RAISE notice '_action_timestamp: %', _action_timestamp;
 
 END;
 $function$;

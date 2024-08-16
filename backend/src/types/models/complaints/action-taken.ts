@@ -9,7 +9,7 @@ export interface ActionTaken {
   actionTimestamp: Date; //--> action_utc_timestamp
   details: string; //--> acton_details_text
   isUpdate: boolean; //-- flag_UAT === "Yes"
-  dataId: number;
+  dataid: number;
 }
 
 export interface ActionTakenDto {

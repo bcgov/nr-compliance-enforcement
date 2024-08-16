@@ -18,6 +18,7 @@ import { StagingComplaintService } from "../staging_complaint/staging_complaint.
 import { dtoAlias } from "../../types/models/complaints/dtoAlias-type";
 
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
+import { ACTION_TAKEN_ACTION_TYPES } from "src/types/constants";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -116,7 +117,7 @@ export class ComplaintController {
   @Post("/process/action-taken/:id")
   @UseGuards(ApiKeyGuard)
   processActionTaken(@Param("id") id: string) {
-    this.stagingService.processObject("ACTION-TAKEN", id);
+    this.stagingService.processObject(ACTION_TAKEN_ACTION_TYPES.CREATE_ACTION_TAKEN, id);
   }
 
   @Public()
@@ -130,6 +131,6 @@ export class ComplaintController {
   @Post("/process/action-taken-update/:id")
   @UseGuards(ApiKeyGuard)
   processActionTakenUpdate(@Param("id") id: string) {
-    this.stagingService.processObject("ACTION-TAKEN-UPDATE", id);
+    this.stagingService.processObject(ACTION_TAKEN_ACTION_TYPES.UPDATE_ACTION_TAKEN, id);
   }
 }

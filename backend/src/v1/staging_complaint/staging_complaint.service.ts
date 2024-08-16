@@ -12,6 +12,7 @@ import { WebEOCComplaintUpdate } from "../../types/webeoc-complaint-update";
 import { isEqual, omit } from "lodash";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
+import { UUID } from "crypto";
 
 @Injectable()
 export class StagingComplaintService {
@@ -238,6 +239,17 @@ export class StagingComplaintService {
     }
   };
 
+  private _findActionTakenStagingIdByWebeocId = async (webeocId: string): Promise<string> => {
+    try {
+      const result = await this.repository
+        .createQueryBuilder("stg")
+        .where(`stg.complaint_jsonb ->> 'webeocId' = :webeocId`, { webeocId })
+        .getOne();
+
+      return result.stagingComplaintGuid;
+    } catch (error) {}
+  };
+
   //-- staging and processing functionality
   //-- add any type of object to the staging table so that it can be processed and added to the correct type
   stageObject = async (type: string, entity: any) => {
@@ -247,10 +259,8 @@ export class StagingComplaintService {
           .createQueryBuilder("staging")
           .where("staging.complaint_identifier = :complaintId", { complaintId })
           .andWhere("staging.staging_activity_code = :status", { status: type })
-          .andWhere(`staging.complaint_jsonb ->> 'dataId' = :dataId`, { dataId })
+          .andWhere(`staging.complaint_jsonb ->> 'dataid' = :dataId`, { dataId })
           .getOne();
-
-        const test = 0;
 
         if (result === null) {
           return false;
@@ -309,7 +319,7 @@ export class StagingComplaintService {
     };
 
     try {
-      const { dataId } = entity;
+      const { dataid } = entity;
 
       if (type === ACTION_TAKEN_TYPES.ACTION_TAKEN) {
         //-- check to see if there is a duplicate action-taken
@@ -319,7 +329,7 @@ export class StagingComplaintService {
         if (complaintId !== undefined) {
           const hasExisting = await _hasExistingActionTaken(
             complaintId,
-            dataId,
+            dataid,
             ACTION_TAKEN_ACTION_TYPES.CREATE_ACTION_TAKEN,
           );
 
@@ -344,7 +354,7 @@ export class StagingComplaintService {
         if (complaintId !== undefined) {
           const hasExisting = await _hasExistingActionTaken(
             complaintId,
-            dataId,
+            dataid,
             ACTION_TAKEN_ACTION_TYPES.UPDATE_ACTION_TAKEN,
           );
 
@@ -370,24 +380,15 @@ export class StagingComplaintService {
     }
   };
 
-  processObject = async (type: string, id: string) => {
-    if (type === ACTION_TAKEN_TYPES.ACTION_TAKEN) {
-      const complaintId = await this._findComplaintIdByWebeocId(id);
-      if (complaintId !== undefined) {
-        await this.repository.manager.query("SELECT public.process_staging_activity_taken($1, $2)", [
-          complaintId,
-          ACTION_TAKEN_ACTION_TYPES.CREATE_ACTION_TAKEN,
-        ]);
-      }
-    } else if (type === ACTION_TAKEN_TYPES.ACTION_TAKEN_UPDATE) {
-      const complaintId = await this._findComplaintUpdateIdByWebeocId(id);
+  processObject = async (type: string, webeocId: string) => {
+    let stagingId = await this._findActionTakenStagingIdByWebeocId(webeocId);
 
-      if (complaintId !== undefined) {
-        await this.repository.manager.query("SELECT public.process_staging_activity_taken($1, $2)", [
-          complaintId,
-          ACTION_TAKEN_ACTION_TYPES.UPDATE_ACTION_TAKEN,
-        ]);
-      }
+    if (stagingId !== undefined) {
+      console.log(`type: ${type}: staging_complaint_guid: ${stagingId} - webEocId: ${webeocId}`);
+      this.logger.warn(`"SELECT public.process_staging_activity_taken($1, $2)", [${stagingId}, ${type}]`);
+      await this.repository.manager.query("SELECT public.process_staging_activity_taken($1, $2)", [stagingId, type]);
+    } else {
+      this.logger.error(`unable to find staging object for webeocid: ${webeocId} - ${type}`);
     }
   };
 }

@@ -109,7 +109,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
         actionTimestamp,
         details,
         isUpdate: false,
-        dataId: dataid,
+        dataid,
       };
 
       this.logger.debug("post message to complaint api for staging");
@@ -141,7 +141,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
         actionTimestamp,
         details,
         isUpdate: true,
-        dataId: dataid,
+        dataid,
       };
 
       this.logger.debug("post message to complaint api for staging");
