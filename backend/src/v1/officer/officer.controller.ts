@@ -42,7 +42,7 @@ export class OfficerController {
   }
 
   @Get("/find-by-auth-user-guid/:auth_user_guid")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   findByAuthUserGuid(@Param("auth_user_guid") auth_user_guid: string) {
     return this.officerService.findByAuthUserGuid(auth_user_guid);
   }

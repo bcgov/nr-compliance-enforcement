@@ -31,6 +31,13 @@ export default defineConfig({
       keycloak_user: process.env.CYPRESS_KEYCLOAK_USER,
       keycloak_password: process.env.CYPRESS_KEYCLOAK_PASSWORD,
       keycloak_login_url: "https://logontest7.gov.bc.ca",
+      //-- CSS fields use for updating test account roles
+      keycloak_user_guid: process.env.CYPRESS_KEYCLOAK_GUID,
+      css_integration_id: process.env.REACT_APP_CSS_INTEGRATION_ID,
+      css_token_url: process.env.REACT_APP_CSS_TOKEN_URL,
+      css_client_id: process.env.REACT_APP_CSS_CLIENT_ID,
+      css_client_secret: process.env.REACT_APP_CSS_CLIENT_SECRET,
+      css_api_url: process.env.REACT_APP_CSS_API_URL,
     },
   },
   retries: 2,

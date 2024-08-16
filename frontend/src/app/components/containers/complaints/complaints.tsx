@@ -1,9 +1,7 @@
 import { FC, useState, useContext, useCallback } from "react";
 import { shallowEqual } from "react-redux";
-import { Button, Collapse, Nav, Offcanvas } from "react-bootstrap";
-import COMPLAINT_TYPES, { complaintTypeToName } from "../../../types/app/complaint-types";
+import { Button, Collapse, Offcanvas } from "react-bootstrap";
 import { useAppSelector } from "../../../hooks/hooks";
-import { selectTotalComplaintsByType, selectTotalMappedComplaints } from "../../../store/reducers/complaints";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
 
@@ -11,11 +9,11 @@ import { ComplaintFilterBar } from "./complaint-filter-bar";
 import { ComplaintFilterContext, ComplaintFilterProvider } from "../../../providers/complaint-filter-provider";
 import { resetFilters, ComplaintFilterPayload } from "../../../store/reducers/complaint-filters";
 
-import { selectDefaultZone, selectOfficerAgency, isFeatureActive } from "../../../store/reducers/app";
+import { selectDefaultZone, selectOfficerAgency } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
-import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
 import { useNavigate } from "react-router-dom";
-import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
+import { ComplaintListTabs } from "./complaint-list-tabs";
+import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
 import { selectCurrentOfficer } from "../../../store/reducers/officer";
 
@@ -30,38 +28,14 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const [viewType, setViewType] = useState<"map" | "list">("list");
 
-  const totalComplaints = useAppSelector(selectTotalComplaintsByType(complaintType));
-
-  const totalComplaintsOnMap = useAppSelector(selectTotalMappedComplaints);
-
   const currentOfficer = useAppSelector(selectCurrentOfficer(), shallowEqual);
 
   const defaultZone = useAppSelector(selectDefaultZone);
-  const showGIRFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.GIR_COMPLAINT));
 
   const userAgency = useAppSelector(selectOfficerAgency, shallowEqual);
 
   //-- this is used to apply the search to the pager component
   const [search, setSearch] = useState("");
-
-  const complaintTypes: Array<{ name: string; id: string; code: string }> = Object.keys(COMPLAINT_TYPES).map((item) => {
-    return {
-      name: complaintTypeToName(item),
-      id: `${item.toLocaleLowerCase()}-tab`,
-      code: item,
-    };
-  });
-
-  // renders the complaint count on the list and map views, for the selected complaint type
-  const renderComplaintTotal = (selectedComplaintType: string): string | undefined => {
-    if (COMPLAINT_VIEW_TYPES.MAP === viewType) {
-      if (complaintType === selectedComplaintType) {
-        return `(${totalComplaintsOnMap})`;
-      }
-    } else if (complaintType === selectedComplaintType) {
-      return `(${totalComplaints})`;
-    }
-  };
 
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
@@ -112,28 +86,12 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         </div>
         {/* <!-- create list of complaint types --> */}
 
-        <Nav className="nav nav-tabs">
-          {/* <!-- dynamic tabs --> */}
-          {complaintTypes.map(({ id, code, name }) => {
-            if (!showGIRFeature && code === "GIR") return <></>;
-            return (
-              <Nav.Item
-                className={`nav-item comp-tab comp-tab-${complaintType === code ? "active" : "inactive"}`}
-                key={`${code}-tab-item`}
-              >
-                <div
-                  className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
-                  id={id}
-                  onClick={() => handleComplaintTabChange(code)}
-                >
-                  {name} {renderComplaintTotal(code)}
-                </div>
-              </Nav.Item>
-            );
-          })}
-
-          {/* <!-- dynamic tabs end --> */}
-        </Nav>
+        <ComplaintListTabs
+          complaintType={complaintType}
+          viewType={viewType}
+          complaintTypes={Object.keys(COMPLAINT_TYPES)}
+          onTabChange={handleComplaintTabChange}
+        />
 
         <ComplaintFilterBar
           viewType={viewType}
@@ -211,7 +169,7 @@ export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
 
   return (
     <>
-      {defaultZone && (
+      {complaintFilters && (
         <ComplaintFilterProvider {...complaintFilters}>
           <Complaints defaultComplaintType={defaultComplaintType} />
         </ComplaintFilterProvider>
