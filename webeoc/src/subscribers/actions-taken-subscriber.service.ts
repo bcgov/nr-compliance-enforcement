@@ -65,6 +65,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
     const iter = await consumer.consume({ max_messages: 1 });
 
     for await (const message of iter) {
+      console.log("subscriber message: ", sc.decode(message.data));
       const decodedData = sc.decode(message.data);
       try {
         //-- push a new message to add the action-taken to the staging table
@@ -76,6 +77,8 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
           await this.publishActionTakenUpdate(message, decodedData);
         } else if (message.subject === STREAM_TOPICS.STAGE_UPDATE_ACTION_TAKEN) {
           await this.stageActionTakenUpdate(message, JSON.parse(decodedData));
+        } else {
+          this.logger.warn("should this happen?");
         }
       } catch (error) {
         this.logger.error(`Error processing message from ${message.subject}`, error);
@@ -115,7 +118,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
       this.logger.debug("post message to complaint api for staging");
       await this.service.stageActionTaken(record);
       //-- this shouldn't happen here, it should be happening in the backend
-      await this.publisher.publishActionTaken(actionTakenId, webeocId);
+      await this.publisher.publishActionTaken(actionTakenId, webeocId, action);
     }
   };
 
@@ -147,7 +150,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
       this.logger.debug("post message to complaint api for staging");
       await this.service.stageActionTakenUpdate(record);
       //-- this shouldn't happen here, it should be happening in the backend
-      await this.publisher.publishActionTakenUpdate(actionTakenId, webeocId);
+      await this.publisher.publishActionTakenUpdate(actionTakenId, webeocId, action);
     }
   };
 
@@ -156,7 +159,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
   //-- published to the action-taken table
   //--
   private publishActionTaken = async (message: JsMsg, id: string) => {
-    this.logger.debug("Process Staged action-taken:", id);
+    this.logger.log("Process Staged action-taken:", id);
     this.service.publishActionTaken(id);
     message.ackAck();
   };
@@ -166,7 +169,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
   //-- published to the action-taken table
   //--
   private publishActionTakenUpdate = async (message: JsMsg, id: string) => {
-    this.logger.debug("Prcess Staged action-taken-update:", id);
+    this.logger.log("Process Staged action-taken-update:", id);
     this.service.publishActionTakenUpdate(id);
     message.ackAck();
   };
