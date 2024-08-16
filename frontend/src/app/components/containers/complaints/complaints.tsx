@@ -9,7 +9,7 @@ import { ComplaintFilterBar } from "./complaint-filter-bar";
 import { ComplaintFilterContext, ComplaintFilterProvider } from "../../../providers/complaint-filter-provider";
 import { resetFilters, ComplaintFilterPayload } from "../../../store/reducers/complaint-filters";
 
-import { selectDefaultZone, selectOfficerAgency } from "../../../store/reducers/app";
+import { selectDefaultZone } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
@@ -159,7 +159,7 @@ export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
   );
 };
 
-export const getFilters = (currentOfficer: any, defaultZone: any) => {
+const getFilters = (currentOfficer: any, defaultZone: any) => {
   let filters: any = {};
 
   if (UserService.hasRole([Roles.CEEB]) && !UserService.hasRole([Roles.CEEB_COMPLIANCE_COORDINATOR])) {
