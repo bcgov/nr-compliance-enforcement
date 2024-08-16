@@ -14,8 +14,9 @@ import { ComplaintMap } from "./complaint-map";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
-import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
 import { selectCurrentOfficer } from "../../../store/reducers/officer";
+import UserService from "../../../service/user-service";
+import Roles from "../../../types/app/roles";
 
 type Props = {
   defaultComplaintType: string;
@@ -152,25 +153,28 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
 export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
   const defaultZone = useAppSelector(selectDefaultZone, shallowEqual);
-  const userAgency = useAppSelector(selectOfficerAgency, shallowEqual);
   const currentOfficer = useAppSelector(selectCurrentOfficer(), shallowEqual);
 
-  const complaintFilters: any = {};
-  if (userAgency === "EPO") {
+  let filters: any = {};
+  if (UserService.hasRole([Roles.CEEB]) && !UserService.hasRole([Roles.CEEB_COMPLIANCE_COORDINATOR])) {
     if (currentOfficer) {
       let {
         person: { firstName, lastName, id },
       } = currentOfficer;
-      (complaintFilters as ComplaintFilters).officer = { label: `${lastName}, ${firstName}`, value: id };
+      const officer = { label: `${lastName}, ${firstName}`, value: id };
+
+      filters = { ...filters, officer };
     }
-  } else {
-    (complaintFilters as ComplaintFilters).zone = defaultZone;
+  }
+  if (UserService.hasRole([Roles.CEEB, Roles.CEEB_COMPLIANCE_COORDINATOR])) {
+  } else if (defaultZone) {
+    filters = { ...filters, zone: defaultZone };
   }
 
   return (
     <>
-      {complaintFilters && (
-        <ComplaintFilterProvider {...complaintFilters}>
+      {filters && (
+        <ComplaintFilterProvider {...filters}>
           <Complaints defaultComplaintType={defaultComplaintType} />
         </ComplaintFilterProvider>
       )}
