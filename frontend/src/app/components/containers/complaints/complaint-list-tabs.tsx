@@ -44,7 +44,7 @@ export const ComplaintListTabs: FC<props> = ({ complaintType, viewType, complain
 
       switch (item) {
         case COMPLAINT_TYPES.ERS:
-          if (UserService.hasRole(Roles.CEEB_COMPLIANCE_COORDINATOR)) {
+          if (UserService.hasRole(Roles.CEEB)) {
             name = "Waste and Pesticides";
           } else {
             name = "Enforcement";
