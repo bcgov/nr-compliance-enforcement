@@ -1,9 +1,7 @@
 import { FC, useState, useContext, useCallback } from "react";
 import { shallowEqual } from "react-redux";
-import { Button, Collapse, Nav, Offcanvas } from "react-bootstrap";
-import COMPLAINT_TYPES, { complaintTypeToName } from "../../../types/app/complaint-types";
+import { Button, Collapse, Offcanvas } from "react-bootstrap";
 import { useAppSelector } from "../../../hooks/hooks";
-import { selectTotalComplaintsByType, selectTotalMappedComplaints } from "../../../store/reducers/complaints";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
 
@@ -11,13 +9,15 @@ import { ComplaintFilterBar } from "./complaint-filter-bar";
 import { ComplaintFilterContext, ComplaintFilterProvider } from "../../../providers/complaint-filter-provider";
 import { resetFilters, ComplaintFilterPayload } from "../../../store/reducers/complaint-filters";
 
-import { selectDefaultZone, selectOfficerAgency, isFeatureActive } from "../../../store/reducers/app";
+import { selectDefaultZone } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
-import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
 import { useNavigate } from "react-router-dom";
-import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
-import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
+import { ComplaintListTabs } from "./complaint-list-tabs";
+import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import { selectCurrentOfficer } from "../../../store/reducers/officer";
+import UserService from "../../../service/user-service";
+import Roles from "../../../types/app/roles";
+import Option from "../../../types/app/option";
 
 type Props = {
   defaultComplaintType: string;
@@ -30,60 +30,27 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const [viewType, setViewType] = useState<"map" | "list">("list");
 
-  const totalComplaints = useAppSelector(selectTotalComplaintsByType(complaintType));
-
-  const totalComplaintsOnMap = useAppSelector(selectTotalMappedComplaints);
-
   const currentOfficer = useAppSelector(selectCurrentOfficer(), shallowEqual);
 
   const defaultZone = useAppSelector(selectDefaultZone);
-  const showGIRFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.GIR_COMPLAINT));
-
-  const userAgency = useAppSelector(selectOfficerAgency, shallowEqual);
 
   //-- this is used to apply the search to the pager component
   const [search, setSearch] = useState("");
 
-  const complaintTypes: Array<{ name: string; id: string; code: string }> = Object.keys(COMPLAINT_TYPES).map((item) => {
-    return {
-      name: complaintTypeToName(item),
-      id: `${item.toLocaleLowerCase()}-tab`,
-      code: item,
-    };
-  });
-
-  // renders the complaint count on the list and map views, for the selected complaint type
-  const renderComplaintTotal = (selectedComplaintType: string): string | undefined => {
-    if (COMPLAINT_VIEW_TYPES.MAP === viewType) {
-      if (complaintType === selectedComplaintType) {
-        return `(${totalComplaintsOnMap})`;
-      }
-    } else if (complaintType === selectedComplaintType) {
-      return `(${totalComplaints})`;
-    }
-  };
-
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
 
-    //-- apply default filters, if more need to be set they can be added as needed
-    let payload: Array<ComplaintFilterPayload> = [];
-    // for CEEB default filter includes current user
-    if (userAgency === "EPO") {
-      if (currentOfficer) {
-        let {
-          person: { id, firstName, lastName },
-        } = currentOfficer;
-        payload = [{ filter: "officer", value: { value: id, label: `${lastName}, ${firstName}` } }];
-      }
-    } else if (defaultZone) {
-      payload = [{ filter: "zone", value: defaultZone }];
-    }
+    let filters = getFilters(currentOfficer, defaultZone);
 
-    payload = [...payload, { filter: "status", value: { value: "OPEN", label: "Open" } }];
+    const payload: Array<ComplaintFilterPayload> = [
+      ...Object.entries(filters).map(([filter, value]) => ({
+        filter,
+        value: value as Option | Date | null, // Explicitly casting value to the correct type
+      })),
+      { filter: "status", value: { value: "OPEN", label: "Open" } as Option },
+    ];
 
     setSearch("");
-
     filterDispatch(resetFilters(payload));
   };
 
@@ -112,28 +79,12 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         </div>
         {/* <!-- create list of complaint types --> */}
 
-        <Nav className="nav nav-tabs">
-          {/* <!-- dynamic tabs --> */}
-          {complaintTypes.map(({ id, code, name }) => {
-            if (!showGIRFeature && code === "GIR") return <></>;
-            return (
-              <Nav.Item
-                className={`nav-item comp-tab comp-tab-${complaintType === code ? "active" : "inactive"}`}
-                key={`${code}-tab-item`}
-              >
-                <div
-                  className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
-                  id={id}
-                  onClick={() => handleComplaintTabChange(code)}
-                >
-                  {name} {renderComplaintTotal(code)}
-                </div>
-              </Nav.Item>
-            );
-          })}
-
-          {/* <!-- dynamic tabs end --> */}
-        </Nav>
+        <ComplaintListTabs
+          complaintType={complaintType}
+          viewType={viewType}
+          complaintTypes={Object.keys(COMPLAINT_TYPES)}
+          onTabChange={handleComplaintTabChange}
+        />
 
         <ComplaintFilterBar
           viewType={viewType}
@@ -194,28 +145,39 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
 export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
   const defaultZone = useAppSelector(selectDefaultZone, shallowEqual);
-  const userAgency = useAppSelector(selectOfficerAgency, shallowEqual);
   const currentOfficer = useAppSelector(selectCurrentOfficer(), shallowEqual);
-
-  const complaintFilters: any = {};
-  if (userAgency === "EPO") {
-    if (currentOfficer) {
-      let {
-        person: { firstName, lastName, id },
-      } = currentOfficer;
-      (complaintFilters as ComplaintFilters).officer = { label: `${lastName}, ${firstName}`, value: id };
-    }
-  } else {
-    (complaintFilters as ComplaintFilters).zone = defaultZone;
-  }
+  const filters = getFilters(currentOfficer, defaultZone);
 
   return (
     <>
-      {defaultZone && (
-        <ComplaintFilterProvider {...complaintFilters}>
+      {filters && (
+        <ComplaintFilterProvider {...filters}>
           <Complaints defaultComplaintType={defaultComplaintType} />
         </ComplaintFilterProvider>
       )}
     </>
   );
+};
+
+const getFilters = (currentOfficer: any, defaultZone: any) => {
+  let filters: any = {};
+
+  if (UserService.hasRole([Roles.CEEB]) && !UserService.hasRole([Roles.CEEB_COMPLIANCE_COORDINATOR])) {
+    if (currentOfficer) {
+      let {
+        person: { firstName, lastName, id },
+      } = currentOfficer;
+      const officer = { label: `${lastName}, ${firstName}`, value: id };
+
+      filters = { ...filters, officer };
+    }
+  }
+
+  if (UserService.hasRole([Roles.CEEB, Roles.CEEB_COMPLIANCE_COORDINATOR])) {
+    // No additional filters needed, default will apply
+  } else if (defaultZone) {
+    filters = { ...filters, zone: defaultZone };
+  }
+
+  return filters;
 };

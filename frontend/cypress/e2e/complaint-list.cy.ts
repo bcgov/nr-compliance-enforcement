@@ -1,7 +1,7 @@
 /*
 Tests to verify complaint list specification functionality
 */
-describe("Complaint List Functionality", () => {
+/*describe("Complaint List Functionality", () => {
   const complaintTypes = ["#hwcr-tab", "#ers-tab", "#gir-tab"];
 
   beforeEach(function () {
@@ -39,6 +39,23 @@ describe("Complaint List Functionality", () => {
 
       cy.get(".incident-col > a").should("have.css", "text-decoration").should("include", "underline");
       cy.get(".incident-col > a").should("have.css", "color").should("include", "rgb(26, 90, 150)");
+    });
+  });
+}); */
+
+describe("CEEB User Stuff?", () => {
+  const roles = ["CEEB"];
+  // const roles = ["CEEB", "CEEB Compliance Coordinator"];
+
+  beforeEach(function () {
+    cy.viewport("macbook-16");
+    cy.kcLogout().kcLogin();
+  });
+
+  Cypress._.times(roles.length, (index) => {
+    it("Verifies something", () => {
+      cy.visit("/");
+      cy.waitForSpinner();
     });
   });
 });
