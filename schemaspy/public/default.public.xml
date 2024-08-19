@@ -7,7 +7,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_code" nullable="false" remarks="A human readable code used to identify an agency." size="10" type="varchar" typeCode="12">
             <child column="owned_by_agency_code" foreignKey="FK_complaint_owned_by_agencycode" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
             <child column="agency_code" foreignKey="FK_complaint_type_code_agency_code" implied="false" onDeleteCascade="false" schema="public" table="complaint_type_code"/>
+            <child column="agency_code" foreignKey="FK_agencycode" implied="false" onDeleteCascade="false" schema="public" table="feature_agency_xref"/>
             <child column="agency_code" foreignKey="FK_gorgustrct_agencycode" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_structure"/>
+            <child column="agency_code" foreignKey="team_agency_code_fk" implied="false" onDeleteCascade="false" schema="public" table="team"/>
             <child column="agency_code" foreignKey="FK_violation_code_agency_code" implied="false" onDeleteCascade="false" schema="public" table="violation_code"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the agency code." size="50" type="varchar" typeCode="12"/>
@@ -287,6 +289,41 @@
             <column ascending="true" name="entity_code"/>
          </index>
       </table>
+      <table name="feature_agency_xref" remarks="Maintains a mapping between FEATURES and AGENCIES that allow for features to be displayed or hidden as required." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="feature_agency_xref_guid" nullable="false" remarks="System generated unique key for a FEATURE_AGENCY_XREF ecord.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="feature_code" nullable="false" remarks="A human readable code used to identify a FEATURE that is controlled by the FEATURE_AGENCY_XREF table." size="10" type="varchar" typeCode="12">
+            <parent column="feature_code" foreignKey="FK_featurecd" implied="false" onDeleteCascade="false" schema="public" table="feature_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code" nullable="false" remarks="A human readable code used to identify an AGENCY." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_agencycode" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the FEATURE should be rendered the for users in the given AGENCY" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the FEATURE / AGENCY mapping." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the FEATURE / AGENCY mapping was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="The id of the user that updated the FEATURE / AGENCY mapping" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the FEATURE / AGENCY mapping was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="feature_agency_xref_guid" sequenceNumberInPK="1"/>
+         <index name="PK_featagcyxr" unique="true">
+            <column ascending="true" name="feature_agency_xref_guid"/>
+         </index>
+      </table>
+      <table name="feature_code" remarks="A list of FEATUREs that can be enabled or disabled on a per agency basis." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="feature_code" nullable="false" remarks="A human readable code used to identify a FEATURE that is controlled by the FEATURE_AGENCY_XREF table." size="10" type="varchar" typeCode="12">
+            <child column="feature_code" foreignKey="FK_featurecd" implied="false" onDeleteCascade="false" schema="public" table="feature_agency_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the FEATURE controlled by the flag." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the FEATURE controlled by the flag." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of  the FEATUREs should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the FEATURE is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the FEATURE." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the FEATURE was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the FEATURE" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the FEATURE was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="feature_code" sequenceNumberInPK="1"/>
+         <index name="PK_featurecd" unique="true">
+            <column ascending="true" name="feature_code"/>
+         </index>
+      </table>
       <table name="flyway_schema_history" remarks="" schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
@@ -541,7 +578,9 @@
          </index>
       </table>
       <table name="officer" remarks="An officer is a subtype of a person who can be identified through their IDIR." schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="officer_guid" nullable="false" remarks="System generated unique key for an officer. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="officer_guid" nullable="false" remarks="System generated unique key for an officer. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="officer_guid" foreignKey="officer_team_xref_officer_fk" implied="false" onDeleteCascade="false" schema="public" table="officer_team_xref"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="user_id" nullable="false" remarks="The IDIR ID issued to the user by the Government of British Columbia as part of their employment." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user_id" nullable="false" remarks="The id of the user that created the officer." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the officer was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
@@ -572,6 +611,36 @@
          <primaryKey column="h_officer_guid" sequenceNumberInPK="1"/>
          <index name="PK_h_officer" unique="true">
             <column ascending="true" name="h_officer_guid"/>
+         </index>
+      </table>
+      <table name="officer_team_xref" remarks="Defines the teams an officer may be on" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="officer_team_xref_guid" nullable="false" remarks="System generated unique key for a OFFICER_TEAM_XREF record.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="officer_guid" nullable="false" remarks="Unique key for an officer. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="officer_guid" foreignKey="officer_team_xref_officer_fk" implied="false" onDeleteCascade="false" schema="public" table="officer"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="team_guid" nullable="false" remarks="Unique key for a team. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="team_guid" foreignKey="officer_team_xref_team_fk" implied="false" onDeleteCascade="false" schema="public" table="team"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active_ind" nullable="false" remarks="Used to indicate if the users in the OFFICER_TEAM_XREF recrodis active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="true" remarks="The id of the user that created the OFFICER_TEAM_XREF." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the OFFICER_TEAM_XREF was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the OFFICER_TEAM_XREF" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the OFFICER_TEAM_XREF was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="officer_team_xref_guid" sequenceNumberInPK="1"/>
+         <index name="officer_team_xref_pk" unique="true">
+            <column ascending="true" name="officer_team_xref_guid"/>
+         </index>
+      </table>
+      <table name="officer_team_xref_h" remarks="History table for officer_team_xref table" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_officer_team_xref_guid" nullable="false" remarks="System generated unique key for officer_team_xref history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the officer_team_xref that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the officer_team_xref table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the officer_team_xref table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_officer_team_xref_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_officer_team_xref" unique="true">
+            <column ascending="true" name="h_officer_team_xref_guid"/>
          </index>
       </table>
       <table name="person" remarks="A person is an individual that is being tracked explicitly within the system.  The criteria for being included as a trackable individual is the possession of a unique identifier that can be used for dealiasing.  For example an IDIR or a BC Drivers Licence." schema="public" type="TABLE">
@@ -777,6 +846,59 @@
          <primaryKey column="staging_status_code" sequenceNumberInPK="1"/>
          <index name="PK_staging_status_code" unique="true">
             <column ascending="true" name="staging_status_code"/>
+         </index>
+      </table>
+      <table name="team" remarks="Contains a list of TEAM types" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="team_guid" nullable="false" remarks="A system generated guid to uniquely identify a TEAM" size="2147483647" type="uuid" typeCode="1111">
+            <child column="team_guid" foreignKey="officer_team_xref_team_fk" implied="false" onDeleteCascade="false" schema="public" table="officer_team_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="team_code" nullable="false" remarks="A human readable code used to identify a TEAM" size="15" type="varchar" typeCode="12">
+            <parent column="team_code" foreignKey="team_team_code_fk" implied="false" onDeleteCascade="false" schema="public" table="team_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="team_agency_code_fk" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the TEAM is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="true" remarks="The id of the user that created the TEAM." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the TEAM was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the TEAM" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the TEAM was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="team_guid" sequenceNumberInPK="1"/>
+         <index name="team_pk" unique="true">
+            <column ascending="true" name="team_guid"/>
+         </index>
+         <index name="team_un" unique="true">
+            <column ascending="true" name="team_code"/>
+            <column ascending="true" name="agency_code"/>
+         </index>
+      </table>
+      <table name="team_code" remarks="An team is an organized and named grouping of people that interacts in some way with the Ministry." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="team_code" nullable="false" remarks="A human readable code used to identify an team." size="10" type="varchar" typeCode="12">
+            <child column="team_code" foreignKey="team_team_code_fk" implied="false" onDeleteCascade="false" schema="public" table="team"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the team code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the team code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the team code table should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the team code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the team code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the team was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the team code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the team was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="team_code" sequenceNumberInPK="1"/>
+         <index name="PK_teamcode" unique="true">
+            <column ascending="true" name="team_code"/>
+         </index>
+      </table>
+      <table name="team_h" remarks="History table for team table" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_team_guid" nullable="false" remarks="System generated unique key for team history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the team that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the team table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the team table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_team_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_team" unique="true">
+            <column ascending="true" name="h_team_guid"/>
          </index>
       </table>
       <table name="violation_code" remarks="The alleged violation involved in the complaint.   (E.g. ORV = Off Road Vehicles; PESTICDE = Pesticide)" schema="public" type="TABLE">
@@ -2019,9 +2141,9 @@ BEGIN
     -- These fields are retrieved to potentially update an existing complaint record
 	_edit_detail_text := edit_complaint_data ->> 'cos_call_details';
     _edit_caller_name := edit_complaint_data ->> 'cos_caller_name';
-    _edit_caller_phone_1 := edit_complaint_data ->> 'cos_primary_phone';
-    _edit_caller_phone_2 := edit_complaint_data ->> 'cos_alt_phone';
-    _edit_caller_phone_3 := edit_complaint_data ->> 'cos_alt_phone_2';
+    _edit_caller_phone_1 := format_phone_number(edit_complaint_data ->> 'cos_primary_phone');
+    _edit_caller_phone_2 := format_phone_number(edit_complaint_data ->> 'cos_alt_phone');
+    _edit_caller_phone_3 := format_phone_number(edit_complaint_data ->> 'cos_alt_phone_2');
     _edit_caller_email := edit_complaint_data ->> 'cos_caller_email';
     _edit_caller_address := edit_complaint_data ->> 'caller_address';
     _edit_address := edit_complaint_data ->> 'address';
@@ -2035,8 +2157,8 @@ BEGIN
     _edit_location_detailed_text := edit_complaint_data ->> 'cos_location_description';
     _edit_incident_utc_datetime := ( edit_complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _edit_incident_reported_utc_timestmp := ( edit_complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-	_edit_address_coordinates_lat := edit_complaint_data ->> 'address_coordinates_lat';
-    _edit_address_coordinates_long := edit_complaint_data ->> 'address_coordinates_long';
+	_edit_address_coordinates_lat := validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_lat');
+    _edit_address_coordinates_long := validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_long');
    
     -- Create a geometry point based on the latitude and longitude
     IF _edit_address_coordinates_lat IS NOT NULL AND _edit_address_coordinates_lat <> '' AND
@@ -2463,10 +2585,10 @@ BEGIN
     -- Check if the first character is '1'
     IF left(formatted_phone_number, 1) = '1' THEN
         -- Add '+' in front of the phone number
-        RETURN '+' || left(formatted_phone_number, 15);
+        RETURN '+' || left(formatted_phone_number, 14);
     ELSE
         -- Add '+1' in front of the phone number
-        RETURN '+1' || formatted_phone_number;
+        RETURN '+1' || left(formatted_phone_number,13);
     END IF;
 END;]]></definition>
          <parameters>
@@ -3517,6 +3639,7 @@ END;]]></definition>
          <definition language="plpgsql"><![CDATA[DECLARE
     new_code VARCHAR(10);  -- used in case we're creating a new code
     truncated_code varchar(10); -- if we're creating a new code, base it off of the webeoc_value.  We'll truncate this and get rid of spaces, and possibly append a number to make it unique
+    truncated_short_description varchar(50); -- if we're creating a new short description, truncate this to 50 characters just in case it is too long
     live_code_value VARCHAR;
     current_utc_timestamp TIMESTAMP WITH TIME ZONE := NOW();
     target_code_table VARCHAR;
@@ -3535,6 +3658,8 @@ BEGIN
     IF truncated_code IS NULL OR truncated_code = '' THEN
         RETURN NULL;
     END IF;
+
+    truncated_short_description := LEFT(webeoc_value, 50);
 
     -- Resolve the target code table and column name based on code_table_type
     CASE code_table_type
@@ -3609,7 +3734,7 @@ BEGIN
            
             -- Insert new code into the specific code table
             EXECUTE format('INSERT INTO %I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', $6, $4, $6, $4, $5)', target_code_table, column_name)
-            USING new_code, webeoc_value, webeoc_value, current_utc_timestamp, new_display_order, webeoc_user_id;
+            USING new_code, truncated_short_description, webeoc_value, current_utc_timestamp, new_display_order, webeoc_user_id;
 
             -- Update configuration_value by 1 to nofity front-end to update
             UPDATE configuration
@@ -3763,8 +3888,8 @@ END;]]></definition>
     _location_detailed_text := complaint_data ->> 'cos_location_description';
     _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-	_address_coordinates_lat := complaint_data ->> 'address_coordinates_lat';
-    _address_coordinates_long := complaint_data ->> 'address_coordinates_long';
+	_address_coordinates_lat := validate_coordinate_field(complaint_data ->> 'address_coordinates_lat');
+    _address_coordinates_long := validate_coordinate_field(complaint_data ->> 'address_coordinates_long');
    
     -- Create a geometry point based on the latitude and longitude
     IF _address_coordinates_lat IS NOT NULL AND _address_coordinates_lat <> '' AND
@@ -4301,8 +4426,8 @@ BEGIN
     _upd_detail_text := update_complaint_data ->> 'update_call_details';
     _upd_location_summary_text := update_complaint_data ->> 'update_address';
     _upd_location_detailed_text := update_complaint_data ->> 'update_location_description';
-    _update_address_coordinates_lat := update_complaint_data ->> 'update_address_coordinates_lat';
-    _update_address_coordinates_long := update_complaint_data ->> 'update_address_coordinates_long';
+    _update_address_coordinates_lat := validate_coordinate_field(update_complaint_data ->> 'update_address_coordinates_lat');
+    _update_address_coordinates_long := validate_coordinate_field(update_complaint_data ->> 'update_address_coordinates_long');
     _create_userid := substring(update_complaint_data ->> USERNAME_TXT from 1 for 32);
     _update_userid := substring(update_complaint_data ->> USERNAME_TXT from 1 for 32);
 
@@ -9984,9 +10109,9 @@ END;]]></definition>
 BEGIN
     -- These fields are retrieved to potentially update an existing complaint record
     _update_caller_name := update_complaint_data ->> 'update_caller_name';
-    _update_caller_phone_1 := update_complaint_data ->> 'update_primary_phone';
-    _update_caller_phone_2 := update_complaint_data ->> 'update_alt_phone';
-    _update_caller_phone_3 := update_complaint_data ->> 'update_alt_phone_2';
+    _update_caller_phone_1 := format_phone_number(update_complaint_data ->> 'update_primary_phone');
+    _update_caller_phone_2 := format_phone_number(update_complaint_data ->> 'update_alt_phone');
+    _update_caller_phone_3 := format_phone_number(update_complaint_data ->> 'update_alt_phone_2');
     _update_caller_email := update_complaint_data ->> 'update_caller_email';
     _update_caller_address := update_complaint_data ->> 'update_caller_address';
     _update_webeoc_reported_by_code := update_complaint_data ->> 'update_reffered_by_lst';
@@ -10018,9 +10143,9 @@ BEGIN
    
    -- Parse the variables out of the original complaint history record
     _original_caller_name := original_complaint_record ->> 'caller_name';
-    _original_caller_phone_1 := original_complaint_record ->> 'caller_phone_1';
-    _original_caller_phone_2 := original_complaint_record ->> 'caller_phone_2';
-    _original_caller_phone_3 := original_complaint_record ->> 'caller_phone_3';
+    _original_caller_phone_1 := format_phone_number(original_complaint_record ->> 'caller_phone_1');
+    _original_caller_phone_2 := format_phone_number(original_complaint_record ->> 'caller_phone_2');
+    _original_caller_phone_3 := format_phone_number(original_complaint_record ->> 'caller_phone_3');
     _original_caller_email := original_complaint_record ->> 'caller_email';
     _original_caller_address := original_complaint_record ->> 'caller_address';
     -- need to get from hrc/allegation history table
@@ -10369,6 +10494,23 @@ END;]]></definition>
          <definition language="c"><![CDATA[uuid_ns_x500]]></definition>
          <parameters>
             <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="validate_coordinate_field(coordinate_field text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="plpgsql"><![CDATA[DECLARE
+    formatted_coordinate_field TEXT;
+BEGIN
+    -- Confirm the coordinate_field is a valid value 
+    formatted_coordinate_field := regexp_substr(coordinate_field, '^[-+]?([0-9]{1,2}|1[0-7][0-9]|180)(\.[0-9]{1,10})');
+    IF (formatted_coordinate_field IS NULL or (length(formatted_coordinate_field) = 0)) then
+		return NULL;
+	-- Valid match so return the formatted_coordinate_field
+	else return formatted_coordinate_field;
+    END IF;
+END;]]></definition>
+         <parameters>
+            <parameter mode="IN" name="coordinate_field" type="text"/>
          </parameters>
       </routine>
    </routines>
