@@ -65,7 +65,6 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
     const iter = await consumer.consume({ max_messages: 1 });
 
     for await (const message of iter) {
-      console.log("subscriber message: ", sc.decode(message.data));
       const decodedData = sc.decode(message.data);
       try {
         //-- push a new message to add the action-taken to the staging table
@@ -158,9 +157,9 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
   //-- sends staged action-taken id to the NatCom backend to be
   //-- published to the action-taken table
   //--
-  private publishActionTaken = async (message: JsMsg, id: string) => {
-    this.logger.log("Process Staged action-taken:", id);
-    this.service.publishActionTaken(id);
+  private publishActionTaken = async (message: JsMsg, payload: string) => {
+    this.logger.log("Process Staged action-taken:", payload);
+    this.service.publishActionTaken(JSON.parse(payload));
     message.ackAck();
   };
 
@@ -168,9 +167,10 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
   //-- sends staged action-taken-update id to the NatCom backend to be
   //-- published to the action-taken table
   //--
-  private publishActionTakenUpdate = async (message: JsMsg, id: string) => {
-    this.logger.log("Process Staged action-taken-update:", id);
-    this.service.publishActionTakenUpdate(id);
+  private publishActionTakenUpdate = async (message: JsMsg, payload: string) => {
+    this.logger.log("Process Staged action-taken-update:", payload);
+    this.logger.warn(JSON.stringify(message.subject));
+    this.service.publishActionTakenUpdate(JSON.parse(payload));
     message.ackAck();
   };
 }

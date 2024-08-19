@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Brackets, Repository } from "typeorm";
+import { Brackets, Repository, SelectQueryBuilder } from "typeorm";
 import { StagingStatusCodeEnum } from "../../enum/staging_status_code.enum";
 import { StagingStatusCode } from "../staging_status_code/entities/staging_status_code.entity";
 import { StagingActivityCodeEnum } from "../../enum/staging_activity_code.enum";
@@ -239,12 +239,22 @@ export class StagingComplaintService {
     }
   };
 
-  private _findActionTakenStagingIdByWebeocId = async (webeocId: string): Promise<string> => {
+  private _findActionTakenStagingIdByWebeocId = async (webeocId: string, dataid: number): Promise<string> => {
     try {
-      const result = await this.repository
+      // const result = await this.repository
+      //   .createQueryBuilder("stg")
+      //   .where(`stg.complaint_jsonb ->> 'webeocId' = :webeocId`, { webeocId })
+      //   .getOne();
+
+      let builder: SelectQueryBuilder<StagingComplaint> = this.repository
         .createQueryBuilder("stg")
-        .where(`stg.complaint_jsonb ->> 'webeocId' = :webeocId`, { webeocId })
-        .getOne();
+        .where(`stg.complaint_jsonb ->> 'webeocId' = :webeocId`, { webeocId });
+
+      if (dataid) {
+        builder.andWhere(`stg.complaint_jsonb ->> 'dataid' = :dataid`, { dataid });
+      }
+
+      const result = await builder.getOne();
 
       return result.stagingComplaintGuid;
     } catch (error) {}
@@ -380,12 +390,10 @@ export class StagingComplaintService {
     }
   };
 
-  processObject = async (type: string, webeocId: string) => {
-    let stagingId = await this._findActionTakenStagingIdByWebeocId(webeocId);
+  processObject = async (type: string, webeocId: string, dataid?: number) => {
+    let stagingId = await this._findActionTakenStagingIdByWebeocId(webeocId, dataid);
 
     if (stagingId !== undefined) {
-      console.log(`type: ${type}: staging_complaint_guid: ${stagingId} - webEocId: ${webeocId}`);
-      this.logger.warn(`"SELECT public.process_staging_activity_taken($1, $2)", [${stagingId}, ${type}]`);
       await this.repository.manager.query("SELECT public.process_staging_activity_taken($1, $2)", [stagingId, type]);
     } else {
       this.logger.error(`unable to find staging object for webeocid: ${webeocId} - ${type}`);

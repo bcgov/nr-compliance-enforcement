@@ -3,6 +3,7 @@ import axios from "axios";
 import { PROCESSING_APIS, STAGING_APIS } from "src/common/constants";
 
 import { ActionTakenDto } from "src/types/actions-taken/action-taken-dto";
+import { ActionTakenPayload } from "src/types/actions-taken/action-taken-payload";
 
 @Injectable()
 export class ComplaintApiService {
@@ -41,24 +42,39 @@ export class ComplaintApiService {
     }
   };
 
-  publishActionTaken = async (id: string) => {
+  // publishActionTaken = async (id: string) => {
+  //   try {
+  //     const url = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${PROCESSING_APIS.ACTION_TAKEN}/${id}`;
+  //     this.logger.debug(`Processing action-taken from staging. API URL: ${url}`);
+
+  //     await axios.post(url, {}, this._apiConfig);
+  //   } catch (error) {
+  //     this.logger.error("Error calling ActionTaken Processing Api:", error);
+  //     throw error;
+  //   }
+  // };
+
+  publishActionTaken = async (payload: ActionTakenPayload) => {
     try {
-      const url = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${PROCESSING_APIS.ACTION_TAKEN}/${id}`;
+      const { webeocId } = payload;
+
+      const url = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${PROCESSING_APIS.ACTION_TAKEN}/${webeocId}`;
       this.logger.debug(`Processing action-taken from staging. API URL: ${url}`);
 
-      await axios.post(url, {}, this._apiConfig);
+      await axios.post(url, payload, this._apiConfig);
     } catch (error) {
       this.logger.error("Error calling ActionTaken Processing Api:", error);
       throw error;
     }
   };
 
-  publishActionTakenUpdate = async (id: string) => {
+  publishActionTakenUpdate = async (payload: ActionTakenPayload) => {
     try {
-      const url = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${PROCESSING_APIS.UPDATE_ACTION_TAKEN}/${id}`;
+      const { webeocId } = payload;
+      const url = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${PROCESSING_APIS.UPDATE_ACTION_TAKEN}/${webeocId}`;
       this.logger.debug(`Processing action-taken-update from staging. API URL: ${url}`);
 
-      await axios.post(url, {}, this._apiConfig);
+      await axios.post(url, payload, this._apiConfig);
     } catch (error) {
       this.logger.error("Error calling ActionTaken Processing Api:", error);
       throw error;
