@@ -1,7 +1,7 @@
-import { FC, useState, useContext, useCallback } from "react";
+import { FC, useState, useContext, useCallback, useEffect } from "react";
 import { shallowEqual } from "react-redux";
 import { Button, Collapse, Offcanvas } from "react-bootstrap";
-import { useAppSelector } from "../../../hooks/hooks";
+import { useAppSelector, useAppDispatch } from "../../../hooks/hooks";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
 
@@ -18,6 +18,7 @@ import { selectCurrentOfficer } from "../../../store/reducers/officer";
 import UserService from "../../../service/user-service";
 import Roles from "../../../types/app/roles";
 import Option from "../../../types/app/option";
+import { setActiveTab } from "../../../store/reducers/app";
 
 type Props = {
   defaultComplaintType: string;
@@ -27,6 +28,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const { dispatch: filterDispatch } = useContext(ComplaintFilterContext); //-- make sure to keep this dispatch renamed
   const [complaintType, setComplaintType] = useState(defaultComplaintType);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [viewType, setViewType] = useState<"map" | "list">("list");
 
@@ -36,6 +38,10 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   //-- this is used to apply the search to the pager component
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    dispatch(setActiveTab(defaultComplaintType));
+  }, [dispatch, defaultComplaintType]);
 
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
@@ -52,6 +58,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
     setSearch("");
     filterDispatch(resetFilters(payload));
+    dispatch(setActiveTab(complaintType));
   };
 
   const handleCreateClick = () => {
