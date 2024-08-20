@@ -13,7 +13,7 @@ import { selectDefaultZone } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
-import COMPLAINT_TYPES from "../../../types/app/complaint-types";
+import { COMPLAINT_TYPES, CEEB_TYPES } from "../../../types/app/complaint-types";
 import { selectCurrentOfficer } from "../../../store/reducers/officer";
 import UserService from "../../../service/user-service";
 import Roles from "../../../types/app/roles";
@@ -69,6 +69,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const [open, setOpen] = useState(false);
   const toggleShowDesktopFilters = useCallback(() => setOpen((prevShow) => !prevShow), []);
+  const isCEEBUser = UserService.hasRole(Roles.CEEB);
 
   return (
     <div className="comp-page-container comp-page-container--noscroll">
@@ -82,7 +83,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         <ComplaintListTabs
           complaintType={complaintType}
           viewType={viewType}
-          complaintTypes={Object.keys(COMPLAINT_TYPES)}
+          complaintTypes={Object.keys(isCEEBUser ? CEEB_TYPES:COMPLAINT_TYPES )}
           onTabChange={handleComplaintTabChange}
         />
 

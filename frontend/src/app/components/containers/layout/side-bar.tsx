@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import { AgencyBanner } from "./agency-banner";
+import UserService from "../../../service/user-service";
+import Roles from "../../../types/app/roles";
 
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
@@ -18,18 +20,21 @@ export const SideBar: FC = () => {
       name: "Complaints",
       icon: "bi bi-file-earmark-medical",
       route: "/complaints",
+      roles: "COS, CEEB",
     },
     {
       id: "create-complaints-link",
       name: "Create Complaint",
       icon: "bi bi-plus-circle",
       route: "complaint/createComplaint",
+      roles: "COS, CEEB",
     },
     {
       id: "zone-at-a-glance-link",
       name: "Zone at a Glance",
       icon: "bi bi-buildings",
       route: "/zone/at-a-glance",
+      roles: "COS",
     },
   ];
 
@@ -110,7 +115,12 @@ export const SideBar: FC = () => {
       {/* <!-- menu items for the organization --> */}
       <ul className="nav nav-pills flex-column mb-auto comp-nav-item-list">
         {menueItems.map((item, idx) => {
-          return renderSideBarMenuItem(idx, item);
+          if (UserService.hasRole(Roles.CEEB) && !item.roles?.includes('CEEB'))
+            {
+              // Do not display this hence return null
+              return null;
+            }
+            return renderSideBarMenuItem(idx, item);
         })}
       </ul>
       <div
