@@ -9,7 +9,7 @@ import { ComplaintFilterBar } from "./complaint-filter-bar";
 import { ComplaintFilterContext, ComplaintFilterProvider } from "../../../providers/complaint-filter-provider";
 import { resetFilters, ComplaintFilterPayload } from "../../../store/reducers/complaint-filters";
 
-import { selectDefaultZone } from "../../../store/reducers/app";
+import { selectDefaultZone, setActiveTab } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
@@ -18,7 +18,6 @@ import { selectCurrentOfficer } from "../../../store/reducers/officer";
 import UserService from "../../../service/user-service";
 import Roles from "../../../types/app/roles";
 import Option from "../../../types/app/option";
-import { setActiveTab } from "../../../store/reducers/app";
 
 type Props = {
   defaultComplaintType: string;
