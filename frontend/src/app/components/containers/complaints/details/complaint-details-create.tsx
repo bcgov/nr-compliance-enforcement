@@ -94,7 +94,7 @@ export const CreateComplaint: FC = () => {
   if (agency === "EPO") {
     initialComplaintType = COMPLAINT_TYPES.ERS;
   } else if (agency === "COS") {
-    initialComplaintType = Object.keys(COMPLAINT_TYPES).find((item) => item === activeTab) ?? COMPLAINT_TYPES.HWCR;
+    initialComplaintType = activeTab === COMPLAINT_TYPES.ERS ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR;
   }
 
   const [complaintType, setComplaintType] = useState<string>(initialComplaintType);
