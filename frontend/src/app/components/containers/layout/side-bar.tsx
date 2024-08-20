@@ -20,21 +20,21 @@ export const SideBar: FC = () => {
       name: "Complaints",
       icon: "bi bi-file-earmark-medical",
       route: "/complaints",
-      roles: "COS, CEEB",
+      roles: ["COS", "CEEB"],
     },
     {
       id: "create-complaints-link",
       name: "Create Complaint",
       icon: "bi bi-plus-circle",
       route: "complaint/createComplaint",
-      roles: "COS, CEEB",
+      roles: ["COS", "CEEB"],
     },
     {
       id: "zone-at-a-glance-link",
       name: "Zone at a Glance",
       icon: "bi bi-buildings",
       route: "/zone/at-a-glance",
-      roles: "COS",
+      roles: ["COS"],
     },
   ];
 
@@ -115,7 +115,7 @@ export const SideBar: FC = () => {
       {/* <!-- menu items for the organization --> */}
       <ul className="nav nav-pills flex-column mb-auto comp-nav-item-list">
         {menueItems.map((item, idx) => {
-          if (UserService.hasRole(Roles.CEEB) && !item.roles?.includes('CEEB'))
+          if (UserService.hasRole(Roles.CEEB) && !item.roles.includes('CEEB'))
             {
               // Do not display this hence return null
               return null;

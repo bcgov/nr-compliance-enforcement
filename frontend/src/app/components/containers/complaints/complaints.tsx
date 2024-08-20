@@ -82,7 +82,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         <ComplaintListTabs
           complaintType={complaintType}
           viewType={viewType}
-          complaintTypes={Object.keys(getComplaintTypes)}
+          complaintTypes={Object.keys(getComplaintTypes())}
           onTabChange={handleComplaintTabChange}
         />
 
