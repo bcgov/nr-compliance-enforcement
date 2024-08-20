@@ -69,7 +69,6 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const [open, setOpen] = useState(false);
   const toggleShowDesktopFilters = useCallback(() => setOpen((prevShow) => !prevShow), []);
-  const isCEEBUser = UserService.hasRole(Roles.CEEB);
 
   return (
     <div className="comp-page-container comp-page-container--noscroll">
@@ -83,7 +82,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         <ComplaintListTabs
           complaintType={complaintType}
           viewType={viewType}
-          complaintTypes={Object.keys(isCEEBUser ? CEEB_TYPES:COMPLAINT_TYPES )}
+          complaintTypes={Object.keys(getComplaintTypes)}
           onTabChange={handleComplaintTabChange}
         />
 
@@ -159,6 +158,10 @@ export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
     </>
   );
 };
+const getComplaintTypes = () =>
+  {
+  return UserService.hasRole(Roles.CEEB)? CEEB_TYPES: COMPLAINT_TYPES;
+  };
 
 const getFilters = (currentOfficer: any, defaultZone: any) => {
   let filters: any = {};
