@@ -58,6 +58,9 @@ import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
+import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
+import { ActionTaken } from "../complaint/entities/action_taken.entity";
+import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 
 describe("DocumentService", () => {
   let service: DocumentService;
@@ -166,6 +169,15 @@ describe("DocumentService", () => {
           provide: getRepositoryToken(ComplaintUpdate),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(StagingComplaint),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(ActionTaken),
+          useValue: {},
+        },
+        ComplaintUpdatesService,
         ComplaintService,
         CodeTableService,
         PersonComplaintXrefService,
@@ -181,10 +193,6 @@ describe("DocumentService", () => {
         ConfigurationService,
         {
           provide: getRepositoryToken(Configuration),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(ComplaintUpdate),
           useValue: {},
         },
       ],

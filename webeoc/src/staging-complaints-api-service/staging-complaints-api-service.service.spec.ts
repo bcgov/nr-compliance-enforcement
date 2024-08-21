@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { StagingComplaintsApiService } from "./staging-complaints-api-service.service";
-import { ComplaintsPublisherService } from "../complaints-publisher/complaints-publisher.service";
+import { ComplaintsPublisherService } from "../publishers/complaints-publisher.service";
 
 describe("StagingComplaintsApiServiceService", () => {
   let service: StagingComplaintsApiService;
