@@ -12,7 +12,6 @@ import { WebEOCComplaintUpdate } from "../../types/webeoc-complaint-update";
 import { isEqual, omit } from "lodash";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
-import { UUID } from "crypto";
 
 @Injectable()
 export class StagingComplaintService {
@@ -241,11 +240,6 @@ export class StagingComplaintService {
 
   private _findActionTakenStagingIdByWebeocId = async (webeocId: string, dataid: number): Promise<string> => {
     try {
-      // const result = await this.repository
-      //   .createQueryBuilder("stg")
-      //   .where(`stg.complaint_jsonb ->> 'webeocId' = :webeocId`, { webeocId })
-      //   .getOne();
-
       let builder: SelectQueryBuilder<StagingComplaint> = this.repository
         .createQueryBuilder("stg")
         .where(`stg.complaint_jsonb ->> 'webeocId' = :webeocId`, { webeocId });

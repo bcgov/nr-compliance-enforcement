@@ -42,18 +42,6 @@ export class ComplaintApiService {
     }
   };
 
-  // publishActionTaken = async (id: string) => {
-  //   try {
-  //     const url = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${PROCESSING_APIS.ACTION_TAKEN}/${id}`;
-  //     this.logger.debug(`Processing action-taken from staging. API URL: ${url}`);
-
-  //     await axios.post(url, {}, this._apiConfig);
-  //   } catch (error) {
-  //     this.logger.error("Error calling ActionTaken Processing Api:", error);
-  //     throw error;
-  //   }
-  // };
-
   publishActionTaken = async (payload: ActionTakenPayload) => {
     try {
       const { webeocId } = payload;
