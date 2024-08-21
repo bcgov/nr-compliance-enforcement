@@ -767,6 +767,11 @@
                                         <td>spatial_ref_sys_srid_check</td>
                                         <td>(((srid &gt; 0) AND (srid &lt;&#61; 998999)))</td>
                                     </tr>
+                                    <tr>
+                                        <td><a href='tables/action_taken.html'>action_taken</a></td>
+                                        <td>action_taken_check</td>
+                                        <td>(((complaint_identifier IS NOT NULL) OR (complaint_update_guid IS NOT NULL)))</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

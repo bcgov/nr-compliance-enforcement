@@ -288,6 +288,20 @@ digraph "compactImpliedRelationshipsDiagram" {
     target="_top"
     tooltip="gir_type_code"
   ];
+  "action_taken" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="77" HEIGHT="16"><B>action_taken</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="action_taken_guid" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="139" HEIGHT="16">action_taken_guid</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="complaint_identifier" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="139" HEIGHT="16">complaint_identifier</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="complaint_update_guid" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="139" HEIGHT="16">complaint_update_guid</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+    </TABLE>>
+    URL="tables/action_taken.html"
+    target="_top"
+    tooltip="action_taken"
+  ];
   "attractant_hwcr_xref" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -468,6 +482,8 @@ digraph "compactImpliedRelationshipsDiagram" {
     target="_top"
     tooltip="geometry_columns"
   ];
+  "action_taken":"complaint_identifier":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
+  "action_taken":"complaint_update_guid":w -> "complaint_update":"complaint_update_guid":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
   "allegation_complaint":"complaint_identifier":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=teeodot];
   "allegation_complaint":"violation_code":w -> "violation_code":"violation_code":e [arrowhead=none dir=back arrowtail=crowodot];
   "attractant_hwcr_xref":"attractant_code":w -> "attractant_code":"attractant_code":e [arrowhead=none dir=back arrowtail=crowodot];

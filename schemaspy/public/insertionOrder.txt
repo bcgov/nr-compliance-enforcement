@@ -17,13 +17,14 @@ team_code
 geo_organization_unit_code
 complaint
 office
+complaint_update
 violation_code
 officer
 team
 hwcr_complaint
 complaint_type_code
-complaint_update
 staging_metadata_mapping
+action_taken
 allegation_complaint
 attractant_hwcr_xref
 feature_agency_xref
@@ -32,6 +33,7 @@ officer_team_xref
 geo_org_unit_structure
 person_complaint_xref
 staging_complaint
+action_taken_h
 allegation_complaint_h
 attractant_hwcr_xref_h
 complaint_h

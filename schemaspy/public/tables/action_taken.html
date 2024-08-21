@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>complaint_update - default.public</title>
+        <title>action_taken - default.public</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>complaint_update</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <h1>action_taken</h1><p><span id="recordNumber">-1</span> rows</p><br />
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <i class="fa fa-file-text-o"></i>
@@ -84,7 +84,7 @@
                             </div>
                         </div><!-- /.box-header -->
                         <div class="box-body clearfix">
-                            <p>Callers will sometimes call in with a COMPLAINT_UPDATE.   This table is used to track items that are considered to be amendments to the complaint information such as additional details, or location information.</p>
+                            <p>Contains information about who the call centre staff contacted and when to allow Officers to know who to follow up with and/or if someone else is already taking action.</p>
                         </div><!-- /.box-body -->
                     </div>
                 </section>
@@ -122,7 +122,7 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="complaint_update_guid">complaint_update_guid</span></td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="action_taken_guid">action_taken_guid</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
                                     <td title=''></td>
@@ -130,24 +130,19 @@
                                     <td>uuid_generate_v4()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="action_taken.complaint_update_guid&#39;s name implies that it&#39;s a child of complaint_update.complaint_update_guid, but it doesn&#39;t reference that column."><a href='action_taken.html'>action_taken</a><span class='relatedKey'>.complaint_update_guid</span></td>
-                                                <td class="constraint detail">Implied Constraint</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
                                         </table>
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>System generated unique key for a complaint update.  This key should never be exposed to users via any system utilizing the tables.</p></td>
+                                    <td><p>System generated unique key for an action taken record.  This key should never be exposed to users via any system utilizing the tables.</p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="complaint_identifier">complaint_identifier</span></td>
                                     <td>varchar</td>
                                     <td>20</td>
-                                    <td title=''></td>
+                                    <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -157,19 +152,19 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="complaint_update.complaint_identifier references complaint.complaint_identifier via complaint_update_fk"><a href='complaint.html'>complaint</a><span class='relatedKey'>.complaint_identifier</span></td>
-                                                <td class="constraint detail">complaint_update_fk</td>
+                                                <td title="action_taken.complaint_identifier&#39;s name implies that it&#39;s a child of complaint.complaint_identifier, but it doesn&#39;t reference that column."><a href='complaint.html'>complaint</a><span class='relatedKey'>.complaint_identifier</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td><p>Natural key for a complaint generated by webEOC.  Format is YY-250744772125074477212507447721 where the number portion of the sequence resets to 0 on the new year.</p></td>
+                                    <td><p>Natural key for a complaint generated by webEOC.  Format is YY-###### where the number portion of the sequence resets to 0 on the new year.  Either a complaint_update_guid or a complaint_identifier must be present on the record.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="update_seq_number">update_seq_number</span></td>
-                                    <td>int4</td>
-                                    <td>10</td>
-                                    <td title=''></td>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="complaint_update_guid">complaint_update_guid</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -178,12 +173,17 @@
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="action_taken.complaint_update_guid&#39;s name implies that it&#39;s a child of complaint_update.complaint_update_guid, but it doesn&#39;t reference that column."><a href='complaint_update.html'>complaint_update</a><span class='relatedKey'>.complaint_update_guid</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
                                         </table>
                                     </td>
-                                    <td><p>An integer that is used to reflect the order that complaint updates were entered into the call center system.</p></td>
+                                    <td><p>System generated unique key for a COMPLAINT_UPDATE.  This key should never be exposed to users via any system utilizing the tables.   Either a complaint_update_guid or a complaint_identifier must be present on the record.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="upd_detail_text">upd_detail_text</span></td>
+                                    <td><span id="action_details_txt">action_details_txt</span></td>
                                     <td>text</td>
                                     <td>2147483647</td>
                                     <td title='nullable'>√</td>
@@ -197,12 +197,12 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>Verbatim details of the complaint as recorded by the call centre or through the web form.</p></td>
+                                    <td><p>Text about who the call centre staff contacted and when</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="upd_location_summary_text">upd_location_summary_text</span></td>
+                                    <td><span id="logged_by_txt">logged_by_txt</span></td>
                                     <td>varchar</td>
-                                    <td>120</td>
+                                    <td>250</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -214,12 +214,12 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>A brief summary of the location of the complaint.</p></td>
+                                    <td><p>The name of the webEOC User that recorded the ACTION_TAKEN</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="upd_location_detailed_text">upd_location_detailed_text</span></td>
-                                    <td>varchar</td>
-                                    <td>4000</td>
+                                    <td><span id="action_utc_timestamp">action_utc_timestamp</span></td>
+                                    <td>timestamp</td>
+                                    <td>29,6</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -231,24 +231,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>A more detailed description of the location of the complaint.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="upd_location_geometry_point">upd_location_geometry_point</span></td>
-                                    <td>geometry</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The closest approximation to where the incident occurred.   Stored as a geometric point using the EPSG:3005 Projected Coordinate System (BC Albers)</p></td>
+                                    <td><p>The date from webEOC that the ACTION_TAKEN was recorded.   The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -265,7 +248,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that created the complaint update record.</p></td>
+                                    <td><p>The id of the user that created the ACTION_TAKEN</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_utc_timestamp">create_utc_timestamp</span></td>
@@ -282,7 +265,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the complaint update record was created.  The timestamp is stored in UTC with no Offset.</p></td>
+                                    <td><p>The timestamp when the ACTION_TAKEN was created.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_id">update_user_id</span></td>
@@ -299,13 +282,13 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that updated the complaint update record.</p></td>
+                                    <td><p>The id of the user that updated the ACTION_TAKEN</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_utc_timestamp">update_utc_timestamp</span></td>
                                     <td>timestamp</td>
                                     <td>29,6</td>
-                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -316,24 +299,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the complaint_update record was updated.  The timestamp is stored in UTC with no Offset.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="webeoc_identifier">webeoc_identifier</span></td>
-                                    <td>varchar</td>
-                                    <td>20</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Unique Identifier from the webEOC source system to identify a complaint update.   This is required as the natural key is not available in all webEOC APIs</p></td>
+                                    <td><p>The timestamp when the ACTION_TAKEN was updated.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -366,14 +332,46 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> complaint_update_pk</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_action_taken_guid</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>complaint_update_guid</td>
+                                    <td>action_taken_guid</td>
                                 </tr>
                                 </tbody>
                             </table>
                         </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 class="box-title">Check Constraints</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="check_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Constraint</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>action_taken_check</td>
+                                    <td>(((complaint_identifier IS NOT NULL) OR (complaint_update_guid IS NOT NULL)))</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="box box-primary">
                         <div class="box-header with-border">
@@ -389,57 +387,40 @@
                                 <h5>Close relationships within degrees of separation</h5>
                                 <ul class="nav nav-tabs pull-left ui-sortable-handle">
                                     <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
-                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
                                     <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
                                     <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
                                 </ul>
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="357,5,811,427">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="5,37,313,301">
+<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="5,5,375,368">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/complaint_update.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
-                                    </div>
-                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
-                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="803,5,1050,93">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="348,547,656,811">
-<area shape="rect" id="node3" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="24,675,285,763">
-<area shape="rect" id="node4" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,780,304,868">
-<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="65,569,245,657">
-<area shape="rect" id="node6" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="45,464,265,552">
-<area shape="rect" id="node7" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="700,111,1153,532">
-<area shape="rect" id="node8" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="833,549,1021,637">
-<area shape="rect" id="node9" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="823,655,1030,743">
-<area shape="rect" id="node10" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="796,760,1057,848">
-</map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/complaint_update.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/action_taken.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="855,5,1089,181">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="5,64,313,328">
-<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="357,85,811,507">
+<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="685,5,1055,368">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="5,67,313,331">
+<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="357,91,641,237">
 </map>
-                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/complaint_update.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/action_taken.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="1049,52,1232,140">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="348,630,508,718">
-<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="552,83,1005,504">
-<area shape="rect" id="node5" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="24,468,285,556">
-<area shape="rect" id="node6" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,574,304,662">
-<area shape="rect" id="node7" href="agency_code.html" target="_top" title="agency_code" alt="" coords="65,679,245,767">
-<area shape="rect" id="node8" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="45,784,265,872">
-<area shape="rect" id="node4" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="655,522,902,610">
-<area shape="rect" id="node9" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="685,627,873,715">
-<area shape="rect" id="node10" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="675,732,882,820">
-<area shape="rect" id="node11" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="648,838,909,926">
-<area shape="rect" id="node12" href="staging_complaint.html" target="_top" title="staging_complaint" alt="" coords="666,943,891,1031">
+<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="857,5,1227,368">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="348,305,508,393">
+<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="571,92,795,180">
+<area shape="rect" id="node5" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="24,144,285,232">
+<area shape="rect" id="node6" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,249,304,337">
+<area shape="rect" id="node7" href="agency_code.html" target="_top" title="agency_code" alt="" coords="65,355,245,443">
+<area shape="rect" id="node8" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="45,460,265,548">
+<area shape="rect" id="node4" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="559,197,806,285">
+<area shape="rect" id="node9" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="589,303,777,391">
+<area shape="rect" id="node10" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="579,408,786,496">
+<area shape="rect" id="node11" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="552,513,813,601">
+<area shape="rect" id="node12" href="staging_complaint.html" target="_top" title="staging_complaint" alt="" coords="570,619,795,707">
 </map>
-                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/complaint_update.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/action_taken.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>
