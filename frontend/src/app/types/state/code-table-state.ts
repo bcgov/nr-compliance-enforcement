@@ -27,6 +27,7 @@ import { DrugMethod } from "../app/code-tables/drug-method";
 import { DrugRemainingOutcome } from "../app/code-tables/drug-remaining-outcome";
 import { Equipment } from "../app/code-tables/equipment";
 import { GirType } from "../app/code-tables/gir-type";
+import { TeamType } from "../app/code-tables/team";
 
 export interface CodeTableState {
   [key: string]:
@@ -58,7 +59,8 @@ export interface CodeTableState {
     | Array<DrugMethod>
     | Array<DrugRemainingOutcome>
     | Array<Equipment>
-    | Array<GirType>;
+    | Array<GirType>
+    | Array<TeamType>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -86,4 +88,5 @@ export interface CodeTableState {
   "drug-remaining-outcomes": Array<DrugRemainingOutcome>;
   equipment: Array<Equipment>;
   "gir-type": Array<GirType>;
+  team: Array<TeamType>;
 }

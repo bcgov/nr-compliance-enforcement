@@ -15,6 +15,7 @@ import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.ent
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
+import { TeamCode } from "../team_code/entities/team_code.entity";
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
     TypeOrmModule.forFeature([ComplaintTypeCode]),
     TypeOrmModule.forFeature([ReportedByCode]),
     TypeOrmModule.forFeature([GirTypeCode]),
+    TypeOrmModule.forFeature([TeamCode]),
   ],
   controllers: [CodeTableController, CaseManagementCodeTableController],
   providers: [CodeTableService],
