@@ -151,4 +151,11 @@ export class UpdateComplaintDto {
     description: "The timestamp when the complaint was last updated",
   })
   update_utc_timestamp: Date;
+
+  @ApiProperty({
+    example: "123455",
+    description:
+      "Unique identifier from the webeoc source system to identify a complaint. This is required as the natural key is not avaialble in all webeoc apis",
+  })
+  webeoc_identifier: string;
 }
