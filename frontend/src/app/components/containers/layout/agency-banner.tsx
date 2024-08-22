@@ -1,21 +1,22 @@
 import { FC } from "react";
 import { useAppSelector } from "../../../hooks/hooks";
-import { selectOfficerAgency } from "../../../store/reducers/app";
 import agencyIcons from "../../../../assets/images/icons";
 import { selectCodeTable } from "../../../store/reducers/code-table";
+import UserService from "../../../service/user-service";
 
 export const AgencyBanner: FC = () => {
   const defaultAgencyCode = "COS";
   const defaultDescription = "Conservation Officer Service";
 
   const agencies = useAppSelector(selectCodeTable("agency"));
-  const agency = useAppSelector(selectOfficerAgency);
+  const agency = UserService.getUserAgency();
 
   const selected = agencies.find((item) => item.agency === agency) || {
     agency: defaultAgencyCode,
     shortDescription: defaultDescription,
     longDescription: defaultDescription,
   };
+
   const { longDescription: name, agency: code } = selected;
 
   const agencyNameStyle = name.length > 28 ? "comp-organization-nav-long-name" : "comp-organization-nav-name";
