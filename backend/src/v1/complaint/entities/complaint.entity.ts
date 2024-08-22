@@ -114,6 +114,14 @@ export class Complaint {
   caller_phone_3: string;
 
   @ApiProperty({
+    example: "123455",
+    description:
+      "Unique identifier from the webeoc source system to identify a complaint. This is required as the natural key is not avaialble in all webeoc apis",
+  })
+  @Column({ length: 20 })
+  webeoc_identifier: string;
+
+  @ApiProperty({
     example: "43.43,-123.55",
     description: "The lat/long point of the complaint",
   })
@@ -217,6 +225,7 @@ export class Complaint {
     geo_organization_unit_code?: GeoOrganizationUnitCode,
     cos_geo_org_unit?: CosGeoOrgUnit,
     person_complaint_xref?: PersonComplaintXref[],
+    webeoc_identifier?: string,
   ) {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -242,5 +251,6 @@ export class Complaint {
     this.geo_organization_unit_code = geo_organization_unit_code;
     this.cos_geo_org_unit = cos_geo_org_unit;
     this.person_complaint_xref = person_complaint_xref;
+    this.webeoc_identifier = webeoc_identifier;
   }
 }

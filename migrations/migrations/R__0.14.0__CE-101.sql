@@ -5,6 +5,7 @@ AS $function$
 DECLARE
     new_code VARCHAR(10);  -- used in case we're creating a new code
     truncated_code varchar(10); -- if we're creating a new code, base it off of the webeoc_value.  We'll truncate this and get rid of spaces, and possibly append a number to make it unique
+    truncated_short_description varchar(50); -- if we're creating a new short description, truncate this to 50 characters just in case it is too long
     live_code_value VARCHAR;
     current_utc_timestamp TIMESTAMP WITH TIME ZONE := NOW();
     target_code_table VARCHAR;
@@ -23,6 +24,8 @@ BEGIN
     IF truncated_code IS NULL OR truncated_code = '' THEN
         RETURN NULL;
     END IF;
+
+    truncated_short_description := LEFT(webeoc_value, 50);
 
     -- Resolve the target code table and column name based on code_table_type
     CASE code_table_type
@@ -44,6 +47,9 @@ BEGIN
         WHEN 'violatncd' THEN
             target_code_table := 'violation_code';
             column_name := 'violation_code';
+        WHEN 'girtypecd' THEN
+            target_code_table := 'gir_type_code';
+            column_name := 'gir_type_code';
 
         ELSE RAISE EXCEPTION 'Invalid code_table_type provided: %', code_table_type;
     END CASE;
@@ -94,7 +100,7 @@ BEGIN
            
             -- Insert new code into the specific code table
             EXECUTE format('INSERT INTO %I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', $6, $4, $6, $4, $5)', target_code_table, column_name)
-            USING new_code, webeoc_value, webeoc_value, current_utc_timestamp, new_display_order, webeoc_user_id;
+            USING new_code, truncated_short_description, webeoc_value, current_utc_timestamp, new_display_order, webeoc_user_id;
 
             -- Update configuration_value by 1 to nofity front-end to update
             UPDATE configuration
@@ -117,6 +123,7 @@ END;
 $function$
 ;
 
+
 CREATE OR REPLACE FUNCTION public.format_phone_number(phone_number text)
  RETURNS text
  LANGUAGE plpgsql
@@ -132,14 +139,35 @@ BEGIN
     -- Check if the first character is '1'
     IF left(formatted_phone_number, 1) = '1' THEN
         -- Add '+' in front of the phone number
-        RETURN '+' || left(formatted_phone_number, 15);
+        RETURN '+' || left(formatted_phone_number, 14);
     ELSE
         -- Add '+1' in front of the phone number
-        RETURN '+1' || formatted_phone_number;
+        RETURN '+1' || left(formatted_phone_number,13);
     END IF;
 END;
 $function$
 ;
+
+CREATE OR REPLACE FUNCTION public.validate_coordinate_field(coordinate_field text)
+ RETURNS text
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+    formatted_coordinate_field TEXT;
+BEGIN
+    -- Confirm the coordinate_field is a valid value 
+    formatted_coordinate_field := regexp_substr(coordinate_field, '^[-+]?([0-9]{1,2}|1[0-7][0-9]|180)(\.[0-9]{1,10})');
+    IF (formatted_coordinate_field IS NULL or (length(formatted_coordinate_field) = 0)) then
+		return NULL;
+	-- Valid match so return the formatted_coordinate_field
+	else return formatted_coordinate_field;
+    END IF;
+END;
+$function$
+;
+
+
+
 
 CREATE OR REPLACE FUNCTION public.insert_complaint_from_staging(_complaint_identifier character varying)
  RETURNS void
@@ -156,9 +184,6 @@ AS $function$
     jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
     jsonb_cos_alt_phone CONSTANT text := 'cos_alt_phone';
     jsonb_cos_alt_phone_2 CONSTANT text := 'cos_alt_phone_2';
-   
-
-   
     complaint_data jsonb;
     -- Variable to hold the JSONB data from staging_complaint.  Used to create a new complaint
     -- Variables for 'complaint' table
@@ -183,6 +208,7 @@ AS $function$
     _address_coordinates_long VARCHAR(200);
     _location_geometry_point GEOMETRY;
     _complaint_status_code VARCHAR(10);
+    _webeoc_identifier VARCHAR(20);
 
     -- Variables for 'hwcr_complaint' table
     _webeoc_species                    VARCHAR(200);
@@ -201,6 +227,8 @@ AS $function$
     _observed_ind_bool bool;
     _suspect_witnesss_dtl_text VARCHAR(4000);
     _violation_code            VARCHAR(10);
+    _gir_type_code             VARCHAR(10);
+    _gir_type_description      VARCHAR(50);
     -- used to generate a uuid.  We use this to create the PK in hwcr_complaint, but
     -- we need to also use it when creating the attractants
     generated_uuid uuid;
@@ -270,8 +298,8 @@ AS $function$
     _location_detailed_text := complaint_data ->> 'cos_location_description';
     _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-	_address_coordinates_lat := complaint_data ->> 'address_coordinates_lat';
-    _address_coordinates_long := complaint_data ->> 'address_coordinates_long';
+	_address_coordinates_lat := validate_coordinate_field(complaint_data ->> 'address_coordinates_lat');
+    _address_coordinates_long := validate_coordinate_field(complaint_data ->> 'address_coordinates_long');
    
     -- Create a geometry point based on the latitude and longitude
     IF _address_coordinates_lat IS NOT NULL AND _address_coordinates_lat <> '' AND
@@ -292,6 +320,7 @@ AS $function$
     _webeoc_cos_area_community := complaint_data ->> 'cos_area_community';
     _webeoc_cos_reffered_by_lst := complaint_data ->> 'cos_reffered_by_lst';
     _cos_reffered_by_txt := left(complaint_data ->> '_cos_reffered_by_txt',120);
+    _webeoc_identifier := complaint_data ->> 'webeoc_identifier';
     SELECT *
     FROM   PUBLIC.insert_and_return_code( _webeoc_cos_reffered_by_lst, 'reprtdbycd' )
     INTO   _cos_reffered_by_lst;
@@ -324,7 +353,8 @@ AS $function$
                             geo_organization_unit_code,
                             location_geometry_point,
                             reported_by_code,
-                            reported_by_other_text
+                            reported_by_other_text,
+                            webeoc_identifier
                 )
                 VALUES
                 (
@@ -349,7 +379,8 @@ AS $function$
                             _geo_organization_unit_code,
                             _location_geometry_point,
                             _cos_reffered_by_lst,
-                            _cos_reffered_by_txt
+                            _cos_reffered_by_txt,
+                            _webeoc_identifier
                 );
     
     IF _report_type = 'HWCR' then
@@ -427,6 +458,36 @@ AS $function$
         
         END IF;
       END LOOP;
+
+    ELSIF _report_type = 'GIR' then
+    
+      -- Prepare data for 'gir_complaint' table
+      _gir_type_description := complaint_data ->> 'call_type_gir';
+      SELECT *
+      FROM   PUBLIC.insert_and_return_code( _gir_type_description, 'girtypecd' )
+      INTO   _gir_type_code;
+      -- Insert data into 'gir_complaint' table
+      INSERT INTO PUBLIC.gir_complaint
+                  (
+                              gir_complaint_guid,
+                              create_user_id,
+                              create_utc_timestamp,
+                              update_user_id,
+                              update_utc_timestamp,
+                              complaint_identifier,
+                              gir_type_code
+                  )
+                  VALUES
+                  (
+                              uuid_generate_v4(),
+                              _create_userid,
+                              _create_utc_timestamp,
+                              _create_userid,
+                              _update_utc_timestamp,
+                              _complaint_identifier,
+                              _gir_type_code
+                  );
+      
     ELSIF _report_type = 'ERS' THEN
       -- Extract and prepare data for 'allegation_complaint' table
       _in_progress_ind := (complaint_data->>'violation_in_progress');

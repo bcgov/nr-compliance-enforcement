@@ -20,7 +20,7 @@ export class PersonComplaintXrefController {
   ) {}
 
   @Post(":complaint_id")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   assignOfficer(
     @Param("complaint_id") complaintId: string,
     @Body() createPersonComplaintXrefDto: CreatePersonComplaintXrefDto,

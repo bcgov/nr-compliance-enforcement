@@ -148,7 +148,7 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
           onClick={toggleExpand}
         >
           {locationSummary}
-        </td>{" "}
+        </td>
         <td
           className={`${isExpandedClass}`}
           onClick={toggleExpand}

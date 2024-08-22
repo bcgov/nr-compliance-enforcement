@@ -902,7 +902,34 @@ UPDATE agency_code SET display_order = 9 WHERE agency_code = 'OTHER';
 ------------------------------
 update  public.geo_organization_unit_code set administrative_office_ind = true where geo_organization_unit_code='COSHQ';
 
+----------------------------------------------
+-- update staging_activity_code display_order
+----------------------------------------------
+UPDATE staging_activity_code SET display_order = 10 WHERE staging_activity_code = 'INSERT';
+UPDATE staging_activity_code SET display_order = 20 WHERE staging_activity_code = 'UPDATE';
+UPDATE staging_activity_code SET display_order = 30 WHERE staging_activity_code = 'EDIT';
 
+-------------------------------------
+-- new staging_activity_code records
+-------------------------------------
+INSERT INTO staging_activity_code(staging_activity_code, short_description, long_description, display_order, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+SELECT 'ACTIONCTE', 'Action Taken', 'An action taken was created by a call centre agent', 40, true, user, now(), user, now()
+ON CONFLICT DO NOTHING;
+
+INSERT INTO staging_activity_code(staging_activity_code, short_description, long_description, display_order, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+SELECT 'ACTIONUPD', 'Action Taken - Update', 'An action taken was updated by a call centre agent', 50, true, user, now(), user, now()
+ON CONFLICT DO NOTHING;
+
+-----------------------------
+-- new configuration records
+-----------------------------
+INSERT INTO	configuration(configuration_code, configuration_value, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+SELECT 'ATINCPK', 'fk_table_345', 'The name of the field in the webEOC Action Taken API that refers to the webEOC internal PK of the parent incident record', true, user, now(), user, now()
+ON CONFLICT DO NOTHING;
+
+INSERT INTO	configuration(configuration_code, configuration_value, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+SELECT 'AUINCPK', 'fk_table_346', 'The name of the field in the webEOC Action Taken Update API that refers to the webEOC internal PK of the parent incident record', true, user, now(), user, now()
+ON CONFLICT DO NOTHING;
 -----------------------
 -- Move Hudson's Hope to Fort St. John Office in North Peace
 -- This is temporary and will likely need to be removed in the future
@@ -1058,6 +1085,489 @@ values
         CURRENT_TIMESTAMP
     ) ON CONFLICT DO NOTHING;
 
+-------------------------
+-- Insert Feature Codes
+-------------------------
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EXPERMFTRS',
+  'Experimental Features',
+  'Features that were included as early prototypes or placeholders , may be used to solicit feedback from user groups.',
+  10,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+  INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'GIRCMPLNTS',
+  'GIR Complaints',
+  'Load and display general Incident Report (GIR)  incidents from webEOC.',
+  20,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACTONSTKEN',
+  'Actions Taken',
+  'Load and display actions taken for incidents and updates from webEOC.',
+  30,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+
+-------------------------
+-- Insert Feature / Agency XREF
+-------------------------
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EXPERMFTRS',
+  'COS',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EXPERMFTRS',
+  'EPO',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EXPERMFTRS',
+  'PARKS',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+  INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'GIRCMPLNTS',
+  'COS',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'GIRCMPLNTS',
+  'PARKS',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+    INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'GIRCMPLNTS',
+  'EPO',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACTONSTKEN',
+  'COS',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACTONSTKEN',
+  'EPO',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACTONSTKEN',
+  'PARKS',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+-------------------------
+-- Insert Team Codes
+-------------------------
+
+insert into
+    public.team_code (
+        team_code,
+        short_description,
+        long_description,
+        display_order,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'HI',
+        'Heavy Industry',
+        'Heavy Industry',
+        10,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team_code (
+        team_code,
+        short_description,
+        long_description,
+        display_order,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'OPS',
+        'Operations',
+        'Operations',
+        20,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team_code (
+        team_code,
+        short_description,
+        long_description,
+        display_order,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'REACTIVE',
+        'REACTIVE',
+        'REACTIVE',
+        30,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team_code (
+        team_code,
+        short_description,
+        long_description,
+        display_order,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'RIPM',
+        'Recycling Integrated Pest Management',
+        'Recycling Integrated Pest Management',
+        40,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team_code (
+        team_code,
+        short_description,
+        long_description,
+        display_order,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'PLAN',
+        'Planned',
+        'Planned',
+        50,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team (
+        team_code,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'HI',
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team (
+        team_code,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'OPS',
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team (
+        team_code,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'PLAN',
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team (
+        team_code,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'REACTIVE',
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
+insert into
+    public.team (
+        team_code,
+        agency_code,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'RIPM',
+        'EPO',
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) ON CONFLICT DO NOTHING;
+
 --------------------------
 -- New Changes above this line
 -------------------------
@@ -1065,7 +1575,3 @@ values
 UPDATE configuration
             SET    configuration_value = configuration_value::int + 1
             WHERE  configuration_code = 'CDTABLEVER';
-
-
-
-
