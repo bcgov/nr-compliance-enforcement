@@ -239,6 +239,10 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
         return delegates;
       }),
     ),
+    forMember(
+      (destination) => destination.webeocId,
+      mapFrom((source) => source.webeoc_identifier),
+    ),
   );
 };
 
@@ -667,6 +671,10 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
         return "";
       }),
     ),
+    forMember(
+      (destination) => destination.webeocId,
+      mapFrom((source) => source.complaint_identifier.webeoc_identifier),
+    ),
   );
 };
 
@@ -867,6 +875,10 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.violationDetails,
       mapFrom((src) => src.suspect_witnesss_dtl_text),
+    ),
+    forMember(
+      (destination) => destination.webeocId,
+      mapFrom((source) => source.complaint_identifier.webeoc_identifier),
     ),
   );
 };
@@ -1071,6 +1083,7 @@ const girTypeCodeToGirTypeCodeDto = (mapper: Mapper) => {
     ),
   );
 };
+
 
 //-- reporting data maps
 export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
@@ -1349,6 +1362,10 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
         return "";
       }),
     ),
+    forMember(
+      (destination) => destination.webeocId,
+      mapFrom((source) => source.complaint_identifier.webeoc_identifier),
+    ),
   );
 };
 
@@ -1609,6 +1626,10 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     forMember(
       (destination) => destination.details,
       mapFrom((src) => src.suspect_witnesss_dtl_text),
+    ),
+    forMember(
+      (destination) => destination.webeocId,
+      mapFrom((source) => source.complaint_identifier.webeoc_identifier),
     ),
   );
 };

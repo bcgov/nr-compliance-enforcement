@@ -184,9 +184,6 @@ AS $function$
     jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
     jsonb_cos_alt_phone CONSTANT text := 'cos_alt_phone';
     jsonb_cos_alt_phone_2 CONSTANT text := 'cos_alt_phone_2';
-   
-
-   
     complaint_data jsonb;
     -- Variable to hold the JSONB data from staging_complaint.  Used to create a new complaint
     -- Variables for 'complaint' table
@@ -211,6 +208,7 @@ AS $function$
     _address_coordinates_long VARCHAR(200);
     _location_geometry_point GEOMETRY;
     _complaint_status_code VARCHAR(10);
+    _webeoc_identifier VARCHAR(20);
 
     -- Variables for 'hwcr_complaint' table
     _webeoc_species                    VARCHAR(200);
@@ -322,6 +320,7 @@ AS $function$
     _webeoc_cos_area_community := complaint_data ->> 'cos_area_community';
     _webeoc_cos_reffered_by_lst := complaint_data ->> 'cos_reffered_by_lst';
     _cos_reffered_by_txt := left(complaint_data ->> '_cos_reffered_by_txt',120);
+    _webeoc_identifier := complaint_data ->> 'webeoc_identifier';
     SELECT *
     FROM   PUBLIC.insert_and_return_code( _webeoc_cos_reffered_by_lst, 'reprtdbycd' )
     INTO   _cos_reffered_by_lst;
@@ -354,7 +353,8 @@ AS $function$
                             geo_organization_unit_code,
                             location_geometry_point,
                             reported_by_code,
-                            reported_by_other_text
+                            reported_by_other_text,
+                            webeoc_identifier
                 )
                 VALUES
                 (
@@ -379,7 +379,8 @@ AS $function$
                             _geo_organization_unit_code,
                             _location_geometry_point,
                             _cos_reffered_by_lst,
-                            _cos_reffered_by_txt
+                            _cos_reffered_by_txt,
+                            _webeoc_identifier
                 );
     
     IF _report_type = 'HWCR' then
