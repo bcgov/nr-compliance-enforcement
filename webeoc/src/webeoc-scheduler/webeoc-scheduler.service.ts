@@ -172,7 +172,7 @@ export class WebEocScheduler {
     }
   }
 
-  private getDateFilter(flagName) {
+  private getDateFilter(flagName: string) {
     const timeZone = "America/Los_Angeles"; // This timezone automatically handles PDT/PST
 
     // Get the current date in UTC
