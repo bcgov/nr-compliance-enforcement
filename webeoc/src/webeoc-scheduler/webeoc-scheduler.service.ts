@@ -97,7 +97,7 @@ export class WebEocScheduler {
   }
 
   private async fetchDataFromWebEOC(urlPath: string, flagName: string): Promise<any[]> {
-    const dateFilter = this.getDateFilter();
+    const dateFilter = this.getDateFilter(flagName);
     const url = `${process.env.WEBEOC_URL}/${urlPath}`;
     const config: AxiosRequestConfig = {
       headers: {
@@ -105,7 +105,7 @@ export class WebEocScheduler {
       },
     };
 
-    const body = {
+    const body_for_UPD = {
       customFilter: {
         boolean: "and",
         items: [
@@ -116,11 +116,55 @@ export class WebEocScheduler {
             fieldvalue: "Yes",
           },
         ],
+        violationGroup: {
+          boolean: "or",
+          items: [
+            {
+              fieldname: "update_violation_type",
+              operator: "Equals",
+              fieldvalue: "Waste",
+            },
+            {
+              fieldname: "update_violation_type",
+              operator: "Equals",
+              fieldvalue: "Pesticide",
+            },
+          ],
+        },
+      },
+    };
+    const body_for_COS = {
+      customFilter: {
+        boolean: "and",
+        items: [
+          dateFilter,
+          {
+            fieldname: flagName,
+            operator: "Equals",
+            fieldvalue: "Yes",
+          },
+        ],
+        violationGroup: {
+          boolean: "or",
+          items: [
+            {
+              fieldname: "violation_type",
+              operator: "Equals",
+              fieldvalue: "Waste",
+            },
+            {
+              fieldname: "violation_type",
+              operator: "Equals",
+              fieldvalue: "Pesticide",
+            },
+          ],
+        },
       },
     };
 
+    const bodyToUse = flagName === "flag_COS" ? body_for_COS : body_for_UPD;
     try {
-      const response = await axios.post(url, body, config);
+      const response = await axios.post(url, bodyToUse, config);
       return response.data as Complaint[];
     } catch (error) {
       this.logger.error(`Error fetching data from WebEOC at ${urlPath}:`, error);
@@ -128,7 +172,7 @@ export class WebEocScheduler {
     }
   }
 
-  private getDateFilter() {
+  private getDateFilter(flagName) {
     const timeZone = "America/Los_Angeles"; // This timezone automatically handles PDT/PST
 
     // Get the current date in UTC
@@ -146,8 +190,10 @@ export class WebEocScheduler {
     this.logger.debug(`Finding complaints greater than ${complaintsAsOfDate.toISOString()}`);
 
     const formattedDate = this.formatDate(complaintsAsOfDate);
+    // passing in "actions" will default to the entryDate satisfying the other use of this function
+    const fieldNameToUse = flagName === "flag_COS" ? "incident_datetime" : "entrydate";
     return {
-      fieldname: "entrydate",
+      fieldname: fieldNameToUse,
       operator: "GreaterThan",
       fieldvalue: formattedDate,
     };
@@ -167,7 +213,7 @@ export class WebEocScheduler {
 
   //-- actions taken
   private _fetchActions = async (path: string) => {
-    const dateFilter = this.getDateFilter();
+    const dateFilter = this.getDateFilter("actions");
     const url = `${process.env.WEBEOC_URL}/${path}`;
     const config: AxiosRequestConfig = {
       headers: {
@@ -199,7 +245,7 @@ export class WebEocScheduler {
   };
 
   private _fetchActionUpdates = async (path: string) => {
-    const dateFilter = this.getDateFilter();
+    const dateFilter = this.getDateFilter("actions");
     const url = `${process.env.WEBEOC_URL}/${path}`;
     const config: AxiosRequestConfig = {
       headers: {
