@@ -1,6 +1,7 @@
 import { FC, useState, useContext, useCallback, useEffect } from "react";
 import { shallowEqual } from "react-redux";
 import { Button, Collapse, Offcanvas } from "react-bootstrap";
+
 import { useAppSelector, useAppDispatch } from "../../../hooks/hooks";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
@@ -10,6 +11,7 @@ import { ComplaintFilterContext, ComplaintFilterProvider } from "../../../provid
 import { resetFilters, ComplaintFilterPayload } from "../../../store/reducers/complaint-filters";
 
 import { selectDefaultZone, setActiveTab } from "../../../store/reducers/app";
+
 import { ComplaintMap } from "./complaint-map";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";

@@ -29,6 +29,7 @@ import { Office } from "../office/entities/office.entity";
 
 import { ComplaintDto } from "../../types/models/complaints/complaint";
 import { CodeTableService } from "../code-table/code-table.service";
+import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
 import {
   mapAllegationComplaintDtoToAllegationComplaint,
   mapAttractantXrefDtoToAttractantHwcrXref,
@@ -62,6 +63,7 @@ import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-c
 import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint-update-dto";
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
+import { RelatedDataDto } from "src/types/models/complaints/related-data";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -79,7 +81,6 @@ export class ComplaintService {
   private _girComplaintRepository: Repository<GirComplaint>;
   @InjectRepository(ComplaintUpdate)
   private _complaintUpdateRepository: Repository<ComplaintUpdate>;
-
   @InjectRepository(Officer)
   private _officertRepository: Repository<Officer>;
   @InjectRepository(Office)
@@ -91,6 +92,7 @@ export class ComplaintService {
     @Inject(REQUEST) private request: Request,
     @InjectMapper() mapper,
     private readonly _codeTableService: CodeTableService,
+    private readonly _compliantUpdatesService: ComplaintUpdatesService,
     private readonly _personService: PersonComplaintXrefService,
     private readonly _attractantService: AttractantHwcrXrefService,
     private dataSource: DataSource,
@@ -903,6 +905,18 @@ export class ComplaintService {
     } catch (error) {
       this.logger.error(error.response);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
+    }
+  };
+
+  findRelatedDataById = async (id: string): Promise<RelatedDataDto> => {
+    try {
+      const udpates = await this._compliantUpdatesService.findByComplaintId(id);
+      const actions = await this._compliantUpdatesService.findActionsByComplaintId(id);
+
+      let fullResults: RelatedDataDto = { updates: udpates, actions: actions };
+      return fullResults;
+    } catch (error) {
+      this.logger.error(error);
     }
   };
 

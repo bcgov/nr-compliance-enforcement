@@ -1,13 +1,14 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import {
-  getWebEOCUpdates,
-  selectWebEOCComplaintUpdates,
   getWebEOCChangeCount,
   selectWebEOCChangeCount,
+  selectRelatedData,
+  getRelatedData,
 } from "../../../../store/reducers/complaints";
 import { WebEOCComplaintUpdateDTO } from "../../../../types/app/complaints/webeoc-complaint-update";
 import { formatDate, formatTime } from "../../../../common/methods";
+import { ActionTaken } from "../../../../types/app/complaints/action-taken";
 
 type Props = {
   complaintIdentifier: string;
@@ -15,19 +16,24 @@ type Props = {
 
 export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) => {
   const dispatch = useAppDispatch();
-  const complaintUpdates = useAppSelector(selectWebEOCComplaintUpdates);
+  const { updates, actions } = useAppSelector(selectRelatedData) || { updates: [], actions: [] };
   const changeCount = useAppSelector(selectWebEOCChangeCount);
   const [expandedUpdates, setExpandedUpdates] = useState<Record<string, boolean>>({});
+  const [expandedActions, setExpandedActions] = useState<Record<string, boolean>>({});
   const [showLinks, setShowLinks] = useState<Record<string, boolean>>({});
   const descriptionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
-    dispatch(getWebEOCUpdates(complaintIdentifier));
+    dispatch(getRelatedData(complaintIdentifier));
     dispatch(getWebEOCChangeCount(complaintIdentifier));
   }, [complaintIdentifier, dispatch]);
 
   const toggleExpand = (id: string) => {
     setExpandedUpdates((prev) => ({
+      ...prev,
+      [id]: !prev[id], // Toggle the expanded state
+    }));
+    setExpandedActions((prev) => ({
       ...prev,
       [id]: !prev[id], // Toggle the expanded state
     }));
@@ -43,16 +49,14 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
         }));
       }
     });
-  }, [complaintUpdates]);
+  }, [updates]);
 
   return (
     <>
-      {((complaintUpdates && complaintUpdates.length > 0) || (changeCount && changeCount > 0)) && (
+      {((updates && updates.length > 0) || (changeCount && changeCount > 0) || (actions && actions.length > 0)) && (
         <div className="comp-container comp-complaint-details-block">
           <div>
-            <h6>
-              Complaint Updates {complaintUpdates && complaintUpdates.length > 0 && "(" + complaintUpdates.length + ")"}
-            </h6>
+            <h6>Complaint Updates {updates && updates.length > 0 && "(" + updates.length + ")"}</h6>
             {changeCount && changeCount > 0 && (
               <div className="comp-complaint-update-count">
                 This ticket has been updated, or its content has been edited, {changeCount} times since it was created.
@@ -60,9 +64,73 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
               </div>
             )}
           </div>
-          {complaintUpdates &&
-            complaintUpdates.length > 0 &&
-            complaintUpdates.map((update: WebEOCComplaintUpdateDTO) => (
+          {actions && actions.length > 0 && (
+            <div>
+              {actions.map((action: ActionTaken) => (
+                <div
+                  className="comp-complaint-update-item"
+                  key={action.actionTakenGuid}
+                >
+                  <div className="comp-complaint-update-item-row first-row">
+                    <div className="update-number">Call center action: </div>
+                    <div className="received">
+                      <span
+                        className="date-time-logged-label"
+                        id="date-time-logged-label-id"
+                      >
+                        Received
+                      </span>
+                      <i className="bi bi-calendar"></i>
+                      {formatDate(action.actionUtcTimestamp)}
+                      <i className="bi bi-clock comp-margin-left-xs"></i>
+                      {formatTime(action.actionUtcTimestamp)}
+                    </div>
+                  </div>
+                  {action.actionDetailsTxt && (
+                    <div className="complaint-description-section">
+                      <div className="complaint-description-label">Details</div>
+                      <div
+                        className={`complaint-description-text ${
+                          expandedActions[action.actionTakenGuid] ? "expanded" : ""
+                        } ${showLinks[action.actionTakenGuid] ? "needs-gradient" : ""}`}
+                        ref={(el) => (descriptionRefs.current[action.actionTakenGuid] = el)}
+                        style={{
+                          maxHeight: expandedActions[action.actionTakenGuid] ? "none" : "6em",
+                          overflow: expandedUpdates[action.actionTakenGuid] ? "visible" : "hidden",
+                        }}
+                      >
+                        {action.actionDetailsTxt}
+                      </div>
+                      {showLinks[action.actionTakenGuid] && (
+                        <div className="show-more-container">
+                          <button
+                            type="button"
+                            className="show-more-link"
+                            onClick={() => toggleExpand(action.actionTakenGuid)}
+                          >
+                            {expandedActions[action.actionTakenGuid] ? "Click to collapse" : "Click to expand"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <div className="complaint-details-section">
+                    <div className="complaint-details-row">
+                      {action.loggedByTxt && (
+                        <div className="complaint-logged-label-value-pair">
+                          <div className="complaint-description-label">Logged by:</div>
+                          <div className="complaint-description-text">{action.loggedByTxt}</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {updates &&
+            updates.length > 0 &&
+            updates.map((update: WebEOCComplaintUpdateDTO) => (
               <div
                 className="comp-complaint-update-item"
                 key={update.complaintUpdateGuid}

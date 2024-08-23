@@ -131,6 +131,7 @@ export const CreateComplaint: FC = () => {
     if (!complaintData) {
       const model: ComplaintDto = {
         id: "",
+        webeocId: "",
         details: "",
         name: "",
         address: "",
@@ -158,7 +159,7 @@ export const CreateComplaint: FC = () => {
 
       applyComplaintData(model);
     }
-  }, [complaintData, currentDate, userid]);
+  }, [agency, complaintData, currentDate, userid]);
 
   // files to add to COMS when complaint is saved
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);

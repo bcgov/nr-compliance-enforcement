@@ -602,12 +602,10 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
       const { payload } = action;
       return { ...state, featureFlags: payload };
     }
-
     case ActionTypes.SET_ACTIVE_TAB: {
       const { payload } = action;
       return { ...state, activeTab: payload };
     }
-
     default:
       return state;
   }

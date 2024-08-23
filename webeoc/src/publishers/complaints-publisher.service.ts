@@ -1,11 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { connect, headers, JetStreamClient, JSONCodec } from "nats";
-import {
-  NATS_NEW_COMPLAINTS_TOPIC_NAME,
-  NATS_UPDATED_COMPLAINTS_TOPIC_NAME,
-  NEW_STAGING_COMPLAINTS_TOPIC_NAME,
-  NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME,
-} from "../common/constants";
+import { STREAM_TOPICS } from "../common/constants";
 import { Complaint } from "src/types/complaint-type";
 import { ComplaintUpdate } from "src/types/complaint-update-type";
 
@@ -36,7 +31,7 @@ export class ComplaintsPublisherService {
       const msg = this.codec.encode(complaint);
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
       natsHeaders.set("Nats-Msg-Id", `staged-${complaint.incident_number}-${complaint.created_by_datetime}`);
-      const ack = await this.jsClient.publish(NATS_NEW_COMPLAINTS_TOPIC_NAME, msg, { headers: natsHeaders });
+      const ack = await this.jsClient.publish(STREAM_TOPICS.COMPLAINTS, msg, { headers: natsHeaders });
       if (!ack.duplicate) {
         this.logger.debug(`New complaint: ${complaint.incident_number}`);
       } else {
@@ -62,7 +57,7 @@ export class ComplaintsPublisherService {
         "Nats-Msg-Id",
         `staged-update-${incidentNumber}-${updateNumber}-${complaintUpdate.back_number_of_days}-${complaintUpdate.back_number_of_hours}-${complaintUpdate.back_number_of_minutes}`,
       );
-      const ack = await this.jsClient.publish(NATS_UPDATED_COMPLAINTS_TOPIC_NAME, jsonData, { headers: natsHeaders });
+      const ack = await this.jsClient.publish(STREAM_TOPICS.COMPLAINT_UPDATE, jsonData, { headers: natsHeaders });
       if (!ack.duplicate) {
         this.logger.debug(`Complaint update: ${incidentNumber} ${updateNumber}`);
       } else {
@@ -82,7 +77,7 @@ export class ComplaintsPublisherService {
     try {
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
       natsHeaders.set("Nats-Msg-Id", `complaint-${incident_number}`);
-      const ack = await this.jsClient.publish(NEW_STAGING_COMPLAINTS_TOPIC_NAME, incident_number, {
+      const ack = await this.jsClient.publish(STREAM_TOPICS.STAGING_COMPLAINTS, incident_number, {
         headers: natsHeaders,
       });
 
@@ -115,7 +110,7 @@ export class ComplaintsPublisherService {
         "Nats-Msg-Id",
         `complaint-${incidentNumber}-update-${updateNumber}-${backNumberOfDays}-${backNumberOfHours}-${backNumberOfMinutes}`,
       );
-      const ack = await this.jsClient.publish(NEW_STAGING_COMPLAINT_UPDATE_TOPIC_NAME, jsonData, {
+      const ack = await this.jsClient.publish(STREAM_TOPICS.STAGING_COMPLAINT_UPDATE, jsonData, {
         headers: natsHeaders,
       });
 

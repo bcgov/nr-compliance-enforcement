@@ -62,6 +62,9 @@ import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
+import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
+import { ActionTaken } from "./entities/action_taken.entity";
+import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -77,6 +80,15 @@ describe("Testing: Complaint Service", () => {
             strategyInitializer: pojos(),
           }),
         },
+        {
+          provide: getRepositoryToken(StagingComplaint),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(ActionTaken),
+          useValue: {},
+        },
+        ComplaintUpdatesService,
         ComplaintService,
         PersonComplaintXrefService,
         AttractantHwcrXrefService,
@@ -319,6 +331,15 @@ describe("Testing: Complaint Service", () => {
             strategyInitializer: pojos(),
           }),
         },
+        {
+          provide: getRepositoryToken(StagingComplaint),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(ActionTaken),
+          useValue: {},
+        },
+        ComplaintUpdatesService,
         ComplaintService,
         PersonComplaintXrefService,
         AttractantHwcrXrefService,

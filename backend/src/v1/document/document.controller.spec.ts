@@ -59,6 +59,9 @@ import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
+import { ActionTaken } from "../complaint/entities/action_taken.entity";
+import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
+import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 
 describe("DocumentController", () => {
   let controller: DocumentController;
@@ -167,6 +170,15 @@ describe("DocumentController", () => {
           provide: getRepositoryToken(ComplaintUpdate),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(StagingComplaint),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(ActionTaken),
+          useValue: {},
+        },
+        ComplaintUpdatesService,
         ComplaintService,
         CodeTableService,
         PersonComplaintXrefService,
@@ -182,10 +194,6 @@ describe("DocumentController", () => {
         ConfigurationService,
         {
           provide: getRepositoryToken(Configuration),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(ComplaintUpdate),
           useValue: {},
         },
       ],

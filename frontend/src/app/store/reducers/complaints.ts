@@ -38,6 +38,9 @@ import {
 import { Agency } from "../../types/app/code-tables/agency";
 import { ReportedBy } from "../../types/app/code-tables/reported-by";
 import { WebEOCComplaintUpdateDTO } from "../../types/app/complaints/webeoc-complaint-update";
+import { RelatedData } from "../../types/app/complaints/related-data";
+import { ActionTaken } from "../../types/app/complaints/action-taken";
+
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../../types/app/complaints/general-complaint";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
@@ -60,6 +63,7 @@ const initialState: ComplaintState = {
   mappedItems: { items: [], unmapped: 0 },
 
   webeocUpdates: [],
+  actions: [],
 
   webeocChangeCount: 0,
 };
@@ -207,9 +211,17 @@ export const complaintSlice = createSlice({
     },
 
     setWebEOCUpdates: (state, action: PayloadAction<WebEOCComplaintUpdateDTO[]>) => {
-      state.webeocUpdates = action.payload;
+      return { ...state, webeocUpdates: action.payload };
     },
-
+    setRelatedData: (state, action) => {
+      const {
+        payload: { updates: webeocUpdates, actions },
+      } = action;
+      return { ...state, webeocUpdates, actions };
+    },
+    setActions: (state, action: PayloadAction<ActionTaken[]>) => {
+      state.actions = action.payload;
+    },
     setWebEOCChangeCount: (state, action: PayloadAction<number>) => {
       state.webeocChangeCount = action.payload;
     },
@@ -239,6 +251,8 @@ export const {
   updateGeneralIncidentComplaintByRow,
   setMappedComplaints,
   setWebEOCUpdates,
+  setRelatedData,
+  setActions,
   setWebEOCChangeCount,
   setComplaintStatus,
 } = complaintSlice.actions;
@@ -413,6 +427,32 @@ export const getWebEOCUpdates =
       dispatch(setWebEOCUpdates(response));
     } catch (error) {
       console.error(`Unable to retrieve WebEOC updates for complaint ${complaintIdentifier}: ${error}`);
+    }
+  };
+export const getRelatedData =
+  (complaintIdentifier: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint-updates/related/${complaintIdentifier}`,
+      );
+      const response = await get<RelatedData>(dispatch, parameters);
+      dispatch(setRelatedData(response));
+    } catch (error) {
+      console.error(`Unable to retrieve related data for complaint ${complaintIdentifier}: ${error}`);
+    }
+  };
+export const getActions =
+  (complaintIdentifier: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint-updates/actions/${complaintIdentifier}`,
+      );
+      const response = await get<ActionTaken[]>(dispatch, parameters);
+      dispatch(setActions(response));
+    } catch (error) {
+      console.error(`Unable to retrieve related data for complaint ${complaintIdentifier}: ${error}`);
     }
   };
 
@@ -1068,7 +1108,18 @@ export const selectWebEOCComplaintUpdates = (state: RootState): WebEOCComplaintU
   } = state;
   return webeocUpdates;
 };
-
+export const selectRelatedData = (state: RootState): RelatedData | null => {
+  const {
+    complaints: { webeocUpdates, actions },
+  } = state;
+  return { updates: webeocUpdates, actions };
+};
+export const selectActions = (state: RootState): ActionTaken[] | null => {
+  const {
+    complaints: { actions },
+  } = state;
+  return actions;
+};
 export const selectWebEOCChangeCount = (state: RootState): number | null => {
   const {
     complaints: { webeocChangeCount },

@@ -55,6 +55,9 @@ import { MockGeneralIncidentComplaintRepository } from "../../../test/mocks/mock
 import { Office } from "../office/entities/office.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
+import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
+import { ActionTaken } from "../complaint/entities/action_taken.entity";
+import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 
 describe("Testing: Case File Service", () => {
   let service: CaseFileService;
@@ -163,6 +166,15 @@ describe("Testing: Case File Service", () => {
           provide: getRepositoryToken(ComplaintUpdate),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(StagingComplaint),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(ActionTaken),
+          useValue: {},
+        },
+        ComplaintUpdatesService,
         CaseFileService,
         ComplaintService,
         CodeTableService,

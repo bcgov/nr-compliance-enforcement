@@ -34,6 +34,7 @@ export const GeneralComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sor
           currentSort={sortKey}
           sortDirection={sortDirection}
         />
+
         <SortableHeader
           title="Community"
           sortFnc={handleSort}
