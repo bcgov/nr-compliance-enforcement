@@ -23,11 +23,17 @@ export const AgencyBanner: FC = () => {
   return (
     <span className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none comp-organization-nav-item">
       <img
+        id="comp-agency-branding"
         className="comp-organization-nav-logo"
         src={agencyIcons[code]}
-        alt="logo"
+        alt={`${agency}-branding`}
       />
-      <span className={agencyNameStyle}>{name}</span>
+      <span
+        id="comp-agency-name"
+        className={agencyNameStyle}
+      >
+        {name}
+      </span>
     </span>
   );
 };
