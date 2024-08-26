@@ -13,7 +13,7 @@ import { ValidationInput } from "../../../../common/validation-input";
 import Option from "../../../../types/app/option";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { openModal, selectOfficerAgency, userId } from "../../../../store/reducers/app";
+import { openModal, selectActiveTab, userId } from "../../../../store/reducers/app";
 import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
 
 import {
@@ -68,6 +68,7 @@ export const CreateComplaint: FC = () => {
   const reportedByCodes = useAppSelector(selectReportedByDropdown) as Option[];
   const violationTypeCodes = useAppSelector(selectViolationCodeDropdown(agency)) as Option[];
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
+  const activeTab = useAppSelector(selectActiveTab);
 
   const handleSlideCountChange = (count: number) => {
     setComplaintAttachmentCount(count);
@@ -89,9 +90,15 @@ export const CreateComplaint: FC = () => {
 
   const [complaintData, applyComplaintData] = useState<ComplaintAlias>();
 
-  const [complaintType, setComplaintType] = useState<string>(
-    agency == "EPO" ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR,
-  );
+  let initialComplaintType: string = COMPLAINT_TYPES.HWCR;
+  if (agency === "EPO") {
+    initialComplaintType = COMPLAINT_TYPES.ERS;
+  } else if (agency === "COS") {
+    initialComplaintType = activeTab === COMPLAINT_TYPES.ERS ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR;
+  }
+
+  const [complaintType, setComplaintType] = useState<string>(initialComplaintType);
+
   const [complaintTypeMsg, setComplaintTypeMsg] = useState<string>("");
   const [natureOfComplaintErrorMsg, setNatureOfComplaintErrorMsg] = useState<string>("");
   const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
@@ -124,6 +131,7 @@ export const CreateComplaint: FC = () => {
     if (!complaintData) {
       const model: ComplaintDto = {
         id: "",
+        webeocId: "",
         details: "",
         name: "",
         address: "",
@@ -151,7 +159,7 @@ export const CreateComplaint: FC = () => {
 
       applyComplaintData(model);
     }
-  }, [complaintData, currentDate, userid]);
+  }, [agency, complaintData, currentDate, userid]);
 
   // files to add to COMS when complaint is saved
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);

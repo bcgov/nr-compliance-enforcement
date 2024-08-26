@@ -902,7 +902,34 @@ UPDATE agency_code SET display_order = 9 WHERE agency_code = 'OTHER';
 ------------------------------
 update  public.geo_organization_unit_code set administrative_office_ind = true where geo_organization_unit_code='COSHQ';
 
+----------------------------------------------
+-- update staging_activity_code display_order
+----------------------------------------------
+UPDATE staging_activity_code SET display_order = 10 WHERE staging_activity_code = 'INSERT';
+UPDATE staging_activity_code SET display_order = 20 WHERE staging_activity_code = 'UPDATE';
+UPDATE staging_activity_code SET display_order = 30 WHERE staging_activity_code = 'EDIT';
 
+-------------------------------------
+-- new staging_activity_code records
+-------------------------------------
+INSERT INTO staging_activity_code(staging_activity_code, short_description, long_description, display_order, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+SELECT 'ACTIONCTE', 'Action Taken', 'An action taken was created by a call centre agent', 40, true, user, now(), user, now()
+ON CONFLICT DO NOTHING;
+
+INSERT INTO staging_activity_code(staging_activity_code, short_description, long_description, display_order, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+SELECT 'ACTIONUPD', 'Action Taken - Update', 'An action taken was updated by a call centre agent', 50, true, user, now(), user, now()
+ON CONFLICT DO NOTHING;
+
+-----------------------------
+-- new configuration records
+-----------------------------
+INSERT INTO	configuration(configuration_code, configuration_value, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+SELECT 'ATINCPK', 'fk_table_345', 'The name of the field in the webEOC Action Taken API that refers to the webEOC internal PK of the parent incident record', true, user, now(), user, now()
+ON CONFLICT DO NOTHING;
+
+INSERT INTO	configuration(configuration_code, configuration_value, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+SELECT 'AUINCPK', 'fk_table_346', 'The name of the field in the webEOC Action Taken Update API that refers to the webEOC internal PK of the parent incident record', true, user, now(), user, now()
+ON CONFLICT DO NOTHING;
 -----------------------
 -- Move Hudson's Hope to Fort St. John Office in North Peace
 -- This is temporary and will likely need to be removed in the future
@@ -1548,7 +1575,3 @@ values
 UPDATE configuration
             SET    configuration_value = configuration_value::int + 1
             WHERE  configuration_code = 'CDTABLEVER';
-
-
-
-
