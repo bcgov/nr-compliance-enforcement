@@ -90,9 +90,8 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                   <div className="comp-complaint-update-item-row first-row">
                     <div className="complaint-description-label">Details</div>
                     <div
-                      className={`update-description-text ${
-                        expandedActions[action.actionTakenGuid] ? "expanded" : ""
-                      } ${showLinks[action.actionTakenGuid] ? "needs-gradient" : ""}`}
+                      className={`update-description-text ${expandedActions[action.actionTakenGuid] ? "expanded" : ""
+                        } ${showLinks[action.actionTakenGuid] ? "needs-gradient" : ""}`}
                       ref={(el) => (descriptionRefs.current[action.actionTakenGuid] = el)}
                       style={{
                         maxHeight: expandedActions[action.actionTakenGuid] ? "none" : "6em",
@@ -150,9 +149,8 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                   <div className="complaint-description-section">
                     <div className="complaint-description-label">Complaint description</div>
                     <div
-                      className={`complaint-description-text ${
-                        expandedUpdates[update.complaintUpdateGuid] ? "expanded" : ""
-                      } ${showLinks[update.complaintUpdateGuid] ? "needs-gradient" : ""}`}
+                      className={`complaint-description-text ${expandedUpdates[update.complaintUpdateGuid] ? "expanded" : ""
+                        } ${showLinks[update.complaintUpdateGuid] ? "needs-gradient" : ""}`}
                       ref={(el) => (descriptionRefs.current[update.complaintUpdateGuid] = el)}
                       style={{
                         maxHeight: expandedUpdates[update.complaintUpdateGuid] ? "none" : "6em",
