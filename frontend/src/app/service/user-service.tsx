@@ -1,4 +1,5 @@
 import _kc from "../keycloak";
+import { AgencyType } from "../types/app/agency-types";
 
 export const AUTH_TOKEN = "__auth_token";
 
@@ -59,9 +60,9 @@ const hasRole = (roles: any) => {
 };
 
 export const getUserAgency = () => {
-  let agency = "COS";
+  let agency = AgencyType.COS;
   if (hasRole("CEEB")) {
-    agency = "EPO";
+    agency = AgencyType.CEEB;
   }
   return agency;
 };
