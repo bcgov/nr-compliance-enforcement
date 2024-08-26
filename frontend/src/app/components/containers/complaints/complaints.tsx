@@ -15,7 +15,7 @@ import { selectDefaultZone, setActiveTab } from "../../../store/reducers/app";
 import { ComplaintMap } from "./complaint-map";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
-import COMPLAINT_TYPES from "../../../types/app/complaint-types";
+import { COMPLAINT_TYPES, CEEB_TYPES } from "../../../types/app/complaint-types";
 import { selectCurrentOfficer } from "../../../store/reducers/officer";
 import UserService from "../../../service/user-service";
 import Roles from "../../../types/app/roles";
@@ -90,7 +90,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         <ComplaintListTabs
           complaintType={complaintType}
           viewType={viewType}
-          complaintTypes={Object.keys(COMPLAINT_TYPES)}
+          complaintTypes={Object.keys(getComplaintTypes())}
           onTabChange={handleComplaintTabChange}
         />
 
@@ -166,6 +166,10 @@ export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
     </>
   );
 };
+const getComplaintTypes = () =>
+  {
+  return UserService.hasRole(Roles.CEEB)? CEEB_TYPES: COMPLAINT_TYPES;
+  };
 
 const getFilters = (currentOfficer: any, defaultZone: any) => {
   let filters: any = {};
