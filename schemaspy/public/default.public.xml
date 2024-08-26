@@ -62,7 +62,7 @@
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="allegation_complaint_guid" nullable="false" remarks="System generated unique key for an allegation complaint. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="in_progress_ind" nullable="false" remarks="True if the alleged violation is currently described as being in progress.  False otherwise." size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="observed_ind" nullable="false" remarks="True if the alleged violation was observed first hand.  False otherwise." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="suspect_witnesss_dtl_text" nullable="true" remarks="" size="4000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="suspect_witnesss_dtl_text" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the allegation complaint." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the allegation complaint was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="The id of the user that updated the allegation complaint." size="32" type="varchar" typeCode="12"/>
@@ -3810,7 +3810,6 @@ END;]]></definition>
     jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
     jsonb_cos_alt_phone CONSTANT text := 'cos_alt_phone';
     jsonb_cos_alt_phone_2 CONSTANT text := 'cos_alt_phone_2';
-
     complaint_data jsonb;
     -- Variable to hold the JSONB data from staging_complaint.  Used to create a new complaint
     -- Variables for 'complaint' table
@@ -3852,7 +3851,7 @@ END;]]></definition>
     _observed_ind                      VARCHAR(3);
     _in_progress_ind_bool bool;
     _observed_ind_bool bool;
-    _suspect_witnesss_dtl_text VARCHAR(4000);
+    _suspect_witnesss_dtl_text TEXT;
     _violation_code            VARCHAR(10);
     _gir_type_code             VARCHAR(10);
     _gir_type_description      VARCHAR(50);
@@ -3874,13 +3873,10 @@ END;]]></definition>
     IF complaint_data IS NULL THEN
       RETURN;
     END IF;
-
     _report_type := complaint_data ->> 'report_type';
-    -- to link actions-taken to a complaint the dataid needs to be used
-    _webeoc_identifier := complaint_data ->> 'dataid'; 
 
-    -- Extract and prepare data for 'complaint' table
-    _detail_text := complaint_data ->> 'cos_call_details';
+   -- Extract and prepare data for 'complaint' table
+   _detail_text := complaint_data ->> 'cos_call_details';
     _caller_name := left( complaint_data ->> 'cos_caller_name', 100 )
     ||
     CASE
@@ -3928,8 +3924,8 @@ END;]]></definition>
     _location_detailed_text := complaint_data ->> 'cos_location_description';
     _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-	  _address_coordinates_lat := complaint_data ->> 'address_coordinates_lat';
-    _address_coordinates_long := complaint_data ->> 'address_coordinates_long';
+	_address_coordinates_lat := validate_coordinate_field(complaint_data ->> 'address_coordinates_lat');
+    _address_coordinates_long := validate_coordinate_field(complaint_data ->> 'address_coordinates_long');
    
     -- Create a geometry point based on the latitude and longitude
     IF _address_coordinates_lat IS NOT NULL AND _address_coordinates_lat <> '' AND
@@ -3950,6 +3946,7 @@ END;]]></definition>
     _webeoc_cos_area_community := complaint_data ->> 'cos_area_community';
     _webeoc_cos_reffered_by_lst := complaint_data ->> 'cos_reffered_by_lst';
     _cos_reffered_by_txt := left(complaint_data ->> '_cos_reffered_by_txt',120);
+    _webeoc_identifier := complaint_data ->> 'webeoc_identifier';
     SELECT *
     FROM   PUBLIC.insert_and_return_code( _webeoc_cos_reffered_by_lst, 'reprtdbycd' )
     INTO   _cos_reffered_by_lst;
