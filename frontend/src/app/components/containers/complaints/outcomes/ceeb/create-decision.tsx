@@ -1,6 +1,14 @@
 import { FC, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 import { Button, Card } from "react-bootstrap";
+import {
+  selectDischargeDropdown,
+  selectNonComplianceDropdown,
+  selectRationalDropdown,
+  selectScheduleDropdown,
+  selectSectorDropdown,
+} from "../../../../../store/reducers/code-table-selectors";
+import { CompSelect } from "../../../../common/comp-select";
 
 export const CeebDecision: FC = () => {
   const dispatch = useAppDispatch();
@@ -9,7 +17,21 @@ export const CeebDecision: FC = () => {
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
+  //-- drop-downs
+  const discharges = useAppSelector(selectDischargeDropdown);
+  const nonCompliance = useAppSelector(selectNonComplianceDropdown);
+  const rational = useAppSelector(selectRationalDropdown);
+  const sectors = useAppSelector(selectSectorDropdown);
+  const schedules = useAppSelector(selectScheduleDropdown);
+
   const [editable, setEditable] = useState<boolean>(true);
+
+  //-- error messages
+  const [scheduleErrorMessage, setScheduleErrorMessage] = useState("");
+  const [sectorErrorMessage, setSectorErrorMessage] = useState("");
+  const [dischargeErrorMessage, setDischargeErrorMessage] = useState("");
+  const [rationalErrorMessage, setRationalErrorMessage] = useState("");
+  const [nonComplianceErrorMessage, setNonComplianceErrorMessage] = useState("");
 
   return (
     <section
@@ -43,7 +65,19 @@ export const CeebDecision: FC = () => {
               id="decision-schedule-sector-type"
             >
               <label htmlFor="action-required">WDR schedule/IPM sector type</label>
-              <div className="comp-details-input full-width">input feild</div>
+              <div className="comp-details-input full-width">
+                <CompSelect
+                  id="outcome-officer"
+                  className="comp-details-input"
+                  classNamePrefix="comp-select"
+                  options={schedules}
+                  enableValidation={true}
+                  errorMessage={scheduleErrorMessage}
+                  // value={selectedOfficer}
+                  placeholder="Select "
+                  // onChange={(officer: any) => setSelectedOfficer(officer)}
+                />
+              </div>
             </div>
             <div
               className="comp-details-form-row"
