@@ -48,6 +48,11 @@ export const AvailableCodeTables = [
   "wildlife-outcomes",
   "equipment",
   "gir-type",
+  "discharge",
+  "rational",
+  "non-compliance",
+  "sector",
+  "schedule",
 ];
 
 export const AvailableAgencies = ["cos"];
