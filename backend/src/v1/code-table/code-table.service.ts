@@ -549,7 +549,7 @@ export class CodeTableService {
         const { data } = await get(token, {
           query: "{scheduleCodes{scheduleCode shortDescription longDescription displayOrder activeIndicator}}",
         });
-        const results = data.sheduleCodes.map(
+        const results = data.scheduleCodes.map(
           ({ scheduleCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
             const table: Schedule = {
               schedule: scheduleCode,
@@ -583,7 +583,7 @@ export class CodeTableService {
       }
       case "discharge": {
         const { data } = await get(token, {
-          query: "{dischargeCodes{discardCode shortDescription longDescription displayOrder activeIndicator}}",
+          query: "{ dischargeCodes { dischargeCode shortDescription longDescription displayOrder activeIndicator} }",
         });
         const results = data.dischargeCodes.map(
           ({ dischargeCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
