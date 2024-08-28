@@ -36,7 +36,7 @@ export class AllegationComplaint {
     example: "Witnessed individual dumping garbage on crown land",
     description: "The details the witness has reported about this allegation",
   })
-  @Column({ length: 4000, nullable: true })
+  @Column({ nullable: true })
   suspect_witnesss_dtl_text: string;
 
   @ApiProperty({

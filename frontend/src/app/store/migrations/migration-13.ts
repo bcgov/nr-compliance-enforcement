@@ -1,11 +1,10 @@
-//Add team code in code table
-export const AddTeamCode = {
+export const AddActiveTab = {
   13: (state: any) => {
     return {
       ...state,
-      codeTables: {
-        ...state.codeTables,
-        team: [],
+      app: {
+        ...state.app,
+        activeTab: "",
       },
     };
   },
