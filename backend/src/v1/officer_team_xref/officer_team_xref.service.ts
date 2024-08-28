@@ -44,9 +44,9 @@ export class OfficerTeamXrefService {
     });
   }
 
-  async findByOfficerAndTeam(officerGuid: any, teamGuid: any): Promise<OfficerTeamXref> {
+  async findByOfficer(officerGuid: any): Promise<OfficerTeamXref> {
     return this.officerTeamXrefRepository.findOne({
-      where: { officer_guid: officerGuid, team_guid: teamGuid },
+      where: { officer_guid: officerGuid },
     });
   }
 

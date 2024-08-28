@@ -54,13 +54,13 @@ export class OfficerController {
   }
 
   @Get("/find-by-person-guid/:person_guid")
-  @Roles(Role.COS_OFFICER, Role.CEEB)
+  @Roles(Role.COS_OFFICER, Role.CEEB, Role.TEMPORARY_TEST_ADMIN)
   findByPersonId(@Param("person_guid") person_guid: string) {
     return this.officerService.findByPersonGuid(person_guid);
   }
 
   @Patch(":id")
-  @Roles(Role.COS_OFFICER, Role.CEEB)
+  @Roles(Role.COS_OFFICER, Role.CEEB, Role.TEMPORARY_TEST_ADMIN)
   update(@Param("id") id: UUID, @Body() updateOfficerDto: UpdateOfficerDto) {
     return this.officerService.update(id, updateOfficerDto);
   }

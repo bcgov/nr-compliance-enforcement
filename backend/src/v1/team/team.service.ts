@@ -1,16 +1,10 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Team } from "./entities/team.entity";
-import { DataSource, QueryRunner, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { REQUEST } from "@nestjs/core";
-import { UUID } from "crypto";
-import { TeamCode } from "../team_code/entities/team_code.entity";
-import { TeamType } from "src/types/models/code-tables/team-type";
 import { CssService } from "src/external_api/css/css.service";
-import { Officer } from "../officer/entities/officer.entity";
 import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
-import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
-import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
+import { Role } from "src/enum/role.enum";
 
 @Injectable()
 export class TeamService {
@@ -22,8 +16,6 @@ export class TeamService {
   private officerTeamXrefRepository: Repository<OfficerTeamXref>;
   @Inject(CssService)
   private readonly cssService: CssService;
-  @Inject(OfficerTeamXrefService)
-  private readonly officerTeamXrefService: OfficerTeamXrefService;
 
   async findAll(): Promise<Team[]> {
     return this.teamRepository.find({
@@ -51,44 +43,104 @@ export class TeamService {
   async findByTeamCodeAndAgencyCode(teamCode: any, agencyCode) {
     return this.teamRepository.findOneOrFail({
       where: { team_code: teamCode, agency_code: agencyCode },
+      relations: {
+        team_code: true,
+        agency_code: true,
+      },
     });
   }
 
   async findUserIdir(firstName, lastName) {
-    const userIdir = this.cssService.getUserIdirByName(firstName, lastName);
+    const userIdir = await this.cssService.getUserIdirByName(firstName, lastName);
     return userIdir;
   }
 
-  async update(officerGuid, updateTeamData) {
-    let result;
-    //Update Team
-    const { teamCode, agencyCode, role, userIdir } = updateTeamData;
-    const teamGuid = await this.findByTeamCodeAndAgencyCode(teamCode, agencyCode);
-    // const updateData = {
-    //   officer_guid: officerGuid,
-    //   team_guid: teamGuid.team_guid as QueryDeepPartialEntity<Team>,
-    //   active_ind: true,
-    //   create_user_id: "postgres",
-    // };
-    // const upsertData = await this.officerTeamXrefRepository.upsert(updateData, ["officer_guid", "team_guid"]);
-    // console.log(upsertData);
+  async findUserCurrentRoles(userIdir) {
+    const currentRoles = await this.cssService.getUserRoles(userIdir);
+    return currentRoles;
+  }
 
-    const officerTeamXref = await this.officerTeamXrefService.findByOfficerAndTeam(officerGuid, teamGuid.team_guid);
-    if (!officerTeamXref) {
-      const newEntity = {
-        officer_guid: officerGuid,
-        team_guid: teamGuid,
-        active_ind: true,
-        create_user_id: "postgres",
-        update_user_id: "postgres",
+  async findUserCurrentTeam(officerGuid) {
+    const officerTeamXref = await this.officerTeamXrefRepository.findOne({
+      where: { officer_guid: officerGuid },
+      relations: { team_guid: { team_code: true } },
+    });
+    if (officerTeamXref) {
+      return {
+        value: officerTeamXref.team_guid.team_code.team_code,
+        label: officerTeamXref.team_guid.team_code.short_description,
       };
-      const newRecord = await this.officerTeamXrefRepository.create(newEntity);
-      await this.officerTeamXrefRepository.save(newRecord);
+    } else {
+      return null;
+    }
+  }
+
+  async update(officerGuid, updateTeamData) {
+    let result = {
+      team: false,
+      roles: false,
+    };
+    const { teamCode, agencyCode, userIdir, roles: updateRoles } = updateTeamData;
+    try {
+      //Update team
+      //Assume one officer belong to one team for now
+      //If user's team is null -> remove any current team user is in
+      const officerTeamXref = await this.officerTeamXrefRepository.findOne({ where: { officer_guid: officerGuid } });
+      if (!teamCode) {
+        if (officerTeamXref) {
+          const deleteResult = await this.officerTeamXrefRepository.delete(officerTeamXref.officer_team_xref_guid);
+          if (deleteResult.affected > 0) {
+            result.team = true;
+          } else result.team = false;
+        }
+      } else {
+        const teamGuid = await this.findByTeamCodeAndAgencyCode(teamCode, agencyCode);
+        if (officerTeamXref) {
+          const updateEnity = {
+            team_guid: teamGuid,
+            active_ind: true,
+            update_user_id: "postgres",
+          };
+          const updateResult = await this.officerTeamXrefRepository.update({ officer_guid: officerGuid }, updateEnity);
+          if (updateResult.affected > 0) {
+            result.team = true;
+          } else result.team = false;
+        } else {
+          //Create new one
+          const newEntity = {
+            officer_guid: officerGuid,
+            team_guid: teamGuid,
+            active_ind: true,
+            create_user_id: "postgres",
+            update_user_id: "postgres",
+          };
+          const newRecord = await this.officerTeamXrefRepository.create(newEntity);
+          const saveResult = await this.officerTeamXrefRepository.save(newRecord);
+          if (saveResult.officer_guid) {
+            result.team = true;
+          } else result.team = false;
+        }
+      }
+
+      //Update Role
+      const currentRoles: any = await this.cssService.getUserRoles(userIdir);
+      for await (const roleItem of currentRoles) {
+        const rolesMatchWithUpdate = updateRoles.some((updateRole) => updateRole.name === roleItem.name);
+        if (roleItem.name !== Role.TEMPORARY_TEST_ADMIN && !rolesMatchWithUpdate) {
+          await this.cssService.deleteUserRole(userIdir, roleItem.name);
+        }
+      }
+      const updated = await this.cssService.updateUserRole(userIdir, updateRoles);
+      //@ts-ignore
+      if (updated.length > 1) {
+        result.roles = true;
+      } else result.roles = false;
+    } catch (error) {
+      this.logger.error(`exception: unable to update user's team and role ${userIdir} - error: ${error}`);
+      throw new Error(`exception: unable to get user's team and role ${userIdir} - error: ${error}`);
     }
 
-    //Update Role
-    const updateRole = await this.cssService.updateUserRole(userIdir, role);
-    console.log(updateRole);
+    return result;
   }
 
   remove(id: number) {

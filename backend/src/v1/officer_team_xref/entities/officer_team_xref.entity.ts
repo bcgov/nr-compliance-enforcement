@@ -1,19 +1,24 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { Officer } from "../../officer/entities/officer.entity";
 import { Team } from "../../team/entities/team.entity";
 
-@Entity()
-@Unique(["officer_guid", "team_guid"])
+@Index("PK_officer_team_xref_guid", ["officer_team_xref_guid"], {
+  unique: true,
+})
+@Entity("officer_team_xref", { schema: "public" })
 export class OfficerTeamXref {
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
     description:
       "System generated unique key for an officer team relationship. This key should never be exposed to users via any system utilizing the tables.",
   })
-  @PrimaryGeneratedColumn()
-  public officer_team_xref_guid: UUID;
+  @Column("uuid", {
+    primary: true,
+    name: "officer_team_xref_guid",
+  })
+  officer_team_xref_guid: UUID;
 
   @ApiProperty({
     example: "IDIRmburns",

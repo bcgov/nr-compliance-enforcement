@@ -18,8 +18,38 @@ export class TeamController {
   @Get("find-user")
   @Roles(Role.TEMPORARY_TEST_ADMIN)
   findUserIdir(@Query("firstName") firstName: string, @Query("lastName") lastName: string) {
-    console.log(firstName, lastName);
     return this.teamService.findUserIdir(firstName, lastName);
+  }
+
+  @Get("current")
+  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  async findCurrentTeamAndRole(@Query("userIdir") userIdir: string, @Query("officerGuid") officerGuid: UUID) {
+    let result = {
+      agency: null,
+      team: null,
+      roles: null,
+    };
+    const currentRoles = await this.teamService.findUserCurrentRoles(userIdir);
+    result.roles = currentRoles;
+    //@ts-ignore
+    const hasCEEBRole = currentRoles.findIndex(
+      (role) =>
+        role.name === Role.CEEB ||
+        role.name === Role.CEEB_COMPLIANCE_COORDINATOR ||
+        role.name === Role.CEEB_SECTION_HEAD,
+    );
+    if (hasCEEBRole > -1) {
+      result.agency = "EPO";
+      result.team = await this.teamService.findUserCurrentTeam(officerGuid);
+    }
+    //@ts-ignore
+    const hasCOSRole = currentRoles.findIndex(
+      (role: any) => role.name === Role.COS_ADMINISTRATOR || role.name === Role.COS_OFFICER,
+    );
+    if (hasCOSRole > -1) {
+      result.agency = "COS";
+    }
+    return result;
   }
 
   @Patch("update/:officer_guid")

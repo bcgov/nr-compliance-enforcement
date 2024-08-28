@@ -1,18 +1,21 @@
 import { FC, useEffect, useState } from "react";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { assignOfficerToOffice, selectOfficersDropdown } from "../../../store/reducers/officer";
 import { CompSelect } from "../../common/comp-select";
 import Option from "../../../types/app/option";
 import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown } from "../../../store/reducers/office";
 import { ToastContainer } from "react-toastify";
-import { ToggleSuccess } from "../../../common/toast";
+import { ToggleError, ToggleSuccess } from "../../../common/toast";
 import { clearNotification, selectNotification } from "../../../store/reducers/app";
 import { selectAgencyDropdown, selectTeamDropdown } from "../../../store/reducers/code-table";
 import { CEEB_ROLE_OPTIONS } from "../../../constants/roles";
 import { generateApiParameters, get, patch } from "../../../common/api";
 import config from "../../../../config";
 import { Officer } from "../../../types/person/person";
+import { UUID } from "crypto";
+import Roles from "../../../types/app/roles";
+import { ValidationMultiSelect } from "../../../common/validation-multiselect";
 
 export const UserManagement: FC = () => {
   const dispatch = useAppDispatch();
@@ -26,9 +29,9 @@ export const UserManagement: FC = () => {
   const [officerError, setOfficerError] = useState<string>("");
   const [office, setOffice] = useState<Option>();
   const [officeError, setOfficeError] = useState<string>("");
-  const [selectedAgency, setSelectedAgency] = useState<Option>();
+  const [selectedAgency, setSelectedAgency] = useState<Option | null>();
   const [selectedTeam, setSelectedTeam] = useState<Option>();
-  const [selectedRole, setSelectedRole] = useState<Option>();
+  const [selectedRoles, setSelectedRoles] = useState<Array<Option>>();
   const [userIdirs, setUserIdirs] = useState([]);
   const [selectedUserIdir, setSelectedUserIdir] = useState<string>("");
   const [officerGuid, setOfficerGuid] = useState<string>("");
@@ -44,33 +47,80 @@ export const UserManagement: FC = () => {
     }
   }, [dispatch, notification]);
 
+  useEffect(() => {
+    (async () => {
+      if (officerGuid && selectedUserIdir && agency) {
+        const current = await getUserCurrentSetting(selectedUserIdir, officerGuid);
+        const currentUserAgency = mapAgencyDropDown(current.agency, agency);
+        setSelectedAgency(currentUserAgency);
+        if (current.agency === "EPO") setSelectedTeam(current.team);
+        if (current.roles) {
+          const currentUserRoles = mapRolesDropdown(current.roles);
+          setSelectedRoles(currentUserRoles);
+        }
+      }
+    })();
+  }, [officerGuid, selectedUserIdir]);
+
+  const mapRolesDropdown = (userRoles: any): Option[] => {
+    let result: Option[] = [];
+    CEEB_ROLE_OPTIONS.forEach((roleOption) => {
+      const found = userRoles.some((role: any) => role.name === roleOption.value);
+      if (found) result.push(roleOption);
+    });
+    return result;
+  };
+
+  const mapAgencyDropDown = (userAgency: any, agencyList: Option[]) => {
+    const result = agencyList.find((agencyItem: Option) => agencyItem.value === userAgency);
+    return result ?? null;
+  };
+
   const getUserIdir = async (person_guid: string, lastName: string, firstName: string) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-person-guid/${person_guid}`);
-    const response = await get<Officer>(dispatch, parameters);
-    if (response.auth_user_guid) {
-      setSelectedUserIdir(`${response.auth_user_guid.split("-").join("")}@idir`);
-      setOfficerGuid(response.officer_guid);
+    const officerRes = await get<Officer>(dispatch, parameters);
+    setOfficerGuid(officerRes.officer_guid);
+    if (officerRes.auth_user_guid) {
+      setSelectedUserIdir(`${officerRes.auth_user_guid.split("-").join("")}@idir`);
     } else {
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/find-user`, { firstName, lastName });
       const response: any = await get(dispatch, parameters);
       if (response.length === 0) setOfficerError("Cannot find user idir.");
-      else if (response.length === 1) setSelectedUserIdir(response[0].username);
-      else setUserIdirs(response);
+      else if (response.length === 1) {
+        setSelectedUserIdir(response[0].username);
+        await updateUserIdirByOfficerId(response[0].username.split("@")[0], officerRes.officer_guid);
+      } else setUserIdirs(response);
     }
   };
 
-  const updateCEEBTeam = async (
+  const getUserCurrentSetting = async (userIdir: any, officerGuid: any) => {
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/current`, { userIdir, officerGuid });
+    const response: any = await get(dispatch, parameters);
+    return response;
+  };
+
+  const updateUserIdirByOfficerId = async (userIdir: string, officerGuid: string) => {
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${officerGuid}`, {
+      auth_user_guid: userIdir as UUID,
+    });
+    const response = await patch<Officer>(dispatch, parameters);
+    if (!response.auth_user_guid) {
+      setOfficerError("Error updating officer idir.");
+    }
+  };
+
+  const updateTeamRole = async (
     userIdir: string,
     officerGuid: string,
     agencyCode: string,
     teamCode: string,
-    role: string,
+    roles: Array<Option>,
   ) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/update/${officerGuid}`, {
       userIdir,
       agencyCode,
       teamCode,
-      role,
+      roles,
     });
     const response: any = await patch(dispatch, parameters);
     return response;
@@ -102,15 +152,8 @@ export const UserManagement: FC = () => {
     }
   };
   const handleRoleChange = (input: any) => {
-    if (input.value) {
-      setSelectedRole(input);
-    }
+    setSelectedRoles(input);
   };
-
-  // console.log(selectedAgency);
-  // console.log(selectedTeam);
-  // console.log(officerGuid);
-  // console.log(selectedRole);
 
   const resetValidationErrors = () => {
     setOfficeError("");
@@ -131,32 +174,49 @@ export const UserManagement: FC = () => {
   const handleSubmit = async () => {
     if (validateUserAssignment()) {
       if (selectedAgency) {
+        const mapRoles = selectedRoles?.map((role) => {
+          return { name: role.value };
+        });
+        let res;
         switch (selectedAgency.value) {
           case "COS":
           default: {
             const officerId = officer?.value ? officer.value : "";
             const officeId = office?.value ? office.value : "";
             dispatch(assignOfficerToOffice(officerId, officeId));
-            ToggleSuccess("success");
+            res = await updateTeamRole(
+              selectedUserIdir,
+              officerGuid,
+              // @ts-ignore
+              selectedAgency?.value,
+              // @ts-ignore
+              null,
+              [{ name: Roles.COS_OFFICER }],
+            );
             break;
           }
           case "EPO": {
-            if (selectedUserIdir && selectedTeam && selectedRole) {
-              const res = await updateCEEBTeam(
+            if (selectedUserIdir && selectedTeam && selectedRoles) {
+              res = await updateTeamRole(
                 selectedUserIdir,
                 officerGuid,
                 selectedAgency?.value,
                 // @ts-ignore
                 selectedTeam?.value,
-                selectedRole?.value,
+                mapRoles,
               );
-              console.log(res);
             }
             break;
           }
           case "PARKS": {
             break;
           }
+        }
+        if (!res) ToggleError("Unable to update");
+        if (!res.team) ToggleError("Unable update team");
+        if (!res.roles) ToggleError("Unable update roles");
+        if (res && res.team && res.roles) {
+          ToggleSuccess("Success");
         }
       }
     }
@@ -168,13 +228,14 @@ export const UserManagement: FC = () => {
 
   const resetSelect = () => {
     setSelectedAgency({ value: "", label: "" });
-    setSelectedRole({ value: "", label: "" });
     setSelectedTeam({ value: "", label: "" });
     setOfficeError("");
     setOfficerError("");
     setSelectedUserIdir("");
     setUserIdirs([]);
     setOfficerGuid("");
+    setOffice({ value: "", label: "" });
+    setSelectedRoles([]);
   };
 
   return (
@@ -219,8 +280,12 @@ export const UserManagement: FC = () => {
                           name="userIdirEmail"
                           /* @ts-ignore */
                           value={item.username}
-                          /* @ts-ignore */
-                          onChange={() => setSelectedUserIdir(item.username)}
+                          onChange={async () => {
+                            /* @ts-ignore */
+                            setSelectedUserIdir(item.username);
+                            /* @ts-ignore */
+                            await updateUserIdirByOfficerId(item.username.split("@")[0]);
+                          }}
                         />
                         <label
                           style={{ marginLeft: "10px", cursor: "pointer" }}
@@ -254,11 +319,12 @@ export const UserManagement: FC = () => {
           </div>
           <br />
           {selectedAgency?.value === "EPO" && (
+            // {(selectedAgency?.value === "EPO" || currentAgency?.value === "EPO") && (
             <>
               <div>
                 Select Team
                 <CompSelect
-                  id="agency-select-id"
+                  id="team-select-id"
                   classNamePrefix="comp-select"
                   onChange={(e) => handleTeamChange(e)}
                   classNames={{
@@ -268,24 +334,21 @@ export const UserManagement: FC = () => {
                   placeholder="Select"
                   enableValidation={true}
                   value={selectedTeam}
-                  // errorMessage={officeError}
+                  errorMessage={""}
                 />
               </div>
               <br />
               <div>
                 Select Role
-                <CompSelect
-                  id="agency-select-id"
-                  classNamePrefix="comp-select"
-                  onChange={(e) => handleRoleChange(e)}
-                  classNames={{
-                    menu: () => "top-layer-select",
-                  }}
+                <ValidationMultiSelect
+                  className="comp-details-input"
                   options={CEEB_ROLE_OPTIONS}
                   placeholder="Select"
-                  enableValidation={true}
-                  value={selectedRole}
-                  // errorMessage={officeError}
+                  id="roles-select-id"
+                  classNamePrefix="comp-select"
+                  onChange={handleRoleChange}
+                  errMsg={""}
+                  values={selectedRoles}
                 />
               </div>
             </>

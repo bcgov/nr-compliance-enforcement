@@ -1,14 +1,8 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ExternalApiService } from "../external-api-service";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { get, post } from "../../helpers/axios-api";
+import { get } from "../../helpers/axios-api";
 import { ConfigurationService } from "../../v1/configuration/configuration.service";
-import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
-import { CONFIGURATION_CODES } from "../../types/configuration-codes";
-import { constants } from "http2";
-import FormData = require("form-data");
-import fs = require("fs");
-import { join } from "path";
 
 @Injectable()
 export class CssService implements ExternalApiService {
@@ -32,51 +26,6 @@ export class CssService implements ExternalApiService {
     this.grantType = "client_credentials";
     this.env = process.env.ENVIRONMENT;
   }
-
-  private _isCachedTemplateValid = async (apiToken: string, uid: string): Promise<boolean> => {
-    let url = `${this.baseUri}/api/v2/template/${uid}`;
-    const headers: any = {
-      "Content-Type": "application/json",
-    };
-
-    try {
-      const response: AxiosResponse = await get(apiToken, url, headers);
-      const { status } = response;
-      if (status === constants.HTTP_STATUS_OK) {
-        return true;
-      }
-    } catch (error) {
-      this.logger.log(`Template not cached: ${error}`);
-      return false;
-    }
-  };
-
-  private _getTemplateId = async (code: string) => {
-    try {
-      const config = await this.configService.findByCode(code);
-
-      if (config) {
-        return config.configurationValue;
-      }
-    } catch (error) {
-      this.logger.error(`Unable to retrieve template ${code} hash`);
-      throw Error(`Unable to retrieve template ${code} hash`);
-    }
-  };
-
-  private _applyData = async (data: any, name: string) => {
-    return {
-      data: {
-        ...data,
-      },
-      options: {
-        cacheReport: false,
-        convertTo: "pdf",
-        overwrite: true,
-        reportName: name,
-      },
-    };
-  };
 
   authenticate = async (): Promise<string> => {
     const response: AxiosResponse = await axios.post(
@@ -106,12 +55,6 @@ export class CssService implements ExternalApiService {
         },
       };
       const response = await get(apiToken, url, config);
-      // if (response?.data.data.length === 1) {
-      //   const roleUrl = `${this.baseUri}/api/v1/integrations/4794/${this.env}/users/${response.data.data[0].username}/roles`;
-      //   const roleRes = await get(apiToken, roleUrl, config);
-      //   console.log(roleRes.data);
-      //   return roleRes.data;
-      // }
       return response?.data.data;
     } catch (error) {
       this.logger.error(`exception: unable to get user: ${firstName} ${lastName} - error: ${error}`);
@@ -119,22 +62,57 @@ export class CssService implements ExternalApiService {
     }
   };
 
-  updateUserRole = async (userIdir, roleName): Promise<AxiosResponse> => {
+  getUserRoles = async (userIdir): Promise<AxiosResponse> => {
     try {
       const apiToken = await this.authenticate();
       const url = `${this.baseUri}/api/v1/integrations/4794/${this.env}/users/${userIdir}/roles`;
-      const updateData = [{ name: roleName }];
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiToken}`,
         },
       };
-      const response = await axios.post(url, updateData, config);
+      const response = await get(apiToken, url, config);
       return response?.data.data;
     } catch (error) {
-      this.logger.error(`exception: unable to update user ${userIdir}  with role ${roleName} - error: ${error}`);
-      throw new Error(`exception: unable to update user ${userIdir} with role ${roleName} - error: ${error}`);
+      this.logger.error(`exception: unable to get user's roles ${userIdir} - error: ${error}`);
+      throw new Error(`exception: unable to get user's roles ${userIdir} - error: ${error}`);
+    }
+  };
+
+  updateUserRole = async (userIdir, userRoles): Promise<AxiosResponse> => {
+    try {
+      const apiToken = await this.authenticate();
+      const url = `${this.baseUri}/api/v1/integrations/4794/${this.env}/users/${userIdir}/roles`;
+      const config: AxiosRequestConfig = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiToken}`,
+        },
+      };
+      const response = await axios.post(url, userRoles, config);
+      return response?.data.data;
+    } catch (error) {
+      this.logger.error(`exception: unable to update user's roles ${userIdir} - error: ${error}`);
+      throw new Error(`exception: unable to update user's roles ${userIdir} - error: ${error}`);
+    }
+  };
+
+  deleteUserRole = async (userIdir, roleName): Promise<AxiosResponse> => {
+    try {
+      const apiToken = await this.authenticate();
+      const url = `${this.baseUri}/api/v1/integrations/4794/${this.env}/users/${userIdir}/roles/${roleName}`;
+      const config: AxiosRequestConfig = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiToken}`,
+        },
+      };
+      const response = await axios.delete(url, config);
+      return response?.data.data;
+    } catch (error) {
+      this.logger.error(`exception: unable to delete user's role ${userIdir} - error: ${error}`);
+      throw new Error(`exception: unable to delete user's role ${userIdir} - error: ${error}`);
     }
   };
 }

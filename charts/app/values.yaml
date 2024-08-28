@@ -24,6 +24,11 @@ global:
     cdogsUri: ~
     cdogsClientId: ~
     cdogsClientSecret: ~
+    cssUrl: ~
+    cssTokenUrl: ~
+    cssClientId: ~
+    cssClientSecret: ~
+    environment: ~
     webeocUsername: ~
     webeocPassword: ~
     webeocPosition: ~
