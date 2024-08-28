@@ -13,6 +13,7 @@ import { FileReviewInput } from "../../types/models/case-files/file-review-input
 import { CreateWildlifeInput } from "../../types/models/case-files/wildlife/create-wildlife-input";
 import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/delete-wildlife-outcome";
 import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
+import { CreateDecisionInput } from "src/types/models/case-files/ceeb/decision/create-decision-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -151,5 +152,11 @@ export class CaseFileController {
     };
 
     return await this.service.deleteWildlife(token, input as DeleteWildlifeInput);
+  }
+
+  @Post("/decision")
+  @Roles(Role.COS_OFFICER)
+  async createDecision(@Token() token, @Body() model: CreateDecisionInput): Promise<CaseFileDto> {
+    return await this.service.createDecision(token, model);
   }
 }

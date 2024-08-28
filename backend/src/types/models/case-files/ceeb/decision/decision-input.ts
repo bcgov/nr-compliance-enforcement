@@ -1,4 +1,4 @@
-export interface DecisionState {
+export interface DecisionInput {
   schedule: string;
   sector: string;
   discharge: string;

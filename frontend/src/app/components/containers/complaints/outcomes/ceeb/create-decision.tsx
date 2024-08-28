@@ -11,14 +11,14 @@ import {
 } from "../../../../../store/reducers/code-table-selectors";
 import { CompSelect } from "../../../../common/comp-select";
 import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
-import { DecisionState } from "../../../../../types/app/case-files/ceeb/decision/decision-state";
+import { Decision } from "../../../../../types/app/case-files/ceeb/decision/decision";
 import { ComplaintParams } from "../../details/complaint-details-edit";
 import { useParams } from "react-router-dom";
 import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
 import Option from "../../../../../types/app/option";
 
-const defaultDecision: DecisionState = {
+const defaultDecision: Decision = {
   schedule: "",
   sector: "",
   discharge: "",
@@ -49,7 +49,7 @@ export const CeebDecision: FC = () => {
 
   //-- component data
   // eslint-disable-line no-console, max-len
-  const [data, applyData] = useState<DecisionState>(defaultDecision);
+  const [data, applyData] = useState<Decision>(defaultDecision);
 
   //-- error messages
   const [scheduleErrorMessage, setScheduleErrorMessage] = useState("");

@@ -43,6 +43,8 @@ import { DrugUsedInputV2 } from "../../types/app/case-files/animal-outcome/drug-
 import { AnimalOutcomeActionInput } from "../../types/app/case-files/animal-outcome/animal-outcome-action-input";
 import { DeleteAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/delete-animal-outcome-input";
 import { UpdateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/update-animal-outcome-input";
+import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
+import { CreateDecisionInput } from "../../types/app/case-files/ceeb/decision/create-decision-input";
 
 //-- general thunks
 export const findCase =
@@ -991,4 +993,57 @@ export const deleteAnimalOutcome =
       ToggleError("Error, unable to delete animal outcome");
       return "error";
     }
+  };
+
+export const upsertDecisionOutcome =
+  (id: string, decision: Decision): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const {
+      app: {
+        profile: { idir_username: idir },
+      },
+      cases: { decision: current },
+    } = getState();
+
+    const _create =
+      (id: string, decision: Decision): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      async (dispatch) => {
+        const input: CreateDecisionInput = {
+          leadIdentifier: id,
+          agencyCode: "COS",
+          caseCode: "HWCR",
+          // actor,
+          actor: "",
+          createUserId: idir,
+          decision,
+        };
+
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/decision`, input);
+        return await post<CaseFileDto>(dispatch, parameters);
+      };
+
+    // const _update =
+    //   (
+    //     id: UUID,
+    //     note: string,
+    //     actor: string,
+    //     userId: string,
+    //     actionId: string,
+    //   ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+    //   async (dispatch) => {
+    //     const caseId = await dispatch(findCase(id));
+
+    //     const input: UpdateSupplementalNotesInput = {
+    //       note,
+    //       caseIdentifier: caseId as UUID,
+    //       actor,
+    //       updateUserId: userId,
+    //       actionId,
+    //     };
+
+    //     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
+    //     return await patch<CaseFileDto>(dispatch, parameters);
+    //   };
+
+    return undefined;
   };

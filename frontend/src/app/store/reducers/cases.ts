@@ -31,7 +31,10 @@ const initialState: CasesState = {
     attachments: false,
     fileReview: false,
     showSectionErrors: false,
+    //-- ceeb
+    decision: false,
   },
+  decision: undefined,
 };
 
 export const casesSlice = createSlice({
