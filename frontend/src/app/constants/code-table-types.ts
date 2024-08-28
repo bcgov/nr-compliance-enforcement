@@ -27,7 +27,8 @@ export const CODE_TABLE_TYPES = {
   GIR_TYPE: "gir-type",
   DISCHARGE: "discharge",
   NON_COMPLIANCE: "non-compliance",
-  RATIONAL: "rational",
+  RATIONALE: "rationale",
   SECTOR: "sector",
   SCHEDULE: "schedule",
+  DECISION_TYPE: "decision-type",
 };

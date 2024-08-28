@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Code, Repository, SelectQueryBuilder } from "typeorm";
+import { Repository, SelectQueryBuilder } from "typeorm";
 
 import BaseCodeTable, {
   Agency,
@@ -50,8 +50,9 @@ import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 import { Schedule } from "src/types/models/code-tables/schedule";
 import { SectorCode } from "src/types/models/code-tables/sector-code";
 import { Discharge } from "src/types/models/code-tables/discharge";
-import { Rational } from "src/types/models/code-tables/rational";
 import { NonCompliance } from "src/types/models/code-tables/non-compliance";
+import { DecisionType } from "src/types/models/code-tables/decision-type";
+import { Rationale } from "src/types/models/code-tables/rationale";
 
 @Injectable()
 export class CodeTableService {
@@ -599,14 +600,14 @@ export class CodeTableService {
         );
         return results;
       }
-      case "rational": {
+      case "rationale": {
         const { data } = await get(token, {
-          query: "{rationalCodes{rationalCode shortDescription longDescription displayOrder activeIndicator}}",
+          query: "{rationaleCodes{rationaleCode shortDescription longDescription displayOrder activeIndicator}}",
         });
-        const results = data.rationalCodes.map(
-          ({ rationalCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
-            const table: Rational = {
-              rational: rationalCode,
+        const results = data.rationaleCodes.map(
+          ({ rationaleCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: Rationale = {
+              rationale: rationaleCode,
               shortDescription: shortDescription,
               longDescription: longDescription,
               displayOrder: displayOrder,
@@ -626,6 +627,25 @@ export class CodeTableService {
           ({ nonComplianceCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
             const table: NonCompliance = {
               nonCompliance: nonComplianceCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "decision-type": {
+        const { data } = await get(token, {
+          query:
+            "{CEEBDecisionActions{actionTypeCode actionCode displayOrder activeIndicator shortDescription longDescription}}",
+        });
+        const results = data.CEEBDecisionActions.map(
+          ({ actionCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: DecisionType = {
+              decisionType: actionCode,
               shortDescription: shortDescription,
               longDescription: longDescription,
               displayOrder: displayOrder,

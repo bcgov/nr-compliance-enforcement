@@ -5,9 +5,10 @@ export const RebuildCodeTable = {
       codeTables: {
         discharge: [],
         "non-compliance": [],
-        rational: [],
+        rationale: [],
         section: [],
         schedule: [],
+        "decision-type": [],
       },
     };
   },

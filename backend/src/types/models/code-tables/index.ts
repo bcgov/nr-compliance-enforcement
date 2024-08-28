@@ -49,10 +49,11 @@ export const AvailableCodeTables = [
   "equipment",
   "gir-type",
   "discharge",
-  "rational",
+  "rationale",
   "non-compliance",
   "sector",
   "schedule",
+  "decision-type",
 ];
 
 export const AvailableAgencies = ["cos"];

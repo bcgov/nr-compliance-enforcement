@@ -33,11 +33,14 @@ import { DrugRemainingOutcome } from "../../types/app/code-tables/drug-remaining
 import { Equipment } from "../../types/app/code-tables/equipment";
 import { PreventionType } from "../../types/app/code-tables/prevention-type";
 import { GirType } from "../../types/app/code-tables/gir-type";
-import { Discharge } from "../../types/app/code-tables/discharge";
-import { NonCompliance } from "../../types/app/code-tables/non-compliance";
-import { Sector } from "../../types/app/code-tables/sector";
-import { Rational } from "../../types/app/code-tables/rational";
-import { Schedule } from "../../types/app/code-tables/schedule";
+import {
+  fetchDischargeTypes,
+  fetchNonComplianceTypes,
+  fetchRationaleTypes,
+  fetchSectorTypes,
+  fetchScheduleTypes,
+  fetchCEEBDecisionTypes,
+} from "./code-table-thunks";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -68,9 +71,10 @@ const initialState: CodeTableState = {
   "gir-type": [],
   discharge: [],
   "non-compliance": [],
-  rational: [],
+  rationale: [],
   sector: [],
   schedule: [],
+  "decision-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -125,9 +129,10 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "gir-type": girType,
       discharge,
       "non-compliance": nonCompliance,
-      rational,
+      rationale,
       sector,
       schedule,
+      "decision-type": decisionType,
     },
   } = state;
 
@@ -227,14 +232,17 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(nonCompliance).any()) {
       dispatch(fetchNonComplianceTypes());
     }
-    if (!from(rational).any()) {
-      dispatch(fetchRationalTypes());
+    if (!from(rationale).any()) {
+      dispatch(fetchRationaleTypes());
     }
     if (!from(sector).any()) {
       dispatch(fetchSectorTypes());
     }
     if (!from(schedule).any()) {
       dispatch(fetchScheduleTypes());
+    }
+    if (!from(decisionType).any()) {
+      dispatch(fetchCEEBDecisionTypes());
     }
   } catch (error) {}
 };
@@ -275,9 +283,10 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchEquipment());
     dispatch(fetchDischargeTypes());
     dispatch(fetchNonComplianceTypes());
-    dispatch(fetchRationalTypes());
+    dispatch(fetchRationaleTypes());
     dispatch(fetchSectorTypes());
     dispatch(fetchScheduleTypes());
+    dispatch(fetchCEEBDecisionTypes());
   } catch (error) {
     console.error(error);
   }
@@ -571,56 +580,6 @@ export const fetchEquipment = (): AppThunk => async (dispatch) => {
   const response = await get<Array<Equipment>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.EQUIPMENT, data: response };
-    dispatch(setCodeTable(payload));
-  }
-};
-
-export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
-
-  const response = await get<Array<Discharge>>(dispatch, parameters);
-  if (response && from(response).any()) {
-    const payload = { key: CODE_TABLE_TYPES.DISCHARGE, data: response };
-    dispatch(setCodeTable(payload));
-  }
-};
-
-export const fetchNonComplianceTypes = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.NON_COMPLIANCE}`);
-
-  const response = await get<Array<NonCompliance>>(dispatch, parameters);
-  if (response && from(response).any()) {
-    const payload = { key: CODE_TABLE_TYPES.NON_COMPLIANCE, data: response };
-    dispatch(setCodeTable(payload));
-  }
-};
-
-export const fetchRationalTypes = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.RATIONAL}`);
-
-  const response = await get<Array<Rational>>(dispatch, parameters);
-  if (response && from(response).any()) {
-    const payload = { key: CODE_TABLE_TYPES.RATIONAL, data: response };
-    dispatch(setCodeTable(payload));
-  }
-};
-
-export const fetchSectorTypes = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.SECTOR}`);
-
-  const response = await get<Array<Sector>>(dispatch, parameters);
-  if (response && from(response).any()) {
-    const payload = { key: CODE_TABLE_TYPES.SECTOR, data: response };
-    dispatch(setCodeTable(payload));
-  }
-};
-
-export const fetchScheduleTypes = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.SCHEDULE}`);
-  console.log("derp");
-  const response = await get<Array<Schedule>>(dispatch, parameters);
-  if (response && from(response).any()) {
-    const payload = { key: CODE_TABLE_TYPES.SCHEDULE, data: response };
     dispatch(setCodeTable(payload));
   }
 };
