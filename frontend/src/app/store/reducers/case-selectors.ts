@@ -7,6 +7,7 @@ import { SupplementalNote } from "../../types/outcomes/supplemental-note";
 import { AnimalOutcomeSubject } from "../../types/state/cases-state";
 import { RootState } from "../store";
 import { CASE_ACTION_CODE } from "../../constants/case_actions";
+import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
 
 //-- Case file selectors
 export const selectCaseId = (state: RootState): string => {
@@ -148,3 +149,37 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
 
   return [];
 };
+
+export const selectCaseDecision = (state: RootState): Decision => {
+  const { cases } = state;
+
+  const defaultDecision: Decision = {
+    schedule: "",
+    sector: "",
+    discharge: "",
+    nonCompliance: "",
+    rationale: "",
+    assignedTo: "",
+    actionTaken: "",
+    actionTakenDate: new Date(),
+  };
+
+  return !cases.decision ? defaultDecision : cases.decision;
+};
+
+//--
+//-- select the state of an outcome property
+//--
+export const selectHasOutcomeData =
+  (property: string) =>
+  (state: RootState): boolean => {
+    const { cases } = state;
+
+    switch (property) {
+      case "decision": {
+        return !!cases.decision;
+      }
+    }
+
+    return false;
+  };
