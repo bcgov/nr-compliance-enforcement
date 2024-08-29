@@ -34,8 +34,6 @@ export const CeebDecision: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editable, hasDecision]);
 
-  //-- button handlers
-
   return (
     <section
       className="comp-details-section"
@@ -60,7 +58,16 @@ export const CeebDecision: FC = () => {
         id="ceeb-decision"
         border={showSectionErrors ? "danger" : "default"}
       >
-        <Card.Body>{!data.id ? <DecisionForm {...data} /> : <>item view</>}</Card.Body>
+        <Card.Body>
+          {!data.id ? (
+            <DecisionForm
+              {...data}
+              leadIdentifier={id}
+            />
+          ) : (
+            <>item view</>
+          )}
+        </Card.Body>
       </Card>
     </section>
   );

@@ -1005,15 +1005,13 @@ export const upsertDecisionOutcome =
       cases: { decision: current },
     } = getState();
 
-    const _create =
+    const _createDecision =
       (id: string, decision: Decision): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
       async (dispatch) => {
         const input: CreateDecisionInput = {
           leadIdentifier: id,
-          agencyCode: "COS",
-          caseCode: "HWCR",
-          // actor,
-          actor: "",
+          agencyCode: "EPO",
+          caseCode: "ERS",
           createUserId: idir,
           decision,
         };
@@ -1022,28 +1020,25 @@ export const upsertDecisionOutcome =
         return await post<CaseFileDto>(dispatch, parameters);
       };
 
-    // const _update =
-    //   (
-    //     id: UUID,
-    //     note: string,
-    //     actor: string,
-    //     userId: string,
-    //     actionId: string,
-    //   ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
-    //   async (dispatch) => {
-    //     const caseId = await dispatch(findCase(id));
+    //-- if there's no decsionId then create a new decsion
+    //-- otherwise update an exisitng decision
+    let result;
 
-    //     const input: UpdateSupplementalNotesInput = {
-    //       note,
-    //       caseIdentifier: caseId as UUID,
-    //       actor,
-    //       updateUserId: userId,
-    //       actionId,
-    //     };
+    if (!current?.id) {
+      result = await dispatch(_createDecision(id, decision));
 
-    //     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
-    //     return await patch<CaseFileDto>(dispatch, parameters);
-    //   };
+      if (result !== null) {
+        dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
 
-    return undefined;
+        ToggleSuccess("Supplemental note created");
+      } else {
+        ToggleError("Error, unable to create supplemental note");
+      }
+    }
+
+    if (result !== null) {
+      return "success";
+    } else {
+      return "error";
+    }
   };

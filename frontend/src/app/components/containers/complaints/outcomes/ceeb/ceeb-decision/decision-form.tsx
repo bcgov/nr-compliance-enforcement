@@ -18,8 +18,11 @@ import { CASE_ACTION_CODE } from "../../../../../../constants/case_actions";
 import { CompInput } from "../../../../../common/comp-input";
 import { openModal } from "../../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../../types/modal/modal-types";
+import { getCaseFile, upsertDecisionOutcome } from "../../../../../../store/reducers/case-thunks";
 
 type props = {
+  leadIdentifier: string;
+  //--
   id?: string;
   schedule: string;
   sector: string;
@@ -34,6 +37,8 @@ type props = {
 };
 
 export const DecisionForm: FC<props> = ({
+  leadIdentifier,
+  //--
   id,
   schedule,
   sector,
@@ -182,6 +187,16 @@ export const DecisionForm: FC<props> = ({
         },
       }),
     );
+  };
+
+  const handleSaveButtonClick = () => {
+    console.log("test");
+    dispatch(upsertDecisionOutcome(leadIdentifier, data)).then((result) => {
+      if (result === "success") {
+        dispatch(getCaseFile(leadIdentifier));
+        // setShowForm(false);
+      }
+    });
   };
 
   return (
@@ -416,7 +431,7 @@ export const DecisionForm: FC<props> = ({
           variant="primary"
           id="decision-save-button"
           title="Save Decision"
-          // onClick={() => saveButtonClick(data)}
+          onClick={() => handleSaveButtonClick()}
         >
           Save
         </Button>
