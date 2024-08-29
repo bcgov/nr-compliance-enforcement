@@ -102,6 +102,7 @@ export class WebEocScheduler {
     const config: AxiosRequestConfig = {
       headers: {
         Cookie: this.cookie,
+        "Content-Type": "application/json",
       },
     };
 
