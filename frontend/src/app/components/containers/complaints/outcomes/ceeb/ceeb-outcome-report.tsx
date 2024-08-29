@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { CEEBFileAttachments } from "./ceeb-file-attachments";
+import { HWCRFileAttachments } from "../hwcr-file-attachments";
 
 export const CeebOutcomeReport: FC = () => {
   return (
@@ -8,8 +8,8 @@ export const CeebOutcomeReport: FC = () => {
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
-      
-      <CEEBFileAttachments />
+
+      <HWCRFileAttachments clickToEnable={true} />
     </section>
   );
 };
