@@ -55,7 +55,7 @@ export class TeamService {
     return userIdir;
   }
 
-  async findUserCurrentRoles(userIdir) {
+  async findUserCurrentRoles(userIdir): Promise<{ name: string; composite: string }[]> {
     const currentRoles = await this.cssService.getUserRoles(userIdir);
     return currentRoles;
   }
@@ -131,8 +131,7 @@ export class TeamService {
         }
       }
       const updated = await this.cssService.updateUserRole(userIdir, updateRoles);
-      //@ts-ignore
-      if (updated.length > 1) {
+      if (updated.length > 0) {
         result.roles = true;
       } else result.roles = false;
     } catch (error) {

@@ -31,7 +31,6 @@ export class TeamController {
     };
     const currentRoles = await this.teamService.findUserCurrentRoles(userIdir);
     result.roles = currentRoles;
-    //@ts-ignore
     const hasCEEBRole = currentRoles.findIndex(
       (role) =>
         role.name === Role.CEEB ||
@@ -42,7 +41,7 @@ export class TeamController {
       result.agency = "EPO";
       result.team = await this.teamService.findUserCurrentTeam(officerGuid);
     }
-    //@ts-ignore
+
     const hasCOSRole = currentRoles.findIndex(
       (role: any) => role.name === Role.COS_ADMINISTRATOR || role.name === Role.COS_OFFICER,
     );

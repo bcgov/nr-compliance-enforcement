@@ -32,7 +32,7 @@ export const UserManagement: FC = () => {
   const [selectedAgency, setSelectedAgency] = useState<Option | null>();
   const [selectedTeam, setSelectedTeam] = useState<Option>();
   const [selectedRoles, setSelectedRoles] = useState<Array<Option>>();
-  const [userIdirs, setUserIdirs] = useState([]);
+  const [userIdirs, setUserIdirs] = useState<any[]>([]);
   const [selectedUserIdir, setSelectedUserIdir] = useState<string>("");
   const [officerGuid, setOfficerGuid] = useState<string>("");
 
@@ -112,9 +112,9 @@ export const UserManagement: FC = () => {
   const updateTeamRole = async (
     userIdir: string,
     officerGuid: string,
-    agencyCode: string,
-    teamCode: string,
-    roles: Array<Option>,
+    agencyCode: string | undefined,
+    teamCode: string | undefined | null,
+    roles: Array<{ name: string | undefined }> | undefined,
   ) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/update/${officerGuid}`, {
       userIdir,
@@ -172,52 +172,42 @@ export const UserManagement: FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (validateUserAssignment()) {
-      if (selectedAgency) {
-        const mapRoles = selectedRoles?.map((role) => {
-          return { name: role.value };
-        });
-        let res;
-        switch (selectedAgency.value) {
-          case "EPO": {
-            if (selectedUserIdir && selectedTeam && selectedRoles) {
-              res = await updateTeamRole(
-                selectedUserIdir,
-                officerGuid,
-                selectedAgency?.value,
-                // @ts-ignore
-                selectedTeam?.value,
-                mapRoles,
-              );
-            }
-            break;
-          }
-          case "PARKS": {
-            break;
-          }
-          case "COS":
-          default: {
-            const officerId = officer?.value ? officer.value : "";
-            const officeId = office?.value ? office.value : "";
-            dispatch(assignOfficerToOffice(officerId, officeId));
+    if (validateUserAssignment() && selectedAgency) {
+      const mapRoles = selectedRoles?.map((role) => {
+        return { name: role.value };
+      });
+      let res;
+      switch (selectedAgency.value) {
+        case "EPO": {
+          if (selectedUserIdir && selectedTeam && selectedRoles) {
             res = await updateTeamRole(
               selectedUserIdir,
               officerGuid,
-              // @ts-ignore
               selectedAgency?.value,
-              // @ts-ignore
-              null,
-              [{ name: Roles.COS_OFFICER }],
+              selectedTeam?.value,
+              mapRoles,
             );
-            break;
           }
+          break;
         }
-        if (!res) ToggleError("Unable to update");
-        if (!res.team) ToggleError("Unable update team");
-        if (!res.roles) ToggleError("Unable update roles");
-        if (res && res.team && res.roles) {
-          ToggleSuccess("Success");
+        case "PARKS": {
+          break;
         }
+        case "COS":
+        default: {
+          const officerId = officer?.value ? officer.value : "";
+          const officeId = office?.value ? office.value : "";
+          dispatch(assignOfficerToOffice(officerId, officeId));
+          res = await updateTeamRole(selectedUserIdir, officerGuid, selectedAgency?.value, null, [
+            { name: Roles.COS_OFFICER },
+          ]);
+          break;
+        }
+      }
+      if (res && res.team && res.roles) {
+        ToggleSuccess("Success");
+      } else {
+        ToggleError("Unable to update");
       }
     }
   };
@@ -271,32 +261,29 @@ export const UserManagement: FC = () => {
               <form>
                 <fieldset>
                   <p>{`Found ${userIdirs.length} users with same name. Please select the correct email: `}</p>
-                  {userIdirs.map((item, index) => {
-                    return (
-                      <div key={`userIdir-${index}`}>
-                        <input
-                          type="radio"
-                          id={`userIdir-${index}`}
-                          name="userIdirEmail"
-                          /* @ts-ignore */
-                          value={item.username}
-                          onChange={async () => {
-                            /* @ts-ignore */
-                            setSelectedUserIdir(item.username);
-                            /* @ts-ignore */
-                            await updateUserIdirByOfficerId(item.username.split("@")[0]);
-                          }}
-                        />
-                        <label
-                          style={{ marginLeft: "10px", cursor: "pointer" }}
-                          htmlFor={`userIdir-${index}`}
-                        >
-                          {/* @ts-ignore */}
-                          {item.email}
-                        </label>
-                      </div>
-                    );
-                  })}
+                  {userIdirs &&
+                    userIdirs.map((item, index) => {
+                      return (
+                        <div key={`userIdir-${item}`}>
+                          <input
+                            type="radio"
+                            id={`userIdir-${index}`}
+                            name="userIdirEmail"
+                            value={item.username}
+                            onChange={async () => {
+                              setSelectedUserIdir(item.username);
+                              await updateUserIdirByOfficerId(item.username.split("@")[0], officerGuid);
+                            }}
+                          />
+                          <label
+                            style={{ marginLeft: "10px", cursor: "pointer" }}
+                            htmlFor={`userIdir-${index}`}
+                          >
+                            {item.email}
+                          </label>
+                        </div>
+                      );
+                    })}
                 </fieldset>
               </form>
             </>
@@ -319,7 +306,6 @@ export const UserManagement: FC = () => {
           </div>
           <br />
           {selectedAgency?.value === "EPO" && (
-            // {(selectedAgency?.value === "EPO" || currentAgency?.value === "EPO") && (
             <>
               <div>
                 Select Team

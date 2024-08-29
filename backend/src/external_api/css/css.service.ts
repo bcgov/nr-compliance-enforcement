@@ -62,7 +62,7 @@ export class CssService implements ExternalApiService {
     }
   };
 
-  getUserRoles = async (userIdir): Promise<AxiosResponse> => {
+  getUserRoles = async (userIdir): Promise<{ name: string; composite: string }[]> => {
     try {
       const apiToken = await this.authenticate();
       const url = `${this.baseUri}/api/v1/integrations/4794/${this.env}/users/${userIdir}/roles`;
@@ -80,7 +80,7 @@ export class CssService implements ExternalApiService {
     }
   };
 
-  updateUserRole = async (userIdir, userRoles): Promise<AxiosResponse> => {
+  updateUserRole = async (userIdir, userRoles): Promise<{ name: string; composite: string }[]> => {
     try {
       const apiToken = await this.authenticate();
       const url = `${this.baseUri}/api/v1/integrations/4794/${this.env}/users/${userIdir}/roles`;
