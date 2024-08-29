@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { Office } from "../../office/entities/office.entity";
 import { Person } from "../../person/entities/person.entity";
-import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn, ManyToOne, AfterLoad } from "typeorm";
 
 @Entity()
 @Unique(["person_guid"])
@@ -71,6 +71,12 @@ export class Officer {
   })
   @Column()
   auth_user_guid: UUID;
+
+  user_roles: string[];
+  @AfterLoad()
+  updateUserRoles() {
+    this.user_roles = [];
+  }
 
   constructor() {}
 }
