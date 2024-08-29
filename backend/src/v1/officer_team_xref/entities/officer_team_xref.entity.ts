@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Officer } from "../../officer/entities/officer.entity";
 import { Team } from "../../team/entities/team.entity";
 

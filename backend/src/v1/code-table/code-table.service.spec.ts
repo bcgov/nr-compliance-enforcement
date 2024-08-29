@@ -22,6 +22,7 @@ import {
   MockRegionCodeTableServiceRepository,
   MockReportedByCodeTableRepository,
   MockGirTypeCodeRepository,
+  MockTeamCodeRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
@@ -33,6 +34,7 @@ import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.ent
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
+import { TeamCode } from "../team_code/entities/team_code.entity";
 
 describe("Testing: CodeTable Service", () => {
   let service: CodeTableService;
@@ -92,6 +94,10 @@ describe("Testing: CodeTable Service", () => {
         {
           provide: getRepositoryToken(GirTypeCode),
           useFactory: MockGirTypeCodeRepository,
+        },
+        {
+          provide: getRepositoryToken(TeamCode),
+          useFactory: MockTeamCodeRepository,
         },
       ],
     }).compile();
@@ -319,6 +325,10 @@ describe("Testing: CodeTable service", () => {
           provide: getRepositoryToken(GirTypeCode),
           useFactory: MockGirTypeCodeRepository,
         },
+        {
+          provide: getRepositoryToken(TeamCode),
+          useFactory: MockTeamCodeRepository,
+        },
       ],
     }).compile();
 
@@ -402,6 +412,10 @@ describe("Testing: CodeTable service", () => {
           provide: getRepositoryToken(GirTypeCode),
           useFactory: MockGirTypeCodeRepository,
         },
+        {
+          provide: getRepositoryToken(TeamCode),
+          useFactory: MockTeamCodeRepository,
+        },
       ],
     }).compile();
 
@@ -484,6 +498,10 @@ describe("Testing: CodeTable service", () => {
         {
           provide: getRepositoryToken(GirTypeCode),
           useFactory: MockGirTypeCodeRepository,
+        },
+        {
+          provide: getRepositoryToken(TeamCode),
+          useFactory: MockTeamCodeRepository,
         },
       ],
     }).compile();

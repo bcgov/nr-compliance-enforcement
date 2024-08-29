@@ -2,9 +2,9 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Team } from "./entities/team.entity";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { CssService } from "src/external_api/css/css.service";
+import { CssService } from "../../external_api/css/css.service";
 import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
-import { Role } from "src/enum/role.enum";
+import { Role } from "../../enum/role.enum";
 
 @Injectable()
 export class TeamService {

@@ -179,22 +179,6 @@ export const UserManagement: FC = () => {
         });
         let res;
         switch (selectedAgency.value) {
-          case "COS":
-          default: {
-            const officerId = officer?.value ? officer.value : "";
-            const officeId = office?.value ? office.value : "";
-            dispatch(assignOfficerToOffice(officerId, officeId));
-            res = await updateTeamRole(
-              selectedUserIdir,
-              officerGuid,
-              // @ts-ignore
-              selectedAgency?.value,
-              // @ts-ignore
-              null,
-              [{ name: Roles.COS_OFFICER }],
-            );
-            break;
-          }
           case "EPO": {
             if (selectedUserIdir && selectedTeam && selectedRoles) {
               res = await updateTeamRole(
@@ -209,6 +193,22 @@ export const UserManagement: FC = () => {
             break;
           }
           case "PARKS": {
+            break;
+          }
+          case "COS":
+          default: {
+            const officerId = officer?.value ? officer.value : "";
+            const officeId = office?.value ? office.value : "";
+            dispatch(assignOfficerToOffice(officerId, officeId));
+            res = await updateTeamRole(
+              selectedUserIdir,
+              officerGuid,
+              // @ts-ignore
+              selectedAgency?.value,
+              // @ts-ignore
+              null,
+              [{ name: Roles.COS_OFFICER }],
+            );
             break;
           }
         }
@@ -273,7 +273,7 @@ export const UserManagement: FC = () => {
                   <p>{`Found ${userIdirs.length} users with same name. Please select the correct email: `}</p>
                   {userIdirs.map((item, index) => {
                     return (
-                      <div>
+                      <div key={`userIdir-${index}`}>
                         <input
                           type="radio"
                           id={`userIdir-${index}`}

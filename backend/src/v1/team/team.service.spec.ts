@@ -4,7 +4,10 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { Team } from "./entities/team.entity";
 import { DataSource } from "typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
-import { TeamCode } from "../team_code/entities/team_code.entity";
+import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
+import { CssService } from "../../external_api/css/css.service";
+import { ConfigurationService } from "../configuration/configuration.service";
+import { Configuration } from "../configuration/entities/configuration.entity";
 
 describe("TeamService", () => {
   let service: TeamService;
@@ -18,12 +21,18 @@ describe("TeamService", () => {
           useValue: {},
         },
         {
-          provide: getRepositoryToken(TeamCode),
+          provide: getRepositoryToken(OfficerTeamXref),
           useValue: {},
         },
         {
           provide: DataSource,
           useFactory: dataSourceMockFactory,
+        },
+        CssService,
+        ConfigurationService,
+        {
+          provide: getRepositoryToken(Configuration),
+          useValue: {},
         },
       ],
     }).compile();

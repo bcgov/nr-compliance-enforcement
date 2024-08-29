@@ -5,7 +5,6 @@ import { OfficerTeamXref } from "./entities/officer_team_xref.entity";
 import { DataSource, QueryRunner, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { REQUEST } from "@nestjs/core";
-import { UUID } from "crypto";
 
 @Injectable()
 export class OfficerTeamXrefService {

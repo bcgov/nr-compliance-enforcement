@@ -22,6 +22,7 @@ import {
   MockComplaintTypeCodeTableRepository,
   MockReportedByCodeTableRepository,
   MockGirTypeCodeRepository as MockGirTypeCodeTableRepository,
+  MockTeamCodeRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import {
   MockComplaintsRepositoryV2,
@@ -61,6 +62,7 @@ import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
+import { TeamCode } from "../team_code/entities/team_code.entity";
 
 describe("DocumentService", () => {
   let service: DocumentService;
@@ -176,6 +178,10 @@ describe("DocumentService", () => {
         {
           provide: getRepositoryToken(ActionTaken),
           useValue: {},
+        },
+        {
+          provide: getRepositoryToken(TeamCode),
+          useFactory: MockTeamCodeRepository,
         },
         ComplaintUpdatesService,
         ComplaintService,

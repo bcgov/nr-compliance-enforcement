@@ -114,7 +114,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "drug-remaining-outcomes": remainingDrugUse,
       equipment,
       "gir-type": girType,
-      team: team,
+      team,
     },
   } = state;
 

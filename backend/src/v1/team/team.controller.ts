@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UseGuards, Post, Query } from "@nestjs/common";
+import { Controller, Get, Body, Patch, Param, UseGuards, Query } from "@nestjs/common";
 import { TeamService } from "./team.service";
 import { ApiTags } from "@nestjs/swagger";
 import { UUID } from "crypto";
