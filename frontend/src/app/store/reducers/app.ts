@@ -36,6 +36,7 @@ enum ActionTypes {
   SET_USER_AGENCY = "app/SET_USER_AGENCY",
   SET_CODE_TABLE_VERSION = "app/SET_CODE_TABLE_VERSION",
   SET_FEATURE_FLAG = "app/SET_FEATURE_FLAG",
+  SET_ACTIVE_TAB = "app/SET_ACTIVE_TAB",
 }
 //-- action creators
 
@@ -121,6 +122,11 @@ export const setOfficerDefaultZone = (name: string, description: string) => ({
 export const setOfficerAgency = (agency: string) => ({
   type: ActionTypes.SET_USER_AGENCY,
   payload: agency,
+});
+
+export const setActiveTab = (activeTab: string) => ({
+  type: ActionTypes.SET_ACTIVE_TAB,
+  payload: activeTab,
 });
 
 //-- selectors
@@ -249,6 +255,14 @@ export const selectOfficerAgency = (state: RootState): string => {
   } = state.app;
 
   return agency;
+};
+
+export const selectActiveTab = (state: RootState): string => {
+  const {
+    app: { activeTab },
+  } = state;
+
+  return activeTab;
 };
 
 export const isFeatureActive =
@@ -472,6 +486,7 @@ const initialState: AppState = {
     },
   },
   featureFlags: [],
+  activeTab: "HWCR",
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {
@@ -586,6 +601,10 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
     case ActionTypes.SET_FEATURE_FLAG: {
       const { payload } = action;
       return { ...state, featureFlags: payload };
+    }
+    case ActionTypes.SET_ACTIVE_TAB: {
+      const { payload } = action;
+      return { ...state, activeTab: payload };
     }
     default:
       return state;
