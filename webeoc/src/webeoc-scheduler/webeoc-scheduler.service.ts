@@ -105,6 +105,34 @@ export class WebEocScheduler {
       },
     };
 
+    // Reusable way for adding multiple violationType customFilter filters to the webeoc api request.
+    // the webeoc filter body doesn't follow correct json syntax.  For multiple filters we need to
+    // use the name customFilter multiple times, which isn't normally allowed in JSON.  This will allow
+    // us to circumvent that, and to reduce code duplication.
+    const createFilterBody = (fieldName, fieldValue) => {
+      const filter = {
+        customFilter: {
+          boolean: "and",
+          items: [
+            dateFilter, // Assuming dateFilter is defined elsewhere
+            {
+              fieldname: fieldName,
+              operator: "Equals",
+              fieldvalue: fieldValue, // Use the dynamic violation type provided
+            },
+          ],
+        },
+      };
+      // return the JSON, formatted as a string
+      return JSON.stringify(filter, null, 2);
+    };
+
+    // construct the body for the violation type filters
+    const body_for_violation_type_waste = createFilterBody("violation_type", "Waste");
+    const body_for_violation_type_pesticide = createFilterBody("violation_type", "Pesticide");
+    const body_for_violation_type_waste_update = createFilterBody("update_violation_type", "Waste");
+    const body_for_violation_type_pesticide_update = createFilterBody("update_violation_type", "Pesticide");
+
     const body_for_UPD = {
       customFilter: {
         boolean: "and",
@@ -116,23 +144,11 @@ export class WebEocScheduler {
             fieldvalue: "Yes",
           },
         ],
-        violationGroup: {
-          boolean: "or",
-          items: [
-            {
-              fieldname: "update_violation_type",
-              operator: "Equals",
-              fieldvalue: "Waste",
-            },
-            {
-              fieldname: "update_violation_type",
-              operator: "Equals",
-              fieldvalue: "Pesticide",
-            },
-          ],
-        },
       },
+      body_for_violation_type_waste_update,
+      body_for_violation_type_pesticide_update,
     };
+
     const body_for_COS = {
       customFilter: {
         boolean: "and",
@@ -144,25 +160,13 @@ export class WebEocScheduler {
             fieldvalue: "Yes",
           },
         ],
-        violationGroup: {
-          boolean: "or",
-          items: [
-            {
-              fieldname: "violation_type",
-              operator: "Equals",
-              fieldvalue: "Waste",
-            },
-            {
-              fieldname: "violation_type",
-              operator: "Equals",
-              fieldvalue: "Pesticide",
-            },
-          ],
-        },
       },
+      body_for_violation_type_waste,
+      body_for_violation_type_pesticide,
     };
 
     const bodyToUse = flagName === "flag_COS" ? body_for_COS : body_for_UPD;
+    this.logger.log(bodyToUse);
     try {
       const response = await axios.post(url, bodyToUse, config);
       return response.data as Complaint[];
