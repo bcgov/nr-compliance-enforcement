@@ -127,48 +127,23 @@ export class WebEocScheduler {
       return JSON.stringify(filter, null, 2);
     };
 
-    // construct the body for the violation type filters
-    const body_for_violation_type_waste = createFilterBody("violation_type", "Waste");
-    const body_for_violation_type_pesticide = createFilterBody("violation_type", "Pesticide");
-    const body_for_violation_type_waste_update = createFilterBody("update_violation_type", "Waste");
-    const body_for_violation_type_pesticide_update = createFilterBody("update_violation_type", "Pesticide");
+    const violationTypeFieldName = flagName === "flag_COS" ? "violation_type" : "update_violation_type";
 
-    const body_for_UPD = {
-      customFilter: {
-        boolean: "and",
-        items: [
-          dateFilter,
-          {
-            fieldname: flagName,
-            operator: "Equals",
-            fieldvalue: "Yes",
-          },
-        ],
-      },
-      body_for_violation_type_waste_update,
-      body_for_violation_type_pesticide_update,
-    };
+    // construct the filter bodies
+    const cosFilter = createFilterBody("flag_COS", "Yes");
+    const body_for_violation_type_waste = createFilterBody(violationTypeFieldName, "Waste");
+    const body_for_violation_type_pesticide = createFilterBody(violationTypeFieldName, "Pesticide");
 
-    const body_for_COS = {
-      customFilter: {
-        boolean: "and",
-        items: [
-          dateFilter,
-          {
-            fieldname: flagName,
-            operator: "Equals",
-            fieldvalue: "Yes",
-          },
-        ],
-      },
-      body_for_violation_type_waste,
-      body_for_violation_type_pesticide,
-    };
+    // construct the intentionally malformed json filter so that it works with WebEOC
+    const filterBody = `{
+      "customFilter": ${cosFilter},
+      "customFilter": ${body_for_violation_type_waste},
+      "customFilter": ${body_for_violation_type_pesticide}
+    }`;
 
-    const bodyToUse = flagName === "flag_COS" ? body_for_COS : body_for_UPD;
-    this.logger.log(bodyToUse);
+    this.logger.log(filterBody);
     try {
-      const response = await axios.post(url, bodyToUse, config);
+      const response = await axios.post(url, filterBody, config);
       return response.data as Complaint[];
     } catch (error) {
       this.logger.error(`Error fetching data from WebEOC at ${urlPath}:`, error);
