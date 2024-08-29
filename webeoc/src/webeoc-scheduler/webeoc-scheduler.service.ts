@@ -105,23 +105,21 @@ export class WebEocScheduler {
       },
     };
 
-    // Reusable way for adding multiple violationType customFilter filters to the webeoc api request.
+    // Reusable way for adding multiple customFilter filters to the webeoc api request.
     // the webeoc filter body doesn't follow correct json syntax.  For multiple filters we need to
     // use the name customFilter multiple times, which isn't normally allowed in JSON.  This will allow
     // us to circumvent that, and to reduce code duplication.
     const createFilterBody = (fieldName, fieldValue) => {
       const filter = {
-        customFilter: {
-          boolean: "and",
-          items: [
-            dateFilter, // Assuming dateFilter is defined elsewhere
-            {
-              fieldname: fieldName,
-              operator: "Equals",
-              fieldvalue: fieldValue, // Use the dynamic violation type provided
-            },
-          ],
-        },
+        boolean: "and",
+        items: [
+          dateFilter,
+          {
+            fieldname: fieldName,
+            operator: "Equals",
+            fieldvalue: fieldValue, // Use the dynamic type provided
+          },
+        ],
       };
       // return the JSON, formatted as a string
       return JSON.stringify(filter, null, 2);
