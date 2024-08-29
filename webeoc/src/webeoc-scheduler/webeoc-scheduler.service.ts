@@ -140,7 +140,6 @@ export class WebEocScheduler {
       "customFilter": ${body_for_violation_type_pesticide}
     }`;
 
-    this.logger.log(filterBody);
     try {
       const response = await axios.post(url, filterBody, config);
       return response.data as Complaint[];
