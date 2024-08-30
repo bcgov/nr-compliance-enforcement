@@ -106,39 +106,42 @@ export class WebEocScheduler {
       },
     };
 
-    // Reusable way for adding multiple customFilter filters to the webeoc api request.
-    // the webeoc filter body doesn't follow correct json syntax.  For multiple filters we need to
-    // use the name customFilter multiple times, which isn't normally allowed in JSON.  This will allow
-    // us to circumvent that, and to reduce code duplication.
-    const createFilterBody = (fieldName, fieldValue) => {
-      const filter = {
-        boolean: "and",
-        items: [
-          dateFilter,
-          {
-            fieldname: fieldName,
-            operator: "Equals",
-            fieldvalue: fieldValue, // Use the dynamic type provided
-          },
-        ],
+    // Create the OR filter part for multiple values
+    const createOrFilterBody = (filters) => {
+      return {
+        boolean: "or",
+        items: filters.map((filter) => ({
+          fieldname: filter.fieldName,
+          operator: "Equals",
+          fieldvalue: filter.fieldValue,
+        })),
       };
-      // return the JSON, formatted as a string
-      return JSON.stringify(filter, null, 2);
     };
 
+    // Specify which field to use for violation type based on the flag name
     const violationTypeFieldName = flagName === "flag_COS" ? "violation_type" : "update_violation_type";
 
-    // construct the filter bodies
-    const cosFilter = createFilterBody("flag_COS", "Yes");
-    const body_for_violation_type_waste = createFilterBody(violationTypeFieldName, "Waste");
-    const body_for_violation_type_pesticide = createFilterBody(violationTypeFieldName, "Pesticide");
+    // Construct the OR filter body with multiple conditions
+    const orFilterBody = createOrFilterBody([
+      { fieldName: violationTypeFieldName, fieldValue: "Waste" },
+      { fieldName: violationTypeFieldName, fieldValue: "Pesticide" },
+      { fieldName: "flag_COS", fieldValue: "Yes" },
+    ]);
 
-    // construct the intentionally malformed json filter so that it works with WebEOC
+    // Construct the overall filter body with nested filters
     const filterBody = `{
-      "customFilter": ${cosFilter},
-      "customFilter2": ${body_for_violation_type_waste},
-      "customFilter3": ${body_for_violation_type_pesticide}
-    }`;
+    "customFilter": {
+      "boolean": "and",
+      "items": [
+        {
+          "fieldname": "${dateFilter.fieldname}",
+          "operator": "${dateFilter.operator}",
+          "fieldvalue": "${dateFilter.fieldvalue}"
+        }
+      ],
+      "customFilter": ${JSON.stringify(orFilterBody, null, 2)}
+    }
+  }`;
 
     try {
       const response = await axios.post(url, filterBody, config);
