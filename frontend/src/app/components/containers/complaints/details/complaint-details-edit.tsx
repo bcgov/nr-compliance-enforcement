@@ -69,6 +69,8 @@ import { HWCROutcomeReport } from "../outcomes/hwcr-outcome-report";
 import AttachmentEnum from "../../../../constants/attachment-enum";
 import { WebEOCComplaintUpdateList } from "../webeoc-complaint-updates/webeoc-complaint-update-list";
 import { getUserAgency } from "../../../../service/user-service";
+import { AgencyType } from "../../../../types/app/agency-types";
+import { CeebOutcomeReport } from "../outcomes/ceeb/ceeb-outcome-report";
 
 export type ComplaintParams = {
   id: string;
@@ -1303,6 +1305,9 @@ export const ComplaintDetailsEdit: FC = () => {
 
       {/* HWCR Outcome Report */}
       {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
+
+      {/* CEEB ERS Outcome Report */}
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && agency === AgencyType.CEEB && <CeebOutcomeReport />}
     </div>
   );
 };

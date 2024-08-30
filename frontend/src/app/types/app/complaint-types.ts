@@ -1,7 +1,12 @@
+import Roles from "./roles";
+
 export const COMPLAINT_TYPES = {
   HWCR: "HWCR",
   ERS: "ERS",
   GIR: "GIR",
+};
+export const CEEB_TYPES = {
+  ERS: "ERS"
 };
 
 export const complaintTypeToName = (complaintType: string | undefined | null, singular?: boolean) => {
@@ -17,4 +22,18 @@ export const complaintTypeToName = (complaintType: string | undefined | null, si
   }
 };
 
+export const complaintTypeForRole = (roleType: string) => {
+  switch (roleType) {
+    case Roles.CEEB:
+    case Roles.CEEB_COMPLIANCE_COORDINATOR:
+    case Roles.CEEB_SECTION_HEAD:
+          return CEEB_TYPES;
+    case Roles.COS_ADMINISTRATOR:
+    case Roles.SYSTEM_ADMINISTRATOR:
+    case Roles.COS_OFFICER:    
+    case Roles.TEMPORARY_TEST_ADMIN:
+    default:
+      return COMPLAINT_TYPES;
+  }
+};
 export default COMPLAINT_TYPES;
