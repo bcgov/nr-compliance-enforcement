@@ -20,6 +20,8 @@ import { openModal } from "../../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../../types/modal/modal-types";
 import { getCaseFile, upsertDecisionOutcome } from "../../../../../../store/reducers/case-thunks";
 import { selectOfficersDropdown } from "../../../../../../store/reducers/officer";
+import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
+import { UUID } from "crypto";
 
 type props = {
   leadIdentifier: string;
@@ -55,6 +57,9 @@ export const DecisionForm: FC<props> = ({
   actionTakenDate,
 }) => {
   const dispatch = useAppDispatch();
+
+  //-- select data from redux
+  const caseId = useAppSelector(selectCaseId) as UUID;
 
   //-- drop-downs
   const dischargesOptions = useAppSelector(selectDischargeDropdown);
@@ -199,11 +204,15 @@ export const DecisionForm: FC<props> = ({
   };
 
   const handleSaveButtonClick = () => {
-    console.log("test");
-    dispatch(upsertDecisionOutcome(leadIdentifier, data)).then((result) => {
+    const identifier = id !== undefined ? caseId : leadIdentifier;
+
+    dispatch(upsertDecisionOutcome(identifier, data)).then((result) => {
       if (result === "success") {
         dispatch(getCaseFile(leadIdentifier));
-        // setShowForm(false);
+
+        if (id !== undefined) {
+          toggleEdit(false);
+        }
       }
     });
   };

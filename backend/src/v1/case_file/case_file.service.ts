@@ -15,6 +15,7 @@ import { CreateWildlifeInput } from "../../types/models/case-files/wildlife/crea
 import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/delete-wildlife-outcome";
 import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
 import { CreateDecisionInput } from "src/types/models/case-files/ceeb/decision/create-decision-input";
+import { UpdateDecisionInput } from "src/types/models/case-files/ceeb/decision/update-decison-input";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -417,6 +418,20 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation createDecision($input: CreateDecisionInput!) {
         createDecision(input: $input) {
+          caseIdentifier
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.createDecison;
+  };
+
+  updateDecision = async (token: any, model: UpdateDecisionInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation updateDecision($input: UpdateDecisionInput!) {
+        updateDecision(input: $input) {
           caseIdentifier
         }
       }`,

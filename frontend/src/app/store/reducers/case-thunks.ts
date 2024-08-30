@@ -45,6 +45,7 @@ import { DeleteAnimalOutcomeInput } from "../../types/app/case-files/animal-outc
 import { UpdateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/update-animal-outcome-input";
 import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
 import { CreateDecisionInput } from "../../types/app/case-files/ceeb/decision/create-decision-input";
+import { UpdateDecisionInput } from "../../types/app/case-files/ceeb/decision/update-decsion-input";
 
 //-- general thunks
 export const findCase =
@@ -60,6 +61,7 @@ export const getCaseFile =
   async (dispatch) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     const response = await get<CaseFileDto>(dispatch, parameters);
+
     dispatch(setCaseFile(response));
   };
 
@@ -1002,7 +1004,6 @@ export const upsertDecisionOutcome =
       app: {
         profile: { idir_username: idir },
       },
-
       cases: { decision: current },
     } = getState();
 
@@ -1024,12 +1025,41 @@ export const upsertDecisionOutcome =
         return await post<CaseFileDto>(dispatch, parameters);
       };
 
+    const _updateDecison =
+      (id: string, decision: Decision): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      async (dispatch) => {
+        const { assignedTo } = decision;
+
+        const input: UpdateDecisionInput = {
+          caseIdentifier: id,
+          agencyCode: "EPO",
+          caseCode: "ERS",
+          actor: assignedTo,
+          updateUserId: idir,
+          decision,
+        };
+
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/decision`, input);
+        return await patch<CaseFileDto>(dispatch, parameters);
+      };
+
     //-- if there's no decsionId then create a new decsion
     //-- otherwise update an exisitng decision
     let result;
 
     if (!current?.id) {
       result = await dispatch(_createDecision(id, decision));
+
+      if (result !== null) {
+        dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
+
+        ToggleSuccess("Supplemental note created");
+      } else {
+        ToggleError("Error, unable to create supplemental note");
+      }
+    } else {
+      const update = { ...decision, id: current.id };
+      result = await dispatch(_updateDecison(id, update));
 
       if (result !== null) {
         dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.

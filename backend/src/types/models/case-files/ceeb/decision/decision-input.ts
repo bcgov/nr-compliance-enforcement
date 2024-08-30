@@ -1,4 +1,5 @@
 export interface DecisionInput {
+  id?: string;
   schedule: string;
   sector: string;
   discharge: string;

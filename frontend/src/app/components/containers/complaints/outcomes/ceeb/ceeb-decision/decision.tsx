@@ -18,9 +18,6 @@ export const CeebDecision: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
 
-  //-- select data from redux
-  const caseId = useAppSelector(selectCaseId) as UUID;
-
   //-- select the decision
   const data = useAppSelector(selectCaseDecision);
   const hasDecision = useAppSelector(selectHasOutcomeData("decision"));

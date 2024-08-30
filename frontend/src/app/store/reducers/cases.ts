@@ -74,13 +74,13 @@ export const casesSlice = createSlice({
     },
     setCaseFile: (state, action) => {
       const {
-        payload: { note, equipment, subject, reviewComplete, decision },
+        payload: { caseIdentifier, note, equipment, subject, reviewComplete, decision },
       } = action;
 
       //--
       //-- TODO: need to have each dev add thier state to this section instead of requesting
       //-- each individual state. Add assessment, prevention, equipment here
-      return { ...state, note, equipment, subject, reviewComplete, decision };
+      return { ...state, caseId: caseIdentifier, note, equipment, subject, reviewComplete, decision };
     },
     setIsInEdit: (state, action) => {
       const { payload } = action;
