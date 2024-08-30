@@ -116,7 +116,7 @@ export class CssService implements ExternalApiService {
     }
   };
 
-getUserRoleMapping = async (): Promise<AxiosResponse> => {
+  getUserRoleMapping = async (): Promise<AxiosResponse> => {
     try {
       const apiToken = await this.authenticate();
       //Get all roles from NatCom CSS integation
