@@ -166,20 +166,3 @@ export const selectCaseDecision = (state: RootState): Decision => {
 
   return !cases.decision ? defaultDecision : cases.decision;
 };
-
-//--
-//-- select the state of an outcome property
-//--
-export const selectHasOutcomeData =
-  (property: string) =>
-  (state: RootState): boolean => {
-    const { cases } = state;
-
-    switch (property) {
-      case "decision": {
-        return !!cases.decision;
-      }
-    }
-
-    return false;
-  };

@@ -1,12 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
 import { Button, Card } from "react-bootstrap";
-import { UUID } from "crypto";
-import {
-  selectCaseDecision,
-  selectCaseId,
-  selectHasOutcomeData,
-} from "../../../../../../store/reducers/case-selectors";
+import { selectCaseDecision } from "../../../../../../store/reducers/case-selectors";
 import { useParams } from "react-router-dom";
 import { ComplaintParams } from "../../../details/complaint-details-edit";
 import { setIsInEdit } from "../../../../../../store/reducers/cases";
@@ -20,20 +15,20 @@ export const CeebDecision: FC = () => {
 
   //-- select the decision
   const data = useAppSelector(selectCaseDecision);
-  const hasDecision = useAppSelector(selectHasOutcomeData("decision"));
 
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const [editable, setEditable] = useState(true);
   const showSectionErrors = isInEdit.showSectionErrors;
 
   const cases = useAppSelector((state) => state.cases);
-  const hasData = !cases.decision;
+  const hasDecision = !cases.decision;
 
   useEffect(() => {
-    if (!hasData && editable) {
+    if (!hasDecision && editable) {
       dispatch(setIsInEdit({ decision: false }));
     } else dispatch(setIsInEdit({ decision: editable }));
-  }, [editable, hasData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editable, hasDecision]);
 
   useEffect(() => {
     setEditable(!data.id);

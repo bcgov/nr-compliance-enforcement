@@ -439,6 +439,6 @@ export class CaseFileService {
     });
 
     const returnValue = await this.handleAPIResponse(result);
-    return returnValue?.createDecison;
+    return returnValue?.updateDecision;
   };
 }

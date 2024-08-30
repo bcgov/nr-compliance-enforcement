@@ -163,6 +163,8 @@ export class CaseFileController {
   @Patch("/decision")
   @Roles(Role.COS_OFFICER)
   async updateDecision(@Token() token, @Body() model: UpdateDecisionInput): Promise<CaseFileDto> {
-    return await this.service.updateDecision(token, model);
+    const result = await this.service.updateDecision(token, model);
+
+    return Promise.resolve(result);
   }
 }
