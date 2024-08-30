@@ -46,26 +46,6 @@ export const CeebDecision: FC = () => {
     setEditable(true);
   };
 
-  // const renderDecision = () => {
-  //   if (!hasDecision) {
-  //     return (
-  //       <DecisionForm
-  //         {...data}
-  //         leadIdentifier={id}
-  //       />
-  //     );
-  //   } else if (hasDecision && editable) {
-  //     return (
-  //       <DecisionItem
-  //         {...data}
-  //         actionTakenDate={data.actionTakenDate === null ? new Date() : data.actionTakenDate}
-  //       />
-  //     );
-  //   } else {
-  //     return <>show edit form</>;
-  //   }
-  // };
-
   return (
     <section
       className="comp-details-section"
@@ -109,28 +89,16 @@ export const CeebDecision: FC = () => {
             <DecisionForm
               {...data}
               leadIdentifier={id}
-              editable={editable}
               toggleEdit={setEditable}
-            />
-          ) : (
-            <>item view</>
-          )}
-        </Card.Body>
-      </Card>
-    </section>
-  );
-};
-
-{
-  /* {!hasDecision ? (
-            <DecisionForm
-              {...data}
-              leadIdentifier={id}
             />
           ) : (
             <DecisionItem
               {...data}
               actionTakenDate={data.actionTakenDate === null ? new Date() : data.actionTakenDate}
             />
-          )} */
-}
+          )}
+        </Card.Body>
+      </Card>
+    </section>
+  );
+};

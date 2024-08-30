@@ -1,4 +1,4 @@
-export const RebuildCodeTable = {
+export const DecisonAndActiveTab = {
   13: (state: any) => {
     return {
       ...state,
@@ -13,7 +13,7 @@ export const RebuildCodeTable = {
         section: [],
         schedule: [],
         "decision-type": [],
-      }
+      },
     };
   },
 };

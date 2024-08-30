@@ -23,7 +23,6 @@ import { selectOfficersDropdown } from "../../../../../../store/reducers/officer
 
 type props = {
   leadIdentifier: string;
-  editable: boolean;
   toggleEdit: Function;
   //--
   id?: string;
@@ -41,7 +40,6 @@ type props = {
 
 export const DecisionForm: FC<props> = ({
   leadIdentifier,
-  editable,
   toggleEdit,
   //--
   id,
@@ -177,7 +175,6 @@ export const DecisionForm: FC<props> = ({
           title: "Cancel Changes?",
           description: "Your changes will be lost.",
           cancelConfirmed: () => {
-            console.log(`editMode: ${editable}`);
             //-- reset the form to its original state
             applyData({
               schedule,
@@ -192,7 +189,7 @@ export const DecisionForm: FC<props> = ({
               actionTakenDate,
             });
 
-            if (editable) {
+            if (id !== undefined) {
               toggleEdit(false);
             }
           },
@@ -327,7 +324,7 @@ export const DecisionForm: FC<props> = ({
             className="comp-details-form-row"
             id="decision-inspection-number"
           >
-            <label htmlFor="action-required">Lead agency</label>
+            <label htmlFor="action-required">NRIS Inspection number</label>
             <div className="comp-details-input full-width">
               <CompInput
                 id={`comp-ear-tag-value-${id}`}
