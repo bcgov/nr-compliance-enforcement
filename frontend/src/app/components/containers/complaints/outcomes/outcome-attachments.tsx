@@ -21,7 +21,7 @@ type props = {
   showAddButton?: boolean;
 };
 
-export const HWCRFileAttachments: FC<props> = ({ showAddButton = false }) => {
+export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
   type ComplaintParams = {
     id: string;
     complaintType: string;
