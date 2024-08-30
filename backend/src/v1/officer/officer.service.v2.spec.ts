@@ -14,6 +14,8 @@ import { Person } from "../person/entities/person.entity";
 import { OfficeService } from "../office/office.service";
 import { Office } from "../office/entities/office.entity";
 import { CssService } from "../../external_api/css/css.service";
+import { ConfigurationService } from "../configuration/configuration.service";
+import { Configuration } from "../configuration/entities/configuration.entity";
 
 describe("Testing: OfficerService", () => {
   let service: OfficerService;
@@ -41,6 +43,11 @@ describe("Testing: OfficerService", () => {
           useFactory: dataSourceMockFactory,
         },
         CssService,
+        ConfigurationService,
+        {
+          provide: getRepositoryToken(Configuration),
+          useValue: {},
+        },
       ],
     })
       .compile()
