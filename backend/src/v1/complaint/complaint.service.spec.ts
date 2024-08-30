@@ -50,6 +50,7 @@ import {
   MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
   MockGirTypeCodeRepository,
+  MockTeamCodeRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import {
   MockComplaintsAgencyRepository,
@@ -65,6 +66,7 @@ import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
 import { ActionTaken } from "./entities/action_taken.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
+import { TeamCode } from "../team_code/entities/team_code.entity";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -195,6 +197,10 @@ describe("Testing: Complaint Service", () => {
           provide: getRepositoryToken(ComplaintUpdate),
           useValue: MockComplaintUpdatesRepository,
         },
+        {
+          provide: getRepositoryToken(TeamCode),
+          useValue: MockTeamCodeRepository,
+        },
       ],
     }).compile();
 
@@ -261,7 +267,7 @@ describe("Testing: Complaint Service", () => {
     };
 
     //-- act
-    const results = await service.search(_complaintType, payload);
+    const results = await service.search(_complaintType, payload, false);
 
     //-- assert
     expect(results).not.toBe(null);
@@ -435,6 +441,10 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(AttractantHwcrXref),
           useValue: {},
+        },
+        {
+          provide: getRepositoryToken(TeamCode),
+          useFactory: MockTeamCodeRepository,
         },
         {
           provide: REQUEST,

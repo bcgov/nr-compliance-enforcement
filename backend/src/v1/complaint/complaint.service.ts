@@ -171,6 +171,7 @@ export class ComplaintService {
             "violation_code.violation_code",
             "violation_code.short_description",
             "violation_code.long_description",
+            "violation_code.agency_code",
           ]);
         break;
       case "GIR":
@@ -824,7 +825,11 @@ export class ComplaintService {
     }
   };
 
-  search = async (complaintType: COMPLAINT_TYPE, model: ComplaintSearchParameters): Promise<SearchResults> => {
+  search = async (
+    complaintType: COMPLAINT_TYPE,
+    model: ComplaintSearchParameters,
+    hasCEEBRole: boolean,
+  ): Promise<SearchResults> => {
     try {
       let results: SearchResults = { totalCount: 0, complaints: [] };
 
@@ -847,6 +852,11 @@ export class ComplaintService {
       const agency = await this._getAgencyByUser();
       if (agency) {
         builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+      }
+
+      //-- return Waste and Pestivide complaints for CEEB users
+      if (hasCEEBRole && complaintType === "ERS") {
+        builder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
       }
 
       //-- apply search

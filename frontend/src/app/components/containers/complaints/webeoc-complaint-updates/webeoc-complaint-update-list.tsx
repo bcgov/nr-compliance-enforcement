@@ -114,7 +114,6 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                     )}
                   </div>
 
-                                    
                   <div className="comp-complaint-update-item-row first-row">
                     <div className="complaint-description-label">Logged by </div>
                     <div className="logged-by-text">
