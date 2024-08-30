@@ -136,8 +136,8 @@ export class WebEocScheduler {
     // construct the intentionally malformed json filter so that it works with WebEOC
     const filterBody = `{
       "customFilter": ${cosFilter},
-      "customFilter": ${body_for_violation_type_waste},
-      "customFilter": ${body_for_violation_type_pesticide}
+      "customFilter2": ${body_for_violation_type_waste},
+      "customFilter3": ${body_for_violation_type_pesticide}
     }`;
 
     try {
