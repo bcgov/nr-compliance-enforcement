@@ -12,6 +12,7 @@ import { ComplaintParams } from "../../../details/complaint-details-edit";
 import { setIsInEdit } from "../../../../../../store/reducers/cases";
 import { DecisionForm } from "./decision-form";
 import { DecisionItem } from "./decision-item";
+import { BsExclamationCircleFill } from "react-icons/bs";
 
 export const CeebDecision: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
@@ -25,15 +26,45 @@ export const CeebDecision: FC = () => {
   const hasDecision = useAppSelector(selectHasOutcomeData("decision"));
 
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
-  const [editable, setEditable] = useState<boolean>(true);
+  const [editable, setEditable] = useState(true);
   const showSectionErrors = isInEdit.showSectionErrors;
 
+  const cases = useAppSelector((state) => state.cases);
+  const hasData = !cases.decision;
+
   useEffect(() => {
-    if (!hasDecision && editable) {
+    if (!hasData && editable) {
       dispatch(setIsInEdit({ decision: false }));
-    } else dispatch(setIsInEdit({ decison: editable }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editable, hasDecision]);
+    } else dispatch(setIsInEdit({ decision: editable }));
+  }, [editable, hasData]);
+
+  useEffect(() => {
+    setEditable(!data.id);
+  }, [data.id]);
+
+  const toggleEdit = () => {
+    setEditable(true);
+  };
+
+  // const renderDecision = () => {
+  //   if (!hasDecision) {
+  //     return (
+  //       <DecisionForm
+  //         {...data}
+  //         leadIdentifier={id}
+  //       />
+  //     );
+  //   } else if (hasDecision && editable) {
+  //     return (
+  //       <DecisionItem
+  //         {...data}
+  //         actionTakenDate={data.actionTakenDate === null ? new Date() : data.actionTakenDate}
+  //       />
+  //     );
+  //   } else {
+  //     return <>show edit form</>;
+  //   }
+  // };
 
   return (
     <section
@@ -47,6 +78,9 @@ export const CeebDecision: FC = () => {
             <Button
               variant="outline-primary"
               size="sm"
+              onClick={() => {
+                toggleEdit();
+              }}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
@@ -60,7 +94,35 @@ export const CeebDecision: FC = () => {
         border={showSectionErrors ? "danger" : "default"}
       >
         <Card.Body>
-          {!data.id ? (
+          {showSectionErrors && (
+            <div className="section-error-message">
+              <BsExclamationCircleFill />
+              {hasDecision ? (
+                <span>Save section before closing the complaint.</span>
+              ) : (
+                <span>Complete section before closing the complaint.</span>
+              )}
+            </div>
+          )}
+
+          {editable ? (
+            <DecisionForm
+              {...data}
+              leadIdentifier={id}
+              editable={editable}
+              toggleEdit={setEditable}
+            />
+          ) : (
+            <>item view</>
+          )}
+        </Card.Body>
+      </Card>
+    </section>
+  );
+};
+
+{
+  /* {!hasDecision ? (
             <DecisionForm
               {...data}
               leadIdentifier={id}
@@ -70,9 +132,5 @@ export const CeebDecision: FC = () => {
               {...data}
               actionTakenDate={data.actionTakenDate === null ? new Date() : data.actionTakenDate}
             />
-          )}
-        </Card.Body>
-      </Card>
-    </section>
-  );
-};
+          )} */
+}

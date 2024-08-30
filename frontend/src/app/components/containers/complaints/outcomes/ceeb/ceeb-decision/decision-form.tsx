@@ -19,11 +19,12 @@ import { CompInput } from "../../../../../common/comp-input";
 import { openModal } from "../../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../../types/modal/modal-types";
 import { getCaseFile, upsertDecisionOutcome } from "../../../../../../store/reducers/case-thunks";
-import { selectOfficersDropdown, selectOfficersByAgency } from "../../../../../../store/reducers/officer";
-import { selectComplaintCallerInformation } from "../../../../../../store/reducers/complaints";
+import { selectOfficersDropdown } from "../../../../../../store/reducers/officer";
 
 type props = {
   leadIdentifier: string;
+  editable: boolean;
+  toggleEdit: Function;
   //--
   id?: string;
   schedule: string;
@@ -40,6 +41,8 @@ type props = {
 
 export const DecisionForm: FC<props> = ({
   leadIdentifier,
+  editable,
+  toggleEdit,
   //--
   id,
   schedule,
@@ -174,6 +177,7 @@ export const DecisionForm: FC<props> = ({
           title: "Cancel Changes?",
           description: "Your changes will be lost.",
           cancelConfirmed: () => {
+            console.log(`editMode: ${editable}`);
             //-- reset the form to its original state
             applyData({
               schedule,
@@ -187,6 +191,10 @@ export const DecisionForm: FC<props> = ({
               actionTaken,
               actionTakenDate,
             });
+
+            if (editable) {
+              toggleEdit(false);
+            }
           },
         },
       }),

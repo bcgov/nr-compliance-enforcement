@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { formatDate } from "../../../../../../common/methods";
-import { data } from "cypress/types/jquery";
-import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
+import { useAppSelector } from "../../../../../../hooks/hooks";
 import { selectAgencyDropdown } from "../../../../../../store/reducers/code-table";
 import {
   selectDischargeDropdown,
@@ -41,8 +40,6 @@ export const DecisionItem: FC<props> = ({
   actionTaken,
   actionTakenDate,
 }) => {
-  const dispatch = useAppDispatch();
-
   //-- drop-downs
   const dischargesOptions = useAppSelector(selectDischargeDropdown);
   const nonComplianceOptions = useAppSelector(selectNonComplianceDropdown);
