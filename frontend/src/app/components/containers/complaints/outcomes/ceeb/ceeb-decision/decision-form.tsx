@@ -19,6 +19,8 @@ import { CompInput } from "../../../../../common/comp-input";
 import { openModal } from "../../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../../types/modal/modal-types";
 import { getCaseFile, upsertDecisionOutcome } from "../../../../../../store/reducers/case-thunks";
+import { selectOfficersDropdown, selectOfficersByAgency } from "../../../../../../store/reducers/officer";
+import { selectComplaintCallerInformation } from "../../../../../../store/reducers/complaints";
 
 type props = {
   leadIdentifier: string;
@@ -61,6 +63,7 @@ export const DecisionForm: FC<props> = ({
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
+  const officerOptions = useAppSelector(selectOfficersDropdown(true));
 
   //-- error messgaes
   const [scheduleErrorMessage, setScheduleErrorMessage] = useState("");
@@ -72,6 +75,7 @@ export const DecisionForm: FC<props> = ({
   const [decisionTypeErrorMessage, setDecisionTypeErrorMessage] = useState("");
   const [leadAgencyErrorMessage, setLeadAgencyErrorMessage] = useState("");
   const [inspectionNumberErrorMessage, setInspectionNumberErrorMessage] = useState("");
+  const [assignedToErrorMessage, setAssignedToErrorMessage] = useState();
 
   //-- component data
   // eslint-disable-line no-console, max-len
@@ -142,8 +146,7 @@ export const DecisionForm: FC<props> = ({
 
       case "assignedTo": {
         const { assignedTo } = data;
-        // return officers.find((item) => item.value === assignedTo);
-        result = undefined;
+        result = officerOptions.find((item) => item.value === assignedTo);
         break;
       }
     }
@@ -154,6 +157,7 @@ export const DecisionForm: FC<props> = ({
   //-- when setting the assignment this should also update the assignment
   //-- of the complaint to the officer being selected in the decision
   const updateAssignment = (value?: string) => {
+    //-- need to get the officer_guid instead of the person
     updateModel("assignedTo", value);
   };
 
@@ -388,14 +392,14 @@ export const DecisionForm: FC<props> = ({
               id="outcome-decision-assigned-to"
               className="comp-details-input"
               classNamePrefix="comp-select"
-              options={[]}
+              options={officerOptions}
               enableValidation={true}
-              errorMessage={scheduleErrorMessage}
+              errorMessage={assignedToErrorMessage}
               placeholder="Select"
               onChange={(evt) => {
                 updateAssignment(evt?.value);
               }}
-              // value={getValue("schedule")}
+              value={getValue("assignedTo")}
             />
           </div>
         </div>

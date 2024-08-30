@@ -1002,16 +1002,20 @@ export const upsertDecisionOutcome =
       app: {
         profile: { idir_username: idir },
       },
+
       cases: { decision: current },
     } = getState();
 
     const _createDecision =
       (id: string, decision: Decision): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
       async (dispatch) => {
+        const { assignedTo } = decision;
+
         const input: CreateDecisionInput = {
           leadIdentifier: id,
           agencyCode: "EPO",
           caseCode: "ERS",
+          actor: assignedTo,
           createUserId: idir,
           decision,
         };

@@ -124,6 +124,19 @@ export class CaseFileService {
       }
       order
     }
+    decision { 
+      id
+      schedule
+      sector
+      discharge
+      nonCompliance
+      rationale
+      inspectionNumber
+      leadAgency
+      assignedTo
+      actionTaken
+      actionTakenDate
+    }
   }
   `;
 
