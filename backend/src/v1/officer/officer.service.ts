@@ -10,7 +10,7 @@ import { DataSource, Repository } from "typeorm";
 import { PersonService } from "../person/person.service";
 import { OfficeService } from "../office/office.service";
 import { UUID } from "crypto";
-import { CssService } from "src/external_api/css/css.service";
+import { CssService } from "../../external_api/css/css.service";
 
 @Injectable()
 export class OfficerService {

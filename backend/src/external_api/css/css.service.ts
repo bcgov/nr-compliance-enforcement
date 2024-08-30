@@ -149,7 +149,7 @@ export class CssService implements ExternalApiService {
                     userId: user.username
                       .replace(/@idir$/i, "")
                       .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5"),
-                    role: (role as any).name,
+                    role: role.name,
                   };
                 }),
               );
