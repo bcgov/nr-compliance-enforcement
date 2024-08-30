@@ -1,7 +1,8 @@
-CREATE OR REPLACE FUNCTION public.insert_and_return_code(webeoc_value character varying, code_table_type character varying)
- RETURNS character varying
- LANGUAGE plpgsql
-AS $function$
+CREATE
+OR REPLACE FUNCTION public.insert_and_return_code (
+  webeoc_value character varying,
+  code_table_type character varying
+) RETURNS character varying LANGUAGE plpgsql AS $function$
 DECLARE
     new_code VARCHAR(10);  -- used in case we're creating a new code
     truncated_code varchar(10); -- if we're creating a new code, base it off of the webeoc_value.  We'll truncate this and get rid of spaces, and possibly append a number to make it unique
@@ -120,14 +121,10 @@ BEGIN
     END LOOP;
    
 END;
-$function$
-;
+$function$;
 
-
-CREATE OR REPLACE FUNCTION public.format_phone_number(phone_number text)
- RETURNS text
- LANGUAGE plpgsql
-AS $function$
+CREATE
+OR REPLACE FUNCTION public.format_phone_number (phone_number text) RETURNS text LANGUAGE plpgsql AS $function$
 DECLARE
     formatted_phone_number TEXT;
 BEGIN
@@ -145,13 +142,10 @@ BEGIN
         RETURN '+1' || left(formatted_phone_number,13);
     END IF;
 END;
-$function$
-;
+$function$;
 
-CREATE OR REPLACE FUNCTION public.validate_coordinate_field(coordinate_field text)
- RETURNS text
- LANGUAGE plpgsql
-AS $function$
+CREATE
+OR REPLACE FUNCTION public.validate_coordinate_field (coordinate_field text) RETURNS text LANGUAGE plpgsql AS $function$
 DECLARE
     formatted_coordinate_field TEXT;
 BEGIN
@@ -163,16 +157,10 @@ BEGIN
 	else return formatted_coordinate_field;
     END IF;
 END;
-$function$
-;
+$function$;
 
-
-
-
-CREATE OR REPLACE FUNCTION public.insert_complaint_from_staging(_complaint_identifier character varying)
- RETURNS void
- LANGUAGE plpgsql
-AS $function$
+CREATE
+OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier character varying) RETURNS void LANGUAGE plpgsql AS $function$
   declare
     WEBEOC_USER_ID CONSTANT varchar(6) := 'webeoc';
     WEBEOC_UPDATE_TYPE_INSERT CONSTANT varchar(6) := 'INSERT';
@@ -225,7 +213,7 @@ AS $function$
     _observed_ind                      VARCHAR(3);
     _in_progress_ind_bool bool;
     _observed_ind_bool bool;
-    _suspect_witnesss_dtl_text VARCHAR(4000);
+    _suspect_witnesss_dtl_text TEXT;
     _violation_code            VARCHAR(10);
     _gir_type_code             VARCHAR(10);
     _gir_type_description      VARCHAR(50);
@@ -559,5 +547,4 @@ AS $function$
     AND    staging_activity_code = WEBEOC_UPDATE_TYPE_INSERT;
   
   END;
-  $function$
-;
+  $function$;

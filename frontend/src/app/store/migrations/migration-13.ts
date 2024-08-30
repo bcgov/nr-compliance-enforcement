@@ -2,6 +2,10 @@ export const RebuildCodeTable = {
   13: (state: any) => {
     return {
       ...state,
+      app: {
+        ...state.app,
+        activeTab: "",
+      },
       codeTables: {
         discharge: [],
         "non-compliance": [],
@@ -9,7 +13,7 @@ export const RebuildCodeTable = {
         section: [],
         schedule: [],
         "decision-type": [],
-      },
+      }
     };
   },
 };

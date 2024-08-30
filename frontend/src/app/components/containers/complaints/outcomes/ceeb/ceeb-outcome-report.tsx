@@ -4,7 +4,8 @@ import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../../../../../hooks/hooks";
 import { getCaseFile } from "../../../../../store/reducers/case-thunks";
 import { ComplaintParams } from "../../details/complaint-details-edit";
-
+import { OutcomeAttachments } from "../outcome-attachments";
+        
 export const CeebOutcomeReport: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
@@ -22,6 +23,7 @@ export const CeebOutcomeReport: FC = () => {
       </div>
       {/* <CeebAuthorization /> */}
       <CeebDecision />
+      <OutcomeAttachments showAddButton={true} />
     </section>
   );
 };
