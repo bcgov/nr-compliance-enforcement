@@ -166,10 +166,9 @@ export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
     </>
   );
 };
-const getComplaintTypes = () =>
-  {
-  return UserService.hasRole(Roles.CEEB)? CEEB_TYPES: COMPLAINT_TYPES;
-  };
+const getComplaintTypes = () => {
+  return UserService.hasRole(Roles.CEEB) ? CEEB_TYPES : COMPLAINT_TYPES;
+};
 
 const getFilters = (currentOfficer: any, defaultZone: any) => {
   let filters: any = {};

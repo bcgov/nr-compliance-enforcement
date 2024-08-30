@@ -61,6 +61,7 @@ const initialState: CodeTableState = {
   "drug-remaining-outcomes": [],
   equipment: [],
   "gir-type": [],
+  team: [],
 };
 
 export const codeTableSlice = createSlice({
@@ -113,6 +114,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "drug-remaining-outcomes": remainingDrugUse,
       equipment,
       "gir-type": girType,
+      team,
     },
   } = state;
 
@@ -205,6 +207,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     }
     if (!from(girType).any()) {
       dispatch(fetchGirTypes());
+    }
+    if (!from(team).any()) {
+      dispatch(fetchTeam());
     }
   } catch (error) {}
 };
@@ -550,6 +555,15 @@ export const fetchGirTypes = (): AppThunk => async (dispatch) => {
   }
 };
 
+export const fetchTeam = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.TEAM}`);
+  const response = await get<Array<GirType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.TEAM, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
 export const selectCodeTable =
   (table: string) =>
   (state: RootState): Array<any> => {
@@ -592,6 +606,18 @@ export const selectAgencyDropdown = (state: RootState): Array<Option> => {
 
   const data = agency.map(({ agency, longDescription }) => {
     const item: Option = { label: longDescription, value: agency };
+    return item;
+  });
+  return data;
+};
+
+export const selectTeamDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { team },
+  } = state;
+
+  const data = team.map(({ team, longDescription }) => {
+    const item: Option = { label: longDescription, value: team };
     return item;
   });
   return data;

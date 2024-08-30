@@ -611,6 +611,31 @@ const girTypeCodes = [
     active_ind: true,
   },
 ];
+
+const teamCodes = [
+  {
+    team_code: "HI",
+    short_description: "Heavy Industry",
+    long_description: "Heavy Industry",
+    display_order: 10,
+    active_ind: true,
+  },
+  {
+    team_code: "OPS",
+    short_description: "Operations",
+    long_description: "Operations",
+    display_order: 20,
+    active_ind: true,
+  },
+  {
+    team_code: "REACTIVE",
+    short_description: "REACTIVE",
+    long_description: "REACTIVE",
+    display_order: 30,
+    active_ind: true,
+  },
+];
+
 const regions = [
   { code: "KTNY", name: "Kootenay" },
   { code: "OKNGN", name: "Okanagan" },
@@ -841,5 +866,14 @@ export const MockGirTypeCodeRepository = () => ({
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(girTypeCodes),
+  })),
+});
+
+export const MockTeamCodeRepository = () => ({
+  find: jest.fn().mockResolvedValue(teamCodes),
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(teamCodes),
   })),
 });

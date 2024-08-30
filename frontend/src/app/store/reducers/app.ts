@@ -6,7 +6,7 @@ import Profile from "../../types/app/profile";
 import { UUID } from "crypto";
 import { Officer } from "../../types/person/person";
 import config from "../../../config";
-import { generateApiParameters, get } from "../../common/api";
+import { generateApiParameters, get, patch } from "../../common/api";
 import { AUTH_TOKEN, getUserAgency } from "../../service/user-service";
 
 import { DropdownOption } from "../../types/app/drop-down-option";
@@ -285,6 +285,14 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
 
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`);
       const response = await get<Officer>(dispatch, parameters);
+
+      //Update auth_user_guid if there is no data
+      if (!response.auth_user_guid) {
+        const updateGuid = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${response.officer_guid}`, {
+          auth_user_guid: idir_user_guid_transformed,
+        });
+        await patch<Officer>(dispatch, updateGuid);
+      }
 
       let office = "";
       let region = "";
