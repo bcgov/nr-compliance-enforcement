@@ -29,4 +29,5 @@ export interface AppState {
   codeTableVersion: CodeTableVersionState;
 
   featureFlags: Array<FeatureFlagState>;
+  activeTab: string;
 }
