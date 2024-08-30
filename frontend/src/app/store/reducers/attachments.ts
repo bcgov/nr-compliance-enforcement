@@ -18,7 +18,6 @@ import AttachmentEnum from "../../constants/attachment-enum";
 const initialState: AttachmentsState = {
   complaintsAttachments: [],
   outcomeAttachments: [],
-  ceebOutcomeAttachments: [],
 };
 
 /**
@@ -255,16 +254,14 @@ export const selectAttachments =
   (attachmentType: AttachmentEnum) =>
   (state: RootState): COMSObject[] => {
     const { attachments: attachmentsRoot } = state;
-    const { complaintsAttachments, outcomeAttachments, ceebOutcomeAttachments } = attachmentsRoot;
+    const { complaintsAttachments, outcomeAttachments } = attachmentsRoot;
 
     switch (attachmentType) {
       case AttachmentEnum.COMPLAINT_ATTACHMENT:
         return complaintsAttachments ?? [];
-        case AttachmentEnum.OUTCOME_ATTACHMENT:
-          return outcomeAttachments ?? [];
-        case AttachmentEnum.CEEB_OUTCOME_ATTACHMENT:
-          return ceebOutcomeAttachments ?? [];
-          }
+      case AttachmentEnum.OUTCOME_ATTACHMENT:
+        return outcomeAttachments ?? [];
+    }
   };
 
 export const selectOutcomeAttachments =

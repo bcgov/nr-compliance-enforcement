@@ -18,10 +18,10 @@ import { BsExclamationCircleFill } from "react-icons/bs";
 import { setIsInEdit } from "../../../../store/reducers/cases";
 
 type props = {
-  clickToEnable?: boolean;
+  showAddButton?: boolean;
 };
 
-export const HWCRFileAttachments: FC<props> = ({ clickToEnable = false }) => {
+export const HWCRFileAttachments: FC<props> = ({ showAddButton = false }) => {
   type ComplaintParams = {
     id: string;
     complaintType: string;
@@ -44,18 +44,22 @@ export const HWCRFileAttachments: FC<props> = ({ clickToEnable = false }) => {
   const [componentState, setComponentState] = useState<number>(DISPLAY_STATE);
   const [cancelPendingUpload, setCancelPendingUpload] = useState<boolean>(false);
 
-  // state to manage the visibility of the card when clickToEnable is true
-  const [isCardVisible, setIsCardVisible] = useState<boolean>(!clickToEnable);
+  // state to manage the visibility of the card when showAddButton is true
+  const [isCardVisible, setIsCardVisible] = useState<boolean>(!showAddButton);
 
   const showSectionErrors =
     componentState === EDIT_STATE &&
     (outcomeAttachmentCount > 0 || carouselData.length > 0) &&
     isInEdit.showSectionErrors;
 
+  // get the attachments when the complaint loads
   useEffect(() => {
-    if (clickToEnable) {
-      setComponentState(EDIT_STATE);
+    if (id) {
+      dispatch(getAttachments(id, AttachmentEnum.OUTCOME_ATTACHMENT));
     }
+  }, [id, dispatch]);
+
+  useEffect(() => {
     if (componentState === DISPLAY_STATE) {
       dispatch(setIsInEdit({ attachments: false }));
     } else if (outcomeAttachmentCount === 0 && carouselData.length === 0) {
@@ -65,8 +69,11 @@ export const HWCRFileAttachments: FC<props> = ({ clickToEnable = false }) => {
 
   useEffect(() => {
     if (carouselData.length > 0) {
+      if (showAddButton) setIsCardVisible(true);
       setComponentState(DISPLAY_STATE);
-    } else setComponentState(EDIT_STATE);
+    } else {
+      setComponentState(EDIT_STATE);
+    }
   }, [carouselData]);
 
   const handleSlideCountChange = (count: number) => {
@@ -76,6 +83,7 @@ export const HWCRFileAttachments: FC<props> = ({ clickToEnable = false }) => {
   const saveButtonClick = async () => {
     //initial state when there is no attachments
     if (outcomeAttachmentCount === 0 && carouselData.length === 0) {
+      if (showAddButton) setIsCardVisible(false);
       setComponentState(EDIT_STATE);
       return;
     }
@@ -91,6 +99,7 @@ export const HWCRFileAttachments: FC<props> = ({ clickToEnable = false }) => {
         AttachmentEnum.OUTCOME_ATTACHMENT,
       );
       if (outcomeAttachmentCount === 0) {
+        if (showAddButton) setIsCardVisible(false);
         setComponentState(EDIT_STATE);
       } else {
         setComponentState(DISPLAY_STATE);
@@ -103,24 +112,23 @@ export const HWCRFileAttachments: FC<props> = ({ clickToEnable = false }) => {
   const cancelConfirmed = () => {
     //initial state when there is no attachments
     if (outcomeAttachmentCount === 0 && carouselData.length === 0) {
-      if (clickToEnable) {
-        setIsCardVisible(false);
-      } else {
-        setComponentState(EDIT_STATE);
-      }
+      setComponentState(EDIT_STATE);
+      if (showAddButton) setIsCardVisible(false);
       return;
     }
 
     if (outcomeAttachmentCount > 0) {
       setAttachmentsToAdd([]);
-      dispatch(clearAttachments);
+      dispatch(clearAttachments());
       setCancelPendingUpload(true);
     }
     if (carouselData.length > 0) {
       setComponentState(DISPLAY_STATE);
     } else {
+      if (showAddButton) setIsCardVisible(false);
       setComponentState(EDIT_STATE);
     }
+    setOutcomeAttachmentCount(carouselData.length);
     setAttachmentsToDelete([]);
     dispatch(getAttachments(id, AttachmentEnum.OUTCOME_ATTACHMENT));
   };
@@ -177,12 +185,14 @@ export const HWCRFileAttachments: FC<props> = ({ clickToEnable = false }) => {
         )}
       </div>
 
-      {!isCardVisible && clickToEnable && (
+      {!isCardVisible && showAddButton && (
         <Button
           variant="primary"
           id="outcome-report-add-attachment"
           title="Add attachments"
-          onClick={() => setIsCardVisible(true)}
+          onClick={() => {
+            setIsCardVisible(true);
+          }}
         >
           Add Attachments
         </Button>
