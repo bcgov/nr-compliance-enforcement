@@ -13,7 +13,7 @@ declare namespace Cypress {
   }
 
   interface Chainable {
-    kcLogin(): Chainable<Element>;
+    kcLogin(account?: string): Chainable<Element>;
     kcLogout(): Chainable<any>;
     verifyMapMarkerExists(existIndicator: boolean): Chainable<any>;
     typeAndTriggerChange(value: string): Chainable<void>;
