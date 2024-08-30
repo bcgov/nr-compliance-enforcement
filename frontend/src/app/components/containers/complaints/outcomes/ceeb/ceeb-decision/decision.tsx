@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import { ComplaintParams } from "../../../details/complaint-details-edit";
 import { setIsInEdit } from "../../../../../../store/reducers/cases";
 import { DecisionForm } from "./decision-form";
+import { DecisionItem } from "./decision-item";
 
 export const CeebDecision: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
@@ -65,7 +66,10 @@ export const CeebDecision: FC = () => {
               leadIdentifier={id}
             />
           ) : (
-            <>item view</>
+            <DecisionItem
+              {...data}
+              actionTakenDate={data.actionTakenDate === null ? new Date() : data.actionTakenDate}
+            />
           )}
         </Card.Body>
       </Card>
