@@ -194,7 +194,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
             setIsCardVisible(true);
           }}
         >
-          <i className="bi bi-plus-circle"></i>
+          <i className="bi bi-plus-circle" />
           Add Attachments
         </Button>
       )}
