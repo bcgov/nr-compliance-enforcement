@@ -8,6 +8,7 @@ import { PersonService } from "../person/person.service";
 import { OfficeService } from "../office/office.service";
 import { DataSource } from "typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
+import { CssService } from "../../external_api/css/css.service";
 
 describe("OfficerService", () => {
   let service: OfficerService;
@@ -34,6 +35,7 @@ describe("OfficerService", () => {
           provide: DataSource,
           useFactory: dataSourceMockFactory,
         },
+        CssService,
       ],
     }).compile();
 

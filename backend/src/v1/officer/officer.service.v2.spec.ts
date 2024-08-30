@@ -13,6 +13,7 @@ import { PersonService } from "../person/person.service";
 import { Person } from "../person/entities/person.entity";
 import { OfficeService } from "../office/office.service";
 import { Office } from "../office/entities/office.entity";
+import { CssService } from "../../external_api/css/css.service";
 
 describe("Testing: OfficerService", () => {
   let service: OfficerService;
@@ -39,6 +40,7 @@ describe("Testing: OfficerService", () => {
           provide: DataSource,
           useFactory: dataSourceMockFactory,
         },
+        CssService,
       ],
     })
       .compile()
