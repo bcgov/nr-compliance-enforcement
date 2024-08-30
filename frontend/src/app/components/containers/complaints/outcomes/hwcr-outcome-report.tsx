@@ -3,7 +3,7 @@ import { HWCRComplaintAssessment } from "./hwcr-complaint-assessment";
 import { HWCREquipment } from "./hwcr-equipment";
 import { HWCRFileReview } from "./hwcr-file-review";
 import { HWCRSupplementalNotes } from "./hwcr-supplemental-notes";
-import { HWCRFileAttachments } from "./hwcr-file-attachments";
+import { OutcomeAttachments } from "./outcome-attachments";
 import { HWCRComplaintPrevention } from "./hwcr-prevention-education";
 import { useParams } from "react-router-dom";
 import { ComplaintParams } from "../details/complaint-details-edit";
@@ -31,7 +31,7 @@ export const HWCROutcomeReport: FC = () => {
       <HWCREquipment />
       <HWCROutcomeByAnimalv2 />
       <HWCRSupplementalNotes />
-      <HWCRFileAttachments />
+      <OutcomeAttachments />
       <HWCRFileReview />
     </section>
   );

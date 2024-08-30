@@ -17,7 +17,11 @@ import { clearAttachments, getAttachments, selectAttachments } from "../../../..
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { setIsInEdit } from "../../../../store/reducers/cases";
 
-export const HWCRFileAttachments: FC = () => {
+type props = {
+  showAddButton?: boolean;
+};
+
+export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
   type ComplaintParams = {
     id: string;
     complaintType: string;
@@ -40,10 +44,20 @@ export const HWCRFileAttachments: FC = () => {
   const [componentState, setComponentState] = useState<number>(DISPLAY_STATE);
   const [cancelPendingUpload, setCancelPendingUpload] = useState<boolean>(false);
 
+  // state to manage the visibility of the card when showAddButton is true
+  const [isCardVisible, setIsCardVisible] = useState<boolean>(!showAddButton);
+
   const showSectionErrors =
     componentState === EDIT_STATE &&
     (outcomeAttachmentCount > 0 || carouselData.length > 0) &&
     isInEdit.showSectionErrors;
+
+  // get the attachments when the complaint loads
+  useEffect(() => {
+    if (id) {
+      dispatch(getAttachments(id, AttachmentEnum.OUTCOME_ATTACHMENT));
+    }
+  }, [id, dispatch]);
 
   useEffect(() => {
     if (componentState === DISPLAY_STATE) {
@@ -55,8 +69,11 @@ export const HWCRFileAttachments: FC = () => {
 
   useEffect(() => {
     if (carouselData.length > 0) {
+      if (showAddButton) setIsCardVisible(true);
       setComponentState(DISPLAY_STATE);
-    } else setComponentState(EDIT_STATE);
+    } else {
+      setComponentState(EDIT_STATE);
+    }
   }, [carouselData]);
 
   const handleSlideCountChange = (count: number) => {
@@ -66,6 +83,7 @@ export const HWCRFileAttachments: FC = () => {
   const saveButtonClick = async () => {
     //initial state when there is no attachments
     if (outcomeAttachmentCount === 0 && carouselData.length === 0) {
+      if (showAddButton) setIsCardVisible(false);
       setComponentState(EDIT_STATE);
       return;
     }
@@ -81,6 +99,7 @@ export const HWCRFileAttachments: FC = () => {
         AttachmentEnum.OUTCOME_ATTACHMENT,
       );
       if (outcomeAttachmentCount === 0) {
+        if (showAddButton) setIsCardVisible(false);
         setComponentState(EDIT_STATE);
       } else {
         setComponentState(DISPLAY_STATE);
@@ -94,19 +113,22 @@ export const HWCRFileAttachments: FC = () => {
     //initial state when there is no attachments
     if (outcomeAttachmentCount === 0 && carouselData.length === 0) {
       setComponentState(EDIT_STATE);
+      if (showAddButton) setIsCardVisible(false);
       return;
     }
 
     if (outcomeAttachmentCount > 0) {
       setAttachmentsToAdd([]);
-      dispatch(clearAttachments);
+      dispatch(clearAttachments());
       setCancelPendingUpload(true);
     }
     if (carouselData.length > 0) {
       setComponentState(DISPLAY_STATE);
     } else {
+      if (showAddButton) setIsCardVisible(false);
       setComponentState(EDIT_STATE);
     }
+    setOutcomeAttachmentCount(carouselData.length);
     setAttachmentsToDelete([]);
     dispatch(getAttachments(id, AttachmentEnum.OUTCOME_ATTACHMENT));
   };
@@ -163,47 +185,63 @@ export const HWCRFileAttachments: FC = () => {
         )}
       </div>
 
-      <Card border={showSectionErrors ? "danger" : "default"}>
-        <Card.Body>
-          {showSectionErrors && (
-            <div className="section-error-message mb-4">
-              <BsExclamationCircleFill />
-              <span>Save section before closing the complaint.</span>
-            </div>
-          )}
-          <AttachmentsCarousel
-            attachmentType={AttachmentEnum.OUTCOME_ATTACHMENT}
-            complaintIdentifier={id}
-            allowUpload={componentState === EDIT_STATE}
-            allowDelete={componentState === EDIT_STATE}
-            cancelPendingUpload={cancelPendingUpload}
-            setCancelPendingUpload={setCancelPendingUpload}
-            onFilesSelected={onHandleAddAttachments}
-            onFileDeleted={onHandleDeleteAttachment}
-            onSlideCountChange={handleSlideCountChange}
-          />
-          {componentState === EDIT_STATE && (
-            <div className="comp-details-form-buttons">
-              <Button
-                variant="outline-primary"
-                id="outcome-cancel-button"
-                title="Cancel Outcome"
-                onClick={cancelButtonClick}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                id="outcome-save-button"
-                title="Save Outcome"
-                onClick={saveButtonClick}
-              >
-                Save
-              </Button>
-            </div>
-          )}
-        </Card.Body>
-      </Card>
+      {!isCardVisible && showAddButton && (
+        <Button
+          variant="primary"
+          id="outcome-report-add-attachment"
+          title="Add attachments"
+          onClick={() => {
+            setIsCardVisible(true);
+          }}
+        >
+          <i className="bi bi-plus-circle" />
+          <span>Add attachments</span>
+        </Button>
+      )}
+
+      {isCardVisible && (
+        <Card border={showSectionErrors ? "danger" : "default"}>
+          <Card.Body>
+            {showSectionErrors && (
+              <div className="section-error-message mb-4">
+                <BsExclamationCircleFill />
+                <span>Save section before closing the complaint.</span>
+              </div>
+            )}
+            <AttachmentsCarousel
+              attachmentType={AttachmentEnum.OUTCOME_ATTACHMENT}
+              complaintIdentifier={id}
+              allowUpload={componentState === EDIT_STATE}
+              allowDelete={componentState === EDIT_STATE}
+              cancelPendingUpload={cancelPendingUpload}
+              setCancelPendingUpload={setCancelPendingUpload}
+              onFilesSelected={onHandleAddAttachments}
+              onFileDeleted={onHandleDeleteAttachment}
+              onSlideCountChange={handleSlideCountChange}
+            />
+            {componentState === EDIT_STATE && (
+              <div className="comp-details-form-buttons">
+                <Button
+                  variant="outline-primary"
+                  id="outcome-cancel-button"
+                  title="Cancel Outcome"
+                  onClick={cancelButtonClick}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  id="outcome-save-button"
+                  title="Save Outcome"
+                  onClick={saveButtonClick}
+                >
+                  Save
+                </Button>
+              </div>
+            )}
+          </Card.Body>
+        </Card>
+      )}
     </section>
   );
 };
