@@ -157,6 +157,8 @@ export class OfficerService {
   }
 
   async update(officer_guid: UUID, updateOfficerDto: UpdateOfficerDto): Promise<Officer> {
+    //exclude roles field populated from keycloak from update
+    delete (updateOfficerDto as any).user_roles;
     await this.officerRepository.update({ officer_guid }, updateOfficerDto);
     return this.findOne(officer_guid);
   }

@@ -173,13 +173,14 @@ export const selectOfficers = (state: RootState): Officer[] | null => {
 };
 
 export const searchOfficers =
-  (input: string) =>
+  (input: string, agency: string) =>
   (state: RootState): Array<Officer> => {
     const {
       officers: { officers: items },
     } = state;
     let results: Array<Officer> = [];
     const searchInput = input.toLowerCase();
+    const role = mapAgencyToRole(agency);
 
     //-- look for any officers that match firstname, lastname, or office
     if (input.length >= 2) {
@@ -189,11 +190,20 @@ export const searchOfficers =
           office_guid: {
             cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
           },
+          user_roles,
         } = officer;
 
         const nameMatch =
           firstName.toLocaleLowerCase().includes(searchInput) || lastName.toLocaleLowerCase().includes(searchInput);
-        return !fromAdminOffice && nameMatch;
+        const roleMatch = user_roles.includes(role) && !user_roles.includes("READ ONLY");
+
+        if (agency === "COS") {
+          return !fromAdminOffice && nameMatch;
+        } else if (agency === "EPO") {
+          return roleMatch && nameMatch;
+        } else {
+          return false;
+        }
       });
     }
 
@@ -300,25 +310,45 @@ export const selectOfficersByReportedBy =
     });
   };
 
-export const selectOfficersByZoneAndAgency =
+export const selectOfficersByZoneAgencyAndRole =
   (agency: string, zone?: string) =>
   (state: RootState): Officer[] | null => {
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
-    if (zone) {
+
+    const role = mapAgencyToRole(agency);
+    let result: boolean = false;
+
+    if (agency === "COS") {
+      if (zone) {
+        return officers.filter((officer) => {
+          const zoneCode = officer?.office_guid?.cos_geo_org_unit?.zone_code ?? null;
+          const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
+          const fromAdminOffice = officer?.office_guid?.cos_geo_org_unit?.administrative_office_ind;
+          const zoneAgencyMatch = zone === zoneCode && (agency === agencyCode || !agency);
+          const roleMatch = officer?.user_roles.includes(role) && !officer?.user_roles.includes("READ ONLY");
+          result = !fromAdminOffice && zoneAgencyMatch && roleMatch;
+          return result;
+        });
+      }
+    } else if (agency === "EPO") {
       return officers.filter((officer) => {
-        // check for nulls
-        const zoneCode = officer?.office_guid?.cos_geo_org_unit?.zone_code ?? null;
-        const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
-        const fromAdminOffice = officer?.office_guid?.cos_geo_org_unit?.administrative_office_ind;
-        const zoneAgencyMatch = zone === zoneCode && (agency === agencyCode || !agency);
-        const result = !fromAdminOffice && zoneAgencyMatch;
+        result = officer?.user_roles.includes(role) && !officer?.user_roles.includes("READ ONLY");
         return result;
       });
     }
-
     return [];
   };
+
+const mapAgencyToRole = (agency: string): string => {
+  let role: string = "";
+  if (agency === "COS") {
+    role = "COS Officer";
+  } else if (agency === "EPO") {
+    role = "CEEB";
+  }
+  return role;
+};
 
 export const assignOfficerToOffice =
   (personId: string, officeId: string): AppThunk =>
