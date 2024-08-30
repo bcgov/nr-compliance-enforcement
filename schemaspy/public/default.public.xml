@@ -3810,6 +3810,7 @@ END;]]></definition>
     jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
     jsonb_cos_alt_phone CONSTANT text := 'cos_alt_phone';
     jsonb_cos_alt_phone_2 CONSTANT text := 'cos_alt_phone_2';
+
     complaint_data jsonb;
     -- Variable to hold the JSONB data from staging_complaint.  Used to create a new complaint
     -- Variables for 'complaint' table
@@ -3851,7 +3852,7 @@ END;]]></definition>
     _observed_ind                      VARCHAR(3);
     _in_progress_ind_bool bool;
     _observed_ind_bool bool;
-    _suspect_witnesss_dtl_text TEXT;
+    _suspect_witnesss_dtl_text VARCHAR(4000);
     _violation_code            VARCHAR(10);
     _gir_type_code             VARCHAR(10);
     _gir_type_description      VARCHAR(50);
@@ -3873,10 +3874,13 @@ END;]]></definition>
     IF complaint_data IS NULL THEN
       RETURN;
     END IF;
-    _report_type := complaint_data ->> 'report_type';
 
-   -- Extract and prepare data for 'complaint' table
-   _detail_text := complaint_data ->> 'cos_call_details';
+    _report_type := complaint_data ->> 'report_type';
+    -- to link actions-taken to a complaint the dataid needs to be used
+    _webeoc_identifier := complaint_data ->> 'dataid'; 
+
+    -- Extract and prepare data for 'complaint' table
+    _detail_text := complaint_data ->> 'cos_call_details';
     _caller_name := left( complaint_data ->> 'cos_caller_name', 100 )
     ||
     CASE
@@ -3924,8 +3928,8 @@ END;]]></definition>
     _location_detailed_text := complaint_data ->> 'cos_location_description';
     _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-	_address_coordinates_lat := validate_coordinate_field(complaint_data ->> 'address_coordinates_lat');
-    _address_coordinates_long := validate_coordinate_field(complaint_data ->> 'address_coordinates_long');
+	  _address_coordinates_lat := complaint_data ->> 'address_coordinates_lat';
+    _address_coordinates_long := complaint_data ->> 'address_coordinates_long';
    
     -- Create a geometry point based on the latitude and longitude
     IF _address_coordinates_lat IS NOT NULL AND _address_coordinates_lat <> '' AND
@@ -3946,7 +3950,6 @@ END;]]></definition>
     _webeoc_cos_area_community := complaint_data ->> 'cos_area_community';
     _webeoc_cos_reffered_by_lst := complaint_data ->> 'cos_reffered_by_lst';
     _cos_reffered_by_txt := left(complaint_data ->> '_cos_reffered_by_txt',120);
-    _webeoc_identifier := complaint_data ->> 'webeoc_identifier';
     SELECT *
     FROM   PUBLIC.insert_and_return_code( _webeoc_cos_reffered_by_lst, 'reprtdbycd' )
     INTO   _cos_reffered_by_lst;
