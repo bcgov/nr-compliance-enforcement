@@ -72,7 +72,6 @@ export interface CodeTableState {
     | Array<Schedule>
     | Array<GirType>
     | Array<DecisionType>
-    | Array<GirType>
     | Array<TeamType>;
 
   agency: Array<Agency>;

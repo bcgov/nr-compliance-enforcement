@@ -172,9 +172,6 @@ export const selectCaseDecision = (state: RootState): Decision => {
     }
   }
 
-  // console.log(complaint);
-  // console.log("assigned: ", assignedTo);
-
   const defaultDecision: Decision = {
     schedule: "",
     sector: "",
