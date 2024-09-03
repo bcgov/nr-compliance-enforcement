@@ -74,13 +74,14 @@ export const ComplaintListTabs: FC<props> = ({ complaintType, viewType, complain
             className={`nav-item comp-tab comp-tab-${complaintType === code ? "active" : "inactive"}`}
             key={`${code}-tab-item`}
           >
-            <div
+            <Nav.Link
               className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
               id={id}
               onClick={() => onTabChange(code)}
+              role="button"
             >
               {name} {complaintTotal(code)}
-            </div>
+            </Nav.Link>
           </Nav.Item>
         );
       })}
