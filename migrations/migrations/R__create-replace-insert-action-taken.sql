@@ -18,6 +18,8 @@ DECLARE
   _action_taken_id        UUID;
   _complaint_update_id    UUID;
   _complaint_id			  VARCHAR(20);
+  _logged_by_firstnames              VARCHAR(250);
+  _logged_by_surname              VARCHAR(250);
   _logged_by              VARCHAR(250);
   _action_timestamp       TIMESTAMP;
   _details                TEXT;
@@ -42,7 +44,13 @@ RAISE notice 'EXECUTING FUNCTION';
   _action_taken_id := staged_data ->> 'actionTakenId';
   _complaint_id := staged_data ->> 'complaintId';
   _complaint_update_id := staged_data ->> 'complaintUpdateGuid';
-  _logged_by := staged_data ->> 'loggedBy';
+  _logged_by_firstnames := regexp_replace(staged_data ->> 'loggedBy','(.+)\s\S+$','\1');
+  _logged_by_surname := regexp_replace(staged_data ->> 'loggedBy','.+[\s]','');
+  IF _logged_by_firstnames IS NOT NULL AND _logged_by_surname IS NOT NULL AND _logged_by_surname <> _logged_by_firstnames THEN
+  _logged_by := concat(_logged_by_surname || ', ' || _logged_by_firstnames);
+  ELSE 
+    _logged_by := staged_data ->> 'loggedBy'; -- In case of a single username return what WebEOC provides.
+  END IF;
   _action_timestamp := (staged_data ->> 'actionTimestamp')::timestamp AT TIME ZONE 'America/Vancouver';
   _details := staged_data ->> 'details';
   _is_update := staged_data ->> 'isUpdate';
