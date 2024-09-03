@@ -245,6 +245,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     }
     if (!from(decisionType).any()) {
       dispatch(fetchCEEBDecisionTypes());
+    }
     if (!from(team).any()) {
       dispatch(fetchTeam());
     }
