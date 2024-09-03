@@ -259,16 +259,27 @@ export const selectOfficersByAgency =
   (state: RootState): Officer[] | null => {
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
+    const role = mapAgencyToRole(agency);
 
     return officers.filter((officer) => {
       const {
         office_guid: {
           cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
         },
+        user_roles,
       } = officer;
-      // check for nulls
+
+      const roleMatch = user_roles.includes(role) && !user_roles.includes("READ ONLY");
       const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
-      return agency === agencyCode && !fromAdminOffice;
+
+      if (agency === "COS") {
+        return agency === agencyCode && !fromAdminOffice && roleMatch;
+      } else if (agency === "EPO") {
+        let result = agency === agencyCode && roleMatch;
+        return result;
+      } else {
+        return false;
+      }
     });
   };
 
