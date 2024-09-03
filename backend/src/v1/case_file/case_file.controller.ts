@@ -156,12 +156,12 @@ export class CaseFileController {
   }
 
   @Post("/decision")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.CEEB)
   async createDecision(@Token() token, @Body() model: CreateDecisionInput): Promise<CaseFileDto> {
     return await this.service.createDecision(token, model);
   }
   @Patch("/decision")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.CEEB)
   async updateDecision(@Token() token, @Body() model: UpdateDecisionInput): Promise<CaseFileDto> {
     const result = await this.service.updateDecision(token, model);
 
