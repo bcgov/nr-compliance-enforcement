@@ -275,7 +275,7 @@ export const selectOfficersByAgency =
       if (agency === "COS") {
         return agency === agencyCode && !fromAdminOffice && roleMatch;
       } else if (agency === "EPO") {
-        let result = agency === agencyCode && roleMatch;
+        let result = roleMatch;
         return result;
       } else {
         return false;
