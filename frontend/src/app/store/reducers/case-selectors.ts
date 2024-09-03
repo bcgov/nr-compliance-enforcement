@@ -151,7 +151,29 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
 };
 
 export const selectCaseDecision = (state: RootState): Decision => {
-  const { cases } = state;
+  const {
+    complaints: { complaint },
+    cases,
+  } = state;
+
+  let assignedTo = "";
+  //-- if the compalint is assigned to an officer pre-select the assigned to officer
+  if (complaint?.delegates) {
+    const { delegates } = complaint;
+    if (from(delegates).any()) {
+      const assigned = delegates.find((item) => item.type === "ASSIGNEE");
+      if (assigned && assigned?.person !== null) {
+        const {
+          person: { id },
+        } = assigned;
+
+        assignedTo = id;
+      }
+    }
+  }
+
+  // console.log(complaint);
+  // console.log("assigned: ", assignedTo);
 
   const defaultDecision: Decision = {
     schedule: "",
@@ -159,7 +181,7 @@ export const selectCaseDecision = (state: RootState): Decision => {
     discharge: "",
     nonCompliance: "",
     rationale: "",
-    assignedTo: "",
+    assignedTo,
     actionTaken: "",
     actionTakenDate: new Date(),
   };

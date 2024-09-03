@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
 import {
   selectDischargeDropdown,
@@ -24,6 +24,7 @@ import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
 import { UUID } from "crypto";
 
 type props = {
+  officerAssigned: string | null;
   leadIdentifier: string;
   toggleEdit: Function;
   //--
@@ -41,6 +42,7 @@ type props = {
 };
 
 export const DecisionForm: FC<props> = ({
+  officerAssigned,
   leadIdentifier,
   toggleEdit,
   //--
@@ -72,16 +74,16 @@ export const DecisionForm: FC<props> = ({
   const officerOptions = useAppSelector(selectOfficersDropdown(true));
 
   //-- error messgaes
-  const [scheduleErrorMessage, setScheduleErrorMessage] = useState("");
-  const [sectorErrorMessage, setSectorErrorMessage] = useState("");
-  const [dischargeErrorMessage, setDischargeErrorMessage] = useState("");
-  const [rationaleErrorMessage, setRationaleErrorMessage] = useState("");
-  const [nonComplianceErrorMessage, setNonComplianceErrorMessage] = useState("");
-  const [dateActionTakenErrorMessage, setDateActionTakenErrorMessage] = useState("");
-  const [decisionTypeErrorMessage, setDecisionTypeErrorMessage] = useState("");
-  const [leadAgencyErrorMessage, setLeadAgencyErrorMessage] = useState("");
-  const [inspectionNumberErrorMessage, setInspectionNumberErrorMessage] = useState("");
-  const [assignedToErrorMessage, setAssignedToErrorMessage] = useState();
+  const [scheduleErrorMessage] = useState("");
+  const [sectorErrorMessage] = useState("");
+  const [dischargeErrorMessage] = useState("");
+  const [rationaleErrorMessage] = useState("");
+  const [nonComplianceErrorMessage] = useState("");
+  const [dateActionTakenErrorMessage] = useState("");
+  const [decisionTypeErrorMessage] = useState("");
+  const [leadAgencyErrorMessage] = useState("");
+  const [inspectionNumberErrorMessage] = useState("");
+  const [assignedToErrorMessage] = useState();
 
   //-- component data
   // eslint-disable-line no-console, max-len
@@ -97,6 +99,13 @@ export const DecisionForm: FC<props> = ({
     actionTaken,
     actionTakenDate,
   });
+
+  useEffect(() => {
+    if (officerAssigned) {
+      updateModel("assignedTo", officerAssigned);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.assignedTo, officerAssigned]);
 
   //-- update the decision state by property
   const updateModel = (property: string, value: string | Date | undefined) => {
@@ -224,7 +233,7 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-schedule-sector-type"
         >
-          <label htmlFor="action-required">WDR schedule/IPM sector type</label>
+          <label htmlFor="outcome-decision-schedule-secto">WDR schedule/IPM sector type</label>
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-schedule-sector"
@@ -245,7 +254,7 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-sector-category"
         >
-          <label htmlFor="action-required">Sector/Category</label>
+          <label htmlFor="outcome-decision-sector-category">Sector/Category</label>
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-sector-category"
@@ -266,7 +275,7 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-discharge-type"
         >
-          <label htmlFor="action-required">Discharge type</label>
+          <label htmlFor="outcome-decision-discharge">Discharge type</label>
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-discharge"
@@ -288,7 +297,7 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-action-taken"
         >
-          <label htmlFor="action-required">Action taken</label>
+          <label htmlFor="outcome-decision-action-taken">Action taken</label>
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-action-taken"
@@ -310,7 +319,7 @@ export const DecisionForm: FC<props> = ({
             className="comp-details-form-row"
             id="decision-lead-agency"
           >
-            <label htmlFor="action-required">Lead agency</label>
+            <label htmlFor="outcome-decision-lead-agency">Lead agency</label>
             <div className="comp-details-input full-width">
               <CompSelect
                 id="outcome-decision-lead-agency"
@@ -333,11 +342,11 @@ export const DecisionForm: FC<props> = ({
             className="comp-details-form-row"
             id="decision-inspection-number"
           >
-            <label htmlFor="action-required">NRIS Inspection number</label>
+            <label htmlFor="outcome-decision-inspection-number">NRIS Inspection number</label>
             <div className="comp-details-input full-width">
               <CompInput
-                id={`comp-ear-tag-value-${id}`}
-                divid="comp-ear-tag-value"
+                id="outcome-decision-inspection-number"
+                divid="outcome-decision-inspection-number-value"
                 type="input"
                 inputClass="comp-form-control"
                 value={data?.inspectionNumber}
@@ -358,7 +367,7 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-non-compliance-decision-matrix"
         >
-          <label htmlFor="action-required">Non-compliance decision matrix</label>
+          <label htmlFor="outcome-decision-non-compliance">Non-compliance decision matrix</label>
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-non-compliance"
@@ -379,7 +388,7 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-rationale"
         >
-          <label htmlFor="action-required">Rationale</label>
+          <label htmlFor="outcome-decision-rationale">Rationale</label>
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-rationale"
@@ -400,7 +409,7 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-assigned-to"
         >
-          <label htmlFor="action-required">Assigned to</label>
+          <label htmlFor="outcome-decision-assigned-to">Assigned to</label>
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-assigned-to"
@@ -421,10 +430,10 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="complaint-outcome-date-div"
         >
-          <label htmlFor="complaint-outcome-date">Date</label>
+          <label htmlFor="outcome-decision-outcome-date">Date</label>
           <div className="comp-details-input">
             <ValidationDatePicker
-              id="complaint-outcome-date"
+              id="outcome-decision-outcome-date"
               selectedDate={data?.actionTakenDate}
               onChange={handleDateChange}
               placeholder="Select date"
@@ -439,7 +448,7 @@ export const DecisionForm: FC<props> = ({
       <div className="comp-details-form-buttons">
         <Button
           variant="outline-primary"
-          id="decision-cancel-button"
+          id="outcome-decision-cancel-button"
           title="Cancel Decision"
           onClick={handleCancelButtonClick}
         >
@@ -447,7 +456,7 @@ export const DecisionForm: FC<props> = ({
         </Button>
         <Button
           variant="primary"
-          id="decision-save-button"
+          id="outcome-decision-save-button"
           title="Save Decision"
           onClick={() => handleSaveButtonClick()}
         >
