@@ -56,6 +56,15 @@ export class OfficerService {
     });
   }
 
+  async findByPersonGuid(person_guid: any): Promise<Officer> {
+    return this.officerRepository.findOne({
+      where: { person_guid: person_guid },
+      relations: {
+        person_guid: {},
+      },
+    });
+  }
+
   async findByUserId(userid: string): Promise<Officer> {
     userid = userid.toUpperCase();
     return this.officerRepository.findOne({

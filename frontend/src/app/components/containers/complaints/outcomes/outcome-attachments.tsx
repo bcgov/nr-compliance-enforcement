@@ -195,7 +195,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
           }}
         >
           <i className="bi bi-plus-circle" />
-          <span>Add Attachments</span>
+          <span>Add attachments</span>
         </Button>
       )}
 

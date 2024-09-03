@@ -53,6 +53,8 @@ import { Discharge } from "src/types/models/code-tables/discharge";
 import { NonCompliance } from "src/types/models/code-tables/non-compliance";
 import { DecisionType } from "src/types/models/code-tables/decision-type";
 import { Rationale } from "src/types/models/code-tables/rationale";
+import { TeamCode } from "../team_code/entities/team_code.entity";
+import { TeamType } from "src/types/models/code-tables/team-type";
 
 @Injectable()
 export class CodeTableService {
@@ -84,6 +86,8 @@ export class CodeTableService {
   private _girTypeCodeRepository: Repository<GirTypeCode>;
   @InjectRepository(ReportedByCode)
   private _reportedByRepository: Repository<ReportedByCode>;
+  @InjectRepository(TeamCode)
+  private _teamCodeRepository: Repository<TeamCode>;
 
   getCodeTableByName = async (table: string, token?: string): Promise<BaseCodeTable[]> => {
     this.logger.debug("in code table: " + JSON.stringify(table));
@@ -654,6 +658,19 @@ export class CodeTableService {
             return table;
           },
         );
+      case "team": {
+        const data = await this._teamCodeRepository.find({ order: { display_order: "ASC" } });
+        let results = data.map(({ team_code, short_description, long_description, display_order, active_ind }) => {
+          let table: TeamType = {
+            team: team_code,
+
+            shortDescription: short_description,
+            longDescription: long_description,
+            displayOrder: display_order,
+            isActive: active_ind,
+          };
+          return table;
+        });
         return results;
       }
     }

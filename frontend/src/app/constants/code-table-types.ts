@@ -31,4 +31,9 @@ export const CODE_TABLE_TYPES = {
   SECTOR: "sector",
   SCHEDULE: "schedule",
   DECISION_TYPE: "decision-type",
+  TEAM: "team",
+
+  //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
+  //  ORGANIZATION_UNIT: "organization-unit",
+  //  PERSON_TYPE: "person-complaint",
 };
