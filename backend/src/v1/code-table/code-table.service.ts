@@ -658,6 +658,7 @@ export class CodeTableService {
             return table;
           },
         );
+        return results;
       }
       case "team": {
         const data = await this._teamCodeRepository.find({ order: { display_order: "ASC" } });
