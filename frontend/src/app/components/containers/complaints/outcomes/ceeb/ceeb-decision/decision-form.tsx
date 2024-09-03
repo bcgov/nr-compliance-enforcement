@@ -180,6 +180,13 @@ export const DecisionForm: FC<props> = ({
     updateModel("actionTakenDate", date);
   };
 
+  const handleActionTakenChange = (value: string) => {
+    //-- if the action taken changes make sure to clear the
+    //-- lead agency and inspection number
+    const update = { ...data, actionTaken: value, leadAgency: undefined, inspectionNumber: undefined };
+    applyData(update);
+  };
+
   const handleCancelButtonClick = () => {
     dispatch(
       openModal({
@@ -308,7 +315,8 @@ export const DecisionForm: FC<props> = ({
               errorMessage={decisionTypeErrorMessage}
               placeholder="Select"
               onChange={(evt) => {
-                updateModel("actionTaken", evt?.value);
+                const action = evt?.value ? evt?.value : "";
+                handleActionTakenChange(action);
               }}
               value={getValue("actionTaken")}
             />

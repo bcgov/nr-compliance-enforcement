@@ -13,8 +13,8 @@ import { FileReviewInput } from "../../types/models/case-files/file-review-input
 import { CreateWildlifeInput } from "../../types/models/case-files/wildlife/create-wildlife-input";
 import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/delete-wildlife-outcome";
 import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
-import { CreateDecisionInput } from "src/types/models/case-files/ceeb/decision/create-decision-input";
-import { UpdateDecisionInput } from "src/types/models/case-files/ceeb/decision/update-decison-input";
+import { CreateDecisionInput } from "../../types/models/case-files/ceeb/decision/create-decision-input";
+import { UpdateDecisionInput } from "../../types/models/case-files/ceeb/decision/update-decison-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -88,7 +88,7 @@ export class CaseFileController {
   }
 
   @Get("/:complaint_id")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   find(@Param("complaint_id") complaint_id: string, @Token() token) {
     return this.service.find(complaint_id, token);
   }

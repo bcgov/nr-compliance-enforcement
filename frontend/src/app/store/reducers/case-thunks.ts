@@ -1053,9 +1053,9 @@ export const upsertDecisionOutcome =
       if (result !== null) {
         dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
 
-        ToggleSuccess("Supplemental note created");
+        ToggleSuccess("Decision outcome added");
       } else {
-        ToggleError("Error, unable to create supplemental note");
+        ToggleError("Error, unable to create decision outcome");
       }
     } else {
       const update = { ...decision, id: current.id };
@@ -1064,9 +1064,9 @@ export const upsertDecisionOutcome =
       if (result !== null) {
         dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
 
-        ToggleSuccess("Supplemental note created");
+        ToggleSuccess("Decision outcome updated");
       } else {
-        ToggleError("Error, unable to create supplemental note");
+        ToggleError("Error, unable to update decision outcome");
       }
     }
 
