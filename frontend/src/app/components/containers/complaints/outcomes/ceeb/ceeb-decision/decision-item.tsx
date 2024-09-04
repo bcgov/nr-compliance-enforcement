@@ -12,6 +12,7 @@ import {
 } from "../../../../../../store/reducers/code-table-selectors";
 import { selectOfficersDropdown } from "../../../../../../store/reducers/officer";
 import Option from "../../../../../../types/app/option";
+import { CASE_ACTION_CODE } from "../../../../../../constants/case_actions";
 
 type props = {
   id?: string;
@@ -117,13 +118,13 @@ export const DecisionItem: FC<props> = ({
         <dt>Action taken</dt>
         <dd>{getValue("actionTaken")?.label}</dd>
       </div>
-      {leadAgency && (
+      {actionTaken === CASE_ACTION_CODE.FWDLEADAGN && (
         <div>
           <dt>Lead agency</dt>
-          <dd>{leadAgency}</dd>
+          <dd>{getValue("leadAgency")?.label}</dd>
         </div>
       )}
-      {inspectionNumber && (
+      {actionTaken === CASE_ACTION_CODE.RESPREC && (
         <div>
           <dt>NRIS Inspection number</dt>
           <dd>{inspectionNumber}</dd>
