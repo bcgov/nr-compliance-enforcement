@@ -112,7 +112,20 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         >
           <div className="comp-data-filters">
             <div className="comp-data-filters-inner">
-              <div className="comp-data-filters-header">Filter by</div>
+              <div className="comp-data-filters-header">
+                Filter by{" "}
+                <Button
+                  className="icon-btn"
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => setOpen(!open)}
+                  aria-controls="example-collapse-text"
+                  aria-expanded={open}
+                  aria-label="Close filters"
+                >
+                  <i className="bi bi-x-lg"></i>
+                </Button>
+              </div>
               <div className="comp-data-filters-body">
                 <ComplaintFilter type={complaintType} />
               </div>

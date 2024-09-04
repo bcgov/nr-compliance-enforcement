@@ -78,12 +78,18 @@
   &-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     flex: 0 0 auto;
     padding: 0 16px;
     height: 44px;
     font-size: 0.875rem;
     font-weight: 700;
     border-bottom: 1px solid $gray-300;
+
+    & .icon-btn {
+      margin-right: -8px;
+      line-height: 36px;
+    }
   }
 
   &-body {
@@ -949,7 +955,7 @@ p {
   .comp-complaint-top-row {
     margin-top: 24px;
   }
-  
+
   .first-row {
     flex-direction: row;
     gap: 10px;
