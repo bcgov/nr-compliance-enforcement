@@ -1,10 +1,7 @@
 export const Decision = {
   15: (state: any) => {
     return {
-      app: {
-        ...state.app,
-        activeTab: "",
-      },
+      ...state,
       codeTables: {
         ...state.codeTables,
         discharge: [],
