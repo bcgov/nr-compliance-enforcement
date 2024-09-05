@@ -1,7 +1,6 @@
 export const Decision = {
-  13: (state: any) => {
+  15: (state: any) => {
     return {
-      ...state,
       app: {
         ...state.app,
         activeTab: "",
