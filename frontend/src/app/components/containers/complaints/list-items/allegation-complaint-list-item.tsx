@@ -114,7 +114,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
         className={`${isExpandedClass} ${isRowHovered ? "comp-table-row-hover-style" : ""}`}
       >
         <td
-          className={`comp-cell-width-100 sticky-col sticky-col--left incident-col ${isExpandedClass}`}
+          className={`comp-cell-width-110 sticky-col sticky-col--left text-center ${isExpandedClass}`}
           onClick={toggleExpand}
         >
           <Link
@@ -125,7 +125,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
           </Link>
         </td>
         <td
-          className={`${isExpandedClass}`}
+          className={`comp-cell-width-160 comp-cell-min-width-160 ac-table-date-cell ${isExpandedClass}`}
           onClick={toggleExpand}
         >
           {reportedOnDateTime}
@@ -179,14 +179,14 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
           className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <div
-            data-initials-listview={getOfficerAssignedInitials()}
-            className="comp-profile-avatar"
-          ></div>
           {getOfficerAssigned()}
         </td>
-        <td className={`${isExpandedClass}`}>{updatedOnDateTime}</td>
-        <td className={`comp-cell-width-110 sticky-col sticky-col--right actions-col ${isExpandedClass}`}>
+        <td className={`comp-cell-width-160 comp-cell-min-width-160 ac-table-date-cell ${isExpandedClass}`}>
+          {updatedOnDateTime}
+        </td>
+        <td
+          className={`comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col ac-table-actions-cell ${isExpandedClass}`}
+        >
           <ComplaintActionItems
             complaint_identifier={id}
             complaint_type={type}
@@ -225,7 +225,9 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
               </div>
             </dl>
           </td>
-          <td className={`comp-cell-width-110 comp-cell-child-expanded sticky-col sticky-col--right actions-col`}></td>
+          <td
+            className={`comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col ac-table-actions-cell`}
+          ></td>
         </tr>
       )}
     </>
