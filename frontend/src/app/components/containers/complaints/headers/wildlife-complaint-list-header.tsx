@@ -17,7 +17,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           sortKey="complaint_identifier"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-110 sticky-col sticky-col--left"
+          className="comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left"
         />
         <SortableHeader
           id="incident-date-column"
@@ -26,6 +26,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           sortKey="incident_reported_utc_timestmp"
           currentSort={sortKey}
           sortDirection={sortDirection}
+          className="comp-cell-width-160 comp-cell-min-width-160"
         />
         <SortableHeader
           title="Nature of Complaint"
@@ -51,8 +52,8 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           sortDirection={sortDirection}
         />
 
-        <th className="unsortable">
-          <div className="comp-header-label">Location/Address</div>
+        <th className="unsortable-header">
+          <div className="header-label">Location/Address</div>
         </th>
 
         <SortableHeader
@@ -61,6 +62,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           sortKey="complaint_status_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
+          className="comp-cell-width-110"
         />
 
         <SortableHeader
@@ -78,9 +80,10 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           sortKey="update_utc_timestamp"
           currentSort={sortKey}
           sortDirection={sortDirection}
+          className="comp-cell-width-160 comp-cell-min-width-160"
         />
 
-        <th className="comp-cell-width-100 unsortable sticky-col sticky-col--right actions-col">
+        <th className="unsortable sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col hwc-table-actions-cell">
           <div className="header-label">Actions</div>
         </th>
       </tr>
