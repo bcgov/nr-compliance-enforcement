@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UseGuards, Query, Post, Logger } from "@nestjs/common";
+import { Controller, Get, Body, Patch, Param, UseGuards, Query, Post, Logger, Request } from "@nestjs/common";
 import { ComplaintService } from "./complaint.service";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -19,6 +19,7 @@ import { dtoAlias } from "../../types/models/complaints/dtoAlias-type";
 
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { ACTION_TAKEN_ACTION_TYPES } from "src/types/constants";
+import { hasRole } from "src/common/has-role";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -46,8 +47,13 @@ export class ComplaintController {
 
   @Get("/search/:complaintType")
   @Roles(Role.COS_OFFICER, Role.CEEB)
-  search(@Param("complaintType") complaintType: COMPLAINT_TYPE, @Query() model: ComplaintSearchParameters) {
-    return this.service.search(complaintType, model);
+  search(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Query() model: ComplaintSearchParameters,
+    @Request() req,
+  ) {
+    const hasCEEBRole = hasRole(req, "CEEB");
+    return this.service.search(complaintType, model, hasCEEBRole);
   }
 
   @Patch("/update-status-by-id/:id")

@@ -9,6 +9,8 @@ import { AddGirTypeCode } from "./migrations/migration-8";
 import { AddWebEOCChangeCount } from "./migrations/migration-9";
 import { RebuildCodeTable } from "./migrations/migration-11";
 import { AddFeatureFlag } from "./migrations/migration-12";
+import { AddActiveTab } from "./migrations/migration-13";
+import { AddTeamCode } from "./migrations/migration-14";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -32,6 +34,8 @@ migration = {
   ...AddWebEOCChangeCount,
   ...RebuildCodeTable,
   ...AddFeatureFlag,
+  ...AddActiveTab,
+  ...AddTeamCode,
 };
 
 export default migration;
