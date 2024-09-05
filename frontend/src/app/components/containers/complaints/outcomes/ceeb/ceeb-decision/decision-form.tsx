@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
 import {
   selectDischargeDropdown,
@@ -19,9 +19,12 @@ import { CompInput } from "../../../../../common/comp-input";
 import { openModal } from "../../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../../types/modal/modal-types";
 import { getCaseFile, upsertDecisionOutcome } from "../../../../../../store/reducers/case-thunks";
-import { selectOfficersDropdown } from "../../../../../../store/reducers/officer";
+import { assignComplaintToOfficer, selectOfficersDropdown } from "../../../../../../store/reducers/officer";
 import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
 import { UUID } from "crypto";
+import { getComplaintById } from "../../../../../../store/reducers/complaints";
+import { ToggleError } from "../../../../../../common/toast";
+import COMPLAINT_TYPES from "../../../../../../types/app/complaint-types";
 
 type props = {
   officerAssigned: string | null;
@@ -95,17 +98,10 @@ export const DecisionForm: FC<props> = ({
     rationale,
     inspectionNumber,
     leadAgency,
-    assignedTo,
+    assignedTo: officerAssigned ? officerAssigned : "",
     actionTaken,
     actionTakenDate,
   });
-
-  useEffect(() => {
-    if (officerAssigned) {
-      updateModel("assignedTo", officerAssigned);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.assignedTo, officerAssigned]);
 
   //-- update the decision state by property
   const updateModel = (property: string, value: string | Date | undefined) => {
@@ -222,8 +218,19 @@ export const DecisionForm: FC<props> = ({
   const handleSaveButtonClick = () => {
     const identifier = id !== undefined ? caseId : leadIdentifier;
 
-    dispatch(upsertDecisionOutcome(identifier, data)).then((result) => {
-      if (result === "success") {
+    dispatch(upsertDecisionOutcome(identifier, data)).then(async (response) => {
+      if (response === "success") {
+        //-- update the assignment of the complaint to the selected officer
+        const { assignedTo } = data;
+        const result = await dispatch(assignComplaintToOfficer(leadIdentifier, assignedTo));
+
+        if (result) {
+          //-- update the complaint
+          dispatch(getComplaintById(leadIdentifier, COMPLAINT_TYPES.ERS));
+        } else {
+          ToggleError("Error, unable to to assign officer to complaint");
+        }
+
         dispatch(getCaseFile(leadIdentifier));
 
         if (id !== undefined) {
