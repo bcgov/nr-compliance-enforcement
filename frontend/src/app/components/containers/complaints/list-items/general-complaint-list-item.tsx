@@ -56,10 +56,7 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
       const {
         person: { firstName, lastName },
       } = officer;
-
-      const firstInitial = firstName.length > 0 ? firstName.substring(0, 1) : "";
-
-      return firstInitial.length > 0 ? `${firstInitial}. ${lastName}` : lastName;
+      return `${lastName}, ${firstName}`;
     }
 
     return "";
