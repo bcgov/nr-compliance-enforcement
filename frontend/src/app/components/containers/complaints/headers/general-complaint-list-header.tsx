@@ -17,7 +17,7 @@ export const GeneralComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sor
           sortKey="complaint_identifier"
           currentSort={sortKey}
           sortDirection={sortDirection}
-          className="comp-cell-width-110 sticky-col sticky-col--left"
+          className="comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left"
         />
         <SortableHeader
           id="incident-date-column"
@@ -26,6 +26,7 @@ export const GeneralComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sor
           sortKey="incident_reported_utc_timestmp"
           currentSort={sortKey}
           sortDirection={sortDirection}
+          className="comp-cell-width-160 comp-cell-min-width-160"
         />
         <SortableHeader
           title="GIR Type"
@@ -70,9 +71,10 @@ export const GeneralComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sor
           sortKey="update_utc_timestamp"
           currentSort={sortKey}
           sortDirection={sortDirection}
+          className="comp-cell-width-160 comp-cell-min-width-160"
         />
 
-        <th className="comp-cell-width-100 unsortable sticky-col sticky-col--right actions-col">
+        <th className="unsortable sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col gc-table-actions-cell">
           <div className="header-label">Actions</div>
         </th>
       </tr>

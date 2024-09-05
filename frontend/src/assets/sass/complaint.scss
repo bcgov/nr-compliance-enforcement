@@ -222,6 +222,103 @@
   }
 }
 
+// COMPLAINT TABLES - GENERAL
+#complaint-list {
+  border-collapse: initial;
+  border-spacing: 0px;
+  font-style: normal;
+
+  tbody {
+    tr {
+      cursor: pointer;
+
+      &:hover {
+        background-color: $gray-110;
+      }
+    }
+
+    td {
+      overflow: hidden;
+    }
+
+    .comp-table-row-hover-style {
+      background-color: $gray-110;
+    }
+
+    .comp-table-icon-weighted:hover {
+      stroke-width: 0.5;
+    }
+  }
+
+  .comp-ellipsis-cell {
+    width: 31px;
+    vertical-align: middle;
+    color: $gray-600;
+    font-size: 14px;
+
+    td {
+      cursor: pointer;
+    }
+  }
+}
+
+// COMPLAINT TABLE - HUMAN WILDLIFE COMPLAINTS
+.hwc-table {
+  &-date-cell {
+    white-space: nowrap;
+  }
+
+  &-actions-cell {
+    text-align: center;
+  }
+}
+
+.hwc-table-dl {
+  margin: 0;
+
+  + dl {
+    margin-top: 16px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  dt {
+    width: 40ch;
+    font-weight: 400;
+    color: $gray-500;
+  }
+
+  dd {
+    margin: 0;
+    white-space: normal;
+    max-width: 92ch;
+  }
+}
+
+// COMPLAINT TABLE - ALLEGATION/COMPLAINTS
+.ac-table {
+  &-date-cell {
+    white-space: nowrap;
+  }
+  &-actions-cell {
+    text-align: center;
+  }
+}
+
+// COMPLAINT TABLE - GENERAL COMPLAINTS
+.gc-table {
+  &-date-cell {
+    white-space: nowrap;
+  }
+  &-actions-cell {
+    text-align: center;
+  }
+}
+
 // COMPLAINT DETAILS AND EDIT PAGES
 // COMPLAINT HEADER COMPONENT
 .comp-details-header {
@@ -699,10 +796,6 @@ p {
   white-space: pre-wrap;
 }
 
-.comp-table tbody div:last-child .comp-cell:last-of-type {
-  border-bottom-right-radius: 4px;
-}
-
 .comp-complaint-label {
   color: $gray-500;
 }
@@ -949,7 +1042,7 @@ p {
   .comp-complaint-top-row {
     margin-top: 24px;
   }
-  
+
   .first-row {
     flex-direction: row;
     gap: 10px;
@@ -1378,160 +1471,6 @@ p {
   margin-top: 6px;
 }
 
-// COMPLAINT DETAILS END
-
-#complaint-list {
-  border-collapse: initial;
-  border-spacing: 0px;
-  font-style: normal;
-
-  tbody {
-    tr {
-      cursor: pointer;
-    }
-
-    tr .comp-table-icons {
-      // don't display unless row is hovered on
-      display: none;
-    }
-
-    tr:hover {
-      background-color: $gray-110;
-    }
-
-    .comp-table-row-hover-style {
-      background-color: $gray-110;
-    }
-
-    // display the interactive icons when the row is hovered on
-    tr:hover .comp-table-icons {
-      margin-top: 10px;
-      display: block;
-    }
-
-    // hide the date when the row is hovered on
-    tr:hover .comp-table-update-date {
-      display: none;
-    }
-
-    td {
-      white-space: nowrap;
-    }
-
-    .comp-table-icon-weighted:hover {
-      stroke-width: 0.5;
-    }
-
-    .comp-cell-action-icon {
-      margin-right: 15px;
-    }
-
-    .comp-cell-break-word {
-      word-break: break-word;
-    }
-
-    .comp-cell-expanded-location {
-      max-width: 800px;
-    }
-
-    .comp-cell-child-actions {
-      vertical-align: bottom !important;
-      text-align: right !important;
-    }
-
-    .comp-cell-child-actions div {
-      margin-right: 20px;
-    }
-  }
-
-  .comp-header-left-border {
-    border-left-width: 1px;
-  }
-
-  .comp-header-right-border {
-    border-right-width: 1px;
-  }
-
-  .comp-header-vertical-border-left {
-    border-left-width: 1px;
-  }
-
-  .comp-ellipsis-cell {
-    width: 31px;
-    vertical-align: middle;
-    color: $gray-600;
-    font-size: 14px;
-
-    td {
-      cursor: pointer;
-    }
-  }
-}
-
-.comp-table-header {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  margin: 0;
-  width: 1330px;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 12px;
-
-  height: 38px;
-  border-spacing: 0px;
-  text-align: left;
-  border-collapse: initial;
-  margin-left: 12px;
-
-  > :not(caption) > * > * {
-    background: $gray-500;
-    background-color: $gray-200;
-    border-color: $gray-500;
-  }
-
-  /* Inside auto layout */
-
-  flex: none;
-  order: 0;
-  align-self: stretch;
-  flex-grow: 0;
-}
-
-.comp-table {
-  border-spacing: 0px;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  margin: 0;
-  width: 1330px;
-  font-style: normal;
-  font-size: 12px;
-  text-align: left;
-  border-collapse: initial;
-
-  /* Inside auto layout */
-
-  flex: none;
-  order: 0;
-  align-self: stretch;
-  flex-grow: 0;
-}
-
-.comp-header-cell {
-  box-sizing: border-box;
-  padding: 0px 12px 0px 12px;
-  height: 38px;
-
-  border-width: 1px 1px 0px 0px;
-  border-style: solid;
-  border-bottom-width: 0px;
-  flex: none;
-  order: 12;
-  align-self: stretch;
-  flex-grow: 0;
-}
-
 .comp-box-footer {
   margin-right: 24px;
   height: 100px;
@@ -1556,20 +1495,6 @@ p {
   }
 }
 
-.comp-cell {
-  box-sizing: border-box;
-  padding: 12px 12px 12px 12px;
-
-  border-width: 0px 1px 0px 0px;
-  border-style: solid;
-  border-color: $gray-310;
-
-  flex: none;
-  order: 12;
-  align-self: stretch;
-  flex-grow: 0;
-}
-
 .comp-cell-parent-expanded {
   border-bottom: none !important;
 }
@@ -1580,33 +1505,6 @@ p {
 
 .comp-cell-child-expanded {
   padding-top: 0 !important;
-}
-
-.comp-cell-left {
-  border-style: solid;
-  border-color: $gray-310;
-  border-width: 0px 1px 0px 1px;
-}
-
-.comp-top-left {
-  border-top-left-radius: 4px;
-  border-width: 1px 1px 0px 1px;
-}
-
-.comp-small-cell {
-  width: 95px;
-}
-
-.comp-medium-cell {
-  width: 130px;
-}
-
-.comp-area-cell {
-  width: 165px;
-}
-
-.comp-location-cell {
-  width: 170px;
 }
 
 .collapsible .header {
@@ -1965,55 +1863,4 @@ p {
 .form-check-input:disabled {
   cursor: not-allowed;
   pointer-events: all;
-}
-
-// COMPLAINT TABLE CUSTOMIZATION
-th,
-td {
-  white-space: nowrap;
-}
-
-td {
-  vertical-align: middle;
-}
-
-td.incident-col {
-  text-align: center;
-}
-
-.actions-col {
-  text-align: center;
-}
-
-.hwc-table-dl {
-  margin: 0;
-
-  + dl {
-    margin-top: 16px;
-  }
-
-  div {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  dt {
-    width: 40ch;
-    font-weight: 400;
-    color: $gray-500;
-  }
-
-  dd {
-    margin: 0;
-    white-space: normal;
-    max-width: 92ch;
-  }
-}
-
-.bg-species-badge {
-  font-size: 0.75rem;
-  line-height: normal;
-  background-color: #e4e4e4;
-  color: #313132;
 }
