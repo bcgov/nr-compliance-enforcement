@@ -4311,8 +4311,12 @@ SELECT
   'COS',
   'Y',
   user,
-  now (),
+  now(),
   user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
   now () ON CONFLICT DO NOTHING;
   
 INSERT INTO
@@ -4540,8 +4544,11 @@ SELECT
   'EPO',
   'Y',
   user,
-  now (),
+  now(),
   user,
+  now() ON CONFLICT
+DO NOTHING;
+
   now () ON CONFLICT DO NOTHING;
   
 INSERT INTO
@@ -4578,8 +4585,12 @@ SELECT
   'EPO',
   'N',
   user,
-  now (),
+  now(),
   user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
   now () ON CONFLICT DO NOTHING;
     
 INSERT INTO
@@ -4597,11 +4608,93 @@ SELECT
   'EPO',
   'N',
   user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACTONSTKEN',
+  'COS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACTONSTKEN',
+  'EPO',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACTONSTKEN',
+  'PARKS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+ -- SET UP COS FILTERS
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACT_FLTR',
+  'COS',
+  'Y',
+  user,
   now (),
   user,
   now () ON CONFLICT DO NOTHING;
 
-INSERT INTO
+  INSERT INTO
   feature_agency_xref (
     feature_code,
     agency_code,
@@ -4672,6 +4765,64 @@ SELECT
   'SPEC_FLTR',
   'EPO',
   'N',
+  user,
+  now(),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+    INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'METH_FLTR',
+  'EPO',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'NAT_FLTR',
+  'EPO',
+  'N',
+  user,
+  now(),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'OFF_FLTR',
+  'EPO',
+  'Y',
   user,
   now (),
   user,
