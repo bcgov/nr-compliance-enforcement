@@ -1569,6 +1569,79 @@ values
     ) ON CONFLICT DO NOTHING;
 
 --------------------------
+-- Table entities for method_complaint_received_code load
+-------------------------
+
+insert into
+    public.method_complaint_received_code (
+        method_complaint_received_code,
+        short_description,
+        long_description,
+        display_order,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'DGIR_FWD',
+        'DGIR_FWD',
+        'DGIR forward',
+        10,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ),
+    (
+        'EMAIL',
+        'EMAIL',
+        'Direct email or phone call ',
+        20,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ),
+    (
+        'MIN_OFFICE',
+        'MIN_OFFICE',
+        'Minister''s office',
+        30,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ),
+    (
+        'RAPP',
+        'RAPP',
+        'RAPP',
+        40,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ),
+    (
+        'RFRL',
+        'RFRL',
+        'Referral',
+        50,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) on conflict do nothing;
+
+--------------------------
 -- New Changes above this line
 -------------------------
 
