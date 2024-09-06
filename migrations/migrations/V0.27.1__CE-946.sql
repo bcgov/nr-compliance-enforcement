@@ -27,7 +27,6 @@ UPDATE officer SET auth_user_guid='b4bb40f5-ee23-4c99-b63c-e741ce61b589' WHERE u
 UPDATE officer SET auth_user_guid='fa4fc3b6-346c-401b-8a29-cd76a097e7b2' WHERE user_id = 'SNORRIS';
 UPDATE officer SET auth_user_guid='eb1ed21e-2da3-40fa-aa82-ae8e52a337ff' WHERE user_id = 'TARWILLI';
 UPDATE officer SET auth_user_guid='07a5cdfa-ff86-4755-ad77-4a5d20c66bea' WHERE user_id = 'CELDER';
-UPDATE officer SET auth_user_guid='0a24b8a9-cb08-4ae2-8287-d5caa3d79007' WHERE user_id = 'ADLAI';
 UPDATE officer SET auth_user_guid='0b524c8e-d202-44ae-a5a0-559930f3187e' WHERE user_id = 'NSMIENK';
 UPDATE officer SET auth_user_guid='eee4b016-7f48-43cb-bd22-325e91bc52c0' WHERE user_id = 'MAWILSON';
 UPDATE officer SET auth_user_guid='c3a081db-a974-449c-9947-8ac8522ba3af' WHERE user_id = 'STRUONG';
@@ -48,7 +47,7 @@ UPDATE officer SET auth_user_guid='07a5cdfa-ff86-4755-ad77-4a5d20c66bea' WHERE u
 UPDATE officer SET auth_user_guid='08a17082-bd02-4ef3-9a38-d6d61f5c365f' WHERE user_id = 'DJSTRUTH';
 UPDATE officer SET auth_user_guid='0b524c8e-d202-44ae-a5a0-559930f3187e' WHERE user_id = 'NSMIENK';
 UPDATE officer SET auth_user_guid='82e8d3b4-bad0-45e8-ad39-80d426ea781c' WHERE user_id = 'JXDUNSDO';
-UPDATE officer SET auth_user_guid='e3ae2a67-83f4-42de-b248-46f217321784' WHERE user_id = 'GRLAVERY';
+UPDATE officer SET auth_user_guid='e3ae2a67-83f4-42de-b248-46f217321784' WHERE user_id = 'GRLAVERY'; 
 UPDATE officer SET auth_user_guid='eee4b016-7f48-43cb-bd22-325e91bc52c0' WHERE user_id = 'MAWILSON';
 UPDATE officer SET auth_user_guid='d657346c-8be6-42cd-9864-120034167892' WHERE user_id = 'MITO';
 UPDATE officer SET auth_user_guid='7ecde23e-9142-4d9b-9e6b-f00b4a549a59' WHERE user_id = 'MGEUZE';
@@ -71,7 +70,6 @@ UPDATE officer SET auth_user_guid='091e810a-c6ac-4754-b762-f10bbc4651e2' WHERE u
 UPDATE officer SET auth_user_guid='c7e86014-2cdd-4e87-9a85-efa280842a43' WHERE user_id = 'KMAYOWSK';
 UPDATE officer SET auth_user_guid='27f86e0d-a158-45c3-af67-c15ec536860f' WHERE user_id = 'GRLAVERY';
 UPDATE officer SET auth_user_guid='d657346c-8be6-42cd-9864-120034167892' WHERE user_id = 'MITO';
-UPDATE officer SET auth_user_guid='0a24b8a9-cb08-4ae2-8287-d5caa3d79007' WHERE user_id = 'ADLAI';
 UPDATE officer SET auth_user_guid='303c6924-2540-4490-8581-70fddf8b3d70' WHERE user_id = 'TYILDIRO';
 UPDATE officer SET auth_user_guid='1432407d-f11b-419c-9c26-96259c0600e2' WHERE user_id = 'JCLAUSEN';
 UPDATE officer SET auth_user_guid='a2c7ef60-5ed1-42c2-8a74-6ac1606b4aec' WHERE user_id = 'MCHAYER';
@@ -82,5 +80,4 @@ UPDATE officer SET auth_user_guid='a5354b38-ab6a-4b5d-8046-5f4bd1bc3c4b' WHERE u
 UPDATE officer SET auth_user_guid='da2fe7e1-fb07-4679-9e2f-1b66df8e7e1b' WHERE user_id = 'JDAMERT';
 UPDATE officer SET auth_user_guid='091e810a-c6ac-4754-b762-f10bbc4651e2' WHERE user_id = 'RGROEGER';
 UPDATE officer SET auth_user_guid='c7e86014-2cdd-4e87-9a85-efa280842a43' WHERE user_id = 'KMAYOWSK';
-UPDATE officer SET auth_user_guid='0a24b8a9-cb08-4ae2-8287-d5caa3d79007' WHERE user_id = 'ADLAI';
 UPDATE officer SET auth_user_guid='303c6924-2540-4490-8581-70fddf8b3d70' WHERE user_id = 'TYILDIRO'
