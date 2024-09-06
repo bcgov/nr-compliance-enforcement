@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { Action, createSlice, ThunkAction } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import { OfficerState } from "../../types/complaints/officers-state";
@@ -160,6 +160,36 @@ export const updateComplaintAssignee =
       await dispatch(getComplaintById(complaint_identifier, complaint_type));
     } catch (error) {
       console.log(error);
+    }
+  };
+
+//-- assign a user to a complaint and return the result of the assignment
+export const assignComplaintToOfficer =
+  (id: string, personId: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const {
+      app: {
+        profile: { idir_username: currentUser },
+      },
+    } = getState();
+
+    // assign a complaint to a person
+    let payload = generateApiParameters(`${config.API_BASE_URL}/v1/person-complaint-xref/${id}`, {
+      active_ind: true,
+      person_guid: {
+        person_guid: personId,
+      },
+      complaint_identifier: id,
+      person_complaint_xref_code: "ASSIGNEE",
+      create_user_id: currentUser,
+    });
+
+    const result = await post<Array<PersonComplaintXref>>(dispatch, payload);
+
+    if (result) {
+      return "success";
+    } else {
+      return "error";
     }
   };
 
