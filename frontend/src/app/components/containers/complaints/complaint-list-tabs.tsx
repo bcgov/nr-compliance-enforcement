@@ -53,7 +53,7 @@ export const ComplaintListTabs: FC<props> = ({ complaintType, viewType, complain
           record = { ...record, name };
           break;
         case COMPLAINT_TYPES.HWCR:
-          record = { ...record, name: "Human Wildlife Conflict" };
+          record = { ...record, name: "Human Wildlife Conflicts" };
           break;
         case COMPLAINT_TYPES.GIR:
           record = { ...record, name: "General Incidents" };

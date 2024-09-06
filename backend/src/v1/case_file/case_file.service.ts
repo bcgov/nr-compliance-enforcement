@@ -14,6 +14,8 @@ import { DeleteEquipmentDto } from "../../types/models/case-files/equipment/dele
 import { CreateWildlifeInput } from "../../types/models/case-files/wildlife/create-wildlife-input";
 import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/delete-wildlife-outcome";
 import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
+import { CreateDecisionInput } from "src/types/models/case-files/ceeb/decision/create-decision-input";
+import { UpdateDecisionInput } from "src/types/models/case-files/ceeb/decision/update-decison-input";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -122,6 +124,19 @@ export class CaseFileService {
         date
       }
       order
+    }
+    decision { 
+      id
+      schedule
+      sector
+      discharge
+      nonCompliance
+      rationale
+      inspectionNumber
+      leadAgency
+      assignedTo
+      actionTaken
+      actionTakenDate
     }
   }
   `;
@@ -397,5 +412,33 @@ export class CaseFileService {
 
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.deleteWildlife;
+  };
+
+  createDecision = async (token: any, model: CreateDecisionInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation createDecision($input: CreateDecisionInput!) {
+        createDecision(input: $input) {
+          caseIdentifier
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.createDecison;
+  };
+
+  updateDecision = async (token: any, model: UpdateDecisionInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation updateDecision($input: UpdateDecisionInput!) {
+        updateDecision(input: $input) {
+          caseIdentifier
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.updateDecision;
   };
 }
