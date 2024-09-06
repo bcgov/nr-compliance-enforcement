@@ -1277,7 +1277,9 @@ export class ComplaintService {
 
     const agencyCodeInstance = new AgencyCode("COS");
 
-    const agencyCode = webeocInd ? agencyCodeInstance : await this._getAgencyByUser();
+    const { ownedBy } = model;
+
+    const agencyCode = webeocInd ? agencyCodeInstance : ownedBy;
 
     const queryRunner = this.dataSource.createQueryRunner();
     let complaintId = "";
