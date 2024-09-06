@@ -14,7 +14,7 @@ type ComplaintParams = {
   id: string;
 };
 
-export const HWCRSupplementalNotes: FC = () => {
+export const SupplementalNote: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
 
