@@ -185,3 +185,5 @@ export const selectCaseDecision = (state: RootState): Decision => {
 
   return !cases.decision ? defaultDecision : cases.decision;
 };
+
+export const selectCeebAuthorization = (state: RootState) => {};
