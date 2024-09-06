@@ -20,6 +20,8 @@ import { ComplaintFilterContext } from "../../../providers/complaint-filter-prov
 import { ComplaintFilterPayload, updateFilter } from "../../../store/reducers/complaint-filters";
 import Option from "../../../types/app/option";
 import { getUserAgency } from "../../../service/user-service";
+import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
+import { isFeatureActive } from "../../../store/reducers/app";
 
 type Props = {
   type: string;
@@ -57,6 +59,17 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
   const communities = useAppSelector(selectCascadedCommunity(region?.value, zone?.value, community?.value));
+
+  const showSpeciesFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.SPECIES_FILTER));
+  const showNatureComplaintFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.NATURE_FILTER));
+  const showZoneFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.ZONE_FILTER));
+  const showGirTypeFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.GIR_FILTER));
+  const showRegionFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.REGION_FILTER));
+  const showCommunityFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.COMMUNITY_FILTER));
+  const showOfficerFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.OFFICER_ASSIGNED_FILTER));
+  const showViolationFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.VIOLATION_TYPE_FILTER));
+  const showDateFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.DATE_LOGGED_FILTER));
+  const showStatusFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.STATUS_FILTER));
 
   const setFilter = useCallback(
     (name: string, value?: Option | Date | null) => {
@@ -109,7 +122,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const renderComplaintFilters = (): JSX.Element => {
     return (
       <div className="comp-filter-container">
-        {COMPLAINT_TYPES.HWCR === type && ( // wildlife only filter
+        {COMPLAINT_TYPES.HWCR === type && showNatureComplaintFilter && showSpeciesFilter && ( // wildlife only filter
           <>
             <div id="comp-filter-nature-of-complaint-id">
               <label htmlFor="nature-of-complaint-select-id">Nature of Complaint</label>
@@ -131,6 +144,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 />
               </div>
             </div>
+
             <div id="comp-species-filter-id">
               <label htmlFor="species-select-id">Species</label>
               <div className="filter-select-padding">
@@ -154,7 +168,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </>
         )}
 
-        {COMPLAINT_TYPES.ERS === type && ( // wildlife only filter
+        {COMPLAINT_TYPES.ERS === type && showViolationFilter && ( // wildlife only filter
           <div id="comp-filter-violation-id">
             {/* <!-- violation types --> */}
             <label htmlFor="violation-type-select-id">Violation Type</label>
@@ -178,7 +192,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {COMPLAINT_TYPES.GIR === type && ( // GIR only filter
+        {COMPLAINT_TYPES.GIR === type && showGirTypeFilter && ( // GIR only filter
           <div id="comp-filter-gir-id">
             <label htmlFor="gir-type-select-id">Gir Type</label>
             <div className="filter-select-padding">
@@ -201,90 +215,90 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {/* <!-- date logged --> */}
-        <div id="comp-filter-date-id">
-          <label htmlFor="date-range-picker-id">Date Logged</label>
-          <div className="filter-select-padding">
-            <DatePicker
-              id="date-range-picker-id"
-              showIcon={true}
-              renderCustomHeader={({ monthDate, customHeaderCount, decreaseMonth, increaseMonth }) => (
-                <div>
-                  <button
-                    aria-label="Previous Month"
-                    className={`react-datepicker__navigation react-datepicker__navigation--previous ${
-                      customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
-                    }`}
-                    onClick={decreaseMonth}
-                  >
-                    <span
-                      className={
-                        "react-datepicker__navigation-icon react-datepicker__navigation-icon--previous datepicker-nav-icon"
-                      }
+        {showDateFilter && (
+          <div id="comp-filter-date-id">
+            <label htmlFor="date-range-picker-id">Date Logged</label>
+            <div className="filter-select-padding">
+              <DatePicker
+                id="date-range-picker-id"
+                showIcon={true}
+                renderCustomHeader={({ monthDate, customHeaderCount, decreaseMonth, increaseMonth }) => (
+                  <div>
+                    <button
+                      aria-label="Previous Month"
+                      className={`react-datepicker__navigation react-datepicker__navigation--previous ${customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
+                        }`}
+                      onClick={decreaseMonth}
                     >
-                      {"<"}
+                      <span
+                        className={
+                          "react-datepicker__navigation-icon react-datepicker__navigation-icon--previous datepicker-nav-icon"
+                        }
+                      >
+                        {"<"}
+                      </span>
+                    </button>
+                    <span className="react-datepicker__current-month">
+                      {monthDate.toLocaleString("en-US", {
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </span>
-                  </button>
-                  <span className="react-datepicker__current-month">
-                    {monthDate.toLocaleString("en-US", {
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </span>
-                  <button
-                    aria-label="Next Month"
-                    className={`react-datepicker__navigation react-datepicker__navigation--next ${
-                      customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
-                    }`}
-                    onClick={increaseMonth}
-                  >
-                    <span
-                      className={
-                        "react-datepicker__navigation-icon react-datepicker__navigation-icon--next datepicker-nav-icon"
-                      }
+                    <button
+                      aria-label="Next Month"
+                      className={`react-datepicker__navigation react-datepicker__navigation--next ${customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
+                        }`}
+                      onClick={increaseMonth}
                     >
-                      {">"}
-                    </span>
-                  </button>
-                </div>
-              )}
-              selected={startDate}
-              onChange={handleDateRangeChange}
-              onChangeRaw={handleManualDateRangeChange}
-              startDate={startDate}
-              endDate={endDate}
-              dateFormat="yyyy-MM-dd"
-              monthsShown={2}
-              selectsRange={true}
-              isClearable={true}
-              wrapperClassName="comp-filter-calendar-input"
-              showPreviousMonths
-              maxDate={new Date()}
-            />
+                      <span
+                        className={
+                          "react-datepicker__navigation-icon react-datepicker__navigation-icon--next datepicker-nav-icon"
+                        }
+                      >
+                        {">"}
+                      </span>
+                    </button>
+                  </div>
+                )}
+                selected={startDate}
+                onChange={handleDateRangeChange}
+                onChangeRaw={handleManualDateRangeChange}
+                startDate={startDate}
+                endDate={endDate}
+                dateFormat="yyyy-MM-dd"
+                monthsShown={2}
+                selectsRange={true}
+                isClearable={true}
+                wrapperClassName="comp-filter-calendar-input"
+                showPreviousMonths
+                maxDate={new Date()}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* <!-- status --> */}
-        <div id="comp-filter-status-id">
-          <label htmlFor="status-select-id">Status</label>
-          <div className="filter-select-padding">
-            <CompSelect
-              id="status-select-id"
-              classNamePrefix="comp-select"
-              onChange={(option) => {
-                setFilter("status", option);
-              }}
-              classNames={{
-                menu: () => "top-layer-select",
-              }}
-              options={statusTypes}
-              placeholder="Select"
-              enableValidation={false}
-              value={status}
-              isClearable={true}
-            />
+        {showStatusFilter && (
+          <div id="comp-filter-status-id">
+            <label htmlFor="status-select-id">Status</label>
+            <div className="filter-select-padding">
+              <CompSelect
+                id="status-select-id"
+                classNamePrefix="comp-select"
+                onChange={(option) => {
+                  setFilter("status", option);
+                }}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={statusTypes}
+                placeholder="Select"
+                enableValidation={false}
+                value={status}
+                isClearable={true}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   };
@@ -295,93 +309,97 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         {/* props */}
         <div className="comp-filter-container">
           {/* <!-- tombstone --> */}
-          <div id="comp-filter-region-id">
-            {/* <!-- region --> */}
-            <label htmlFor="region-select-filter-id">Region</label>
-            <div className="filter-select-padding">
-              <CompSelect
-                id="region-select-filter-id"
-                classNamePrefix="comp-select"
-                onChange={(option) => {
-                  setFilter("region", option);
-                }}
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                options={regions}
-                placeholder="Select"
-                enableValidation={false}
-                value={region}
-                isClearable={true}
-              />
+          {showRegionFilter && (
+            <div id="comp-filter-region-id">
+              {/* <!-- region --> */}
+              <label htmlFor="region-select-filter-id">Region</label>
+              <div className="filter-select-padding">
+                <CompSelect
+                  id="region-select-filter-id"
+                  classNamePrefix="comp-select"
+                  onChange={(option) => {
+                    setFilter("region", option);
+                  }}
+                  classNames={{
+                    menu: () => "top-layer-select",
+                  }}
+                  options={regions}
+                  placeholder="Select"
+                  enableValidation={false}
+                  value={region}
+                  isClearable={true}
+                />
+              </div>
             </div>
-          </div>
-          {/* <!-- zones --> */}
-          <div id="comp-filter-zone-id">
-            <label htmlFor="zone-select-id">Zone</label>
-            <div className="filter-select-padding">
-              <CompSelect
-                id="zone-select-id"
-                classNamePrefix="comp-select"
-                onChange={(option) => {
-                  setFilter("zone", option);
-                }}
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                options={zones}
-                placeholder="Select"
-                enableValidation={false}
-                value={zone}
-                isClearable={true}
-              />
+          )}
+          {showZoneFilter && (
+            <div id="comp-filter-zone-id">
+              <label htmlFor="zone-select-id">Zone</label>
+              <div className="filter-select-padding">
+                <CompSelect
+                  id="zone-select-id"
+                  classNamePrefix="comp-select"
+                  onChange={(option) => {
+                    setFilter("zone", option);
+                  }}
+                  classNames={{
+                    menu: () => "top-layer-select",
+                  }}
+                  options={zones}
+                  placeholder="Select"
+                  enableValidation={false}
+                  value={zone}
+                  isClearable={true}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* <!-- communities --> */}
-          <div id="comp-filter-community-id">
-            <label htmlFor="community-select-id">Community</label>
-            <div className="filter-select-padding">
-              <CompSelect
-                id="community-select-id"
-                classNamePrefix="comp-select"
-                onChange={(option) => {
-                  setFilter("community", option);
-                }}
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                options={communities}
-                placeholder="Select"
-                enableValidation={false}
-                value={community}
-                isClearable={true}
-              />
+          {showCommunityFilter && (
+            <div id="comp-filter-community-id">
+              <label htmlFor="community-select-id">Community</label>
+              <div className="filter-select-padding">
+                <CompSelect
+                  id="community-select-id"
+                  classNamePrefix="comp-select"
+                  onChange={(option) => {
+                    setFilter("community", option);
+                  }}
+                  classNames={{
+                    menu: () => "top-layer-select",
+                  }}
+                  options={communities}
+                  placeholder="Select"
+                  enableValidation={false}
+                  value={community}
+                  isClearable={true}
+                />
+              </div>
             </div>
-          </div>
-
-          {/* <!-- officers --> */}
-          <div id="comp-filter-officer-id">
-            <label htmlFor="officer-select-id">Officer Assigned</label>
-            <div className="filter-select-padding">
-              <CompSelect
-                id="officer-select-id"
-                classNamePrefix="comp-select"
-                onChange={(option) => {
-                  setFilter("officer", option);
-                }}
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                options={officers}
-                defaultOption={{ label: "Unassigned", value: "Unassigned" }}
-                placeholder="Select"
-                enableValidation={false}
-                value={officer}
-                isClearable={true}
-              />
+          )}
+          {showOfficerFilter && (
+            <div id="comp-filter-officer-id">
+              <label htmlFor="officer-select-id">Officer Assigned</label>
+              <div className="filter-select-padding">
+                <CompSelect
+                  id="officer-select-id"
+                  classNamePrefix="comp-select"
+                  onChange={(option) => {
+                    setFilter("officer", option);
+                  }}
+                  classNames={{
+                    menu: () => "top-layer-select",
+                  }}
+                  options={officers}
+                  defaultOption={{ label: "Unassigned", value: "Unassigned" }}
+                  placeholder="Select"
+                  enableValidation={false}
+                  value={officer}
+                  isClearable={true}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
         {renderComplaintFilters()}
       </div>
