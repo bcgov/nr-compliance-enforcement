@@ -6,6 +6,7 @@ import { CaseAction } from "../outcomes/case-action";
 import { AnimalTagV2 } from "../app/complaints/outcomes/wildlife/animal-tag";
 import { DrugUsedV2 } from "../app/complaints/outcomes/wildlife/drug-used";
 import { Decision } from "../app/case-files/ceeb/decision/decision";
+import { Site } from "../app/case-files/ceeb/authorization/site";
 
 export interface CasesState {
   caseId: string | undefined;
@@ -18,6 +19,7 @@ export interface CasesState {
   subject: Array<Subject>;
   isInEdit: IsInEdit;
   decision?: Decision;
+  site?: Site;
 }
 
 export interface IsInEdit {
@@ -30,6 +32,7 @@ export interface IsInEdit {
   fileReview: boolean;
   showSectionErrors: boolean;
   decision: false;
+  site: false;
 }
 export interface Review {
   actor: string;

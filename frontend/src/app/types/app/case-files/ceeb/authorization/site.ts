@@ -3,6 +3,6 @@
 //--
 export interface Site {
   id?: string;
-  type: "authorized" | "unauthroized";
-  site: string;
+  type?: "authorized" | "unauthorized";
+  site?: string;
 }
