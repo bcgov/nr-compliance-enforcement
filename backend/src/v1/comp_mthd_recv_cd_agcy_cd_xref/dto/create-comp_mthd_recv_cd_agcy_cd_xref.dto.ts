@@ -1,7 +1,7 @@
 import { PickType } from "@nestjs/swagger";
 import { CompMthdRecvCdAgcyCdXrefDto } from "./comp_mthd_recv_cd_agcy_cd_xref.dto";
 
-export class CreateCompMthdRecvCdAgcyCdXrefXrefDto extends PickType(CompMthdRecvCdAgcyCdXrefDto, [
+export class CreateCompMthdRecvCdAgcyCdXrefDto extends PickType(CompMthdRecvCdAgcyCdXrefDto, [
   "comp_mthd_recv_cd_agcy_cd_xref_guid",
   "complaint_method_received_code",
   "agency_code",

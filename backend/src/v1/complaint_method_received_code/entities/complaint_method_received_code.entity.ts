@@ -1,16 +1,16 @@
 import { Column, Entity, Index } from "typeorm";
 
-@Index("PK_method_complaint_received_code", ["methodComplaintReceivedCode"], {
+@Index("PK_method_complaint_received_code", ["complaint_method_received_code"], {
   unique: true,
 })
 @Entity("complaint_method_received_code", { schema: "public" })
 export class ComplaintMethodReceivedCode {
   @Column("character varying", {
     primary: true,
-    name: "method_complaint_received_code",
+    name: "complaint_method_received_code",
     length: 10,
   })
-  method_complaintReceivedCode: string;
+  complaint_method_received_code: string;
 
   @Column("character varying", { name: "short_description", length: 50 })
   short_description: string;

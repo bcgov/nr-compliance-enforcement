@@ -1,19 +1,19 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { AttractantHwcrXrefController } from "./comp_mthd_recv_cd_agcy_cd_xref.controller";
-import { AttractantHwcrXrefService } from "./comp_mthd_recv_cd_agcy_cd_xref.service";
+import { CompMthdRecvCdAgcyCdXrefController } from "./comp_mthd_recv_cd_agcy_cd_xref.controller";
+import { CompMthdRecvCdAgcyCdXrefService } from "./comp_mthd_recv_cd_agcy_cd_xref.service";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { CompMthdRecvCdAgcyCdXref } from "./entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { DataSource } from "typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 
-describe("AttractantHwcrXrefController", () => {
-  let controller: AttractantHwcrXrefController;
+describe("CompMthdRecvCdAgcyCdXrefController", () => {
+  let controller: CompMthdRecvCdAgcyCdXrefController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [AttractantHwcrXrefController],
+      controllers: [CompMthdRecvCdAgcyCdXrefController],
       providers: [
-        AttractantHwcrXrefService,
+        CompMthdRecvCdAgcyCdXrefService,
         {
           provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
           useValue: {},
@@ -25,7 +25,7 @@ describe("AttractantHwcrXrefController", () => {
       ],
     }).compile();
 
-    controller = module.get<AttractantHwcrXrefController>(AttractantHwcrXrefController);
+    controller = module.get<CompMthdRecvCdAgcyCdXrefController>(CompMthdRecvCdAgcyCdXrefController);
   });
 
   it("should be defined", () => {

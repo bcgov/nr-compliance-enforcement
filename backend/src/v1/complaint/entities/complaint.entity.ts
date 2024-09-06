@@ -46,10 +46,10 @@ export class Complaint {
   @JoinColumn([
     {
       name: "comp_mthd_recv_cd_agcy_cd_xref_guid",
-      referencedColumnName: "compMthdRecvCdAgcyCdXrefGuid",
+      referencedColumnName: "comp_mthd_recv_cd_agcy_cd_xref_guid",
     },
   ])
-  compMthdRecvCdAgcyCdXrefGuid: CompMthdRecvCdAgcyCdXref;
+  comp_mthd_recv_cd_agcy_cd_xref_guid: CompMthdRecvCdAgcyCdXref;
 
   @ApiProperty({
     example: "DCC",

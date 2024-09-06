@@ -1,7 +1,6 @@
 import { FC, useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes, useParams } from "react-router-dom";
 
-
 import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
 import NotAuthorized, { NotFound } from "./components/containers/pages";
@@ -15,7 +14,13 @@ import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
 import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
 import COMPLAINT_TYPES from "./types/app/complaint-types";
-import { getCodeTableVersion, getConfigurations, getFeatureFlag, getOfficerDefaultZone } from "./store/reducers/app";
+import {
+  getCodeTableVersion,
+  getComplaintMethodReceivedCodes,
+  getConfigurations,
+  getFeatureFlag,
+  getOfficerDefaultZone,
+} from "./store/reducers/app";
 import { CreateComplaint } from "./components/containers/complaints/details/complaint-details-create";
 import { UserManagement } from "./components/containers/admin/user-management";
 import UserService from "./service/user-service";
@@ -34,6 +39,7 @@ const App: FC = () => {
     dispatch(getConfigurations());
     dispatch(getCodeTableVersion());
     dispatch(getFeatureFlag());
+    dispatch(getComplaintMethodReceivedCodes());
   }, [dispatch]);
 
   return (
@@ -105,7 +111,7 @@ const App: FC = () => {
 
 const ComplaintsRouteWrapper = () => {
   const { type } = useParams();
-  let userType = UserService.hasRole(Roles.CEEB) ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR ;
+  let userType = UserService.hasRole(Roles.CEEB) ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR;
   const defaultType = !type ? userType : type;
 
   return <ComplaintsWrapper defaultComplaintType={defaultType} />;

@@ -26,7 +26,7 @@ export class ComplaintMethodReceivedCodeService {
   }
 
   async findOne(id: string): Promise<ComplaintMethodReceivedCode> {
-    return this.complaintMethodReceivedCodeRepository.findOneByOrFail({ method_complaintReceivedCode: id });
+    return this.complaintMethodReceivedCodeRepository.findOneByOrFail({ complaint_method_received_code: id });
   }
 
   async update(
@@ -34,7 +34,7 @@ export class ComplaintMethodReceivedCodeService {
     updateComplaintMethodReceivedCodeDto: UpdateComplaintMethodReceivedCodeDto,
   ): Promise<ComplaintMethodReceivedCode> {
     await this.complaintMethodReceivedCodeRepository.update(
-      { method_complaintReceivedCode: complaint_method_received_code },
+      { complaint_method_received_code: complaint_method_received_code },
       updateComplaintMethodReceivedCodeDto,
     );
     return this.findOne(complaint_method_received_code);

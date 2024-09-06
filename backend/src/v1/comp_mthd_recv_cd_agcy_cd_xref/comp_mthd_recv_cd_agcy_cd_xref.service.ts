@@ -1,99 +1,40 @@
-import { BadRequestException, Inject, Injectable, Logger } from "@nestjs/common";
-import { CreateCompMthdRecvCdAgcyCdXrefXrefDto } from "./dto/create-comp_mthd_recv_cd_agcy_cd_xref.dto";
-import { UpdateAttractantHwcrXrefDto } from "./dto/update-comp_mthd_recv_cd_agcy_cd_xref.dto";
-import { AttractantHwcrXref } from "./entities/attractant_hwcr_xref.entity";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { DataSource, QueryRunner, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
 import { REQUEST } from "@nestjs/core";
-import { getIdirFromRequest } from "../../common/get-idir-from-request";
+import { CompMthdRecvCdAgcyCdXref } from "./entities/comp_mthd_recv_cd_agcy_cd_xref";
 
 @Injectable()
 export class CompMthdRecvCdAgcyCdXrefService {
   private readonly logger = new Logger(CompMthdRecvCdAgcyCdXrefService.name);
-  @InjectRepository(AttractantHwcrXref)
-  private attractantHwcrXrefRepository: Repository<AttractantHwcrXref>;
+  @InjectRepository(CompMthdRecvCdAgcyCdXref)
+  private compMthdRecvCdAgcyCdXrefRepository: Repository<CompMthdRecvCdAgcyCdXref>;
 
   constructor(@Inject(REQUEST) private request: Request, private dataSource: DataSource) {}
 
-  async create(queryRunner: QueryRunner, createAttractantHwcrXrefDto: CreateAttractantHwcrXrefDto) {
-    const createdValue = await this.attractantHwcrXrefRepository.create(createAttractantHwcrXrefDto);
-    queryRunner.manager.save(createdValue);
-    return createdValue;
-  }
-
-  async findAll(): Promise<AttractantHwcrXref[]> {
-    return this.attractantHwcrXrefRepository.find({
+  async findAll(): Promise<CompMthdRecvCdAgcyCdXref[]> {
+    return this.compMthdRecvCdAgcyCdXrefRepository.find({
       where: { active_ind: true },
       relations: {
-        attractant_code: true,
-        hwcr_complaint_guid: true,
+        agency_code: true,
+        complaint_method_received_code: true,
       },
     });
   }
 
-  async findOne(id: any): Promise<AttractantHwcrXref> {
-    return this.attractantHwcrXrefRepository.findOneOrFail({
-      where: { attractant_hwcr_xref_guid: id },
+  async findOne(id: any): Promise<CompMthdRecvCdAgcyCdXref> {
+    return this.compMthdRecvCdAgcyCdXrefRepository.findOneOrFail({
+      where: { comp_mthd_recv_cd_agcy_cd_xref_guid: id },
       relations: {
-        attractant_code: true,
-        hwcr_complaint_guid: true,
+        complaint_method_received_code: true,
+        agency_code: true,
       },
     });
   }
 
-  update(id: number, updateAttractantHwcrXrefDto: UpdateAttractantHwcrXrefDto) {
-    return `This action updates a #${id} attractantHwcrXref`;
-  }
-
-  async updateComplaintAttractants(comaplint: HwcrComplaint, attractants: AttractantHwcrXref[]) {
-    const idir = getIdirFromRequest(this.request);
-
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      attractants.forEach(async (item) => {
-        //-- if there's no xref create a new attractant
-        if (!item.attractant_hwcr_xref_guid) {
-          const { attractant_code } = item;
-
-          let attractant = new CreateAttractantHwcrXrefDto();
-          attractant = {
-            ...attractant,
-            attractant_code,
-            hwcr_complaint_guid: comaplint,
-            create_user_id: idir,
-          };
-
-          const createdResult = await this.attractantHwcrXrefRepository.create(attractant);
-          queryRunner.manager.save(createdResult);
-        } else {
-          //-- update the attractant IF its active_ind is false
-          const { active_ind: isActive, attractant_hwcr_xref_guid: xrefId } = item;
-          if (!isActive) {
-            await this.attractantHwcrXrefRepository
-              .createQueryBuilder()
-              .update(AttractantHwcrXref)
-              .set({ active_ind: isActive, update_user_id: idir })
-              .where("attractant_hwcr_xref_guid = :xrefId", { xrefId })
-              .execute();
-          }
-        }
-      });
-
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      this.logger.error(err);
-      throw new BadRequestException(err);
-    } finally {
-      await queryRunner.release();
-    }
-    return;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} attractantHwcrXref`;
+  async findBy(agencyCode: any): Promise<CompMthdRecvCdAgcyCdXref[]> {
+    return this.compMthdRecvCdAgcyCdXrefRepository.findBy({
+      agency_code: agencyCode,
+    });
   }
 }

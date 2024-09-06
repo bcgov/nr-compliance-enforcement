@@ -13,6 +13,18 @@ export class CompMthdRecvCdAgcyCdXrefDto {
   public comp_mthd_recv_cd_agcy_cd_xref_guid: UUID;
 
   @ApiProperty({
+    example: "INDCAMP",
+    description: "A human readable code used to identify an attractant.",
+  })
+  public agency_code: AgencyCode;
+
+  @ApiProperty({
+    example: "903f87c8-76dd-427c-a1bb-4d179e443252",
+    description: "System generated unique key for a hwcr complaint.",
+  })
+  public complaint_method_received_code: ComplaintMethodReceivedCode;
+
+  @ApiProperty({
     example: "IDIRmburns",
     description: "The id of the user that created the attractant hwcr cross reference.",
   })
@@ -37,18 +49,6 @@ export class CompMthdRecvCdAgcyCdXrefDto {
       "The timestamp when the attractant hwcr cross reference was updated.  The timestamp is stored in UTC with no Offset.",
   })
   update_utc_timestamp: Date;
-
-  @ApiProperty({
-    example: "INDCAMP",
-    description: "A human readable code used to identify an attractant.",
-  })
-  public agency_code: AgencyCode;
-
-  @ApiProperty({
-    example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-    description: "System generated unique key for a hwcr complaint.",
-  })
-  public complaint_method_received_code: ComplaintMethodReceivedCode;
 
   @ApiProperty({
     example: "true",

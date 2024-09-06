@@ -8,4 +8,4 @@ import { ComplaintMethodReceivedCode } from "./entities/complaint_method_receive
   controllers: [],
   providers: [ComplaintMethodReceivedCodeService],
 })
-export class FeatureCodeModule {}
+export class ComplaintMethodReceivedCodeModule {}

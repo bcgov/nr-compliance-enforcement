@@ -1,13 +1,13 @@
 import { Module } from "@nestjs/common";
-import { AttractantHwcrXrefService } from "./comp_mthd_recv_cd_agcy_cd_xref.service";
-import { AttractantHwcrXrefController } from "./comp_mthd_recv_cd_agcy_cd_xref.controller";
+import { CompMthdRecvCdAgcyCdXrefService } from "./comp_mthd_recv_cd_agcy_cd_xref.service";
+import { CompMthdRecvCdAgcyCdXrefController } from "./comp_mthd_recv_cd_agcy_cd_xref.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { AttractantHwcrXref } from "./entities/attractant_hwcr_xref.entity";
+import { CompMthdRecvCdAgcyCdXref } from "./entities/comp_mthd_recv_cd_agcy_cd_xref";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AttractantHwcrXref])],
-  controllers: [AttractantHwcrXrefController],
-  providers: [AttractantHwcrXrefService],
-  exports: [AttractantHwcrXrefService],
+  imports: [TypeOrmModule.forFeature([CompMthdRecvCdAgcyCdXref])],
+  controllers: [CompMthdRecvCdAgcyCdXrefController],
+  providers: [CompMthdRecvCdAgcyCdXrefService],
+  exports: [CompMthdRecvCdAgcyCdXrefService],
 })
-export class AttractantHwcrXrefModule {}
+export class CompMthdRecvCdAgcyCdXrefModule {}
