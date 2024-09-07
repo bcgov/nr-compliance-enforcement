@@ -15,6 +15,9 @@ import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/dele
 import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
 import { CreateDecisionInput } from "../../types/models/case-files/ceeb/decision/create-decision-input";
 import { UpdateDecisionInput } from "../../types/models/case-files/ceeb/decision/update-decison-input";
+import { CreateSiteInput } from "src/types/models/case-files/ceeb/site/create-site-input";
+import { UpdateSiteInput } from "src/types/models/case-files/ceeb/site/update-site-input";
+import { DeleteSiteInput } from "src/types/models/case-files/ceeb/site/delete-site-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -160,11 +163,41 @@ export class CaseFileController {
   async createDecision(@Token() token, @Body() model: CreateDecisionInput): Promise<CaseFileDto> {
     return await this.service.createDecision(token, model);
   }
+
   @Patch("/decision")
   @Roles(Role.CEEB)
   async updateDecision(@Token() token, @Body() model: UpdateDecisionInput): Promise<CaseFileDto> {
-    const result = await this.service.updateDecision(token, model);
+    return await this.service.updateDecision(token, model);
+  }
+
+  @Post("/site")
+  @Roles(Role.CEEB)
+  async createSite(@Token() token, @Body() model: CreateSiteInput): Promise<CaseFileDto> {
+    return await this.service.createSite(token, model);
+  }
+
+  @Patch("/site")
+  @Roles(Role.CEEB)
+  async updateSite(@Token() token, @Body() model: UpdateSiteInput): Promise<CaseFileDto> {
+    const result = await this.service.updateSite(token, model);
 
     return Promise.resolve(result);
+  }
+
+  @Delete("/site")
+  @Roles(Role.COS_OFFICER)
+  async deleteSite(
+    @Token() token,
+    @Query("caseIdentifier") caseIdentifier: string,
+    @Query("updateUserId") updateUserId: string,
+    @Query("outcomeId") outcomeId: string,
+  ): Promise<CaseFileDto> {
+    const input = {
+      caseIdentifier,
+      updateUserId,
+      siteId: outcomeId,
+    };
+
+    return await this.service.deleteSite(token, input as DeleteSiteInput);
   }
 }

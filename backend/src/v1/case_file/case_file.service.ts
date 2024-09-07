@@ -16,6 +16,9 @@ import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/dele
 import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
 import { CreateDecisionInput } from "src/types/models/case-files/ceeb/decision/create-decision-input";
 import { UpdateDecisionInput } from "src/types/models/case-files/ceeb/decision/update-decison-input";
+import { CreateSiteInput } from "src/types/models/case-files/ceeb/site/create-site-input";
+import { UpdateSiteInput } from "src/types/models/case-files/ceeb/site/update-site-input";
+import { DeleteSiteInput } from "src/types/models/case-files/ceeb/site/delete-site-input";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -440,5 +443,16 @@ export class CaseFileService {
 
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.updateDecision;
+  };
+
+  createSite = async (token: any, model: CreateSiteInput): Promise<CaseFileDto> => {
+    throw new Error("Method not implemented.");
+  };
+
+  deleteSite = async (token: any, model: DeleteSiteInput): Promise<CaseFileDto> => {
+    throw new Error("Method not implemented.");
+  };
+  updateSite = async (token: any, model: UpdateSiteInput): Promise<CaseFileDto> => {
+    throw new Error("Method not implemented.");
   };
 }

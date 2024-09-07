@@ -15,8 +15,8 @@ export const AuthorizationForm: FC<props> = ({ id, type, site, leadIdentifier, t
   const [authorized, setAuthroized] = useState("");
   const [unauthorized, setUnauthorized] = useState("");
 
-  const [authorizedErrorMessage, setAuthroizedErrorMessage] = useState("");
-  const [unauthorizedErrorMessage, setUnauthorizedErrorMessage] = useState("");
+  const [authorizedErrorMessage] = useState("");
+  const [unauthorizedErrorMessage] = useState("");
 
   const handleUpdateSiteChange = (type: "authorized" | "unauthorized", value: string) => {
     if (type === "authorized") {
