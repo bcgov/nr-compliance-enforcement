@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Code, Repository, SelectQueryBuilder } from "typeorm";
+import { Repository, SelectQueryBuilder } from "typeorm";
 
 import BaseCodeTable, {
   Agency,
@@ -47,6 +47,12 @@ import { DrugRemainingOutcome } from "src/types/models/code-tables/drug-remainin
 import { WildlifeComplaintOutcome } from "src/types/models/code-tables/wildlfe-complaint-outcome";
 import { get } from "../../external_api/case_management";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
+import { Schedule } from "src/types/models/code-tables/schedule";
+import { SectorCode } from "src/types/models/code-tables/sector-code";
+import { Discharge } from "src/types/models/code-tables/discharge";
+import { NonCompliance } from "src/types/models/code-tables/non-compliance";
+import { DecisionType } from "src/types/models/code-tables/decision-type";
+import { Rationale } from "src/types/models/code-tables/rationale";
 import { TeamCode } from "../team_code/entities/team_code.entity";
 import { TeamType } from "src/types/models/code-tables/team-type";
 
@@ -542,6 +548,116 @@ export class CodeTableService {
           };
           return table;
         });
+        return results;
+      }
+      case "schedule": {
+        const { data } = await get(token, {
+          query: "{scheduleCodes{scheduleCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.scheduleCodes.map(
+          ({ scheduleCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: Schedule = {
+              schedule: scheduleCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "sector": {
+        const { data } = await get(token, {
+          query: "{sectorCodes{sectorCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.sectorCodes.map(
+          ({ sectorCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: SectorCode = {
+              sector: sectorCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "discharge": {
+        const { data } = await get(token, {
+          query: "{ dischargeCodes { dischargeCode shortDescription longDescription displayOrder activeIndicator} }",
+        });
+        const results = data.dischargeCodes.map(
+          ({ dischargeCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: Discharge = {
+              discharge: dischargeCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "rationale": {
+        const { data } = await get(token, {
+          query: "{rationaleCodes{rationaleCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.rationaleCodes.map(
+          ({ rationaleCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: Rationale = {
+              rationale: rationaleCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "non-compliance": {
+        const { data } = await get(token, {
+          query:
+            "{nonComplianceCodes{nonComplianceCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.nonComplianceCodes.map(
+          ({ nonComplianceCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: NonCompliance = {
+              nonCompliance: nonComplianceCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "decision-type": {
+        const { data } = await get(token, {
+          query:
+            "{CEEBDecisionActions{actionTypeCode actionCode displayOrder activeIndicator shortDescription longDescription}}",
+        });
+        const results = data.CEEBDecisionActions.map(
+          ({ actionCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: DecisionType = {
+              decisionType: actionCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
         return results;
       }
       case "team": {
