@@ -1624,18 +1624,35 @@ p {
   display: none;
 }
 
+// COMPLAINT PAGE NAVIGATION TABS
 .comp-tabs {
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
 }
 
-.comp-tab-active {
-  color: $gray-700;
-}
+.comp-tab {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 
-.comp-tab-inactive {
-  color: $bc-gov-shade-300;
+  &-active {
+    color: $gray-700;
+  }
+
+  &-inactive {
+    color: $bc-gov-shade-300;
+  }
+
+  .nav-link {
+    outline: 2px solid transparent;
+    outline-offset: -2px;
+    transition: all ease-out 0.2s;
+
+    &:focus-visible {
+      outline-color: $bc-brand-links;
+      color: $bc-brand-links;
+    }
+  }
 }
 
 .comp-sub-header {

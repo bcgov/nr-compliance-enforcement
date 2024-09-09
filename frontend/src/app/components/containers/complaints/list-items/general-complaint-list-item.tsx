@@ -62,23 +62,6 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
     return "";
   };
 
-  const getOfficerAssignedInitials = () => {
-    const officer = delegates.find((item) => item.type === "ASSIGNEE");
-    if (officer) {
-      const {
-        person: { firstName, lastName },
-      } = officer;
-
-      const firstInitial = firstName.length > 0 ? firstName.substring(0, 1) : "";
-      const lastInitial = lastName.length > 0 ? lastName.substring(0, 1) : "";
-      const initials = firstInitial + lastInitial;
-
-      return initials;
-    }
-
-    return "";
-  };
-
   const reportedOnDateTime = formatDateTime(reportedOn.toString());
   const updatedOnDateTime = formatDateTime(updatedOn.toString());
 
@@ -156,10 +139,6 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
           className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <div
-            data-initials-listview={getOfficerAssignedInitials()}
-            className="comp-profile-avatar"
-          ></div>
           {getOfficerAssigned()}
         </td>
         <td className={`comp-cell-width-160 comp-cell-min-width-160 gc-table-date-cell ${isExpandedClass}`}>
