@@ -744,7 +744,7 @@ p {
 }
 
 // TABLES
-.table {
+.comp-table {
   font-size: 0.875rem;
 
   thead {
@@ -756,6 +756,7 @@ p {
       background: $gray-100;
       background-color: $gray-100;
       border-color: $gray-300;
+      overflow: hidden;
       white-space: nowrap;
       vertical-align: middle;
 
@@ -774,6 +775,9 @@ p {
   }
 
   td {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    overflow: hidden;
     border-color: $gray-300;
   }
 
@@ -815,7 +819,13 @@ td.sticky-col {
   background-color: #fff;
 }
 
-.actions-col {
+td.actions-col {
+  padding-top: 0;
+  padding-bottom: 0;
+  .btn {
+    margin-top: 4px;
+  }
+
   .btn + .btn {
     margin-left: 8px;
   }
@@ -832,12 +842,12 @@ td.sticky-col {
     justify-content: space-between;
     gap: 0.5rem;
   }
+}
 
-  & .header-label {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+.header-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 // TABS
