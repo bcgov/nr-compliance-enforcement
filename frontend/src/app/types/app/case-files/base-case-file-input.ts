@@ -9,7 +9,7 @@ export interface BaseCaseFileCreateInput {
 }
 
 export interface BaseCaseFileUpdateInput {
-  caseIdentifier: UUID;
+  caseIdentifier: UUID | string;
   actor?: string;
   updateUserId: string;
   actionId?: string;
