@@ -46,6 +46,7 @@ import { UpdateAnimalOutcomeInput } from "../../types/app/case-files/animal-outc
 import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
 import { CreateDecisionInput } from "../../types/app/case-files/ceeb/decision/create-decision-input";
 import { UpdateDecisionInput } from "../../types/app/case-files/ceeb/decision/update-decsion-input";
+import { getUserAgency } from "../../service/user-service";
 
 //-- general thunks
 export const findCase =
@@ -468,7 +469,11 @@ const parsePreventionResponse = async (
 
 //-- supplemental note thunks
 export const upsertNote =
-  (id: string, note: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (
+    id: string,
+    complaintType: string,
+    note: string,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       officers: { officers },
@@ -489,8 +494,8 @@ export const upsertNote =
         const input: CreateSupplementalNotesInput = {
           note,
           leadIdentifier: id,
-          agencyCode: "COS",
-          caseCode: "HWCR",
+          agencyCode: getUserAgency(),
+          caseCode: complaintType,
           actor,
           createUserId: userId,
         };
