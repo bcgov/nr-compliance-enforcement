@@ -68,7 +68,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
             <div>
               {actions.map((action: ActionTaken) => (
                 <div
-                  className="comp-complaint-update-item"
+                  className="comp-complaint-update-item comp-complaint-top-row"
                   key={action.actionTakenGuid}
                 >
                   <div className="comp-complaint-update-item-row first-row">
@@ -86,42 +86,38 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                       {formatTime(action.actionUtcTimestamp)}
                     </div>
                   </div>
-                  {action.actionDetailsTxt && (
-                    <div className="complaint-description-section">
-                      <div className="complaint-description-label">Details</div>
-                      <div
-                        className={`complaint-description-text ${
-                          expandedActions[action.actionTakenGuid] ? "expanded" : ""
-                        } ${showLinks[action.actionTakenGuid] ? "needs-gradient" : ""}`}
-                        ref={(el) => (descriptionRefs.current[action.actionTakenGuid] = el)}
-                        style={{
-                          maxHeight: expandedActions[action.actionTakenGuid] ? "none" : "6em",
-                          overflow: expandedUpdates[action.actionTakenGuid] ? "visible" : "hidden",
-                        }}
-                      >
-                        {action.actionDetailsTxt}
-                      </div>
-                      {showLinks[action.actionTakenGuid] && (
-                        <div className="show-more-container">
-                          <button
-                            type="button"
-                            className="show-more-link"
-                            onClick={() => toggleExpand(action.actionTakenGuid)}
-                          >
-                            {expandedActions[action.actionTakenGuid] ? "Click to collapse" : "Click to expand"}
-                          </button>
-                        </div>
-                      )}
+
+                  <div className="comp-complaint-update-item-row first-row">
+                    <div className="complaint-description-label">Details</div>
+                    <div
+                      className={`update-description-text ${
+                        expandedActions[action.actionTakenGuid] ? "expanded" : ""
+                      } ${showLinks[action.actionTakenGuid] ? "needs-gradient" : ""}`}
+                      ref={(el) => (descriptionRefs.current[action.actionTakenGuid] = el)}
+                      style={{
+                        maxHeight: expandedActions[action.actionTakenGuid] ? "none" : "6em",
+                        overflow: expandedUpdates[action.actionTakenGuid] ? "visible" : "hidden",
+                      }}
+                    >
+                      {action.actionDetailsTxt}
                     </div>
-                  )}
-                  <div className="complaint-details-section">
-                    <div className="complaint-details-row">
-                      {action.loggedByTxt && (
-                        <div className="complaint-logged-label-value-pair">
-                          <div className="complaint-description-label">Logged by:</div>
-                          <div className="complaint-description-text">{action.loggedByTxt}</div>
-                        </div>
-                      )}
+                    {showLinks[action.actionTakenGuid] && (
+                      <div className="show-more-container">
+                        <button
+                          type="button"
+                          className="show-more-link"
+                          onClick={() => toggleExpand(action.actionTakenGuid)}
+                        >
+                          {expandedActions[action.actionTakenGuid] ? "Click to collapse" : "Click to expand"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="comp-complaint-update-item-row first-row">
+                    <div className="complaint-description-label">Logged by </div>
+                    <div className="logged-by-text">
+                      <div className="complaint-description-text">{action.loggedByTxt}</div>
                     </div>
                   </div>
                 </div>

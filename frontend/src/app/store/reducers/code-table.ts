@@ -33,6 +33,14 @@ import { DrugRemainingOutcome } from "../../types/app/code-tables/drug-remaining
 import { Equipment } from "../../types/app/code-tables/equipment";
 import { PreventionType } from "../../types/app/code-tables/prevention-type";
 import { GirType } from "../../types/app/code-tables/gir-type";
+import {
+  fetchDischargeTypes,
+  fetchNonComplianceTypes,
+  fetchRationaleTypes,
+  fetchSectorTypes,
+  fetchScheduleTypes,
+  fetchCEEBDecisionTypes,
+} from "./code-table-thunks";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -61,6 +69,13 @@ const initialState: CodeTableState = {
   "drug-remaining-outcomes": [],
   equipment: [],
   "gir-type": [],
+  discharge: [],
+  "non-compliance": [],
+  rationale: [],
+  sector: [],
+  schedule: [],
+  "decision-type": [],
+  team: [],
 };
 
 export const codeTableSlice = createSlice({
@@ -113,6 +128,13 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "drug-remaining-outcomes": remainingDrugUse,
       equipment,
       "gir-type": girType,
+      discharge,
+      "non-compliance": nonCompliance,
+      rationale,
+      sector,
+      schedule,
+      "decision-type": decisionType,
+      team,
     },
   } = state;
 
@@ -206,6 +228,27 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(girType).any()) {
       dispatch(fetchGirTypes());
     }
+    if (!from(discharge).any()) {
+      dispatch(fetchDischargeTypes());
+    }
+    if (!from(nonCompliance).any()) {
+      dispatch(fetchNonComplianceTypes());
+    }
+    if (!from(rationale).any()) {
+      dispatch(fetchRationaleTypes());
+    }
+    if (!from(sector).any()) {
+      dispatch(fetchSectorTypes());
+    }
+    if (!from(schedule).any()) {
+      dispatch(fetchScheduleTypes());
+    }
+    if (!from(decisionType).any()) {
+      dispatch(fetchCEEBDecisionTypes());
+    }
+    if (!from(team).any()) {
+      dispatch(fetchTeam());
+    }
   } catch (error) {}
 };
 
@@ -243,6 +286,12 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchDrugUseMethods());
     dispatch(fetchRemainingDrugUse());
     dispatch(fetchEquipment());
+    dispatch(fetchDischargeTypes());
+    dispatch(fetchNonComplianceTypes());
+    dispatch(fetchRationaleTypes());
+    dispatch(fetchSectorTypes());
+    dispatch(fetchScheduleTypes());
+    dispatch(fetchCEEBDecisionTypes());
   } catch (error) {
     console.error(error);
   }
@@ -550,6 +599,15 @@ export const fetchGirTypes = (): AppThunk => async (dispatch) => {
   }
 };
 
+export const fetchTeam = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.TEAM}`);
+  const response = await get<Array<GirType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.TEAM, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
 export const selectCodeTable =
   (table: string) =>
   (state: RootState): Array<any> => {
@@ -592,6 +650,18 @@ export const selectAgencyDropdown = (state: RootState): Array<Option> => {
 
   const data = agency.map(({ agency, longDescription }) => {
     const item: Option = { label: longDescription, value: agency };
+    return item;
+  });
+  return data;
+};
+
+export const selectTeamDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { team },
+  } = state;
+
+  const data = team.map(({ team, longDescription }) => {
+    const item: Option = { label: longDescription, value: team };
     return item;
   });
   return data;

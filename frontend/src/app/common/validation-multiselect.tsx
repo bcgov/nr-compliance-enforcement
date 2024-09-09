@@ -11,6 +11,7 @@ interface ValidationMultiSelectProps {
   classNamePrefix: string;
   onChange: Function;
   errMsg: string;
+  values?: Option[];
 }
 
 export const ValidationMultiSelect: FC<ValidationMultiSelectProps> = ({
@@ -22,6 +23,7 @@ export const ValidationMultiSelect: FC<ValidationMultiSelectProps> = ({
   classNamePrefix,
   onChange,
   errMsg,
+  values,
 }) => {
   const errClass = errMsg === "" ? "" : "error-message";
   const calulatedClass = errMsg === "" ? "" : "error-border";
@@ -38,6 +40,7 @@ export const ValidationMultiSelect: FC<ValidationMultiSelectProps> = ({
           classNamePrefix={classNamePrefix}
           className={calulatedClass}
           defaultValue={defaultValue}
+          value={values}
           isMulti
         />
       </div>
