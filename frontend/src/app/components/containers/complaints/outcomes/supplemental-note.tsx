@@ -9,13 +9,10 @@ import { selectSupplementalNote } from "../../../../store/reducers/case-selector
 import { openModal } from "../../../../store/reducers/app";
 import { DELETE_NOTE } from "../../../../types/modal/modal-types";
 import { setIsInEdit } from "../../../../store/reducers/cases";
-
-type ComplaintParams = {
-  id: string;
-};
+import { ComplaintParams } from "../details/complaint-details-edit";
 
 export const SupplementalNote: FC = () => {
-  const { id = "" } = useParams<ComplaintParams>();
+  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
 
   const officer = useAppSelector(selectCurrentOfficer());
@@ -77,6 +74,7 @@ export const SupplementalNote: FC = () => {
       return (
         <SupplementalNotesInput
           id={id}
+          complaintType={complaintType}
           notes={note}
           currentOfficer={officer}
           setShowInput={setShowInput}
