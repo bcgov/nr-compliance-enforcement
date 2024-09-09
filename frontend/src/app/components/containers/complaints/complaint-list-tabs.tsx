@@ -78,7 +78,6 @@ export const ComplaintListTabs: FC<props> = ({ complaintType, viewType, complain
               className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
               id={id}
               onClick={() => onTabChange(code)}
-              role="button"
             >
               {name} {complaintTotal(code)}
             </Nav.Link>

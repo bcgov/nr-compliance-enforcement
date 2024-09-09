@@ -52,7 +52,7 @@ export const SideBar: FC = () => {
           <Link
             className="comp-sidenav-item comp-sidenav-item-lg"
             to={route}
-            id={`icon-${id}`}
+            id={id}
           >
             <i className={`comp-sidenav-item-icon ${icon}`}></i>
             <span className="comp-sidenav-item-name">{name}</span>
