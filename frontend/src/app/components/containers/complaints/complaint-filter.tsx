@@ -20,8 +20,7 @@ import { ComplaintFilterContext } from "../../../providers/complaint-filter-prov
 import { ComplaintFilterPayload, updateFilter } from "../../../store/reducers/complaint-filters";
 import Option from "../../../types/app/option";
 import { getUserAgency } from "../../../service/user-service";
-import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
-import { isFeatureActive } from "../../../store/reducers/app";
+import { listActiveFilters } from "../../../store/reducers/app";
 
 type Props = {
   type: string;
@@ -60,16 +59,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
   const communities = useAppSelector(selectCascadedCommunity(region?.value, zone?.value, community?.value));
 
-  const showSpeciesFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.SPECIES_FILTER));
-  const showNatureComplaintFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.NATURE_FILTER));
-  const showZoneFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.ZONE_FILTER));
-  const showGirTypeFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.GIR_FILTER));
-  const showRegionFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.REGION_FILTER));
-  const showCommunityFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.COMMUNITY_FILTER));
-  const showOfficerFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.OFFICER_ASSIGNED_FILTER));
-  const showViolationFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.VIOLATION_TYPE_FILTER));
-  const showDateFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.DATE_LOGGED_FILTER));
-  const showStatusFilter = useAppSelector(isFeatureActive(FEATURE_TYPES.STATUS_FILTER));
+  const activeFilters = useAppSelector(listActiveFilters());
 
   const setFilter = useCallback(
     (name: string, value?: Option | Date | null) => {
@@ -122,7 +112,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const renderComplaintFilters = (): JSX.Element => {
     return (
       <div className="comp-filter-container">
-        {COMPLAINT_TYPES.HWCR === type && showNatureComplaintFilter && showSpeciesFilter && ( // wildlife only filter
+        {COMPLAINT_TYPES.HWCR === type && activeFilters.showNatureComplaintFilter && activeFilters.showSpeciesFilter && ( // wildlife only filter
           <>
             <div id="comp-filter-nature-of-complaint-id">
               <label htmlFor="nature-of-complaint-select-id">Nature of Complaint</label>
@@ -168,7 +158,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </>
         )}
 
-        {COMPLAINT_TYPES.ERS === type && showViolationFilter && ( // wildlife only filter
+        {COMPLAINT_TYPES.ERS === type && activeFilters.showViolationFilter && ( // wildlife only filter
           <div id="comp-filter-violation-id">
             {/* <!-- violation types --> */}
             <label htmlFor="violation-type-select-id">Violation Type</label>
@@ -192,7 +182,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {COMPLAINT_TYPES.GIR === type && showGirTypeFilter && ( // GIR only filter
+        {COMPLAINT_TYPES.GIR === type && activeFilters.showGirTypeFilter && ( // GIR only filter
           <div id="comp-filter-gir-id">
             <label htmlFor="gir-type-select-id">Gir Type</label>
             <div className="filter-select-padding">
@@ -215,7 +205,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {showDateFilter && (
+        {activeFilters.showDateFilter && (
           <div id="comp-filter-date-id">
             <label htmlFor="date-range-picker-id">Date Logged</label>
             <div className="filter-select-padding">
@@ -277,7 +267,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {showStatusFilter && (
+        {activeFilters.showStatusFilter && (
           <div id="comp-filter-status-id">
             <label htmlFor="status-select-id">Status</label>
             <div className="filter-select-padding">
@@ -309,7 +299,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         {/* props */}
         <div className="comp-filter-container">
           {/* <!-- tombstone --> */}
-          {showRegionFilter && (
+          {activeFilters.showRegionFilter && (
             <div id="comp-filter-region-id">
               {/* <!-- region --> */}
               <label htmlFor="region-select-filter-id">Region</label>
@@ -332,7 +322,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               </div>
             </div>
           )}
-          {showZoneFilter && (
+          {activeFilters.showZoneFilter && (
             <div id="comp-filter-zone-id">
               <label htmlFor="zone-select-id">Zone</label>
               <div className="filter-select-padding">
@@ -355,7 +345,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             </div>
           )}
 
-          {showCommunityFilter && (
+          {activeFilters.showCommunityFilter && (
             <div id="comp-filter-community-id">
               <label htmlFor="community-select-id">Community</label>
               <div className="filter-select-padding">
@@ -377,7 +367,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               </div>
             </div>
           )}
-          {showOfficerFilter && (
+          {activeFilters.showOfficerFilter && (
             <div id="comp-filter-officer-id">
               <label htmlFor="officer-select-id">Officer Assigned</label>
               <div className="filter-select-padding">
