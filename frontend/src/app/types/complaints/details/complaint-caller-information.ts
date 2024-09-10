@@ -11,5 +11,5 @@ export interface ComplaintCallerInformation {
   alternatePhone?: string;
   ownedByAgencyCode: Agency;
   reportedByCode?: ReportedBy;
-  complaintMethodReceivedCode?: string;
+  complaintMethodReceivedCode?: ComplaintMethodReceivedType;
 }

@@ -1045,8 +1045,9 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
     code: string,
     codes: Array<ComplaintMethodReceivedType>,
   ): ComplaintMethodReceivedType | null => {
-    if (codes && from(codes).any(({ complaintMethodReceived }) => complaintMethodReceived === code)) {
-      const selected = from(codes).first(({ complaintMethodReceived }) => complaintMethodReceived === code);
+    debugger;
+    if (codes && from(codes).any(({ complaintMethodReceivedCode }) => complaintMethodReceivedCode === code)) {
+      const selected = from(codes).first(({ complaintMethodReceivedCode }) => complaintMethodReceivedCode === code);
 
       return selected;
     }
@@ -1074,7 +1075,7 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
       alternatePhone: phone3,
       address,
       email,
-      complaintMethodReceivedCode: complaintMethodReceivedCode,
+      complaintMethodReceivedCode: complaintReceivedMethod ?? undefined,
     };
 
     if (reportedByCode) {
@@ -1083,9 +1084,6 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
 
     if (ownedByAgencyCode) {
       results = { ...results, ownedByAgencyCode };
-    }
-    if (complaintMethodReceivedCode) {
-      results = { ...results, complaintMethodReceivedCode };
     }
   }
   return results;

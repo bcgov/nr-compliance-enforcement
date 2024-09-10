@@ -52,7 +52,7 @@ export const CallerInformation: FC = () => {
             </div>
             <div>
               <dt>Method complaint was received</dt>
-              <dd id="comp-details-complaint-received-method">{complaintMethodReceivedCode}</dd>
+              <dd id="comp-details-complaint-received-method">{complaintMethodReceivedCode?.longDescription}</dd>
             </div>
           </dl>
         </Card.Body>
