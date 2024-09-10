@@ -14,13 +14,14 @@ import { ToggleError } from "../../../../../common/toast";
 
 type props = {
   id: string;
+  complaintType: string;
   notes: string;
   currentOfficer: OfficerDto | null;
   mode: "create" | "update";
   setShowInput: Function;
 };
 
-export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, mode, setShowInput }) => {
+export const SupplementalNotesInput: FC<props> = ({ id, complaintType, notes, currentOfficer, mode, setShowInput }) => {
   const currentDate = new Date();
 
   const dispatch = useAppDispatch();
@@ -68,7 +69,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, notes, currentOfficer, m
 
   const handleSaveNotes = () => {
     if (validateInput()) {
-      dispatch(upsertNote(id, currentNotes)).then((result) => {
+      dispatch(upsertNote(id, complaintType, currentNotes)).then((result) => {
         if (result === "success") {
           dispatch(getCaseFile(id));
           setShowInput(false);

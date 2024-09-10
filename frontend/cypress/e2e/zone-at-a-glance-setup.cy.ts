@@ -9,7 +9,7 @@ describe("COMPENF-137 Zone at a Glance - Page Set Up", () => {
     cy.visit("/");
 
     //-- there should be more than one link in the side bar
-    cy.get(".comp-nav-item-list")
+    cy.get(".comp-sidenav-list")
       .find("a")
       .then(({ length }) => {
         expect(length, "rows N").to.be.gt(1);
@@ -21,7 +21,7 @@ describe("COMPENF-137 Zone at a Glance - Page Set Up", () => {
     cy.visit("/");
 
     //-- sidebar should have link to zone at a glance
-    cy.get(".comp-nav-item-list")
+    cy.get(".comp-sidenav-list")
       .find("a")
       .then((items) => {
         const list = Array.from(items, (item) => {
