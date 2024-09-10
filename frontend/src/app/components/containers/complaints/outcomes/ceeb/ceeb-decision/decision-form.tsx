@@ -306,7 +306,7 @@ export const DecisionForm: FC<props> = ({
             />
           </div>
         </div>
-        <hr></hr>
+        <hr className="my-0"></hr>
         <div
           className="comp-details-form-row"
           id="decision-action-taken"
