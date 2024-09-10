@@ -30,5 +30,5 @@ export interface Complaint {
   };
   delegates: Array<Delegate>;
   webeocId: string;
-  complaintMethodReceived: string;
+  complaintMethodReceivedCode: string;
 }

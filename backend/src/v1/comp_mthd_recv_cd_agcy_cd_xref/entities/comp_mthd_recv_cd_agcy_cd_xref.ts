@@ -38,6 +38,9 @@ export class CompMthdRecvCdAgcyCdXref {
   @Column("timestamp without time zone", { name: "update_utc_timestamp" })
   update_utc_timestamp: Date;
 
-  @OneToMany(() => Complaint, (complaint) => complaint.comp_mthd_recv_cd_agcy_cd_xref_guid)
+  @OneToMany(
+    () => Complaint,
+    (complaint) => complaint.comp_mthd_recv_cd_agcy_cd_xref.comp_mthd_recv_cd_agcy_cd_xref_guid,
+  )
   complaints: Complaint[];
 }

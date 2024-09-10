@@ -155,7 +155,7 @@ export const CreateComplaint: FC = () => {
         delegates: [],
         createdBy: userid,
         updatedBy: userid,
-        complaintMethodReceived: "",
+        complaintMethodReceivedCode: "",
       };
 
       applyComplaintData(model);

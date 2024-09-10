@@ -5,9 +5,16 @@ import { formatPhoneNumber } from "react-phone-number-input/input";
 import { Card } from "react-bootstrap";
 
 export const CallerInformation: FC = () => {
-  const { name, primaryPhone, secondaryPhone, alternatePhone, address, email, reportedByCode } = useAppSelector(
-    selectComplaintCallerInformation,
-  );
+  const {
+    name,
+    primaryPhone,
+    secondaryPhone,
+    alternatePhone,
+    address,
+    email,
+    reportedByCode,
+    complaintMethodReceivedCode,
+  } = useAppSelector(selectComplaintCallerInformation);
 
   return (
     <section className="comp-details-section">
@@ -42,6 +49,10 @@ export const CallerInformation: FC = () => {
             <div>
               <dt>Organization Reporting the Complaint</dt>
               <dd id="comp-details-reported">{reportedByCode?.longDescription}</dd>
+            </div>
+            <div>
+              <dt>Method complaint was received</dt>
+              <dd id="comp-details-complaint-received-method">{complaintMethodReceivedCode}</dd>
             </div>
           </dl>
         </Card.Body>

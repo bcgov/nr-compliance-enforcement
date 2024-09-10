@@ -238,7 +238,10 @@ export class ComplaintService {
       .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
       .leftJoinAndSelect("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
       .leftJoinAndSelect("delegate.person_complaint_xref_code", "delegate_code")
-      .leftJoinAndSelect("delegate.person_guid", "person", "delegate.active_ind = true");
+      .leftJoinAndSelect("delegate.person_guid", "person", "delegate.active_ind = true")
+      .leftJoinAndSelect("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
+      .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code")
+      .leftJoinAndSelect("method_xref.agency_code", "method_agency");
 
     return builder;
   };
@@ -1141,16 +1144,15 @@ export class ComplaintService {
       );
 
       const complaintMethodReceived = await this._complaintMethodReceivedCodeRepository.findOne({
-        where: { complaint_method_received_code: model.complaintMethodReceived },
+        where: { complaint_method_received_code: model.complaintMethodReceivedCode },
       });
 
       const xref = await this._compMthdRecvCdAgcyCdXrefService.findByComplaintMethodReceivedCodeAndAgencyCode(
-        model.complaintMethodReceived,
+        model.complaintMethodReceivedCode,
         agencyCode.agency_code,
       );
 
-      complaintTable.compMthdRecvCdAgcyCdXrefGuid = xref.comp_mthd_recv_cd_agcy_cd_xref_guid;
-      complaintTable.compMthdRecvCdAgcyCdXrefGuid = xref.comp_mthd_recv_cd_agcy_cd_xref_guid;
+      complaintTable.comp_mthd_recv_cd_agcy_cd_xref = xref;
 
       //set the audit field
       complaintTable.update_user_id = idir;

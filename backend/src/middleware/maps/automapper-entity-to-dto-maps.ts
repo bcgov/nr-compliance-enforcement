@@ -243,6 +243,15 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
       (destination) => destination.webeocId,
       mapFrom((source) => source.webeoc_identifier),
     ),
+    forMember(
+      (destination) => destination.complaintMethodReceivedCode,
+      mapFrom((source) => {
+        if (source.comp_mthd_recv_cd_agcy_cd_xref) {
+          return source.comp_mthd_recv_cd_agcy_cd_xref.complaint_method_received_code.complaint_method_received_code;
+        }
+        return null;
+      }),
+    ),
   );
 };
 
@@ -674,6 +683,16 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.webeocId,
       mapFrom((source) => source.complaint_identifier.webeoc_identifier),
+    ),
+    forMember(
+      (destination) => destination.complaintMethodReceivedCode,
+      mapFrom((source) => {
+        if (source.complaint_identifier.comp_mthd_recv_cd_agcy_cd_xref) {
+          return source.complaint_identifier.comp_mthd_recv_cd_agcy_cd_xref.complaint_method_received_code
+            .complaint_method_received_code;
+        }
+        return null;
+      }),
     ),
   );
 };

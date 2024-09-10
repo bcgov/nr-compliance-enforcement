@@ -1041,7 +1041,7 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
     return null;
   };
 
-  const getComplaintReceivedMethodCode = (
+  const getComplaintMethodReceivedCode = (
     code: string,
     codes: Array<ComplaintMethodReceivedType>,
   ): ComplaintMethodReceivedType | null => {
@@ -1057,12 +1057,12 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
   let results = {} as ComplaintCallerInformation;
 
   if (complaint) {
-    const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy, complaintReceivedMethod }: any =
+    const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy, complaintMethodReceivedCode }: any =
       complaint;
     const reportedByCode = getReportedByReportedByCode(reportedBy, reportedByCodes);
     const ownedByAgencyCode = getAgencyByAgencyCode(ownedBy, agencyCodes);
-    const complaintReceivedMethodCode = getComplaintReceivedMethodCode(
-      complaintReceivedMethod,
+    const complaintReceivedMethod = getComplaintMethodReceivedCode(
+      complaintMethodReceivedCode,
       complaintMethodReceivedCodes,
     );
 
@@ -1074,6 +1074,7 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
       alternatePhone: phone3,
       address,
       email,
+      complaintMethodReceivedCode: complaintMethodReceivedCode,
     };
 
     if (reportedByCode) {
@@ -1083,9 +1084,8 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
     if (ownedByAgencyCode) {
       results = { ...results, ownedByAgencyCode };
     }
-
-    if (complaintReceivedMethodCode) {
-      results = { ...results, complaintReceivedMethodCode };
+    if (complaintMethodReceivedCode) {
+      results = { ...results, complaintMethodReceivedCode };
     }
   }
   return results;

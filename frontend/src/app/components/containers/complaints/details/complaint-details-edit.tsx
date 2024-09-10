@@ -100,24 +100,16 @@ export const ComplaintDetailsEdit: FC = () => {
     violationInProgress,
     violationObserved,
     girType,
-    complaintMethodReceived,
   } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
+
+  const { complaintMethodReceivedCode } = useAppSelector(selectComplaintCallerInformation);
 
   const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
     selectComplaintHeader(complaintType),
   );
 
-  const {
-    name,
-    primaryPhone,
-    secondaryPhone,
-    alternatePhone,
-    address,
-    email,
-    reportedByCode,
-    ownedByAgencyCode,
-    complaintReceivedMethodCode,
-  } = useAppSelector(selectComplaintCallerInformation);
+  const { name, primaryPhone, secondaryPhone, alternatePhone, address, email, reportedByCode, ownedByAgencyCode } =
+    useAppSelector(selectComplaintCallerInformation);
 
   // Get the code table lists to populate the Selects
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
@@ -127,7 +119,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
-  const complaintReceivedMethodCodes = useSelector(selectComplaintReceivedMethodDropdown) as Option[];
+  const complaintMethodReceivedCodes = useSelector(selectComplaintReceivedMethodDropdown) as Option[];
 
   const agency = getUserAgency();
   const violationTypeCodes = useSelector(selectViolationCodeDropdown(agency)) as Option[];
@@ -223,7 +215,6 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const saveButtonClick = async () => {
-    debugger;
     if (!complaintUpdate) {
       return;
     }
@@ -345,8 +336,8 @@ export const ComplaintDetailsEdit: FC = () => {
   const selectedViolationObserved = yesNoOptions.find((option) => option.value === (violationObserved ? "Yes" : "No"));
   const selectedGirTypeCode = girTypeCodes.find((option) => option.label === girType);
 
-  const selectedComplaintReceivedMethodCode = complaintReceivedMethodCodes.find(
-    (option) => option.value === complaintMethodReceived,
+  const selectedComplaintMethodReceivedCode = complaintMethodReceivedCodes.find(
+    (option) => option.value === complaintMethodReceivedCode,
   );
 
   const getEditableCoordinates = (input: Array<number> | Array<string> | undefined, type: Coordinates): string => {
@@ -696,7 +687,7 @@ export const ComplaintDetailsEdit: FC = () => {
     if (selected) {
       const { value } = selected;
 
-      const updatedComplaint = { ...complaintUpdate, complaintMethodReceived: value } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, complaintMethodReceivedCode: value } as ComplaintDto;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -1282,9 +1273,9 @@ export const ComplaintDetailsEdit: FC = () => {
                     id="complaint-received-method-select-id"
                     classNamePrefix="comp-select"
                     className="comp-details-input"
-                    defaultOption={selectedComplaintReceivedMethodCode}
+                    defaultOption={selectedComplaintMethodReceivedCode}
                     placeholder="Select"
-                    options={complaintReceivedMethodCodes}
+                    options={complaintMethodReceivedCodes}
                     enableValidation={false}
                     onChange={(e) => handleComplaintReceivedMethodChange(e)}
                   />
