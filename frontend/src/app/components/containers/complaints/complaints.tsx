@@ -1,6 +1,6 @@
 import { FC, useState, useContext, useCallback, useEffect } from "react";
 import { shallowEqual } from "react-redux";
-import { Button, Collapse, Offcanvas } from "react-bootstrap";
+import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 
 import { useAppSelector, useAppDispatch } from "../../../hooks/hooks";
 import { ComplaintFilter } from "./complaint-filter";
@@ -114,17 +114,11 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
             <div className="comp-data-filters-inner">
               <div className="comp-data-filters-header">
                 Filter by{" "}
-                <Button
-                  className="icon-btn"
-                  variant="outline-primary"
-                  size="sm"
+                <CloseButton
                   onClick={() => setOpen(!open)}
-                  aria-controls="example-collapse-text"
                   aria-expanded={open}
                   aria-label="Close filters"
-                >
-                  <i className="bi bi-x-lg"></i>
-                </Button>
+                />
               </div>
               <div className="comp-data-filters-body">
                 <ComplaintFilter type={complaintType} />

@@ -86,9 +86,12 @@
     font-weight: 700;
     border-bottom: 1px solid $gray-300;
 
-    & .icon-btn {
-      margin-right: -8px;
-      line-height: 36px;
+    & .btn-close {
+      width: 24px;
+      height: 24px;
+      margin-top: 0;
+      margin-right: -4px;
+      padding: 0;
     }
   }
 
