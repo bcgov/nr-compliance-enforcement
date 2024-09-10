@@ -78,12 +78,21 @@
   &-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     flex: 0 0 auto;
     padding: 0 16px;
     height: 44px;
     font-size: 0.875rem;
     font-weight: 700;
     border-bottom: 1px solid $gray-300;
+
+    & .btn-close {
+      width: 24px;
+      height: 24px;
+      margin-top: 0;
+      margin-right: -4px;
+      padding: 0;
+    }
   }
 
   &-body {
@@ -1577,14 +1586,11 @@ p {
   border-color: $bc-gov-danger;
 }
 
-.comp-species-btn {
-  width: auto;
-
+.comp-species-badge {
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
 
-  display: flex;
   flex-direction: row;
   padding: 4px 8px;
 
