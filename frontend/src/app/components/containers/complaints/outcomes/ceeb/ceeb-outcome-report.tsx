@@ -5,7 +5,8 @@ import { useAppDispatch } from "../../../../../hooks/hooks";
 import { getCaseFile } from "../../../../../store/reducers/case-thunks";
 import { ComplaintParams } from "../../details/complaint-details-edit";
 import { OutcomeAttachments } from "../outcome-attachments";
-        
+import { SupplementalNote } from "../supplemental-note";
+
 export const CeebOutcomeReport: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
@@ -23,6 +24,7 @@ export const CeebOutcomeReport: FC = () => {
       </div>
       {/* <CeebAuthorization /> */}
       <CeebDecision />
+      <SupplementalNote />
       <OutcomeAttachments showAddButton={true} />
     </section>
   );
