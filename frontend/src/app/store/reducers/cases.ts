@@ -33,10 +33,10 @@ const initialState: CasesState = {
     showSectionErrors: false,
     //-- ceeb
     decision: false,
-    site: false,
+    authorization: false,
   },
   decision: undefined,
-  site: undefined,
+  authorization: undefined,
 };
 
 export const casesSlice = createSlice({

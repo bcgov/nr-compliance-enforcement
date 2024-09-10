@@ -8,7 +8,7 @@ import { AnimalOutcomeSubject } from "../../types/state/cases-state";
 import { RootState } from "../store";
 import { CASE_ACTION_CODE } from "../../constants/case_actions";
 import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
-import { Site } from "../../types/app/case-files/ceeb/authorization/site";
+import { PermitSite } from "../../types/app/case-files/ceeb/authorization-outcome/permit-site";
 
 //-- Case file selectors
 export const selectCaseId = (state: RootState): string => {
@@ -187,7 +187,7 @@ export const selectCaseDecision = (state: RootState): Decision => {
   return !cases.decision ? defaultDecision : cases.decision;
 };
 
-export const selectCeebAuthorization = (state: RootState): Site => {
+export const selectCeebAuthorization = (state: RootState): PermitSite => {
   const { cases } = state;
-  return !cases.site ? {} : cases.site;
+  return !cases.authorization ? {} : cases.authorization;
 };

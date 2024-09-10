@@ -46,6 +46,9 @@ import { UpdateAnimalOutcomeInput } from "../../types/app/case-files/animal-outc
 import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
 import { CreateDecisionInput } from "../../types/app/case-files/ceeb/decision/create-decision-input";
 import { UpdateDecisionInput } from "../../types/app/case-files/ceeb/decision/update-decsion-input";
+import { PermitSite } from "../../types/app/case-files/ceeb/authorization-outcome/permit-site";
+import { CreateAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/create-authorization-outcome-input";
+import { UpdateAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/update-authorization-outcome-input";
 
 //-- general thunks
 export const findCase =
@@ -1067,6 +1070,76 @@ export const upsertDecisionOutcome =
         ToggleSuccess("Decision outcome updated");
       } else {
         ToggleError("Error, unable to update decision outcome");
+      }
+    }
+
+    if (result !== null) {
+      return "success";
+    } else {
+      return "error";
+    }
+  };
+
+export const upsertAuthorizationOutcome =
+  (id: string, site: PermitSite): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const {
+      app: {
+        profile: { idir_username: idir },
+      },
+      cases: { authorization: current },
+    } = getState();
+
+    const _create =
+      (id: string, input: PermitSite): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      async (dispatch) => {
+        const payload: CreateAuthorizationOutcomeInput = {
+          leadIdentifier: id,
+          agencyCode: "EPO",
+          caseCode: "ERS",
+          createUserId: idir,
+          input: input,
+        };
+
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/site`, payload);
+        return await post<CaseFileDto>(dispatch, parameters);
+      };
+
+    const _update =
+      (id: string, site: PermitSite): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      async (dispatch) => {
+        const input: UpdateAuthorizationOutcomeInput = {
+          caseIdentifier: id,
+          updateUserId: idir,
+          input: site,
+        };
+
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/site`, input);
+        return await post<CaseFileDto>(dispatch, parameters);
+      };
+
+    let result;
+
+    if (!current?.id) {
+      result = await dispatch(_create(id, site));
+
+      if (result !== null) {
+        dispatch(setCaseId(result.caseIdentifier));
+
+        ToggleSuccess("Authorization outcome added");
+      } else {
+        ToggleError("Error, unable to create authroization outcome");
+      }
+    } else {
+      const update = { ...site, id: current.id };
+      result = await dispatch(_update(id, update));
+
+      if (result !== null) {
+        dispatch(setCaseId(result.caseIdentifier));
+
+        ToggleSuccess("Authroization outcome updated");
+      } else {
+        ToggleError("Error, unable to update authorization outcome");
       }
     }
 

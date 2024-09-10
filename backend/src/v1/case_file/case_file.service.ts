@@ -16,9 +16,9 @@ import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/dele
 import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
 import { CreateDecisionInput } from "src/types/models/case-files/ceeb/decision/create-decision-input";
 import { UpdateDecisionInput } from "src/types/models/case-files/ceeb/decision/update-decison-input";
-import { CreateSiteInput } from "src/types/models/case-files/ceeb/site/create-site-input";
-import { UpdateSiteInput } from "src/types/models/case-files/ceeb/site/update-site-input";
-import { DeleteSiteInput } from "src/types/models/case-files/ceeb/site/delete-site-input";
+import { CreateAuthorizationOutcomeInput } from "src/types/models/case-files/ceeb/site/create-authorization-outcome-input";
+import { UpdateAuthorizationOutcomeInput } from "src/types/models/case-files/ceeb/site/update-authorization-outcome-input";
+import { DeleteAuthorizationOutcomeInput } from "src/types/models/case-files/ceeb/site/delete-authorization-outcome-input";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -445,14 +445,24 @@ export class CaseFileService {
     return returnValue?.updateDecision;
   };
 
-  createSite = async (token: any, model: CreateSiteInput): Promise<CaseFileDto> => {
-    throw new Error("Method not implemented.");
+  createAuthorizationOutcome = async (token: any, model: CreateAuthorizationOutcomeInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation createSite($input: CreateSiteInput!) {
+        createSite(input: $input) {
+          caseIdentifier
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.createSite;
   };
 
-  deleteSite = async (token: any, model: DeleteSiteInput): Promise<CaseFileDto> => {
+  deleteAuthorizationOutcome = async (token: any, model: DeleteAuthorizationOutcomeInput): Promise<CaseFileDto> => {
     throw new Error("Method not implemented.");
   };
-  updateSite = async (token: any, model: UpdateSiteInput): Promise<CaseFileDto> => {
+  updateAuthorizationOutcome = async (token: any, model: UpdateAuthorizationOutcomeInput): Promise<CaseFileDto> => {
     throw new Error("Method not implemented.");
   };
 }

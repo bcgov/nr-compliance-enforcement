@@ -15,9 +15,9 @@ import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/dele
 import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
 import { CreateDecisionInput } from "../../types/models/case-files/ceeb/decision/create-decision-input";
 import { UpdateDecisionInput } from "../../types/models/case-files/ceeb/decision/update-decison-input";
-import { CreateSiteInput } from "src/types/models/case-files/ceeb/site/create-site-input";
-import { UpdateSiteInput } from "src/types/models/case-files/ceeb/site/update-site-input";
-import { DeleteSiteInput } from "src/types/models/case-files/ceeb/site/delete-site-input";
+import { CreateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/create-authorization-outcome-input";
+import { UpdateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/update-authorization-outcome-input";
+import { DeleteAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/delete-authorization-outcome-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -172,32 +172,36 @@ export class CaseFileController {
 
   @Post("/site")
   @Roles(Role.CEEB)
-  async createSite(@Token() token, @Body() model: CreateSiteInput): Promise<CaseFileDto> {
-    return await this.service.createSite(token, model);
+  async createAuthorizationOutcome(
+    @Token() token,
+    @Body() model: CreateAuthorizationOutcomeInput,
+  ): Promise<CaseFileDto> {
+    return await this.service.createAuthorizationOutcome(token, model);
   }
 
   @Patch("/site")
   @Roles(Role.CEEB)
-  async updateSite(@Token() token, @Body() model: UpdateSiteInput): Promise<CaseFileDto> {
-    const result = await this.service.updateSite(token, model);
-
-    return Promise.resolve(result);
+  async updateAuthorizationOutcome(
+    @Token() token,
+    @Body() model: UpdateAuthorizationOutcomeInput,
+  ): Promise<CaseFileDto> {
+    return await this.service.updateAuthorizationOutcome(token, model);
   }
 
   @Delete("/site")
   @Roles(Role.COS_OFFICER)
-  async deleteSite(
+  async deleteAuthorizationOutcome(
     @Token() token,
     @Query("caseIdentifier") caseIdentifier: string,
     @Query("updateUserId") updateUserId: string,
-    @Query("outcomeId") outcomeId: string,
+    @Query("id") id: string,
   ): Promise<CaseFileDto> {
     const input = {
       caseIdentifier,
       updateUserId,
-      siteId: outcomeId,
+      id,
     };
 
-    return await this.service.deleteSite(token, input as DeleteSiteInput);
+    return await this.service.deleteAuthorizationOutcome(token, input as DeleteAuthorizationOutcomeInput);
   }
 }

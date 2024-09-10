@@ -6,10 +6,10 @@ import { setIsInEdit } from "../../../../../../store/reducers/cases";
 import { selectCeebAuthorization } from "../../../../../../store/reducers/case-selectors";
 import { Button, Card } from "react-bootstrap";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { AuthorizationForm } from "./authorization-form";
-import { AuthorizationItem } from "./authorization-item";
+import { AuthoizationOutcomeForm } from "./authorization-outcome-form";
+import { AuthoizationOutcomeItem } from "./authorization-outcome-item";
 
-export const CeebAuthoization: FC = () => {
+export const AuthoizationOutcome: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
 
@@ -21,7 +21,7 @@ export const CeebAuthoization: FC = () => {
   const showSectionErrors = isInEdit.showSectionErrors;
 
   const cases = useAppSelector((state) => state.cases);
-  const hasAuthorization = !cases.site;
+  const hasAuthorization = !cases.authorization;
 
   useEffect(() => {
     if (!hasAuthorization && editable) {
@@ -78,13 +78,13 @@ export const CeebAuthoization: FC = () => {
           )}
 
           {editable ? (
-            <AuthorizationForm
+            <AuthoizationOutcomeForm
               {...data}
               leadIdentifier={id}
               toggleEdit={setEditable}
             />
           ) : (
-            <AuthorizationItem {...data} />
+            <AuthoizationOutcomeItem {...data} />
           )}
         </Card.Body>
       </Card>
