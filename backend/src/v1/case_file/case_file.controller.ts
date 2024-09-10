@@ -94,19 +94,19 @@ export class CaseFileController {
   }
 
   @Post("/note")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async createNote(@Token() token, @Body() model: CreateSupplementalNotesInput): Promise<CaseFileDto> {
     return await this.service.createNote(token, model);
   }
 
   @Patch("/note")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async UpdateNote(@Token() token, @Body() model: UpdateSupplementalNotesInput): Promise<CaseFileDto> {
     return await this.service.updateNote(token, model);
   }
 
   @Delete("/note")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async deleteNote(
     @Token() token,
     @Query("caseIdentifier") caseIdentifier: string,
