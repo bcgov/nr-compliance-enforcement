@@ -1,3 +1,8 @@
+// GLOBAL
+a {
+  color: $bc-brand-links;
+}
+
 // LAYOUT
 .comp-app-container {
   display: flex;
@@ -73,34 +78,103 @@
   }
 }
 
-.fixed-sidebar .comp-side-bar {
+// SIDEBAR
+.fixed-sidebar .comp-sidebar {
   position: fixed;
 }
 
-.comp-side-bar {
+.comp-sidebar {
   background-color: $gray-110;
   width: 220px;
   padding: 16px;
   overflow: hidden;
 
-  ul > li:first-child {
-    margin-top: 0px;
-  }
-
-  ul > li:last-child {
-    margin-bottom: 0px;
-  }
-
-  &.collapsed {
-    width: 72px;
-  }
-
   .comp-sidebar-toggle > i {
     float: right;
     cursor: pointer;
   }
+
+  .comp-sidenav-list {
+    gap: 4px;
+    margin-left: -8px;
+    margin-right: -8px;
+  }
+
+  &.collapsed {
+    align-items: center;
+    width: 72px;
+
+    .comp-sidenav-list {
+      gap: 8px;
+    }
+  }
+
+  &.collapsed > span > span.comp-organization-nav-name {
+    display: none;
+  }
+
+  &.collapsed > span > span.comp-organization-nav-long-name {
+    display: none;
+  }
+
+  &.collapsed > div.comp-sidebar-toggle > i {
+    float: none;
+    margin-left: 25%;
+  }
 }
 
+// SIDE NAVIGATION
+.comp-sidenav-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+
+  li {
+    margin: 0;
+  }
+}
+
+.comp-sidenav-item {
+  display: flex;
+  flex-wrap: nowrap;
+  border-radius: 6px;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition: all ease-out 0.2s;
+
+  &:hover {
+    color: $bc-brand-links;
+    background-color: #c1d9f2;
+  }
+
+  &:active {
+    background-color: #c1d9f2;
+    outline-color: $bc-brand-links;
+  }
+
+  &:focus-visible {
+    outline-color: $bc-brand-links;
+  }
+
+  &-lg {
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    text-decoration: none;
+  }
+
+  &-sm {
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    i.bi {
+      font-size: 24px;
+    }
+  }
+}
+
+// ORGANIZATION LOGO
 .comp-organization-nav-logo {
   padding-right: 12px;
 }
@@ -121,24 +195,7 @@
   color: $bc-gov-primary;
 }
 
-.comp-side-bar.collapsed > span > span.comp-organization-nav-name {
-  display: none;
-}
-
-.comp-side-bar.collapsed > span > span.comp-organization-nav-long-name {
-  display: none;
-}
-
-.comp-side-bar.collapsed > div.comp-sidebar-toggle > i {
-  float: none;
-  margin-left: 25%;
-}
-
 // Start of Hyperlink Styles
-a {
-  color: $bc-brand-links;
-}
-
 .comp-nav-item-name {
   color: $bc-brand-links;
 
@@ -146,10 +203,6 @@ a {
     text-decoration: none;
     color: $bc-brand-links;
   }
-}
-
-.spacer-seperator {
-  height: 12px;
 }
 
 .comp-nav-item-name-underline {
@@ -167,6 +220,7 @@ a {
 
 .comp-nav-item-name-inverted {
   color: $bc-brand-links;
+
   a {
     text-decoration: underline;
     color: $white;
@@ -174,15 +228,6 @@ a {
 
   a:hover {
     color: $white;
-  }
-}
-
-.comp-nav-item-icon {
-  color: $bc-brand-links;
-
-  a {
-    text-decoration: none;
-    color: $bc-brand-links;
   }
 }
 
@@ -194,31 +239,7 @@ a {
     color: $white;
   }
 }
-
 // End of Hyperlink Styles
-
-.comp-side-bar.collapsed > ul > li > span.comp-nav-item-name {
-  display: none;
-}
-
-.comp-side-bar.collapsed > ul > li > a > i.bi {
-  margin-left: 25%;
-  font-size: 22px;
-}
-
-.comp-nav-item-list {
-  padding-top: 28px;
-
-  li > a > i.bi {
-    padding-right: 8px;
-    color: $bc-gov-primary;
-  }
-
-  li {
-    margin-top: 12px;
-    margin-bottom: 12px;
-  }
-}
 
 .comp-profile-avatar {
   display: inline;
@@ -723,7 +744,7 @@ p {
 }
 
 // TABLES
-.table {
+.comp-table {
   font-size: 0.875rem;
 
   thead {
@@ -735,6 +756,7 @@ p {
       background: $gray-100;
       background-color: $gray-100;
       border-color: $gray-300;
+      overflow: hidden;
       white-space: nowrap;
       vertical-align: middle;
 
@@ -753,6 +775,9 @@ p {
   }
 
   td {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    overflow: hidden;
     border-color: $gray-300;
   }
 
@@ -794,7 +819,13 @@ td.sticky-col {
   background-color: #fff;
 }
 
-.actions-col {
+td.actions-col {
+  padding-top: 0;
+  padding-bottom: 0;
+  .btn {
+    margin-top: 4px;
+  }
+
   .btn + .btn {
     margin-left: 8px;
   }
@@ -811,12 +842,12 @@ td.sticky-col {
     justify-content: space-between;
     gap: 0.5rem;
   }
+}
 
-  & .header-label {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+.header-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 // TABS

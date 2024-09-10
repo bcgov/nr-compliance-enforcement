@@ -207,3 +207,9 @@
     width: #{$width}px;
   }
 }
+
+@each $width in $cell-widths {
+  .comp-cell-min-width-#{$width} {
+    min-width: #{$width}px;
+  }
+}
