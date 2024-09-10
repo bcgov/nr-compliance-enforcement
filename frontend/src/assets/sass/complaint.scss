@@ -1577,14 +1577,11 @@ p {
   border-color: $bc-gov-danger;
 }
 
-.comp-species-btn {
-  width: auto;
-
+.comp-species-badge {
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
 
-  display: flex;
   flex-direction: row;
   padding: 4px 8px;
 
