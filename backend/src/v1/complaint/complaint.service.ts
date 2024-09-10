@@ -64,6 +64,9 @@ import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
+import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
+import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
+import { ComplaintMethodReceivedCode } from "../complaint_method_received_code/entities/complaint_method_received_code.entity";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -87,6 +90,10 @@ export class ComplaintService {
   private _officeRepository: Repository<Office>;
   @InjectRepository(CosGeoOrgUnit)
   private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
+  @InjectRepository(CompMthdRecvCdAgcyCdXref)
+  private _compMthdRecvCdAgcyCdXref: Repository<CompMthdRecvCdAgcyCdXref>;
+  @InjectRepository(ComplaintMethodReceivedCode)
+  private _complaintMethodReceivedCodeRepository: Repository<ComplaintMethodReceivedCode>;
 
   constructor(
     @Inject(REQUEST) private request: Request,
@@ -95,6 +102,7 @@ export class ComplaintService {
     private readonly _compliantUpdatesService: ComplaintUpdatesService,
     private readonly _personService: PersonComplaintXrefService,
     private readonly _attractantService: AttractantHwcrXrefService,
+    private readonly _compMthdRecvCdAgcyCdXrefService: CompMthdRecvCdAgcyCdXrefService,
     private dataSource: DataSource,
   ) {
     this.mapper = mapper;
@@ -1073,6 +1081,7 @@ export class ComplaintService {
     complaintType: string,
     model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> => {
+    const agencyCode = await this._getAgencyByUser();
     const hasAssignees = (delegates: Array<DelegateDto>): boolean => {
       if (delegates && delegates.length > 0) {
         const result = delegates.find((item) => item.type === "ASSIGNEE");
@@ -1130,6 +1139,18 @@ export class ComplaintService {
         "ComplaintDto",
         "UpdateComplaintDto",
       );
+
+      const complaintMethodReceived = await this._complaintMethodReceivedCodeRepository.findOne({
+        where: { complaint_method_received_code: model.complaintMethodReceived },
+      });
+
+      const xref = await this._compMthdRecvCdAgcyCdXrefService.findByComplaintMethodReceivedCodeAndAgencyCode(
+        model.complaintMethodReceived,
+        agencyCode.agency_code,
+      );
+
+      complaintTable.compMthdRecvCdAgcyCdXrefGuid = xref.comp_mthd_recv_cd_agcy_cd_xref_guid;
+      complaintTable.compMthdRecvCdAgcyCdXrefGuid = xref.comp_mthd_recv_cd_agcy_cd_xref_guid;
 
       //set the audit field
       complaintTable.update_user_id = idir;

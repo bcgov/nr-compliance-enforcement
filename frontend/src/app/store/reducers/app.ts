@@ -433,22 +433,6 @@ export const getFeatureFlag = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const getComplaintMethodReceivedCodes = (): AppThunk => async (dispatch) => {
-  try {
-    const agency = getUserAgency();
-    const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/complaint-method-received-by/by-agency/${agency}`,
-    );
-    const response: any = await get(dispatch, parameters);
-    debugger;
-    if (response) {
-      dispatch(setFeatureFlag(response));
-    }
-  } catch (error) {
-    ToggleError("Unable to get complaint method received by codes");
-  }
-};
-
 export const validateComsAccess =
   (token: string): ThunkAction<Promise<ComsInviteResponse>, RootState, unknown, Action<ComsInviteResponse>> =>
   async (dispatch) => {

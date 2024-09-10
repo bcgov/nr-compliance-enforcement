@@ -42,13 +42,8 @@ export class Complaint {
   @JoinColumn({ name: "complaint_status_code" })
   complaint_status_code: ComplaintStatusCode;
 
-  @ManyToOne(() => CompMthdRecvCdAgcyCdXref, (compMthdRecvCdAgcyCdXref) => compMthdRecvCdAgcyCdXref.complaints)
-  @JoinColumn([
-    {
-      name: "comp_mthd_recv_cd_agcy_cd_xref_guid",
-      referencedColumnName: "comp_mthd_recv_cd_agcy_cd_xref_guid",
-    },
-  ])
+  @ManyToOne(() => CompMthdRecvCdAgcyCdXref)
+  @JoinColumn({ name: "comp_mthd_recv_cd_agcy_cd_xref_guid" })
   comp_mthd_recv_cd_agcy_cd_xref_guid: CompMthdRecvCdAgcyCdXref;
 
   @ApiProperty({
@@ -236,6 +231,7 @@ export class Complaint {
     cos_geo_org_unit?: CosGeoOrgUnit,
     person_complaint_xref?: PersonComplaintXref[],
     webeoc_identifier?: string,
+    comp_mthd_recv_cd_agcy_cd_xref_guid?: CompMthdRecvCdAgcyCdXref,
   ) {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -262,5 +258,6 @@ export class Complaint {
     this.cos_geo_org_unit = cos_geo_org_unit;
     this.person_complaint_xref = person_complaint_xref;
     this.webeoc_identifier = webeoc_identifier;
+    this.comp_mthd_recv_cd_agcy_cd_xref_guid = comp_mthd_recv_cd_agcy_cd_xref_guid;
   }
 }

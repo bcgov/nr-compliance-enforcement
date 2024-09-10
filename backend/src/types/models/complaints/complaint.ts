@@ -1,3 +1,4 @@
+import { CompMthdRecvCdAgcyCdXref } from "src/v1/comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { DelegateDto } from "../people/delegate";
 
 export interface ComplaintDto {
@@ -30,4 +31,5 @@ export interface ComplaintDto {
   };
   delegates: Array<DelegateDto>;
   webeocId: string;
+  complaintMethodReceived: string;
 }

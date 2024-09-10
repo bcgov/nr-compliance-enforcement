@@ -28,6 +28,7 @@ import { DrugRemainingOutcome } from "../app/code-tables/drug-remaining-outcome"
 import { Equipment } from "../app/code-tables/equipment";
 import { GirType } from "../app/code-tables/gir-type";
 import { TeamType } from "../app/code-tables/team";
+import { ComplaintMethodReceivedType } from "../app/code-tables/complaint-method-received-type";
 
 export interface CodeTableState {
   [key: string]:
@@ -60,7 +61,8 @@ export interface CodeTableState {
     | Array<DrugRemainingOutcome>
     | Array<Equipment>
     | Array<GirType>
-    | Array<TeamType>;
+    | Array<TeamType>
+    | Array<ComplaintMethodReceivedType>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -89,4 +91,5 @@ export interface CodeTableState {
   equipment: Array<Equipment>;
   "gir-type": Array<GirType>;
   team: Array<TeamType>;
+  "complaint-method-received-codes": Array<ComplaintMethodReceivedType>;
 }

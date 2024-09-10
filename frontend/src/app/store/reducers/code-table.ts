@@ -33,6 +33,7 @@ import { DrugRemainingOutcome } from "../../types/app/code-tables/drug-remaining
 import { Equipment } from "../../types/app/code-tables/equipment";
 import { PreventionType } from "../../types/app/code-tables/prevention-type";
 import { GirType } from "../../types/app/code-tables/gir-type";
+import { getUserAgency } from "../../service/user-service";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -62,6 +63,7 @@ const initialState: CodeTableState = {
   equipment: [],
   "gir-type": [],
   team: [],
+  "complaint-method-received-codes": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -115,6 +117,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       equipment,
       "gir-type": girType,
       team,
+      "complaint-method-received-codes": complaintMethodReceived,
     },
   } = state;
 
@@ -211,6 +214,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(team).any()) {
       dispatch(fetchTeam());
     }
+    if (!from(complaintMethodReceived).any()) {
+      dispatch(fetchComplaintMethodReceivedCodes());
+    }
   } catch (error) {}
 };
 
@@ -228,6 +234,7 @@ export const fetchComplaintCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchComplaintTypeCodes());
     dispatch(fetchReportedByCodes());
     dispatch(fetchGirTypes());
+    dispatch(fetchComplaintMethodReceivedCodes());
   } catch (error) {
     console.error(error);
   }
@@ -564,6 +571,18 @@ export const fetchTeam = (): AppThunk => async (dispatch) => {
   }
 };
 
+export const fetchComplaintMethodReceivedCodes = (): AppThunk => async (dispatch) => {
+  const agency = getUserAgency();
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/complaint-method-received-by-agency/${agency}`,
+  );
+  const response: any = await get(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.COMPLAINT_METHOD_RECEIVED, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
 export const selectCodeTable =
   (table: string) =>
   (state: RootState): Array<any> => {
@@ -584,6 +603,7 @@ export const selectComplaintTypeDropdown = (state: RootState): Array<Option> => 
   });
   return data;
 };
+
 export const selectCreatableComplaintTypeDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { "complaint-type": complaintTypes },
@@ -700,6 +720,18 @@ export const selectGirTypeCodeDropdown = (state: RootState): Array<Option> => {
 
   const data = girType.map(({ girType, longDescription }) => {
     const item: Option = { label: longDescription, value: girType };
+    return item;
+  });
+  return data;
+};
+
+export const selectComplaintReceivedMethodDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "complaint-method-received-codes": complaintMethodReceivedType },
+  } = state;
+
+  const data = complaintMethodReceivedType.map(({ complaintMethodReceivedCode, longDescription }) => {
+    const item: Option = { label: longDescription, value: complaintMethodReceivedCode };
     return item;
   });
   return data;

@@ -19,4 +19,5 @@ export interface ComplaintDetails {
   violationObserved?: boolean;
   girType?: string;
   girTypeCode?: string;
+  complaintMethodReceived?: string;
 }

@@ -14,13 +14,7 @@ import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
 import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
 import COMPLAINT_TYPES from "./types/app/complaint-types";
-import {
-  getCodeTableVersion,
-  getComplaintMethodReceivedCodes,
-  getConfigurations,
-  getFeatureFlag,
-  getOfficerDefaultZone,
-} from "./store/reducers/app";
+import { getCodeTableVersion, getConfigurations, getFeatureFlag, getOfficerDefaultZone } from "./store/reducers/app";
 import { CreateComplaint } from "./components/containers/complaints/details/complaint-details-create";
 import { UserManagement } from "./components/containers/admin/user-management";
 import UserService from "./service/user-service";
@@ -39,7 +33,6 @@ const App: FC = () => {
     dispatch(getConfigurations());
     dispatch(getCodeTableVersion());
     dispatch(getFeatureFlag());
-    dispatch(getComplaintMethodReceivedCodes());
   }, [dispatch]);
 
   return (

@@ -1084,7 +1084,6 @@ const girTypeCodeToGirTypeCodeDto = (mapper: Mapper) => {
   );
 };
 
-
 //-- reporting data maps
 export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
   const reportGeneratedOn: Date = new Date();

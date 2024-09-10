@@ -26,6 +26,7 @@ export const CODE_TABLE_TYPES = {
   EQUIPMENT: "equipment",
   GIR_TYPE: "gir-type",
   TEAM: "team",
+  COMPLAINT_METHOD_RECEIVED: "complaint-method-received-codes",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",

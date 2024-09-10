@@ -42,6 +42,7 @@ import { RelatedData } from "../../types/app/complaints/related-data";
 import { ActionTaken } from "../../types/app/complaints/action-taken";
 
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../../types/app/complaints/general-complaint";
+import { ComplaintMethodReceivedType } from "../../types/app/code-tables/complaint-method-received-type";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
@@ -1013,7 +1014,11 @@ export const selectComplaintHeader =
 export const selectComplaintCallerInformation = (state: RootState): ComplaintCallerInformation => {
   const {
     complaints: { complaint },
-    codeTables: { agency: agencyCodes, "reported-by": reportedByCodes },
+    codeTables: {
+      agency: agencyCodes,
+      "reported-by": reportedByCodes,
+      "complaint-method-received-codes": complaintMethodReceivedCodes,
+    },
   } = state;
 
   const getAgencyByAgencyCode = (code: string, codes: Array<Agency>): Agency | null => {
@@ -1036,12 +1041,30 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
     return null;
   };
 
+  const getComplaintReceivedMethodCode = (
+    code: string,
+    codes: Array<ComplaintMethodReceivedType>,
+  ): ComplaintMethodReceivedType | null => {
+    if (codes && from(codes).any(({ complaintMethodReceived }) => complaintMethodReceived === code)) {
+      const selected = from(codes).first(({ complaintMethodReceived }) => complaintMethodReceived === code);
+
+      return selected;
+    }
+
+    return null;
+  };
+
   let results = {} as ComplaintCallerInformation;
 
   if (complaint) {
-    const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy }: any = complaint;
+    const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy, complaintReceivedMethod }: any =
+      complaint;
     const reportedByCode = getReportedByReportedByCode(reportedBy, reportedByCodes);
     const ownedByAgencyCode = getAgencyByAgencyCode(ownedBy, agencyCodes);
+    const complaintReceivedMethodCode = getComplaintReceivedMethodCode(
+      complaintReceivedMethod,
+      complaintMethodReceivedCodes,
+    );
 
     results = {
       ...results,
@@ -1059,6 +1082,10 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
 
     if (ownedByAgencyCode) {
       results = { ...results, ownedByAgencyCode };
+    }
+
+    if (complaintReceivedMethodCode) {
+      results = { ...results, complaintReceivedMethodCode };
     }
   }
   return results;

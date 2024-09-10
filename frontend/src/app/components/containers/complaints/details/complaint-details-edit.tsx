@@ -24,6 +24,7 @@ import {
   selectCommunityCodeDropdown,
   selectGirTypeCodeDropdown,
   selectReportedByDropdown,
+  selectComplaintReceivedMethodDropdown,
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import { Officer } from "../../../../types/person/person";
@@ -99,14 +100,24 @@ export const ComplaintDetailsEdit: FC = () => {
     violationInProgress,
     violationObserved,
     girType,
+    complaintMethodReceived,
   } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
 
   const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
     selectComplaintHeader(complaintType),
   );
 
-  const { name, primaryPhone, secondaryPhone, alternatePhone, address, email, reportedByCode, ownedByAgencyCode } =
-    useAppSelector(selectComplaintCallerInformation);
+  const {
+    name,
+    primaryPhone,
+    secondaryPhone,
+    alternatePhone,
+    address,
+    email,
+    reportedByCode,
+    ownedByAgencyCode,
+    complaintReceivedMethodCode,
+  } = useAppSelector(selectComplaintCallerInformation);
 
   // Get the code table lists to populate the Selects
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
@@ -116,6 +127,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
+  const complaintReceivedMethodCodes = useSelector(selectComplaintReceivedMethodDropdown) as Option[];
 
   const agency = getUserAgency();
   const violationTypeCodes = useSelector(selectViolationCodeDropdown(agency)) as Option[];
@@ -211,6 +223,7 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const saveButtonClick = async () => {
+    debugger;
     if (!complaintUpdate) {
       return;
     }
@@ -331,6 +344,11 @@ export const ComplaintDetailsEdit: FC = () => {
   );
   const selectedViolationObserved = yesNoOptions.find((option) => option.value === (violationObserved ? "Yes" : "No"));
   const selectedGirTypeCode = girTypeCodes.find((option) => option.label === girType);
+
+  const selectedComplaintReceivedMethodCode = complaintReceivedMethodCodes.find(
+    (option) => option.value === complaintMethodReceived,
+  );
+
   const getEditableCoordinates = (input: Array<number> | Array<string> | undefined, type: Coordinates): string => {
     if (!input) {
       return "";
@@ -670,6 +688,15 @@ export const ComplaintDetailsEdit: FC = () => {
       const { value } = selected;
 
       const updatedComplaint = { ...complaintUpdate, reportedBy: value } as ComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
+    }
+  };
+
+  const handleComplaintReceivedMethodChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+
+      const updatedComplaint = { ...complaintUpdate, complaintMethodReceived: value } as ComplaintDto;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -1242,6 +1269,24 @@ export const ComplaintDetailsEdit: FC = () => {
                     options={reportedByCodes}
                     enableValidation={false}
                     onChange={(e) => handleReportedByChange(e)}
+                  />
+                </div>
+              </div>
+              <div
+                className="comp-details-form-row"
+                id="complaint-received-method-pair-id"
+              >
+                <label htmlFor="complaint-received-method-label-id">Method complaint was received</label>
+                <div className="comp-details-edit-input">
+                  <CompSelect
+                    id="complaint-received-method-select-id"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    defaultOption={selectedComplaintReceivedMethodCode}
+                    placeholder="Select"
+                    options={complaintReceivedMethodCodes}
+                    enableValidation={false}
+                    onChange={(e) => handleComplaintReceivedMethodChange(e)}
                   />
                 </div>
               </div>

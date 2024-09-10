@@ -13,6 +13,7 @@ import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref"
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
 import { GirComplaint } from "../../v1/gir_complaint/entities/gir_complaint.entity";
+import { ComplaintMethodReceivedCode } from "src/v1/complaint_method_received_code/entities/complaint_method_received_code.entity";
 
 export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
   createMap<ComplaintDto, Complaint>(
@@ -140,6 +141,13 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
       mapFrom((src) => {
         const { status } = src;
         return { complaint_status_code: status };
+      }),
+    ),
+    forMember(
+      (dest) => dest.comp_mthd_recv_cd_agcy_cd_xref_guid,
+      mapFrom((src) => {
+        // This will be looked up from the service using the received complaintMethodReceivedCode
+        return null; // This will be handled in the service
       }),
     ),
   );

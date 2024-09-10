@@ -28,6 +28,9 @@ import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates
 import { ComplaintUpdatesModule } from "../complaint_updates/complaint_updates.module";
 import { StagingComplaintModule } from "../staging_complaint/staging_complaint.module";
 import { ActionTaken } from "./entities/action_taken.entity";
+import { ComplaintMethodReceivedCode } from "../complaint_method_received_code/entities/complaint_method_received_code.entity";
+import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
+import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 
 @Module({
   imports: [
@@ -52,6 +55,8 @@ import { ActionTaken } from "./entities/action_taken.entity";
     TypeOrmModule.forFeature([ComplaintUpdate]),
     TypeOrmModule.forFeature([GirComplaint]),
     TypeOrmModule.forFeature([ActionTaken]),
+    TypeOrmModule.forFeature([ComplaintMethodReceivedCode]),
+    TypeOrmModule.forFeature([CompMthdRecvCdAgcyCdXref]),
     CodeTableModule,
     PersonComplaintXrefModule,
     AttractantHwcrXrefModule,
@@ -60,7 +65,7 @@ import { ActionTaken } from "./entities/action_taken.entity";
     StagingComplaintModule,
   ],
   controllers: [ComplaintController],
-  providers: [ComplaintService],
+  providers: [ComplaintService, CompMthdRecvCdAgcyCdXrefService],
   exports: [ComplaintService],
 })
 export class ComplaintModule {}

@@ -158,4 +158,10 @@ export class UpdateComplaintDto {
       "Unique identifier from the webeoc source system to identify a complaint. This is required as the natural key is not avaialble in all webeoc apis",
   })
   webeoc_identifier: string;
+
+  @ApiProperty({
+    example: "RAPP",
+    description: "Method in which the complaint was created",
+  })
+  compMthdRecvCdAgcyCdXrefGuid: string;
 }
