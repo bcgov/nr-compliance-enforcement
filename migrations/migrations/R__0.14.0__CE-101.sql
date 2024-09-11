@@ -506,7 +506,7 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
       END IF;
 
       -- set the complaint method received code to RAPP.  We're using an xref guid here, so 
-      -- we have to get the guid first
+      -- we have to get the guid first.
       UPDATE public.complaint 
       SET comp_mthd_recv_cd_agcy_cd_xref_guid = (
           SELECT comp_mthd_recv_cd_agcy_cd_xref_guid 

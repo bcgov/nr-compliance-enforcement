@@ -1416,6 +1416,20 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
       (destination) => destination.webeocId,
       mapFrom((source) => source.complaint_identifier.webeoc_identifier),
     ),
+    forMember(
+      (destination) => destination.complaintMethodReceivedCode,
+      mapFrom((source) => {
+        const { complaint_identifier } = source;
+        const { comp_mthd_recv_cd_agcy_cd_xref } = complaint_identifier || {};
+
+        if (comp_mthd_recv_cd_agcy_cd_xref) {
+          const { complaint_method_received_code } = comp_mthd_recv_cd_agcy_cd_xref;
+          return complaint_method_received_code?.complaint_method_received_code || null;
+        }
+
+        return null;
+      }),
+    ),
   );
 };
 
@@ -1680,6 +1694,20 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     forMember(
       (destination) => destination.webeocId,
       mapFrom((source) => source.complaint_identifier.webeoc_identifier),
+    ),
+    forMember(
+      (destination) => destination.complaintMethodReceivedCode,
+      mapFrom((source) => {
+        const { complaint_identifier } = source;
+        const { comp_mthd_recv_cd_agcy_cd_xref } = complaint_identifier || {};
+
+        if (comp_mthd_recv_cd_agcy_cd_xref) {
+          const { complaint_method_received_code } = comp_mthd_recv_cd_agcy_cd_xref;
+          return complaint_method_received_code?.complaint_method_received_code || null;
+        }
+
+        return null;
+      }),
     ),
   );
 };
