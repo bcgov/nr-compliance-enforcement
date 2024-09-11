@@ -16,32 +16,32 @@ export class ComplaintMethodReceivedCodeDto {
   })
   long_description: string;
 
-  @ApiProperty({ example: "10", description: "The display order of the code" })
+  @ApiProperty({ example: "20", description: "The display order of the code" })
   display_order: number;
 
-  @ApiProperty({ example: "True", description: "An indicator to determine if the code is active" })
+  @ApiProperty({ example: "TrFalseue", description: "An indicator to determine if the code is active" })
   active_ind: boolean;
 
   @ApiProperty({
-    example: "IDIRmburns",
+    example: "JaneDoe",
     description: "The id of the user that created the code",
   })
   create_user_id: string;
 
   @ApiProperty({
-    example: "2003-04-12 04:05:06",
+    example: "2024-05-12 05:02:04",
     description: "The timestamp when the code was created",
   })
   create_utc_timestamp: Date;
 
   @ApiProperty({
-    example: "IDIRmburns",
+    example: "JaneDoe",
     description: "The id of the user that last updated the code",
   })
   update_user_id: string;
 
   @ApiProperty({
-    example: "2003-04-12 04:05:06",
+    example: "2024-05-12 05:02:04",
     description: "The timestamp when the code was last updated",
   })
   update_utc_timestamp: Date;
