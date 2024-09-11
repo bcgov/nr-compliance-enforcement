@@ -47,8 +47,7 @@ CREATE TABLE
     update_utc_timestamp timestamp NOT NULL,
     CONSTRAINT "PK_featagcyxr" PRIMARY KEY (feature_agency_xref_guid),
     CONSTRAINT "FK_featurecd" FOREIGN KEY (feature_code) REFERENCES public.feature_code (feature_code),
-    CONSTRAINT "FK_agencycode" FOREIGN KEY (agency_code) REFERENCES public.agency_code (agency_code),
-    CONSTRAINT "UK_unique" UNIQUE (feature_code, agency_code)
+    CONSTRAINT "FK_agencycode" FOREIGN KEY (agency_code) REFERENCES public.agency_code (agency_code)
   );
 
 -- Comments for Feature / Agency XREF table
