@@ -1,6 +1,6 @@
 import { Column, Entity, Index } from "typeorm";
 
-@Index("PK_method_complaint_received_code", ["complaint_method_received_code"], {
+@Index("PK_complaint_method_received_code", ["complaint_method_received_code"], {
   unique: true,
 })
 @Entity("complaint_method_received_code", { schema: "public" })

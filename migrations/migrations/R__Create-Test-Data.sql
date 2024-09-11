@@ -4321,8 +4321,8 @@ DO NOTHING;
 -------------------------
 
 insert into
-    public.method_complaint_received_code (
-        method_complaint_received_code,
+    public.complaint_method_received_code (
+        complaint_method_received_code,
         short_description,
         long_description,
         display_order,

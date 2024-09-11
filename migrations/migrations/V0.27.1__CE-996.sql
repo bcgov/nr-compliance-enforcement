@@ -10,7 +10,7 @@ CREATE TABLE
     create_utc_timestamp timestamp NOT NULL,
     update_user_id varchar(32) NOT NULL,
     update_utc_timestamp timestamp NOT NULL,
-    CONSTRAINT "PK_method_complaint_received_code" PRIMARY KEY (method_complaint_received_code)
+    CONSTRAINT "PK_complaint_method_received_code" PRIMARY KEY (complaint_method_received_code)
   );
 
 comment on table public.complaint_method_received_code is 'Methods in which the complaint was received.  Examples include: DGIR forward, Direct email or phone call,Minister''s office,RAPP ,Referral';
