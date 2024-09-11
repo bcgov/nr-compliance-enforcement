@@ -50,6 +50,12 @@ export const AvailableCodeTables = [
   "wildlife-outcomes",
   "equipment",
   "gir-type",
+  "discharge",
+  "rationale",
+  "non-compliance",
+  "sector",
+  "schedule",
+  "decision-type",
   "team",
   "complaint-method-received-codes",
 ];

@@ -43,6 +43,10 @@ import { DrugUsedInputV2 } from "../../types/app/case-files/animal-outcome/drug-
 import { AnimalOutcomeActionInput } from "../../types/app/case-files/animal-outcome/animal-outcome-action-input";
 import { DeleteAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/delete-animal-outcome-input";
 import { UpdateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/update-animal-outcome-input";
+import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
+import { CreateDecisionInput } from "../../types/app/case-files/ceeb/decision/create-decision-input";
+import { UpdateDecisionInput } from "../../types/app/case-files/ceeb/decision/update-decsion-input";
+import { getUserAgency } from "../../service/user-service";
 
 //-- general thunks
 export const findCase =
@@ -58,6 +62,7 @@ export const getCaseFile =
   async (dispatch) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     const response = await get<CaseFileDto>(dispatch, parameters);
+
     dispatch(setCaseFile(response));
   };
 
@@ -464,7 +469,11 @@ const parsePreventionResponse = async (
 
 //-- supplemental note thunks
 export const upsertNote =
-  (id: string, note: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (
+    id: string,
+    complaintType: string,
+    note: string,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       officers: { officers },
@@ -485,8 +494,8 @@ export const upsertNote =
         const input: CreateSupplementalNotesInput = {
           note,
           leadIdentifier: id,
-          agencyCode: "COS",
-          caseCode: "HWCR",
+          agencyCode: getUserAgency(),
+          caseCode: complaintType,
           actor,
           createUserId: userId,
         };
@@ -989,6 +998,86 @@ export const deleteAnimalOutcome =
       return "success";
     } else {
       ToggleError("Error, unable to delete animal outcome");
+      return "error";
+    }
+  };
+
+export const upsertDecisionOutcome =
+  (id: string, decision: Decision): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const {
+      app: {
+        profile: { idir_username: idir },
+      },
+      cases: { decision: current },
+    } = getState();
+
+    const _createDecision =
+      (id: string, decision: Decision): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      async (dispatch) => {
+        const { assignedTo } = decision;
+
+        const input: CreateDecisionInput = {
+          leadIdentifier: id,
+          agencyCode: "EPO",
+          caseCode: "ERS",
+          actor: assignedTo,
+          createUserId: idir,
+          decision,
+        };
+
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/decision`, input);
+        return await post<CaseFileDto>(dispatch, parameters);
+      };
+
+    const _updateDecison =
+      (id: string, decision: Decision): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      async (dispatch) => {
+        const { assignedTo } = decision;
+
+        const input: UpdateDecisionInput = {
+          caseIdentifier: id,
+          agencyCode: "EPO",
+          caseCode: "ERS",
+          actor: assignedTo,
+          updateUserId: idir,
+          decision,
+        };
+
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/decision`, input);
+        return await patch<CaseFileDto>(dispatch, parameters);
+      };
+
+    //-- if there's no decsionId then create a new decsion
+    //-- otherwise update an exisitng decision
+    let result;
+
+    if (!current?.id) {
+      result = await dispatch(_createDecision(id, decision));
+
+      if (result !== null) {
+        dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
+
+        ToggleSuccess("Decision outcome added");
+      } else {
+        ToggleError("Error, unable to create decision outcome");
+      }
+    } else {
+      const update = { ...decision, id: current.id };
+      result = await dispatch(_updateDecison(id, update));
+
+      if (result !== null) {
+        dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
+
+        ToggleSuccess("Decision outcome updated");
+      } else {
+        ToggleError("Error, unable to update decision outcome");
+      }
+    }
+
+    if (result !== null) {
+      return "success";
+    } else {
       return "error";
     }
   };

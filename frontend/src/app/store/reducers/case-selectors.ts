@@ -7,6 +7,7 @@ import { SupplementalNote } from "../../types/outcomes/supplemental-note";
 import { AnimalOutcomeSubject } from "../../types/state/cases-state";
 import { RootState } from "../store";
 import { CASE_ACTION_CODE } from "../../constants/case_actions";
+import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
 
 //-- Case file selectors
 export const selectCaseId = (state: RootState): string => {
@@ -147,4 +148,40 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
   }
 
   return [];
+};
+
+export const selectCaseDecision = (state: RootState): Decision => {
+  const {
+    complaints: { complaint },
+    cases,
+  } = state;
+
+  let assignedTo = "";
+  //-- if the compalint is assigned to an officer pre-select the assigned to officer
+  if (complaint?.delegates) {
+    const { delegates } = complaint;
+    if (from(delegates).any()) {
+      const assigned = delegates.find((item) => item.type === "ASSIGNEE");
+      if (assigned && assigned?.person !== null) {
+        const {
+          person: { id },
+        } = assigned;
+
+        assignedTo = id;
+      }
+    }
+  }
+
+  const defaultDecision: Decision = {
+    schedule: "",
+    sector: "",
+    discharge: "",
+    nonCompliance: "",
+    rationale: "",
+    assignedTo,
+    actionTaken: "",
+    actionTakenDate: new Date(),
+  };
+
+  return !cases.decision ? defaultDecision : cases.decision;
 };

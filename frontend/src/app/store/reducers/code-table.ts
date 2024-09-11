@@ -34,6 +34,14 @@ import { Equipment } from "../../types/app/code-tables/equipment";
 import { PreventionType } from "../../types/app/code-tables/prevention-type";
 import { GirType } from "../../types/app/code-tables/gir-type";
 import { getUserAgency } from "../../service/user-service";
+import {
+  fetchDischargeTypes,
+  fetchNonComplianceTypes,
+  fetchRationaleTypes,
+  fetchSectorTypes,
+  fetchScheduleTypes,
+  fetchCEEBDecisionTypes,
+} from "./code-table-thunks";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -62,6 +70,12 @@ const initialState: CodeTableState = {
   "drug-remaining-outcomes": [],
   equipment: [],
   "gir-type": [],
+  discharge: [],
+  "non-compliance": [],
+  rationale: [],
+  sector: [],
+  schedule: [],
+  "decision-type": [],
   team: [],
   "complaint-method-received-codes": [],
 };
@@ -116,6 +130,12 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "drug-remaining-outcomes": remainingDrugUse,
       equipment,
       "gir-type": girType,
+      discharge,
+      "non-compliance": nonCompliance,
+      rationale,
+      sector,
+      schedule,
+      "decision-type": decisionType,
       team,
       "complaint-method-received-codes": complaintMethodReceived,
     },
@@ -211,6 +231,24 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(girType).any()) {
       dispatch(fetchGirTypes());
     }
+    if (!from(discharge).any()) {
+      dispatch(fetchDischargeTypes());
+    }
+    if (!from(nonCompliance).any()) {
+      dispatch(fetchNonComplianceTypes());
+    }
+    if (!from(rationale).any()) {
+      dispatch(fetchRationaleTypes());
+    }
+    if (!from(sector).any()) {
+      dispatch(fetchSectorTypes());
+    }
+    if (!from(schedule).any()) {
+      dispatch(fetchScheduleTypes());
+    }
+    if (!from(decisionType).any()) {
+      dispatch(fetchCEEBDecisionTypes());
+    }
     if (!from(team).any()) {
       dispatch(fetchTeam());
     }
@@ -255,6 +293,12 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchDrugUseMethods());
     dispatch(fetchRemainingDrugUse());
     dispatch(fetchEquipment());
+    dispatch(fetchDischargeTypes());
+    dispatch(fetchNonComplianceTypes());
+    dispatch(fetchRationaleTypes());
+    dispatch(fetchSectorTypes());
+    dispatch(fetchScheduleTypes());
+    dispatch(fetchCEEBDecisionTypes());
   } catch (error) {
     console.error(error);
   }

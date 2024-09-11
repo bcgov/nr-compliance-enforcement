@@ -27,6 +27,12 @@ import { DrugMethod } from "../app/code-tables/drug-method";
 import { DrugRemainingOutcome } from "../app/code-tables/drug-remaining-outcome";
 import { Equipment } from "../app/code-tables/equipment";
 import { GirType } from "../app/code-tables/gir-type";
+import { Discharge } from "../app/code-tables/discharge";
+import { NonCompliance } from "../app/code-tables/non-compliance";
+import { Rationale } from "../app/code-tables/rationale";
+import { Sector } from "../app/code-tables/sector";
+import { Schedule } from "../app/code-tables/schedule";
+import { DecisionType } from "../app/code-tables/decision-type";
 import { TeamType } from "../app/code-tables/team";
 import { ComplaintMethodReceivedType } from "../app/code-tables/complaint-method-received-type";
 
@@ -60,9 +66,15 @@ export interface CodeTableState {
     | Array<DrugMethod>
     | Array<DrugRemainingOutcome>
     | Array<Equipment>
+    | Array<Discharge>
+    | Array<NonCompliance>
+    | Array<Rationale>
+    | Array<Sector>
+    | Array<Schedule>
     | Array<GirType>
-    | Array<TeamType>
     | Array<ComplaintMethodReceivedType>;
+    | Array<DecisionType>
+    | Array<TeamType>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -90,6 +102,12 @@ export interface CodeTableState {
   "drug-remaining-outcomes": Array<DrugRemainingOutcome>;
   equipment: Array<Equipment>;
   "gir-type": Array<GirType>;
+  discharge: Array<Discharge>;
+  "non-compliance": Array<NonCompliance>;
+  rationale: Array<Rationale>;
+  sector: Array<Sector>;
+  schedule: Array<Schedule>;
+  "decision-type": Array<DecisionType>;
   team: Array<TeamType>;
   "complaint-method-received-codes": Array<ComplaintMethodReceivedType>;
 }

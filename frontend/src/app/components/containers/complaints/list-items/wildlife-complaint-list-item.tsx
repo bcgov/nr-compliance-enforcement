@@ -115,7 +115,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
         className={`${isExpandedClass} ${isRowHovered ? "comp-table-row-hover-style" : ""}`}
       >
         <td
-          className={`comp-cell-width-95 sticky-col sticky-col--left incident-col ${isExpandedClass}`}
+          className={`comp-cell-width-110 sticky-col sticky-col--left text-center ${isExpandedClass}`}
           onClick={toggleExpand}
         >
           <Link
@@ -126,13 +126,13 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           </Link>
         </td>
         <td
-          className={`comp-cell-width-95 ${isExpandedClass}`}
+          className={`comp-cell-width-160 comp-cell-min-width-160 hwc-table-date-cell ${isExpandedClass}`}
           onClick={toggleExpand}
         >
           {reportedOnDateTime}
         </td>
         <td
-          className={`comp-cell-width-330 ${isExpandedClass}`}
+          className={`hwc-nature-of-complaint-cell ${isExpandedClass}`}
           onClick={toggleExpand}
         >
           {natureCode}
@@ -141,7 +141,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           className={`comp-cell-width-130 ${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <Badge bg="species-badge">{species}</Badge>
+          <Badge bg="species-badge comp-species-badge">{species}</Badge>
         </td>
         <td
           className={`comp-cell-width-165 ${isExpandedClass}`}
@@ -150,7 +150,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           {location}
         </td>
         <td
-          className={`comp-cell-width-170 ${isExpandedClass}`}
+          className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
           {locationSummary}
@@ -162,17 +162,17 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           <div className={statusButtonClass}>{getStatusDescription(status)}</div>
         </td>
         <td
-          className={`comp-cell-width-130 ${isExpandedClass}`}
+          className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <div
-            data-initials-listview={getOfficerAssignedInitials()}
-            className="comp-profile-avatar"
-          ></div>
           {getOfficerAssigned()}
         </td>
-        <td className={`comp-cell-width-110 ${isExpandedClass}`}>{updatedOnDateTime}</td>
-        <td className={`comp-cell-width-110 sticky-col sticky-col--right actions-col ${isExpandedClass}`}>
+        <td className={`comp-cell-width-160 comp-cell-min-width-160 hwc-table-date-cell ${isExpandedClass}`}>
+          {updatedOnDateTime}
+        </td>
+        <td
+          className={`comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col hwc-table-actions-cell ${isExpandedClass}`}
+        >
           <ComplaintActionItems
             complaint_identifier={id}
             complaint_type={type}
@@ -211,7 +211,9 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
               </div>
             </dl>
           </td>
-          <td className={`comp-cell-width-110 comp-cell-child-expanded sticky-col sticky-col--right actions-col`}></td>
+          <td
+            className={`comp-cell-width-90 comp-cell-min-width-90 comp-cell-child-expanded sticky-col sticky-col--right actions-col`}
+          ></td>
         </tr>
       )}
     </>
