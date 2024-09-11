@@ -246,8 +246,12 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.complaintMethodReceivedCode,
       mapFrom((source) => {
-        if (source.comp_mthd_recv_cd_agcy_cd_xref) {
-          return source.comp_mthd_recv_cd_agcy_cd_xref.complaint_method_received_code.complaint_method_received_code;
+        const xref = source.comp_mthd_recv_cd_agcy_cd_xref;
+        if (xref) {
+          const { complaint_method_received_code } = xref;
+          if (complaint_method_received_code) {
+            return complaint_method_received_code.complaint_method_received_code;
+          }
         }
         return null;
       }),
@@ -687,10 +691,14 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.complaintMethodReceivedCode,
       mapFrom((source) => {
-        if (source.complaint_identifier.comp_mthd_recv_cd_agcy_cd_xref) {
-          return source.complaint_identifier.comp_mthd_recv_cd_agcy_cd_xref.complaint_method_received_code
-            .complaint_method_received_code;
+        const complaintIdentifier = source.complaint_identifier;
+        const xref = complaintIdentifier?.comp_mthd_recv_cd_agcy_cd_xref;
+
+        if (xref) {
+          const { complaint_method_received_code } = xref;
+          return complaint_method_received_code?.complaint_method_received_code || null;
         }
+
         return null;
       }),
     ),
@@ -902,10 +910,14 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.complaintMethodReceivedCode,
       mapFrom((source) => {
-        if (source.complaint_identifier.comp_mthd_recv_cd_agcy_cd_xref) {
-          return source.complaint_identifier.comp_mthd_recv_cd_agcy_cd_xref.complaint_method_received_code
-            .complaint_method_received_code;
+        const { complaint_identifier } = source;
+        const { comp_mthd_recv_cd_agcy_cd_xref } = complaint_identifier || {};
+
+        if (comp_mthd_recv_cd_agcy_cd_xref) {
+          const { complaint_method_received_code } = comp_mthd_recv_cd_agcy_cd_xref;
+          return complaint_method_received_code?.complaint_method_received_code || null;
         }
+
         return null;
       }),
     ),
@@ -1101,11 +1113,11 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.complaintMethodReceivedCode,
       mapFrom((source) => {
-        if (source.complaint_identifier.comp_mthd_recv_cd_agcy_cd_xref) {
-          return source.complaint_identifier.comp_mthd_recv_cd_agcy_cd_xref.complaint_method_received_code
-            .complaint_method_received_code;
-        }
-        return null;
+        const { comp_mthd_recv_cd_agcy_cd_xref } = source.complaint_identifier || {};
+
+        const { complaint_method_received_code } = comp_mthd_recv_cd_agcy_cd_xref || {};
+
+        return complaint_method_received_code?.complaint_method_received_code || null;
       }),
     ),
   );

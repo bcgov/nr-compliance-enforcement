@@ -7,7 +7,7 @@ import { Point } from "geojson";
 import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
 import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ReportedByCode } from "../../reported_by_code/entities/reported_by_code.entity";
-import { CompMthdRecvCdAgcyCdXref } from "src/v1/comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
+import { CompMthdRecvCdAgcyCdXref } from "../../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 
 @Entity()
 export class Complaint {
