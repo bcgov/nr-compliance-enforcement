@@ -5,7 +5,7 @@ export class ComplaintMethodReceivedCodeDto {
     example: "RAPP",
     description: "The complaint method received code",
   })
-  feature_code: string;
+  complaint_method_reeived_code: string;
 
   @ApiProperty({ example: "RAPP", description: "The short description of the code" })
   short_description: string;

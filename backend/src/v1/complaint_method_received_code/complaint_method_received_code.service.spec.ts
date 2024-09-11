@@ -2,12 +2,10 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { ComplaintMethodReceivedCodeService } from "./complaint_method_received_code.service";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { ComplaintMethodReceivedCode } from "./entities/complaint_method_received_code.entity";
-import { Repository } from "typeorm";
 import { FeatureCodeRepositoryMockFactory } from "../../../test/mocks/featureCodeRepositoryMockFactory";
 
 describe("ComplaintMethodReceivedCodeService", () => {
   let service: ComplaintMethodReceivedCodeService;
-  let repository: Repository<ComplaintMethodReceivedCode>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,7 +19,6 @@ describe("ComplaintMethodReceivedCodeService", () => {
     }).compile();
 
     service = module.get<ComplaintMethodReceivedCodeService>(ComplaintMethodReceivedCodeService);
-    repository = module.get<Repository<ComplaintMethodReceivedCode>>(getRepositoryToken(ComplaintMethodReceivedCode));
   });
 
   it("should be defined", () => {
