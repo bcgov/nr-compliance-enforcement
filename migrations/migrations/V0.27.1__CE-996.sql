@@ -50,8 +50,6 @@ CREATE TABLE
 COMMENT ON TABLE public.comp_mthd_recv_cd_agcy_cd_xref IS 'complaint_method_received_code and AGENCIES that allow for features to be displayed or hidden as required.';
 
 -- Column comments
-COMMENT ON COLUMN public.comp_mthd_recv_cd_agcy_cd_xref.feature_agency_xref_guid IS 'System generated unique key for a comp_mthd_recv_cd_agcy_cd_xref record.  This key should never be exposed to users via any system utilizing the tables.';
-
 COMMENT ON COLUMN public.comp_mthd_recv_cd_agcy_cd_xref.complaint_method_received_code IS 'A human readable code used to identify a complaint_method_received_code that is controlled by the comp_mthd_recv_cd_agcy_cd_xref table.';
 
 COMMENT ON COLUMN public.comp_mthd_recv_cd_agcy_cd_xref.agency_code IS 'A human readable code used to identify an AGENCY.';
