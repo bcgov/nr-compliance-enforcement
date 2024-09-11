@@ -344,6 +344,10 @@
          <index name="PK_featagcyxr" unique="true">
             <column ascending="true" name="feature_agency_xref_guid"/>
          </index>
+         <index name="UK_unique" unique="true">
+            <column ascending="true" name="feature_code"/>
+            <column ascending="true" name="agency_code"/>
+         </index>
       </table>
       <table name="feature_code" remarks="A list of FEATUREs that can be enabled or disabled on a per agency basis." schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="feature_code" nullable="false" remarks="A human readable code used to identify a FEATURE that is controlled by the FEATURE_AGENCY_XREF table." size="10" type="varchar" typeCode="12">
