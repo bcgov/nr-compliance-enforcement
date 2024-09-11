@@ -113,7 +113,7 @@ export const DecisionItem: FC<props> = ({
         <dt>Discharge type</dt>
         <dd>{getValue("discharge")?.label}</dd>
       </div>
-      <hr></hr>
+      <hr className="my-0"></hr>
       <div>
         <dt>Action taken</dt>
         <dd>{getValue("actionTaken")?.label}</dd>
