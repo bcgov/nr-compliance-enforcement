@@ -1128,30 +1128,19 @@ export const upsertAuthorizationOutcome =
 
     if (!current?.id) {
       result = await dispatch(_create(id, input));
-
-      if (result !== null) {
-        dispatch(setCaseId(result.caseIdentifier));
-
-        ToggleSuccess("Authorization outcome added");
-      } else {
-        ToggleError("Error, unable to create authroization outcome");
-      }
     } else {
       const update = { ...input, id: current.id };
       result = await dispatch(_update(id, update));
-
-      if (result !== null) {
-        dispatch(setCaseId(result.caseIdentifier));
-
-        ToggleSuccess("Authroization outcome updated");
-      } else {
-        ToggleError("Error, unable to update authorization outcome");
-      }
     }
+    const { authorization } = result;
 
-    if (result !== null) {
+    if (result && authorization.id) {
+      dispatch(setCaseId(result.caseIdentifier));
+
+      ToggleSuccess(`Authorization outcome ${!current?.id ? "added" : "updated"}`);
       return "success";
     } else {
+      ToggleError(`Error, unable to ${!current?.id ? "create" : "update"} authroization outcome`);
       return "error";
     }
   };
@@ -1176,17 +1165,15 @@ export const deleteAuthorizationOutcome =
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/site`, input);
       const result = await deleteMethod<CaseFileDto>(dispatch, parameters);
 
-      if (result !== null) {
+      const { authorization: outcome } = result;
+
+      if (result && !outcome) {
         dispatch(setCaseId(result.caseIdentifier));
 
-        ToggleSuccess("Authroization outcome updated");
-      } else {
-        ToggleError("Error, unable to update authorization outcome");
-      }
-
-      if (result !== null) {
+        ToggleSuccess("Authroization outcome deleted");
         return "success";
       } else {
+        ToggleError("Error, unable to delete authorization outcome");
         return "error";
       }
     }

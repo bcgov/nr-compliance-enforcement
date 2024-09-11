@@ -61,6 +61,16 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
       return false;
     }
 
+    if (!authorized.match(/^\d{1,10}$/) && !unauthorized) {
+      setAuthorizedErrorMessage("Invalid format, numbers only allowed");
+      return false;
+    }
+
+    if (!unauthorized.match(/^\d{1,10}$/) && !authorized) {
+      setUnauthorizedErrorMessage("Invalid format, numbers only allowed");
+      return false;
+    }
+
     return true;
   };
 
@@ -153,7 +163,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
             <CompInput
               id="outcome-authroization-unauthroized-site"
               divid="outcome-authroization-unauthroized-site-value"
-              type="input"
+              type="number"
               inputClass="comp-form-control"
               value={unauthorized}
               error={unauthorizedErrorMessage}

@@ -454,7 +454,8 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation createAuthorizationOutcome($input: CreateAuthorizationOutcomeInput!) {
         createAuthorizationOutcome(input: $input) {
-          caseIdentifier
+          caseIdentifier,
+          authorization { id }
         }
       }`,
       variables: { input: model },
@@ -469,6 +470,7 @@ export class CaseFileService {
       query: `mutation updateAuthorizationOutcome($input: UpdateAuthorizationOutcomeInput!) {
         updateAuthorizationOutcome(input: $input) {
           caseIdentifier
+          authorization { id }
         }
       }`,
       variables: { input: model },
@@ -483,6 +485,7 @@ export class CaseFileService {
       query: `mutation deleteAuthorizationOutcome($input: DeleteAuthorizationOutcomeInput!) {
         deleteAuthorizationOutcome(input: $input) {
           caseIdentifier
+          authorization { id }
         }
       }`,
       variables: { input: model },
