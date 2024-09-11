@@ -1,3 +1,4 @@
+import { ComplaintMethodReceivedType } from "../../app/code-tables/complaint-method-received-type";
 import { ComplaintDetailsAttractant } from "./complaint-attactant";
 
 export interface ComplaintDetails {
@@ -19,5 +20,5 @@ export interface ComplaintDetails {
   violationObserved?: boolean;
   girType?: string;
   girTypeCode?: string;
-  complaintMethodReceivedCode?: string;
+  complaintMethodReceivedCode?: ComplaintMethodReceivedType;
 }

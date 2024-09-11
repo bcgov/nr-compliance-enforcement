@@ -141,7 +141,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
             <div>
               <dt>Method complaint was received</dt>
               <dd className="comp-method-complaint-received">
-                <span id="call-method-complaint-received">{complaintMethodReceivedCode}</span>
+                <span id="call-method-complaint-received">{complaintMethodReceivedCode?.longDescription}</span>
               </dd>
             </div>
           </dl>

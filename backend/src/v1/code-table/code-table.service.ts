@@ -578,6 +578,11 @@ export class CodeTableService {
     const data = await this._compMthdRecvCdAgcyCdXrefRepository.find({
       where: whereClause,
       relations: ["complaint_method_received_code"],
+      order: {
+        complaint_method_received_code: {
+          display_order: "ASC",
+        },
+      },
     });
 
     // Map the fields correctly from complaint_method_received_code

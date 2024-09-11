@@ -102,7 +102,7 @@ export const ComplaintDetailsEdit: FC = () => {
     girType,
   } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
 
-  const { complaintMethodReceivedCode } = useAppSelector(selectComplaintCallerInformation);
+  const { complaintMethodReceivedCode } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
 
   const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
     selectComplaintHeader(complaintType),
@@ -1107,6 +1107,24 @@ export const ComplaintDetailsEdit: FC = () => {
                   defaultValue={region}
                 />
               </div>
+              <div
+                className="comp-details-form-row"
+                id="complaint-received-method-pair-id"
+              >
+                <label htmlFor="complaint-received-method-label-id">Method complaint was received</label>
+                <div className="comp-details-edit-input">
+                  <CompSelect
+                    id="complaint-received-method-select-id"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    defaultOption={selectedComplaintMethodReceivedCode}
+                    placeholder="Select"
+                    options={complaintMethodReceivedCodes}
+                    enableValidation={false}
+                    onChange={(e) => handleComplaintReceivedMethodChange(e)}
+                  />
+                </div>
+              </div>
             </fieldset>
 
             {/* Call Information */}
@@ -1260,24 +1278,6 @@ export const ComplaintDetailsEdit: FC = () => {
                     options={reportedByCodes}
                     enableValidation={false}
                     onChange={(e) => handleReportedByChange(e)}
-                  />
-                </div>
-              </div>
-              <div
-                className="comp-details-form-row"
-                id="complaint-received-method-pair-id"
-              >
-                <label htmlFor="complaint-received-method-label-id">Method complaint was received</label>
-                <div className="comp-details-edit-input">
-                  <CompSelect
-                    id="complaint-received-method-select-id"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    defaultOption={selectedComplaintMethodReceivedCode}
-                    placeholder="Select"
-                    options={complaintMethodReceivedCodes}
-                    enableValidation={false}
-                    onChange={(e) => handleComplaintReceivedMethodChange(e)}
                   />
                 </div>
               </div>

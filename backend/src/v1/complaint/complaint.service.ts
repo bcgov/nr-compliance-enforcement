@@ -798,7 +798,10 @@ export class ComplaintService {
             "person.middle_name_1",
             "person.middle_name_2",
             "person.last_name",
-          ]);
+          ])
+          .leftJoinAndSelect("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
+          .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code")
+          .leftJoinAndSelect("method_xref.agency_code", "method_agency");
       }
 
       builder.where("complaint.complaint_identifier = :id", { id });

@@ -22,7 +22,11 @@ export class ComplaintMethodReceivedCodeService {
   }
 
   async findAll(): Promise<ComplaintMethodReceivedCode[]> {
-    return this.complaintMethodReceivedCodeRepository.find();
+    return this.complaintMethodReceivedCodeRepository.find({
+      order: {
+        display_order: "ASC",
+      },
+    });
   }
 
   async findOne(id: string): Promise<ComplaintMethodReceivedCode> {

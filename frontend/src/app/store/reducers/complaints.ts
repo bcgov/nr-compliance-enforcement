@@ -806,7 +806,12 @@ export const selectComplaintDetails =
   (state: RootState): ComplaintDetails => {
     const {
       complaints: { complaint },
-      codeTables: { "area-codes": areaCodes, attractant: attractantCodeTable, "gir-type": girTypeCodes },
+      codeTables: {
+        "area-codes": areaCodes,
+        attractant: attractantCodeTable,
+        "gir-type": girTypeCodes,
+        "complaint-method-received-codes": complaintMethodReceivedCodes,
+      },
     } = state;
 
     const getAttractants = (
@@ -834,6 +839,20 @@ export const selectComplaintDetails =
     };
 
     let result: ComplaintDetails = {};
+
+    const getComplaintMethodReceivedCode = (
+      code: string,
+      codes: Array<ComplaintMethodReceivedType>,
+    ): ComplaintMethodReceivedType | null => {
+      debugger;
+      if (codes && from(codes).any(({ complaintMethodReceivedCode }) => complaintMethodReceivedCode === code)) {
+        const selected = from(codes).first(({ complaintMethodReceivedCode }) => complaintMethodReceivedCode === code);
+
+        return selected;
+      }
+
+      return null;
+    };
 
     if (complaint?.location) {
       const {
@@ -894,6 +913,19 @@ export const selectComplaintDetails =
           zone_code: zone,
           office: officeLocationName,
           officeCode: officeLocation,
+        };
+      }
+
+      if (complaint) {
+        const { complaintMethodReceivedCode }: any = complaint;
+        const complaintReceivedMethod = getComplaintMethodReceivedCode(
+          complaintMethodReceivedCode,
+          complaintMethodReceivedCodes,
+        );
+
+        result = {
+          ...result,
+          complaintMethodReceivedCode: complaintReceivedMethod ?? undefined,
         };
       }
     }
@@ -1014,11 +1046,7 @@ export const selectComplaintHeader =
 export const selectComplaintCallerInformation = (state: RootState): ComplaintCallerInformation => {
   const {
     complaints: { complaint },
-    codeTables: {
-      agency: agencyCodes,
-      "reported-by": reportedByCodes,
-      "complaint-method-received-codes": complaintMethodReceivedCodes,
-    },
+    codeTables: { agency: agencyCodes, "reported-by": reportedByCodes },
   } = state;
 
   const getAgencyByAgencyCode = (code: string, codes: Array<Agency>): Agency | null => {
@@ -1041,31 +1069,12 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
     return null;
   };
 
-  const getComplaintMethodReceivedCode = (
-    code: string,
-    codes: Array<ComplaintMethodReceivedType>,
-  ): ComplaintMethodReceivedType | null => {
-    debugger;
-    if (codes && from(codes).any(({ complaintMethodReceivedCode }) => complaintMethodReceivedCode === code)) {
-      const selected = from(codes).first(({ complaintMethodReceivedCode }) => complaintMethodReceivedCode === code);
-
-      return selected;
-    }
-
-    return null;
-  };
-
   let results = {} as ComplaintCallerInformation;
 
   if (complaint) {
-    const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy, complaintMethodReceivedCode }: any =
-      complaint;
+    const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy }: any = complaint;
     const reportedByCode = getReportedByReportedByCode(reportedBy, reportedByCodes);
     const ownedByAgencyCode = getAgencyByAgencyCode(ownedBy, agencyCodes);
-    const complaintReceivedMethod = getComplaintMethodReceivedCode(
-      complaintMethodReceivedCode,
-      complaintMethodReceivedCodes,
-    );
 
     results = {
       ...results,
@@ -1075,7 +1084,6 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
       alternatePhone: phone3,
       address,
       email,
-      complaintMethodReceivedCode: complaintReceivedMethod ?? undefined,
     };
 
     if (reportedByCode) {
