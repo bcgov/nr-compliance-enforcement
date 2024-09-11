@@ -167,6 +167,7 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
     STAGING_STATUS_CODE_PENDING CONSTANT varchar(7) := 'PENDING';
     STAGING_STATUS_CODE_SUCCESS CONSTANT varchar(7) := 'SUCCESS' ;
     STAGING_STATUS_CODE_ERROR CONSTANT varchar(5) := 'ERROR';
+    METHOD_OF_COMPLAINT_RAPP CONSTANT varchar(5) := 'RAPP';
     
     -- jsonb attribute names
     jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
@@ -197,6 +198,7 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
     _location_geometry_point GEOMETRY;
     _complaint_status_code VARCHAR(10);
     _webeoc_identifier VARCHAR(20);
+    
 
     -- Variables for 'hwcr_complaint' table
     _webeoc_species                    VARCHAR(200);
@@ -309,6 +311,7 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
     _webeoc_cos_reffered_by_lst := complaint_data ->> 'cos_reffered_by_lst';
     _cos_reffered_by_txt := left(complaint_data ->> '_cos_reffered_by_txt',120);
     _webeoc_identifier := complaint_data ->> 'webeoc_identifier';
+    
     SELECT *
     FROM   PUBLIC.insert_and_return_code( _webeoc_cos_reffered_by_lst, 'reprtdbycd' )
     INTO   _cos_reffered_by_lst;
@@ -501,6 +504,17 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
         SET    owned_by_agency_code = 'EPO'
         WHERE  complaint_identifier = _complaint_identifier;
       END IF;
+
+      -- set the complaint method received code to RAPP.  We're using an xref guid here, so 
+      -- we have to get the guid first
+      UPDATE public.complaint 
+      SET comp_mthd_recv_cd_agcy_cd_xref_guid = (
+          SELECT comp_mthd_recv_cd_agcy_cd_xref_guid 
+          FROM comp_mthd_recv_cd_agcy_cd_xref cmrcacx 
+          WHERE complaint_method_received_code = METHOD_OF_COMPLAINT_RAPP
+          AND cmrcacx.agency_code = complaint.owned_by_agency_code
+      )
+      WHERE complaint_identifier = _complaint_identifier;
 
       -- Insert data into 'allegation_complaint' table
       INSERT INTO PUBLIC.allegation_complaint
