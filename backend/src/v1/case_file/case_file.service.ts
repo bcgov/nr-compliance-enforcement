@@ -479,6 +479,16 @@ export class CaseFileService {
   };
 
   deleteAuthorizationOutcome = async (token: any, model: DeleteAuthorizationOutcomeInput): Promise<CaseFileDto> => {
-    throw new Error("Method not implemented.");
+    const result = await post(token, {
+      query: `mutation deleteAuthorizationOutcome($input: DeleteAuthorizationOutcomeInput!) {
+        deleteAuthorizationOutcome(input: $input) {
+          caseIdentifier
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.deleteAuthorizationOutcome;
   };
 }

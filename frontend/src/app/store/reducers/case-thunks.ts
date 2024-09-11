@@ -50,6 +50,7 @@ import { PermitSite } from "../../types/app/case-files/ceeb/authorization-outcom
 import { CreateAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/create-authorization-outcome-input";
 import { UpdateAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/update-authorization-outcome-input";
 import { getUserAgency } from "../../service/user-service";
+import { DeleteAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/delete-authorization-outcome-input";
 
 //-- general thunks
 export const findCase =
@@ -1124,7 +1125,7 @@ export const upsertAuthorizationOutcome =
       };
 
     let result;
-    debugger;
+
     if (!current?.id) {
       result = await dispatch(_create(id, input));
 
@@ -1152,5 +1153,41 @@ export const upsertAuthorizationOutcome =
       return "success";
     } else {
       return "error";
+    }
+  };
+
+export const deleteAuthorizationOutcome =
+  (): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> => async (dispatch, getState) => {
+    const {
+      app: {
+        profile: { idir_username: idir },
+      },
+      cases: { caseId, authorization },
+    } = getState();
+
+    if (caseId && authorization?.id) {
+      const { id } = authorization;
+      const input: DeleteAuthorizationOutcomeInput = {
+        caseIdentifier: caseId,
+        updateUserId: idir,
+        id,
+      };
+
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/site`, input);
+      const result = await deleteMethod<CaseFileDto>(dispatch, parameters);
+
+      if (result !== null) {
+        dispatch(setCaseId(result.caseIdentifier));
+
+        ToggleSuccess("Authroization outcome updated");
+      } else {
+        ToggleError("Error, unable to update authorization outcome");
+      }
+
+      if (result !== null) {
+        return "success";
+      } else {
+        return "error";
+      }
     }
   };

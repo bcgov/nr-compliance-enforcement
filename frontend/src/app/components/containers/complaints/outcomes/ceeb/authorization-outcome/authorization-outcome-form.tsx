@@ -133,7 +133,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
               inputClass="comp-form-control"
               value={authorized}
               error={authorizedErrorMessage}
-              maxLength={5}
+              maxLength={10}
               onChange={(evt: any) => {
                 const {
                   target: { value },
@@ -157,7 +157,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
               inputClass="comp-form-control"
               value={unauthorized}
               error={unauthorizedErrorMessage}
-              maxLength={5}
+              maxLength={10}
               onChange={(evt: any) => {
                 const {
                   target: { value },

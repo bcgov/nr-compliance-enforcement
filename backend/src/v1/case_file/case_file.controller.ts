@@ -189,7 +189,7 @@ export class CaseFileController {
   }
 
   @Delete("/site")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.CEEB)
   async deleteAuthorizationOutcome(
     @Token() token,
     @Query("caseIdentifier") caseIdentifier: string,

@@ -8,6 +8,9 @@ import { Button, Card } from "react-bootstrap";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { AuthoizationOutcomeForm } from "./authorization-outcome-form";
 import { AuthoizationOutcomeItem } from "./authorization-outcome-item";
+import { openModal } from "../../../../../../store/reducers/app";
+import { DELETE_CONFIRM } from "../../../../../../types/modal/modal-types";
+import { deleteAuthorizationOutcome, getCaseFile } from "../../../../../../store/reducers/case-thunks";
 
 export const AuthoizationOutcome: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
@@ -38,6 +41,27 @@ export const AuthoizationOutcome: FC = () => {
     setEditable(true);
   };
 
+  const handleDeleteButtonClick = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: DELETE_CONFIRM,
+        data: {
+          title: "Delete Authorization?",
+          description: "Your changes will be lost.",
+          confirmText: "delete authroization",
+          deleteConfirmed: () => {
+            dispatch(deleteAuthorizationOutcome()).then(async (response) => {
+              if (response === "success") {
+                dispatch(getCaseFile(id));
+              }
+            });
+          },
+        },
+      }),
+    );
+  };
+
   return (
     <section
       className="comp-details-section"
@@ -56,6 +80,15 @@ export const AuthoizationOutcome: FC = () => {
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
+            </Button>
+
+            <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={handleDeleteButtonClick}
+            >
+              <i className="bi bi-trash3"></i>
+              <span>Delete</span>
             </Button>
           </div>
         )}
