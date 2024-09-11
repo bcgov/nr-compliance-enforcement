@@ -72,7 +72,7 @@ export interface CodeTableState {
     | Array<Sector>
     | Array<Schedule>
     | Array<GirType>
-    | Array<ComplaintMethodReceivedType>;
+    | Array<ComplaintMethodReceivedType>
     | Array<DecisionType>
     | Array<TeamType>;
 

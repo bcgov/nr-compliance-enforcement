@@ -2,8 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ComplaintMethodReceivedCode } from "./entities/complaint_method_received_code.entity";
-import { CreateComplaintMethodReceivedCodeDto } from "./dto/create-complaint_method_received_code";
 import { UpdateComplaintMethodReceivedCodeDto } from "./dto/update-complaint_method_received_code.dto";
+import { ComplaintMethodReceivedCodeDto } from "./dto/complaint_method_received_code.dto";
 
 @Injectable()
 export class ComplaintMethodReceivedCodeService {
@@ -12,9 +12,7 @@ export class ComplaintMethodReceivedCodeService {
     private complaintMethodReceivedCodeRepository: Repository<ComplaintMethodReceivedCode>,
   ) {}
 
-  async create(
-    complaint_method_received_code: CreateComplaintMethodReceivedCodeDto,
-  ): Promise<ComplaintMethodReceivedCode> {
+  async create(complaint_method_received_code: ComplaintMethodReceivedCodeDto): Promise<ComplaintMethodReceivedCode> {
     const newComplaintMethodReceivedCode =
       this.complaintMethodReceivedCodeRepository.create(complaint_method_received_code);
     await this.complaintMethodReceivedCodeRepository.save(newComplaintMethodReceivedCode);

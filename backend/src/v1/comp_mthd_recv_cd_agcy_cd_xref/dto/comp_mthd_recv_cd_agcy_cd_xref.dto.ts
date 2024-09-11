@@ -54,5 +54,5 @@ export class CompMthdRecvCdAgcyCdXrefDto {
     example: "true",
     description: "A boolean indicating if this is an active attractant for the HWCR",
   })
-  public active_ind: Boolean;
+  public active_ind: boolean;
 }

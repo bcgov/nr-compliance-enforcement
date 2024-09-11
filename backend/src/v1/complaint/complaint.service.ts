@@ -1146,10 +1146,6 @@ export class ComplaintService {
         "UpdateComplaintDto",
       );
 
-      const complaintMethodReceived = await this._complaintMethodReceivedCodeRepository.findOne({
-        where: { complaint_method_received_code: model.complaintMethodReceivedCode },
-      });
-
       const xref = await this._compMthdRecvCdAgcyCdXrefService.findByComplaintMethodReceivedCodeAndAgencyCode(
         model.complaintMethodReceivedCode,
         agencyCode.agency_code,

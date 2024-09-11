@@ -13,7 +13,6 @@ import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref"
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
 import { GirComplaint } from "../../v1/gir_complaint/entities/gir_complaint.entity";
-import { ComplaintMethodReceivedCode } from "src/v1/complaint_method_received_code/entities/complaint_method_received_code.entity";
 
 export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
   createMap<ComplaintDto, Complaint>(

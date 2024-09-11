@@ -1,4 +1,4 @@
 import { PartialType } from "@nestjs/swagger";
-import { CreateComplaintMethodReceivedCodeDto } from "./create-complaint_method_received_code";
+import { ComplaintMethodReceivedCodeDto } from "./complaint_method_received_code.dto";
 
-export class UpdateComplaintMethodReceivedCodeDto extends PartialType(CreateComplaintMethodReceivedCodeDto) {}
+export class UpdateComplaintMethodReceivedCodeDto extends PartialType(ComplaintMethodReceivedCodeDto) {}
