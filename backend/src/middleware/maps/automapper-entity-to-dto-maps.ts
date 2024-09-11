@@ -1424,7 +1424,7 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
 
         if (comp_mthd_recv_cd_agcy_cd_xref) {
           const { complaint_method_received_code } = comp_mthd_recv_cd_agcy_cd_xref;
-          return complaint_method_received_code?.complaint_method_received_code || null;
+          return complaint_method_received_code?.long_description || null;
         }
 
         return null;
@@ -1703,7 +1703,7 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
 
         if (comp_mthd_recv_cd_agcy_cd_xref) {
           const { complaint_method_received_code } = comp_mthd_recv_cd_agcy_cd_xref;
-          return complaint_method_received_code?.complaint_method_received_code || null;
+          return complaint_method_received_code?.long_description || null;
         }
 
         return null;
