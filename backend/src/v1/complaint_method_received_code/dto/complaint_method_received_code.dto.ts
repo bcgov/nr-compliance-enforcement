@@ -19,7 +19,7 @@ export class ComplaintMethodReceivedCodeDto {
   @ApiProperty({ example: "20", description: "The display order of the code" })
   display_order: number;
 
-  @ApiProperty({ example: "TrFalseue", description: "An indicator to determine if the code is active" })
+  @ApiProperty({ example: "False", description: "An indicator to determine if the code is active" })
   active_ind: boolean;
 
   @ApiProperty({
