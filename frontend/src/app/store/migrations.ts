@@ -11,7 +11,7 @@ import { RebuildCodeTable } from "./migrations/migration-11";
 import { AddFeatureFlag } from "./migrations/migration-12";
 import { AddActiveTab } from "./migrations/migration-13";
 import { AddTeamCode } from "./migrations/migration-14";
-import { AddComplaintMethodReceivedCodes } from "./migrations/migration-15";
+import { AddComplaintMethodReceivedCodes } from "./migrations/migration-16";
 
 const BaseMigration = {
   0: (state: any) => {
