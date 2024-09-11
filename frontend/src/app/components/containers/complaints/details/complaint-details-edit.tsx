@@ -339,7 +339,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const selectedComplaintMethodReceivedCode = complaintMethodReceivedCodes.find(
     (option) => option.value === complaintMethodReceivedCode?.complaintMethodReceivedCode,
   );
-  debugger;
+
   const getEditableCoordinates = (input: Array<number> | Array<string> | undefined, type: Coordinates): string => {
     if (!input) {
       return "";

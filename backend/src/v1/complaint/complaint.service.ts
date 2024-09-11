@@ -90,10 +90,6 @@ export class ComplaintService {
   private _officeRepository: Repository<Office>;
   @InjectRepository(CosGeoOrgUnit)
   private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
-  @InjectRepository(CompMthdRecvCdAgcyCdXref)
-  private _compMthdRecvCdAgcyCdXref: Repository<CompMthdRecvCdAgcyCdXref>;
-  @InjectRepository(ComplaintMethodReceivedCode)
-  private _complaintMethodReceivedCodeRepository: Repository<ComplaintMethodReceivedCode>;
 
   constructor(
     @Inject(REQUEST) private request: Request,
@@ -1087,7 +1083,7 @@ export class ComplaintService {
     complaintType: string,
     model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> => {
-    const agencyCode = await this._getAgencyByUser();
+    const agencyCode = model.ownedBy;
     const hasAssignees = (delegates: Array<DelegateDto>): boolean => {
       if (delegates && delegates.length > 0) {
         const result = delegates.find((item) => item.type === "ASSIGNEE");
@@ -1148,7 +1144,7 @@ export class ComplaintService {
 
       const xref = await this._compMthdRecvCdAgcyCdXrefService.findByComplaintMethodReceivedCodeAndAgencyCode(
         model.complaintMethodReceivedCode,
-        agencyCode.agency_code,
+        agencyCode,
       );
 
       complaintTable.comp_mthd_recv_cd_agcy_cd_xref = xref;

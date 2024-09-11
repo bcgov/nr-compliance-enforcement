@@ -844,10 +844,8 @@ export const selectComplaintDetails =
       code: string,
       codes: Array<ComplaintMethodReceivedType>,
     ): ComplaintMethodReceivedType | null => {
-      debugger;
       if (codes && from(codes).any(({ complaintMethodReceivedCode }) => complaintMethodReceivedCode === code)) {
         const selected = from(codes).first(({ complaintMethodReceivedCode }) => complaintMethodReceivedCode === code);
-
         return selected;
       }
 
