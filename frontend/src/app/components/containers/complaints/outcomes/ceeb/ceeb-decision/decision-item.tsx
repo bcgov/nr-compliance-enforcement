@@ -25,7 +25,7 @@ type props = {
   leadAgency?: string;
   assignedTo: string;
   actionTaken: string;
-  actionTakenDate: Date;
+  actionTakenDate: Date | null;
 };
 
 export const DecisionItem: FC<props> = ({
@@ -142,10 +142,9 @@ export const DecisionItem: FC<props> = ({
         <dt>Assigned to</dt>
         <dd>{getValue("assignedTo")?.label}</dd>
       </div>
-
       <div>
         <dt>Date action taken</dt>
-        <dd>{formatDate(new Date(actionTakenDate).toString())}</dd>
+        <dd> {actionTakenDate && <>{formatDate(new Date(actionTakenDate).toString())}</>}</dd>
       </div>
     </dl>
   );
