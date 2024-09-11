@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { CompInput } from "../../../../../common/comp-input";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
@@ -27,6 +27,16 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
 
   const [authorizedErrorMessage, setAuthorizedErrorMessage] = useState("");
   const [unauthorizedErrorMessage, setUnauthorizedErrorMessage] = useState("");
+
+  useEffect(() => {
+    if (type === "permit" && value) {
+      setAuthroized(value);
+    }
+
+    if (type === "site" && value) {
+      setUnauthorized(value);
+    }
+  }, [type, value]);
 
   const handleUpdateSiteChange = (type: "permit" | "site", value: string) => {
     if (type === "permit") {

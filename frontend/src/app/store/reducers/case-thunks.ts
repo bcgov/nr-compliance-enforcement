@@ -51,7 +51,6 @@ import { CreateAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb
 import { UpdateAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/update-authorization-outcome-input";
 import { getUserAgency } from "../../service/user-service";
 
-
 //-- general thunks
 export const findCase =
   (complaintIdentifier?: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
@@ -1087,7 +1086,7 @@ export const upsertDecisionOutcome =
   };
 
 export const upsertAuthorizationOutcome =
-  (id: string, site: PermitSite): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (id: string, input: PermitSite): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       app: {
@@ -1104,7 +1103,7 @@ export const upsertAuthorizationOutcome =
           agencyCode: "EPO",
           caseCode: "ERS",
           createUserId: idir,
-          input: input,
+          input,
         };
 
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/site`, payload);
@@ -1121,13 +1120,13 @@ export const upsertAuthorizationOutcome =
         };
 
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/site`, input);
-        return await post<CaseFileDto>(dispatch, parameters);
+        return await patch<CaseFileDto>(dispatch, parameters);
       };
 
     let result;
-
+    debugger;
     if (!current?.id) {
-      result = await dispatch(_create(id, site));
+      result = await dispatch(_create(id, input));
 
       if (result !== null) {
         dispatch(setCaseId(result.caseIdentifier));
@@ -1137,7 +1136,7 @@ export const upsertAuthorizationOutcome =
         ToggleError("Error, unable to create authroization outcome");
       }
     } else {
-      const update = { ...site, id: current.id };
+      const update = { ...input, id: current.id };
       result = await dispatch(_update(id, update));
 
       if (result !== null) {

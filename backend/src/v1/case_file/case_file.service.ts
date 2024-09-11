@@ -141,6 +141,11 @@ export class CaseFileService {
       actionTaken
       actionTakenDate
     }
+    authorization { 
+      id
+      type
+      value
+    }
   }
   `;
 
@@ -447,8 +452,8 @@ export class CaseFileService {
 
   createAuthorizationOutcome = async (token: any, model: CreateAuthorizationOutcomeInput): Promise<CaseFileDto> => {
     const result = await post(token, {
-      query: `mutation createSite($input: CreateSiteInput!) {
-        createSite(input: $input) {
+      query: `mutation createAuthorizationOutcome($input: CreateAuthorizationOutcomeInput!) {
+        createAuthorizationOutcome(input: $input) {
           caseIdentifier
         }
       }`,
@@ -456,13 +461,24 @@ export class CaseFileService {
     });
 
     const returnValue = await this.handleAPIResponse(result);
-    return returnValue?.createSite;
+    return returnValue?.createAuthorizationOutcome;
+  };
+
+  updateAuthorizationOutcome = async (token: any, model: UpdateAuthorizationOutcomeInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation updateAuthorizationOutcome($input: UpdateAuthorizationOutcomeInput!) {
+        updateAuthorizationOutcome(input: $input) {
+          caseIdentifier
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.updateAuthorizationOutcome;
   };
 
   deleteAuthorizationOutcome = async (token: any, model: DeleteAuthorizationOutcomeInput): Promise<CaseFileDto> => {
-    throw new Error("Method not implemented.");
-  };
-  updateAuthorizationOutcome = async (token: any, model: UpdateAuthorizationOutcomeInput): Promise<CaseFileDto> => {
     throw new Error("Method not implemented.");
   };
 }

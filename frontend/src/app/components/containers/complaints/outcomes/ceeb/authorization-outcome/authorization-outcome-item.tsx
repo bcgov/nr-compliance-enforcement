@@ -1,11 +1,17 @@
 import { FC } from "react";
 
 type props = {
-  id?: string;
   type?: "permit" | "site";
   value?: string;
 };
 
-export const AuthoizationOutcomeItem: FC<props> = ({ id, type, value }) => {
-  return <>Item</>;
+export const AuthoizationOutcomeItem: FC<props> = ({ type, value }) => {
+  return (
+    <dl>
+      <div>
+        <dt>{type === "permit" ? "Authorization id" : "Unauthorized site id"}</dt>
+        <dd>{value}</dd>
+      </div>
+    </dl>
+  );
 };
