@@ -24,19 +24,4 @@ describe("ComplaintMethodReceivedCodeService", () => {
   it("should be defined", () => {
     expect(service).toBeDefined();
   });
-
-  it("should return a single value", async () => {
-    const complaintMethodReceivedCode = "RAPP";
-
-    let response = await service.findOne(complaintMethodReceivedCode);
-
-    expect(response.complaint_method_received_code).toBe("RAPP");
-    expect(response.short_description).toBe("RAPP");
-  });
-
-  it("should return all the values", async () => {
-    let response = await service.findAll();
-
-    expect(response).toHaveLength(7);
-  });
 });

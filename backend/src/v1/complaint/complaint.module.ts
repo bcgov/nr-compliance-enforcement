@@ -31,6 +31,7 @@ import { ActionTaken } from "./entities/action_taken.entity";
 import { ComplaintMethodReceivedCode } from "../complaint_method_received_code/entities/complaint_method_received_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
+import { CompMthdRecvCdAgcyCdXrefModule } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.module";
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xr
     AutomapperModule,
     ComplaintUpdatesModule,
     StagingComplaintModule,
+    CompMthdRecvCdAgcyCdXrefModule,
   ],
   controllers: [ComplaintController],
   providers: [ComplaintService, CompMthdRecvCdAgcyCdXrefService],

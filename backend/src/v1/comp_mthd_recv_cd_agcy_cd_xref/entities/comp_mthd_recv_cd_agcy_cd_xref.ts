@@ -1,6 +1,6 @@
-import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
-import { Complaint } from "src/v1/complaint/entities/complaint.entity";
-import { ComplaintMethodReceivedCode } from "src/v1/complaint_method_received_code/entities/complaint_method_received_code.entity";
+import { AgencyCode } from "../..//agency_code/entities/agency_code.entity";
+import { Complaint } from "../../complaint/entities/complaint.entity";
+import { ComplaintMethodReceivedCode } from "../../complaint_method_received_code/entities/complaint_method_received_code.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 
 @Index("PK_comp_mthd_recv_cd_agcy_cd_xref", ["comp_mthd_recv_cd_agcy_cd_xref_guid"], {

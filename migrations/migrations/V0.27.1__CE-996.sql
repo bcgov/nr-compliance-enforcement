@@ -44,7 +44,8 @@ CREATE TABLE
     create_utc_timestamp timestamp NOT NULL,
     update_user_id varchar(32) NOT NULL,
     update_utc_timestamp timestamp NOT NULL,
-    CONSTRAINT "PK_comp_mthd_recv_cd_agcy_cd_xref" PRIMARY KEY (comp_mthd_recv_cd_agcy_cd_xref_guid)
+    CONSTRAINT "PK_comp_mthd_recv_cd_agcy_cd_xref" PRIMARY KEY (comp_mthd_recv_cd_agcy_cd_xref_guid),
+    CONSTRAINT "UK_comp_mthd_recv_cd_agcy_cd_xref" UNIQUE (agency_code, complaint_method_received_code)
   );
 
 COMMENT ON TABLE public.comp_mthd_recv_cd_agcy_cd_xref IS 'complaint_method_received_code and AGENCIES that allow for features to be displayed or hidden as required.';

@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 
 import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
-import { ComplaintMethodReceivedCode } from "src/v1/complaint_method_received_code/entities/complaint_method_received_code.entity";
+import { ComplaintMethodReceivedCode } from "../../complaint_method_received_code/entities/complaint_method_received_code.entity";
 
 export class CompMthdRecvCdAgcyCdXrefDto {
   @ApiProperty({

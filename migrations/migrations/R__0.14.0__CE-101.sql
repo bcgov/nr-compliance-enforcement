@@ -505,17 +505,6 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
         WHERE  complaint_identifier = _complaint_identifier;
       END IF;
 
-      -- set the complaint method received code to RAPP.  We're using an xref guid here, so 
-      -- we have to get the guid first.
-      UPDATE public.complaint 
-      SET comp_mthd_recv_cd_agcy_cd_xref_guid = (
-          SELECT comp_mthd_recv_cd_agcy_cd_xref_guid 
-          FROM comp_mthd_recv_cd_agcy_cd_xref cmrcacx 
-          WHERE complaint_method_received_code = METHOD_OF_COMPLAINT_RAPP
-          AND cmrcacx.agency_code = complaint.owned_by_agency_code
-      )
-      WHERE complaint_identifier = _complaint_identifier;
-
       -- Insert data into 'allegation_complaint' table
       INSERT INTO PUBLIC.allegation_complaint
                   (
@@ -545,7 +534,18 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
                   );
     
     END IF;
-   
+
+    UPDATE public.complaint 
+    SET comp_mthd_recv_cd_agcy_cd_xref_guid = (
+        SELECT comp_mthd_recv_cd_agcy_cd_xref_guid 
+        FROM comp_mthd_recv_cd_agcy_cd_xref cmrcacx 
+        WHERE complaint_method_received_code = METHOD_OF_COMPLAINT_RAPP
+        AND cmrcacx.agency_code = complaint.owned_by_agency_code
+    )
+    WHERE complaint_identifier = _complaint_identifier;
+
+    -- set the complaint method received code to RAPP.  We're using an xref guid here, so 
+    -- we have to get the guid first.
     UPDATE staging_complaint
     SET    staging_status_code = STAGING_STATUS_CODE_SUCCESS
     WHERE  complaint_identifier = _complaint_identifier
