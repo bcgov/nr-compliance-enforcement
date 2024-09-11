@@ -344,7 +344,7 @@
          <index name="PK_featagcyxr" unique="true">
             <column ascending="true" name="feature_agency_xref_guid"/>
          </index>
-         <index name="UK_unique" unique="true">
+         <index name="UK_unique_feature_agency" unique="true">
             <column ascending="true" name="feature_code"/>
             <column ascending="true" name="agency_code"/>
          </index>
