@@ -3816,7 +3816,283 @@ SELECT
   user,
   now() ON CONFLICT
 DO NOTHING;
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACT_FLTR',
+  'Actions Taken Filter',
+  'Actions Taken Filter',
+  40,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COM_FLTR',
+  'Community Filter',
+  'Community Filter',
+  50,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
 
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'D_L_FLTR',
+  'Date Logged Filter',
+  'Date Logged Filter',
+  60,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+  
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'GIR_FLTR',
+  'GIR Type Filter',
+  'GIR Type Filter',
+  70,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+  
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'METH_FLTR',
+  'Method Filter',
+  'Method Filter',
+  80,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+  
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'NAT_FLTR',
+  'Nature of Complaint Filter',
+  'Nature of Complaint Filter',
+  90,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+  
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'OFF_FLTR',
+  'Officer Assigned Filter',
+  'Officer Assigned Filter',
+  100,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'REG_FLTR',
+  'Region Filter',
+  'Region Filter',
+  110,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'SPEC_FLTR',
+  'Species Filter',
+  'Species Filter',
+  120,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+  
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'STAT_FLTR',
+  'Status Filter',
+  'Status Filter',
+  130,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+  
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'VIOL_FLTR',
+  'Violation Type Filter',
+  'Violation Type Filter',
+  140,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ZONE_FLTR',
+  'Zone Filter',
+  'Zone Filter',
+  60,
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
 -------------------------
 -- Insert Feature / Agency XREF
 -------------------------
@@ -4000,6 +4276,693 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
+ -- SET UP COS FILTERS
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACT_FLTR',
+  'COS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;  
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COM_FLTR',
+  'COS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+  
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'D_L_FLTR',
+  'COS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'GIR_FLTR',
+  'COS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'METH_FLTR',
+  'COS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'NAT_FLTR',
+  'COS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'OFF_FLTR',
+  'COS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'REG_FLTR',
+  'COS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'SPEC_FLTR',
+  'COS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'STAT_FLTR',
+  'COS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'VIOL_FLTR',
+  'COS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ZONE_FLTR',
+  'COS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+-- SET UP CEEB FILTERS
+  
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACT_FLTR',
+  'EPO',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;  
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COM_FLTR',
+  'EPO',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+  
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'D_L_FLTR',
+  'EPO',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'GIR_FLTR',
+  'EPO',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'METH_FLTR',
+  'EPO',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'NAT_FLTR',
+  'EPO',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'OFF_FLTR',
+  'EPO',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'REG_FLTR',
+  'EPO',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'SPEC_FLTR',
+  'EPO',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'STAT_FLTR',
+  'EPO',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'VIOL_FLTR',
+  'EPO',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ZONE_FLTR',
+  'EPO',
+  'N',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+-- SET UP PARKS FILTERS
+  
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ACT_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;  
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COM_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+  
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'D_L_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'GIR_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'METH_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'NAT_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'OFF_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'REG_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'SPEC_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'STAT_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'VIOL_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+    
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ZONE_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now (),
+  user,
+  now () ON CONFLICT DO NOTHING;
+  
 -------------------------
 -- Insert Team Codes
 -------------------------
