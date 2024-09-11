@@ -141,7 +141,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           className={`comp-cell-width-130 ${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <Badge bg="species-badge">{species}</Badge>
+          <Badge bg="species-badge comp-species-badge">{species}</Badge>
         </td>
         <td
           className={`comp-cell-width-165 ${isExpandedClass}`}
