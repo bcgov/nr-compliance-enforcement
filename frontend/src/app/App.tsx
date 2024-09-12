@@ -1,7 +1,6 @@
 import { FC, useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes, useParams } from "react-router-dom";
 
-
 import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
 import NotAuthorized, { NotFound } from "./components/containers/pages";
@@ -105,7 +104,7 @@ const App: FC = () => {
 
 const ComplaintsRouteWrapper = () => {
   const { type } = useParams();
-  let userType = UserService.hasRole(Roles.CEEB) ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR ;
+  let userType = UserService.hasRole(Roles.CEEB) ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR;
   const defaultType = !type ? userType : type;
 
   return <ComplaintsWrapper defaultComplaintType={defaultType} />;
