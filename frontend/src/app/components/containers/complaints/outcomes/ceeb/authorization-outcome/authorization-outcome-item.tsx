@@ -9,7 +9,7 @@ export const AuthoizationOutcomeItem: FC<props> = ({ type, value }) => {
   return (
     <dl>
       <div>
-        <dt>{type === "permit" ? "Authorization id" : "Unauthorized site id"}</dt>
+        <dt>{type === "permit" ? "Authorization ID" : "Unauthorized site ID"}</dt>
         <dd>{type === "site" ? `UA${value}` : value}</dd>
       </div>
     </dl>

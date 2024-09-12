@@ -22,6 +22,7 @@ type Props = {
   min?: number;
   max?: number;
   step?: number | string;
+  prefix?: { value: string; prefixClassName?: string; inputClassName?: string };
 };
 
 const noop = () => {};
@@ -48,6 +49,7 @@ export const CompInput: FC<Props> = ({
   onBlur = noop,
   onChange = noop,
   onKeyDown = noop,
+  prefix,
 }) => {
   let Component: any;
 
@@ -114,7 +116,17 @@ export const CompInput: FC<Props> = ({
         </label>
       )}
       <div className={containerClass}>
-        <div>{Component}</div>
+        <div className={prefix && "input-group"}>
+          {prefix && (
+            <span
+              className={`input-group-text ${prefix.prefixClassName}`}
+              id={id}
+            >
+              {prefix.value}
+            </span>
+          )}
+          {Component}
+        </div>
         {error && <div className="error-message">{error}</div>}
       </div>
     </div>

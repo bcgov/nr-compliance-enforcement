@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { CompInput } from "../../../../../common/comp-input";
-import { Button } from "react-bootstrap";
+import { Button, Form, InputGroup } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
 import { getCaseFile, upsertAuthorizationOutcome } from "../../../../../../store/reducers/case-thunks";
 import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
@@ -22,7 +22,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
 
   const caseId = useAppSelector(selectCaseId);
 
-  const [authorized, setAuthroized] = useState("");
+  const [authorized, setAuthorized] = useState("");
   const [unauthorized, setUnauthorized] = useState("");
 
   const [authorizedErrorMessage, setAuthorizedErrorMessage] = useState("");
@@ -30,7 +30,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
 
   useEffect(() => {
     if (type === "permit" && value) {
-      setAuthroized(value);
+      setAuthorized(value);
     }
 
     if (type === "site" && value) {
@@ -43,12 +43,12 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
       if (unauthorized) {
         setUnauthorized("");
       }
-      setAuthroized(value);
+      setAuthorized(value);
     }
 
     if (type === "site") {
       if (authorized) {
-        setAuthroized("");
+        setAuthorized("");
       }
       setUnauthorized(value);
     }
@@ -62,12 +62,12 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
     }
 
     if (!authorized.match(/^\d{1,10}$/) && !unauthorized) {
-      setAuthorizedErrorMessage("Invalid format, numbers only allowed");
+      setAuthorizedErrorMessage("Invalid format. Please only include numbers.");
       return false;
     }
 
     if (!unauthorized.match(/^\d{1,10}$/) && !authorized) {
-      setUnauthorizedErrorMessage("Invalid format, numbers only allowed");
+      setUnauthorizedErrorMessage("Invalid format. Please only include numbers.");
       return false;
     }
 
@@ -110,10 +110,10 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
           cancelConfirmed: () => {
             //-- reset the form to its original state
             if (!type) {
-              setAuthroized("");
+              setAuthorized("");
               setUnauthorized("");
             } else if (type === "permit" && value) {
-              setAuthroized(value);
+              setAuthorized(value);
             } else if (type === "site" && value) {
               setUnauthorized(value);
             }
@@ -127,6 +127,13 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
     );
   };
 
+  // const inline = {
+  //   backgroundColor: "white",
+  //   border-right: "none",
+  //   color:  "gray",
+  // }
+
+  const inline = { backgroundColor: "white", borderRight: "none", color: "gray " };
   return (
     <>
       <div className="comp-details-form">
@@ -163,11 +170,16 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
             <CompInput
               id="outcome-authroization-unauthroized-site"
               divid="outcome-authroization-unauthroized-site-value"
-              type="number"
-              inputClass="comp-form-control"
+              type="input"
+              inputClass="comp-form-control form-control outcome-authroization-unauthroized-site-input"
               value={unauthorized}
               error={unauthorizedErrorMessage}
               maxLength={10}
+              prefix={{
+                value: "UA",
+                prefixClassName: "outcome-authroization-unauthroized-site-prefix",
+                inputClassName: "outcome-authroization-unauthroized-site-input",
+              }}
               onChange={(evt: any) => {
                 const {
                   target: { value },
