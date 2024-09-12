@@ -35,6 +35,7 @@ import {
   MockViolationsCodeTableRepository,
   MockGirTypeCodeRepository,
   MockTeamCodeRepository,
+  MockCompMthdRecvCdAgcyCdXrefRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
@@ -60,6 +61,8 @@ import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 import { TeamCode } from "../team_code/entities/team_code.entity";
+import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
+import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 
 describe("Testing: Case File Service", () => {
   let service: CaseFileService;
@@ -180,12 +183,17 @@ describe("Testing: Case File Service", () => {
           provide: getRepositoryToken(ActionTaken),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
+          useFactory: MockCompMthdRecvCdAgcyCdXrefRepository,
+        },
         ComplaintUpdatesService,
         CaseFileService,
         ComplaintService,
         CodeTableService,
         PersonComplaintXrefService,
         AttractantHwcrXrefService,
+        CompMthdRecvCdAgcyCdXrefService,
         {
           provide: REQUEST,
           useValue: {

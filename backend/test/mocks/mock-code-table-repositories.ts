@@ -877,3 +877,12 @@ export const MockTeamCodeRepository = () => ({
     getMany: jest.fn().mockResolvedValue(teamCodes),
   })),
 });
+
+export const MockCompMthdRecvCdAgcyCdXrefRepository = () => ({
+  find: jest.fn().mockResolvedValue(teamCodes),
+  createQueryBuilder: jest.fn(() => ({
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue(teamCodes),
+  })),
+});

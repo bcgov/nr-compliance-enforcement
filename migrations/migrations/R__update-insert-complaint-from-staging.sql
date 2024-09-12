@@ -6,6 +6,7 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
     STAGING_STATUS_CODE_PENDING CONSTANT varchar(7) := 'PENDING';
     STAGING_STATUS_CODE_SUCCESS CONSTANT varchar(7) := 'SUCCESS' ;
     STAGING_STATUS_CODE_ERROR CONSTANT varchar(5) := 'ERROR';
+    METHOD_OF_COMPLAINT_RAPP CONSTANT varchar(5) := 'RAPP';
     
     -- jsonb attribute names
     jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
@@ -53,7 +54,7 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
     _observed_ind                      VARCHAR(3);
     _in_progress_ind_bool bool;
     _observed_ind_bool bool;
-    _suspect_witnesss_dtl_text VARCHAR(4000);
+    _suspect_witnesss_dtl_text TEXT;
     _violation_code            VARCHAR(10);
     _gir_type_code             VARCHAR(10);
     _gir_type_description      VARCHAR(50);
@@ -129,8 +130,8 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
     _location_detailed_text := complaint_data ->> 'cos_location_description';
     _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-	  _address_coordinates_lat := complaint_data ->> 'address_coordinates_lat';
-    _address_coordinates_long := complaint_data ->> 'address_coordinates_long';
+	_address_coordinates_lat := validate_coordinate_field(complaint_data ->> 'address_coordinates_lat');
+    _address_coordinates_long := validate_coordinate_field(complaint_data ->> 'address_coordinates_long');
    
     -- Create a geometry point based on the latitude and longitude
     IF _address_coordinates_lat IS NOT NULL AND _address_coordinates_lat <> '' AND
@@ -151,6 +152,7 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
     _webeoc_cos_area_community := complaint_data ->> 'cos_area_community';
     _webeoc_cos_reffered_by_lst := complaint_data ->> 'cos_reffered_by_lst';
     _cos_reffered_by_txt := left(complaint_data ->> '_cos_reffered_by_txt',120);
+    _webeoc_identifier := complaint_data ->> 'webeoc_identifier';
     SELECT *
     FROM   PUBLIC.insert_and_return_code( _webeoc_cos_reffered_by_lst, 'reprtdbycd' )
     INTO   _cos_reffered_by_lst;
@@ -374,6 +376,14 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
     
     END IF;
    
+    UPDATE public.complaint 
+    SET comp_mthd_recv_cd_agcy_cd_xref_guid = (
+        SELECT comp_mthd_recv_cd_agcy_cd_xref_guid 
+        FROM comp_mthd_recv_cd_agcy_cd_xref cmrcacx 
+        WHERE complaint_method_received_code = METHOD_OF_COMPLAINT_RAPP
+        AND cmrcacx.agency_code = complaint.owned_by_agency_code
+    )
+    WHERE complaint_identifier = _complaint_identifier;
     UPDATE staging_complaint
     SET    staging_status_code = STAGING_STATUS_CODE_SUCCESS
     WHERE  complaint_identifier = _complaint_identifier

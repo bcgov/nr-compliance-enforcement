@@ -42,6 +42,7 @@ import { RelatedData } from "../../types/app/complaints/related-data";
 import { ActionTaken } from "../../types/app/complaints/action-taken";
 
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../../types/app/complaints/general-complaint";
+import { ComplaintMethodReceivedType } from "../../types/app/code-tables/complaint-method-received-type";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
@@ -805,7 +806,12 @@ export const selectComplaintDetails =
   (state: RootState): ComplaintDetails => {
     const {
       complaints: { complaint },
-      codeTables: { "area-codes": areaCodes, attractant: attractantCodeTable, "gir-type": girTypeCodes },
+      codeTables: {
+        "area-codes": areaCodes,
+        attractant: attractantCodeTable,
+        "gir-type": girTypeCodes,
+        "complaint-method-received-codes": complaintMethodReceivedCodes,
+      },
     } = state;
 
     const getAttractants = (
@@ -833,6 +839,18 @@ export const selectComplaintDetails =
     };
 
     let result: ComplaintDetails = {};
+
+    const getComplaintMethodReceivedCode = (
+      code: string,
+      codes: Array<ComplaintMethodReceivedType>,
+    ): ComplaintMethodReceivedType | null => {
+      if (codes && from(codes).any(({ complaintMethodReceivedCode }) => complaintMethodReceivedCode === code)) {
+        const selected = from(codes).first(({ complaintMethodReceivedCode }) => complaintMethodReceivedCode === code);
+        return selected;
+      }
+
+      return null;
+    };
 
     if (complaint?.location) {
       const {
@@ -893,6 +911,19 @@ export const selectComplaintDetails =
           zone_code: zone,
           office: officeLocationName,
           officeCode: officeLocation,
+        };
+      }
+
+      if (complaint) {
+        const { complaintMethodReceivedCode }: any = complaint;
+        const complaintReceivedMethod = getComplaintMethodReceivedCode(
+          complaintMethodReceivedCode,
+          complaintMethodReceivedCodes,
+        );
+
+        result = {
+          ...result,
+          complaintMethodReceivedCode: complaintReceivedMethod ?? undefined,
         };
       }
     }
