@@ -1320,6 +1320,13 @@ export class ComplaintService {
       entity.complaint_identifier = complaintId;
       entity.owned_by_agency_code = agencyCode;
 
+      const xref = await this._compMthdRecvCdAgcyCdXrefService.findByComplaintMethodReceivedCodeAndAgencyCode(
+        model.complaintMethodReceivedCode,
+        agencyCode.agency_code,
+      );
+
+      entity.comp_mthd_recv_cd_agcy_cd_xref = xref;
+
       const complaint = await this.complaintsRepository.create(entity);
       await this.complaintsRepository.save(complaint);
 
