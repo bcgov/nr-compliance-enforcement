@@ -21,6 +21,7 @@ import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/compl
 import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
 import { OfficerDto } from "../../types/app/people/officer";
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../../types/app/complaints/general-complaint";
+import Roles from "../../types/app/roles";
 
 const initialState: OfficerState = {
   officers: [],
@@ -225,10 +226,10 @@ export const searchOfficers =
 
         const nameMatch =
           firstName.toLocaleLowerCase().includes(searchInput) || lastName.toLocaleLowerCase().includes(searchInput);
-        const roleMatch = user_roles.includes(role) && !user_roles.includes("READ ONLY");
+        const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
 
         if (agency === "COS") {
-          return !fromAdminOffice && nameMatch;
+          return !fromAdminOffice && nameMatch && roleMatch;
         } else if (agency === "EPO") {
           return roleMatch && nameMatch;
         } else {
@@ -283,34 +284,49 @@ export const selectOfficersByZone =
     return [];
   };
 
-// find officers that have an office in the given zone
+// find officers that have an office in the given agency
+const mapAgencyToRole = (agency: string): string => {
+  let role: string = "";
+  if (agency === "COS") {
+    role = "COS Officer";
+  } else if (agency === "EPO") {
+    role = "CEEB";
+  }
+  return role;
+};
+
+const filterOfficerByAgency = (agency: string, officers: Officer[]) => {
+  const role = mapAgencyToRole(agency);
+  const result = officers.filter((officer) => {
+    const {
+      office_guid: {
+        cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
+      },
+      user_roles,
+    } = officer;
+
+    const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
+    const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
+
+    if (agency === "COS") {
+      return agency === agencyCode && !fromAdminOffice && roleMatch;
+    } else if (agency === "EPO") {
+      let result = roleMatch;
+      return result;
+    } else {
+      return false;
+    }
+  });
+  return result;
+};
+
 export const selectOfficersByAgency =
   (agency: string) =>
   (state: RootState): Officer[] | null => {
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
-    const role = mapAgencyToRole(agency);
-
-    return officers.filter((officer) => {
-      const {
-        office_guid: {
-          cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
-        },
-        user_roles,
-      } = officer;
-
-      const roleMatch = user_roles.includes(role) && !user_roles.includes("READ ONLY");
-      const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
-
-      if (agency === "COS") {
-        return agency === agencyCode && !fromAdminOffice && roleMatch;
-      } else if (agency === "EPO") {
-        let result = roleMatch;
-        return result;
-      } else {
-        return false;
-      }
-    });
+    const result = filterOfficerByAgency(agency, officers);
+    return result;
   };
 
 export const selectOfficersByAgencyDropdown =
@@ -318,24 +334,13 @@ export const selectOfficersByAgencyDropdown =
   (state: RootState): Array<Option> => {
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
+    const officerList = filterOfficerByAgency(agency, officers);
+    const officerDropdown = officerList.map((officer: Officer) => ({
+      value: officer.person_guid.person_guid,
+      label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+    }));
 
-    const data = officers
-      .filter((officer) => {
-        const {
-          office_guid: {
-            cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
-          },
-        } = officer;
-        // check for nulls
-        const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
-        return agency === agencyCode && !fromAdminOffice;
-      })
-      .map((officer: Officer) => ({
-        value: officer.person_guid.person_guid,
-        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-      }));
-
-    return data;
+    return officerDropdown;
   };
 
 export const selectOfficersByReportedBy =
@@ -367,29 +372,19 @@ export const selectOfficersByZoneAgencyAndRole =
           const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
           const fromAdminOffice = officer?.office_guid?.cos_geo_org_unit?.administrative_office_ind;
           const zoneAgencyMatch = zone === zoneCode && (agency === agencyCode || !agency);
-          const roleMatch = officer?.user_roles.includes(role) && !officer?.user_roles.includes("READ ONLY");
+          const roleMatch = officer?.user_roles.includes(role) && !officer?.user_roles.includes(Roles.READ_ONLY);
           result = !fromAdminOffice && zoneAgencyMatch && roleMatch;
           return result;
         });
       }
     } else if (agency === "EPO") {
       return officers.filter((officer) => {
-        result = officer?.user_roles.includes(role) && !officer?.user_roles.includes("READ ONLY");
+        result = officer?.user_roles.includes(role) && !officer?.user_roles.includes(Roles.READ_ONLY);
         return result;
       });
     }
     return [];
   };
-
-const mapAgencyToRole = (agency: string): string => {
-  let role: string = "";
-  if (agency === "COS") {
-    role = "COS Officer";
-  } else if (agency === "EPO") {
-    role = "CEEB";
-  }
-  return role;
-};
 
 export const assignOfficerToOffice =
   (personId: string, officeId: string): AppThunk =>
