@@ -65,8 +65,6 @@ import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
-import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
-import { ComplaintMethodReceivedCode } from "../complaint_method_received_code/entities/complaint_method_received_code.entity";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
