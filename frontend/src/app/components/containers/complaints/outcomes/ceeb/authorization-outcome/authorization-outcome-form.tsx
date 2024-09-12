@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { CompInput } from "../../../../../common/comp-input";
-import { Button, Form, InputGroup } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
 import { getCaseFile, upsertAuthorizationOutcome } from "../../../../../../store/reducers/case-thunks";
 import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
@@ -127,13 +127,6 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
     );
   };
 
-  // const inline = {
-  //   backgroundColor: "white",
-  //   border-right: "none",
-  //   color:  "gray",
-  // }
-
-  const inline = { backgroundColor: "white", borderRight: "none", color: "gray " };
   return (
     <>
       <div className="comp-details-form">
