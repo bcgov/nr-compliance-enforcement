@@ -76,6 +76,7 @@ export const CreateComplaint: FC = () => {
   const reportedByCodes = useAppSelector(selectReportedByDropdown) as Option[];
   const violationTypeCodes = useAppSelector(selectViolationCodeDropdown(agency)) as Option[];
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
+
   const activeTab = useAppSelector(selectActiveTab);
 
   const activeTab = useAppSelector(selectActiveTab);
