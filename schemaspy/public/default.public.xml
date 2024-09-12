@@ -38,6 +38,7 @@
       </table>
       <table name="agency_code" remarks="An agency is an organized and named grouping of people that interacts in some way with the Ministry." schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_code" nullable="false" remarks="A human readable code used to identify an agency." size="10" type="varchar" typeCode="12">
+            <child column="agency_code" foreignKey="FK_comp_mthd_recv_cd_agcy_cd_xref_agencycode" implied="false" onDeleteCascade="false" schema="public" table="comp_mthd_recv_cd_agcy_cd_xref"/>
             <child column="owned_by_agency_code" foreignKey="FK_complaint_owned_by_agencycode" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
             <child column="agency_code" foreignKey="FK_complaint_type_code_agency_code" implied="false" onDeleteCascade="false" schema="public" table="complaint_type_code"/>
             <child column="agency_code" foreignKey="FK_agencycode" implied="false" onDeleteCascade="false" schema="public" table="feature_agency_xref"/>
@@ -140,6 +141,30 @@
             <column ascending="true" name="h_attrhwcrx_guid"/>
          </index>
       </table>
+      <table name="comp_mthd_recv_cd_agcy_cd_xref" remarks="complaint_method_received_code and AGENCIES that allow for features to be displayed or hidden as required." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="comp_mthd_recv_cd_agcy_cd_xref_guid" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="comp_mthd_recv_cd_agcy_cd_xref_guid" foreignKey="complaint_comp_mthd_recv_cd_agcy_cd_xref_fk" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_code" nullable="false" remarks="A human readable code used to identify an AGENCY." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_comp_mthd_recv_cd_agcy_cd_xref_agencycode" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="complaint_method_received_code" nullable="false" remarks="A human readable code used to identify a complaint_method_received_code that is controlled by the comp_mthd_recv_cd_agcy_cd_xref table." size="10" type="varchar" typeCode="12">
+            <parent column="complaint_method_received_code" foreignKey="FK_comp_mthd_recv_cd_agcy_cd_xref_complaint_method_received_cod" implied="false" onDeleteCascade="false" schema="public" table="complaint_method_received_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the complaint_method_received_code should be rendered the for users in the given AGENCY" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the complaint_method_received_code / AGENCY mapping." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the complaint_method_received_code / AGENCY mapping was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="The id of the user that updated the complaint_method_received_code / AGENCY mapping" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the complaint_method_received_code / AGENCY mapping was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="comp_mthd_recv_cd_agcy_cd_xref_guid" sequenceNumberInPK="1"/>
+         <index name="PK_comp_mthd_recv_cd_agcy_cd_xref" unique="true">
+            <column ascending="true" name="comp_mthd_recv_cd_agcy_cd_xref_guid"/>
+         </index>
+         <index name="UK_comp_mthd_recv_cd_agcy_cd_xref" unique="true">
+            <column ascending="true" name="agency_code"/>
+            <column ascending="true" name="complaint_method_received_code"/>
+         </index>
+      </table>
       <table name="complaint" remarks="Initial information provided on a potential incident." schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="complaint_identifier" nullable="false" remarks="" size="20" type="varchar" typeCode="12">
             <child column="complaint_identifier" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="action_taken"/>
@@ -181,6 +206,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="location_geometry_point" nullable="true" remarks="The closest approximation to where the incident occurred. Stored as a geometric point using the EPSG:3005 Projected Coordinate System (BC Albers)" size="2147483647" type="geometry" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="false" digits="0" id="22" name="privacy_request_ind" nullable="false" remarks="flag to represent that the caller has asked for special care when handling their personal information" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="webeoc_identifier" nullable="true" remarks="Unique Identifier from the webEOC source system to identify a complaint update.   This is required as the natural key is not available in all webEOC APIs" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="24" name="comp_mthd_recv_cd_agcy_cd_xref_guid" nullable="true" remarks="Methods in which the complaint was received.  Examples include: DGIR forward, Direct email or phone call,Minister's office,RAPP ,Referral" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="comp_mthd_recv_cd_agcy_cd_xref_guid" foreignKey="complaint_comp_mthd_recv_cd_agcy_cd_xref_fk" implied="false" onDeleteCascade="false" schema="public" table="comp_mthd_recv_cd_agcy_cd_xref"/>
+         </column>
          <primaryKey column="complaint_identifier" sequenceNumberInPK="1"/>
          <index name="PK_complaint" unique="true">
             <column ascending="true" name="complaint_identifier"/>
@@ -199,6 +227,23 @@
          <primaryKey column="h_complaint_guid" sequenceNumberInPK="1"/>
          <index name="PK_h_complaint" unique="true">
             <column ascending="true" name="h_complaint_guid"/>
+         </index>
+      </table>
+      <table name="complaint_method_received_code" remarks="Methods in which the complaint was received.  Examples include: DGIR forward, Direct email or phone call,Minister's office,RAPP ,Referral" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="complaint_method_received_code" nullable="false" remarks="A human readable code used to define the method in which the complaint was received" size="10" type="varchar" typeCode="12">
+            <child column="complaint_method_received_code" foreignKey="FK_comp_mthd_recv_cd_agcy_cd_xref_complaint_method_received_cod" implied="false" onDeleteCascade="false" schema="public" table="comp_mthd_recv_cd_agcy_cd_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of a METHOD_COMPLAINT_RECEIVED_CODE" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a METHOD_COMPLAINT_RECEIVED_CODE" size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the METHOD_COMPLAINT_RECEIVED_CODE is active" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the wdr schedule code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the METHOD_COMPLAINT_RECEIVED_CODE was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the METHOD_COMPLAINT_RECEIVED_CODE." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the METHOD_COMPLAINT_RECEIVED_CODE was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="complaint_method_received_code" sequenceNumberInPK="1"/>
+         <index name="PK_complaint_method_received_code" unique="true">
+            <column ascending="true" name="complaint_method_received_code"/>
          </index>
       </table>
       <table name="complaint_status_code" remarks="The status of a Complaint.  Values include OPEN = Open and CLOSED = Closed." schema="public" type="TABLE">
@@ -3809,6 +3854,7 @@ END;]]></definition>
     STAGING_STATUS_CODE_PENDING CONSTANT varchar(7) := 'PENDING';
     STAGING_STATUS_CODE_SUCCESS CONSTANT varchar(7) := 'SUCCESS' ;
     STAGING_STATUS_CODE_ERROR CONSTANT varchar(5) := 'ERROR';
+    METHOD_OF_COMPLAINT_RAPP CONSTANT varchar(5) := 'RAPP';
     
     -- jsonb attribute names
     jsonb_cos_primary_phone CONSTANT text := 'cos_primary_phone';
@@ -3856,7 +3902,7 @@ END;]]></definition>
     _observed_ind                      VARCHAR(3);
     _in_progress_ind_bool bool;
     _observed_ind_bool bool;
-    _suspect_witnesss_dtl_text VARCHAR(4000);
+    _suspect_witnesss_dtl_text TEXT;
     _violation_code            VARCHAR(10);
     _gir_type_code             VARCHAR(10);
     _gir_type_description      VARCHAR(50);
@@ -3932,8 +3978,8 @@ END;]]></definition>
     _location_detailed_text := complaint_data ->> 'cos_location_description';
     _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-	  _address_coordinates_lat := complaint_data ->> 'address_coordinates_lat';
-    _address_coordinates_long := complaint_data ->> 'address_coordinates_long';
+	_address_coordinates_lat := validate_coordinate_field(complaint_data ->> 'address_coordinates_lat');
+    _address_coordinates_long := validate_coordinate_field(complaint_data ->> 'address_coordinates_long');
    
     -- Create a geometry point based on the latitude and longitude
     IF _address_coordinates_lat IS NOT NULL AND _address_coordinates_lat <> '' AND
@@ -3954,6 +4000,7 @@ END;]]></definition>
     _webeoc_cos_area_community := complaint_data ->> 'cos_area_community';
     _webeoc_cos_reffered_by_lst := complaint_data ->> 'cos_reffered_by_lst';
     _cos_reffered_by_txt := left(complaint_data ->> '_cos_reffered_by_txt',120);
+    _webeoc_identifier := complaint_data ->> 'webeoc_identifier';
     SELECT *
     FROM   PUBLIC.insert_and_return_code( _webeoc_cos_reffered_by_lst, 'reprtdbycd' )
     INTO   _cos_reffered_by_lst;
@@ -4177,6 +4224,14 @@ END;]]></definition>
     
     END IF;
    
+    UPDATE public.complaint 
+    SET comp_mthd_recv_cd_agcy_cd_xref_guid = (
+        SELECT comp_mthd_recv_cd_agcy_cd_xref_guid 
+        FROM comp_mthd_recv_cd_agcy_cd_xref cmrcacx 
+        WHERE complaint_method_received_code = METHOD_OF_COMPLAINT_RAPP
+        AND cmrcacx.agency_code = complaint.owned_by_agency_code
+    )
+    WHERE complaint_identifier = _complaint_identifier;
     UPDATE staging_complaint
     SET    staging_status_code = STAGING_STATUS_CODE_SUCCESS
     WHERE  complaint_identifier = _complaint_identifier
