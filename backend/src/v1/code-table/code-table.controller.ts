@@ -10,6 +10,7 @@ import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import BaseCodeTable, {
   AvailableAgencies,
   AvailableCodeTables,
+  ComplaintMethodReceivedType,
   OrganizationCodeTable,
   Sector,
 } from "../../types/models/code-tables";
@@ -28,6 +29,13 @@ export class CodeTableController {
     }
 
     const result = await this.service.getCodeTableByName(table, token);
+    return result;
+  }
+
+  @Get("/complaint-method-received-by-agency/:agency")
+  @Roles(Role.COS_OFFICER, Role.CEEB)
+  async getComplaintMethodReceived(@Param("agency") agency: string): Promise<ComplaintMethodReceivedType[]> {
+    const result = await this.service.getComplaintMethodReceived(agency);
     return result;
   }
 

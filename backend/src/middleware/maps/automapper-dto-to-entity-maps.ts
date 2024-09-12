@@ -142,6 +142,13 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
         return { complaint_status_code: status };
       }),
     ),
+    forMember(
+      (dest) => dest.comp_mthd_recv_cd_agcy_cd_xref,
+      mapFrom((src) => {
+        // This will be looked up from the service using the received complaintMethodReceivedCode
+        return null; // This will be handled in the service
+      }),
+    ),
   );
 };
 
