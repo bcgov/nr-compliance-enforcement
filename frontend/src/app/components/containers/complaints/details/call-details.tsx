@@ -26,6 +26,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
     attractants,
     violationInProgress,
     violationObserved,
+    complaintMethodReceivedCode,
   } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
 
   return (
@@ -136,6 +137,12 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
             <div>
               <dt>Region</dt>
               <dd id="comp-details-region">{region}</dd>
+            </div>
+            <div>
+              <dt>Method complaint was received</dt>
+              <dd className="comp-method-complaint-received">
+                <span id="comp-method-complaint-received-span-id">{complaintMethodReceivedCode?.longDescription}</span>
+              </dd>
             </div>
           </dl>
         </Card.Body>

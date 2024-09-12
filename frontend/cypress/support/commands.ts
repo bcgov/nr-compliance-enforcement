@@ -74,7 +74,6 @@ Cypress.Commands.add("kcLogin", (account?: string) => {
       // Extract the location header from the response to get the redirect URL.
       const redirectUrls = response.headers.location;
       const url = Array.isArray(redirectUrls) ? redirectUrls[0] : redirectUrls;
-      debugger;
       // Visit redirect URL.
       const credentials = {
         username: Cypress.env(!account ? "keycloak_user" : account),

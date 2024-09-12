@@ -24,6 +24,7 @@ import {
   selectCommunityCodeDropdown,
   selectGirTypeCodeDropdown,
   selectReportedByDropdown,
+  selectComplaintReceivedMethodDropdown,
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import { Officer } from "../../../../types/person/person";
@@ -101,6 +102,8 @@ export const ComplaintDetailsEdit: FC = () => {
     girType,
   } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
 
+  const { complaintMethodReceivedCode } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
+
   const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
     selectComplaintHeader(complaintType),
   );
@@ -116,6 +119,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
+  const complaintMethodReceivedCodes = useSelector(selectComplaintReceivedMethodDropdown) as Option[];
 
   const agency = getUserAgency();
   const violationTypeCodes = useSelector(selectViolationCodeDropdown(agency)) as Option[];
@@ -331,6 +335,11 @@ export const ComplaintDetailsEdit: FC = () => {
   );
   const selectedViolationObserved = yesNoOptions.find((option) => option.value === (violationObserved ? "Yes" : "No"));
   const selectedGirTypeCode = girTypeCodes.find((option) => option.label === girType);
+
+  const selectedComplaintMethodReceivedCode = complaintMethodReceivedCodes.find(
+    (option) => option.value === complaintMethodReceivedCode?.complaintMethodReceivedCode,
+  );
+
   const getEditableCoordinates = (input: Array<number> | Array<string> | undefined, type: Coordinates): string => {
     if (!input) {
       return "";
@@ -670,6 +679,15 @@ export const ComplaintDetailsEdit: FC = () => {
       const { value } = selected;
 
       const updatedComplaint = { ...complaintUpdate, reportedBy: value } as ComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
+    }
+  };
+
+  const handleComplaintReceivedMethodChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+
+      const updatedComplaint = { ...complaintUpdate, complaintMethodReceivedCode: value } as ComplaintDto;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -1088,6 +1106,24 @@ export const ComplaintDetailsEdit: FC = () => {
                   disabled
                   defaultValue={region}
                 />
+              </div>
+              <div
+                className="comp-details-form-row"
+                id="complaint-received-method-pair-id"
+              >
+                <label htmlFor="complaint-received-method-label-id">Method complaint was received</label>
+                <div className="comp-details-edit-input">
+                  <CompSelect
+                    id="complaint-received-method-select-id"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    defaultOption={selectedComplaintMethodReceivedCode}
+                    placeholder="Select"
+                    options={complaintMethodReceivedCodes}
+                    enableValidation={false}
+                    onChange={(e) => handleComplaintReceivedMethodChange(e)}
+                  />
+                </div>
               </div>
             </fieldset>
 
