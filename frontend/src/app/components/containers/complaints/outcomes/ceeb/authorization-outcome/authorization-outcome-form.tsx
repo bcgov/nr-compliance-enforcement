@@ -158,7 +158,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
           className="comp-details-form-row"
           id="authroization-unauthroized-site-id"
         >
-          <label htmlFor="outcome-authroization-unauthroized-site">Unuthorized site ID</label>
+          <label htmlFor="outcome-authroization-unauthroized-site">Unauthorized site ID</label>
           <div className="comp-details-input full-width">
             <CompInput
               id="outcome-authroization-unauthroized-site"
