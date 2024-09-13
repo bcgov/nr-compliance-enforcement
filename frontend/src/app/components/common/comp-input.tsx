@@ -25,7 +25,7 @@ type Props = {
   prefix?: { value: string; prefixClassName?: string; inputClassName?: string };
 };
 
-const noop = () => {};
+const noop = () => { };
 
 export const CompInput: FC<Props> = ({
   id,
