@@ -64,7 +64,7 @@ const editCallDetails = {
   regionCode: "KTNY",
   status: "Closed",
   statusIndex: 1,
-  assigned: "Benson, Olivia",
+  assigned: "Kot, Steve",
   assignedIndex: 1,
   violationInProgressIndex: 1,
   violationInProgressString: "No",
