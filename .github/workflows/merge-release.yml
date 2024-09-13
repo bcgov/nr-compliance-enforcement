@@ -35,6 +35,62 @@ jobs:
         uses: ./.github/actions/get-pr-number
       - name: Set PR Output
         run: echo "pr=${{ steps.pr.outputs.pr }}" >> $GITHUB_OUTPUT
+  bump_version:
+    name: Bump Version for Release Branch
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        package: [backend, frontend, webeoc]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq (JSON parser)
+        run: sudo apt-get install -y jq
+
+      # Check if it's the first PR into the release branch (no existing tags)
+      - name: Check for existing tags
+        id: check_tag
+        run: |
+          git fetch --tags
+          latest_tag=$(git describe --tags --abbrev=0 --match "v*.*.*" || echo "none")
+          echo "::set-output name=latest_tag::$latest_tag"
+
+      # If it's the first PR into the release branch, reset patch and bump minor version
+      - name: Bump minor version and reset patch for first PR
+        if: ${{ steps.check_tag.outputs.latest_tag == 'none' }}
+        run: |
+          cd ${{ matrix.package }}
+          current_version=$(jq -r '.version' package.json)
+          new_version=$(echo $current_version | awk -F. '{$2+=1; $3=0; print $1"."$2"."$3}')
+          jq --arg v "$new_version" '.version = $v' package.json > package.json.tmp && mv package.json.tmp package.json
+          echo "First PR: Resetting patch and bumping minor. New version: $new_version"
+
+      # For subsequent PRs into the release branch, just bump the patch version
+      - name: Bump patch version for subsequent PRs
+        if: ${{ steps.check_tag.outputs.latest_tag != 'none' }}
+        run: |
+          cd ${{ matrix.package }}
+          current_version=$(jq -r '.version' package.json)
+          new_version=$(echo $current_version | awk -F. '{$3+=1; print $1"."$2"."$3}')
+          jq --arg v "$new_version" '.version = $v' package.json > package.json.tmp && mv package.json.tmp package.json
+          echo "Subsequent PR: Bumping patch. New version: $new_version"
+
+      - name: Set Git Identity
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Commit and push version bump
+        run: |
+          git add ${{ matrix.package }}/package.json
+          git commit -m "chore(${{ matrix.package }}): bump version"
+          git push origin HEAD
+
+      - name: Tag the new version
+        run: |
+          new_version=$(jq -r '.version' ${{ matrix.package }}/package.json)
+          git tag "v$new_version"
+          git push origin "v$new_version"
 
   # https://github.com/bcgov/quickstart-openshift-helpers
   deploy-test:
