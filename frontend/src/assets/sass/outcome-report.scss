@@ -478,3 +478,16 @@
     margin-top: 16px;
   }
 }
+
+.outcome-authroization-unauthroized-site-prefix {
+  background-color: transparent;
+  border-right: none;
+  color: $gray-500;
+  border: 1px solid hsl(0, 0%, 80%);
+  padding-right: 0.1875rem;
+}
+
+.outcome-authroization-unauthroized-site-input {
+  border-left: none !important;
+  padding-left: 0.1875rem;
+}

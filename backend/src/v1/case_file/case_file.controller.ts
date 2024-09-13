@@ -15,6 +15,9 @@ import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/dele
 import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
 import { CreateDecisionInput } from "../../types/models/case-files/ceeb/decision/create-decision-input";
 import { UpdateDecisionInput } from "../../types/models/case-files/ceeb/decision/update-decison-input";
+import { CreateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/create-authorization-outcome-input";
+import { UpdateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/update-authorization-outcome-input";
+import { DeleteAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/delete-authorization-outcome-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -160,11 +163,45 @@ export class CaseFileController {
   async createDecision(@Token() token, @Body() model: CreateDecisionInput): Promise<CaseFileDto> {
     return await this.service.createDecision(token, model);
   }
+
   @Patch("/decision")
   @Roles(Role.CEEB)
   async updateDecision(@Token() token, @Body() model: UpdateDecisionInput): Promise<CaseFileDto> {
-    const result = await this.service.updateDecision(token, model);
+    return await this.service.updateDecision(token, model);
+  }
 
-    return Promise.resolve(result);
+  @Post("/site")
+  @Roles(Role.CEEB)
+  async createAuthorizationOutcome(
+    @Token() token,
+    @Body() model: CreateAuthorizationOutcomeInput,
+  ): Promise<CaseFileDto> {
+    return await this.service.createAuthorizationOutcome(token, model);
+  }
+
+  @Patch("/site")
+  @Roles(Role.CEEB)
+  async updateAuthorizationOutcome(
+    @Token() token,
+    @Body() model: UpdateAuthorizationOutcomeInput,
+  ): Promise<CaseFileDto> {
+    return await this.service.updateAuthorizationOutcome(token, model);
+  }
+
+  @Delete("/site")
+  @Roles(Role.CEEB)
+  async deleteAuthorizationOutcome(
+    @Token() token,
+    @Query("caseIdentifier") caseIdentifier: string,
+    @Query("updateUserId") updateUserId: string,
+    @Query("id") id: string,
+  ): Promise<CaseFileDto> {
+    const input = {
+      caseIdentifier,
+      updateUserId,
+      id,
+    };
+
+    return await this.service.deleteAuthorizationOutcome(token, input as DeleteAuthorizationOutcomeInput);
   }
 }
