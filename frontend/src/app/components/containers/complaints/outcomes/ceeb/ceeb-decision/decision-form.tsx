@@ -240,6 +240,10 @@ export const DecisionForm: FC<props> = ({
     });
   };
 
+  const isValid = (): boolean => {
+    return false;
+  };
+
   return (
     <>
       <div className="comp-details-form">
