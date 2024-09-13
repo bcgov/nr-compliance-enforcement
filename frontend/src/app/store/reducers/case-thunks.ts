@@ -46,7 +46,11 @@ import { UpdateAnimalOutcomeInput } from "../../types/app/case-files/animal-outc
 import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
 import { CreateDecisionInput } from "../../types/app/case-files/ceeb/decision/create-decision-input";
 import { UpdateDecisionInput } from "../../types/app/case-files/ceeb/decision/update-decsion-input";
+import { PermitSite } from "../../types/app/case-files/ceeb/authorization-outcome/permit-site";
+import { CreateAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/create-authorization-outcome-input";
+import { UpdateAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/update-authorization-outcome-input";
 import { getUserAgency } from "../../service/user-service";
+import { DeleteAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/delete-authorization-outcome-input";
 
 //-- general thunks
 export const findCase =
@@ -1079,5 +1083,98 @@ export const upsertDecisionOutcome =
       return "success";
     } else {
       return "error";
+    }
+  };
+
+export const upsertAuthorizationOutcome =
+  (id: string, input: PermitSite): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    const {
+      app: {
+        profile: { idir_username: idir },
+      },
+      cases: { authorization: current },
+    } = getState();
+
+    const _create =
+      (id: string, input: PermitSite): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      async (dispatch) => {
+        const payload: CreateAuthorizationOutcomeInput = {
+          leadIdentifier: id,
+          agencyCode: "EPO",
+          caseCode: "ERS",
+          createUserId: idir,
+          input,
+        };
+
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/site`, payload);
+        return await post<CaseFileDto>(dispatch, parameters);
+      };
+
+    const _update =
+      (id: string, site: PermitSite): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      async (dispatch) => {
+        const input: UpdateAuthorizationOutcomeInput = {
+          caseIdentifier: id,
+          updateUserId: idir,
+          input: site,
+        };
+
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/site`, input);
+        return await patch<CaseFileDto>(dispatch, parameters);
+      };
+
+    let result;
+
+    if (!current?.id) {
+      result = await dispatch(_create(id, input));
+    } else {
+      const update = { ...input, id: current.id };
+      result = await dispatch(_update(id, update));
+    }
+    const { authorization } = result;
+
+    if (result && authorization.id) {
+      dispatch(setCaseId(result.caseIdentifier));
+
+      ToggleSuccess(`Authorization outcome ${!current?.id ? "added" : "updated"}`);
+      return "success";
+    } else {
+      ToggleError(`Error, unable to ${!current?.id ? "create" : "update"} authroization outcome`);
+      return "error";
+    }
+  };
+
+export const deleteAuthorizationOutcome =
+  (): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> => async (dispatch, getState) => {
+    const {
+      app: {
+        profile: { idir_username: idir },
+      },
+      cases: { caseId, authorization },
+    } = getState();
+
+    if (caseId && authorization?.id) {
+      const { id } = authorization;
+      const input: DeleteAuthorizationOutcomeInput = {
+        caseIdentifier: caseId,
+        updateUserId: idir,
+        id,
+      };
+
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/site`, input);
+      const result = await deleteMethod<CaseFileDto>(dispatch, parameters);
+
+      const { authorization: outcome } = result;
+
+      if (result && !outcome) {
+        dispatch(setCaseId(result.caseIdentifier));
+
+        ToggleSuccess("Authroization outcome deleted");
+        return "success";
+      } else {
+        ToggleError("Error, unable to delete authorization outcome");
+        return "error";
+      }
     }
   };

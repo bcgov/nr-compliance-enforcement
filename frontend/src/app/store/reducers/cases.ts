@@ -33,8 +33,10 @@ const initialState: CasesState = {
     showSectionErrors: false,
     //-- ceeb
     decision: false,
+    authorization: false,
   },
   decision: undefined,
+  authorization: undefined,
 };
 
 export const casesSlice = createSlice({
@@ -74,13 +76,13 @@ export const casesSlice = createSlice({
     },
     setCaseFile: (state, action) => {
       const {
-        payload: { caseIdentifier, note, equipment, subject, reviewComplete, decision },
+        payload: { caseIdentifier, note, equipment, subject, reviewComplete, decision, authorization },
       } = action;
 
       //--
       //-- TODO: need to have each dev add thier state to this section instead of requesting
       //-- each individual state. Add assessment, prevention, equipment here
-      return { ...state, caseId: caseIdentifier, note, equipment, subject, reviewComplete, decision };
+      return { ...state, caseId: caseIdentifier, note, equipment, subject, reviewComplete, decision, authorization };
     },
     setIsInEdit: (state, action) => {
       const { payload } = action;
