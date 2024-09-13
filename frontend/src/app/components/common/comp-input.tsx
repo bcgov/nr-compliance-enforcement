@@ -119,7 +119,7 @@ export const CompInput: FC<Props> = ({
         <div className={prefix && "input-group"}>
           {prefix && (
             <span
-              className={`input-group-text ${prefix.prefixClassName}`}
+              className={`input-group-text ${prefix.prefixClassName} ${error ? "error-border" : ""}`}
               id={id}
             >
               {prefix.value}
