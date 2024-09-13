@@ -35,17 +35,6 @@ jobs:
         uses: ./.github/actions/get-pr-number
       - name: Set PR Output
         run: echo "pr=${{ steps.pr.outputs.pr }}" >> $GITHUB_OUTPUT
-  bump_version:
-    name: Bump Minor Version and Create Release
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        package: [backend, frontend, webeoc]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install jq (JSON parser)
-        run: sudo apt-get install -y jq
 
   create_release:
     name: Create GitHub Release (Keep Version)
@@ -55,9 +44,6 @@ jobs:
         package: [backend, frontend, webeoc]
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install jq (JSON parser)
-        run: sudo apt-get install -y jq
 
       # Retrieve the latest tag (from the release branch)
       - name: Get Latest Tag
