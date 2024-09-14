@@ -33,7 +33,6 @@ violation_code
 complaint_update
 office
 complaint
-comp_mthd_recv_cd_agcy_cd_xref
 geo_organization_unit_code
 team_code
 staging_status_code
@@ -47,7 +46,6 @@ geo_org_unit_type_code
 feature_code
 entity_code
 complaint_status_code
-complaint_method_received_code
 attractant_code
 spatial_ref_sys
 person

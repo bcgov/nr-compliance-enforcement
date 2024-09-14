@@ -2,7 +2,6 @@ agency_code
 person
 spatial_ref_sys
 attractant_code
-complaint_method_received_code
 complaint_status_code
 entity_code
 feature_code
@@ -16,7 +15,6 @@ staging_activity_code
 staging_status_code
 team_code
 geo_organization_unit_code
-comp_mthd_recv_cd_agcy_cd_xref
 complaint
 office
 complaint_update

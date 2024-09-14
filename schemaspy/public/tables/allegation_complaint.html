@@ -174,8 +174,8 @@
                                 </tr>
                                 <tr>
                                     <td><span id="suspect_witnesss_dtl_text">suspect_witnesss_dtl_text</span></td>
-                                    <td>text</td>
-                                    <td>2147483647</td>
+                                    <td>varchar</td>
+                                    <td>4000</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -368,53 +368,51 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="405,5,797,368">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="5,101,361,395">
-<area shape="rect" id="node3" href="violation_code.html" target="_top" title="violation_code" alt="" coords="67,412,299,559">
+<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="357,5,749,368">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="5,116,313,380">
+<area shape="rect" id="node3" href="violation_code.html" target="_top" title="violation_code" alt="" coords="43,397,275,544">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/allegation_complaint.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="1019,427,1411,789">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="619,244,975,537">
-<area shape="rect" id="node3" href="violation_code.html" target="_top" title="violation_code" alt="" coords="681,677,913,824">
-<area shape="rect" id="node4" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="229,567,575,655">
-<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,567,185,655">
-<area shape="rect" id="node6" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="271,356,533,444">
-<area shape="rect" id="node7" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="253,461,551,549">
-<area shape="rect" id="node8" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="292,215,512,303">
-<area shape="rect" id="node9" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="1103,5,1327,93">
-<area shape="rect" id="node10" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="1121,111,1309,199">
-<area shape="rect" id="node11" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="1111,216,1318,304">
-<area shape="rect" id="node12" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="1084,321,1345,409">
+<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="700,5,1092,368">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="348,463,656,727">
+<area shape="rect" id="node3" href="violation_code.html" target="_top" title="violation_code" alt="" coords="386,285,618,432">
+<area shape="rect" id="node4" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="24,553,285,641">
+<area shape="rect" id="node5" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,659,304,747">
+<area shape="rect" id="node6" href="agency_code.html" target="_top" title="agency_code" alt="" coords="65,331,245,419">
+<area shape="rect" id="node7" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="45,448,265,536">
+<area shape="rect" id="node8" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="784,701,1008,789">
+<area shape="rect" id="node9" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="802,385,990,473">
+<area shape="rect" id="node10" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="793,491,999,579">
+<area shape="rect" id="node11" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="765,596,1027,684">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/allegation_complaint.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="405,5,797,368">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="5,101,361,395">
-<area shape="rect" id="node3" href="violation_code.html" target="_top" title="violation_code" alt="" coords="67,412,299,559">
+<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="357,5,749,368">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="5,116,313,380">
+<area shape="rect" id="node3" href="violation_code.html" target="_top" title="violation_code" alt="" coords="43,397,275,544">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/allegation_complaint.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="1455,36,1637,124">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="619,334,975,627">
-<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="1103,72,1327,160">
-<area shape="rect" id="node6" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="229,656,575,744">
-<area shape="rect" id="node7" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,656,185,744">
-<area shape="rect" id="node8" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="271,446,533,534">
-<area shape="rect" id="node9" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="253,551,551,639">
-<area shape="rect" id="node10" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="292,304,512,392">
-<area shape="rect" id="node4" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="1019,599,1411,962">
-<area shape="rect" id="node5" href="violation_code.html" target="_top" title="violation_code" alt="" coords="681,822,913,968">
-<area shape="rect" id="node11" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="1121,178,1309,266">
-<area shape="rect" id="node12" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="1111,283,1318,371">
-<area shape="rect" id="node13" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="1084,388,1345,476">
-<area shape="rect" id="node14" href="staging_complaint.html" target="_top" title="staging_complaint" alt="" coords="1102,494,1327,582">
+<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="1136,736,1319,824">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="348,541,656,805">
+<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="784,701,1008,789">
+<area shape="rect" id="node6" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="24,632,285,720">
+<area shape="rect" id="node7" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,737,304,825">
+<area shape="rect" id="node8" href="agency_code.html" target="_top" title="agency_code" alt="" coords="65,389,245,477">
+<area shape="rect" id="node9" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="45,527,265,615">
+<area shape="rect" id="node4" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="700,5,1092,368">
+<area shape="rect" id="node5" href="violation_code.html" target="_top" title="violation_code" alt="" coords="386,325,618,472">
+<area shape="rect" id="node10" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="802,843,990,931">
+<area shape="rect" id="node11" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="793,385,999,473">
+<area shape="rect" id="node12" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="765,491,1027,579">
+<area shape="rect" id="node13" href="staging_complaint.html" target="_top" title="staging_complaint" alt="" coords="783,596,1009,684">
 </map>
                                         <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/allegation_complaint.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
