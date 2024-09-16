@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
 import {
   selectDischargeDropdown,
@@ -19,11 +19,12 @@ import { CompInput } from "../../../../../common/comp-input";
 import { openModal } from "../../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../../types/modal/modal-types";
 import { getCaseFile, upsertDecisionOutcome } from "../../../../../../store/reducers/case-thunks";
-import { assignComplaintToOfficer, selectOfficersDropdown } from "../../../../../../store/reducers/officer";
+import { assignComplaintToOfficer, selectOfficersByAgencyDropdown } from "../../../../../../store/reducers/officer";
 import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
 import { UUID } from "crypto";
-import { getComplaintById } from "../../../../../../store/reducers/complaints";
-import { ToggleError, ToggleSuccess } from "../../../../../../common/toast";
+import { getComplaintById, selectComplaintCallerInformation } from "../../../../../../store/reducers/complaints";
+import { ToggleError } from "../../../../../../common/toast";
+
 import COMPLAINT_TYPES from "../../../../../../types/app/complaint-types";
 
 type props = {
@@ -74,7 +75,8 @@ export const DecisionForm: FC<props> = ({
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
-  const officerOptions = useAppSelector(selectOfficersDropdown(true));
+  const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
+  const officerOptions = useAppSelector(selectOfficersByAgencyDropdown(ownedByAgencyCode?.agency));
 
   //-- error messgaes
   const [scheduleErrorMessage, setScheduleErrorMessage] = useState("");
@@ -98,10 +100,16 @@ export const DecisionForm: FC<props> = ({
     rationale,
     inspectionNumber,
     leadAgency,
-    assignedTo: officerAssigned ? officerAssigned : "",
+    assignedTo: officerAssigned ?? "",
     actionTaken,
     actionTakenDate,
   });
+
+  useEffect(() => {
+    if (officerAssigned) {
+      applyData({ ...data, assignedTo: officerAssigned });
+    }
+  }, [officerAssigned]);
 
   //-- update the decision state by property
   const updateModel = (property: string, value: string | Date | undefined) => {

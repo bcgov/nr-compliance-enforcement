@@ -7,12 +7,14 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Officer } from "./entities/officer.entity";
 import { Person } from "../person/entities/person.entity";
 import { Office } from "../office/entities/office.entity";
+import { CssModule } from "src/external_api/css/css.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Officer]),
     TypeOrmModule.forFeature([Person]),
     TypeOrmModule.forFeature([Office]),
+    CssModule,
   ],
   controllers: [OfficerController],
   providers: [OfficerService, PersonService, OfficeService],

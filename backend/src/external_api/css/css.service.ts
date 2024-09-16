@@ -115,4 +115,63 @@ export class CssService implements ExternalApiService {
       throw new Error(`exception: unable to delete user's role ${userIdir} - error: ${error}`);
     }
   };
+
+getUserRoleMapping = async (): Promise<AxiosResponse> => {
+    try {
+      const apiToken = await this.authenticate();
+      //Get all roles from NatCom CSS integation
+      const rolesUrl = `${this.baseUri}/api/v1/integrations/4794/${this.env}/roles`;
+      const config: AxiosRequestConfig = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiToken}`,
+        },
+      };
+      const roleRes = await get(apiToken, rolesUrl, config);
+      if (roleRes?.data.data.length > 0) {
+        const {
+          data: { data: roleList },
+        } = roleRes;
+
+        //Get all users for each role
+        let usersUrl: string = "";
+        const usersRoles = await Promise.all(
+          roleList.map(async (role) => {
+            usersUrl = `${this.baseUri}/api/v1/integrations/4794/${this.env}/roles/${role.name}/users`;
+            const userRes = await get(apiToken, encodeURI(usersUrl), config);
+            if (userRes?.data.data.length > 0) {
+              const {
+                data: { data: users },
+              } = userRes;
+              let usersRolesTemp = await Promise.all(
+                users.map((user) => {
+                  return {
+                    userId: user.username
+                      .replace(/@idir$/i, "")
+                      .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5"),
+                    role: role.name,
+                  };
+                }),
+              );
+              return usersRolesTemp;
+            }
+          }),
+        );
+
+        //exclude empty roles and concatenate all sub-array elements
+        const usersRolesFlat = usersRoles.filter((item) => item !== undefined).flat();
+
+        //group the array elements by a user id
+        const usersRolesGroupped = usersRolesFlat.reduce((grouping, item) => {
+          grouping[item.userId] = [...(grouping[item.userId] || []), item.role];
+          return grouping;
+        }, {});
+
+        return usersRolesGroupped;
+      }
+    } catch (error) {
+      this.logger.error(`exception: error: ${error}`);
+      return;
+    }
+  };
 }

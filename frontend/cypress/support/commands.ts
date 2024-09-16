@@ -319,7 +319,7 @@ Cypress.Commands.add("navigateToTab", (complaintTab: string, removeFilters: bool
 
   //-- verify correct tab
   if (complaintTab === "#hwcr-tab") {
-    cy.get(complaintTab).should("contain.text", "Human Wildlife Conflicts");
+    cy.get(complaintTab).should("contain.text", "Human Wildlife Conflict");
   } else {
     cy.get(complaintTab).should("contain.text", "Enforcement");
   }

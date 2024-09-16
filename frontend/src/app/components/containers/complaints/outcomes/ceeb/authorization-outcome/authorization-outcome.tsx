@@ -49,7 +49,7 @@ export const AuthoizationOutcome: FC = () => {
         data: {
           title: "Delete Authorization?",
           description: "Your changes will be lost.",
-          confirmText: "delete authroization",
+          confirmText: "delete authorization",
           deleteConfirmed: () => {
             dispatch(deleteAuthorizationOutcome()).then(async (response) => {
               if (response === "success") {
