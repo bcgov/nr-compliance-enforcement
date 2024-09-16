@@ -52,8 +52,8 @@ jobs:
       # Create a tag based on the version from package.json
       - name: Create Git Tag
         run: |
-          git tag "v${{ steps.get_version.outputs.version }}_temp"
-          git push origin "v${{ steps.get_version.outputs.version }}"
+          git tag "v${{ steps.get_version.outputs.version }}_teset"
+          git push origin "v${{ steps.get_version.outputs.version }}_test"
 
   # https://github.com/bcgov/quickstart-openshift-helpers
   deploys:
