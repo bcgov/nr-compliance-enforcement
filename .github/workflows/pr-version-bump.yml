@@ -8,7 +8,7 @@ on:
 
 concurrency:
   # Cancel in progress for PR open and close
-  group: ${{ github.event.number }}
+  group: ${{ github.workflow }}-${{ github.event.number }}
   cancel-in-progress: true
 
 jobs:
