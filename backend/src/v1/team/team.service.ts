@@ -126,7 +126,8 @@ export class TeamService {
       const currentRoles: any = await this.cssService.getUserRoles(userIdir);
       for await (const roleItem of currentRoles) {
         const rolesMatchWithUpdate = updateRoles.some((updateRole) => updateRole.name === roleItem.name);
-        if (roleItem.name !== Role.TEMPORARY_TEST_ADMIN && !rolesMatchWithUpdate) {
+        //Remove existing roles that do not match with updated roles, but still keeps Admin and Read only role
+        if (roleItem.name !== Role.TEMPORARY_TEST_ADMIN && roleItem.name !== Role.READ_ONLY && !rolesMatchWithUpdate) {
           await this.cssService.deleteUserRole(userIdir, roleItem.name);
         }
       }

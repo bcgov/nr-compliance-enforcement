@@ -9,6 +9,9 @@ import { PersonService } from "../person/person.service";
 import { OfficeService } from "../office/office.service";
 import { DataSource } from "typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
+import { CssService } from "../../external_api/css/css.service";
+import { ConfigurationService } from "../configuration/configuration.service";
+import { Configuration } from "../configuration/entities/configuration.entity";
 
 describe("OfficerController", () => {
   let controller: OfficerController;
@@ -35,6 +38,12 @@ describe("OfficerController", () => {
         {
           provide: DataSource,
           useFactory: dataSourceMockFactory,
+        },
+        CssService,
+        ConfigurationService,
+        {
+          provide: getRepositoryToken(Configuration),
+          useValue: {},
         },
       ],
     }).compile();

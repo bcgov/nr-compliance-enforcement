@@ -18,7 +18,7 @@ describe("Complaint Create Page spec - Create View", () => {
     region: "West Coast",
     status: "Closed",
     statusIndex: 1,
-    assigned: "Benson, Olivia",
+    assigned: "Kot, Steve",
     assignedIndex: 1,
     violationInProgressIndex: 1,
     violationInProgressString: "No",
