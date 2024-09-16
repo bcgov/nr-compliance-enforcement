@@ -1,10 +1,10 @@
 name: PR
 
 on:
-  workflow_run:
-    workflows: ["PR Bump Version Workflow"]
+  pull_request:
     branches:
       - release/**
+
 concurrency:
   # Cancel in progress for PR open and close
   group: ${{ github.event.number }}
