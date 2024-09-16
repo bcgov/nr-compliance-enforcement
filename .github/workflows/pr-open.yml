@@ -1,8 +1,12 @@
 name: PR
 
 on:
-  pull_request:
-
+  workflow_run:
+    workflows: ["PR Bump Version Workflow"]
+    types:
+      - completed
+    branches:
+      - release/**
 concurrency:
   # Cancel in progress for PR open and close
   group: ${{ github.event.number }}
@@ -20,7 +24,6 @@ jobs:
     steps:
       - uses: bcgov-nr/action-builder-ghcr@v2.0.2
         with:
-          keep_versions: 50
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
           tag_fallback: latest
