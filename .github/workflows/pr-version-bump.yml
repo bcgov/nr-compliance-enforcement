@@ -59,13 +59,19 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-      - name: Pull latest changes before pushing
-        run: |
-          git pull --rebase origin ${{ github.head_ref }}
-
       # Commit and push version bump
       - name: Commit and push version bump
         run: |
           git add ${{ matrix.package }}/package.json
           git commit -m "chore(${{ matrix.package }}): bump version."
           git push origin HEAD:refs/heads/${{ github.head_ref }}  # Push to the branch associated with the PR
+
+      # Pull the latest changes with rebase before pushing
+      - name: Pull latest changes with rebase before pushing
+        run: |
+          git pull --rebase origin ${{ github.head_ref }}
+
+      # Push the rebased version bump
+      - name: Push rebased version bump
+        run: |
+          git push origin HEAD:refs/heads/${{ github.head_ref }}
