@@ -63,5 +63,5 @@ jobs:
       - name: Commit and push version bump
         run: |
           git add ${{ matrix.package }}/package.json
-          git commit -m "chore(${{ matrix.package }}): bump version"
+          git commit -m "chore(${{ matrix.package }}): bump version."
           git push origin HEAD:refs/heads/${{ github.head_ref }}  # Push to the branch associated with the PR
