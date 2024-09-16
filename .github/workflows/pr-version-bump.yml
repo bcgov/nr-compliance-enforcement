@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }} # Ensure you're checking out the correct branch
+          ref: ${{ github.head_ref }}
 
       - name: Install jq (JSON parser)
         run: sudo apt-get install -y jq
@@ -64,4 +64,4 @@ jobs:
         run: |
           git add ${{ matrix.package }}/package.json
           git commit -m "chore(${{ matrix.package }}): bump version"
-          git push origin HEAD:refs/heads/${{ github.ref_name }}  # Push to the correct branch
+          git push origin HEAD:${{ github.head_ref }}
