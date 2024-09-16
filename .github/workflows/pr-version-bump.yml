@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   bump_version:
-    name: Bump Version forRelease Branch
+    name: Bump Version for the Release Branch
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -26,17 +26,46 @@ jobs:
       - name: Install jq (JSON parser)
         run: sudo apt-get install -y jq
 
-      # Check if it's the first PR into the release branch (no existing tags)
-      - name: Check for existing tags
+      # Pull the latest changes from the release branch before version bump
+      - name: Pull latest changes with rebase
+        run: git pull --rebase origin ${{ github.base_ref }}
+
+      # Get the latest global tag (from previous releases)
+      - name: Get latest global tag
         id: check_tag
         run: |
           git fetch --tags
-          latest_tag=$(git describe --tags --abbrev=0 --match "v*.*.*" || echo "none")
+          latest_tag=$(git tag --sort=-creatordate | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || echo "none")
           echo "::set-output name=latest_tag::$latest_tag"
+          echo "Latest global tag: $latest_tag"
 
-      # Bump minor version and reset patch for first PR
+      # Get the current version from package.json
+      - name: Get version from package.json
+        id: get_version
+        run: |
+          cd ${{ matrix.package }}
+          current_version=$(jq -r '.version' package.json)
+          echo "::set-output name=current_version::$current_version"
+          echo "Current version in package.json: $current_version"
+
+      # Compare current version with the latest tag to determine if it's the first PR
+      - name: Determine if it's the first PR
+        id: compare_version
+        run: |
+          current_version=${{ steps.get_version.outputs.current_version }}
+          latest_tag=${{ steps.check_tag.outputs.latest_tag }}
+
+          if [[ "$current_version" == "$latest_tag" ]]; then
+            echo "First PR for this release branch"
+            echo "::set-output name=first_pr::true"
+          else
+            echo "Subsequent PR"
+            echo "::set-output name=first_pr::false"
+          fi
+
+      # Bump minor version and reset patch for first PR into release branch
       - name: Bump minor version and reset patch for first PR
-        if: ${{ steps.check_tag.outputs.latest_tag == 'none' }}
+        if: ${{ steps.compare_version.outputs.first_pr == 'true' }}
         run: |
           cd ${{ matrix.package }}
           current_version=$(jq -r '.version' package.json)
@@ -44,9 +73,9 @@ jobs:
           jq --arg v "$new_version" '.version = $v' package.json > package.json.tmp && mv package.json.tmp package.json
           echo "First PR: Resetting patch and bumping minor. New version: $new_version"
 
-      # Bump patch version for subsequent PRs
+      # Bump patch version for subsequent PRs into release branch
       - name: Bump patch version for subsequent PRs
-        if: ${{ steps.check_tag.outputs.latest_tag != 'none' }}
+        if: ${{ steps.compare_version.outputs.first_pr == 'false' }}
         run: |
           cd ${{ matrix.package }}
           current_version=$(jq -r '.version' package.json)
