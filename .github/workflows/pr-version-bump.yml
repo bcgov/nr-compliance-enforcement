@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   bump_version:
-    name: Bump Version for Release Branch
+    name: Bump Version forRelease Branch
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -54,28 +54,48 @@ jobs:
           jq --arg v "$new_version" '.version = $v' package.json > package.json.tmp && mv package.json.tmp package.json
           echo "Subsequent PR: Bumping patch. New version: $new_version"
 
+      # Upload the updated package.json file
+      - name: Upload updated package.json
+        uses: actions/upload-artifact@v3
+        with:
+          name: updated-package-${{ matrix.package }}
+          path: ${{ matrix.package }}/package.json
+
+  commit_and_push:
+    name: Commit and Push All Changes
+    runs-on: ubuntu-22.04
+    needs: bump_version # Wait for the bump_version job to complete
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      # Download all updated package.json files from the matrix jobs
+      - name: Download updated package.json files
+        uses: actions/download-artifact@v3
+        with:
+          name: updated-package-backend
+          path: backend/
+      - name: Download updated frontend package.json
+        uses: actions/download-artifact@v3
+        with:
+          name: updated-package-frontend
+          path: frontend/
+      - name: Download updated webeoc package.json
+        uses: actions/download-artifact@v3
+        with:
+          name: updated-package-webeoc
+          path: webeoc/
+
+      # Set Git Identity
       - name: Set Git Identity
         run: |
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-      # Commit and push version bump
-      - name: Commit and push version bump
+      # Commit and push all changes at once
+      - name: Commit and push all changes
         run: |
-          git add ${{ matrix.package }}/package.json
-          git commit -m "chore(${{ matrix.package }}): bump version."
-          git push origin HEAD:refs/heads/${{ github.head_ref }}  # Push to the branch associated with the PR
-
-      # Pull the latest changes with rebase before pushing
-      - name: Pull latest changes with rebase before pushing
-        run: |
-          git pull --rebase origin ${{ github.head_ref }}
-
-      # Push the rebased version bump with retry on failure
-      - name: Push rebased version bump with retry
-        run: |
-          git push origin HEAD:refs/heads/${{ github.head_ref }} || (
-            echo "Push failed, retrying..." &&
-            git pull --rebase origin ${{ github.head_ref }} &&
-            git push origin HEAD:refs/heads/${{ github.head_ref }}
-          )
+          git add backend/package.json frontend/package.json webeoc/package.json
+          git commit -m "chore: bump versions for backend, frontend, and webeoc"
+          git push origin HEAD:refs/heads/${{ github.head_ref }}  # Push to the same branch
