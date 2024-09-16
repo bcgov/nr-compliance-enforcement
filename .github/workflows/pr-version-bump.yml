@@ -59,6 +59,10 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
+      - name: Pull latest changes before pushing
+        run: |
+          git pull origin ${{ github.head_ref }}
+
       # Commit and push version bump
       - name: Commit and push version bump
         run: |
