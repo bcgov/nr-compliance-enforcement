@@ -71,7 +71,11 @@ jobs:
         run: |
           git pull --rebase origin ${{ github.head_ref }}
 
-      # Push the rebased version bump
-      - name: Push rebased version bump
+      # Push the rebased version bump with retry on failure
+      - name: Push rebased version bump with retry
         run: |
-          git push origin HEAD:refs/heads/${{ github.head_ref }}
+          git push origin HEAD:refs/heads/${{ github.head_ref }} || (
+            echo "Push failed, retrying..." &&
+            git pull --rebase origin ${{ github.head_ref }} &&
+            git push origin HEAD:refs/heads/${{ github.head_ref }}
+          )
