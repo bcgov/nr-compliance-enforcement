@@ -27,34 +27,6 @@ jobs:
           tag_fallback: latest
           triggers: ('${{ matrix.package }}/')
 
-  create-tag:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install jq (JSON parser)
-        run: sudo apt-get install -y jq
-
-      # Get version from package.json
-      - name: Get version from package.json
-        id: get_version
-        run: |
-          version=$(jq -r '.version' backend/package.json)  # Assuming all package.json files have the same version
-          echo "Version: $version"
-          echo "::set-output name=version::$version"
-
-      # Set Git Identity for tagging
-      - name: Set Git Identity
-        run: |
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-
-      # Create a tag based on the version from package.json
-      - name: Create Git Tag
-        run: |
-          git tag "v${{ steps.get_version.outputs.version }}_test"
-          git push origin "v${{ steps.get_version.outputs.version }}_test"
-
   # https://github.com/bcgov/quickstart-openshift-helpers
   deploys:
     name: Deploys
