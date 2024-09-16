@@ -61,7 +61,7 @@ jobs:
 
       - name: Pull latest changes before pushing
         run: |
-          git pull origin ${{ github.head_ref }}
+          git pull --rebase origin ${{ github.head_ref }}
 
       # Commit and push version bump
       - name: Commit and push version bump
