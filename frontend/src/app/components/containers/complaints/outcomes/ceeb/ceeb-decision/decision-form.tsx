@@ -31,7 +31,7 @@ type props = {
   officerAssigned: string | null;
   leadIdentifier: string;
   toggleEdit: Function;
-  //--
+  //-- properties
   id?: string;
   schedule: string;
   sector: string;
