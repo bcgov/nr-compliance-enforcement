@@ -20,6 +20,8 @@ jobs:
         package: [backend, frontend, webeoc]
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Install jq (JSON parser)
         run: sudo apt-get install -y jq
