@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }} # Ensure you're checking out the correct PR branch
+          ref: ${{ github.ref_name }} # Ensure you're checking out the correct branch
 
       - name: Install jq (JSON parser)
         run: sudo apt-get install -y jq
@@ -34,7 +34,7 @@ jobs:
           latest_tag=$(git describe --tags --abbrev=0 --match "v*.*.*" || echo "none")
           echo "::set-output name=latest_tag::$latest_tag"
 
-      # If it's the first PR into the release branch, reset patch and bump minor version
+      # Bump minor version and reset patch for first PR
       - name: Bump minor version and reset patch for first PR
         if: ${{ steps.check_tag.outputs.latest_tag == 'none' }}
         run: |
@@ -44,7 +44,7 @@ jobs:
           jq --arg v "$new_version" '.version = $v' package.json > package.json.tmp && mv package.json.tmp package.json
           echo "First PR: Resetting patch and bumping minor. New version: $new_version"
 
-      # For subsequent PRs into the release branch, just bump the patch version
+      # Bump patch version for subsequent PRs
       - name: Bump patch version for subsequent PRs
         if: ${{ steps.check_tag.outputs.latest_tag != 'none' }}
         run: |
@@ -64,11 +64,4 @@ jobs:
         run: |
           git add ${{ matrix.package }}/package.json
           git commit -m "chore(${{ matrix.package }}): bump version"
-          git push origin HEAD:refs/heads/${{ github.ref_name }}  # Ensure you're pushing to the correct branch
-
-      # Tag the new version
-      - name: Tag the new version
-        run: |
-          new_version=$(jq -r '.version' ${{ matrix.package }}/package.json)
-          git tag "v$new_version"
-          git push origin "v$new_version"
+          git push origin HEAD:refs/heads/${{ github.ref_name }}  # Push to the correct branch
