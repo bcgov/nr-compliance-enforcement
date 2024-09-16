@@ -71,6 +71,7 @@ export const DecisionForm: FC<props> = ({
   const nonComplianceOptions = useAppSelector(selectNonComplianceDropdown);
   const rationaleOptions = useAppSelector(selectRationaleDropdown);
   const sectorsOptions = useAppSelector(selectSectorDropdown);
+  //  const sectorsFilteredList = sectorsOptions;
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
@@ -87,6 +88,8 @@ export const DecisionForm: FC<props> = ({
   const [leadAgencyErrorMessage] = useState("");
   const [inspectionNumberErrorMessage] = useState("");
   const [assignedToErrorMessage] = useState();
+
+  const [sectorsFilteredList, setSectorsFilteredList] = useState([]);
 
   //-- component data
   // eslint-disable-line no-console, max-len
@@ -214,6 +217,15 @@ export const DecisionForm: FC<props> = ({
       }),
     );
   };
+  // handle change event of the schedule dropdown
+  const handleScheduleChange = (obj: Option | null | undefined) => {
+    let filteredList = sectorsOptions.filter(item => item.value?.startsWith("u"));
+    //setSectorsFilteredList(filteredList);
+  };
+  // handle change event of the sector dropdown
+  const handleSectorChange = (obj: Option | null | undefined) => {
+    // updateModel("sector", obj?.value);
+  };
 
   const handleSaveButtonClick = () => {
     const identifier = id !== undefined ? caseId : leadIdentifier;
@@ -259,6 +271,7 @@ export const DecisionForm: FC<props> = ({
               placeholder="Select "
               onChange={(evt) => {
                 updateModel("schedule", evt?.value);
+                handleScheduleChange(getValue("schedule"));
               }}
               value={getValue("schedule")}
             />
@@ -280,6 +293,7 @@ export const DecisionForm: FC<props> = ({
               placeholder="Select "
               onChange={(evt) => {
                 updateModel("sector", evt?.value);
+                handleSectorChange(getValue("sector"));
               }}
               value={getValue("sector")}
             />

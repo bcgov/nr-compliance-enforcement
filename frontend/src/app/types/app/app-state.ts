@@ -3,6 +3,7 @@ import { ConfigurationState } from "../state/configuration-state";
 import { FeatureFlagState } from "../state/feature-flag-state";
 import { LoadingState } from "../state/loading-state";
 import { NotificationState } from "../state/notification-state";
+import { ScheduleSectorState } from "../state/schedule-sector-state";
 import Profile from "./profile";
 
 export interface AppState {
@@ -30,4 +31,5 @@ export interface AppState {
 
   featureFlags: Array<FeatureFlagState>;
   activeTab: string;
+  scheduleSectors: Array<ScheduleSectorState>;
 }

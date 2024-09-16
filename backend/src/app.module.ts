@@ -51,6 +51,7 @@ import { FeatureCodeModule } from "./v1/feature_code/feature_code.module";
 import { TeamModule } from "./v1/team/team.module";
 import { TeamCodeModule } from "./v1/team_code/team_code.module";
 import { OfficerTeamXrefModule } from "./v1/officer_team_xref/officer_team_xref.module";
+import { ScheduleSectorXrefModule } from "./v1/schedule_sector_xref/schedule_sector_xref.module";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -124,6 +125,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     TeamModule,
     TeamCodeModule,
     OfficerTeamXrefModule,
+    ScheduleSectorXrefModule,
   ],
   controllers: [AppController],
   providers: [AppService, ComplaintSequenceResetScheduler],

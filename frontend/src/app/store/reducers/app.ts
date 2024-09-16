@@ -273,26 +273,51 @@ export const isFeatureActive =
     const features = state.app.featureFlags;
     return features.some((feature: any) => feature.featureCode === featureCode && feature.isActive === true);
   };
- 
- export const listActiveFilters = () => (state: RootState): ActiveFilters => {
-  const features = state.app.featureFlags;
-  const filters: ActiveFilters =
-  {
-    showActionTakenFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.ACTION_TAKEN_FILTER && feature.isActive === true),
-    showCommunityFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.COMMUNITY_FILTER && feature.isActive === true),
-    showDateFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.DATE_LOGGED_FILTER && feature.isActive === true),
-    showGirTypeFilter :  features.some((feature: any) => feature.featureCode === FEATURE_TYPES.GIR_FILTER && feature.isActive === true),
-    showMethodFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.METHOD_FILTER && feature.isActive === true),
-    showNatureComplaintFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.NATURE_FILTER && feature.isActive === true),
-    showOfficerFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.OFFICER_ASSIGNED_FILTER && feature.isActive === true),
-    showRegionFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.REGION_FILTER && feature.isActive === true),
-    showSpeciesFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.SPECIES_FILTER && feature.isActive === true),
-    showStatusFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.STATUS_FILTER && feature.isActive === true),
-    showViolationFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.VIOLATION_TYPE_FILTER && feature.isActive === true),
-    showZoneFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.ZONE_FILTER && feature.isActive === true)
-  }
- return filters;
- } 
+
+export const listActiveFilters =
+  () =>
+  (state: RootState): ActiveFilters => {
+    const features = state.app.featureFlags;
+    const filters: ActiveFilters = {
+      showActionTakenFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.ACTION_TAKEN_FILTER && feature.isActive === true,
+      ),
+      showCommunityFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.COMMUNITY_FILTER && feature.isActive === true,
+      ),
+      showDateFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.DATE_LOGGED_FILTER && feature.isActive === true,
+      ),
+      showGirTypeFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.GIR_FILTER && feature.isActive === true,
+      ),
+      showMethodFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.METHOD_FILTER && feature.isActive === true,
+      ),
+      showNatureComplaintFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.NATURE_FILTER && feature.isActive === true,
+      ),
+      showOfficerFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.OFFICER_ASSIGNED_FILTER && feature.isActive === true,
+      ),
+      showRegionFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.REGION_FILTER && feature.isActive === true,
+      ),
+      showSpeciesFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.SPECIES_FILTER && feature.isActive === true,
+      ),
+      showStatusFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.STATUS_FILTER && feature.isActive === true,
+      ),
+      showViolationFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.VIOLATION_TYPE_FILTER && feature.isActive === true,
+      ),
+      showZoneFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.ZONE_FILTER && feature.isActive === true,
+      ),
+    };
+    return filters;
+  };
 
 //-- thunks
 export const getTokenProfile = (): AppThunk => async (dispatch) => {
@@ -517,6 +542,7 @@ const initialState: AppState = {
   },
   featureFlags: [],
   activeTab: "HWCR",
+  scheduleSectors: [],
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {

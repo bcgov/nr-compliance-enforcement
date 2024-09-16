@@ -23,6 +23,7 @@ import GenericErrorBoundary from "./components/error-handling/generic-error-boun
 import { VerifyAccess } from "./components/containers/pages/verify-access";
 import Roles from "./types/app/roles";
 import { FeatureManagement } from "./components/containers/admin/feature-management";
+import { getScheduleSectors } from "./store/reducers/schedule-sector";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -34,6 +35,7 @@ const App: FC = () => {
     dispatch(getConfigurations());
     dispatch(getCodeTableVersion());
     dispatch(getFeatureFlag());
+    dispatch(getScheduleSectors());
   }, [dispatch]);
 
   return (
@@ -105,7 +107,7 @@ const App: FC = () => {
 
 const ComplaintsRouteWrapper = () => {
   const { type } = useParams();
-  let userType = UserService.hasRole(Roles.CEEB) ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR ;
+  let userType = UserService.hasRole(Roles.CEEB) ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR;
   const defaultType = !type ? userType : type;
 
   return <ComplaintsWrapper defaultComplaintType={defaultType} />;
