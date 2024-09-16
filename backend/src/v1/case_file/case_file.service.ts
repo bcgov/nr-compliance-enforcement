@@ -436,7 +436,7 @@ export class CaseFileService {
     const returnValue = await this.handleAPIResponse(result);
     // return returnValue?.createDecison;
     const { createDecison: data } = returnValue;
-
+    this.logger.debug(`createDecision.service ${data}`);
     return data;
   };
 

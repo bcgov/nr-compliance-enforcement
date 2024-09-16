@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UseGuards, Post, Delete, Query } from "@nestjs/common";
+import { Controller, Get, Body, Patch, Param, UseGuards, Post, Delete, Query, Logger } from "@nestjs/common";
 import { CaseFileService } from "./case_file.service";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -27,6 +27,7 @@ import { DeleteAuthorizationOutcomeInput } from "../../types/models/case-files/c
 })
 export class CaseFileController {
   constructor(private readonly service: CaseFileService) {}
+  private readonly logger = new Logger(CaseFileController.name);
 
   @Post("/equipment")
   @Roles(Role.COS_OFFICER)
@@ -161,7 +162,8 @@ export class CaseFileController {
   @Post("/decision")
   @Roles(Role.CEEB)
   async createDecision(@Token() token, @Body() model: CreateDecisionInput): Promise<CaseFileDto> {
-    return await this.service.createDecision(token, model);
+    const result = await this.service.createDecision(token, model);
+    return result;
   }
 
   @Patch("/decision")
