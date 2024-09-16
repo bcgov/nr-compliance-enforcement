@@ -427,6 +427,7 @@ export class CaseFileService {
       query: `mutation createDecision($input: CreateDecisionInput!) {
         createDecision(input: $input) {
           caseIdentifier
+          decision { id }
         }
       }`,
       variables: { input: model },
@@ -441,6 +442,7 @@ export class CaseFileService {
       query: `mutation updateDecision($input: UpdateDecisionInput!) {
         updateDecision(input: $input) {
           caseIdentifier
+          decision { id }
         }
       }`,
       variables: { input: model },
