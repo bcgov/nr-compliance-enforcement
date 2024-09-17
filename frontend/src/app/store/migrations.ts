@@ -13,7 +13,7 @@ import { ActiveTab } from "./migrations/migration-13";
 import { AddTeamCode } from "./migrations/migration-14";
 import { Decision } from "./migrations/migration-15";
 import { AddComplaintMethodReceivedCodes } from "./migrations/migration-16";
-import { AddScheduleSector } from "./migrations/migration-16";
+import { AddScheduleSector } from "./migrations/migration-16"; // TO BE REMOVED - FIXING THE MERGE CONFLICT...
 
 const BaseMigration = {
   0: (state: any) => {

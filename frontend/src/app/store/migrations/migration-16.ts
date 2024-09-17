@@ -10,14 +10,15 @@ export const AddComplaintMethodReceivedCodes = {
     };
   },
 };
-// export const AddScheduleSector = {
-//   17: (state: any) => {
-//     return {
-//       ...state,
-//       app: {
-//         ...state.app,
-//         scheduleSectors: [],
-//       },
-//     };
-//   },
-// };
+//TO BE REMOVED - FIXING THE MERGE CONFLICT FOR NOW...
+export const AddScheduleSector = {
+  17: (state: any) => {
+    return {
+      ...state,
+      app: {
+        ...state.app,
+        scheduleSectors: [],
+      },
+    };
+  },
+};
