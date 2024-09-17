@@ -434,10 +434,7 @@ export class CaseFileService {
     });
 
     const returnValue = await this.handleAPIResponse(result);
-    // return returnValue?.createDecison;
-    const { createDecision: data } = returnValue;
-    this.logger.debug(`createDecision.service ${data}`);
-    return data;
+    return returnValue?.createDecision;
   };
 
   updateDecision = async (token: any, model: UpdateDecisionInput): Promise<CaseFileDto> => {

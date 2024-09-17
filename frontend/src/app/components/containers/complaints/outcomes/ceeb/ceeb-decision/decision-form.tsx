@@ -269,21 +269,58 @@ export const DecisionForm: FC<props> = ({
   const isValid = (): boolean => {
     let _isValid = true;
 
-    if (!data.schedule) {
-      setScheduleErrorMessage("Required");
-    }
+    const _isDecisionValid = (data: Decision, _isValid: boolean): boolean => {
+      if (!data.schedule) {
+        setScheduleErrorMessage("Required");
+        _isValid = false;
+      }
 
-    if (!data.sector) {
-      setSectorErrorMessage("Required");
-    }
+      if (!data.sector) {
+        setSectorErrorMessage("Required");
+        _isValid = false;
+      }
 
-    if (!data.discharge) {
-      setDischargeErrorMessage("Required");
-    }
+      if (!data.discharge) {
+        setDischargeErrorMessage("Required");
+        _isValid = false;
+      }
 
-    if (!data.schedule || !data.sector || !data.discharge) {
-      _isValid = false;
-    }
+      return _isValid;
+    };
+
+    const _isActionValid = (data: Decision, _isValid: boolean): boolean => {
+      if (data.actionTaken && (!data.actionTakenDate || !data.assignedTo)) {
+        if (!data.actionTakenDate) {
+          setDateActionTakenErrorMessage("Date required when action taken selected");
+          _isValid = false;
+        }
+
+        if (!data.assignedTo) {
+          setAssignedToErrorMessage("Assigned to required when action taken selected");
+          _isValid = false;
+        }
+      }
+
+      return _isValid;
+    };
+
+    const _isAssignedToValid = (data: Decision, _isValid: boolean): boolean => {
+      if (data.assignedTo && (!data.actionTaken || !data.actionTakenDate)) {
+        if (!data.actionTakenDate) {
+          setDateActionTakenErrorMessage("Date required when action taken selected");
+          _isValid = false;
+        }
+
+        if (!data.actionTaken) {
+          setActionTakenErrorMessage("Action taken required when assigned to is selected");
+          _isValid = false;
+        }
+      }
+
+      return _isValid;
+    };
+
+    _isValid = _isDecisionValid(data, _isValid);
 
     if (data.actionTaken === CASE_ACTION_CODE.FWDLEADAGN && !data.leadAgency) {
       setLeadAgencyErrorMessage("Required");
@@ -295,28 +332,8 @@ export const DecisionForm: FC<props> = ({
       _isValid = false;
     }
 
-    if (data.actionTaken && (!data.actionTakenDate || !data.assignedTo)) {
-      if (!data.actionTakenDate) {
-        setDateActionTakenErrorMessage("Date required when action taken selected");
-        _isValid = false;
-      }
-      if (!data.assignedTo) {
-        setAssignedToErrorMessage("Assigned to required when action taken selected");
-        _isValid = false;
-      }
-    }
-
-    if (data.assignedTo && (!data.actionTaken || !data.actionTakenDate)) {
-      if (!data.actionTakenDate) {
-        setDateActionTakenErrorMessage("Date required when action taken selected");
-        _isValid = false;
-      }
-
-      if (!data.actionTaken) {
-        setActionTakenErrorMessage("Action taken required when assigned to is selected");
-        _isValid = false;
-      }
-    }
+    _isValid = _isActionValid(data, _isValid);
+    _isValid = _isAssignedToValid(data, _isValid);
 
     return _isValid;
   };
