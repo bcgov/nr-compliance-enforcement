@@ -24,13 +24,14 @@ import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
 import { UUID } from "crypto";
 import { getComplaintById, selectComplaintCallerInformation } from "../../../../../../store/reducers/complaints";
 import { ToggleError } from "../../../../../../common/toast";
+
 import COMPLAINT_TYPES from "../../../../../../types/app/complaint-types";
 
 type props = {
   officerAssigned: string | null;
   leadIdentifier: string;
   toggleEdit: Function;
-  //--
+  //-- properties
   id?: string;
   schedule: string;
   sector: string;
@@ -78,16 +79,16 @@ export const DecisionForm: FC<props> = ({
   const officerOptions = useAppSelector(selectOfficersByAgencyDropdown(ownedByAgencyCode?.agency));
 
   //-- error messgaes
-  const [scheduleErrorMessage] = useState("");
-  const [sectorErrorMessage] = useState("");
-  const [dischargeErrorMessage] = useState("");
+  const [scheduleErrorMessage, setScheduleErrorMessage] = useState("");
+  const [sectorErrorMessage, setSectorErrorMessage] = useState("");
+  const [dischargeErrorMessage, setDischargeErrorMessage] = useState("");
   const [rationaleErrorMessage] = useState("");
   const [nonComplianceErrorMessage] = useState("");
-  const [dateActionTakenErrorMessage] = useState("");
-  const [decisionTypeErrorMessage] = useState("");
-  const [leadAgencyErrorMessage] = useState("");
-  const [inspectionNumberErrorMessage] = useState("");
-  const [assignedToErrorMessage] = useState();
+  const [dateActionTakenErrorMessage, setDateActionTakenErrorMessage] = useState("");
+  const [leadAgencyErrorMessage, setLeadAgencyErrorMessage] = useState("");
+  const [inspectionNumberErrorMessage, setInspectionNumberErrorMessage] = useState("");
+  const [assignedToErrorMessage, setAssignedToErrorMessage] = useState("");
+  const [actionTakenErrorMessage, setActionTakenErrorMessage] = useState("");
 
   //-- component data
   // eslint-disable-line no-console, max-len
@@ -213,6 +214,8 @@ export const DecisionForm: FC<props> = ({
               actionTakenDate,
             });
 
+            resetErrorMessages();
+
             if (id !== undefined) {
               toggleEdit(false);
             }
@@ -222,29 +225,117 @@ export const DecisionForm: FC<props> = ({
     );
   };
 
+  const resetErrorMessages = () => {
+    setScheduleErrorMessage("");
+    setSectorErrorMessage("");
+    setDischargeErrorMessage("");
+    setActionTakenErrorMessage("");
+    setAssignedToErrorMessage("");
+    setDateActionTakenErrorMessage("");
+    setLeadAgencyErrorMessage("");
+    setInspectionNumberErrorMessage("");
+  };
+
   const handleSaveButtonClick = () => {
     const identifier = id !== undefined ? caseId : leadIdentifier;
+    resetErrorMessages();
 
-    dispatch(upsertDecisionOutcome(identifier, data)).then(async (response) => {
-      if (response === "success") {
-        //-- update the assignment of the complaint to the selected officer
-        const { assignedTo } = data;
-        const result = await dispatch(assignComplaintToOfficer(leadIdentifier, assignedTo));
+    if (isValid()) {
+      dispatch(upsertDecisionOutcome(identifier, data)).then(async (response) => {
+        if (response === "success") {
+          //-- update the assignment of the complaint to the selected officer
+          const { assignedTo } = data;
+          if (assignedTo) {
+            const result = await dispatch(assignComplaintToOfficer(leadIdentifier, assignedTo));
 
-        if (result) {
-          //-- update the complaint
-          dispatch(getComplaintById(leadIdentifier, COMPLAINT_TYPES.ERS));
-        } else {
-          ToggleError("Error, unable to to assign officer to complaint");
+            if (result) {
+              //-- update the complaint
+              dispatch(getComplaintById(leadIdentifier, COMPLAINT_TYPES.ERS));
+            } else {
+              ToggleError("Error, unable to to assign officer to complaint");
+            }
+          }
+
+          dispatch(getCaseFile(leadIdentifier));
+
+          if (id !== undefined) {
+            toggleEdit(false);
+          }
+        }
+      });
+    }
+  };
+
+  const isValid = (): boolean => {
+    let _isValid = true;
+
+    const _isDecisionValid = (data: Decision, _isValid: boolean): boolean => {
+      if (!data.schedule) {
+        setScheduleErrorMessage("Required");
+        _isValid = false;
+      }
+
+      if (!data.sector) {
+        setSectorErrorMessage("Required");
+        _isValid = false;
+      }
+
+      if (!data.discharge) {
+        setDischargeErrorMessage("Required");
+        _isValid = false;
+      }
+
+      return _isValid;
+    };
+
+    const _isActionValid = (data: Decision, _isValid: boolean): boolean => {
+      if (data.actionTaken && (!data.actionTakenDate || !data.assignedTo)) {
+        if (!data.actionTakenDate) {
+          setDateActionTakenErrorMessage("Date required when action taken selected");
+          _isValid = false;
         }
 
-        dispatch(getCaseFile(leadIdentifier));
-
-        if (id !== undefined) {
-          toggleEdit(false);
+        if (!data.assignedTo) {
+          setAssignedToErrorMessage("Assigned to required when action taken selected");
+          _isValid = false;
         }
       }
-    });
+
+      return _isValid;
+    };
+
+    const _isAssignedToValid = (data: Decision, _isValid: boolean): boolean => {
+      if (data.assignedTo && (!data.actionTaken || !data.actionTakenDate)) {
+        if (!data.actionTakenDate) {
+          setDateActionTakenErrorMessage("Date required when action taken selected");
+          _isValid = false;
+        }
+
+        if (!data.actionTaken) {
+          setActionTakenErrorMessage("Action taken required when assigned to is selected");
+          _isValid = false;
+        }
+      }
+
+      return _isValid;
+    };
+
+    _isValid = _isDecisionValid(data, _isValid);
+
+    if (data.actionTaken === CASE_ACTION_CODE.FWDLEADAGN && !data.leadAgency) {
+      setLeadAgencyErrorMessage("Required");
+      _isValid = false;
+    }
+
+    if (data.actionTaken === CASE_ACTION_CODE.RESPREC && !data.inspectionNumber) {
+      setInspectionNumberErrorMessage("Required");
+      _isValid = false;
+    }
+
+    _isValid = _isActionValid(data, _isValid);
+    _isValid = _isAssignedToValid(data, _isValid);
+
+    return _isValid;
   };
 
   return (
@@ -326,7 +417,7 @@ export const DecisionForm: FC<props> = ({
               classNamePrefix="comp-select"
               options={decisionTypeOptions}
               enableValidation={true}
-              errorMessage={decisionTypeErrorMessage}
+              errorMessage={actionTakenErrorMessage}
               placeholder="Select"
               onChange={(evt) => {
                 const action = evt?.value ? evt?.value : "";

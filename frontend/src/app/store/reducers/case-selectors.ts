@@ -181,7 +181,7 @@ export const selectCaseDecision = (state: RootState): Decision => {
     rationale: "",
     assignedTo,
     actionTaken: "",
-    actionTakenDate: new Date(),
+    actionTakenDate: null,
   };
 
   return !cases.decision ? defaultDecision : cases.decision;
