@@ -20,7 +20,6 @@ jobs:
     steps:
       - uses: bcgov-nr/action-builder-ghcr@v2.0.2
         with:
-          keep_versions: 50
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
           tag_fallback: latest
