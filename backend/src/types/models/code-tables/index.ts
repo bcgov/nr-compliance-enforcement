@@ -20,6 +20,7 @@ import { PreventionType } from "./prevention-type";
 import { Equipment } from "./equipment";
 import { GirType } from "./gir-type";
 import { TeamType } from "./team-type";
+import { ComplaintMethodReceivedType } from "./complaint-method-received-type";
 
 export const AvailableCodeTables = [
   "agency",
@@ -56,6 +57,7 @@ export const AvailableCodeTables = [
   "schedule",
   "decision-type",
   "team",
+  "complaint-method-received-codes",
 ];
 
 export const AvailableAgencies = ["cos"];
@@ -83,4 +85,5 @@ export {
   Equipment,
   GirType,
   TeamType,
+  ComplaintMethodReceivedType,
 };

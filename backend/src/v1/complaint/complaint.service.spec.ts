@@ -51,6 +51,7 @@ import {
   MockViolationsCodeTableRepository,
   MockGirTypeCodeRepository,
   MockTeamCodeRepository,
+  MockCompMthdRecvCdAgcyCdXrefRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import {
   MockComplaintsAgencyRepository,
@@ -67,6 +68,8 @@ import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.
 import { ActionTaken } from "./entities/action_taken.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 import { TeamCode } from "../team_code/entities/team_code.entity";
+import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
+import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -95,6 +98,7 @@ describe("Testing: Complaint Service", () => {
         PersonComplaintXrefService,
         AttractantHwcrXrefService,
         CodeTableService,
+        CompMthdRecvCdAgcyCdXrefService,
         {
           provide: getRepositoryToken(Complaint),
           useFactory: MockComplaintsRepositoryV2,
@@ -200,6 +204,10 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(TeamCode),
           useValue: MockTeamCodeRepository,
+        },
+        {
+          provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
+          useFactory: MockCompMthdRecvCdAgcyCdXrefRepository,
         },
       ],
     }).compile();
@@ -350,6 +358,7 @@ describe("Testing: Complaint Service", () => {
         PersonComplaintXrefService,
         AttractantHwcrXrefService,
         CodeTableService,
+        CompMthdRecvCdAgcyCdXrefService,
         {
           provide: getRepositoryToken(Complaint),
           useFactory: MockUpdateComplaintsRepository,
@@ -445,6 +454,10 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(TeamCode),
           useFactory: MockTeamCodeRepository,
+        },
+        {
+          provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
+          useFactory: MockCompMthdRecvCdAgcyCdXrefRepository,
         },
         {
           provide: REQUEST,

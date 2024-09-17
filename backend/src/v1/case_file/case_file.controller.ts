@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UseGuards, Post, Delete, Query } from "@nestjs/common";
+import { Controller, Get, Body, Patch, Param, UseGuards, Post, Delete, Query, Logger } from "@nestjs/common";
 import { CaseFileService } from "./case_file.service";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -15,6 +15,9 @@ import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/dele
 import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
 import { CreateDecisionInput } from "../../types/models/case-files/ceeb/decision/create-decision-input";
 import { UpdateDecisionInput } from "../../types/models/case-files/ceeb/decision/update-decison-input";
+import { CreateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/create-authorization-outcome-input";
+import { UpdateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/update-authorization-outcome-input";
+import { DeleteAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/delete-authorization-outcome-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -24,6 +27,7 @@ import { UpdateDecisionInput } from "../../types/models/case-files/ceeb/decision
 })
 export class CaseFileController {
   constructor(private readonly service: CaseFileService) {}
+  private readonly logger = new Logger(CaseFileController.name);
 
   @Post("/equipment")
   @Roles(Role.COS_OFFICER)
@@ -158,13 +162,48 @@ export class CaseFileController {
   @Post("/decision")
   @Roles(Role.CEEB)
   async createDecision(@Token() token, @Body() model: CreateDecisionInput): Promise<CaseFileDto> {
-    return await this.service.createDecision(token, model);
+    const result = await this.service.createDecision(token, model);
+    return result;
   }
+
   @Patch("/decision")
   @Roles(Role.CEEB)
   async updateDecision(@Token() token, @Body() model: UpdateDecisionInput): Promise<CaseFileDto> {
-    const result = await this.service.updateDecision(token, model);
+    return await this.service.updateDecision(token, model);
+  }
 
-    return Promise.resolve(result);
+  @Post("/site")
+  @Roles(Role.CEEB)
+  async createAuthorizationOutcome(
+    @Token() token,
+    @Body() model: CreateAuthorizationOutcomeInput,
+  ): Promise<CaseFileDto> {
+    return await this.service.createAuthorizationOutcome(token, model);
+  }
+
+  @Patch("/site")
+  @Roles(Role.CEEB)
+  async updateAuthorizationOutcome(
+    @Token() token,
+    @Body() model: UpdateAuthorizationOutcomeInput,
+  ): Promise<CaseFileDto> {
+    return await this.service.updateAuthorizationOutcome(token, model);
+  }
+
+  @Delete("/site")
+  @Roles(Role.CEEB)
+  async deleteAuthorizationOutcome(
+    @Token() token,
+    @Query("caseIdentifier") caseIdentifier: string,
+    @Query("updateUserId") updateUserId: string,
+    @Query("id") id: string,
+  ): Promise<CaseFileDto> {
+    const input = {
+      caseIdentifier,
+      updateUserId,
+      id,
+    };
+
+    return await this.service.deleteAuthorizationOutcome(token, input as DeleteAuthorizationOutcomeInput);
   }
 }

@@ -8,6 +8,7 @@ import { AnimalOutcomeSubject } from "../../types/state/cases-state";
 import { RootState } from "../store";
 import { CASE_ACTION_CODE } from "../../constants/case_actions";
 import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
+import { PermitSite } from "../../types/app/case-files/ceeb/authorization-outcome/permit-site";
 
 //-- Case file selectors
 export const selectCaseId = (state: RootState): string => {
@@ -180,8 +181,13 @@ export const selectCaseDecision = (state: RootState): Decision => {
     rationale: "",
     assignedTo,
     actionTaken: "",
-    actionTakenDate: new Date(),
+    actionTakenDate: null,
   };
 
   return !cases.decision ? defaultDecision : cases.decision;
+};
+
+export const selectCeebAuthorization = (state: RootState): PermitSite => {
+  const { cases } = state;
+  return !cases.authorization ? {} : cases.authorization;
 };

@@ -1,11 +1,23 @@
-export const AddScheduleSector = {
+//Add Complaint Method Received Codes in code table
+export const AddComplaintMethodReceivedCodes = {
   16: (state: any) => {
     return {
       ...state,
-      app: {
-        ...state.app,
-        scheduleSectors: [],
+      codeTables: {
+        ...state.codeTables,
+        "complaint-method-received-codes": [],
       },
     };
   },
 };
+// export const AddScheduleSector = {
+//   17: (state: any) => {
+//     return {
+//       ...state,
+//       app: {
+//         ...state.app,
+//         scheduleSectors: [],
+//       },
+//     };
+//   },
+// };

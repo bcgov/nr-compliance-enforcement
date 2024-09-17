@@ -5280,6 +5280,123 @@ values
 DO NOTHING;
 
 --------------------------
+-- Table entities for method_complaint_received_code load
+-------------------------
+
+insert into
+    public.complaint_method_received_code (
+        complaint_method_received_code,
+        short_description,
+        long_description,
+        display_order,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp,
+        update_user_id,
+        update_utc_timestamp
+    )
+values
+    (
+        'BC_WLD_FD',
+        'BC_WLD_FD',
+        'BC wildlife federation app',
+        10,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ),
+    (
+        'DGIR_FWD',
+        'DGIR_FWD',
+        'DGIR forward',
+        20,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ),
+    (
+        'DRCT_CNTCT',
+        'DRCT_CNTCT',
+        'Direct contact',
+        30,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ),
+    (
+        'MIN_OFFICE',
+        'MIN_OFFICE',
+        'Minister''s office',
+        40,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ),
+    (
+        'OBSRVD_FLD',
+        'OBSRVD_FLD',
+        'Observed in field ',
+        50,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ),
+    (
+        'RAPP',
+        'RAPP',
+        'RAPP',
+        60,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ),
+    (
+        'RFRL',
+        'RFRL',
+        'Referral',
+        70,
+        true,
+        'FLYWAY',
+        CURRENT_TIMESTAMP,
+        'FLYWAY',
+        CURRENT_TIMESTAMP
+    ) on conflict do nothing;
+
+INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
+	VALUES ('COS','BC_WLD_FD',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
+	VALUES ('COS','DRCT_CNTCT',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
+	VALUES ('COS','OBSRVD_FLD',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
+	VALUES ('COS','RAPP',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
+	VALUES ('COS','RFRL',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
+	VALUES ('EPO','DGIR_FWD',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
+	VALUES ('EPO','DRCT_CNTCT',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
+	VALUES ('EPO','MIN_OFFICE',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
+	VALUES ('EPO','RAPP',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
+	VALUES ('EPO','RFRL',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+
+
+--------------------------
 -- New Changes above this line
 -------------------------
 UPDATE configuration

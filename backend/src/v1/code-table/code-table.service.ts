@@ -55,6 +55,8 @@ import { DecisionType } from "src/types/models/code-tables/decision-type";
 import { Rationale } from "src/types/models/code-tables/rationale";
 import { TeamCode } from "../team_code/entities/team_code.entity";
 import { TeamType } from "src/types/models/code-tables/team-type";
+import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
+import { ComplaintMethodReceivedType } from "src/types/models/code-tables/complaint-method-received-type";
 
 @Injectable()
 export class CodeTableService {
@@ -88,6 +90,8 @@ export class CodeTableService {
   private _reportedByRepository: Repository<ReportedByCode>;
   @InjectRepository(TeamCode)
   private _teamCodeRepository: Repository<TeamCode>;
+  @InjectRepository(CompMthdRecvCdAgcyCdXref)
+  private _compMthdRecvCdAgcyCdXrefRepository: Repository<CompMthdRecvCdAgcyCdXref>;
 
   getCodeTableByName = async (table: string, token?: string): Promise<BaseCodeTable[]> => {
     this.logger.debug("in code table: " + JSON.stringify(table));
@@ -676,6 +680,39 @@ export class CodeTableService {
         return results;
       }
     }
+  };
+
+  getComplaintMethodReceived = async (agency: string): Promise<ComplaintMethodReceivedType[]> => {
+    const whereClause: any = {
+      active_ind: true,
+    };
+
+    if (agency) {
+      whereClause.agency_code = agency;
+    }
+
+    const data = await this._compMthdRecvCdAgcyCdXrefRepository.find({
+      where: whereClause,
+      relations: ["complaint_method_received_code"],
+      order: {
+        complaint_method_received_code: {
+          display_order: "ASC",
+        },
+      },
+    });
+
+    // Map the fields correctly from complaint_method_received_code
+    let results = data.map(({ complaint_method_received_code }) => {
+      let table: ComplaintMethodReceivedType = {
+        complaintMethodReceivedCode: complaint_method_received_code.complaint_method_received_code,
+        shortDescription: complaint_method_received_code.short_description,
+        longDescription: complaint_method_received_code.long_description,
+        displayOrder: complaint_method_received_code.display_order,
+        isActive: complaint_method_received_code.active_ind,
+      };
+      return table;
+    });
+    return results;
   };
 
   getOrganizationsByAgency = async (agency: string): Promise<OrganizationCodeTable[]> => {

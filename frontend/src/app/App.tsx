@@ -1,7 +1,6 @@
 import { FC, useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes, useParams } from "react-router-dom";
 
-
 import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
 import NotAuthorized, { NotFound } from "./components/containers/pages";

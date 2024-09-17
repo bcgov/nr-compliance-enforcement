@@ -91,7 +91,7 @@ export const CeebDecision: FC = () => {
           ) : (
             <DecisionItem
               {...data}
-              actionTakenDate={data.actionTakenDate === null ? new Date() : data.actionTakenDate}
+              actionTakenDate={data.actionTakenDate}
             />
           )}
         </Card.Body>

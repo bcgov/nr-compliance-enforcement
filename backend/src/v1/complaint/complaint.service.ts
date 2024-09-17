@@ -64,6 +64,7 @@ import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
+import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -95,6 +96,7 @@ export class ComplaintService {
     private readonly _compliantUpdatesService: ComplaintUpdatesService,
     private readonly _personService: PersonComplaintXrefService,
     private readonly _attractantService: AttractantHwcrXrefService,
+    private readonly _compMthdRecvCdAgcyCdXrefService: CompMthdRecvCdAgcyCdXrefService,
     private dataSource: DataSource,
   ) {
     this.mapper = mapper;
@@ -230,7 +232,10 @@ export class ComplaintService {
       .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
       .leftJoinAndSelect("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
       .leftJoinAndSelect("delegate.person_complaint_xref_code", "delegate_code")
-      .leftJoinAndSelect("delegate.person_guid", "person", "delegate.active_ind = true");
+      .leftJoinAndSelect("delegate.person_guid", "person", "delegate.active_ind = true")
+      .leftJoinAndSelect("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
+      .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code")
+      .leftJoinAndSelect("method_xref.agency_code", "method_agency");
 
     return builder;
   };
@@ -787,7 +792,10 @@ export class ComplaintService {
             "person.middle_name_1",
             "person.middle_name_2",
             "person.last_name",
-          ]);
+          ])
+          .leftJoinAndSelect("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
+          .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code")
+          .leftJoinAndSelect("method_xref.agency_code", "method_agency");
       }
 
       builder.where("complaint.complaint_identifier = :id", { id });
@@ -1073,6 +1081,7 @@ export class ComplaintService {
     complaintType: string,
     model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
   ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> => {
+    const agencyCode = model.ownedBy;
     const hasAssignees = (delegates: Array<DelegateDto>): boolean => {
       if (delegates && delegates.length > 0) {
         const result = delegates.find((item) => item.type === "ASSIGNEE");
@@ -1130,6 +1139,13 @@ export class ComplaintService {
         "ComplaintDto",
         "UpdateComplaintDto",
       );
+
+      const xref = await this._compMthdRecvCdAgcyCdXrefService.findByComplaintMethodReceivedCodeAndAgencyCode(
+        model.complaintMethodReceivedCode,
+        agencyCode,
+      );
+
+      complaintTable.comp_mthd_recv_cd_agcy_cd_xref = xref;
 
       //set the audit field
       complaintTable.update_user_id = idir;
@@ -1277,7 +1293,9 @@ export class ComplaintService {
 
     const agencyCodeInstance = new AgencyCode("COS");
 
-    const agencyCode = webeocInd ? agencyCodeInstance : await this._getAgencyByUser();
+    const { ownedBy } = model;
+
+    const agencyCode = webeocInd ? agencyCodeInstance : new AgencyCode(ownedBy);
 
     const queryRunner = this.dataSource.createQueryRunner();
     let complaintId = "";
@@ -1301,6 +1319,13 @@ export class ComplaintService {
       entity.update_user_id = idir;
       entity.complaint_identifier = complaintId;
       entity.owned_by_agency_code = agencyCode;
+
+      const xref = await this._compMthdRecvCdAgcyCdXrefService.findByComplaintMethodReceivedCodeAndAgencyCode(
+        model.complaintMethodReceivedCode,
+        agencyCode.agency_code,
+      );
+
+      entity.comp_mthd_recv_cd_agcy_cd_xref = xref;
 
       const complaint = await this.complaintsRepository.create(entity);
       await this.complaintsRepository.save(complaint);

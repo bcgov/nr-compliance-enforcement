@@ -165,7 +165,7 @@ export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
 
   return (
     <>
-      {filters && (
+      {defaultZone && currentOfficer && (
         <ComplaintFilterProvider {...filters}>
           <Complaints defaultComplaintType={defaultComplaintType} />
         </ComplaintFilterProvider>

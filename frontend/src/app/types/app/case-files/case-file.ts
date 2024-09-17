@@ -4,6 +4,8 @@ import { ReviewCompleteAction } from "./review-complete-action";
 import { PreventionDetailsDto } from "./prevention/prevention-details";
 import { EquipmentDetailsDto } from "./equipment-details";
 import { Subject } from "../../state/cases-state";
+import { PermitSite } from "./ceeb/authorization-outcome/permit-site";
+import { Decision } from "./ceeb/decision/decision";
 
 export interface CaseFileDto {
   caseIdentifier: UUID;
@@ -18,4 +20,6 @@ export interface CaseFileDto {
   reviewComplete?: ReviewCompleteAction;
   equipment: EquipmentDetailsDto[];
   subject: Array<Subject>;
+  decision: Decision;
+  authorization: PermitSite;
 }

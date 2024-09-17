@@ -12,6 +12,7 @@ import { AddFeatureFlag } from "./migrations/migration-12";
 import { ActiveTab } from "./migrations/migration-13";
 import { AddTeamCode } from "./migrations/migration-14";
 import { Decision } from "./migrations/migration-15";
+import { AddComplaintMethodReceivedCodes } from "./migrations/migration-16";
 import { AddScheduleSector } from "./migrations/migration-16";
 
 const BaseMigration = {
@@ -39,6 +40,7 @@ migration = {
   ...ActiveTab,
   ...AddTeamCode,
   ...Decision,
+  ...AddComplaintMethodReceivedCodes,
   ...AddScheduleSector,
 };
 

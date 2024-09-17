@@ -6,6 +6,7 @@ enum Roles {
   COS_ADMINISTRATOR = "COS Administrator",
   COS_OFFICER = "COS Officer",
   TEMPORARY_TEST_ADMIN = "TEMPORARY_TEST_ADMIN",
+  READ_ONLY = "READ ONLY",
 }
 
 export default Roles;
