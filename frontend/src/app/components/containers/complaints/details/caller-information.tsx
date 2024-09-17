@@ -16,6 +16,10 @@ export const CallerInformation: FC = () => {
         <Card.Body>
           <dl>
             <div>
+              <dt>Privacy requested</dt>
+              <dd id="comp-details-name">{`No`}</dd>
+            </div>
+            <div>
               <dt>Name</dt>
               <dd id="comp-details-name">{name}</dd>
             </div>
