@@ -6,6 +6,7 @@ import { ScheduleSectorState } from "../../types/state/schedule-sector-state";
 
 import { generateApiParameters, get, patch, post } from "../../common/api";
 import { from } from "linq-to-typescript";
+import { AUTH_TOKEN } from "../../service/user-service";
 
 const initialState: ScheduleSectorState = {
   scheduleSectors: [],
@@ -39,7 +40,6 @@ export const getScheduleSectors =
     try {
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/schedule-sector-xref`);
       const response = await get<Array<ScheduleSector>>(dispatch, parameters);
-
       if (response && from(response).any()) {
         dispatch(
           setScheduleSectors({

@@ -5,6 +5,7 @@ import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role } from "../../enum/role.enum";
 import { DataSource } from "typeorm";
 import { ScheduleSectorXrefService } from "./schedule_sector_xref.service";
+import { Token } from "src/auth/decorators/token.decorator";
 
 @ApiTags("schedule-sector-xref")
 @Controller({
@@ -15,7 +16,8 @@ export class ScheduleSectorXrefController {
   constructor(private readonly scheduleSectorXrefService: ScheduleSectorXrefService, private dataSource: DataSource) {}
 
   @Get()
-  findAll() {
-    return this.scheduleSectorXrefService.findAll();
+  findAll(@Token() token) {
+    let test = 0;
+    return this.scheduleSectorXrefService.findAll(token);
   }
 }

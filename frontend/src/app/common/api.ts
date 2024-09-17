@@ -74,6 +74,7 @@ export const get = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParamet
     const { url, requiresAuthentication, params } = parameters;
 
     if (requiresAuthentication) {
+      //  debugger;
       axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
     }
 
