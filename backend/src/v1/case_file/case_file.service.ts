@@ -427,13 +427,14 @@ export class CaseFileService {
       query: `mutation createDecision($input: CreateDecisionInput!) {
         createDecision(input: $input) {
           caseIdentifier
+          decision { id }
         }
       }`,
       variables: { input: model },
     });
 
     const returnValue = await this.handleAPIResponse(result);
-    return returnValue?.createDecison;
+    return returnValue?.createDecision;
   };
 
   updateDecision = async (token: any, model: UpdateDecisionInput): Promise<CaseFileDto> => {
@@ -441,6 +442,7 @@ export class CaseFileService {
       query: `mutation updateDecision($input: UpdateDecisionInput!) {
         updateDecision(input: $input) {
           caseIdentifier
+          decision { id }
         }
       }`,
       variables: { input: model },

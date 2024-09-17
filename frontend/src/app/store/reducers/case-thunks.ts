@@ -1058,30 +1058,20 @@ export const upsertDecisionOutcome =
 
     if (!current?.id) {
       result = await dispatch(_createDecision(id, decision));
-
-      if (result !== null) {
-        dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
-
-        ToggleSuccess("Decision outcome added");
-      } else {
-        ToggleError("Error, unable to create decision outcome");
-      }
     } else {
       const update = { ...decision, id: current.id };
       result = await dispatch(_updateDecison(id, update));
-
-      if (result !== null) {
-        dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
-
-        ToggleSuccess("Decision outcome updated");
-      } else {
-        ToggleError("Error, unable to update decision outcome");
-      }
     }
 
-    if (result !== null) {
+    const { decision: _decision } = result;
+
+    if (result && _decision.id) {
+      dispatch(setCaseId(result.caseIdentifier));
+
+      ToggleSuccess(`Decision ${!current?.id ? "added" : "updated"}`);
       return "success";
     } else {
+      ToggleError(`Error, unable to ${!current?.id ? "create" : "update"} decision`);
       return "error";
     }
   };
