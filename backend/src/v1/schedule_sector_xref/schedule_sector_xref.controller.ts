@@ -7,6 +7,7 @@ import { DataSource } from "typeorm";
 import { ScheduleSectorXrefService } from "./schedule_sector_xref.service";
 import { Token } from "src/auth/decorators/token.decorator";
 
+@UseGuards(JwtRoleGuard)
 @ApiTags("schedule-sector-xref")
 @Controller({
   path: "schedule-sector-xref",
@@ -16,6 +17,7 @@ export class ScheduleSectorXrefController {
   constructor(private readonly scheduleSectorXrefService: ScheduleSectorXrefService, private dataSource: DataSource) {}
 
   @Get()
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   findAll(@Token() token) {
     let test = 0;
     return this.scheduleSectorXrefService.findAll(token);
