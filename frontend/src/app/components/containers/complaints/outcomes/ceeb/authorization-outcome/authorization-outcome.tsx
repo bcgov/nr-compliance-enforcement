@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
 import { ComplaintParams } from "../../../details/complaint-details-edit";
@@ -11,10 +11,13 @@ import { AuthoizationOutcomeItem } from "./authorization-outcome-item";
 import { openModal } from "../../../../../../store/reducers/app";
 import { DELETE_CONFIRM } from "../../../../../../types/modal/modal-types";
 import { deleteAuthorizationOutcome, getCaseFile } from "../../../../../../store/reducers/case-thunks";
+import ReadOnlyContext from "../../../../../../providers/read-only-context";
 
 export const AuthoizationOutcome: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
+
+  const isReadonly = useContext(ReadOnlyContext);
 
   //-- select the authorization
   const data = useAppSelector(selectCeebAuthorization);
@@ -77,6 +80,7 @@ export const AuthoizationOutcome: FC = () => {
               onClick={() => {
                 toggleEdit();
               }}
+              disabled={isReadonly}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
@@ -86,6 +90,7 @@ export const AuthoizationOutcome: FC = () => {
               variant="outline-primary"
               size="sm"
               onClick={handleDeleteButtonClick}
+              disabled={isReadonly}
             >
               <i className="bi bi-trash3"></i>
               <span>Delete</span>

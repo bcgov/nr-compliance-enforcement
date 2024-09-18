@@ -11,6 +11,8 @@ import "./assets/sass/app.scss";
 import reportWebVitals from "./reportWebVitals";
 import { PersistGate } from "redux-persist/integration/react";
 import { ErrorBoundaryContext } from "./app/hooks/error-boundary";
+import ReadOnlyContext from "./app/providers/read-only-context";
+import { isReadOnly } from "./app/common/methods";
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
@@ -24,7 +26,9 @@ const onAuthenticatedCallback = () =>
             loading={null}
             persistor={persistor}
           >
-            <App />
+            <ReadOnlyContext.Provider value={isReadOnly()}>
+              <App readonly={true} />
+            </ReadOnlyContext.Provider>
           </PersistGate>
         </Provider>
       </ErrorBoundaryContext>

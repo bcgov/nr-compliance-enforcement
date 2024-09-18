@@ -22,8 +22,11 @@ import GenericErrorBoundary from "./components/error-handling/generic-error-boun
 import { VerifyAccess } from "./components/containers/pages/verify-access";
 import Roles from "./types/app/roles";
 import { FeatureManagement } from "./components/containers/admin/feature-management";
+import { BaseComponent } from "./types/app/base-component-type";
 
-const App: FC = () => {
+interface props extends BaseComponent {}
+
+const App: FC<props> = ({ readonly }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {

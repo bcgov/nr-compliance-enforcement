@@ -13,6 +13,10 @@ import { fromImage } from "imtool";
 import AttachmentEnum from "../constants/attachment-enum";
 import Option from "../types/app/option";
 import { GirType } from "../types/app/code-tables/gir-type";
+import { AUTH_TOKEN } from "../service/user-service";
+import { SsoToken } from "../types/app/sso-token";
+import jwtDecode from "jwt-decode";
+import Roles from "../types/app/roles";
 
 type Coordinate = number[] | string[] | undefined;
 
@@ -401,3 +405,20 @@ export const getThumbnailDataURL = async (file: File): Promise<string> => {
 export function isPositiveNum(number: string) {
   return !isNaN(Number(number)) && Number(number) >= 0;
 }
+
+export const isReadOnly = (_default: boolean = false): boolean => {
+  try {
+    const token = localStorage.getItem(AUTH_TOKEN);
+
+    if (token) {
+      const decoded: SsoToken = jwtDecode<SsoToken>(token);
+      const { client_roles } = decoded;
+      console.log(client_roles);
+      return client_roles.includes(Roles.READ_ONLY);
+    }
+    console.log("testing");
+    return false;
+  } catch (exception) {
+    return _default;
+  }
+};

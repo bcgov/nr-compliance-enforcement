@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { CompInput } from "../../../../../common/comp-input";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
@@ -7,20 +7,23 @@ import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
 import { PermitSite } from "../../../../../../types/app/case-files/ceeb/authorization-outcome/permit-site";
 import { openModal } from "../../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../../types/modal/modal-types";
+import ReadOnlyContext from "../../../../../../providers/read-only-context";
 
-type props = {
+interface props {
   leadIdentifier: string;
   toggleEdit: Function;
   //--
   id?: string;
   type?: "permit" | "site";
   value?: string;
-};
+}
 
 export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdentifier, toggleEdit }) => {
   const dispatch = useAppDispatch();
 
   const caseId = useAppSelector(selectCaseId);
+
+  const isReadonly = useContext(ReadOnlyContext);
 
   const [authorized, setAuthorized] = useState("");
   const [unauthorized, setUnauthorized] = useState("");
@@ -151,6 +154,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
 
                 handleUpdateSiteChange("permit", value);
               }}
+              disabled={isReadonly}
             />
           </div>
         </div>
@@ -180,6 +184,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
 
                 handleUpdateSiteChange("site", value);
               }}
+              disabled={isReadonly}
             />
           </div>
         </div>
@@ -190,6 +195,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
           id="outcome-decision-cancel-button"
           title="Cancel Decision"
           onClick={handleCancelButtonClick}
+          disabled={isReadonly}
         >
           Cancel
         </Button>
@@ -198,6 +204,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
           id="outcome-decision-save-button"
           title="Save Decision"
           onClick={() => handleSaveButtonClick()}
+          disabled={isReadonly}
         >
           Save
         </Button>
