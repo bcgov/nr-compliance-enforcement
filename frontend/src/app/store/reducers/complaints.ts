@@ -562,9 +562,12 @@ export const updateComplaintById =
       await patch<dtoAlias>(dispatch, updateParams);
 
       ToggleSuccess("Updates have been saved");
-    } catch (error) {
-      debugger;
-      ToggleError("Unable to update complaint");
+    } catch (error: any) {
+      if (error.response && error.response.status === 403) {
+        ToggleError("You do not have permission to make changes");
+      } else {
+        ToggleError("Unable to update complaint");
+      }
     }
   };
 
