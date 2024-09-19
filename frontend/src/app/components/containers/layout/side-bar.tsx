@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import { AgencyBanner } from "./agency-banner";
+import UserService from "../../../service/user-service";
+import Roles from "../../../types/app/roles";
 
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
@@ -18,18 +20,21 @@ export const SideBar: FC = () => {
       name: "Complaints",
       icon: "bi bi-file-earmark-medical",
       route: "/complaints",
+      roles: ["COS", "CEEB"],
     },
     {
       id: "create-complaints-link",
       name: "Create Complaint",
       icon: "bi bi-plus-circle",
       route: "complaint/createComplaint",
+      roles: ["COS", "CEEB"],
     },
     {
       id: "zone-at-a-glance-link",
       name: "Zone at a Glance",
       icon: "bi bi-buildings",
       route: "/zone/at-a-glance",
+      roles: ["COS"],
     },
   ];
 
@@ -39,27 +44,20 @@ export const SideBar: FC = () => {
     return isOpen ? (
       <li key={`sb-open-${idx}`}>
         {!route ? (
-          <i className={`comp-nav-item-icon ${icon}`}></i>
+          <div className="comp-sidenav-item comp-sidenav-item-lg">
+            <i className={`comp-sidenav-item-icon ${icon}`}></i>
+            <span className="comp-sidenav-item-name">{name}</span>
+          </div>
         ) : (
           <Link
+            className="comp-sidenav-item comp-sidenav-item-lg"
             to={route}
-            id={`icon-${id}`}
+            id={id}
           >
-            <i className={`comp-nav-item-icon ${icon}`}></i>
+            <i className={`comp-sidenav-item-icon ${icon}`}></i>
+            <span className="comp-sidenav-item-name">{name}</span>
           </Link>
         )}
-        <span className="comp-nav-item-name">
-          {!route ? (
-            <>{name}</>
-          ) : (
-            <Link
-              to={route}
-              id={id}
-            >
-              {name}
-            </Link>
-          )}
-        </span>
       </li>
     ) : (
       <OverlayTrigger
@@ -76,40 +74,39 @@ export const SideBar: FC = () => {
       >
         <li key={`sb-closed-${idx}`}>
           {!route ? (
-            <i className={`comp-nav-item-icon ${icon}`}></i>
+            <div
+              className="comp-sidenav-item comp-sidenav-item-sm"
+              aria-label={name}
+            >
+              <i className={`comp-sidenav-item-icon ${icon}`}></i>
+            </div>
           ) : (
             <Link
+              className="comp-sidenav-item comp-sidenav-item-sm"
               to={route}
               id={`icon-${id}`}
+              aria-label={name}
             >
-              <i className={`comp-nav-item-icon ${icon}`}></i>
+              <i className={`comp-sidenav-item-icon ${icon}`}></i>
             </Link>
           )}
-          <span className="comp-nav-item-name">
-            {!route ? (
-              <>{name}</>
-            ) : (
-              <Link
-                to={route}
-                id={id}
-              >
-                {name}
-              </Link>
-            )}
-          </span>
         </li>
       </OverlayTrigger>
     );
   };
 
   return (
-    <div className={`d-flex flex-column flex-shrink-0 comp-side-bar  ${(!isOpen ? "collapsed" : "").trim()}`}>
+    <div className={`d-flex flex-column flex-shrink-0 comp-sidebar ${(!isOpen ? "collapsed" : "").trim()}`}>
       {/* <!-- organization name --> */}
       <AgencyBanner />
 
       {/* <!-- menu items for the organization --> */}
-      <ul className="nav nav-pills flex-column mb-auto comp-nav-item-list">
+      <ul className="nav nav-pills flex-column mb-auto comp-sidenav-list">
         {menueItems.map((item, idx) => {
+          if (UserService.hasRole(Roles.CEEB) && !item.roles.includes("CEEB")) {
+            // Do not display this hence return null
+            return null;
+          }
           return renderSideBarMenuItem(idx, item);
         })}
       </ul>

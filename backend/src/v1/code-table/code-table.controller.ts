@@ -10,6 +10,7 @@ import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import BaseCodeTable, {
   AvailableAgencies,
   AvailableCodeTables,
+  ComplaintMethodReceivedType,
   OrganizationCodeTable,
   Sector,
 } from "../../types/models/code-tables";
@@ -21,13 +22,20 @@ export class CodeTableController {
   constructor(private readonly service: CodeTableService) {}
 
   @Get(":table")
-  @Roles(Role.COS_OFFICER, Role.CEEB)
+  @Roles(Role.COS_OFFICER, Role.CEEB, Role.TEMPORARY_TEST_ADMIN)
   async getCodeTableByName(@Param("table") table: string, @Token() token): Promise<BaseCodeTable[]> {
     if (!AvailableCodeTables.includes(table)) {
       throw new NotFoundException();
     }
 
     const result = await this.service.getCodeTableByName(table, token);
+    return result;
+  }
+
+  @Get("/complaint-method-received-by-agency/:agency")
+  @Roles(Role.COS_OFFICER, Role.CEEB)
+  async getComplaintMethodReceived(@Param("agency") agency: string): Promise<ComplaintMethodReceivedType[]> {
+    const result = await this.service.getComplaintMethodReceived(agency);
     return result;
   }
 

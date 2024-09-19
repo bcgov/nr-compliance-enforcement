@@ -6,7 +6,7 @@ import Profile from "../../types/app/profile";
 import { UUID } from "crypto";
 import { Officer } from "../../types/person/person";
 import config from "../../../config";
-import { generateApiParameters, get } from "../../common/api";
+import { generateApiParameters, get, patch } from "../../common/api";
 import { AUTH_TOKEN, getUserAgency } from "../../service/user-service";
 
 import { DropdownOption } from "../../types/app/drop-down-option";
@@ -22,6 +22,8 @@ import { fetchCaseCodeTables, fetchComplaintCodeTables } from "./code-table";
 import { Action, ThunkAction } from "@reduxjs/toolkit";
 import { ComsInviteResponse } from "../../types/app/coms-invite-response";
 import { AxiosError } from "axios";
+import { FEATURE_TYPES } from "../../constants/feature-flag-types";
+import { ActiveFilters } from "../../types/app/active-filters";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -36,6 +38,7 @@ enum ActionTypes {
   SET_USER_AGENCY = "app/SET_USER_AGENCY",
   SET_CODE_TABLE_VERSION = "app/SET_CODE_TABLE_VERSION",
   SET_FEATURE_FLAG = "app/SET_FEATURE_FLAG",
+  SET_ACTIVE_TAB = "app/SET_ACTIVE_TAB",
 }
 //-- action creators
 
@@ -121,6 +124,11 @@ export const setOfficerDefaultZone = (name: string, description: string) => ({
 export const setOfficerAgency = (agency: string) => ({
   type: ActionTypes.SET_USER_AGENCY,
   payload: agency,
+});
+
+export const setActiveTab = (activeTab: string) => ({
+  type: ActionTypes.SET_ACTIVE_TAB,
+  payload: activeTab,
 });
 
 //-- selectors
@@ -251,12 +259,40 @@ export const selectOfficerAgency = (state: RootState): string => {
   return agency;
 };
 
+export const selectActiveTab = (state: RootState): string => {
+  const {
+    app: { activeTab },
+  } = state;
+
+  return activeTab;
+};
+
 export const isFeatureActive =
   (featureCode: string) =>
   (state: RootState): boolean => {
     const features = state.app.featureFlags;
     return features.some((feature: any) => feature.featureCode === featureCode && feature.isActive === true);
   };
+ 
+ export const listActiveFilters = () => (state: RootState): ActiveFilters => {
+  const features = state.app.featureFlags;
+  const filters: ActiveFilters =
+  {
+    showActionTakenFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.ACTION_TAKEN_FILTER && feature.isActive === true),
+    showCommunityFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.COMMUNITY_FILTER && feature.isActive === true),
+    showDateFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.DATE_LOGGED_FILTER && feature.isActive === true),
+    showGirTypeFilter :  features.some((feature: any) => feature.featureCode === FEATURE_TYPES.GIR_FILTER && feature.isActive === true),
+    showMethodFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.METHOD_FILTER && feature.isActive === true),
+    showNatureComplaintFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.NATURE_FILTER && feature.isActive === true),
+    showOfficerFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.OFFICER_ASSIGNED_FILTER && feature.isActive === true),
+    showRegionFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.REGION_FILTER && feature.isActive === true),
+    showSpeciesFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.SPECIES_FILTER && feature.isActive === true),
+    showStatusFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.STATUS_FILTER && feature.isActive === true),
+    showViolationFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.VIOLATION_TYPE_FILTER && feature.isActive === true),
+    showZoneFilter : features.some((feature: any) => feature.featureCode === FEATURE_TYPES.ZONE_FILTER && feature.isActive === true)
+  }
+ return filters;
+ } 
 
 //-- thunks
 export const getTokenProfile = (): AppThunk => async (dispatch) => {
@@ -271,6 +307,14 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
 
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`);
       const response = await get<Officer>(dispatch, parameters);
+
+      //Update auth_user_guid if there is no data
+      if (!response.auth_user_guid) {
+        const updateGuid = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${response.officer_guid}`, {
+          auth_user_guid: idir_user_guid_transformed,
+        });
+        await patch<Officer>(dispatch, updateGuid);
+      }
 
       let office = "";
       let region = "";
@@ -472,6 +516,7 @@ const initialState: AppState = {
     },
   },
   featureFlags: [],
+  activeTab: "HWCR",
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {
@@ -586,6 +631,10 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
     case ActionTypes.SET_FEATURE_FLAG: {
       const { payload } = action;
       return { ...state, featureFlags: payload };
+    }
+    case ActionTypes.SET_ACTIVE_TAB: {
+      const { payload } = action;
+      return { ...state, activeTab: payload };
     }
     default:
       return state;

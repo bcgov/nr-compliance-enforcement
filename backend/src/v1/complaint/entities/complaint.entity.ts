@@ -7,6 +7,7 @@ import { Point } from "geojson";
 import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
 import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ReportedByCode } from "../../reported_by_code/entities/reported_by_code.entity";
+import { CompMthdRecvCdAgcyCdXref } from "../../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 
 @Entity()
 export class Complaint {
@@ -40,6 +41,10 @@ export class Complaint {
   @ManyToOne(() => ComplaintStatusCode)
   @JoinColumn({ name: "complaint_status_code" })
   complaint_status_code: ComplaintStatusCode;
+
+  @ManyToOne(() => CompMthdRecvCdAgcyCdXref)
+  @JoinColumn({ name: "comp_mthd_recv_cd_agcy_cd_xref_guid" })
+  comp_mthd_recv_cd_agcy_cd_xref: CompMthdRecvCdAgcyCdXref;
 
   @ApiProperty({
     example: "DCC",
@@ -226,6 +231,7 @@ export class Complaint {
     cos_geo_org_unit?: CosGeoOrgUnit,
     person_complaint_xref?: PersonComplaintXref[],
     webeoc_identifier?: string,
+    comp_mthd_recv_cd_agcy_cd_xref?: CompMthdRecvCdAgcyCdXref,
   ) {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -252,5 +258,6 @@ export class Complaint {
     this.cos_geo_org_unit = cos_geo_org_unit;
     this.person_complaint_xref = person_complaint_xref;
     this.webeoc_identifier = webeoc_identifier;
+    this.comp_mthd_recv_cd_agcy_cd_xref = comp_mthd_recv_cd_agcy_cd_xref;
   }
 }

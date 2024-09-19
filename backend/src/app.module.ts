@@ -48,6 +48,11 @@ import { GirTypeCodeModule } from "./v1/gir_type_code/gir_type_code.module";
 import { GeneralIncidentComplaintModule } from "./v1/gir_complaint/gir_complaint.module";
 import { FeatureFlagModule } from "./v1/feature_flag/feature_flag.module";
 import { FeatureCodeModule } from "./v1/feature_code/feature_code.module";
+import { TeamModule } from "./v1/team/team.module";
+import { TeamCodeModule } from "./v1/team_code/team_code.module";
+import { OfficerTeamXrefModule } from "./v1/officer_team_xref/officer_team_xref.module";
+import { ComplaintMethodReceivedCodeModule } from "./v1/complaint_method_received_code/complaint_method_received_code.module";
+import { CompMthdRecvCdAgcyCdXrefModule } from "./v1/comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.module";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -118,6 +123,11 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     GeneralIncidentComplaintModule,
     FeatureFlagModule,
     FeatureCodeModule,
+    TeamModule,
+    TeamCodeModule,
+    OfficerTeamXrefModule,
+    ComplaintMethodReceivedCodeModule,
+    CompMthdRecvCdAgcyCdXrefModule,
   ],
   controllers: [AppController],
   providers: [AppService, ComplaintSequenceResetScheduler],

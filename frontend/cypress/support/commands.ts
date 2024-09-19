@@ -34,8 +34,9 @@ const sha256 = async (plain) => {
   return hashHex;
 };
 
-Cypress.Commands.add("kcLogin", () => {
+Cypress.Commands.add("kcLogin", (account?: string) => {
   Cypress.log({ name: "Login to Keycloak" });
+  console.log("account: ", account);
 
   cy.log("Keyloak Login").then(async () => {
     const authBaseUrl = Cypress.env("auth_base_url");
@@ -73,10 +74,9 @@ Cypress.Commands.add("kcLogin", () => {
       // Extract the location header from the response to get the redirect URL.
       const redirectUrls = response.headers.location;
       const url = Array.isArray(redirectUrls) ? redirectUrls[0] : redirectUrls;
-
       // Visit redirect URL.
       const credentials = {
-        username: Cypress.env("keycloak_user"),
+        username: Cypress.env(!account ? "keycloak_user" : account),
         password: Cypress.env("keycloak_password"),
         url: url,
       };
@@ -319,7 +319,7 @@ Cypress.Commands.add("navigateToTab", (complaintTab: string, removeFilters: bool
 
   //-- verify correct tab
   if (complaintTab === "#hwcr-tab") {
-    cy.get(complaintTab).should("contain.text", "Human Wildlife Conflicts");
+    cy.get(complaintTab).should("contain.text", "Human Wildlife Conflict");
   } else {
     cy.get(complaintTab).should("contain.text", "Enforcement");
   }

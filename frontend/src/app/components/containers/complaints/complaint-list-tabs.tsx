@@ -53,7 +53,7 @@ export const ComplaintListTabs: FC<props> = ({ complaintType, viewType, complain
           record = { ...record, name };
           break;
         case COMPLAINT_TYPES.HWCR:
-          record = { ...record, name: "Human Wildlife Conflict" };
+          record = { ...record, name: "Human Wildlife Conflicts" };
           break;
         case COMPLAINT_TYPES.GIR:
           record = { ...record, name: "General Incidents" };
@@ -74,13 +74,13 @@ export const ComplaintListTabs: FC<props> = ({ complaintType, viewType, complain
             className={`nav-item comp-tab comp-tab-${complaintType === code ? "active" : "inactive"}`}
             key={`${code}-tab-item`}
           >
-            <div
+            <Nav.Link
               className={`nav-link ${complaintType === code ? "active" : "inactive"}`}
               id={id}
               onClick={() => onTabChange(code)}
             >
               {name} {complaintTotal(code)}
-            </div>
+            </Nav.Link>
           </Nav.Item>
         );
       })}

@@ -10,6 +10,7 @@ import { DataSource, Repository } from "typeorm";
 import { PersonService } from "../person/person.service";
 import { OfficeService } from "../office/office.service";
 import { UUID } from "crypto";
+import { CssService } from "../../external_api/css/css.service";
 
 @Injectable()
 export class OfficerService {
@@ -22,9 +23,11 @@ export class OfficerService {
   protected readonly personService: PersonService;
   @Inject(OfficeService)
   protected readonly officeService: OfficeService;
+  @Inject(CssService)
+  private readonly cssService: CssService;
 
   async findAll(): Promise<Officer[]> {
-    return this.officerRepository
+    let officers = await this.officerRepository
       .createQueryBuilder("officer")
       .leftJoinAndSelect("officer.office_guid", "office")
       .leftJoinAndSelect("officer.person_guid", "person")
@@ -33,6 +36,28 @@ export class OfficerService {
       .leftJoinAndSelect("office.agency_code", "agency_code")
       .orderBy("person.last_name", "ASC")
       .getMany();
+
+    const roleMapping = await this.cssService.getUserRoleMapping();
+    if (roleMapping) {
+      let useGuid: string;
+      officers = officers.map((officer) => {
+        useGuid = Object.keys(roleMapping).find((key) => key === officer.auth_user_guid);
+        return {
+          officer_guid: officer.officer_guid,
+          person_guid: officer.person_guid,
+          office_guid: officer.office_guid,
+          user_id: officer.user_id,
+          create_user_id: officer.create_user_id,
+          create_utc_timestamp: officer.create_utc_timestamp,
+          update_user_id: officer.update_user_id,
+          update_utc_timestamp: officer.update_utc_timestamp,
+          auth_user_guid: officer.auth_user_guid,
+          user_roles: roleMapping[useGuid] ?? [],
+        } as Officer;
+      });
+    }
+
+    return officers;
   }
 
   async findByOffice(office_guid: any): Promise<Officer[]> {
@@ -50,6 +75,15 @@ export class OfficerService {
   async findByAuthUserGuid(auth_user_guid: any): Promise<Officer> {
     return this.officerRepository.findOne({
       where: { auth_user_guid: auth_user_guid },
+      relations: {
+        person_guid: {},
+      },
+    });
+  }
+
+  async findByPersonGuid(person_guid: any): Promise<Officer> {
+    return this.officerRepository.findOne({
+      where: { person_guid: person_guid },
       relations: {
         person_guid: {},
       },
@@ -132,6 +166,8 @@ export class OfficerService {
   }
 
   async update(officer_guid: UUID, updateOfficerDto: UpdateOfficerDto): Promise<Officer> {
+    //exclude roles field populated from keycloak from update
+    delete (updateOfficerDto as any).user_roles;
     await this.officerRepository.update({ officer_guid }, updateOfficerDto);
     return this.findOne(officer_guid);
   }

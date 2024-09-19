@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Code, Repository, SelectQueryBuilder } from "typeorm";
+import { Repository, SelectQueryBuilder } from "typeorm";
 
 import BaseCodeTable, {
   Agency,
@@ -47,6 +47,16 @@ import { DrugRemainingOutcome } from "src/types/models/code-tables/drug-remainin
 import { WildlifeComplaintOutcome } from "src/types/models/code-tables/wildlfe-complaint-outcome";
 import { get } from "../../external_api/case_management";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
+import { Schedule } from "src/types/models/code-tables/schedule";
+import { SectorCode } from "src/types/models/code-tables/sector-code";
+import { Discharge } from "src/types/models/code-tables/discharge";
+import { NonCompliance } from "src/types/models/code-tables/non-compliance";
+import { DecisionType } from "src/types/models/code-tables/decision-type";
+import { Rationale } from "src/types/models/code-tables/rationale";
+import { TeamCode } from "../team_code/entities/team_code.entity";
+import { TeamType } from "src/types/models/code-tables/team-type";
+import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
+import { ComplaintMethodReceivedType } from "src/types/models/code-tables/complaint-method-received-type";
 
 @Injectable()
 export class CodeTableService {
@@ -78,6 +88,10 @@ export class CodeTableService {
   private _girTypeCodeRepository: Repository<GirTypeCode>;
   @InjectRepository(ReportedByCode)
   private _reportedByRepository: Repository<ReportedByCode>;
+  @InjectRepository(TeamCode)
+  private _teamCodeRepository: Repository<TeamCode>;
+  @InjectRepository(CompMthdRecvCdAgcyCdXref)
+  private _compMthdRecvCdAgcyCdXrefRepository: Repository<CompMthdRecvCdAgcyCdXref>;
 
   getCodeTableByName = async (table: string, token?: string): Promise<BaseCodeTable[]> => {
     this.logger.debug("in code table: " + JSON.stringify(table));
@@ -540,7 +554,165 @@ export class CodeTableService {
         });
         return results;
       }
+      case "schedule": {
+        const { data } = await get(token, {
+          query: "{scheduleCodes{scheduleCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.scheduleCodes.map(
+          ({ scheduleCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: Schedule = {
+              schedule: scheduleCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "sector": {
+        const { data } = await get(token, {
+          query: "{sectorCodes{sectorCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.sectorCodes.map(
+          ({ sectorCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: SectorCode = {
+              sector: sectorCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "discharge": {
+        const { data } = await get(token, {
+          query: "{ dischargeCodes { dischargeCode shortDescription longDescription displayOrder activeIndicator} }",
+        });
+        const results = data.dischargeCodes.map(
+          ({ dischargeCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: Discharge = {
+              discharge: dischargeCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "rationale": {
+        const { data } = await get(token, {
+          query: "{rationaleCodes{rationaleCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.rationaleCodes.map(
+          ({ rationaleCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: Rationale = {
+              rationale: rationaleCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "non-compliance": {
+        const { data } = await get(token, {
+          query:
+            "{nonComplianceCodes{nonComplianceCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.nonComplianceCodes.map(
+          ({ nonComplianceCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: NonCompliance = {
+              nonCompliance: nonComplianceCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "decision-type": {
+        const { data } = await get(token, {
+          query:
+            "{CEEBDecisionActions{actionTypeCode actionCode displayOrder activeIndicator shortDescription longDescription}}",
+        });
+        const results = data.CEEBDecisionActions.map(
+          ({ actionCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: DecisionType = {
+              decisionType: actionCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "team": {
+        const data = await this._teamCodeRepository.find({ order: { display_order: "ASC" } });
+        let results = data.map(({ team_code, short_description, long_description, display_order, active_ind }) => {
+          let table: TeamType = {
+            team: team_code,
+
+            shortDescription: short_description,
+            longDescription: long_description,
+            displayOrder: display_order,
+            isActive: active_ind,
+          };
+          return table;
+        });
+        return results;
+      }
     }
+  };
+
+  getComplaintMethodReceived = async (agency: string): Promise<ComplaintMethodReceivedType[]> => {
+    const whereClause: any = {
+      active_ind: true,
+    };
+
+    if (agency) {
+      whereClause.agency_code = agency;
+    }
+
+    const data = await this._compMthdRecvCdAgcyCdXrefRepository.find({
+      where: whereClause,
+      relations: ["complaint_method_received_code"],
+      order: {
+        complaint_method_received_code: {
+          display_order: "ASC",
+        },
+      },
+    });
+
+    // Map the fields correctly from complaint_method_received_code
+    let results = data.map(({ complaint_method_received_code }) => {
+      let table: ComplaintMethodReceivedType = {
+        complaintMethodReceivedCode: complaint_method_received_code.complaint_method_received_code,
+        shortDescription: complaint_method_received_code.short_description,
+        longDescription: complaint_method_received_code.long_description,
+        displayOrder: complaint_method_received_code.display_order,
+        isActive: complaint_method_received_code.active_ind,
+      };
+      return table;
+    });
+    return results;
   };
 
   getOrganizationsByAgency = async (agency: string): Promise<OrganizationCodeTable[]> => {

@@ -205,7 +205,10 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
         className="comp-table-scroll-container"
         ref={divRef}
       >
-        <Table id="complaint-list">
+        <Table
+          className="comp-table"
+          id="complaint-list"
+        >
           {renderComplaintListHeader(type)}
           <tbody>
             {complaints.map((item) => {

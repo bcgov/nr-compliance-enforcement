@@ -2,8 +2,8 @@ import { FC, useEffect } from "react";
 import { HWCRComplaintAssessment } from "./hwcr-complaint-assessment";
 import { HWCREquipment } from "./hwcr-equipment";
 import { HWCRFileReview } from "./hwcr-file-review";
-import { HWCRSupplementalNotes } from "./hwcr-supplemental-notes";
-import { HWCRFileAttachments } from "./hwcr-file-attachments";
+import { SupplementalNote } from "./supplemental-note";
+import { OutcomeAttachments } from "./outcome-attachments";
 import { HWCRComplaintPrevention } from "./hwcr-prevention-education";
 import { useParams } from "react-router-dom";
 import { ComplaintParams } from "../details/complaint-details-edit";
@@ -30,8 +30,8 @@ export const HWCROutcomeReport: FC = () => {
       <HWCRComplaintPrevention />
       <HWCREquipment />
       <HWCROutcomeByAnimalv2 />
-      <HWCRSupplementalNotes />
-      <HWCRFileAttachments />
+      <SupplementalNote />
+      <OutcomeAttachments />
       <HWCRFileReview />
     </section>
   );

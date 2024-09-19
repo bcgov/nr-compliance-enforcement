@@ -13,12 +13,13 @@ import { ValidationInput } from "../../../../common/validation-input";
 import Option from "../../../../types/app/option";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { openModal, selectOfficerAgency, userId } from "../../../../store/reducers/app";
+import { openModal, selectActiveTab, userId } from "../../../../store/reducers/app";
 import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
 
 import {
   selectAttractantCodeDropdown,
   selectCommunityCodeDropdown,
+  selectComplaintReceivedMethodDropdown,
   selectCreatableComplaintTypeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
   selectReportedByDropdown,
@@ -29,7 +30,12 @@ import { Officer } from "../../../../types/person/person";
 import { selectOfficersByAgency } from "../../../../store/reducers/officer";
 import { CreateComplaintHeader } from "./create-complaint-header";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
-import { createComplaint, getComplaintById, setComplaint } from "../../../../store/reducers/complaints";
+import {
+  createComplaint,
+  getComplaintById,
+  selectComplaintDetails,
+  setComplaint,
+} from "../../../../store/reducers/complaints";
 import { from } from "linq-to-typescript";
 import { ToggleError } from "../../../../common/toast";
 import { ToastContainer } from "react-toastify";
@@ -52,6 +58,8 @@ import { AttractantXref } from "../../../../types/app/complaints/attractant-xref
 import { ComplaintAlias } from "../../../../types/app/aliases";
 import AttachmentEnum from "../../../../constants/attachment-enum";
 import { getUserAgency } from "../../../../service/user-service";
+import { useSelector } from "react-redux";
+import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -68,6 +76,8 @@ export const CreateComplaint: FC = () => {
   const reportedByCodes = useAppSelector(selectReportedByDropdown) as Option[];
   const violationTypeCodes = useAppSelector(selectViolationCodeDropdown(agency)) as Option[];
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
+
+  const activeTab = useAppSelector(selectActiveTab);
 
   const handleSlideCountChange = (count: number) => {
     setComplaintAttachmentCount(count);
@@ -89,9 +99,15 @@ export const CreateComplaint: FC = () => {
 
   const [complaintData, applyComplaintData] = useState<ComplaintAlias>();
 
-  const [complaintType, setComplaintType] = useState<string>(
-    agency == "EPO" ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR,
-  );
+  let initialComplaintType: string = COMPLAINT_TYPES.HWCR;
+  if (agency === "EPO") {
+    initialComplaintType = COMPLAINT_TYPES.ERS;
+  } else if (agency === "COS") {
+    initialComplaintType = activeTab === COMPLAINT_TYPES.ERS ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR;
+  }
+
+  const [complaintType, setComplaintType] = useState<string>(initialComplaintType);
+
   const [complaintTypeMsg, setComplaintTypeMsg] = useState<string>("");
   const [natureOfComplaintErrorMsg, setNatureOfComplaintErrorMsg] = useState<string>("");
   const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
@@ -105,6 +121,11 @@ export const CreateComplaint: FC = () => {
   const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
   const [alternatePhoneMsg, setAlternatePhoneMsg] = useState<string>("");
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
+  const complaintMethodReceivedCodes = useSelector(selectComplaintReceivedMethodDropdown) as Option[];
+  const { complaintMethodReceivedCode } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
+  const selectedComplaintMethodReceivedCode = complaintMethodReceivedCodes.find(
+    (option) => option.value === complaintMethodReceivedCode?.complaintMethodReceivedCode,
+  );
 
   const [errorNotificationClass, setErrorNotificationClass] = useState("comp-complaint-error display-none");
 
@@ -148,6 +169,7 @@ export const CreateComplaint: FC = () => {
         delegates: [],
         createdBy: userid,
         updatedBy: userid,
+        complaintMethodReceivedCode: "",
       };
 
       applyComplaintData(model);
@@ -206,6 +228,15 @@ export const CreateComplaint: FC = () => {
         const complaint = { ...complaintData, natureOfComplaint: value } as WildlifeComplaintDto;
         applyComplaintData(complaint);
       }
+    }
+  };
+
+  const handleComplaintReceivedMethodChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+
+      const complaint = { ...complaintData, complaintMethodReceivedCode: value } as ComplaintDto;
+      applyComplaintData(complaint);
     }
   };
 
@@ -970,6 +1001,24 @@ export const CreateComplaint: FC = () => {
                 id="region-edit-readonly-id"
                 className="comp-form-control"
                 disabled
+              />
+            </div>
+          </div>
+          <div
+            className="comp-details-form-row"
+            id="complaint-received-method-pair-id"
+          >
+            <label htmlFor="complaint-received-method-label-id">Method complaint was received</label>
+            <div className="comp-details-edit-input">
+              <CompSelect
+                id="complaint-received-method-select-id"
+                classNamePrefix="comp-select"
+                className="comp-details-input"
+                defaultOption={selectedComplaintMethodReceivedCode}
+                placeholder="Select"
+                options={complaintMethodReceivedCodes}
+                enableValidation={false}
+                onChange={(e) => handleComplaintReceivedMethodChange(e)}
               />
             </div>
           </div>

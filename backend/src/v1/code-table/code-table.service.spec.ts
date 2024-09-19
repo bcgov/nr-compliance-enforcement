@@ -22,6 +22,8 @@ import {
   MockRegionCodeTableServiceRepository,
   MockReportedByCodeTableRepository,
   MockGirTypeCodeRepository,
+  MockTeamCodeRepository,
+  MockCompMthdRecvCdAgcyCdXrefRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
@@ -33,6 +35,8 @@ import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.ent
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
+import { TeamCode } from "../team_code/entities/team_code.entity";
+import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 
 describe("Testing: CodeTable Service", () => {
   let service: CodeTableService;
@@ -92,6 +96,14 @@ describe("Testing: CodeTable Service", () => {
         {
           provide: getRepositoryToken(GirTypeCode),
           useFactory: MockGirTypeCodeRepository,
+        },
+        {
+          provide: getRepositoryToken(TeamCode),
+          useFactory: MockTeamCodeRepository,
+        },
+        {
+          provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
+          useFactory: MockCompMthdRecvCdAgcyCdXrefRepository,
         },
       ],
     }).compile();
@@ -319,6 +331,14 @@ describe("Testing: CodeTable service", () => {
           provide: getRepositoryToken(GirTypeCode),
           useFactory: MockGirTypeCodeRepository,
         },
+        {
+          provide: getRepositoryToken(TeamCode),
+          useFactory: MockTeamCodeRepository,
+        },
+        {
+          provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
+          useFactory: MockCompMthdRecvCdAgcyCdXrefRepository,
+        },
       ],
     }).compile();
 
@@ -402,6 +422,14 @@ describe("Testing: CodeTable service", () => {
           provide: getRepositoryToken(GirTypeCode),
           useFactory: MockGirTypeCodeRepository,
         },
+        {
+          provide: getRepositoryToken(TeamCode),
+          useFactory: MockTeamCodeRepository,
+        },
+        {
+          provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
+          useFactory: MockCompMthdRecvCdAgcyCdXrefRepository,
+        },
       ],
     }).compile();
 
@@ -484,6 +512,14 @@ describe("Testing: CodeTable service", () => {
         {
           provide: getRepositoryToken(GirTypeCode),
           useFactory: MockGirTypeCodeRepository,
+        },
+        {
+          provide: getRepositoryToken(TeamCode),
+          useFactory: MockTeamCodeRepository,
+        },
+        {
+          provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
+          useFactory: MockCompMthdRecvCdAgcyCdXrefRepository,
         },
       ],
     }).compile();

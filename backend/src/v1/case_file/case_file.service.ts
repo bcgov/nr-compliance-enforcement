@@ -14,6 +14,11 @@ import { DeleteEquipmentDto } from "../../types/models/case-files/equipment/dele
 import { CreateWildlifeInput } from "../../types/models/case-files/wildlife/create-wildlife-input";
 import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/delete-wildlife-outcome";
 import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
+import { CreateDecisionInput } from "src/types/models/case-files/ceeb/decision/create-decision-input";
+import { UpdateDecisionInput } from "src/types/models/case-files/ceeb/decision/update-decison-input";
+import { CreateAuthorizationOutcomeInput } from "src/types/models/case-files/ceeb/site/create-authorization-outcome-input";
+import { UpdateAuthorizationOutcomeInput } from "src/types/models/case-files/ceeb/site/update-authorization-outcome-input";
+import { DeleteAuthorizationOutcomeInput } from "src/types/models/case-files/ceeb/site/delete-authorization-outcome-input";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -122,6 +127,24 @@ export class CaseFileService {
         date
       }
       order
+    }
+    decision { 
+      id
+      schedule
+      sector
+      discharge
+      nonCompliance
+      rationale
+      inspectionNumber
+      leadAgency
+      assignedTo
+      actionTaken
+      actionTakenDate
+    }
+    authorization { 
+      id
+      type
+      value
     }
   }
   `;
@@ -397,5 +420,80 @@ export class CaseFileService {
 
     const returnValue = await this.handleAPIResponse(result);
     return returnValue?.deleteWildlife;
+  };
+
+  createDecision = async (token: any, model: CreateDecisionInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation createDecision($input: CreateDecisionInput!) {
+        createDecision(input: $input) {
+          caseIdentifier
+          decision { id }
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.createDecision;
+  };
+
+  updateDecision = async (token: any, model: UpdateDecisionInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation updateDecision($input: UpdateDecisionInput!) {
+        updateDecision(input: $input) {
+          caseIdentifier
+          decision { id }
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.updateDecision;
+  };
+
+  createAuthorizationOutcome = async (token: any, model: CreateAuthorizationOutcomeInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation createAuthorizationOutcome($input: CreateAuthorizationOutcomeInput!) {
+        createAuthorizationOutcome(input: $input) {
+          caseIdentifier,
+          authorization { id }
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.createAuthorizationOutcome;
+  };
+
+  updateAuthorizationOutcome = async (token: any, model: UpdateAuthorizationOutcomeInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation updateAuthorizationOutcome($input: UpdateAuthorizationOutcomeInput!) {
+        updateAuthorizationOutcome(input: $input) {
+          caseIdentifier
+          authorization { id }
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.updateAuthorizationOutcome;
+  };
+
+  deleteAuthorizationOutcome = async (token: any, model: DeleteAuthorizationOutcomeInput): Promise<CaseFileDto> => {
+    const result = await post(token, {
+      query: `mutation deleteAuthorizationOutcome($input: DeleteAuthorizationOutcomeInput!) {
+        deleteAuthorizationOutcome(input: $input) {
+          caseIdentifier
+          authorization { id }
+        }
+      }`,
+      variables: { input: model },
+    });
+
+    const returnValue = await this.handleAPIResponse(result);
+    return returnValue?.deleteAuthorizationOutcome;
   };
 }

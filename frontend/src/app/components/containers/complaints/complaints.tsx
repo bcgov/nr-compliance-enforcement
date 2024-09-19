@@ -1,7 +1,8 @@
-import { FC, useState, useContext, useCallback } from "react";
+import { FC, useState, useContext, useCallback, useEffect } from "react";
 import { shallowEqual } from "react-redux";
-import { Button, Collapse, Offcanvas } from "react-bootstrap";
-import { useAppSelector } from "../../../hooks/hooks";
+import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
+
+import { useAppSelector, useAppDispatch } from "../../../hooks/hooks";
 import { ComplaintFilter } from "./complaint-filter";
 import { ComplaintList } from "./complaint-list";
 
@@ -9,11 +10,12 @@ import { ComplaintFilterBar } from "./complaint-filter-bar";
 import { ComplaintFilterContext, ComplaintFilterProvider } from "../../../providers/complaint-filter-provider";
 import { resetFilters, ComplaintFilterPayload } from "../../../store/reducers/complaint-filters";
 
-import { selectDefaultZone } from "../../../store/reducers/app";
+import { selectDefaultZone, setActiveTab } from "../../../store/reducers/app";
+
 import { ComplaintMap } from "./complaint-map";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
-import COMPLAINT_TYPES from "../../../types/app/complaint-types";
+import { COMPLAINT_TYPES, CEEB_TYPES } from "../../../types/app/complaint-types";
 import { selectCurrentOfficer } from "../../../store/reducers/officer";
 import UserService from "../../../service/user-service";
 import Roles from "../../../types/app/roles";
@@ -27,6 +29,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const { dispatch: filterDispatch } = useContext(ComplaintFilterContext); //-- make sure to keep this dispatch renamed
   const [complaintType, setComplaintType] = useState(defaultComplaintType);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [viewType, setViewType] = useState<"map" | "list">("list");
 
@@ -36,6 +39,10 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   //-- this is used to apply the search to the pager component
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    dispatch(setActiveTab(defaultComplaintType));
+  }, [dispatch, defaultComplaintType]);
 
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
@@ -52,6 +59,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
     setSearch("");
     filterDispatch(resetFilters(payload));
+    dispatch(setActiveTab(complaintType));
   };
 
   const handleCreateClick = () => {
@@ -82,7 +90,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         <ComplaintListTabs
           complaintType={complaintType}
           viewType={viewType}
-          complaintTypes={Object.keys(COMPLAINT_TYPES)}
+          complaintTypes={Object.keys(getComplaintTypes())}
           onTabChange={handleComplaintTabChange}
         />
 
@@ -104,7 +112,14 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
         >
           <div className="comp-data-filters">
             <div className="comp-data-filters-inner">
-              <div className="comp-data-filters-header">Filter by</div>
+              <div className="comp-data-filters-header">
+                Filter by{" "}
+                <CloseButton
+                  onClick={() => setOpen(!open)}
+                  aria-expanded={open}
+                  aria-label="Close filters"
+                />
+              </div>
               <div className="comp-data-filters-body">
                 <ComplaintFilter type={complaintType} />
               </div>
@@ -150,13 +165,16 @@ export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
 
   return (
     <>
-      {filters && (
+      {defaultZone && currentOfficer && (
         <ComplaintFilterProvider {...filters}>
           <Complaints defaultComplaintType={defaultComplaintType} />
         </ComplaintFilterProvider>
       )}
     </>
   );
+};
+const getComplaintTypes = () => {
+  return UserService.hasRole(Roles.CEEB) ? CEEB_TYPES : COMPLAINT_TYPES;
 };
 
 const getFilters = (currentOfficer: any, defaultZone: any) => {

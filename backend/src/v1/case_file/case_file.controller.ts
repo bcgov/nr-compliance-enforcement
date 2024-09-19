@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UseGuards, Post, Delete, Query } from "@nestjs/common";
+import { Controller, Get, Body, Patch, Param, UseGuards, Post, Delete, Query, Logger } from "@nestjs/common";
 import { CaseFileService } from "./case_file.service";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -13,6 +13,11 @@ import { FileReviewInput } from "../../types/models/case-files/file-review-input
 import { CreateWildlifeInput } from "../../types/models/case-files/wildlife/create-wildlife-input";
 import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/delete-wildlife-outcome";
 import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
+import { CreateDecisionInput } from "../../types/models/case-files/ceeb/decision/create-decision-input";
+import { UpdateDecisionInput } from "../../types/models/case-files/ceeb/decision/update-decison-input";
+import { CreateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/create-authorization-outcome-input";
+import { UpdateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/update-authorization-outcome-input";
+import { DeleteAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/delete-authorization-outcome-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -22,6 +27,7 @@ import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/upda
 })
 export class CaseFileController {
   constructor(private readonly service: CaseFileService) {}
+  private readonly logger = new Logger(CaseFileController.name);
 
   @Post("/equipment")
   @Roles(Role.COS_OFFICER)
@@ -86,25 +92,25 @@ export class CaseFileController {
   }
 
   @Get("/:complaint_id")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   find(@Param("complaint_id") complaint_id: string, @Token() token) {
     return this.service.find(complaint_id, token);
   }
 
   @Post("/note")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async createNote(@Token() token, @Body() model: CreateSupplementalNotesInput): Promise<CaseFileDto> {
     return await this.service.createNote(token, model);
   }
 
   @Patch("/note")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async UpdateNote(@Token() token, @Body() model: UpdateSupplementalNotesInput): Promise<CaseFileDto> {
     return await this.service.updateNote(token, model);
   }
 
   @Delete("/note")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS_OFFICER, Role.CEEB)
   async deleteNote(
     @Token() token,
     @Query("caseIdentifier") caseIdentifier: string,
@@ -151,5 +157,53 @@ export class CaseFileController {
     };
 
     return await this.service.deleteWildlife(token, input as DeleteWildlifeInput);
+  }
+
+  @Post("/decision")
+  @Roles(Role.CEEB)
+  async createDecision(@Token() token, @Body() model: CreateDecisionInput): Promise<CaseFileDto> {
+    const result = await this.service.createDecision(token, model);
+    return result;
+  }
+
+  @Patch("/decision")
+  @Roles(Role.CEEB)
+  async updateDecision(@Token() token, @Body() model: UpdateDecisionInput): Promise<CaseFileDto> {
+    return await this.service.updateDecision(token, model);
+  }
+
+  @Post("/site")
+  @Roles(Role.CEEB)
+  async createAuthorizationOutcome(
+    @Token() token,
+    @Body() model: CreateAuthorizationOutcomeInput,
+  ): Promise<CaseFileDto> {
+    return await this.service.createAuthorizationOutcome(token, model);
+  }
+
+  @Patch("/site")
+  @Roles(Role.CEEB)
+  async updateAuthorizationOutcome(
+    @Token() token,
+    @Body() model: UpdateAuthorizationOutcomeInput,
+  ): Promise<CaseFileDto> {
+    return await this.service.updateAuthorizationOutcome(token, model);
+  }
+
+  @Delete("/site")
+  @Roles(Role.CEEB)
+  async deleteAuthorizationOutcome(
+    @Token() token,
+    @Query("caseIdentifier") caseIdentifier: string,
+    @Query("updateUserId") updateUserId: string,
+    @Query("id") id: string,
+  ): Promise<CaseFileDto> {
+    const input = {
+      caseIdentifier,
+      updateUserId,
+      id,
+    };
+
+    return await this.service.deleteAuthorizationOutcome(token, input as DeleteAuthorizationOutcomeInput);
   }
 }

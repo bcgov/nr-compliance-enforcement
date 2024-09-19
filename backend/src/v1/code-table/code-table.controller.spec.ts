@@ -24,6 +24,8 @@ import {
   MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
   MockGirTypeCodeRepository,
+  MockTeamCodeRepository,
+  MockCompMthdRecvCdAgcyCdXrefRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -38,6 +40,8 @@ import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.ent
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
+import { TeamCode } from "../team_code/entities/team_code.entity";
+import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 
 describe("Testing: CodeTable Controller", () => {
   let app: INestApplication;
@@ -99,6 +103,14 @@ describe("Testing: CodeTable Controller", () => {
         {
           provide: getRepositoryToken(GirTypeCode),
           useFactory: MockGirTypeCodeRepository,
+        },
+        {
+          provide: getRepositoryToken(TeamCode),
+          useFactory: MockTeamCodeRepository,
+        },
+        {
+          provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
+          useFactory: MockCompMthdRecvCdAgcyCdXrefRepository,
         },
       ],
     })

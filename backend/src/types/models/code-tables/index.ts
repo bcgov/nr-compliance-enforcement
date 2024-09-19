@@ -19,6 +19,8 @@ import { AssessmentType } from "./assessment-type";
 import { PreventionType } from "./prevention-type";
 import { Equipment } from "./equipment";
 import { GirType } from "./gir-type";
+import { TeamType } from "./team-type";
+import { ComplaintMethodReceivedType } from "./complaint-method-received-type";
 
 export const AvailableCodeTables = [
   "agency",
@@ -48,6 +50,14 @@ export const AvailableCodeTables = [
   "wildlife-outcomes",
   "equipment",
   "gir-type",
+  "discharge",
+  "rationale",
+  "non-compliance",
+  "sector",
+  "schedule",
+  "decision-type",
+  "team",
+  "complaint-method-received-codes",
 ];
 
 export const AvailableAgencies = ["cos"];
@@ -74,4 +84,6 @@ export {
   PreventionType,
   Equipment,
   GirType,
+  TeamType,
+  ComplaintMethodReceivedType,
 };

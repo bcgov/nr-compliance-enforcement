@@ -22,6 +22,8 @@ import {
   MockComplaintTypeCodeTableRepository,
   MockReportedByCodeTableRepository,
   MockGirTypeCodeRepository as MockGirTypeCodeTableRepository,
+  MockTeamCodeRepository,
+  MockCompMthdRecvCdAgcyCdXrefRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import {
   MockComplaintsRepositoryV2,
@@ -61,6 +63,9 @@ import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
+import { TeamCode } from "../team_code/entities/team_code.entity";
+import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
+import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 
 describe("DocumentService", () => {
   let service: DocumentService;
@@ -177,11 +182,20 @@ describe("DocumentService", () => {
           provide: getRepositoryToken(ActionTaken),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(TeamCode),
+          useFactory: MockTeamCodeRepository,
+        },
+        {
+          provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
+          useFactory: MockCompMthdRecvCdAgcyCdXrefRepository,
+        },
         ComplaintUpdatesService,
         ComplaintService,
         CodeTableService,
         PersonComplaintXrefService,
         AttractantHwcrXrefService,
+        CompMthdRecvCdAgcyCdXrefService,
         {
           provide: REQUEST,
           useValue: {
