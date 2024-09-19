@@ -105,23 +105,45 @@ export class WebEocScheduler {
       },
     };
 
+    // default filter grabs complaints that are newer than a specific date
+    const filterItems = [dateFilter];
+
+    // If we're looking for updates, indicate that here.
+    if (flagName === WEBEOC_FLAGS.COMPLAINT_UPDATES) {
+      filterItems.push({
+        fieldname: flagName,
+        operator: "Equals",
+        fieldvalue: "Yes",
+      });
+    }
+
+    // construct the body of the request
     const body = {
       customFilter: {
         boolean: "and",
-        items: [
-          dateFilter,
-          {
-            fieldname: flagName,
-            operator: "Equals",
-            fieldvalue: "Yes",
-          },
-        ],
+        items: filterItems,
       },
     };
 
     try {
       const response = await axios.post(url, body, config);
-      return response.data as Complaint[];
+      const complaints = response.data as Complaint[];
+      let filteredComplaints: Complaint[];
+      if (flagName === WEBEOC_FLAGS.COMPLAINTS) {
+        // if we're looking for complaints, only get
+        // complaints that have flag_COS (to indicate that we want the complaints in the Peace region),
+        // or complaints that have a violation type of Waste or Pesticide (for CEEB complaints, even those
+        // outside the Peace region)
+        filteredComplaints = complaints.filter(
+          (complaint) =>
+            complaint.flag_COS === "Yes" ||
+            complaint.violation_type === "Waste" ||
+            complaint.violation_type === "Pesticide",
+        );
+        return filteredComplaints;
+      } else {
+        return complaints;
+      }
     } catch (error) {
       this.logger.error(`Error fetching data from WebEOC at ${urlPath}:`, error);
       throw error;

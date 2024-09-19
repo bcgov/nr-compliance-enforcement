@@ -69,4 +69,5 @@ export interface Complaint {
   back_number_of_days: string;
   back_number_of_hours: string;
   back_number_of_minutes: string;
+  flag_COS: string;
 }
