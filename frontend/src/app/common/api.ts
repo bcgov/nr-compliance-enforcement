@@ -5,6 +5,7 @@ import { AUTH_TOKEN } from "../service/user-service";
 import { ApiRequestParameters } from "../types/app/api-request-parameters";
 import { toggleLoading, toggleNotification } from "../store/reducers/app";
 import { store } from "../../app/store/store";
+import { ToggleError } from "./toast";
 
 const STATUS_CODES = {
   Ok: 200,
@@ -138,6 +139,10 @@ export const deleteMethod = <T, M = {}>(
           dispatch(toggleNotification("error", message));
         }
         reject(error);
+
+        if (error.response && error.response.status === 403) {
+          ToggleError("User is not authorized to perform this action");
+        }
       });
   });
 };
@@ -161,6 +166,10 @@ export const post = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParame
           dispatch(toggleNotification("error", error.message));
         }
         reject(error);
+
+        if (error.response && error.response.status === 403) {
+          ToggleError("User is not authorized to perform this action");
+        }
       });
   });
 };
@@ -190,6 +199,10 @@ export const patch = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParam
           dispatch(toggleNotification("error", error.message));
         }
         reject(error);
+
+        if (error.response && error.response.status === 403) {
+          ToggleError("User is not authorized to perform this action");
+        }
       });
   });
 };
@@ -219,6 +232,10 @@ export const put = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParamet
           dispatch(toggleNotification("error", error.message));
         }
         reject(error);
+
+        if (error.response && error.response.status === 403) {
+          ToggleError("User is not authorized to perform this action");
+        }
       });
   });
 };
@@ -257,6 +274,10 @@ export const putFile = <T, M = {}>(
           dispatch(toggleNotification("error", error.message));
         }
         reject(error);
+
+        if (error.response && error.response.status === 403) {
+          ToggleError("User is not authorized to perform this action");
+        }
       });
   });
 };

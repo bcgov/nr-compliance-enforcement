@@ -562,12 +562,8 @@ export const updateComplaintById =
       await patch<dtoAlias>(dispatch, updateParams);
 
       ToggleSuccess("Updates have been saved");
-    } catch (error: any) {
-      if (error.response && error.response.status === 403) {
-        ToggleError("You do not have permission to make changes");
-      } else {
-        ToggleError("Unable to update complaint");
-      }
+    } catch (error) {
+      ToggleError("Unable to update complaint");
     }
   };
 
@@ -663,12 +659,9 @@ export const createComplaint =
       });
       ToggleSuccess("Complaint has been saved");
       return result;
-    } catch (error: any) {
-      if (error.response && error.response.status === 403) {
-        ToggleError("You do not have permission to make changes");
-      } else {
-        ToggleError("Unable to create complaint");
-      }
+    } catch (error) {
+      ToggleError("Unable to create complaint");
+      //-- add error handling
     }
   };
 
