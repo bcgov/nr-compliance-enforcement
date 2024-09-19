@@ -108,15 +108,6 @@ export class WebEocScheduler {
     // default filter grabs complaints that are newer than a specific date
     const filterItems = [dateFilter];
 
-    // If we're looking for updates, indicate that here.
-    if (flagName === WEBEOC_FLAGS.COMPLAINT_UPDATES) {
-      filterItems.push({
-        fieldname: flagName,
-        operator: "Equals",
-        fieldvalue: "Yes",
-      });
-    }
-
     // construct the body of the request
     const body = {
       customFilter: {
