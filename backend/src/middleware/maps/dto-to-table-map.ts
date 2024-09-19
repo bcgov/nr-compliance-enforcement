@@ -100,6 +100,12 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
         };
       }),
     ),
+    forMember(
+      (dest) => dest.privacy_request_ind,
+      mapFrom((src) => {
+        return src.privacyRequestIndicator;
+      }),
+    ),
   );
 };
 

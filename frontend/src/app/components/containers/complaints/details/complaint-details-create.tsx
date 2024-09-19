@@ -170,6 +170,7 @@ export const CreateComplaint: FC = () => {
         createdBy: userid,
         updatedBy: userid,
         complaintMethodReceivedCode: "",
+        privacyRequestIndicator: false,
       };
 
       applyComplaintData(model);
@@ -354,6 +355,14 @@ export const CreateComplaint: FC = () => {
       const { value } = selected;
 
       const complaint = { ...complaintData, wasObserved: value === "Yes" } as AllegationComplaintDto;
+      applyComplaintData(complaint);
+    }
+  };
+
+  const handlePrivacyRequestedChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+      const complaint = { ...complaintData, privacyRequestIndicator: value === "Yes" } as ComplaintDto;
       applyComplaintData(complaint);
     }
   };
@@ -1026,6 +1035,28 @@ export const CreateComplaint: FC = () => {
 
         <fieldset>
           <legend>Caller Information</legend>
+          <div
+            className="comp-details-form-row"
+            id="privacy-requested-id"
+          >
+            <label
+              id="complaint-caller-info-privacy-label-id"
+              className="col-auto"
+              htmlFor="caller-privacy-id"
+            >
+              Privacy requested
+            </label>
+            <div className="comp-details-edit-input">
+              <Select
+                options={yesNoOptions}
+                placeholder="Select"
+                id="caller-privacy-id"
+                classNamePrefix="comp-select"
+                onChange={(e) => handlePrivacyRequestedChange(e)}
+              />
+            </div>
+          </div>
+
           <div
             className="comp-details-form-row"
             id="name-pair-id"

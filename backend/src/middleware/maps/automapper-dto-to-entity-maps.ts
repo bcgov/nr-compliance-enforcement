@@ -149,6 +149,10 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
         return null; // This will be handled in the service
       }),
     ),
+    forMember(
+      (dest) => dest.privacy_request_ind,
+      mapFrom((src) => src.privacyRequestIndicator),
+    ),
   );
 };
 

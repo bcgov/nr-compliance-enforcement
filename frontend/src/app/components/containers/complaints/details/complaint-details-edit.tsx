@@ -108,8 +108,17 @@ export const ComplaintDetailsEdit: FC = () => {
     selectComplaintHeader(complaintType),
   );
 
-  const { name, primaryPhone, secondaryPhone, alternatePhone, address, email, reportedByCode, ownedByAgencyCode } =
-    useAppSelector(selectComplaintCallerInformation);
+  const {
+    name,
+    primaryPhone,
+    secondaryPhone,
+    alternatePhone,
+    address,
+    email,
+    reportedByCode,
+    ownedByAgencyCode,
+    privacyRequestIndicator,
+  } = useAppSelector(selectComplaintCallerInformation);
 
   // Get the code table lists to populate the Selects
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
@@ -335,7 +344,7 @@ export const ComplaintDetailsEdit: FC = () => {
   );
   const selectedViolationObserved = yesNoOptions.find((option) => option.value === (violationObserved ? "Yes" : "No"));
   const selectedGirTypeCode = girTypeCodes.find((option) => option.label === girType);
-
+  const selectedPrivacy = yesNoOptions.find((option) => option.value === (privacyRequestIndicator ? "Yes" : "No"));
   const selectedComplaintMethodReceivedCode = complaintMethodReceivedCodes.find(
     (option) => option.value === complaintMethodReceivedCode?.complaintMethodReceivedCode,
   );
@@ -616,6 +625,19 @@ export const ComplaintDetailsEdit: FC = () => {
   const handleNameChange = (value: string) => {
     const updatedComplaint = { ...complaintUpdate, name: value } as ComplaintDto;
     applyComplaintUpdate(updatedComplaint);
+  };
+
+  const handlePrivacyRequestedChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+      if (value) {
+        let updatedComplaint = {
+          ...complaintUpdate,
+          privacyRequestIndicator: value === "Yes",
+        } as ComplaintDto;
+        applyComplaintUpdate(updatedComplaint);
+      }
+    }
   };
 
   const handlePrimaryPhoneChange = (value: string) => {
@@ -1130,6 +1152,29 @@ export const ComplaintDetailsEdit: FC = () => {
             {/* Call Information */}
             <fieldset>
               <legend>Caller Information</legend>
+
+              <div
+                className="comp-details-form-row"
+                id="privacy-requested-id"
+              >
+                <label
+                  id="complaint-caller-info-privacy-label-id"
+                  className="col-auto"
+                  htmlFor="caller-privacy-id"
+                >
+                  Privacy requested
+                </label>
+                <div className="comp-details-edit-input">
+                  <Select
+                    options={yesNoOptions}
+                    defaultValue={selectedPrivacy}
+                    placeholder="Select"
+                    id="caller-privacy-id"
+                    classNamePrefix="comp-select"
+                    onChange={(e) => handlePrivacyRequestedChange(e)}
+                  />
+                </div>
+              </div>
 
               <div
                 className="comp-details-form-row"

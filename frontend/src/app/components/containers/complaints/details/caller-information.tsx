@@ -5,9 +5,16 @@ import { formatPhoneNumber } from "react-phone-number-input/input";
 import { Card } from "react-bootstrap";
 
 export const CallerInformation: FC = () => {
-  const { name, primaryPhone, secondaryPhone, alternatePhone, address, email, reportedByCode } = useAppSelector(
-    selectComplaintCallerInformation,
-  );
+  const {
+    name,
+    primaryPhone,
+    secondaryPhone,
+    alternatePhone,
+    address,
+    email,
+    reportedByCode,
+    privacyRequestIndicator,
+  } = useAppSelector(selectComplaintCallerInformation);
 
   return (
     <section className="comp-details-section">
@@ -17,7 +24,7 @@ export const CallerInformation: FC = () => {
           <dl>
             <div>
               <dt>Privacy requested</dt>
-              <dd id="comp-details-name">{`No`}</dd>
+              <dd id="comp-details-name">{privacyRequestIndicator ? "Yes" : "No"}</dd>
             </div>
             <div>
               <dt>Name</dt>
