@@ -1,4 +1,11 @@
-import { ExecutionContext, Injectable, CanActivate, UnauthorizedException, Logger } from "@nestjs/common";
+import {
+  ExecutionContext,
+  Injectable,
+  CanActivate,
+  UnauthorizedException,
+  Logger,
+  ForbiddenException,
+} from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
 import { Role } from "src/enum/role.enum";
@@ -46,6 +53,17 @@ export class JwtRoleGuard extends AuthGuard("jwt") implements CanActivate {
     } else {
       this.logger.debug("User authorization verified");
     }
+    const userRoles: string[] = user.client_roles;
+    // Check if the user has the readonly role
+    const hasReadOnlyRole = userRoles.includes(Role.READ_ONLY);
+
+    // If the user has readonly role, allow only GET requests
+    if (hasReadOnlyRole) {
+      if (request.method !== "GET") {
+        this.logger.debug(`User with readonly role attempted ${request.method} method`);
+        throw new ForbiddenException("Access denied: Read-only users cannot perform this action");
+      }
+    }
 
     // if there aren't any required roles, don't allow the user to access any api.  Unless the API is marked as public, at least one role is required.
     if (!requiredRoles) {
@@ -56,9 +74,6 @@ export class JwtRoleGuard extends AuthGuard("jwt") implements CanActivate {
     } else {
       this.logger.debug(`Endpoint ${request.originalUrl} is properly guarded.`);
     }
-
-    // roles that the user has
-    const userRoles: string[] = user.client_roles;
 
     this.logger.debug(`User Roles: ${userRoles}`);
 

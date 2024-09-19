@@ -563,6 +563,7 @@ export const updateComplaintById =
 
       ToggleSuccess("Updates have been saved");
     } catch (error) {
+      debugger;
       ToggleError("Unable to update complaint");
     }
   };
