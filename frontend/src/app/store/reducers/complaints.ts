@@ -663,9 +663,12 @@ export const createComplaint =
       });
       ToggleSuccess("Complaint has been saved");
       return result;
-    } catch (error) {
-      ToggleError("Unable to create complaint");
-      //-- add error handling
+    } catch (error: any) {
+      if (error.response && error.response.status === 403) {
+        ToggleError("You do not have permission to make changes");
+      } else {
+        ToggleError("Unable to create complaint");
+      }
     }
   };
 
