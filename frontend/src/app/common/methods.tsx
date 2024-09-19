@@ -413,10 +413,9 @@ export const isReadOnly = (_default: boolean = false): boolean => {
     if (token) {
       const decoded: SsoToken = jwtDecode<SsoToken>(token);
       const { client_roles } = decoded;
-      console.log(client_roles);
       return client_roles.includes(Roles.READ_ONLY);
     }
-    console.log("testing");
+
     return false;
   } catch (exception) {
     return _default;
