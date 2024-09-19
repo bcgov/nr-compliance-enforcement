@@ -1,5 +1,6 @@
 import _kc from "../keycloak";
 import { AgencyType } from "../types/app/agency-types";
+import Roles from "../types/app/roles";
 
 export const AUTH_TOKEN = "__auth_token";
 
@@ -65,6 +66,10 @@ export const getUserAgency = () => {
     agency = AgencyType.CEEB;
   }
   return agency;
+};
+
+export const hasReadOnlyRole = () => {
+  return hasRole(Roles.READ_ONLY);
 };
 
 const UserService = {

@@ -1,6 +1,8 @@
-import { FC } from "react";
+import { FC, useMemo, memo } from "react";
 import Select, { StylesConfig } from "react-select";
 import Option from "../../types/app/option";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { getUserAgency, hasReadOnlyRole } from "../../service/user-service";
 
 type Props = {
   id: string;
@@ -16,6 +18,7 @@ type Props = {
   onChange?: (selectedOption: Option | null) => void;
   isDisabled?: boolean;
   isClearable?: boolean;
+  isFilter?: boolean;
 };
 
 export const CompSelect: FC<Props> = ({
@@ -32,6 +35,7 @@ export const CompSelect: FC<Props> = ({
   errorMessage,
   isDisabled,
   isClearable,
+  isFilter,
 }) => {
   let styles: StylesConfig = {};
 
@@ -70,6 +74,13 @@ export const CompSelect: FC<Props> = ({
       };
     },
   };
+  const isReadOnly = useMemo(() => hasReadOnlyRole(), []);
+  const checkDisable = () => {
+    if (isFilter) return isDisabled;
+    if (isReadOnly === true) {
+      return true;
+    } else return isDisabled;
+  };
 
   //-- pass through the onChange event
   const handleChange = (s: any) => {
@@ -91,7 +102,8 @@ export const CompSelect: FC<Props> = ({
         onChange={handleChange}
         classNamePrefix={classNamePrefix}
         defaultValue={defaultOption}
-        isDisabled={isDisabled}
+        // isDisabled={isDisabled}
+        isDisabled={checkDisable()}
         menuPlacement="auto"
         isClearable={isClearable ?? false}
       />
@@ -99,3 +111,5 @@ export const CompSelect: FC<Props> = ({
     </div>
   );
 };
+
+// export const CompSelect = memo(CompSelect2);

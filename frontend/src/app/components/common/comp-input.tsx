@@ -1,4 +1,5 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
+import { hasReadOnlyRole } from "../../service/user-service";
 
 type Props = {
   id: string;
@@ -83,6 +84,7 @@ export const CompInput: FC<Props> = ({
     min: min,
     max: max,
   };
+  const isReadOnly = useMemo(() => hasReadOnlyRole(), []);
 
   if (type === "text") {
     Component = (
@@ -90,6 +92,7 @@ export const CompInput: FC<Props> = ({
         {...props}
         cols={cols}
         rows={rows}
+        disabled={isReadOnly}
       />
     );
   } else {
@@ -98,9 +101,12 @@ export const CompInput: FC<Props> = ({
         {...props}
         type={type}
         inputMode="numeric"
+        disabled={isReadOnly}
       />
     );
   }
+
+  // console.log(isReadOnly);
 
   return (
     <div

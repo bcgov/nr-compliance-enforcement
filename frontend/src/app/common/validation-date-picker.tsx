@@ -1,5 +1,6 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import DatePicker from "react-datepicker";
+import { hasReadOnlyRole } from "../service/user-service";
 
 interface ValidationDatePickerProps {
   className: string;
@@ -30,6 +31,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
 
   const calculatedClass = errMsg === "" ? "" : "error-message";
   const calculatedBorderClass = errMsg === "" ? "" : "error-border";
+  const isReadOnly = useMemo(() => hasReadOnlyRole(), []);
 
   return (
     <div className={className}>
@@ -48,6 +50,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
           autoComplete="false"
           monthsShown={2}
           showPreviousMonths
+          disabled={isReadOnly}
         />
       </div>
       <div className={calculatedClass}>{errMsg}</div>
