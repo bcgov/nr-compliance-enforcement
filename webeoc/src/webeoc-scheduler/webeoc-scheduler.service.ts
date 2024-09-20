@@ -203,11 +203,6 @@ export class WebEocScheduler {
     try {
       const response = await axios.post(url, body, config);
       const complaints = response.data as Complaint[];
-      //let filteredComplaints: Complaint[];
-      // if we're looking for complaints, only get
-      // complaints that have flag_COS (to indicate that we want the complaints in the Peace region),
-      // or complaints that have a violation type of Waste or Pesticide (for CEEB complaints, even those
-      // outside the Peace region)
       const filteredComplaints = complaints.filter(
         (complaint) =>
           complaint.flag_AT === "Yes" ||
@@ -240,11 +235,6 @@ export class WebEocScheduler {
     try {
       const response = await axios.post(url, body, config);
       const complaints = response.data as Complaint[];
-      //let filteredComplaints: Complaint[];
-      // if we're looking for complaints, only get
-      // complaints that have flag_COS (to indicate that we want the complaints in the Peace region),
-      // or complaints that have a violation type of Waste or Pesticide (for CEEB complaints, even those
-      // outside the Peace region)
       const filteredComplaints = complaints.filter(
         (complaint) =>
           complaint.flag_UAT === "Yes" ||
