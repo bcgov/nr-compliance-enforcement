@@ -11,7 +11,12 @@ export const CallerInformation: FC = () => {
     useAppSelector(selectComplaintCallerInformation);
   const enablePrivacyFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.PRIV_REQ));
 
-  const privacy = privacyRequest === "Y" ? "Yes" : privacyRequest === "N" ? "No" : "";
+  let privacy = "";
+  if (privacyRequest === "Y") {
+    privacy = "Yes";
+  } else if (privacyRequest === "N") {
+    privacy = "No";
+  }
 
   return (
     <section className="comp-details-section">

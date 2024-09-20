@@ -43,7 +43,7 @@ import notificationInvalid from "../../../../../assets/images/notification-inval
 import { CompSelect } from "../../../common/comp-select";
 import { CompInput } from "../../../common/comp-input";
 import { from } from "linq-to-typescript";
-import { openModal } from "../../../../store/reducers/app";
+import { openModal, isFeatureActive } from "../../../../store/reducers/app";
 import { useParams } from "react-router-dom";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { ToggleError } from "../../../../common/toast";
@@ -74,7 +74,6 @@ import { getUserAgency } from "../../../../service/user-service";
 import { AgencyType } from "../../../../types/app/agency-types";
 import { CeebOutcomeReport } from "../outcomes/ceeb/ceeb-outcome-report";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
-import { isFeatureActive } from "../../../../store/reducers/app";
 
 export type ComplaintParams = {
   id: string;

@@ -13,7 +13,7 @@ import { ValidationInput } from "../../../../common/validation-input";
 import Option from "../../../../types/app/option";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { openModal, selectActiveTab, userId } from "../../../../store/reducers/app";
+import { openModal, selectActiveTab, userId, isFeatureActive } from "../../../../store/reducers/app";
 import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
 
 import {
@@ -62,7 +62,6 @@ import { getUserAgency } from "../../../../service/user-service";
 import { useSelector } from "react-redux";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
-import { isFeatureActive } from "../../../../store/reducers/app";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
