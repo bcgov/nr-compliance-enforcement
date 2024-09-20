@@ -61,6 +61,8 @@ import AttachmentEnum from "../../../../constants/attachment-enum";
 import { getUserAgency } from "../../../../service/user-service";
 import { useSelector } from "react-redux";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
+import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
+import { isFeatureActive } from "../../../../store/reducers/app";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -97,6 +99,7 @@ export const CreateComplaint: FC = () => {
   ];
 
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
+  const enablePrivacyFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.PRIV_REQ));
 
   const currentDate = useMemo(() => new Date(), []);
 
@@ -1038,27 +1041,29 @@ export const CreateComplaint: FC = () => {
 
         <fieldset>
           <legend>Caller Information</legend>
-          <div
-            className="comp-details-form-row"
-            id="privacy-requested-id"
-          >
-            <label
-              id="complaint-caller-info-privacy-label-id"
-              className="col-auto"
-              htmlFor="caller-privacy-id"
+          {enablePrivacyFeature && (
+            <div
+              className="comp-details-form-row"
+              id="privacy-requested-id"
             >
-              Privacy requested
-            </label>
-            <div className="comp-details-edit-input">
-              <Select
-                options={privacyDropdown}
-                placeholder="Select"
-                id="caller-privacy-id"
-                classNamePrefix="comp-select"
-                onChange={(e) => handlePrivacyRequestedChange(e)}
-              />
+              <label
+                id="complaint-caller-info-privacy-label-id"
+                className="col-auto"
+                htmlFor="caller-privacy-id"
+              >
+                Privacy requested
+              </label>
+              <div className="comp-details-edit-input">
+                <Select
+                  options={privacyDropdown}
+                  placeholder="Select"
+                  id="caller-privacy-id"
+                  classNamePrefix="comp-select"
+                  onChange={(e) => handlePrivacyRequestedChange(e)}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           <div
             className="comp-details-form-row"

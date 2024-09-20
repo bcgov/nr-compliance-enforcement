@@ -3,10 +3,13 @@ import { useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaintCallerInformation } from "../../../../store/reducers/complaints";
 import { formatPhoneNumber } from "react-phone-number-input/input";
 import { Card } from "react-bootstrap";
+import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
+import { isFeatureActive } from "../../../../store/reducers/app";
 
 export const CallerInformation: FC = () => {
   const { name, primaryPhone, secondaryPhone, alternatePhone, address, email, reportedByCode, privacyRequest } =
     useAppSelector(selectComplaintCallerInformation);
+  const enablePrivacyFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.PRIV_REQ));
 
   const privacy = privacyRequest === "Y" ? "Yes" : privacyRequest === "N" ? "No" : "";
 
@@ -16,10 +19,12 @@ export const CallerInformation: FC = () => {
       <Card>
         <Card.Body>
           <dl>
-            <div>
-              <dt>Privacy requested</dt>
-              <dd id="comp-details-name">{privacy}</dd>
-            </div>
+            {enablePrivacyFeature && (
+              <div>
+                <dt>Privacy requested</dt>
+                <dd id="comp-details-name">{privacy}</dd>
+              </div>
+            )}
             <div>
               <dt>Name</dt>
               <dd id="comp-details-name">{name}</dd>

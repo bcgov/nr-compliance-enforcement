@@ -73,6 +73,8 @@ import { WebEOCComplaintUpdateList } from "../webeoc-complaint-updates/webeoc-co
 import { getUserAgency } from "../../../../service/user-service";
 import { AgencyType } from "../../../../types/app/agency-types";
 import { CeebOutcomeReport } from "../outcomes/ceeb/ceeb-outcome-report";
+import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
+import { isFeatureActive } from "../../../../store/reducers/app";
 
 export type ComplaintParams = {
   id: string;
@@ -87,6 +89,7 @@ export const ComplaintDetailsEdit: FC = () => {
   //-- selectors
   const data = useAppSelector(selectComplaint);
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
+  const enablePrivacyFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.PRIV_REQ));
 
   const {
     details,
@@ -1155,28 +1158,30 @@ export const ComplaintDetailsEdit: FC = () => {
             <fieldset>
               <legend>Caller Information</legend>
 
-              <div
-                className="comp-details-form-row"
-                id="privacy-requested-id"
-              >
-                <label
-                  id="complaint-caller-info-privacy-label-id"
-                  className="col-auto"
-                  htmlFor="caller-privacy-id"
+              {enablePrivacyFeature && (
+                <div
+                  className="comp-details-form-row"
+                  id="privacy-requested-id"
                 >
-                  Privacy requested
-                </label>
-                <div className="comp-details-edit-input">
-                  <Select
-                    options={privacyDropdown}
-                    defaultValue={privacyDropdown.find((item) => item.value === privacyRequest)}
-                    placeholder="Select"
-                    id="caller-privacy-id"
-                    classNamePrefix="comp-select"
-                    onChange={(e) => handlePrivacyRequestedChange(e)}
-                  />
+                  <label
+                    id="complaint-caller-info-privacy-label-id"
+                    className="col-auto"
+                    htmlFor="caller-privacy-id"
+                  >
+                    Privacy requested
+                  </label>
+                  <div className="comp-details-edit-input">
+                    <Select
+                      options={privacyDropdown}
+                      defaultValue={privacyDropdown.find((item) => item.value === privacyRequest)}
+                      placeholder="Select"
+                      id="caller-privacy-id"
+                      classNamePrefix="comp-select"
+                      onChange={(e) => handlePrivacyRequestedChange(e)}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div
                 className="comp-details-form-row"

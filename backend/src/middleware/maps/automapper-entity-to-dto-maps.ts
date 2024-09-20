@@ -1683,6 +1683,18 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
         return "";
       }),
     ),
+    forMember(
+      (destination) => destination.privacyRequested,
+      mapFrom((source) => {
+        if (source.complaint_identifier.privacy_request === "Y") {
+          return "Yes";
+        } else if (source.complaint_identifier.privacy_request === "N") {
+          return "No";
+        } else {
+          return null;
+        }
+      }),
+    ),
 
     //--
     forMember(
