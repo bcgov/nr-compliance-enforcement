@@ -346,6 +346,7 @@ export const ComplaintDetailsEdit: FC = () => {
   );
   const selectedViolationObserved = yesNoOptions.find((option) => option.value === (violationObserved ? "Yes" : "No"));
   const selectedGirTypeCode = girTypeCodes.find((option) => option.label === girType);
+
   const selectedComplaintMethodReceivedCode = complaintMethodReceivedCodes.find(
     (option) => option.value === complaintMethodReceivedCode?.complaintMethodReceivedCode,
   );

@@ -153,6 +153,7 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
       (dest) => dest.privacy_request,
       mapFrom((src) => src.privacyRequest),
     ),
+
   );
 };
 
