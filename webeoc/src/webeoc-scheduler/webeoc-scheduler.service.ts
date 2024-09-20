@@ -191,20 +191,25 @@ export class WebEocScheduler {
     const body = {
       customFilter: {
         boolean: "and",
-        items: [
-          dateFilter,
-          {
-            fieldname: WEBEOC_FLAGS.ACTIONS_TAKEN,
-            operator: "Equals",
-            fieldvalue: "Yes",
-          },
-        ],
+        items: [dateFilter],
       },
     };
 
     try {
       const response = await axios.post(url, body, config);
-      return response?.data;
+      const complaints = response.data as Complaint[];
+      //let filteredComplaints: Complaint[];
+      // if we're looking for complaints, only get
+      // complaints that have flag_COS (to indicate that we want the complaints in the Peace region),
+      // or complaints that have a violation type of Waste or Pesticide (for CEEB complaints, even those
+      // outside the Peace region)
+      const filteredComplaints = complaints.filter(
+        (complaint) =>
+          complaint.flag_AT === "Yes" ||
+          complaint.violation_type === "Waste" ||
+          complaint.violation_type === "Pesticide",
+      );
+      return filteredComplaints;
     } catch (error) {
       this.logger.error(`Error fetching data from WebEOC at ${path}:`, error);
       throw error;
@@ -223,20 +228,25 @@ export class WebEocScheduler {
     const body = {
       customFilter: {
         boolean: "and",
-        items: [
-          dateFilter,
-          {
-            fieldname: WEBEOC_FLAGS.ACTIONS_TAKEN_UPDATES,
-            operator: "Equals",
-            fieldvalue: "Yes",
-          },
-        ],
+        items: [dateFilter],
       },
     };
 
     try {
       const response = await axios.post(url, body, config);
-      return response?.data;
+      const complaints = response.data as Complaint[];
+      //let filteredComplaints: Complaint[];
+      // if we're looking for complaints, only get
+      // complaints that have flag_COS (to indicate that we want the complaints in the Peace region),
+      // or complaints that have a violation type of Waste or Pesticide (for CEEB complaints, even those
+      // outside the Peace region)
+      const filteredComplaints = complaints.filter(
+        (complaint) =>
+          complaint.flag_UAT === "Yes" ||
+          complaint.violation_type === "Waste" ||
+          complaint.violation_type === "Pesticide",
+      );
+      return filteredComplaints;
     } catch (error) {
       this.logger.error(`Error fetching data from WebEOC at ${path}:`, error);
       throw error;
