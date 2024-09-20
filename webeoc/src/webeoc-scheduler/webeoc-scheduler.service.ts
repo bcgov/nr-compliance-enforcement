@@ -118,23 +118,28 @@ export class WebEocScheduler {
 
     try {
       const response = await axios.post(url, body, config);
-      const complaints = response.data as Complaint[];
-      let filteredComplaints: Complaint[];
-      if (flagName === WEBEOC_FLAGS.COMPLAINTS) {
-        // if we're looking for complaints, only get
-        // complaints that have flag_COS (to indicate that we want the complaints in the Peace region),
-        // or complaints that have a violation type of Waste or Pesticide (for CEEB complaints, even those
-        // outside the Peace region)
-        filteredComplaints = complaints.filter(
-          (complaint) =>
+      const complaints = response.data;
+
+      // Filter the complaints to only include complaints where flag_COS is "Yes" (indicating complaints
+      // that are in the Peace region), or complaints where the violation type is Waste or Pesticide (which
+      // are complaints needed for CEEB)
+      const filteredComplaints = complaints.filter((complaint: any) => {
+        if (flagName === WEBEOC_FLAGS.COMPLAINTS) {
+          return (
             complaint.flag_COS === "Yes" ||
             complaint.violation_type === "Waste" ||
-            complaint.violation_type === "Pesticide",
-        );
-        return filteredComplaints;
-      } else {
-        return complaints;
-      }
+            complaint.violation_type === "Pesticide"
+          );
+        } else {
+          return (
+            complaint.flag_UPD === "Yes" ||
+            complaint.update_violation_type === "Waste" ||
+            complaint.update_violation_type === "Pesticide"
+          );
+        }
+      });
+
+      return filteredComplaints;
     } catch (error) {
       this.logger.error(`Error fetching data from WebEOC at ${urlPath}:`, error);
       throw error;
