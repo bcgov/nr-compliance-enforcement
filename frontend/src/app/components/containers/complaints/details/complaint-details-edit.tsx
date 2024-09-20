@@ -25,6 +25,7 @@ import {
   selectGirTypeCodeDropdown,
   selectReportedByDropdown,
   selectComplaintReceivedMethodDropdown,
+  selectPrivacyDropdown,
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import { Officer } from "../../../../types/person/person";
@@ -85,6 +86,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   //-- selectors
   const data = useAppSelector(selectComplaint);
+  const privacyDropdown = useAppSelector(selectPrivacyDropdown);
 
   const {
     details,
@@ -117,7 +119,7 @@ export const ComplaintDetailsEdit: FC = () => {
     email,
     reportedByCode,
     ownedByAgencyCode,
-    privacyRequestIndicator,
+    privacyRequest,
   } = useAppSelector(selectComplaintCallerInformation);
 
   // Get the code table lists to populate the Selects
@@ -344,7 +346,6 @@ export const ComplaintDetailsEdit: FC = () => {
   );
   const selectedViolationObserved = yesNoOptions.find((option) => option.value === (violationObserved ? "Yes" : "No"));
   const selectedGirTypeCode = girTypeCodes.find((option) => option.label === girType);
-  const selectedPrivacy = yesNoOptions.find((option) => option.value === (privacyRequestIndicator ? "Yes" : "No"));
   const selectedComplaintMethodReceivedCode = complaintMethodReceivedCodes.find(
     (option) => option.value === complaintMethodReceivedCode?.complaintMethodReceivedCode,
   );
@@ -633,7 +634,7 @@ export const ComplaintDetailsEdit: FC = () => {
       if (value) {
         let updatedComplaint = {
           ...complaintUpdate,
-          privacyRequestIndicator: value === "Yes",
+          privacyRequest: value,
         } as ComplaintDto;
         applyComplaintUpdate(updatedComplaint);
       }
@@ -1166,8 +1167,8 @@ export const ComplaintDetailsEdit: FC = () => {
                 </label>
                 <div className="comp-details-edit-input">
                   <Select
-                    options={yesNoOptions}
-                    defaultValue={selectedPrivacy}
+                    options={privacyDropdown}
+                    defaultValue={privacyDropdown.find((item) => item.value === privacyRequest)}
                     placeholder="Select"
                     id="caller-privacy-id"
                     classNamePrefix="comp-select"

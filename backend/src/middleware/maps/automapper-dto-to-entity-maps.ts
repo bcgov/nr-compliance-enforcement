@@ -150,8 +150,8 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (dest) => dest.privacy_request_ind,
-      mapFrom((src) => src.privacyRequestIndicator),
+      (dest) => dest.privacy_request,
+      mapFrom((src) => src.privacyRequest),
     ),
   );
 };

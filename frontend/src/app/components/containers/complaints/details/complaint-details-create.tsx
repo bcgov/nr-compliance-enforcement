@@ -22,6 +22,7 @@ import {
   selectComplaintReceivedMethodDropdown,
   selectCreatableComplaintTypeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
+  selectPrivacyDropdown,
   selectReportedByDropdown,
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
@@ -94,6 +95,8 @@ export const CreateComplaint: FC = () => {
     { value: "Yes", label: "Yes" },
     { value: "No", label: "No" },
   ];
+
+  const privacyDropdown = useAppSelector(selectPrivacyDropdown);
 
   const currentDate = useMemo(() => new Date(), []);
 
@@ -170,7 +173,7 @@ export const CreateComplaint: FC = () => {
         createdBy: userid,
         updatedBy: userid,
         complaintMethodReceivedCode: "",
-        privacyRequestIndicator: false,
+        privacyRequest: "U",
       };
 
       applyComplaintData(model);
@@ -362,7 +365,7 @@ export const CreateComplaint: FC = () => {
   const handlePrivacyRequestedChange = (selected: Option | null) => {
     if (selected) {
       const { value } = selected;
-      const complaint = { ...complaintData, privacyRequestIndicator: value === "Yes" } as ComplaintDto;
+      const complaint = { ...complaintData, privacyRequest: value } as ComplaintDto;
       applyComplaintData(complaint);
     }
   };
@@ -1048,7 +1051,7 @@ export const CreateComplaint: FC = () => {
             </label>
             <div className="comp-details-edit-input">
               <Select
-                options={yesNoOptions}
+                options={privacyDropdown}
                 placeholder="Select"
                 id="caller-privacy-id"
                 classNamePrefix="comp-select"

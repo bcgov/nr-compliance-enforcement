@@ -257,8 +257,8 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (destination) => destination.privacyRequestIndicator,
-      mapFrom((source) => source.privacy_request_ind),
+      (destination) => destination.privacyRequest,
+      mapFrom((source) => source.privacy_request),
     ),
   );
 };
@@ -707,8 +707,8 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (destination) => destination.privacyRequestIndicator,
-      mapFrom((source) => source.complaint_identifier.privacy_request_ind),
+      (destination) => destination.privacyRequest,
+      mapFrom((source) => source.complaint_identifier.privacy_request),
     ),
   );
 };
@@ -930,8 +930,8 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (destination) => destination.privacyRequestIndicator,
-      mapFrom((source) => source.complaint_identifier.privacy_request_ind),
+      (destination) => destination.privacyRequest,
+      mapFrom((source) => source.complaint_identifier.privacy_request),
     ),
   );
 };
@@ -1133,8 +1133,8 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (destination) => destination.privacyRequestIndicator,
-      mapFrom((source) => source.complaint_identifier.privacy_request_ind),
+      (destination) => destination.privacyRequest,
+      mapFrom((source) => source.complaint_identifier.privacy_request),
     ),
   );
 };
