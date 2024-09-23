@@ -113,20 +113,12 @@
   background-color: $gray-200;
 }
 
+[data-initials-sm]:before {
+  content: attr(data-initials-sm);
+}
+
 [data-initials-modal]:before {
-  background: $orange-200;
-  color: $orange-600;
-  opacity: 1;
   content: attr(data-initials-modal);
-  display: inline-block;
-  border-radius: 50%;
-  vertical-align: middle;
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  font-size: 16px;
-  text-align: center;
-  margin-right: 8px;
 }
 
 // Refactor Avatar Styling
@@ -142,7 +134,6 @@
     display: inline-block;
     text-align: center;
     border-radius: 50%;
-    content: attr(data-initials-sm);
   }
 
   // Sizing
@@ -318,6 +309,43 @@
 
 .width-full {
   width: 100%;
+}
+
+.comp-search-input {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  color: $gray-500;
+
+  input {
+    padding-left: 40px;
+  }
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    z-index: 2;
+  }
+
+  .btn-close {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    margin-top: 0;
+    padding: 8px;
+    border-radius: 4px;
+    outline: none;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 .comp-tooltip {

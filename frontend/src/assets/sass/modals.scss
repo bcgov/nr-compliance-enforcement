@@ -49,12 +49,21 @@ $modal-md: 508px !default;
   z-index: 10000 !important;
 }
 
+.modal-header,
+.modal-footer {
+  border: none;
+}
+
 .modal-header .btn-close {
-  padding-right: 16px !important;
+  margin-right: 0;
 }
 
 .modal-backdrop {
   z-index: 9000 !important;
+}
+
+.modal-title {
+  font-size: 20px;
 }
 
 //body > div.fade.modal.show > div > div > div.border-0.modal-header > button
