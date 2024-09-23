@@ -112,10 +112,6 @@ export class WebEocScheduler {
           complaint.update_violation_type === "Waste" ||
           complaint.update_violation_type === "Pesticide"
         );
-      } else if (flagName === WEBEOC_FLAGS.ACTIONS_TAKEN) {
-        return "";
-      } else if (flagName === WEBEOC_FLAGS.ACTIONS_TAKEN_UPDATES) {
-        return "";
       }
     });
   }
