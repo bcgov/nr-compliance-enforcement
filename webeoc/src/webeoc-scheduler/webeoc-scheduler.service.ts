@@ -113,17 +113,9 @@ export class WebEocScheduler {
           complaint.update_violation_type === "Pesticide"
         );
       } else if (flagName === WEBEOC_FLAGS.ACTIONS_TAKEN) {
-        return (
-          complaint.flag_AT === "Yes" ||
-          complaint.violation_type === "Waste" ||
-          complaint.violation_type === "Pesticide"
-        );
+        return "";
       } else if (flagName === WEBEOC_FLAGS.ACTIONS_TAKEN_UPDATES) {
-        return (
-          complaint.flag_UAT === "Yes" ||
-          complaint.violation_type === "Waste" ||
-          complaint.violation_type === "Pesticide"
-        );
+        return "";
       }
     });
   }
@@ -217,9 +209,7 @@ export class WebEocScheduler {
 
     try {
       const response = await axios.post(url, body, config);
-      const complaints = response.data as Complaint[];
-      const filteredComplaints = this._filterComplaints(complaints, WEBEOC_FLAGS.ACTIONS_TAKEN);
-      return filteredComplaints;
+      return response.data as Complaint[];
     } catch (error) {
       this.logger.error(`Error fetching data from WebEOC at ${path}:`, error);
       throw error;
@@ -244,9 +234,7 @@ export class WebEocScheduler {
 
     try {
       const response = await axios.post(url, body, config);
-      const complaints = response.data as Complaint[];
-      const filteredComplaints = this._filterComplaints(complaints, WEBEOC_FLAGS.ACTIONS_TAKEN_UPDATES);
-      return filteredComplaints;
+      return response.data as Complaint[];
     } catch (error) {
       this.logger.error(`Error fetching data from WebEOC at ${path}:`, error);
       throw error;
