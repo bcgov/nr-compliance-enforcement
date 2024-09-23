@@ -48,6 +48,20 @@ axios.interceptors.response.use(
   },
 );
 
+axios.interceptors.response.use(
+  (response) => {
+    // Successful response, just return the data
+    return response;
+  },
+  (error: AxiosError) => {
+    const { response } = error;
+
+    if (response && response.status === STATUS_CODES.Forbiden) {
+      ToggleError("User is not authorized to perform this action");
+    }
+  },
+);
+
 const { KEYCLOAK_URL } = config;
 
 export const generateApiParameters = <T = {}>(
@@ -139,10 +153,6 @@ export const deleteMethod = <T, M = {}>(
           dispatch(toggleNotification("error", message));
         }
         reject(error);
-
-        if (error.response && error.response.status === 403) {
-          ToggleError("User is not authorized to perform this action");
-        }
       });
   });
 };
@@ -166,10 +176,6 @@ export const post = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParame
           dispatch(toggleNotification("error", error.message));
         }
         reject(error);
-
-        if (error.response && error.response.status === 403) {
-          ToggleError("User is not authorized to perform this action");
-        }
       });
   });
 };
@@ -199,10 +205,6 @@ export const patch = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParam
           dispatch(toggleNotification("error", error.message));
         }
         reject(error);
-
-        if (error.response && error.response.status === 403) {
-          ToggleError("User is not authorized to perform this action");
-        }
       });
   });
 };
@@ -232,10 +234,6 @@ export const put = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParamet
           dispatch(toggleNotification("error", error.message));
         }
         reject(error);
-
-        if (error.response && error.response.status === 403) {
-          ToggleError("User is not authorized to perform this action");
-        }
       });
   });
 };
@@ -274,10 +272,6 @@ export const putFile = <T, M = {}>(
           dispatch(toggleNotification("error", error.message));
         }
         reject(error);
-
-        if (error.response && error.response.status === 403) {
-          ToggleError("User is not authorized to perform this action");
-        }
       });
   });
 };
