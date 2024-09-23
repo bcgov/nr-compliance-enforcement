@@ -1564,6 +1564,11 @@ export class ComplaintService {
             "AllegationReportData",
           );
 
+          //-- this is a bit of a hack to hide and show the privacy requested row
+          if (data.privacyRequested) {
+            data = { ...data, privacy: [{ value: data.privacyRequested }] };
+          }
+
           break;
         }
       }
