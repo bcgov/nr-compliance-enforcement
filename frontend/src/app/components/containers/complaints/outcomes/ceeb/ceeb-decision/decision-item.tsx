@@ -9,6 +9,7 @@ import {
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
+  selectScheduleSectorDropdown,
 } from "../../../../../../store/reducers/code-table-selectors";
 import { selectOfficersDropdown } from "../../../../../../store/reducers/officer";
 import Option from "../../../../../../types/app/option";
@@ -46,6 +47,7 @@ export const DecisionItem: FC<props> = ({
   const nonComplianceOptions = useAppSelector(selectNonComplianceDropdown);
   const rationaleOptions = useAppSelector(selectRationaleDropdown);
   const sectorsOptions = useAppSelector(selectSectorDropdown);
+  const scheduleSectorsOptions = useAppSelector(selectScheduleSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
@@ -64,7 +66,14 @@ export const DecisionItem: FC<props> = ({
         result = sectorsOptions.find((item) => item.value === sector);
         break;
       }
-
+      case "schedule-sector": {
+        result = scheduleSectorsOptions.find((item) => item.value === sector);
+        break;
+      }
+      case "schedule-sector-type": {
+        result = scheduleSectorsOptions.find((item) => item.value === sector);
+        break;
+      }
       case "discharge": {
         result = dischargesOptions.find((item) => item.value === discharge);
         break;
@@ -103,7 +112,7 @@ export const DecisionItem: FC<props> = ({
     <dl>
       <div>
         <dt>WDR schedule/IPM sector type</dt>
-        <dd>{getValue("schedule")?.label}</dd>
+        <dd>{getValue("schedule-sector")?.label}</dd>
       </div>
       <div>
         <dt>Sector/Category</dt>

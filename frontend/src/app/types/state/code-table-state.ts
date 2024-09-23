@@ -35,6 +35,8 @@ import { Schedule } from "../app/code-tables/schedule";
 import { DecisionType } from "../app/code-tables/decision-type";
 import { TeamType } from "../app/code-tables/team";
 import { ComplaintMethodReceivedType } from "../app/code-tables/complaint-method-received-type";
+import { ScheduleSector } from "../app/code-tables/schedule-sector";
+import { ScheduleSectorXref } from "../app/code-tables/schedule-sector-xref";
 
 export interface CodeTableState {
   [key: string]:
@@ -71,6 +73,7 @@ export interface CodeTableState {
     | Array<Rationale>
     | Array<Sector>
     | Array<Schedule>
+    | Array<ScheduleSectorXref>
     | Array<GirType>
     | Array<ComplaintMethodReceivedType>
     | Array<DecisionType>
@@ -106,6 +109,7 @@ export interface CodeTableState {
   "non-compliance": Array<NonCompliance>;
   rationale: Array<Rationale>;
   sector: Array<Sector>;
+  "schedule-sector-type": Array<ScheduleSectorXref>;
   schedule: Array<Schedule>;
   "decision-type": Array<DecisionType>;
   team: Array<TeamType>;

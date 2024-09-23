@@ -41,6 +41,7 @@ import {
   fetchSectorTypes,
   fetchScheduleTypes,
   fetchCEEBDecisionTypes,
+  fetchScheduleSectorTypes,
 } from "./code-table-thunks";
 
 const initialState: CodeTableState = {
@@ -75,6 +76,8 @@ const initialState: CodeTableState = {
   rationale: [],
   sector: [],
   schedule: [],
+  scheduleSector: [],
+  "schedule-sector-type": [],
   "decision-type": [],
   team: [],
   "complaint-method-received-codes": [],
@@ -133,9 +136,10 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       discharge,
       "non-compliance": nonCompliance,
       rationale,
-      sector,
-      schedule,
+      sector: sector,
+      schedule: schedule,
       "decision-type": decisionType,
+      "schedule-sector-type": scheduleSectorType,
       team,
       "complaint-method-received-codes": complaintMethodReceived,
     },
@@ -246,6 +250,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(schedule).any()) {
       dispatch(fetchScheduleTypes());
     }
+    if (!from(scheduleSectorType).any()) {
+      dispatch(fetchScheduleSectorTypes());
+    }
     if (!from(decisionType).any()) {
       dispatch(fetchCEEBDecisionTypes());
     }
@@ -273,6 +280,7 @@ export const fetchComplaintCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchReportedByCodes());
     dispatch(fetchGirTypes());
     dispatch(fetchComplaintMethodReceivedCodes());
+    //dispatch(fetchScheduleSectorTypes());
   } catch (error) {
     console.error(error);
   }
@@ -298,6 +306,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchRationaleTypes());
     dispatch(fetchSectorTypes());
     dispatch(fetchScheduleTypes());
+    dispatch(fetchScheduleSectorTypes());
     dispatch(fetchCEEBDecisionTypes());
   } catch (error) {
     console.error(error);
@@ -1204,7 +1213,33 @@ export const selectCascadedCommunity =
       };
     });
   };
+// export const selectCascadedSectorUsingSchedule =
+//   (schedule?: string) =>
+//   (state: RootState): Array<Option> => {
+//     const {
+//       codeTables: { sector: items, scheduleSector },
+//     } = state;
 
+//     let check = scheduleSector;
+//     let filteredValues = scheduleSector.filter((filteredItem) => filteredItem.schedule === schedule).values;
+//     console.log(filteredValues.toString());
+//     if (schedule) {
+//       // filter the listing of sectors based upon the array of values
+//       //var filteredSectors = items.filter(value => filteredValues.includes(value.sector));
+//       const data = items.map(({ sector: value, shortDescription: label }) => {
+//         const item: Option = { label, value };
+//         return item;
+//       });
+//       return data;
+//     }
+
+//     // returns unfiltered
+//     const data = items.map(({ sector: value, shortDescription: label }) => {
+//       const item: Option = { label, value };
+//       return item;
+//     });
+//     return data;
+//   };
 export const selectSexDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { sex: items },

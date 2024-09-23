@@ -7,6 +7,8 @@ import {
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
+  selectScheduleSectorDropdown,
+  selectScheduleSectorXref,
 } from "../../../../../../store/reducers/code-table-selectors";
 import { selectAgencyDropdown } from "../../../../../../store/reducers/code-table";
 import { Decision } from "../../../../../../types/app/case-files/ceeb/decision/decision";
@@ -26,6 +28,7 @@ import { getComplaintById, selectComplaintCallerInformation } from "../../../../
 import { ToggleError } from "../../../../../../common/toast";
 
 import COMPLAINT_TYPES from "../../../../../../types/app/complaint-types";
+import { fetchScheduleSectorTypes } from "../../../../../../store/reducers/code-table-thunks";
 
 type props = {
   officerAssigned: string | null;
@@ -66,6 +69,7 @@ export const DecisionForm: FC<props> = ({
 
   //-- select data from redux
   const caseId = useAppSelector(selectCaseId) as UUID;
+  // const scheduleSectorXref = useAppSelector(fetchScheduleSectorTypes);
 
   //-- drop-downs
   const dischargesOptions = useAppSelector(selectDischargeDropdown);
@@ -73,10 +77,13 @@ export const DecisionForm: FC<props> = ({
   const rationaleOptions = useAppSelector(selectRationaleDropdown);
   const sectorsOptions = useAppSelector(selectSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
+  //  const scheduleSectorsOptions = useAppSelector(selectScheduleSectorDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officerOptions = useAppSelector(selectOfficersByAgencyDropdown(ownedByAgencyCode?.agency));
+  const scheduleSectorType = useAppSelector(selectScheduleSectorXref);
+
 
   //-- error messgaes
   const [scheduleErrorMessage, setScheduleErrorMessage] = useState("");
@@ -104,6 +111,8 @@ export const DecisionForm: FC<props> = ({
     actionTaken,
     actionTakenDate,
   });
+
+  const [_sector, setSector] = useState<Array<Option>>();
 
   useEffect(() => {
     if (officerAssigned) {
@@ -182,6 +191,16 @@ export const DecisionForm: FC<props> = ({
 
   const handleDateChange = (date?: Date) => {
     updateModel("actionTakenDate", date);
+  };
+
+  const handleScheduleChange = (schedule?: string) => {
+    let temp = 0;
+    let options = scheduleSectorType.filter((item) => item.schedule === schedule).map(item => {
+      const record: Option = { label: item.longDescription, value: item.sector };
+      return record
+    })
+      ;
+    setSector(options);
   };
 
   const handleActionTakenChange = (value: string) => {
@@ -356,6 +375,7 @@ export const DecisionForm: FC<props> = ({
               errorMessage={scheduleErrorMessage}
               placeholder="Select "
               onChange={(evt) => {
+                handleScheduleChange(evt?.value);
                 updateModel("schedule", evt?.value);
               }}
               value={getValue("schedule")}
@@ -372,7 +392,7 @@ export const DecisionForm: FC<props> = ({
               id="outcome-decision-sector-category"
               className="comp-details-input"
               classNamePrefix="comp-select"
-              options={sectorsOptions}
+              options={_sector}
               enableValidation={true}
               errorMessage={sectorErrorMessage}
               placeholder="Select "
