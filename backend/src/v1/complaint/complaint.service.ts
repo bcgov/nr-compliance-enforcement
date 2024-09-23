@@ -801,7 +801,6 @@ export class ComplaintService {
       builder.where("complaint.complaint_identifier = :id", { id });
       const result = await builder.getOne();
 
-      const test = 0;
       switch (complaintType) {
         case "ERS": {
           return this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
