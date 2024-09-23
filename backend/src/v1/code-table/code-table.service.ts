@@ -57,6 +57,7 @@ import { TeamCode } from "../team_code/entities/team_code.entity";
 import { TeamType } from "src/types/models/code-tables/team-type";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { ComplaintMethodReceivedType } from "src/types/models/code-tables/complaint-method-received-type";
+import { ScheduleSectorXref } from "src/types/models/code-tables/schedule-sector-xref";
 
 @Injectable()
 export class CodeTableService {
@@ -588,6 +589,23 @@ export class CodeTableService {
             return table;
           },
         );
+        return results;
+      }
+      case "schedule-sector": {
+        const { data } = await get(token, {
+          query: "{scheduleSectorXrefs{scheduleCode sectorCode}}",
+        });
+        const results = data.scheduleSectorXrefs.map(({ sectorCode, scheduleCode }) => {
+          const table: ScheduleSectorXref = {
+            schedule: scheduleCode,
+            sector: sectorCode,
+            shortDescription: "",
+            longDescription: "",
+            displayOrder: 1,
+            isActive: true,
+          };
+          return table;
+        });
         return results;
       }
       case "discharge": {

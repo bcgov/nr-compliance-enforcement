@@ -10,6 +10,7 @@ import { Sector } from "../../types/app/code-tables/sector";
 import { AppThunk } from "../store";
 import { setCodeTable } from "./code-table";
 import { DecisionType } from "../../types/app/code-tables/decision-type";
+import { ScheduleSector } from "../../types/app/code-tables/schedule-sector";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
@@ -47,6 +48,15 @@ export const fetchSectorTypes = (): AppThunk => async (dispatch) => {
   const response = await get<Array<Sector>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.SECTOR, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+export const fetchScheduleSectorTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.SCHEDULE_SECTOR}`);
+
+  const response = await get<Array<ScheduleSector>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.SCHEDULE_SECTOR, data: response };
     dispatch(setCodeTable(payload));
   }
 };
