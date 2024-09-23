@@ -8,7 +8,7 @@ import {
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
-import { Role } from "src/enum/role.enum";
+import { Role } from "../enum/role.enum";
 import { ROLES_KEY } from "./decorators/roles.decorator";
 import { IS_PUBLIC_KEY } from "./decorators/public.decorator";
 
