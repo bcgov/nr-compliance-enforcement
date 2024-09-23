@@ -38,8 +38,15 @@ export class WebEocScheduler {
         this.publishComplaintUpdate.bind(this),
       );
 
-      await this._handleActionTaken(WEBEOC_API_PATHS.ACTIONS_TAKEN, this._publishAction.bind(this));
-      await this._handleActionTakenUpdate(WEBEOC_API_PATHS.ACTIONS_TAKEN_UPDATES, this._publishActionUpdate.bind(this));
+      await this._handleAction(
+        () => this._fetchActions(WEBEOC_API_PATHS.ACTIONS_TAKEN),
+        this._publishAction.bind(this),
+      );
+
+      await this._handleAction(
+        () => this._fetchActionUpdates(WEBEOC_API_PATHS.ACTIONS_TAKEN_UPDATES),
+        this._publishActionUpdate.bind(this),
+      );
     });
 
     this.cronJob.start();
@@ -237,33 +244,19 @@ export class WebEocScheduler {
     }
   };
 
-  private _handleActionTaken = async (path: string, publish: any) => {
+  private _handleAction = async (
+    fetchMethod: () => Promise<any>,
+    publishMethod: (item: ActionTaken) => Promise<void>,
+  ) => {
     try {
       await this.authenticateWithWebEOC();
-      const data = await this._fetchActions(path);
+      const data = await fetchMethod();
 
       if (data) {
-        this.logger.debug(`Found ${data?.length} actions_taken from WebEOC`);
+        this.logger.debug(`Found ${data.length} action taken from WebEOC`);
 
         for (const item of data) {
-          await publish(item);
-        }
-      }
-    } catch (error) {
-      this.logger.error(`Unable to fetch data from WebEOC`, error);
-    }
-  };
-
-  private _handleActionTakenUpdate = async (path: string, publish: any) => {
-    try {
-      await this.authenticateWithWebEOC();
-      const data = await this._fetchActionUpdates(path);
-
-      if (data) {
-        this.logger.debug(`Found ${data?.length} action_taken_updates from WebEOC`);
-
-        for (const item of data) {
-          await publish(item);
+          await publishMethod(item);
         }
       }
     } catch (error) {
