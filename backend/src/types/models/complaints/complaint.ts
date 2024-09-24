@@ -31,5 +31,5 @@ export interface ComplaintDto {
   delegates: Array<DelegateDto>;
   webeocId: string;
   complaintMethodReceivedCode: string;
-  privacyRequest: string;
+  isPrivacyRequested: string;
 }

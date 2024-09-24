@@ -175,7 +175,7 @@ export const CreateComplaint: FC = () => {
         createdBy: userid,
         updatedBy: userid,
         complaintMethodReceivedCode: "",
-        privacyRequest: "U",
+        isPrivacyRequested: "U",
       };
 
       applyComplaintData(model);
@@ -367,7 +367,7 @@ export const CreateComplaint: FC = () => {
   const handlePrivacyRequestedChange = (selected: Option | null) => {
     if (selected) {
       const { value } = selected;
-      const complaint = { ...complaintData, privacyRequest: value } as ComplaintDto;
+      const complaint = { ...complaintData, isPrivacyRequested: value } as ComplaintDto;
       applyComplaintData(complaint);
     }
   };

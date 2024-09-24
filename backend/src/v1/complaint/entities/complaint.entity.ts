@@ -207,7 +207,7 @@ export class Complaint {
       "flag to represent that the caller has asked for special care when handling their personal information",
   })
   @Column()
-  privacy_request: string;
+  is_privacy_requested: string;
 
   constructor(
     detail_text?: string,
@@ -236,7 +236,7 @@ export class Complaint {
     person_complaint_xref?: PersonComplaintXref[],
     webeoc_identifier?: string,
     comp_mthd_recv_cd_agcy_cd_xref?: CompMthdRecvCdAgcyCdXref,
-    privacy_request?: string,
+    is_privacy_requested?: string,
   ) {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -264,6 +264,6 @@ export class Complaint {
     this.person_complaint_xref = person_complaint_xref;
     this.webeoc_identifier = webeoc_identifier;
     this.comp_mthd_recv_cd_agcy_cd_xref = comp_mthd_recv_cd_agcy_cd_xref;
-    this.privacy_request = privacy_request;
+    this.is_privacy_requested = is_privacy_requested;
   }
 }

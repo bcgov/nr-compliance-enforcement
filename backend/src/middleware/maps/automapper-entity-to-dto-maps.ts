@@ -257,8 +257,8 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (destination) => destination.privacyRequest,
-      mapFrom((source) => source.privacy_request),
+      (destination) => destination.isPrivacyRequested,
+      mapFrom((source) => source.is_privacy_requested),
     ),
   );
 };
@@ -707,8 +707,8 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (destination) => destination.privacyRequest,
-      mapFrom((source) => source.complaint_identifier.privacy_request),
+      (destination) => destination.isPrivacyRequested,
+      mapFrom((source) => source.complaint_identifier.is_privacy_requested),
     ),
   );
 };
@@ -930,8 +930,8 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (destination) => destination.privacyRequest,
-      mapFrom((source) => source.complaint_identifier.privacy_request),
+      (destination) => destination.isPrivacyRequested,
+      mapFrom((source) => source.complaint_identifier.is_privacy_requested),
     ),
   );
 };
@@ -1133,8 +1133,8 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (destination) => destination.privacyRequest,
-      mapFrom((source) => source.complaint_identifier.privacy_request),
+      (destination) => destination.isPrivacyRequested,
+      mapFrom((source) => source.complaint_identifier.is_privacy_requested),
     ),
   );
 };
@@ -1686,9 +1686,9 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     forMember(
       (destination) => destination.privacyRequested,
       mapFrom((source) => {
-        if (source.complaint_identifier.privacy_request === "Y") {
+        if (source.complaint_identifier.is_privacy_requested === "Y") {
           return "Yes";
-        } else if (source.complaint_identifier.privacy_request === "N") {
+        } else if (source.complaint_identifier.is_privacy_requested === "N") {
           return "No";
         } else {
           return null;

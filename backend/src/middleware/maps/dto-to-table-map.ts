@@ -101,9 +101,9 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (dest) => dest.privacy_request,
+      (dest) => dest.is_privacy_requested,
       mapFrom((src) => {
-        return src.privacyRequest;
+        return src.isPrivacyRequested;
       }),
     ),
   );

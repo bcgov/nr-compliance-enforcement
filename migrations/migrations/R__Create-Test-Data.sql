@@ -3816,6 +3816,7 @@ SELECT
   user,
   now() ON CONFLICT
 DO NOTHING;
+
 INSERT INTO
   feature_code (
     feature_code,
@@ -3835,9 +3836,11 @@ SELECT
   40,
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_code (
     feature_code,
@@ -3857,9 +3860,10 @@ SELECT
   50,
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
+  now() ON CONFLICT
+DO NOTHING;
 
 INSERT INTO
   feature_code (
@@ -3880,11 +3884,11 @@ SELECT
   60,
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
+  now() ON CONFLICT
+DO NOTHING;
 
-  
 INSERT INTO
   feature_code (
     feature_code,
@@ -3904,11 +3908,11 @@ SELECT
   70,
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
+  now() ON CONFLICT
+DO NOTHING;
 
-  
 INSERT INTO
   feature_code (
     feature_code,
@@ -3928,10 +3932,11 @@ SELECT
   80,
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-  
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_code (
     feature_code,
@@ -3951,10 +3956,11 @@ SELECT
   90,
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-  
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_code (
     feature_code,
@@ -3974,9 +3980,10 @@ SELECT
   100,
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
+  now() ON CONFLICT
+DO NOTHING;
 
 INSERT INTO
   feature_code (
@@ -3997,9 +4004,10 @@ SELECT
   110,
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
+  now() ON CONFLICT
+DO NOTHING;
 
 INSERT INTO
   feature_code (
@@ -4020,10 +4028,11 @@ SELECT
   120,
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-  
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_code (
     feature_code,
@@ -4043,10 +4052,11 @@ SELECT
   130,
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-  
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_code (
     feature_code,
@@ -4066,10 +4076,10 @@ SELECT
   140,
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-
+  now() ON CONFLICT
+DO NOTHING;
 
 INSERT INTO
   feature_code (
@@ -4090,9 +4100,11 @@ SELECT
   60,
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
+  now() ON CONFLICT
+DO NOTHING;
+
 -------------------------
 -- Insert Feature / Agency XREF
 -------------------------
@@ -4276,8 +4288,7 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
- -- SET UP COS FILTERS
-
+-- SET UP COS FILTERS
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4293,9 +4304,11 @@ SELECT
   'COS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;  
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4311,10 +4324,11 @@ SELECT
   'COS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-  
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4330,10 +4344,11 @@ SELECT
   'COS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4349,10 +4364,11 @@ SELECT
   'COS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4368,9 +4384,10 @@ SELECT
   'COS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
+  now() ON CONFLICT
+DO NOTHING;
 
 INSERT INTO
   feature_agency_xref (
@@ -4387,10 +4404,11 @@ SELECT
   'COS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4406,10 +4424,11 @@ SELECT
   'COS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4425,10 +4444,11 @@ SELECT
   'COS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4444,10 +4464,11 @@ SELECT
   'COS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4463,10 +4484,11 @@ SELECT
   'COS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4482,10 +4504,11 @@ SELECT
   'COS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4501,12 +4524,12 @@ SELECT
   'COS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
+  now() ON CONFLICT
+DO NOTHING;
 
 -- SET UP CEEB FILTERS
-  
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4522,9 +4545,11 @@ SELECT
   'EPO',
   'N',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;  
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4540,10 +4565,11 @@ SELECT
   'EPO',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-  
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4559,10 +4585,11 @@ SELECT
   'EPO',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4578,10 +4605,11 @@ SELECT
   'EPO',
   'N',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4597,9 +4625,10 @@ SELECT
   'EPO',
   'N',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
+  now() ON CONFLICT
+DO NOTHING;
 
 INSERT INTO
   feature_agency_xref (
@@ -4616,10 +4645,11 @@ SELECT
   'EPO',
   'N',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4635,10 +4665,11 @@ SELECT
   'EPO',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4654,10 +4685,11 @@ SELECT
   'EPO',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4673,10 +4705,11 @@ SELECT
   'EPO',
   'N',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4692,10 +4725,11 @@ SELECT
   'EPO',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4711,10 +4745,11 @@ SELECT
   'EPO',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4730,12 +4765,12 @@ SELECT
   'EPO',
   'N',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
+  now() ON CONFLICT
+DO NOTHING;
 
 -- SET UP PARKS FILTERS
-  
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4751,9 +4786,11 @@ SELECT
   'PARKS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;  
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4769,10 +4806,11 @@ SELECT
   'PARKS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-  
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4788,10 +4826,11 @@ SELECT
   'PARKS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4807,10 +4846,11 @@ SELECT
   'PARKS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4826,9 +4866,10 @@ SELECT
   'PARKS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
+  now() ON CONFLICT
+DO NOTHING;
 
 INSERT INTO
   feature_agency_xref (
@@ -4845,10 +4886,11 @@ SELECT
   'PARKS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4864,10 +4906,11 @@ SELECT
   'PARKS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4883,10 +4926,11 @@ SELECT
   'PARKS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4902,10 +4946,11 @@ SELECT
   'PARKS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4921,10 +4966,11 @@ SELECT
   'PARKS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4940,10 +4986,11 @@ SELECT
   'PARKS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-    
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,
@@ -4959,10 +5006,11 @@ SELECT
   'PARKS',
   'Y',
   user,
-  now (),
+  now(),
   user,
-  now () ON CONFLICT DO NOTHING;
-  
+  now() ON CONFLICT
+DO NOTHING;
+
 -------------------------
 -- Insert Team Codes
 -------------------------
@@ -5282,119 +5330,397 @@ DO NOTHING;
 --------------------------
 -- Table entities for method_complaint_received_code load
 -------------------------
-
 insert into
-    public.complaint_method_received_code (
-        complaint_method_received_code,
-        short_description,
-        long_description,
-        display_order,
-        active_ind,
-        create_user_id,
-        create_utc_timestamp,
-        update_user_id,
-        update_utc_timestamp
-    )
+  public.complaint_method_received_code (
+    complaint_method_received_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
 values
-    (
-        'BC_WLD_FD',
-        'BC_WLD_FD',
-        'BC wildlife federation app',
-        10,
-        true,
-        'FLYWAY',
-        CURRENT_TIMESTAMP,
-        'FLYWAY',
-        CURRENT_TIMESTAMP
-    ),
-    (
-        'DGIR_FWD',
-        'DGIR_FWD',
-        'DGIR forward',
-        20,
-        true,
-        'FLYWAY',
-        CURRENT_TIMESTAMP,
-        'FLYWAY',
-        CURRENT_TIMESTAMP
-    ),
-    (
-        'DRCT_CNTCT',
-        'DRCT_CNTCT',
-        'Direct contact',
-        30,
-        true,
-        'FLYWAY',
-        CURRENT_TIMESTAMP,
-        'FLYWAY',
-        CURRENT_TIMESTAMP
-    ),
-    (
-        'MIN_OFFICE',
-        'MIN_OFFICE',
-        'Minister''s office',
-        40,
-        true,
-        'FLYWAY',
-        CURRENT_TIMESTAMP,
-        'FLYWAY',
-        CURRENT_TIMESTAMP
-    ),
-    (
-        'OBSRVD_FLD',
-        'OBSRVD_FLD',
-        'Observed in field ',
-        50,
-        true,
-        'FLYWAY',
-        CURRENT_TIMESTAMP,
-        'FLYWAY',
-        CURRENT_TIMESTAMP
-    ),
-    (
-        'RAPP',
-        'RAPP',
-        'RAPP',
-        60,
-        true,
-        'FLYWAY',
-        CURRENT_TIMESTAMP,
-        'FLYWAY',
-        CURRENT_TIMESTAMP
-    ),
-    (
-        'RFRL',
-        'RFRL',
-        'Referral',
-        70,
-        true,
-        'FLYWAY',
-        CURRENT_TIMESTAMP,
-        'FLYWAY',
-        CURRENT_TIMESTAMP
-    ) on conflict do nothing;
+  (
+    'BC_WLD_FD',
+    'BC_WLD_FD',
+    'BC wildlife federation app',
+    10,
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ),
+  (
+    'DGIR_FWD',
+    'DGIR_FWD',
+    'DGIR forward',
+    20,
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ),
+  (
+    'DRCT_CNTCT',
+    'DRCT_CNTCT',
+    'Direct contact',
+    30,
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ),
+  (
+    'MIN_OFFICE',
+    'MIN_OFFICE',
+    'Minister''s office',
+    40,
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ),
+  (
+    'OBSRVD_FLD',
+    'OBSRVD_FLD',
+    'Observed in field ',
+    50,
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ),
+  (
+    'RAPP',
+    'RAPP',
+    'RAPP',
+    60,
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ),
+  (
+    'RFRL',
+    'RFRL',
+    'Referral',
+    70,
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict
+do nothing;
 
-INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('COS','BC_WLD_FD',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
-INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('COS','DRCT_CNTCT',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
-INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('COS','OBSRVD_FLD',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
-INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('COS','RAPP',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
-INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('COS','RFRL',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
-INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('EPO','DGIR_FWD',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
-INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('EPO','DRCT_CNTCT',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
-INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('EPO','MIN_OFFICE',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
-INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('EPO','RAPP',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
-INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('EPO','RFRL',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+INSERT INTO
+  public.comp_mthd_recv_cd_agcy_cd_xref (
+    agency_code,
+    complaint_method_received_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'COS',
+    'BC_WLD_FD',
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  );
 
+INSERT INTO
+  public.comp_mthd_recv_cd_agcy_cd_xref (
+    agency_code,
+    complaint_method_received_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'COS',
+    'DRCT_CNTCT',
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  );
+
+INSERT INTO
+  public.comp_mthd_recv_cd_agcy_cd_xref (
+    agency_code,
+    complaint_method_received_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'COS',
+    'OBSRVD_FLD',
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  );
+
+INSERT INTO
+  public.comp_mthd_recv_cd_agcy_cd_xref (
+    agency_code,
+    complaint_method_received_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'COS',
+    'RAPP',
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  );
+
+INSERT INTO
+  public.comp_mthd_recv_cd_agcy_cd_xref (
+    agency_code,
+    complaint_method_received_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'COS',
+    'RFRL',
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  );
+
+INSERT INTO
+  public.comp_mthd_recv_cd_agcy_cd_xref (
+    agency_code,
+    complaint_method_received_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'EPO',
+    'DGIR_FWD',
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  );
+
+INSERT INTO
+  public.comp_mthd_recv_cd_agcy_cd_xref (
+    agency_code,
+    complaint_method_received_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'EPO',
+    'DRCT_CNTCT',
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  );
+
+INSERT INTO
+  public.comp_mthd_recv_cd_agcy_cd_xref (
+    agency_code,
+    complaint_method_received_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'EPO',
+    'MIN_OFFICE',
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  );
+
+INSERT INTO
+  public.comp_mthd_recv_cd_agcy_cd_xref (
+    agency_code,
+    complaint_method_received_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'EPO',
+    'RAPP',
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  );
+
+INSERT INTO
+  public.comp_mthd_recv_cd_agcy_cd_xref (
+    agency_code,
+    complaint_method_received_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'EPO',
+    'RFRL',
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  );
+
+--
+-- create new feature for privacy-requested
+--
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'PRIV_REQ',
+  'Privacy Requested',
+  'Enables the privacy requested field when creating a new complaint',
+  150,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+--
+-- create new xrefs for new privacy-requested feature
+--
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'PRIV_REQ',
+  'EPO',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'PRIV_REQ',
+  'COS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'PRIV_REQ',
+  'PARKS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
 
 --------------------------
 -- New Changes above this line

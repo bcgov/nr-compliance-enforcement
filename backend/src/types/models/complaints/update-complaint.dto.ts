@@ -171,5 +171,5 @@ export class UpdateComplaintDto {
     description:
       "flag to represent that the caller has asked for special care when handling their personal information",
   })
-  privacy_request: string;
+  is_privacy_requested: string;
 }

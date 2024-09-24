@@ -150,10 +150,9 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (dest) => dest.privacy_request,
-      mapFrom((src) => src.privacyRequest),
+      (dest) => dest.is_privacy_requested,
+      mapFrom((src) => src.isPrivacyRequested),
     ),
-
   );
 };
 
@@ -338,6 +337,10 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
         return record;
       }),
     ),
+    forMember(
+      (dest) => dest.complaint_identifier.is_privacy_requested,
+      mapFrom((src) => src.isPrivacyRequested),
+    ),
   );
 };
 
@@ -495,6 +498,10 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (mapper: Mapper) =
       (dest) => dest.suspect_witnesss_dtl_text,
       mapFrom((src) => src.violationDetails),
     ),
+    forMember(
+      (dest) => dest.complaint_identifier.is_privacy_requested,
+      mapFrom((src) => src.isPrivacyRequested),
+    ),
   );
 };
 
@@ -597,6 +604,10 @@ export const mapGirComplaintDtoToGirComplaint = (mapper: Mapper) => {
     forMember(
       (dest) => dest.gir_complaint_guid,
       mapFrom((src) => src.girId),
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.is_privacy_requested,
+      mapFrom((src) => src.isPrivacyRequested),
     ),
   );
 };

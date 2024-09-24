@@ -637,7 +637,7 @@ export const ComplaintDetailsEdit: FC = () => {
       if (value) {
         let updatedComplaint = {
           ...complaintUpdate,
-          privacyRequest: value,
+          isPrivacyRequested: value,
         } as ComplaintDto;
         applyComplaintUpdate(updatedComplaint);
       }
