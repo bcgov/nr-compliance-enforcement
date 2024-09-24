@@ -5422,6 +5422,7 @@ values
   ) on conflict
 do nothing;
 
+
 INSERT INTO
   public.comp_mthd_recv_cd_agcy_cd_xref (
     agency_code,
@@ -5721,6 +5722,2105 @@ SELECT
   user,
   now() ON CONFLICT
 DO NOTHING;
+
+--------------------------
+-- CE-951 CEEB Initial Users
+-------------------------
+
+-- Person Records
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('5469db87-a942-4b52-825d-c808da1ef531', 'Bryan', NULL, NULL, 'Vroom', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('e8c85e50-c123-4c45-a5d2-10348d423d78', 'Gina', NULL, NULL, 'Tamm', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('ea43cf10-72ac-43f8-80ea-89dd4917ae7d', 'Connor', NULL, NULL, 'Fraleigh', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('f4d24021-b73f-4aa8-82b2-f291052fca1b', 'Rebecca ', NULL, NULL, 'Benham', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('dc9d810b-5c42-4648-aa4a-8da17a141059', 'Taryn', NULL, NULL, 'Angus', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('d09d10d9-e431-431d-bf39-31504fd403d2', 'Oana', NULL, NULL, 'Enick', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('c5faeeb4-e9dd-47b3-8f97-b53f57de9fbf', 'Katie', NULL, NULL, 'Howett', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('9327da85-9b1f-47b0-8b5e-22b4f8734c2f', 'Kyle', NULL, NULL, 'Lynch', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('5771827b-1e24-4292-aaac-562ef00f5e08', 'Jurgen', NULL, NULL, 'Deagle', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('b59b956b-deae-4d7f-883b-edaf0869ed90', 'Ross', NULL, NULL, 'Blake', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('246e5454-7984-4d30-943a-fc1c0a1c14d8', 'Michael', NULL, NULL, 'Lapham', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('98472f43-cfa3-4cd4-983d-4abd9efa0b0b', 'Rafiullah', NULL, NULL, 'Sahibzada', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('c8836549-3174-4ec0-bbaa-5a4d00ce1595', 'Alexis', NULL, NULL, 'Friesen', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('bf7ff57d-6add-42c6-b081-c56432b07eb7', 'Linda', NULL, NULL, 'Pawson', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('7fc49d76-3f74-44bc-96dd-e909175a7e6c', 'Darren', NULL, NULL, 'Stewart', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('25f40438-46cb-4166-8dcc-42439bc8e87a', 'Keith', NULL, NULL, 'Connolly', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('fa98adab-1f52-4078-a828-ecaa2abc02e5', 'Anthony', NULL, NULL, 'Sarraino', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('4ef0b568-d3fd-498a-8b08-1f48dcbe898a', 'Jamie', NULL, NULL, 'Mercier', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('6cd37458-61db-4c4a-857f-8eb71c438f5f', 'Travis', NULL, NULL, 'Kurinka', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('30a85846-92ce-48a8-90dd-136f43453300', 'Michael', NULL, NULL, 'Jeffery', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('c69de99d-96f1-4296-ba16-5884a16f749c', 'Vahab', NULL, NULL, 'Nazeri', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('94ba6186-fe58-451b-a954-44332e20bad9', 'Jiabin', NULL, NULL, 'Liu', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('b1db7648-5393-4be0-a968-913e475a695e', 'Chris', NULL, NULL, 'White', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('6399a3fa-44ef-414b-a001-e62c9b33863b', 'Christine', NULL, NULL, 'Combe', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('4b909d1b-43a8-4f4a-95d5-3dc8e5c5bb26', 'Haylea', NULL, NULL, 'Van Vaals', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('b08e71ee-86e4-4dcd-8d74-e382ac5a7bd3', 'Kristan Robinson', NULL, NULL, 'Robinson', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('69353a89-2df4-4bc9-bd14-eb55d656c4c5', 'Kelly', NULL, NULL, 'Mills', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('0296cff1-4d54-4527-b064-8cb0ae42f2b4', 'Jack', NULL, NULL, 'Green', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('d8b51060-421a-4e32-9d7b-22ce1ed8dad5', 'Katelyn', NULL, NULL, 'Dick', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('ac7f8da7-0490-44f7-a5d0-68e34332b1e3', 'Natasha', NULL, NULL, 'Olsoff', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('eb6bfe40-cd2d-4b81-a1af-315b49dc3640', 'Ben', NULL, NULL, 'McKinnon', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('0448033a-0e0d-4a23-a496-7111b7b8edd9', 'Steven', NULL, NULL, 'Pasichnuk', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('7d2649d9-69ab-452f-b6d4-593786db0ebd', 'Jenna', NULL, NULL, 'Rathman', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('c3c2ae30-33b5-41ac-b389-70d372e5c67f', 'Patricia', NULL, NULL, 'Burley', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('cbf2eb1c-bfc4-4a0c-ad96-86e313e5e4c5', 'Jason', NULL, NULL, 'Bourgeois', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('083b09d1-61ce-4a57-9ca2-8f04a53416c1', 'Nadine', NULL, NULL, 'Schwager', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('a0e23621-ae6f-4919-a837-51ae93249721', 'Kevin', NULL, NULL, 'Vu', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('c4ec0073-d6e5-420e-929c-45406d7f658b', 'Laura', NULL, NULL, 'Hunse', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('d8b4d7f6-9805-4805-928d-cb23be9f5478', 'Christine', NULL, NULL, 'Turlet', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('83105952-7fb0-4386-a099-8499fbc41905', 'Jennifer', NULL, NULL, 'Mayberry', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('373aa5b1-5f7c-47e8-8df3-e8c6b912d73f', 'Stephanie', NULL, NULL, 'Little', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('0bf8b025-987c-4dd3-a1b5-e7c89a649aef', 'Ashly', NULL, NULL, 'Dixon', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('e92834d3-7851-4f63-a90c-4810405971fb', 'Tamara', NULL, NULL, 'Mickel', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.person 
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES
+('d22dbeeb-c1e7-43a6-9ea3-1df8f2c2067b', 'Brady', NULL, NULL, 'Nelless', 'FLYWAY', CURRENT_TIMESTAMP, 'FLYWAY', CURRENT_TIMESTAMP) 
+ON CONFLICT DO NOTHING;
+
+-- Officer Records
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '8518cda0-9d3f-47aa-a5f9-75b4a7675841','BVROOM','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '5469db87-a942-4b52-825d-c808da1ef531','55B94622685C4E67BCF2591CCBA92A52',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '7a3289fe-a2cd-4644-80c9-c8977b79fb87','GTAMM','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'e8c85e50-c123-4c45-a5d2-10348d423d78','83ec53d2d54d4aa1ab2547deed10c5cf',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '41544626-9ff0-4c99-871e-8563635682fb','CFRALEIG','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'ea43cf10-72ac-43f8-80ea-89dd4917ae7d','e8bdb58f3712472a83a4b9ca0bd77c4b',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '0d39faf9-5827-41f6-9e57-9a2eb9215825','RBENHAM','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'f4d24021-b73f-4aa8-82b2-f291052fca1b','12a5f2137403481d903e2279a02b4b08',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '7a31605b-ab01-49b8-ab21-868d7236baae','TANGUS','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'dc9d810b-5c42-4648-aa4a-8da17a141059','67479601dc8048a58cb30bf7cadcb3a2',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'abe6518a-ad86-4644-98f4-d1fea03dbfe9','OANENICK','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'd09d10d9-e431-431d-bf39-31504fd403d2','1fdf2193b0dd4c1fbe3e0ac83ef06fa0',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '513aadd9-ee44-443c-b45f-43f7c76f8382','KHOWETT','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'c5faeeb4-e9dd-47b3-8f97-b53f57de9fbf','f069ec7672a04b17bca66bad643b73eb',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'be0a2ff8-7a03-451e-ad7a-1d504db887be','KYLYNCH','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '9327da85-9b1f-47b0-8b5e-22b4f8734c2f','6b2dc57fc73b40a082dbf09ee209ba34',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '255bba5a-505d-4b91-a9e8-182589ee2054','JDEAGLE','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '5771827b-1e24-4292-aaac-562ef00f5e08','0b3087a03733425293233e2fa2186ffc',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '900b2f22-5143-4a16-ab58-a1553852c1ac','RBLAKE','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'b59b956b-deae-4d7f-883b-edaf0869ed90','69afcc605c384205a3ddb60146596a16',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '5223b623-b500-42ca-8d12-4cb870a7fc99','MLAPHAM','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '246e5454-7984-4d30-943a-fc1c0a1c14d8','97ffa5c2bb0049cbb1f9fac3cabe235d',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '655c39e5-41ce-4e13-836f-e3a8d0466271','RSAHIBZA','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '98472f43-cfa3-4cd4-983d-4abd9efa0b0b','2193bc014ff54f7994827d46c39a6b89',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '49089e00-50df-4686-ad73-d82216432ef9','AFRIESEN','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'c8836549-3174-4ec0-bbaa-5a4d00ce1595','cf2b42274ef248c08136e5df138ff8ae',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '4a2a60e1-7710-4be4-b905-6f7ff4f62fd3','LPAWSON','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'bf7ff57d-6add-42c6-b081-c56432b07eb7','5e3a744cb3aa4db8900dbd4d700dab32',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'cf80b4a1-4d23-4c1d-a8e3-b1b5006126dd','DARSTEWA','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '7fc49d76-3f74-44bc-96dd-e909175a7e6c','5eadbd98caef41c880785aa2b4bf4f0e',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'b42da2be-e651-402e-a506-bf70688fea37','KCONNOLL','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '25f40438-46cb-4166-8dcc-42439bc8e87a','7ba21b59eed342ecbc88657aacd34cd5',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '07412e24-b076-47a0-8521-80fd42c2a8d4','ASARRAIN','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'fa98adab-1f52-4078-a828-ecaa2abc02e5','2255b48444c8400b8857052081c49be6',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '3da8314c-7c16-4848-8cf8-0fbdf2b9c0ff','JAMMERCI','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '4ef0b568-d3fd-498a-8b08-1f48dcbe898a','1da450c8e0f14873bfe11c158adff270',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '2fd165c8-6178-4ae3-99c0-ce10425577de','TKURINKA','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '6cd37458-61db-4c4a-857f-8eb71c438f5f','548cde0952294f898f932cd79f2f3db4',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '8217f895-3865-4256-af5f-e536577fc9f9','MIJEFFER','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '30a85846-92ce-48a8-90dd-136f43453300','8323d5a207ca403a993c9c91c1f702db',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '2c7a0705-129d-49e2-abee-66a53a8baaf6','VNAZERI','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'c69de99d-96f1-4296-ba16-5884a16f749c','b2a780a21d2542d4bee05bb7634712bb',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '7d589cd2-e796-45bb-bb12-62fbd13c9f03','JILIU','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '94ba6186-fe58-451b-a954-44332e20bad9','c2a44e0ecabd4affaac9ca423c5a0145',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '4d6bce0e-34db-4e07-ba2b-387a9775077d','CJWHITE','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'b1db7648-5393-4be0-a968-913e475a695e','6f837618f9ae4b96938b0b6673e714e4',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'fc649352-5e0d-4ea0-a5a4-3f6f7855451f','CCOMBE','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '6399a3fa-44ef-414b-a001-e62c9b33863b','6ea94fdddf3a439eaa51ef61824e99b0',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'fd427bc5-fddf-47bb-90be-7725ada5d913','HVANVAAL','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '4b909d1b-43a8-4f4a-95d5-3dc8e5c5bb26','276ddb03437649c1a3f43689cf254840',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '55f91b30-ab61-4374-8ec8-669bc85fc744','KROBINSO','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'b08e71ee-86e4-4dcd-8d74-e382ac5a7bd3','b8ad0911fd3445bfbc7c629f468d19c4',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'd46b8a99-216a-4b5d-9ba0-0643c254b5ae','KEMILLS','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '69353a89-2df4-4bc9-bd14-eb55d656c4c5','86911022CBAD4B71AC8DD11C12BC841D',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'fed45857-9323-496e-84a5-d96b7b032bc3','JEGREEN','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '0296cff1-4d54-4527-b064-8cb0ae42f2b4','300e8e5b85df4888b0c39b08d48ca094',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'a96d4c1b-7f0c-40fc-8406-004a836498d7','KDICK','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'd8b51060-421a-4e32-9d7b-22ce1ed8dad5','c45a224494eb44b8adb5d3e0102ca93a',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'bf896bea-8d0e-4bc1-ace8-726e8d3ada7e','NOLSOFF','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'ac7f8da7-0490-44f7-a5d0-68e34332b1e3','268c43eaaf0f47dc8b92447b2d4e167f',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'd31dff78-997b-4229-b3b2-6c8735567c02','BENMCKIN','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'eb6bfe40-cd2d-4b81-a1af-315b49dc3640','7756f1f0ff744160a5c57bd27edd2e5b',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '66dfe65a-c7c7-459c-8405-d6447d6c261c','SPASICHN','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '0448033a-0e0d-4a23-a496-7111b7b8edd9','9547910ec4ad4bd98c79293ab8207143',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '2d3e6d63-c987-4ed8-95d4-5b9a82d01a8c',' JRATHMAN','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '7d2649d9-69ab-452f-b6d4-593786db0ebd','703d8cfe75814626a4cc60a11d9c9448',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '541feb53-1c53-48be-b2e1-933c79861e99','PBURLEY','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'c3c2ae30-33b5-41ac-b389-70d372e5c67f','abce6f98d40d43558b13d4a6e11cbbf4',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '82848fe9-b648-4a80-8701-7759e85fe922','JBOURGEO','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'cbf2eb1c-bfc4-4a0c-ad96-86e313e5e4c5','49426B8E696A43A992C13ACBCC82151A',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'f1384e56-b033-44d2-8514-c8700531b2bf','NSCHWAGE','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '083b09d1-61ce-4a57-9ca2-8f04a53416c1','5981920cfcb844269ce42cf5c451e8b8',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '3bb5dfa2-c22c-48ac-8fb5-7afc522d8dab','KEVINVU','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'a0e23621-ae6f-4919-a837-51ae93249721','f9a49ae5b4ba47c1b35c419a3586f991',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '8a87a8b7-6f57-4d2a-a156-60c6bb284887','LAHUNSE','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'c4ec0073-d6e5-420e-929c-45406d7f658b','89b8b7f2b8a947cd8b11b8c96f94e00a',NULL
+  ) ON CONFLICT DO NOTHING;
+  
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '11a40b42-74ad-4ae2-95ce-52e020f7b426','CTURLET','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'd8b4d7f6-9805-4805-928d-cb23be9f5478','dce57bffaf064f77b46882cb480888ab',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'c535ef38-b191-4ae6-897f-dcc0d1a1421d','JMAYBERR','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '83105952-7fb0-4386-a099-8499fbc41905','e26ee5bf3a1f4cb8ac3e499eb0a88fb3',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '43af02a8-e5b7-434f-b72e-d68d4680b473','STLITTLE','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '373aa5b1-5f7c-47e8-8df3-e8c6b912d73f','836cfc9bc31549219c418cdf5a8f8e7b',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    'd3c1de9b-a041-4d11-ad50-70a4c81f87d0','ASDIXON','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, '0bf8b025-987c-4dd3-a1b5-e7c89a649aef','68fcb16abe3945bfbd601a4f7e302ebc',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '2f7c7aca-2249-4cb1-b3ac-01a92ccb6b4d','TMICKEL','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'e92834d3-7851-4f63-a90c-4810405971fb','bd01c32ad91d45ce91505d4275e15fe3',NULL
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    auth_user_guid,
+    office_guid
+  )
+VALUES
+  (
+    '7ba9a601-dc1e-46f4-a3c2-9a4a002303e8','BNELLES','FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP, 'd22dbeeb-c1e7-43a6-9ea3-1df8f2c2067b','cf4993216c2a42ef8e6005f0ea7e55bf',NULL
+  ) ON CONFLICT DO NOTHING;
+
+-- Teams
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '40d57eab-9864-4553-9b87-f54814c6bb07',
+    '8518cda0-9d3f-47aa-a5f9-75b4a7675841',
+    (SELECT team_guid from public.team where team_code = 'REACTIVE' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+  
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '1a7bf5dd-128c-4062-8f0c-200a5d7ffa84',
+    '7a3289fe-a2cd-4644-80c9-c8977b79fb87',
+    (SELECT team_guid from public.team where team_code = 'REACTIVE' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'f1509605-3cdd-466c-8c4b-435de93e9cd6',
+    '41544626-9ff0-4c99-871e-8563635682fb',
+    (SELECT team_guid from public.team where team_code = 'REACTIVE' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'b628a551-5e55-4203-91dc-d8d77b947bab',
+    '0d39faf9-5827-41f6-9e57-9a2eb9215825',
+    (SELECT team_guid from public.team where team_code = 'REACTIVE' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'abd07a80-1feb-4a72-a9b5-a35670e6ad0a',
+    '7a31605b-ab01-49b8-ab21-868d7236baae',
+    (SELECT team_guid from public.team where team_code = 'REACTIVE' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '4055351d-d3c6-41fb-ae5d-bd94fa9ec9d5',
+    'abe6518a-ad86-4644-98f4-d1fea03dbfe9',
+    (SELECT team_guid from public.team where team_code = 'REACTIVE' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'e8226bdd-28a5-403a-ae85-c1869fb702e2',
+    '513aadd9-ee44-443c-b45f-43f7c76f8382',
+    (SELECT team_guid from public.team where team_code = 'REACTIVE' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'be928882-0336-4a80-973d-c800cb945c06',
+    'be0a2ff8-7a03-451e-ad7a-1d504db887be',
+    (SELECT team_guid from public.team where team_code = 'REACTIVE' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '28aaa821-a6ac-435f-bd00-59763bd6f4f2',
+    '255bba5a-505d-4b91-a9e8-182589ee2054',
+    (SELECT team_guid from public.team where team_code = 'REACTIVE' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '7109d8b7-5154-4935-86d1-305e8a532ead',
+    '900b2f22-5143-4a16-ab58-a1553852c1ac',
+    (SELECT team_guid from public.team where team_code = 'REACTIVE' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'fad3dd51-774b-4079-a6c3-116cadadb1ff',
+    '5223b623-b500-42ca-8d12-4cb870a7fc99',
+    (SELECT team_guid from public.team where team_code = 'RIPM' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'abbc44ff-78dd-41e5-bf87-4941e3b7d28a',
+    '655c39e5-41ce-4e13-836f-e3a8d0466271',
+    (SELECT team_guid from public.team where team_code = 'RIPM' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'cef4a487-2db2-4658-a62e-7990467a0cf7',
+    '49089e00-50df-4686-ad73-d82216432ef9',
+    (SELECT team_guid from public.team where team_code = 'RIPM' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '30cf398c-6714-4920-85a5-76063f8b1a63',
+    '4a2a60e1-7710-4be4-b905-6f7ff4f62fd3',
+    (SELECT team_guid from public.team where team_code = 'RIPM' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+  INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'c4465d85-af74-4d7d-9a15-4c3e0964b452',
+    'cf80b4a1-4d23-4c1d-a8e3-b1b5006126dd',
+    (SELECT team_guid from public.team where team_code = 'PLAN' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'c4f58470-fd05-4c75-b40f-83596425dbfd',
+    'b42da2be-e651-402e-a506-bf70688fea37',
+    (SELECT team_guid from public.team where team_code = 'PLAN' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '931a6336-c4c3-44ea-9811-119a4d70f3cc',
+    '07412e24-b076-47a0-8521-80fd42c2a8d4',
+    (SELECT team_guid from public.team where team_code = 'PLAN' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'a74c026f-7c7c-47ae-bf69-7c541aaf1640',
+    '3da8314c-7c16-4848-8cf8-0fbdf2b9c0ff',
+    (SELECT team_guid from public.team where team_code = 'PLAN' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '9bf8813e-a174-4e28-90d8-ddc8c679196d',
+    '2fd165c8-6178-4ae3-99c0-ce10425577de',
+    (SELECT team_guid from public.team where team_code = 'PLAN' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'f3e6c599-715c-4870-929f-e67c123f165f',
+    '8217f895-3865-4256-af5f-e536577fc9f9',
+    (SELECT team_guid from public.team where team_code = 'PLAN' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '974f76a2-7bb5-46f4-85cc-6dd0e441bf40',
+    '2c7a0705-129d-49e2-abee-66a53a8baaf6',
+    (SELECT team_guid from public.team where team_code = 'PLAN' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'abcf1c51-d977-4d7c-8a22-21a6ab39e518',
+    '7d589cd2-e796-45bb-bb12-62fbd13c9f03',
+    (SELECT team_guid from public.team where team_code = 'PLAN' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'db3a3dd9-2d8d-47de-9a4f-c792bdbc9bd7',
+    '4d6bce0e-34db-4e07-ba2b-387a9775077d',
+    (SELECT team_guid from public.team where team_code = 'PLAN' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '471f75dc-0dca-455a-9705-2dfa271d93ec',
+    'fc649352-5e0d-4ea0-a5a4-3f6f7855451f',
+    (SELECT team_guid from public.team where team_code = 'PLAN' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'aab90bd7-2b4f-4d43-8c1b-326657de8583',
+    'fd427bc5-fddf-47bb-90be-7725ada5d913',
+    (SELECT team_guid from public.team where team_code = 'PLAN' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '914ba2d1-ec43-4509-ac44-96b22ffa1b27',
+    '55f91b30-ab61-4374-8ec8-669bc85fc744',
+    (SELECT team_guid from public.team where team_code = 'PLAN' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+  INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '914ba2d1-ec43-4509-ac44-96b22ffa1b27',
+    '55f91b30-ab61-4374-8ec8-669bc85fc744',
+    (SELECT team_guid from public.team where team_code = 'HI' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'b1a48533-e304-4834-8fe6-79f36cd0732b',
+    'd46b8a99-216a-4b5d-9ba0-0643c254b5ae',
+    (SELECT team_guid from public.team where team_code = 'HI' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '56911779-fa15-4def-b641-d7c4cc646559',
+    'fed45857-9323-496e-84a5-d96b7b032bc3',
+    (SELECT team_guid from public.team where team_code = 'HI' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'e7959748-8287-4d97-bc20-c37a07d20ac2',
+    'a96d4c1b-7f0c-40fc-8406-004a836498d7',
+    (SELECT team_guid from public.team where team_code = 'HI' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'f16cc618-46c6-4347-8bdc-3ba76915e313',
+    'bf896bea-8d0e-4bc1-ace8-726e8d3ada7e',
+    (SELECT team_guid from public.team where team_code = 'HI' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'f2972204-0f3a-4782-81bb-ac19b6542ef1',
+    'd31dff78-997b-4229-b3b2-6c8735567c02',
+    (SELECT team_guid from public.team where team_code = 'HI' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '30d770b9-988f-43df-9b44-2bdac5799313',
+    '66dfe65a-c7c7-459c-8405-d6447d6c261c',
+    (SELECT team_guid from public.team where team_code = 'HI' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '876685ee-cc61-48f4-9c7a-81116a658a49',
+    '2d3e6d63-c987-4ed8-95d4-5b9a82d01a8c',
+    (SELECT team_guid from public.team where team_code = 'HI' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'bd5970a6-3824-4958-bff0-6c0486fa53ce',
+    '541feb53-1c53-48be-b2e1-933c79861e99',
+    (SELECT team_guid from public.team where team_code = 'HI' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+  INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '7f388d4a-bc69-47ea-83c4-cd4809decbc2',
+    '82848fe9-b648-4a80-8701-7759e85fe922',
+    (SELECT team_guid from public.team where team_code = 'OPS' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'b69cc067-3146-43c8-ae9f-c6329b0fe163',
+    'f1384e56-b033-44d2-8514-c8700531b2bf',
+    (SELECT team_guid from public.team where team_code = 'OPS' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '891e5df1-d352-4f08-af50-60207a181391',
+    '3bb5dfa2-c22c-48ac-8fb5-7afc522d8dab',
+    (SELECT team_guid from public.team where team_code = 'OPS' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '82ec0202-aa7a-4b66-807f-bc5265c5784e',
+    '8a87a8b7-6f57-4d2a-a156-60c6bb284887',
+    (SELECT team_guid from public.team where team_code = 'OPS' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '829370c7-b4f1-471b-97dc-64888e21362a',
+    '11a40b42-74ad-4ae2-95ce-52e020f7b426',
+    (SELECT team_guid from public.team where team_code = 'OPS' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '5951f821-849f-45ef-8267-8ccb32bce11a',
+    'c535ef38-b191-4ae6-897f-dcc0d1a1421d',
+    (SELECT team_guid from public.team where team_code = 'OPS' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '63bc2b3a-c8fa-449b-9ef0-bf9e4fbff0f5',
+    '43af02a8-e5b7-434f-b72e-d68d4680b473',
+    (SELECT team_guid from public.team where team_code = 'OPS' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    'a07aba96-2525-473e-bca1-7bf70a0323fc',
+    'd3c1de9b-a041-4d11-ad50-70a4c81f87d0',
+    (SELECT team_guid from public.team where team_code = 'OPS' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '40cdcdba-2510-4686-8534-66a9b0a7b46f',
+    '2f7c7aca-2249-4cb1-b3ac-01a92ccb6b4d',
+    (SELECT team_guid from public.team where team_code = 'OPS' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+INSERT INTO
+  public.officer_team_xref (
+    officer_team_xref_guid,
+    officer_guid,
+    team_guid,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  ) VALUES (
+    '1baa6327-872e-4a39-b769-79a1b606d599',
+    '7ba9a601-dc1e-46f4-a3c2-9a4a002303e8',
+    (SELECT team_guid from public.team where team_code = 'OPS' and active_ind = 'Y'),
+    'Y',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
 
 --------------------------
 -- New Changes above this line
