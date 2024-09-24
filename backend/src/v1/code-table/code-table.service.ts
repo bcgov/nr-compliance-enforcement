@@ -591,21 +591,23 @@ export class CodeTableService {
         );
         return results;
       }
-      case "schedule-sector": {
+      case "schedule-sector-type": {
         const { data } = await get(token, {
-          query: "{scheduleSectorXrefs{scheduleCode sectorCode}}",
+          query: "{scheduleSectorXrefs{scheduleCode sectorCode shortDescription longDescription activeIndicator}}",
         });
-        const results = data.scheduleSectorXrefs.map(({ sectorCode, scheduleCode }) => {
-          const table: ScheduleSectorXref = {
-            schedule: scheduleCode,
-            sector: sectorCode,
-            shortDescription: "",
-            longDescription: "",
-            displayOrder: 1,
-            isActive: true,
-          };
-          return table;
-        });
+        const results = data.scheduleSectorXrefs.map(
+          ({ sectorCode, scheduleCode, shortDescription, longDescription, activeIndicator: isActive }) => {
+            const table: ScheduleSectorXref = {
+              schedule: scheduleCode,
+              sector: sectorCode,
+              shortDescription,
+              longDescription,
+              displayOrder: 1,
+              isActive,
+            };
+            return table;
+          },
+        );
         return results;
       }
       case "discharge": {

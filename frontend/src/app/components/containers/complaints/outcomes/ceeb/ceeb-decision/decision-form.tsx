@@ -69,7 +69,6 @@ export const DecisionForm: FC<props> = ({
 
   //-- select data from redux
   const caseId = useAppSelector(selectCaseId) as UUID;
-  // const scheduleSectorXref = useAppSelector(fetchScheduleSectorTypes);
 
   //-- drop-downs
   const dischargesOptions = useAppSelector(selectDischargeDropdown);
@@ -77,7 +76,6 @@ export const DecisionForm: FC<props> = ({
   const rationaleOptions = useAppSelector(selectRationaleDropdown);
   const sectorsOptions = useAppSelector(selectSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
-  //  const scheduleSectorsOptions = useAppSelector(selectScheduleSectorDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
@@ -193,13 +191,13 @@ export const DecisionForm: FC<props> = ({
     updateModel("actionTakenDate", date);
   };
 
-  const handleScheduleChange = (schedule?: string) => {
-    let temp = 0;
+  const handleScheduleChange = (schedule: string) => {
     let options = scheduleSectorType.filter((item) => item.schedule === schedule).map(item => {
       const record: Option = { label: item.longDescription, value: item.sector };
       return record
-    })
-      ;
+    });
+    const model = { ...data, sector: "", schedule: schedule };
+    applyData(model);
     setSector(options);
   };
 
@@ -375,8 +373,9 @@ export const DecisionForm: FC<props> = ({
               errorMessage={scheduleErrorMessage}
               placeholder="Select "
               onChange={(evt) => {
-                handleScheduleChange(evt?.value);
-                updateModel("schedule", evt?.value);
+                if (evt?.value) {
+                  handleScheduleChange(evt.value);
+                }
               }}
               value={getValue("schedule")}
             />
