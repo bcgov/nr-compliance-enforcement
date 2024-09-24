@@ -661,7 +661,6 @@ export const createComplaint =
       return result;
     } catch (error) {
       ToggleError("Unable to create complaint");
-      //-- add error handling
     }
   };
 
