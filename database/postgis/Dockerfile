@@ -1,5 +1,5 @@
 # RedHat UBI 8 with nodejs 14 
-FROM postgis/postgis:15-master@sha256:c1288c91f8671521bb7c7d3f08a3e2b537d48cdd1725c78bdf8fa34ac81225f4
+FROM postgis/postgis:15-master@sha256:9e03ed5407b7c0e81e0e2191bdb1168334339fd02cbe6fc67ef0a6eb88c0b2c4
 
 # Enable pgcrypto extension on startup 
 RUN sed -i '/EXISTS postgis_tiger_geocoder;*/a CREATE EXTENSION IF NOT EXISTS pgcrypto;' \ 

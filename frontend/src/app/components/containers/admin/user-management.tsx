@@ -198,17 +198,15 @@ export const UserManagement: FC = () => {
           const officerId = officer?.value ? officer.value : "";
           const officeId = office?.value ? office.value : "";
           dispatch(assignOfficerToOffice(officerId, officeId));
-          const mapRoles = selectedRoles?.map((role) => {
-            return { name: role.value };
-          });
-          res = await updateTeamRole(selectedUserIdir, officerGuid, selectedAgency?.value, null, mapRoles);
+          res = await updateTeamRole(selectedUserIdir, officerGuid, selectedAgency?.value, null, [
+            { name: Roles.COS_OFFICER },
+          ]);
           break;
         }
       }
       if (res && res.team && res.roles) {
         ToggleSuccess("Success");
       } else {
-        debugger;
         ToggleError("Unable to update");
       }
     }
@@ -326,42 +324,39 @@ export const UserManagement: FC = () => {
                 />
               </div>
               <br />
+              <div>
+                Select Role
+                <ValidationMultiSelect
+                  className="comp-details-input"
+                  options={CEEB_ROLE_OPTIONS}
+                  placeholder="Select"
+                  id="roles-select-id"
+                  classNamePrefix="comp-select"
+                  onChange={handleRoleChange}
+                  errMsg={""}
+                  values={selectedRoles}
+                />
+              </div>
             </>
           )}
           {selectedAgency?.value === "COS" && (
-            <>
-              <div>
-                Select Office
-                <CompSelect
-                  id="species-select-id"
-                  classNamePrefix="comp-select"
-                  onChange={(evt) => handleOfficeChange(evt)}
-                  classNames={{
-                    menu: () => "top-layer-select",
-                  }}
-                  options={officeAssignments}
-                  placeholder="Select"
-                  enableValidation={true}
-                  value={office}
-                  errorMessage={officeError}
-                />
-              </div>
-              <br />
-            </>
+            <div>
+              Select Office
+              <CompSelect
+                id="species-select-id"
+                classNamePrefix="comp-select"
+                onChange={(evt) => handleOfficeChange(evt)}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={officeAssignments}
+                placeholder="Select"
+                enableValidation={true}
+                value={office}
+                errorMessage={officeError}
+              />
+            </div>
           )}
-          <div>
-            Select Role
-            <ValidationMultiSelect
-              className="comp-details-input"
-              options={CEEB_ROLE_OPTIONS}
-              placeholder="Select"
-              id="roles-select-id"
-              classNamePrefix="comp-select"
-              onChange={handleRoleChange}
-              errMsg={""}
-              values={selectedRoles}
-            />
-          </div>
           <br />
           <div>
             <Button
