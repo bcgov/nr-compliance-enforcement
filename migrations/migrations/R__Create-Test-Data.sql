@@ -5375,25 +5375,25 @@ values
     ) on conflict do nothing;
 
 INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('COS','BC_WLD_FD',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+	VALUES ('COS','BC_WLD_FD',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP) on conflict do nothing;
 INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('COS','DRCT_CNTCT',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+	VALUES ('COS','DRCT_CNTCT',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP) on conflict do nothing;
 INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('COS','OBSRVD_FLD',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+	VALUES ('COS','OBSRVD_FLD',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP) on conflict do nothing;
 INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('COS','RAPP',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+	VALUES ('COS','RAPP',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP) on conflict do nothing;
 INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('COS','RFRL',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+	VALUES ('COS','RFRL',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP) on conflict do nothing;
 INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('EPO','DGIR_FWD',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+	VALUES ('EPO','DGIR_FWD',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP) on conflict do nothing;
 INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('EPO','DRCT_CNTCT',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+	VALUES ('EPO','DRCT_CNTCT',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP) on conflict do nothing;
 INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('EPO','MIN_OFFICE',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+	VALUES ('EPO','MIN_OFFICE',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP) on conflict do nothing;
 INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('EPO','RAPP',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+	VALUES ('EPO','RAPP',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP) on conflict do nothing;
 INSERT INTO public.comp_mthd_recv_cd_agcy_cd_xref (agency_code,complaint_method_received_code,active_ind,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp)
-	VALUES ('EPO','RFRL',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP);
+	VALUES ('EPO','RFRL',true,'FLYWAY',CURRENT_TIMESTAMP,'FLYWAY',CURRENT_TIMESTAMP) on conflict do nothing;
 
 
 --------------------------
@@ -5882,26 +5882,6 @@ INSERT INTO
   )
 VALUES
   (
-    '','MPOPOVIC','FLYWAY',
-    CURRENT_TIMESTAMP,
-    'FLYWAY',
-    CURRENT_TIMESTAMP, '','',NULL
-  ) ON CONFLICT DO NOTHING;
-
-INSERT INTO
-  public.officer (
-    officer_guid,
-    user_id,
-    create_user_id,
-    create_utc_timestamp,
-    update_user_id,
-    update_utc_timestamp,
-    person_guid,
-    auth_user_guid,
-    office_guid
-  )
-VALUES
-  (
     '5223b623-b500-42ca-8d12-4cb870a7fc99','MLAPHAM','FLYWAY',
     CURRENT_TIMESTAMP,
     'FLYWAY',
@@ -6186,26 +6166,6 @@ VALUES
     CURRENT_TIMESTAMP,
     'FLYWAY',
     CURRENT_TIMESTAMP, '4b909d1b-43a8-4f4a-95d5-3dc8e5c5bb26','276ddb03437649c1a3f43689cf254840',NULL
-  ) ON CONFLICT DO NOTHING;
-
-INSERT INTO
-  public.officer (
-    officer_guid,
-    user_id,
-    create_user_id,
-    create_utc_timestamp,
-    update_user_id,
-    update_utc_timestamp,
-    person_guid,
-    auth_user_guid,
-    office_guid
-  )
-VALUES
-  (
-    '','SSAMJI','FLYWAY',
-    CURRENT_TIMESTAMP,
-    'FLYWAY',
-    CURRENT_TIMESTAMP, '','',NULL
   ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
@@ -7345,7 +7305,7 @@ INSERT INTO
     'FLYWAY',
     CURRENT_TIMESTAMP
   ) ON CONFLICT DO NOTHING;
-  
+
 INSERT INTO
   public.officer_team_xref (
     officer_team_xref_guid,
