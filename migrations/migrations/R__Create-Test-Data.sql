@@ -9509,7 +9509,7 @@ INSERT INTO
 SELECT
   'ENBL_OFF',
   'EPO',
-  'Y',
+  'N',
   user,
   now(),
   user,
@@ -9529,7 +9529,7 @@ INSERT INTO
 SELECT
   'ENBL_OFF',
   'COS',
-  'N',
+  'Y',
   user,
   now(),
   user,
@@ -9549,7 +9549,7 @@ INSERT INTO
 SELECT
   'ENBL_OFF',
   'PARKS',
-  'N',
+  'Y',
   user,
   now(),
   user,
