@@ -256,6 +256,10 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
         return null;
       }),
     ),
+    forMember(
+      (destination) => destination.isPrivacyRequested,
+      mapFrom((source) => source.is_privacy_requested),
+    ),
   );
 };
 
@@ -702,6 +706,10 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
         return null;
       }),
     ),
+    forMember(
+      (destination) => destination.isPrivacyRequested,
+      mapFrom((source) => source.complaint_identifier.is_privacy_requested),
+    ),
   );
 };
 
@@ -921,6 +929,10 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
         return null;
       }),
     ),
+    forMember(
+      (destination) => destination.isPrivacyRequested,
+      mapFrom((source) => source.complaint_identifier.is_privacy_requested),
+    ),
   );
 };
 export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
@@ -1119,6 +1131,10 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
 
         return complaint_method_received_code?.complaint_method_received_code || null;
       }),
+    ),
+    forMember(
+      (destination) => destination.isPrivacyRequested,
+      mapFrom((source) => source.complaint_identifier.is_privacy_requested),
     ),
   );
 };
@@ -1665,6 +1681,18 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
         }
 
         return "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.privacyRequested,
+      mapFrom((source) => {
+        if (source.complaint_identifier.is_privacy_requested === "Y") {
+          return "Yes";
+        } else if (source.complaint_identifier.is_privacy_requested === "N") {
+          return "No";
+        } else {
+          return null;
+        }
       }),
     ),
 
