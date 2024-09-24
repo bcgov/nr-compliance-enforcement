@@ -10,5 +10,5 @@ export interface ComplaintCallerInformation {
   alternatePhone?: string;
   ownedByAgencyCode: Agency;
   reportedByCode?: ReportedBy;
-  privacyRequest: string;
+  isPrivacyRequested: string;
 }

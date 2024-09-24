@@ -121,7 +121,7 @@ export const ComplaintDetailsEdit: FC = () => {
     email,
     reportedByCode,
     ownedByAgencyCode,
-    privacyRequest,
+    isPrivacyRequested,
   } = useAppSelector(selectComplaintCallerInformation);
 
   // Get the code table lists to populate the Selects
@@ -1172,7 +1172,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   <div className="comp-details-edit-input">
                     <Select
                       options={privacyDropdown}
-                      defaultValue={privacyDropdown.find((item) => item.value === privacyRequest)}
+                      defaultValue={privacyDropdown.find((item) => item.value === isPrivacyRequested)}
                       placeholder="Select"
                       id="caller-privacy-id"
                       classNamePrefix="comp-select"

@@ -7,14 +7,14 @@ import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
 import { isFeatureActive } from "../../../../store/reducers/app";
 
 export const CallerInformation: FC = () => {
-  const { name, primaryPhone, secondaryPhone, alternatePhone, address, email, reportedByCode, privacyRequest } =
+  const { name, primaryPhone, secondaryPhone, alternatePhone, address, email, reportedByCode, isPrivacyRequested } =
     useAppSelector(selectComplaintCallerInformation);
   const enablePrivacyFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.PRIV_REQ));
 
   let privacy = "";
-  if (privacyRequest === "Y") {
+  if (isPrivacyRequested === "Y") {
     privacy = "Yes";
-  } else if (privacyRequest === "N") {
+  } else if (isPrivacyRequested === "N") {
     privacy = "No";
   }
 
