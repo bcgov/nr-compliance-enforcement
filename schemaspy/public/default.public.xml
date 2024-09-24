@@ -204,11 +204,11 @@
             <parent column="geo_organization_unit_code" foreignKey="FK_complaint_geoorgutnd" implied="false" onDeleteCascade="false" schema="public" table="geo_organization_unit_code"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="location_geometry_point" nullable="true" remarks="The closest approximation to where the incident occurred. Stored as a geometric point using the EPSG:3005 Projected Coordinate System (BC Albers)" size="2147483647" type="geometry" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="false" digits="0" id="22" name="privacy_request_ind" nullable="false" remarks="flag to represent that the caller has asked for special care when handling their personal information" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="webeoc_identifier" nullable="true" remarks="Unique Identifier from the webEOC source system to identify a complaint update.   This is required as the natural key is not available in all webEOC APIs" size="20" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="24" name="comp_mthd_recv_cd_agcy_cd_xref_guid" nullable="true" remarks="Methods in which the complaint was received.  Examples include: DGIR forward, Direct email or phone call,Minister's office,RAPP ,Referral" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="webeoc_identifier" nullable="true" remarks="Unique Identifier from the webEOC source system to identify a complaint update.   This is required as the natural key is not available in all webEOC APIs" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="comp_mthd_recv_cd_agcy_cd_xref_guid" nullable="true" remarks="Methods in which the complaint was received.  Examples include: DGIR forward, Direct email or phone call,Minister's office,RAPP ,Referral" size="2147483647" type="uuid" typeCode="1111">
             <parent column="comp_mthd_recv_cd_agcy_cd_xref_guid" foreignKey="complaint_comp_mthd_recv_cd_agcy_cd_xref_fk" implied="false" onDeleteCascade="false" schema="public" table="comp_mthd_recv_cd_agcy_cd_xref"/>
          </column>
+         <column autoUpdated="false" defaultValue="'U'::bpchar" digits="0" id="24" name="is_privacy_requested" nullable="true" remarks="flag to represent that the caller has asked for special care when handling their personal information" size="1" type="bpchar" typeCode="1"/>
          <primaryKey column="complaint_identifier" sequenceNumberInPK="1"/>
          <index name="PK_complaint" unique="true">
             <column ascending="true" name="complaint_identifier"/>
@@ -216,6 +216,7 @@
          <index name="IDX_adbfa452bdecec83d2daf17d18" unique="false">
             <column ascending="true" name="location_geometry_point"/>
          </index>
+         <checkConstraint constraint="((is_privacy_requested = ANY (ARRAY['Y'::bpchar, 'N'::bpchar, 'U'::bpchar])))" name="complaint_is_privacy_requested"/>
       </table>
       <table name="complaint_h" remarks="History table for complaint table" schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_complaint_guid" nullable="false" remarks="System generated unique key for complaint history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>

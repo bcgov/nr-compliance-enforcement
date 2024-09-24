@@ -826,6 +826,11 @@
                                         <td>action_taken_check</td>
                                         <td>(((complaint_identifier IS NOT NULL) OR (complaint_update_guid IS NOT NULL)))</td>
                                     </tr>
+                                    <tr>
+                                        <td><a href='tables/complaint.html'>complaint</a></td>
+                                        <td>complaint_is_privacy_requested</td>
+                                        <td>((is_privacy_requested &#61; ANY (ARRAY[&#39;Y&#39;::bpchar, &#39;N&#39;::bpchar, &#39;U&#39;::bpchar])))</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

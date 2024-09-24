@@ -551,23 +551,6 @@
                                     <td><p>The closest approximation to where the incident occurred. Stored as a geometric point using the EPSG:3005 Projected Coordinate System (BC Albers)</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="privacy_request_ind">privacy_request_ind</span></td>
-                                    <td>bool</td>
-                                    <td>1</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>false</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>flag to represent that the caller has asked for special care when handling their personal information</p></td>
-                                </tr>
-                                <tr>
                                     <td><span id="webeoc_identifier">webeoc_identifier</span></td>
                                     <td>varchar</td>
                                     <td>20</td>
@@ -605,6 +588,23 @@
                                         </table>
                                     </td>
                                     <td><p>Methods in which the complaint was received.  Examples include: DGIR forward, Direct email or phone call,Minister&rsquo;s office,RAPP ,Referral</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="is_privacy_requested">is_privacy_requested</span></td>
+                                    <td>bpchar</td>
+                                    <td>1</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>&#39;U&#39;::bpchar</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>flag to represent that the caller has asked for special care when handling their personal information</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -651,6 +651,38 @@
                                 </tbody>
                             </table>
                         </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 class="box-title">Check Constraints</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="check_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Constraint</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>complaint_is_privacy_requested</td>
+                                    <td>((is_privacy_requested &#61; ANY (ARRAY[&#39;Y&#39;::bpchar, &#39;N&#39;::bpchar, &#39;U&#39;::bpchar])))</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="box box-primary">
                         <div class="box-header with-border">
