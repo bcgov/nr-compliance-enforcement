@@ -152,7 +152,7 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
     _webeoc_cos_area_community := complaint_data ->> 'cos_area_community';
     _webeoc_cos_reffered_by_lst := complaint_data ->> 'cos_reffered_by_lst';
     _cos_reffered_by_txt := left(complaint_data ->> '_cos_reffered_by_txt',120);
-    _webeoc_identifier := complaint_data ->> 'webeoc_identifier';
+
     SELECT *
     FROM   PUBLIC.insert_and_return_code( _webeoc_cos_reffered_by_lst, 'reprtdbycd' )
     INTO   _cos_reffered_by_lst;
