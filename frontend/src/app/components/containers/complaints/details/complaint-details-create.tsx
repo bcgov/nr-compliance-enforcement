@@ -79,17 +79,15 @@ export const CreateComplaint: FC = () => {
 
   const activeTab = useAppSelector(selectActiveTab);
 
-  const activeTab = useAppSelector(selectActiveTab);
-
   const handleSlideCountChange = (count: number) => {
     setComplaintAttachmentCount(count);
   };
 
   let assignableOfficers: Option[] = officerList
     ? officerList.map((officer: Officer) => ({
-        value: officer.person_guid.person_guid,
-        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-      }))
+      value: officer.person_guid.person_guid,
+      label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+    }))
     : [];
 
   const yesNoOptions: Option[] = [
