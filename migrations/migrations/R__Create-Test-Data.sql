@@ -4601,8 +4601,6 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
-INSERT INTO
-  now () ON CONFLICT DO NOTHING;
     
 INSERT INTO
   feature_agency_xref (

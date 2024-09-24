@@ -35,7 +35,6 @@ import { Schedule } from "../app/code-tables/schedule";
 import { DecisionType } from "../app/code-tables/decision-type";
 import { TeamType } from "../app/code-tables/team";
 import { ComplaintMethodReceivedType } from "../app/code-tables/complaint-method-received-type";
-import { ScheduleSector } from "../app/code-tables/schedule-sector";
 import { ScheduleSectorXref } from "../app/code-tables/schedule-sector-xref";
 
 export interface CodeTableState {

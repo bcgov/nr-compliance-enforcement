@@ -28,7 +28,6 @@ import { getComplaintById, selectComplaintCallerInformation } from "../../../../
 import { ToggleError } from "../../../../../../common/toast";
 
 import COMPLAINT_TYPES from "../../../../../../types/app/complaint-types";
-import { fetchScheduleSectorTypes } from "../../../../../../store/reducers/code-table-thunks";
 
 type props = {
   officerAssigned: string | null;
