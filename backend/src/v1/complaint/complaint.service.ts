@@ -1003,6 +1003,11 @@ export class ComplaintService {
         });
       }
 
+      //-- return Waste and Pestivide complaints for CEEB users
+      if (hasCEEBRole && complaintType === "ERS") {
+        unMappedBuilder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+      }
+
       //-- filter locations without coordinates
       unMappedBuilder.andWhere("ST_X(complaint.location_geometry_point) = 0");
       unMappedBuilder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
