@@ -34,7 +34,7 @@
     "@types/warning": "^3.0.0",
     "@typescript-eslint/parser": "5.56.0",
     "assert": "^2.1.0",
-    "axios": "^1.6.0",
+    "axios": "^1.7.0",
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.10.5",
     "chart.js": "^4.3.0",

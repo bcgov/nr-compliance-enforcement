@@ -60,7 +60,7 @@
     "@nestjs/testing": "^10.4.4",
     "@nestjs/typeorm": "^10.0.2",
     "automapper": "^1.0.0",
-    "axios": "^1.6.0",
+    "axios": "^1.7.4",
     "cron": "^3.1.7",
     "date-fns": "^3.6.0",
     "date-fns-tz": "^3.1.3",
