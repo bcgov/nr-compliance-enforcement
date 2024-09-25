@@ -1356,4 +1356,13 @@ export const selectTrapEquipment = (state: RootState): Array<string> => {
 
   return data;
 };
+
+export const selectPrivacyDropdown = (): Array<Option> => {
+  const data: Option[] = [
+    { value: "Y", label: "Yes" },
+    { value: "N", label: "No" },
+  ];
+  return data;
+};
+
 export default codeTableSlice.reducer;

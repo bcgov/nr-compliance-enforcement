@@ -165,4 +165,11 @@ export class UpdateComplaintDto {
     description: "Method in which the complaint was created",
   })
   comp_mthd_recv_cd_agcy_cd_xref: CompMthdRecvCdAgcyCdXref;
+
+  @ApiProperty({
+    example: "true",
+    description:
+      "flag to represent that the caller has asked for special care when handling their personal information",
+  })
+  is_privacy_requested: string;
 }
