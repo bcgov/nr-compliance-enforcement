@@ -5,6 +5,7 @@ import { AUTH_TOKEN } from "../service/user-service";
 import { ApiRequestParameters } from "../types/app/api-request-parameters";
 import { toggleLoading, toggleNotification } from "../store/reducers/app";
 import { store } from "../../app/store/store";
+import { ToggleError } from "./toast";
 
 const STATUS_CODES = {
   Ok: 200,
@@ -44,6 +45,20 @@ axios.interceptors.response.use(
       store.dispatch(toggleLoading(false));
     }
     return Promise.reject(error);
+  },
+);
+
+axios.interceptors.response.use(
+  (response) => {
+    // Successful response, just return the data
+    return response;
+  },
+  (error: AxiosError) => {
+    const { response } = error;
+
+    if (response && response.status === STATUS_CODES.Forbiden) {
+      ToggleError("User is not authorized to perform this action");
+    }
   },
 );
 

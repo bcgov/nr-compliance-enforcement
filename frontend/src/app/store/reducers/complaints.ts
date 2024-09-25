@@ -661,7 +661,6 @@ export const createComplaint =
       return result;
     } catch (error) {
       ToggleError("Unable to create complaint");
-      //-- add error handling
     }
   };
 
@@ -1070,7 +1069,7 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
   let results = {} as ComplaintCallerInformation;
 
   if (complaint) {
-    const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy }: any = complaint;
+    const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy, isPrivacyRequested }: any = complaint;
     const reportedByCode = getReportedByReportedByCode(reportedBy, reportedByCodes);
     const ownedByAgencyCode = getAgencyByAgencyCode(ownedBy, agencyCodes);
 
@@ -1082,6 +1081,7 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
       alternatePhone: phone3,
       address,
       email,
+      isPrivacyRequested,
     };
 
     if (reportedByCode) {
