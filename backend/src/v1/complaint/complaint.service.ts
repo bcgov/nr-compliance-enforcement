@@ -938,7 +938,11 @@ export class ComplaintService {
     }
   };
 
-  mapSearch = async (complaintType: COMPLAINT_TYPE, model: ComplaintSearchParameters): Promise<MapSearchResults> => {
+  mapSearch = async (
+    complaintType: COMPLAINT_TYPE,
+    model: ComplaintSearchParameters,
+    hasCEEBRole: boolean,
+  ): Promise<MapSearchResults> => {
     const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
 
     try {
@@ -965,6 +969,11 @@ export class ComplaintService {
         complaintBuilder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", {
           agency: agency.agency_code,
         });
+      }
+
+      //-- return Waste and Pestivide complaints for CEEB users
+      if (hasCEEBRole && complaintType === "ERS") {
+        complaintBuilder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
       }
 
       //-- filter locations without coordinates
