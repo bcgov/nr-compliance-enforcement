@@ -74,6 +74,7 @@ import { getUserAgency } from "../../../../service/user-service";
 import { AgencyType } from "../../../../types/app/agency-types";
 import { CeebOutcomeReport } from "../outcomes/ceeb/ceeb-outcome-report";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
+import { FeatureFlag } from "../../../common/feature-flag";
 
 export type ComplaintParams = {
   id: string;
@@ -1094,19 +1095,21 @@ export const ComplaintDetailsEdit: FC = () => {
                   />
                 </div>
               </div>
-              <div
-                className="comp-details-form-row"
-                id="office-pair-id"
-              >
-                <label>Office</label>
-                <input
-                  type="text"
-                  id="office-edit-readonly-id"
-                  className="comp-form-control"
-                  disabled
-                  defaultValue={office}
-                />
-              </div>
+              <FeatureFlag feature={FEATURE_TYPES.ENABLE_OFFICE}>
+                <div
+                  className="comp-details-form-row"
+                  id="office-pair-id"
+                >
+                  <label>Office</label>
+                  <input
+                    type="text"
+                    id="office-edit-readonly-id"
+                    className="comp-form-control"
+                    disabled
+                    defaultValue={office}
+                  />
+                </div>
+              </FeatureFlag>
               <div
                 className="comp-details-form-row"
                 id="zone-pair-id"
