@@ -109,7 +109,6 @@ export const DecisionForm: FC<props> = ({
     if (officerAssigned) {
       applyData({ ...data, assignedTo: officerAssigned });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [officerAssigned]);
 
   //-- update the decision state by property
@@ -328,12 +327,8 @@ export const DecisionForm: FC<props> = ({
       _isValid = false;
     }
 
-    if (
-      data.actionTaken === CASE_ACTION_CODE.RESPREC &&
-      data.inspectionNumber &&
-      !data.inspectionNumber.match(/^\d{1,10}$/)
-    ) {
-      setInspectionNumberErrorMessage("Invalid format. Please only include numbers.");
+    if (data.actionTaken === CASE_ACTION_CODE.RESPREC && !data.inspectionNumber) {
+      setInspectionNumberErrorMessage("Required");
       _isValid = false;
     }
 
@@ -469,7 +464,7 @@ export const DecisionForm: FC<props> = ({
                 inputClass="comp-form-control"
                 value={data?.inspectionNumber}
                 error={inspectionNumberErrorMessage}
-                maxLength={10}
+                maxLength={5}
                 onChange={(evt: any) => {
                   const {
                     target: { value },
