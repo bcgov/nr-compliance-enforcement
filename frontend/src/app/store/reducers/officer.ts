@@ -218,11 +218,12 @@ export const searchOfficers =
       results = items.filter((officer) => {
         const {
           person_guid: { first_name: firstName, last_name: lastName },
-          office_guid: {
-            cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
-          },
+          office_guid,
           user_roles,
         } = officer;
+
+        // Safely handle office_guid and cos_geo_org_unit
+        const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? undefined; // Will be undefined if cos_geo_org_unit is null or undefined
 
         const nameMatch =
           firstName.toLocaleLowerCase().includes(searchInput) || lastName.toLocaleLowerCase().includes(searchInput);
@@ -249,11 +250,11 @@ export const selectOfficersDropdown =
 
     const results = officers
       ?.filter((officer) => {
-        const {
-          office_guid: {
-            cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
-          },
-        } = officer;
+        const { office_guid } = officer;
+
+        // Safely handle office_guid and cos_geo_org_unit
+        const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? undefined; // Will be undefined if cos_geo_org_unit is null or undefined
+
         return includeAdminOffice ? true : !fromAdminOffice;
       })
       .map((item) => {
@@ -298,12 +299,10 @@ const mapAgencyToRole = (agency: string): string => {
 const filterOfficerByAgency = (agency: string, officers: Officer[]) => {
   const role = mapAgencyToRole(agency);
   const result = officers.filter((officer) => {
-    const {
-      office_guid: {
-        cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
-      },
-      user_roles,
-    } = officer;
+    const { office_guid, user_roles } = officer;
+
+    // Safely handle office_guid and cos_geo_org_unit
+    const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? undefined; // Will be undefined if cos_geo_org_unit is null or undefined
 
     const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
     const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
