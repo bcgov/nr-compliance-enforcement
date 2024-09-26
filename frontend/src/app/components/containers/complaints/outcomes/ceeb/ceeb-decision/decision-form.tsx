@@ -120,8 +120,8 @@ export const DecisionForm: FC<props> = ({
         const record: Option = { label: item.longDescription, value: item.sector };
         return record
       });
-      const model = { ...data, sector: sector, schedule: schedule };
-      setData(model);
+      // const model = { ...data, sector: sector, schedule: schedule };
+      // setData(model);
       setSectorList(options);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
