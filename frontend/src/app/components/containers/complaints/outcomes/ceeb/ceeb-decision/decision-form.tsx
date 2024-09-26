@@ -7,6 +7,8 @@ import {
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
+  selectScheduleSectorDropdown,
+  selectScheduleSectorXref,
 } from "../../../../../../store/reducers/code-table-selectors";
 import { selectLeadAgencyDropdown } from "../../../../../../store/reducers/code-table";
 import { Decision } from "../../../../../../types/app/case-files/ceeb/decision/decision";
@@ -77,6 +79,7 @@ export const DecisionForm: FC<props> = ({
   const leadAgencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officerOptions = useAppSelector(selectOfficersByAgencyDropdown(ownedByAgencyCode?.agency));
+  const scheduleSectorType = useAppSelector(selectScheduleSectorXref);
 
   //-- error messgaes
   const [scheduleErrorMessage, setScheduleErrorMessage] = useState("");
@@ -104,6 +107,8 @@ export const DecisionForm: FC<props> = ({
     actionTaken,
     actionTakenDate,
   });
+
+  const [_sector, setSector] = useState<Array<Option>>();
 
   useEffect(() => {
     if (officerAssigned) {
@@ -183,6 +188,16 @@ export const DecisionForm: FC<props> = ({
 
   const handleDateChange = (date?: Date) => {
     updateModel("actionTakenDate", date);
+  };
+
+  const handleScheduleChange = (schedule: string) => {
+    let options = scheduleSectorType.filter((item) => item.schedule === schedule).map(item => {
+      const record: Option = { label: item.longDescription, value: item.sector };
+      return record
+    });
+    const model = { ...data, sector: "", schedule: schedule };
+    applyData(model);
+    setSector(options);
   };
 
   const handleActionTakenChange = (value: string) => {
@@ -361,7 +376,9 @@ export const DecisionForm: FC<props> = ({
               errorMessage={scheduleErrorMessage}
               placeholder="Select "
               onChange={(evt) => {
-                updateModel("schedule", evt?.value);
+                if (evt?.value) {
+                  handleScheduleChange(evt.value);
+                }
               }}
               value={getValue("schedule")}
             />
@@ -377,7 +394,7 @@ export const DecisionForm: FC<props> = ({
               id="outcome-decision-sector-category"
               className="comp-details-input"
               classNamePrefix="comp-select"
-              options={sectorsOptions}
+              options={_sector}
               enableValidation={true}
               errorMessage={sectorErrorMessage}
               placeholder="Select "
