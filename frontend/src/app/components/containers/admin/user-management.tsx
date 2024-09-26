@@ -18,7 +18,6 @@ import { generateApiParameters, get, patch } from "../../../common/api";
 import config from "../../../../config";
 import { Officer } from "../../../types/person/person";
 import { UUID } from "crypto";
-import Roles from "../../../types/app/roles";
 import { ValidationMultiSelect } from "../../../common/validation-multiselect";
 
 export const UserManagement: FC = () => {
@@ -57,6 +56,7 @@ export const UserManagement: FC = () => {
       });
       setOffices(options);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   useEffect(() => {
@@ -95,6 +95,7 @@ export const UserManagement: FC = () => {
         }
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [officerGuid, selectedUserIdir]);
 
   const mapRolesDropdown = (userRoles: any): Option[] => {
@@ -237,7 +238,7 @@ export const UserManagement: FC = () => {
               mapRoles,
             );
 
-            if (res && res.team && res.roles) {
+            if (res?.team && res?.roles) {
               ToggleSuccess("Officer updated successfully");
             } else {
               ToggleError("Unable to update");
@@ -257,8 +258,8 @@ export const UserManagement: FC = () => {
             return { name: role.value };
           });
           let res = await updateTeamRole(selectedUserIdir, officerGuid, selectedAgency?.value, null, mapRoles);
-          console.log(res);
-          if (res && res.roles) {
+
+          if (res?.roles) {
             ToggleSuccess("Officer updated successfully");
           } else {
             ToggleError("Unable to update");
