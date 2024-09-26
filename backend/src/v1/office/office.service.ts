@@ -73,7 +73,7 @@ export class OfficeService {
       .select("office.office_guid")
       .leftJoin("office.cos_geo_org_unit", "organization")
       .leftJoin("office.agency_code", "agency")
-      .addSelect(["organization.office_location_name", "agency.short_description"]);
+      .addSelect(["organization.office_location_name", "agency.short_description", "agency.agency_code"]);
 
     const data = await queryBuilder.getMany();
 
@@ -81,9 +81,9 @@ export class OfficeService {
       const {
         office_guid: id,
         cos_geo_org_unit: { office_location_name: name },
-        agency_code: { short_description: description },
+        agency_code: { short_description: description, agency_code: code },
       } = item;
-      const record: OfficeAssignmentDto = { id, name, agency: description };
+      const record: OfficeAssignmentDto = { id, name, agency: description, code };
       return record;
     });
 
