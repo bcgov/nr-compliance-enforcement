@@ -1,0 +1,66 @@
+name: Handle PR Merge and Version Update
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - release/*
+
+jobs:
+  handle_pr:
+    name: Handle Merged PR
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.pull_request.merged == true }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Latest Tag
+        id: get_latest_tag
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0)
+          echo "::set-output name=latest_tag::$latest_tag"
+          echo "Latest tag: $latest_tag"
+
+      - name: Increment Patch Version
+        id: increment_version
+        run: |
+          latest_tag=${{ steps.get_latest_tag.outputs.latest_tag }}
+          version_array=(${latest_tag//./ })
+          patch_version=${version_array[2]}
+          new_patch_version=$((patch_version + 1))
+          new_version="${version_array[0]}.${version_array[1]}.${new_patch_version}"
+          echo "::set-output name=new_version::$new_version"
+          echo "New version: $new_version"
+
+      - name: Update package.json versions
+        run: |
+          # Update package.json in the frontend directory
+          cd frontend
+          npm version ${{ steps.increment_version.outputs.new_version }} --no-git-tag-version
+          echo "Frontend package.json version updated to ${{ steps.increment_version.outputs.new_version }}"
+
+          # Update package.json in the backend directory
+          cd ../backend
+          npm version ${{ steps.increment_version.outputs.new_version }} --no-git-tag-version
+          echo "Backend package.json version updated to ${{ steps.increment_version.outputs.new_version }}"
+
+          # Update package.json in the webeoc directory
+          cd ../webeoc
+          npm version ${{ steps.increment_version.outputs.new_version }} --no-git-tag-version
+          echo "WebEOC package.json version updated to ${{ steps.increment_version.outputs.new_version }}"
+
+          # Return to the original directory
+          cd ..
+
+      - name: Commit and Push Version Update
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add frontend/package.json backend/package.json webeoc/package.json
+          git commit -m "chore: bump version to ${{ steps.increment_version.outputs.new_version }}"
+          git push origin HEAD:refs/heads/${{ github.head_ref }}
+
+      - name: Create Git Tag
+        run: |
+          git tag "v${{ steps.increment_version.outputs.new_version }}"
+          git push origin "v${{ steps.increment_version.outputs.new_version }}"

@@ -29,10 +29,13 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
-      # Get PR number for squash merges to main
+      - uses: actions/checkout@v4
+      # Get PR number for squash merges to release
       - name: PR Number
         id: pr
-        uses: bcgov-nr/action-get-pr@v0.0.1
+        uses: ./.github/actions/get-pr-number
+      - name: Set PR Output
+        run: echo "pr=${{ steps.pr.outputs.pr }}" >> $GITHUB_OUTPUT
 
   # https://github.com/bcgov/quickstart-openshift-helpers
   deploy-hotfix:
