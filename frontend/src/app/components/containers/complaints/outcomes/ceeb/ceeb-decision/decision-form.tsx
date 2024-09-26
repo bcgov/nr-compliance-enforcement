@@ -7,7 +7,6 @@ import {
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
-  selectScheduleSectorDropdown,
   selectScheduleSectorXref,
 } from "../../../../../../store/reducers/code-table-selectors";
 import { selectLeadAgencyDropdown } from "../../../../../../store/reducers/code-table";
@@ -95,7 +94,7 @@ export const DecisionForm: FC<props> = ({
 
   //-- component data
   // eslint-disable-line no-console, max-len
-  const [data, applyData] = useState<Decision>({
+  const [data, setData] = useState<Decision>({
     schedule,
     sector,
     discharge,
@@ -112,7 +111,7 @@ export const DecisionForm: FC<props> = ({
 
   useEffect(() => {
     if (officerAssigned) {
-      applyData({ ...data, assignedTo: officerAssigned });
+      setData({ ...data, assignedTo: officerAssigned });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [officerAssigned]);
@@ -120,7 +119,7 @@ export const DecisionForm: FC<props> = ({
   //-- update the decision state by property
   const updateModel = (property: string, value: string | Date | undefined) => {
     const model = { ...data, [property]: value };
-    applyData(model);
+    setData(model);
   };
 
   const getValue = (property: string): Option | undefined | null => {
@@ -196,7 +195,7 @@ export const DecisionForm: FC<props> = ({
       return record
     });
     const model = { ...data, sector: "", schedule: schedule };
-    applyData(model);
+    setData(model);
     setSector(options);
   };
 
@@ -204,7 +203,7 @@ export const DecisionForm: FC<props> = ({
     //-- if the action taken changes make sure to clear the
     //-- lead agency and inspection number
     const update = { ...data, actionTaken: value, leadAgency: undefined, inspectionNumber: undefined };
-    applyData(update);
+    setData(update);
   };
 
   const handleCancelButtonClick = () => {
@@ -217,7 +216,7 @@ export const DecisionForm: FC<props> = ({
           description: "Your changes will be lost.",
           cancelConfirmed: () => {
             //-- reset the form to its original state
-            applyData({
+            setData({
               schedule,
               sector,
               discharge,
