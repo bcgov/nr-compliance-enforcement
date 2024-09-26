@@ -1,130 +1,66 @@
-name: PR Bump Version Workflow
+name: Handle PR Merge and Version Update
 
 on:
   pull_request:
-    types: [opened]
+    types: [closed]
     branches:
-      - release/**
-
-concurrency:
-  # Cancel in progress for PR open and close
-  group: ${{ github.workflow }}-${{ github.event.number }}
-  cancel-in-progress: true
+      - release/*
 
 jobs:
-  bump_version:
-    name: Bump Version for the Release Branch
+  handle_pr:
+    name: Handle Merged PR
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        package: [backend, frontend, webeoc]
+    if: ${{ github.event.pull_request.merged == true }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
 
-      - name: Install jq (JSON parser)
-        run: sudo apt-get install -y jq
-
-      # Pull the latest changes from the release branch before version bump
-      - name: Pull latest changes with rebase
-        run: git pull --rebase origin ${{ github.base_ref }}
-
-      # Get the latest global tag (from previous releases)
-      - name: Get latest global tag
-        id: check_tag
+      - name: Get Latest Tag
+        id: get_latest_tag
         run: |
-          git fetch --tags
-          latest_tag=$(git tag --sort=-creatordate | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || echo "none")
+          latest_tag=$(git describe --tags --abbrev=0)
           echo "::set-output name=latest_tag::$latest_tag"
-          echo "Latest global tag: $latest_tag"
+          echo "Latest tag: $latest_tag"
 
-      # Get the current version from package.json
-      - name: Get version from package.json
-        id: get_version
+      - name: Increment Patch Version
+        id: increment_version
         run: |
-          cd ${{ matrix.package }}
-          current_version=$(jq -r '.version' package.json)
-          echo "::set-output name=current_version::$current_version"
-          echo "Current version in package.json: $current_version"
+          latest_tag=${{ steps.get_latest_tag.outputs.latest_tag }}
+          version_array=(${latest_tag//./ })
+          patch_version=${version_array[2]}
+          new_patch_version=$((patch_version + 1))
+          new_version="${version_array[0]}.${version_array[1]}.${new_patch_version}"
+          echo "::set-output name=new_version::$new_version"
+          echo "New version: $new_version"
 
-      # Compare current version with the latest tag to determine if it's the first PR
-      - name: Determine if it's the first PR
-        id: compare_version
+      - name: Update package.json versions
         run: |
-          current_version=${{ steps.get_version.outputs.current_version }}
-          latest_tag=${{ steps.check_tag.outputs.latest_tag }}
+          # Update package.json in the frontend directory
+          cd frontend
+          npm version ${{ steps.increment_version.outputs.new_version }} --no-git-tag-version
+          echo "Frontend package.json version updated to ${{ steps.increment_version.outputs.new_version }}"
 
-          if [[ "$current_version" == "$latest_tag" ]]; then
-            echo "First PR for this release branch"
-            echo "::set-output name=first_pr::true"
-          else
-            echo "Subsequent PR"
-            echo "::set-output name=first_pr::false"
-          fi
+          # Update package.json in the backend directory
+          cd ../backend
+          npm version ${{ steps.increment_version.outputs.new_version }} --no-git-tag-version
+          echo "Backend package.json version updated to ${{ steps.increment_version.outputs.new_version }}"
 
-      # Bump minor version and reset patch for first PR into release branch
-      - name: Bump minor version and reset patch for first PR
-        if: ${{ steps.compare_version.outputs.first_pr == 'true' }}
-        run: |
-          cd ${{ matrix.package }}
-          current_version=$(jq -r '.version' package.json)
-          new_version=$(echo $current_version | awk -F. '{$2+=1; $3=0; print $1"."$2"."$3}')
-          jq --arg v "$new_version" '.version = $v' package.json > package.json.tmp && mv package.json.tmp package.json
-          echo "First PR: Resetting patch and bumping minor. New version: $new_version"
+          # Update package.json in the webeoc directory
+          cd ../webeoc
+          npm version ${{ steps.increment_version.outputs.new_version }} --no-git-tag-version
+          echo "WebEOC package.json version updated to ${{ steps.increment_version.outputs.new_version }}"
 
-      # Bump patch version for subsequent PRs into release branch
-      - name: Bump patch version for subsequent PRs
-        if: ${{ steps.compare_version.outputs.first_pr == 'false' }}
-        run: |
-          cd ${{ matrix.package }}
-          current_version=$(jq -r '.version' package.json)
-          new_version=$(echo $current_version | awk -F. '{$3+=1; print $1"."$2"."$3}')
-          jq --arg v "$new_version" '.version = $v' package.json > package.json.tmp && mv package.json.tmp package.json
-          echo "Subsequent PR: Bumping patch. New version: $new_version"
+          # Return to the original directory
+          cd ..
 
-      # Upload the updated package.json file
-      - name: Upload updated package.json
-        uses: actions/upload-artifact@v3
-        with:
-          name: updated-package-${{ matrix.package }}
-          path: ${{ matrix.package }}/package.json
-
-  commit_and_push:
-    name: Commit and Push All Changes
-    runs-on: ubuntu-22.04
-    needs: bump_version # Wait for the bump_version job to complete
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-
-      # Download all updated package.json files from the matrix jobs
-      - name: Download updated package.json files
-        uses: actions/download-artifact@v3
-        with:
-          name: updated-package-backend
-          path: backend/
-      - name: Download updated frontend package.json
-        uses: actions/download-artifact@v3
-        with:
-          name: updated-package-frontend
-          path: frontend/
-      - name: Download updated webeoc package.json
-        uses: actions/download-artifact@v3
-        with:
-          name: updated-package-webeoc
-          path: webeoc/
-
-      # Set Git Identity
-      - name: Set Git Identity
+      - name: Commit and Push Version Update
         run: |
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
+          git add frontend/package.json backend/package.json webeoc/package.json
+          git commit -m "chore: bump version to ${{ steps.increment_version.outputs.new_version }}"
+          git push origin HEAD:refs/heads/${{ github.head_ref }}
 
-      # Commit and push all changes at once
-      - name: Commit and push all changes
+      - name: Create Git Tag
         run: |
-          git add backend/package.json frontend/package.json webeoc/package.json
-          git commit -m "chore: bump versions for backend, frontend, and webeoc"
-          git push origin HEAD:refs/heads/${{ github.head_ref }}  # Push to the same branch
+          git tag "v${{ steps.increment_version.outputs.new_version }}"
+          git push origin "v${{ steps.increment_version.outputs.new_version }}"
