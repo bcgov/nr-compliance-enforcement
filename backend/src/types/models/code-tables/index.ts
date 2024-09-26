@@ -51,7 +51,6 @@ export const AvailableCodeTables = [
   "equipment",
   "gir-type",
   "discharge",
-  "rationale",
   "non-compliance",
   "sector",
   "schedule",

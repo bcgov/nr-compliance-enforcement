@@ -6,7 +6,6 @@ on:
     branches:
       - release/**
       - release/**/**
-
 jobs:
   handle_pr:
     name: Handle Merged PR

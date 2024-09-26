@@ -25,18 +25,6 @@ export const selectNonComplianceDropdown = (state: RootState): Array<Option> => 
   return data;
 };
 
-export const selectRationaleDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { rationale: items },
-  } = state;
-
-  const data = items.map(({ rationale: value, longDescription: label }) => {
-    return { label, value };
-  });
-
-  return data;
-};
-
 export const selectSectorDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { sector: items },
