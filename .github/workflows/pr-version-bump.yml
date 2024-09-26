@@ -15,6 +15,7 @@ jobs:
         run: git fetch --tags --force
 
       - name: Fetch tags from main
+        id: get_latest_tag
         run: |
           git fetch origin main --tags
           latest_tag=$(git describe --tags --abbrev=0 origin/main)
