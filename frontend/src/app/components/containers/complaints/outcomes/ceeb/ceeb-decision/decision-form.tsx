@@ -107,7 +107,7 @@ export const DecisionForm: FC<props> = ({
     actionTakenDate,
   });
 
-  const [_sector, setSector] = useState<Array<Option>>();
+  const [sectorList, setSectorList] = useState<Array<Option>>();
 
   useEffect(() => {
     if (officerAssigned) {
@@ -196,7 +196,7 @@ export const DecisionForm: FC<props> = ({
     });
     const model = { ...data, sector: "", schedule: schedule };
     setData(model);
-    setSector(options);
+    setSectorList(options);
   };
 
   const handleActionTakenChange = (value: string) => {
@@ -393,7 +393,7 @@ export const DecisionForm: FC<props> = ({
               id="outcome-decision-sector-category"
               className="comp-details-input"
               classNamePrefix="comp-select"
-              options={_sector}
+              options={sectorList}
               enableValidation={true}
               errorMessage={sectorErrorMessage}
               placeholder="Select "
