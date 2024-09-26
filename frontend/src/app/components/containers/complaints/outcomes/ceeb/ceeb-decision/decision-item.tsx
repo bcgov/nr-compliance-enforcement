@@ -112,7 +112,7 @@ export const DecisionItem: FC<props> = ({
     <dl>
       <div>
         <dt>WDR schedule/IPM sector type</dt>
-        <dd>{getValue("schedule-sector")?.label}</dd>
+        <dd>{getValue("schedule")?.label}</dd>
       </div>
       <div>
         <dt>Sector/Category</dt>
