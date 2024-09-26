@@ -5,7 +5,6 @@ on:
     types: [closed]
     branches:
       - release/**
-
 jobs:
   handle_pr:
     name: Handle Merged PR
