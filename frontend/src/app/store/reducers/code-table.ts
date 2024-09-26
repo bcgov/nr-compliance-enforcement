@@ -43,6 +43,7 @@ import {
   fetchCEEBDecisionTypes,
   fetchScheduleSectorTypes,
 } from "./code-table-thunks";
+import { TeamType } from "../../types/app/code-tables/team";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -81,6 +82,7 @@ const initialState: CodeTableState = {
   "decision-type": [],
   team: [],
   "complaint-method-received-codes": [],
+  "lead-agency": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -142,6 +144,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "schedule-sector-type": scheduleSectorType,
       team,
       "complaint-method-received-codes": complaintMethodReceived,
+      "lead-agency": leadAgency,
     },
   } = state;
 
@@ -262,6 +265,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(complaintMethodReceived).any()) {
       dispatch(fetchComplaintMethodReceivedCodes());
     }
+    if (!from(leadAgency).any()) {
+      dispatch(fetchLeadAgencies());
+    }
   } catch (error) {}
 };
 
@@ -307,6 +313,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchScheduleTypes());
     dispatch(fetchScheduleSectorTypes());
     dispatch(fetchCEEBDecisionTypes());
+    dispatch(fetchLeadAgencies());
   } catch (error) {
     console.error(error);
   }
@@ -616,7 +623,7 @@ export const fetchGirTypes = (): AppThunk => async (dispatch) => {
 
 export const fetchTeam = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.TEAM}`);
-  const response = await get<Array<GirType>>(dispatch, parameters);
+  const response = await get<Array<TeamType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.TEAM, data: response };
     dispatch(setCodeTable(payload));
@@ -631,6 +638,16 @@ export const fetchComplaintMethodReceivedCodes = (): AppThunk => async (dispatch
   const response: any = await get(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.COMPLAINT_METHOD_RECEIVED, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchLeadAgencies = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.LEAD_AGENCY}`);
+
+  const response = await get<Array<Agency>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.LEAD_AGENCY, data: response };
     dispatch(setCodeTable(payload));
   }
 };
@@ -677,6 +694,18 @@ export const selectAgencyDropdown = (state: RootState): Array<Option> => {
   } = state;
 
   const data = agency.map(({ agency, longDescription }) => {
+    const item: Option = { label: longDescription, value: agency };
+    return item;
+  });
+  return data;
+};
+
+export const selectLeadAgencyDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "lead-agency": leadAgency },
+  } = state;
+
+  const data = leadAgency.map(({ agency, longDescription }) => {
     const item: Option = { label: longDescription, value: agency };
     return item;
   });

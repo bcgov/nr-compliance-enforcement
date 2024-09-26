@@ -1,11 +1,11 @@
-//Add Schedule Sector Type Codes in code table
-export const AddScheduleSectorTypes = {
+//Add Lead Agency Code in code table
+export const AddLeadAgencyCode = {
   17: (state: any) => {
     return {
       ...state,
       codeTables: {
         ...state.codeTables,
-        "schedule-sector-type": [],
+        "lead-agency": [],
       },
     };
   },

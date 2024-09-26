@@ -33,6 +33,7 @@ export const CODE_TABLE_TYPES = {
   DECISION_TYPE: "decision-type",
   TEAM: "team",
   COMPLAINT_METHOD_RECEIVED: "complaint-method-received-codes",
+  LEAD_AGENCY: "lead-agency",
   SCHEDULE_SECTOR: "schedule-sector",
   SCHEDULE_SECTOR_TYPE: "schedule-sector-type",
 

@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { formatDate } from "../../../../../../common/methods";
 import { useAppSelector } from "../../../../../../hooks/hooks";
-import { selectAgencyDropdown } from "../../../../../../store/reducers/code-table";
+import { selectLeadAgencyDropdown } from "../../../../../../store/reducers/code-table";
 import {
   selectDischargeDropdown,
   selectNonComplianceDropdown,
@@ -50,7 +50,7 @@ export const DecisionItem: FC<props> = ({
   const scheduleSectorsOptions = useAppSelector(selectScheduleSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
-  const agencyOptions = useAppSelector(selectAgencyDropdown);
+  const agencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const officerOptions = useAppSelector(selectOfficersDropdown(true));
 
   const getValue = (property: string): Option | undefined | null => {

@@ -13,7 +13,8 @@ import { ActiveTab } from "./migrations/migration-13";
 import { AddTeamCode } from "./migrations/migration-14";
 import { Decision } from "./migrations/migration-15";
 import { AddComplaintMethodReceivedCodes } from "./migrations/migration-16";
-import { AddScheduleSectorTypes } from "./migrations/migration-17";
+import { AddLeadAgencyCode } from "./migrations/migration-17";
+import { AddScheduleSectorTypes } from "./migrations/migration-18";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -41,6 +42,7 @@ migration = {
   ...AddTeamCode,
   ...Decision,
   ...AddComplaintMethodReceivedCodes,
+  ...AddLeadAgencyCode,
   ...AddScheduleSectorTypes,
 };
 

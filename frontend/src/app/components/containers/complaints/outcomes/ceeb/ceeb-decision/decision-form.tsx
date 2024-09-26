@@ -10,7 +10,7 @@ import {
   selectScheduleSectorDropdown,
   selectScheduleSectorXref,
 } from "../../../../../../store/reducers/code-table-selectors";
-import { selectAgencyDropdown } from "../../../../../../store/reducers/code-table";
+import { selectLeadAgencyDropdown } from "../../../../../../store/reducers/code-table";
 import { Decision } from "../../../../../../types/app/case-files/ceeb/decision/decision";
 import { Button } from "react-bootstrap";
 import { ValidationDatePicker } from "../../../../../../common/validation-date-picker";
@@ -76,7 +76,7 @@ export const DecisionForm: FC<props> = ({
   const sectorsOptions = useAppSelector(selectSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
-  const agencyOptions = useAppSelector(selectAgencyDropdown);
+  const leadAgencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officerOptions = useAppSelector(selectOfficersByAgencyDropdown(ownedByAgencyCode?.agency));
   const scheduleSectorType = useAppSelector(selectScheduleSectorXref);
@@ -115,6 +115,7 @@ export const DecisionForm: FC<props> = ({
     if (officerAssigned) {
       applyData({ ...data, assignedTo: officerAssigned });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [officerAssigned]);
 
   //-- update the decision state by property
@@ -159,7 +160,7 @@ export const DecisionForm: FC<props> = ({
 
       case "leadAgency": {
         const { leadAgency } = data;
-        result = agencyOptions.find((item) => item.value === leadAgency);
+        result = leadAgencyOptions.find((item) => item.value === leadAgency);
         break;
       }
 
@@ -343,8 +344,12 @@ export const DecisionForm: FC<props> = ({
       _isValid = false;
     }
 
-    if (data.actionTaken === CASE_ACTION_CODE.RESPREC && !data.inspectionNumber) {
-      setInspectionNumberErrorMessage("Required");
+    if (
+      data.actionTaken === CASE_ACTION_CODE.RESPREC &&
+      data.inspectionNumber &&
+      !data.inspectionNumber.match(/^\d{1,10}$/)
+    ) {
+      setInspectionNumberErrorMessage("Invalid format. Please only include numbers.");
       _isValid = false;
     }
 
@@ -456,7 +461,7 @@ export const DecisionForm: FC<props> = ({
                 id="outcome-decision-lead-agency"
                 className="comp-details-input"
                 classNamePrefix="comp-select"
-                options={agencyOptions}
+                options={leadAgencyOptions}
                 enableValidation={true}
                 errorMessage={leadAgencyErrorMessage}
                 placeholder="Select"
@@ -482,7 +487,7 @@ export const DecisionForm: FC<props> = ({
                 inputClass="comp-form-control"
                 value={data?.inspectionNumber}
                 error={inspectionNumberErrorMessage}
-                maxLength={5}
+                maxLength={10}
                 onChange={(evt: any) => {
                   const {
                     target: { value },
