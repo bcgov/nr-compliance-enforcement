@@ -5254,79 +5254,6 @@ values
   ) ON CONFLICT
 DO NOTHING;
 
---
--- insert new agency codes
---
-insert into
-  agency_code (
-    agency_code,
-    short_description,
-    long_description,
-    display_order,
-    active_ind,
-    create_user_id,
-    create_utc_timestamp,
-    update_user_id,
-    update_utc_timestamp
-  )
-values
-  (
-    'FLNRO',
-    'FLNRO',
-    'FLNRO',
-    10,
-    true,
-    CURRENT_USER,
-    CURRENT_TIMESTAMP,
-    CURRENT_USER,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    'EAO',
-    'EAO',
-    'Environmental Assessment Office',
-    20,
-    true,
-    CURRENT_USER,
-    CURRENT_TIMESTAMP,
-    CURRENT_USER,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    'OIL_GAS',
-    'OIL_GAS',
-    'Oil and Gas Commision',
-    30,
-    true,
-    CURRENT_USER,
-    CURRENT_TIMESTAMP,
-    CURRENT_USER,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    'AGR_LAND',
-    'AGR_LAND',
-    'Agriculture Lands Commission',
-    40,
-    true,
-    CURRENT_USER,
-    CURRENT_TIMESTAMP,
-    CURRENT_USER,
-    CURRENT_TIMESTAMP
-  ),
-  (
-    'MINES',
-    'MINES',
-    'Ministry of Energy and Mines',
-    50,
-    true,
-    CURRENT_USER,
-    CURRENT_TIMESTAMP,
-    CURRENT_USER,
-    CURRENT_TIMESTAMP
-  ) ON CONFLICT
-DO NOTHING;
-
 --------------------------
 -- Table entities for method_complaint_received_code load
 -------------------------
@@ -9464,6 +9391,96 @@ VALUES
     'FLYWAY',
     CURRENT_TIMESTAMP
   ) ON CONFLICT
+DO NOTHING;
+
+--
+-- create new feature for Enable Office
+--
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ENBL_OFF',
+  'Enable Office',
+  'Enables the ability to render the office input and field on a complaint',
+  150,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+--
+-- create new xrefs for new enable office feature
+--
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ENBL_OFF',
+  'EPO',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ENBL_OFF',
+  'COS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'ENBL_OFF',
+  'PARKS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
 DO NOTHING;
 
 --------------------------

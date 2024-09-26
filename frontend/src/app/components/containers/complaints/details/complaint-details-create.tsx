@@ -62,6 +62,7 @@ import { getUserAgency } from "../../../../service/user-service";
 import { useSelector } from "react-redux";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
+import { FeatureFlag } from "../../../common/feature-flag";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -976,20 +977,22 @@ export const CreateComplaint: FC = () => {
               />
             </div>
           </div>
-          <div
-            className="comp-details-form-row"
-            id="office-pair-id"
-          >
-            <label>Office</label>
-            <div className="comp-details-edit-input">
-              <input
-                type="text"
-                id="office-edit-readonly-id"
-                className="comp-form-control"
-                disabled
-              />
+          <FeatureFlag feature={FEATURE_TYPES.ENABLE_OFFICE}>
+            <div
+              className="comp-details-form-row"
+              id="office-pair-id"
+            >
+              <label>Office</label>
+              <div className="comp-details-edit-input">
+                <input
+                  type="text"
+                  id="office-edit-readonly-id"
+                  className="comp-form-control"
+                  disabled
+                />
+              </div>
             </div>
-          </div>
+          </FeatureFlag>
           <div
             className="comp-details-form-row"
             id="zone-pair-id"
