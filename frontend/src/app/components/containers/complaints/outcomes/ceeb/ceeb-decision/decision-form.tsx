@@ -7,7 +7,7 @@ import {
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
 } from "../../../../../../store/reducers/code-table-selectors";
-import { selectAgencyDropdown } from "../../../../../../store/reducers/code-table";
+import { selectLeadAgencyDropdown } from "../../../../../../store/reducers/code-table";
 import { Decision } from "../../../../../../types/app/case-files/ceeb/decision/decision";
 import { Button } from "react-bootstrap";
 import { ValidationDatePicker } from "../../../../../../common/validation-date-picker";
@@ -73,7 +73,7 @@ export const DecisionForm: FC<props> = ({
   const sectorsOptions = useAppSelector(selectSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
-  const agencyOptions = useAppSelector(selectAgencyDropdown);
+  const leadAgencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officerOptions = useAppSelector(selectOfficersByAgencyDropdown(ownedByAgencyCode?.agency));
 
@@ -146,7 +146,7 @@ export const DecisionForm: FC<props> = ({
 
       case "leadAgency": {
         const { leadAgency } = data;
-        result = agencyOptions.find((item) => item.value === leadAgency);
+        result = leadAgencyOptions.find((item) => item.value === leadAgency);
         break;
       }
 
@@ -439,7 +439,7 @@ export const DecisionForm: FC<props> = ({
                 id="outcome-decision-lead-agency"
                 className="comp-details-input"
                 classNamePrefix="comp-select"
-                options={agencyOptions}
+                options={leadAgencyOptions}
                 enableValidation={true}
                 errorMessage={leadAgencyErrorMessage}
                 placeholder="Select"

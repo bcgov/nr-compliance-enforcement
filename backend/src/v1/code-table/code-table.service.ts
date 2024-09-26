@@ -660,6 +660,24 @@ export class CodeTableService {
         });
         return results;
       }
+      case "lead-agency": {
+        const { data } = await get(token, {
+          query: "{agencyCodes{agencyCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.agencyCodes.map(
+          ({ agencyCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: Agency = {
+              agency: agencyCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
     }
   };
 

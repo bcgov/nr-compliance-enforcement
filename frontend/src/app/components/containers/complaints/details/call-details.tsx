@@ -7,6 +7,8 @@ import { ComplaintDetailsAttractant } from "../../../../types/complaints/details
 import { selectComplaintDetails } from "../../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
+import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
+import { FeatureFlag } from "../../../common/feature-flag";
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -126,10 +128,12 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
               <dt>Community</dt>
               <dd id="comp-details-community">{area}</dd>
             </div>
-            <div>
-              <dt>Office</dt>
-              <dd id="comp-details-office">{office}</dd>
-            </div>
+            <FeatureFlag feature={FEATURE_TYPES.ENABLE_OFFICE}>
+              <div>
+                <dt>Office</dt>
+                <dd id="comp-details-office">{office}</dd>
+              </div>
+            </FeatureFlag>
             <div>
               <dt>Zone</dt>
               <dd id="comp-details-zone">{zone}</dd>

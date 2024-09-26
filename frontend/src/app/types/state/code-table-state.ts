@@ -107,4 +107,5 @@ export interface CodeTableState {
   "decision-type": Array<DecisionType>;
   team: Array<TeamType>;
   "complaint-method-received-codes": Array<ComplaintMethodReceivedType>;
+  "lead-agency": Array<Agency>;
 }
