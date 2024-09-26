@@ -114,6 +114,18 @@ export const DecisionForm: FC<props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [officerAssigned]);
 
+  useEffect(() => {
+    if (sector && schedule) {
+      let options = scheduleSectorType.filter((item) => item.schedule === schedule).map(item => {
+        const record: Option = { label: item.longDescription, value: item.sector };
+        return record
+      });
+      const model = { ...data, sector: sector, schedule: schedule };
+      setData(model);
+      setSectorList(options);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [officerAssigned]);
   //-- update the decision state by property
   const updateModel = (property: string, value: string | Date | undefined) => {
     const model = { ...data, [property]: value };

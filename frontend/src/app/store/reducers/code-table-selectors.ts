@@ -41,7 +41,6 @@ export const selectScheduleSectorDropdown = (state: RootState): Array<Option> =>
   const {
     codeTables: { sector: items, "schedule-sector": scheduleSector },
   } = state;
-  let _scheduleSector = scheduleSector;
   const data = items.map(({ sector: value, longDescription: label }) => {
     return { label, value };
   });
