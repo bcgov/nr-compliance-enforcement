@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
 import {
   selectDischargeDropdown,
   selectNonComplianceDropdown,
-  selectRationaleDropdown,
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
@@ -27,6 +26,7 @@ import { getComplaintById, selectComplaintCallerInformation } from "../../../../
 import { ToggleError } from "../../../../../../common/toast";
 
 import COMPLAINT_TYPES from "../../../../../../types/app/complaint-types";
+import { ValidationTextArea } from "../../../../../../common/validation-textarea";
 
 type props = {
   officerAssigned: string | null;
@@ -71,7 +71,6 @@ export const DecisionForm: FC<props> = ({
   //-- drop-downs
   const dischargesOptions = useAppSelector(selectDischargeDropdown);
   const nonComplianceOptions = useAppSelector(selectNonComplianceDropdown);
-  const rationaleOptions = useAppSelector(selectRationaleDropdown);
   const sectorsOptions = useAppSelector(selectSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
@@ -84,7 +83,6 @@ export const DecisionForm: FC<props> = ({
   const [scheduleErrorMessage, setScheduleErrorMessage] = useState("");
   const [sectorErrorMessage, setSectorErrorMessage] = useState("");
   const [dischargeErrorMessage, setDischargeErrorMessage] = useState("");
-  const [rationaleErrorMessage] = useState("");
   const [nonComplianceErrorMessage] = useState("");
   const [dateActionTakenErrorMessage, setDateActionTakenErrorMessage] = useState("");
   const [leadAgencyErrorMessage, setLeadAgencyErrorMessage] = useState("");
@@ -150,12 +148,6 @@ export const DecisionForm: FC<props> = ({
         break;
       }
 
-      case "rationale": {
-        const { rationale } = data;
-        result = rationaleOptions.find((item) => item.value === rationale);
-        break;
-      }
-
       case "leadAgency": {
         const { leadAgency } = data;
         result = leadAgencyOptions.find((item) => item.value === leadAgency);
@@ -183,6 +175,10 @@ export const DecisionForm: FC<props> = ({
   const updateAssignment = (value?: string) => {
     //-- need to get the officer_guid instead of the person
     updateModel("assignedTo", value);
+  };
+
+  const handleRationaleChange = (value: string) => {
+    updateModel("rationale", value.trim());
   };
 
   const handleDateChange = (date?: Date) => {
@@ -524,18 +520,14 @@ export const DecisionForm: FC<props> = ({
         >
           <label htmlFor="outcome-decision-rationale">Rationale</label>
           <div className="comp-details-input full-width">
-            <CompSelect
+            <ValidationTextArea
+              className="comp-form-control"
               id="outcome-decision-rationale"
-              className="comp-details-input"
-              classNamePrefix="comp-select"
-              options={rationaleOptions}
-              enableValidation={true}
-              errorMessage={rationaleErrorMessage}
-              placeholder="Select "
-              onChange={(evt) => {
-                updateModel("rationale", evt?.value);
-              }}
-              value={getValue("rationale")}
+              defaultValue={rationale}
+              rows={2}
+              errMsg={""}
+              maxLength={4000}
+              onChange={handleRationaleChange}
             />
           </div>
         </div>

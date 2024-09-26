@@ -37,7 +37,6 @@ import { getUserAgency } from "../../service/user-service";
 import {
   fetchDischargeTypes,
   fetchNonComplianceTypes,
-  fetchRationaleTypes,
   fetchSectorTypes,
   fetchScheduleTypes,
   fetchCEEBDecisionTypes,
@@ -74,7 +73,6 @@ const initialState: CodeTableState = {
   "gir-type": [],
   discharge: [],
   "non-compliance": [],
-  rationale: [],
   sector: [],
   schedule: [],
   "decision-type": [],
@@ -137,7 +135,6 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "gir-type": girType,
       discharge,
       "non-compliance": nonCompliance,
-      rationale,
       sector,
       schedule,
       "decision-type": decisionType,
@@ -244,9 +241,6 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(nonCompliance).any()) {
       dispatch(fetchNonComplianceTypes());
     }
-    if (!from(rationale).any()) {
-      dispatch(fetchRationaleTypes());
-    }
     if (!from(sector).any()) {
       dispatch(fetchSectorTypes());
     }
@@ -308,7 +302,6 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchEquipment());
     dispatch(fetchDischargeTypes());
     dispatch(fetchNonComplianceTypes());
-    dispatch(fetchRationaleTypes());
     dispatch(fetchSectorTypes());
     dispatch(fetchScheduleTypes());
     dispatch(fetchCEEBDecisionTypes());

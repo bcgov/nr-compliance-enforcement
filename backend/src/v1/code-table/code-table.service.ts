@@ -52,7 +52,6 @@ import { SectorCode } from "src/types/models/code-tables/sector-code";
 import { Discharge } from "src/types/models/code-tables/discharge";
 import { NonCompliance } from "src/types/models/code-tables/non-compliance";
 import { DecisionType } from "src/types/models/code-tables/decision-type";
-import { Rationale } from "src/types/models/code-tables/rationale";
 import { TeamCode } from "../team_code/entities/team_code.entity";
 import { TeamType } from "src/types/models/code-tables/team-type";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
@@ -618,24 +617,6 @@ export class CodeTableService {
           ({ dischargeCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
             const table: Discharge = {
               discharge: dischargeCode,
-              shortDescription: shortDescription,
-              longDescription: longDescription,
-              displayOrder: displayOrder,
-              isActive: activeIndicator,
-            };
-            return table;
-          },
-        );
-        return results;
-      }
-      case "rationale": {
-        const { data } = await get(token, {
-          query: "{rationaleCodes{rationaleCode shortDescription longDescription displayOrder activeIndicator}}",
-        });
-        const results = data.rationaleCodes.map(
-          ({ rationaleCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
-            const table: Rationale = {
-              rationale: rationaleCode,
               shortDescription: shortDescription,
               longDescription: longDescription,
               displayOrder: displayOrder,

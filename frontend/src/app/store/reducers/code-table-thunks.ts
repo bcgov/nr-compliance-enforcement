@@ -4,7 +4,6 @@ import { generateApiParameters, get } from "../../common/api";
 import { CODE_TABLE_TYPES } from "../../constants/code-table-types";
 import { Discharge } from "../../types/app/code-tables/discharge";
 import { NonCompliance } from "../../types/app/code-tables/non-compliance";
-import { Rationale } from "../../types/app/code-tables/rationale";
 import { Schedule } from "../../types/app/code-tables/schedule";
 import { Sector } from "../../types/app/code-tables/sector";
 import { AppThunk } from "../store";
@@ -28,16 +27,6 @@ export const fetchNonComplianceTypes = (): AppThunk => async (dispatch) => {
   const response = await get<Array<NonCompliance>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.NON_COMPLIANCE, data: response };
-    dispatch(setCodeTable(payload));
-  }
-};
-
-export const fetchRationaleTypes = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.RATIONALE}`);
-
-  const response = await get<Array<Rationale>>(dispatch, parameters);
-  if (response && from(response).any()) {
-    const payload = { key: CODE_TABLE_TYPES.RATIONALE, data: response };
     dispatch(setCodeTable(payload));
   }
 };

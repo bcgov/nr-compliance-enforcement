@@ -5,7 +5,6 @@ import { selectLeadAgencyDropdown } from "../../../../../../store/reducers/code-
 import {
   selectDischargeDropdown,
   selectNonComplianceDropdown,
-  selectRationaleDropdown,
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
@@ -45,7 +44,6 @@ export const DecisionItem: FC<props> = ({
   //-- drop-downs
   const dischargesOptions = useAppSelector(selectDischargeDropdown);
   const nonComplianceOptions = useAppSelector(selectNonComplianceDropdown);
-  const rationaleOptions = useAppSelector(selectRationaleDropdown);
   const sectorsOptions = useAppSelector(selectSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
   const scheduleSectorsOptions = useAppSelector(selectScheduleSectorDropdown);
@@ -81,11 +79,6 @@ export const DecisionItem: FC<props> = ({
 
       case "nonCompliance": {
         result = nonComplianceOptions.find((item) => item.value === nonCompliance);
-        break;
-      }
-
-      case "rationale": {
-        result = rationaleOptions.find((item) => item.value === rationale);
         break;
       }
 
@@ -145,7 +138,7 @@ export const DecisionItem: FC<props> = ({
       </div>
       <div>
         <dt>Rationale</dt>
-        <dd>{getValue("rationale")?.label}</dd>
+        <dd>{rationale}</dd>
       </div>
       <div>
         <dt>Assigned to</dt>
