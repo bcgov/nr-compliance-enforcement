@@ -3,7 +3,6 @@ name: Handle PR Merge and Version Update
 on:
   pull_request:
     types: [closed]
-
 jobs:
   handle_pr:
     name: Handle Merged PR
