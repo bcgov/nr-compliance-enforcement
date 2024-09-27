@@ -8,7 +8,6 @@ import {
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
-  selectScheduleSectorDropdown,
 } from "../../../../../../store/reducers/code-table-selectors";
 import { selectOfficersDropdown } from "../../../../../../store/reducers/officer";
 import Option from "../../../../../../types/app/option";
@@ -46,7 +45,7 @@ export const DecisionItem: FC<props> = ({
   const nonComplianceOptions = useAppSelector(selectNonComplianceDropdown);
   const sectorsOptions = useAppSelector(selectSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
-  const scheduleSectorsOptions = useAppSelector(selectScheduleSectorDropdown);
+  const scheduleSectorsOptions = useAppSelector(selectSectorDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const officerOptions = useAppSelector(selectOfficersDropdown(true));
