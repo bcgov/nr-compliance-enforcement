@@ -938,7 +938,11 @@ export class ComplaintService {
     }
   };
 
-  mapSearch = async (complaintType: COMPLAINT_TYPE, model: ComplaintSearchParameters): Promise<MapSearchResults> => {
+  mapSearch = async (
+    complaintType: COMPLAINT_TYPE,
+    model: ComplaintSearchParameters,
+    hasCEEBRole: boolean,
+  ): Promise<MapSearchResults> => {
     const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
 
     try {
@@ -967,6 +971,11 @@ export class ComplaintService {
         });
       }
 
+      //-- return Waste and Pestivide complaints for CEEB users
+      if (hasCEEBRole && complaintType === "ERS") {
+        complaintBuilder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+      }
+
       //-- filter locations without coordinates
       complaintBuilder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
       complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
@@ -992,6 +1001,11 @@ export class ComplaintService {
         unMappedBuilder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", {
           agency: agency.agency_code,
         });
+      }
+
+      //-- return Waste and Pestivide complaints for CEEB users
+      if (hasCEEBRole && complaintType === "ERS") {
+        unMappedBuilder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
       }
 
       //-- filter locations without coordinates
