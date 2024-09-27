@@ -3,12 +3,11 @@ import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
 import {
   selectDischargeDropdown,
   selectNonComplianceDropdown,
-  selectRationaleDropdown,
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
 } from "../../../../../../store/reducers/code-table-selectors";
-import { selectAgencyDropdown } from "../../../../../../store/reducers/code-table";
+import { selectLeadAgencyDropdown } from "../../../../../../store/reducers/code-table";
 import { Decision } from "../../../../../../types/app/case-files/ceeb/decision/decision";
 import { Button } from "react-bootstrap";
 import { ValidationDatePicker } from "../../../../../../common/validation-date-picker";
@@ -26,6 +25,7 @@ import { getComplaintById, selectComplaintCallerInformation } from "../../../../
 import { ToggleError } from "../../../../../../common/toast";
 
 import COMPLAINT_TYPES from "../../../../../../types/app/complaint-types";
+import { ValidationTextArea } from "../../../../../../common/validation-textarea";
 
 type props = {
   officerAssigned: string | null;
@@ -70,11 +70,10 @@ export const DecisionForm: FC<props> = ({
   //-- drop-downs
   const dischargesOptions = useAppSelector(selectDischargeDropdown);
   const nonComplianceOptions = useAppSelector(selectNonComplianceDropdown);
-  const rationaleOptions = useAppSelector(selectRationaleDropdown);
   const sectorsOptions = useAppSelector(selectSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
-  const agencyOptions = useAppSelector(selectAgencyDropdown);
+  const leadAgencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officerOptions = useAppSelector(selectOfficersByAgencyDropdown(ownedByAgencyCode?.agency));
 
@@ -82,7 +81,6 @@ export const DecisionForm: FC<props> = ({
   const [scheduleErrorMessage, setScheduleErrorMessage] = useState("");
   const [sectorErrorMessage, setSectorErrorMessage] = useState("");
   const [dischargeErrorMessage, setDischargeErrorMessage] = useState("");
-  const [rationaleErrorMessage] = useState("");
   const [nonComplianceErrorMessage] = useState("");
   const [dateActionTakenErrorMessage, setDateActionTakenErrorMessage] = useState("");
   const [leadAgencyErrorMessage, setLeadAgencyErrorMessage] = useState("");
@@ -109,6 +107,7 @@ export const DecisionForm: FC<props> = ({
     if (officerAssigned) {
       applyData({ ...data, assignedTo: officerAssigned });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [officerAssigned]);
 
   //-- update the decision state by property
@@ -145,15 +144,9 @@ export const DecisionForm: FC<props> = ({
         break;
       }
 
-      case "rationale": {
-        const { rationale } = data;
-        result = rationaleOptions.find((item) => item.value === rationale);
-        break;
-      }
-
       case "leadAgency": {
         const { leadAgency } = data;
-        result = agencyOptions.find((item) => item.value === leadAgency);
+        result = leadAgencyOptions.find((item) => item.value === leadAgency);
         break;
       }
 
@@ -178,6 +171,10 @@ export const DecisionForm: FC<props> = ({
   const updateAssignment = (value?: string) => {
     //-- need to get the officer_guid instead of the person
     updateModel("assignedTo", value);
+  };
+
+  const handleRationaleChange = (value: string) => {
+    updateModel("rationale", value.trim());
   };
 
   const handleDateChange = (date?: Date) => {
@@ -327,8 +324,12 @@ export const DecisionForm: FC<props> = ({
       _isValid = false;
     }
 
-    if (data.actionTaken === CASE_ACTION_CODE.RESPREC && !data.inspectionNumber) {
-      setInspectionNumberErrorMessage("Required");
+    if (
+      data.actionTaken === CASE_ACTION_CODE.RESPREC &&
+      data.inspectionNumber &&
+      !data.inspectionNumber.match(/^\d{1,10}$/)
+    ) {
+      setInspectionNumberErrorMessage("Invalid format. Please only include numbers.");
       _isValid = false;
     }
 
@@ -438,7 +439,7 @@ export const DecisionForm: FC<props> = ({
                 id="outcome-decision-lead-agency"
                 className="comp-details-input"
                 classNamePrefix="comp-select"
-                options={agencyOptions}
+                options={leadAgencyOptions}
                 enableValidation={true}
                 errorMessage={leadAgencyErrorMessage}
                 placeholder="Select"
@@ -464,7 +465,7 @@ export const DecisionForm: FC<props> = ({
                 inputClass="comp-form-control"
                 value={data?.inspectionNumber}
                 error={inspectionNumberErrorMessage}
-                maxLength={5}
+                maxLength={10}
                 onChange={(evt: any) => {
                   const {
                     target: { value },
@@ -503,18 +504,14 @@ export const DecisionForm: FC<props> = ({
         >
           <label htmlFor="outcome-decision-rationale">Rationale</label>
           <div className="comp-details-input full-width">
-            <CompSelect
+            <ValidationTextArea
+              className="comp-form-control"
               id="outcome-decision-rationale"
-              className="comp-details-input"
-              classNamePrefix="comp-select"
-              options={rationaleOptions}
-              enableValidation={true}
-              errorMessage={rationaleErrorMessage}
-              placeholder="Select "
-              onChange={(evt) => {
-                updateModel("rationale", evt?.value);
-              }}
-              value={getValue("rationale")}
+              defaultValue={rationale}
+              rows={2}
+              errMsg={""}
+              maxLength={4000}
+              onChange={handleRationaleChange}
             />
           </div>
         </div>

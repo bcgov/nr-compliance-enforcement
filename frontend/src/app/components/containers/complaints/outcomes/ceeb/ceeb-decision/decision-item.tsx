@@ -1,11 +1,10 @@
 import { FC } from "react";
 import { formatDate } from "../../../../../../common/methods";
 import { useAppSelector } from "../../../../../../hooks/hooks";
-import { selectAgencyDropdown } from "../../../../../../store/reducers/code-table";
+import { selectLeadAgencyDropdown } from "../../../../../../store/reducers/code-table";
 import {
   selectDischargeDropdown,
   selectNonComplianceDropdown,
-  selectRationaleDropdown,
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
@@ -44,11 +43,10 @@ export const DecisionItem: FC<props> = ({
   //-- drop-downs
   const dischargesOptions = useAppSelector(selectDischargeDropdown);
   const nonComplianceOptions = useAppSelector(selectNonComplianceDropdown);
-  const rationaleOptions = useAppSelector(selectRationaleDropdown);
   const sectorsOptions = useAppSelector(selectSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
-  const agencyOptions = useAppSelector(selectAgencyDropdown);
+  const agencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const officerOptions = useAppSelector(selectOfficersDropdown(true));
 
   const getValue = (property: string): Option | undefined | null => {
@@ -72,11 +70,6 @@ export const DecisionItem: FC<props> = ({
 
       case "nonCompliance": {
         result = nonComplianceOptions.find((item) => item.value === nonCompliance);
-        break;
-      }
-
-      case "rationale": {
-        result = rationaleOptions.find((item) => item.value === rationale);
         break;
       }
 
@@ -136,7 +129,7 @@ export const DecisionItem: FC<props> = ({
       </div>
       <div>
         <dt>Rationale</dt>
-        <dd>{getValue("rationale")?.label}</dd>
+        <dd>{rationale}</dd>
       </div>
       <div>
         <dt>Assigned to</dt>

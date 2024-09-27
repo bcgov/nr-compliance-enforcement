@@ -29,7 +29,6 @@ import { Equipment } from "../app/code-tables/equipment";
 import { GirType } from "../app/code-tables/gir-type";
 import { Discharge } from "../app/code-tables/discharge";
 import { NonCompliance } from "../app/code-tables/non-compliance";
-import { Rationale } from "../app/code-tables/rationale";
 import { Sector } from "../app/code-tables/sector";
 import { Schedule } from "../app/code-tables/schedule";
 import { DecisionType } from "../app/code-tables/decision-type";
@@ -68,7 +67,6 @@ export interface CodeTableState {
     | Array<Equipment>
     | Array<Discharge>
     | Array<NonCompliance>
-    | Array<Rationale>
     | Array<Sector>
     | Array<Schedule>
     | Array<GirType>
@@ -104,10 +102,10 @@ export interface CodeTableState {
   "gir-type": Array<GirType>;
   discharge: Array<Discharge>;
   "non-compliance": Array<NonCompliance>;
-  rationale: Array<Rationale>;
   sector: Array<Sector>;
   schedule: Array<Schedule>;
   "decision-type": Array<DecisionType>;
   team: Array<TeamType>;
   "complaint-method-received-codes": Array<ComplaintMethodReceivedType>;
+  "lead-agency": Array<Agency>;
 }

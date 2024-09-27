@@ -39,6 +39,7 @@ export interface ComplaintUpdate {
   parent_species: string;
   update_created_by_username: string;
   update_created_by_position: string;
+  flag_UPD: string;
   back_number_of_days: string;
   back_number_of_hours: string;
   back_number_of_minutes: string;

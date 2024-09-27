@@ -27,12 +27,12 @@ export const CODE_TABLE_TYPES = {
   GIR_TYPE: "gir-type",
   DISCHARGE: "discharge",
   NON_COMPLIANCE: "non-compliance",
-  RATIONALE: "rationale",
   SECTOR: "sector",
   SCHEDULE: "schedule",
   DECISION_TYPE: "decision-type",
   TEAM: "team",
   COMPLAINT_METHOD_RECEIVED: "complaint-method-received-codes",
+  LEAD_AGENCY: "lead-agency",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",

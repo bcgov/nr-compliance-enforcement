@@ -13,7 +13,7 @@ import { ValidationInput } from "../../../../common/validation-input";
 import Option from "../../../../types/app/option";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { openModal, selectActiveTab, userId } from "../../../../store/reducers/app";
+import { openModal, selectActiveTab, userId, isFeatureActive } from "../../../../store/reducers/app";
 import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
 
 import {
@@ -22,6 +22,7 @@ import {
   selectComplaintReceivedMethodDropdown,
   selectCreatableComplaintTypeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
+  selectPrivacyDropdown,
   selectReportedByDropdown,
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
@@ -60,6 +61,8 @@ import AttachmentEnum from "../../../../constants/attachment-enum";
 import { getUserAgency } from "../../../../service/user-service";
 import { useSelector } from "react-redux";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
+import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
+import { FeatureFlag } from "../../../common/feature-flag";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -94,6 +97,9 @@ export const CreateComplaint: FC = () => {
     { value: "Yes", label: "Yes" },
     { value: "No", label: "No" },
   ];
+
+  const privacyDropdown = useAppSelector(selectPrivacyDropdown);
+  const enablePrivacyFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.PRIV_REQ));
 
   const currentDate = useMemo(() => new Date(), []);
 
@@ -170,6 +176,7 @@ export const CreateComplaint: FC = () => {
         createdBy: userid,
         updatedBy: userid,
         complaintMethodReceivedCode: "",
+        isPrivacyRequested: "U",
       };
 
       applyComplaintData(model);
@@ -354,6 +361,14 @@ export const CreateComplaint: FC = () => {
       const { value } = selected;
 
       const complaint = { ...complaintData, wasObserved: value === "Yes" } as AllegationComplaintDto;
+      applyComplaintData(complaint);
+    }
+  };
+
+  const handlePrivacyRequestedChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+      const complaint = { ...complaintData, isPrivacyRequested: value } as ComplaintDto;
       applyComplaintData(complaint);
     }
   };
@@ -962,20 +977,22 @@ export const CreateComplaint: FC = () => {
               />
             </div>
           </div>
-          <div
-            className="comp-details-form-row"
-            id="office-pair-id"
-          >
-            <label>Office</label>
-            <div className="comp-details-edit-input">
-              <input
-                type="text"
-                id="office-edit-readonly-id"
-                className="comp-form-control"
-                disabled
-              />
+          <FeatureFlag feature={FEATURE_TYPES.ENABLE_OFFICE}>
+            <div
+              className="comp-details-form-row"
+              id="office-pair-id"
+            >
+              <label>Office</label>
+              <div className="comp-details-edit-input">
+                <input
+                  type="text"
+                  id="office-edit-readonly-id"
+                  className="comp-form-control"
+                  disabled
+                />
+              </div>
             </div>
-          </div>
+          </FeatureFlag>
           <div
             className="comp-details-form-row"
             id="zone-pair-id"
@@ -1026,6 +1043,30 @@ export const CreateComplaint: FC = () => {
 
         <fieldset>
           <legend>Caller Information</legend>
+          {enablePrivacyFeature && (
+            <div
+              className="comp-details-form-row"
+              id="privacy-requested-id"
+            >
+              <label
+                id="complaint-caller-info-privacy-label-id"
+                className="col-auto"
+                htmlFor="caller-privacy-id"
+              >
+                Privacy requested
+              </label>
+              <div className="comp-details-edit-input">
+                <Select
+                  options={privacyDropdown}
+                  placeholder="Select"
+                  id="caller-privacy-id"
+                  classNamePrefix="comp-select"
+                  onChange={(e) => handlePrivacyRequestedChange(e)}
+                />
+              </div>
+            </div>
+          )}
+
           <div
             className="comp-details-form-row"
             id="name-pair-id"

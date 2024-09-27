@@ -38,8 +38,17 @@ export class WebEocScheduler {
         this.publishComplaintUpdate.bind(this),
       );
 
-      await this._handleActionTaken(WEBEOC_API_PATHS.ACTIONS_TAKEN, this._publishAction.bind(this));
-      await this._handleActionTakenUpdate(WEBEOC_API_PATHS.ACTIONS_TAKEN_UPDATES, this._publishActionUpdate.bind(this));
+      // handle actions taken
+      await this._handleAction(
+        () => this._fetchDataFromWebEOC(WEBEOC_API_PATHS.ACTIONS_TAKEN),
+        this._publishAction.bind(this),
+      );
+
+      // handle actions taken updates
+      await this._handleAction(
+        () => this._fetchDataFromWebEOC(WEBEOC_API_PATHS.ACTIONS_TAKEN_UPDATES),
+        this._publishActionUpdate.bind(this),
+      );
     });
 
     this.cronJob.start();
@@ -96,6 +105,26 @@ export class WebEocScheduler {
     }
   }
 
+  // Filter the complaints to only include complaints with a given flag (indicating the type of data: complaint, update, action taken, etc), or complaints where the violation type is Waste or Pesticide (which
+  // are complaints needed for CEEB (where the violation type is waste or pesticide, accross all regions)
+  private _filterComplaints(complaints: any[], flagName: string) {
+    return complaints.filter((complaint: any) => {
+      if (flagName === WEBEOC_FLAGS.COMPLAINTS) {
+        return (
+          complaint.flag_COS === "Yes" ||
+          complaint.violation_type === "Waste" ||
+          complaint.violation_type === "Pesticide"
+        );
+      } else if (flagName === WEBEOC_FLAGS.COMPLAINT_UPDATES) {
+        return (
+          complaint.flag_UPD === "Yes" ||
+          complaint.update_violation_type === "Waste" ||
+          complaint.update_violation_type === "Pesticide"
+        );
+      }
+    });
+  }
+
   private async fetchDataFromWebEOC(urlPath: string, flagName: string): Promise<any[]> {
     const dateFilter = this.getDateFilter();
     const url = `${process.env.WEBEOC_URL}/${urlPath}`;
@@ -105,23 +134,24 @@ export class WebEocScheduler {
       },
     };
 
+    // default filter grabs complaints that are newer than a specific date
+    const filterItems = [dateFilter];
+
+    // construct the body of the request
     const body = {
       customFilter: {
         boolean: "and",
-        items: [
-          dateFilter,
-          {
-            fieldname: flagName,
-            operator: "Equals",
-            fieldvalue: "Yes",
-          },
-        ],
+        items: filterItems,
       },
     };
 
     try {
       const response = await axios.post(url, body, config);
-      return response.data as Complaint[];
+      const complaints = response.data;
+
+      const filteredComplaints = this._filterComplaints(complaints, flagName);
+
+      return filteredComplaints;
     } catch (error) {
       this.logger.error(`Error fetching data from WebEOC at ${urlPath}:`, error);
       throw error;
@@ -165,8 +195,7 @@ export class WebEocScheduler {
     return format(date, "yyyy-MM-dd HH:mm:ss");
   }
 
-  //-- actions taken
-  private _fetchActions = async (path: string) => {
+  private _fetchDataFromWebEOC = async (path: string): Promise<Complaint[]> => {
     const dateFilter = this.getDateFilter();
     const url = `${process.env.WEBEOC_URL}/${path}`;
     const config: AxiosRequestConfig = {
@@ -178,85 +207,32 @@ export class WebEocScheduler {
     const body = {
       customFilter: {
         boolean: "and",
-        items: [
-          dateFilter,
-          {
-            fieldname: WEBEOC_FLAGS.ACTIONS_TAKEN,
-            operator: "Equals",
-            fieldvalue: "Yes",
-          },
-        ],
+        items: [dateFilter],
       },
     };
 
     try {
       const response = await axios.post(url, body, config);
-      return response?.data;
+      return response.data as Complaint[];
     } catch (error) {
       this.logger.error(`Error fetching data from WebEOC at ${path}:`, error);
       throw error;
     }
   };
 
-  private _fetchActionUpdates = async (path: string) => {
-    const dateFilter = this.getDateFilter();
-    const url = `${process.env.WEBEOC_URL}/${path}`;
-    const config: AxiosRequestConfig = {
-      headers: {
-        Cookie: this.cookie,
-      },
-    };
-
-    const body = {
-      customFilter: {
-        boolean: "and",
-        items: [
-          dateFilter,
-          {
-            fieldname: WEBEOC_FLAGS.ACTIONS_TAKEN_UPDATES,
-            operator: "Equals",
-            fieldvalue: "Yes",
-          },
-        ],
-      },
-    };
-
-    try {
-      const response = await axios.post(url, body, config);
-      return response?.data;
-    } catch (error) {
-      this.logger.error(`Error fetching data from WebEOC at ${path}:`, error);
-      throw error;
-    }
-  };
-
-  private _handleActionTaken = async (path: string, publish: any) => {
+  private _handleAction = async (
+    fetchMethod: () => Promise<any>,
+    publishMethod: (item: ActionTaken) => Promise<void>,
+  ) => {
     try {
       await this.authenticateWithWebEOC();
-      const data = await this._fetchActions(path);
+      const data = await fetchMethod();
 
       if (data) {
-        this.logger.debug(`Found ${data?.length} actions_taken from WebEOC`);
+        this.logger.debug(`Found ${data.length} action taken from WebEOC`);
 
         for (const item of data) {
-          await publish(item);
-        }
-      }
-    } catch (error) {
-      this.logger.error(`Unable to fetch data from WebEOC`, error);
-    }
-  };
-
-  private _handleActionTakenUpdate = async (path: string, publish: any) => {
-    try {
-      await this.authenticateWithWebEOC();
-      const data = await this._fetchActionUpdates(path);
-
-      if (data) {
-        this.logger.debug(`Found ${data?.length} action_taken_updates from WebEOC`);
-
-        for (const item of data) {
-          await publish(item);
+          await publishMethod(item);
         }
       }
     } catch (error) {
