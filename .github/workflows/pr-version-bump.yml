@@ -3,6 +3,8 @@ name: Handle PR Merge and Version Update
 on:
   pull_request:
     types: [closed]
+    branches:
+      - release/**
 jobs:
   handle_pr:
     name: Handle Merged PR
@@ -63,5 +65,5 @@ jobs:
 
       - name: Create Git Tag
         run: |
-          git tag "v${{ steps.increment_version.outputs.new_version }}"
-          git push origin "v${{ steps.increment_version.outputs.new_version }}"
+          git tag "${{ steps.increment_version.outputs.new_version }}"
+          git push origin "${{ steps.increment_version.outputs.new_version }}"
