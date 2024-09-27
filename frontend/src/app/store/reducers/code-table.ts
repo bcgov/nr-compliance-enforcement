@@ -40,6 +40,7 @@ import {
   fetchSectorTypes,
   fetchScheduleTypes,
   fetchCEEBDecisionTypes,
+  fetchScheduleSectorTypes,
 } from "./code-table-thunks";
 import { TeamType } from "../../types/app/code-tables/team";
 
@@ -75,6 +76,8 @@ const initialState: CodeTableState = {
   sector: [],
   schedule: [],
   "decision-type": [],
+  scheduleSector: [],
+  "schedule-sector-type": [],
   team: [],
   "complaint-method-received-codes": [],
   "lead-agency": [],
@@ -135,6 +138,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       sector,
       schedule,
       "decision-type": decisionType,
+      "schedule-sector-type": scheduleSectorType,
       team,
       "complaint-method-received-codes": complaintMethodReceived,
       "lead-agency": leadAgency,
@@ -243,6 +247,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(schedule).any()) {
       dispatch(fetchScheduleTypes());
     }
+    if (!from(scheduleSectorType).any()) {
+      dispatch(fetchScheduleSectorTypes());
+    }
     if (!from(decisionType).any()) {
       dispatch(fetchCEEBDecisionTypes());
     }
@@ -298,6 +305,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchSectorTypes());
     dispatch(fetchScheduleTypes());
     dispatch(fetchCEEBDecisionTypes());
+    dispatch(fetchScheduleSectorTypes());
     dispatch(fetchLeadAgencies());
   } catch (error) {
     console.error(error);

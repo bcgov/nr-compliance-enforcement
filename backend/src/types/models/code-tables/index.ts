@@ -54,6 +54,7 @@ export const AvailableCodeTables = [
   "non-compliance",
   "sector",
   "schedule",
+  "schedule-sector-type",
   "decision-type",
   "team",
   "complaint-method-received-codes",

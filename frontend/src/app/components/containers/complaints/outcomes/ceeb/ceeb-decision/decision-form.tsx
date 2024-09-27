@@ -6,6 +6,7 @@ import {
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
+  selectScheduleSectorXref,
 } from "../../../../../../store/reducers/code-table-selectors";
 import { selectLeadAgencyDropdown } from "../../../../../../store/reducers/code-table";
 import { Decision } from "../../../../../../types/app/case-files/ceeb/decision/decision";
@@ -76,6 +77,7 @@ export const DecisionForm: FC<props> = ({
   const leadAgencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officerOptions = useAppSelector(selectOfficersByAgencyDropdown(ownedByAgencyCode?.agency));
+  const scheduleSectorType = useAppSelector(selectScheduleSectorXref);
 
   //-- error messgaes
   const [scheduleErrorMessage, setScheduleErrorMessage] = useState("");
@@ -90,7 +92,7 @@ export const DecisionForm: FC<props> = ({
 
   //-- component data
   // eslint-disable-line no-console, max-len
-  const [data, applyData] = useState<Decision>({
+  const [data, setData] = useState<Decision>({
     schedule,
     sector,
     discharge,
@@ -103,17 +105,29 @@ export const DecisionForm: FC<props> = ({
     actionTakenDate,
   });
 
+  const [sectorList, setSectorList] = useState<Array<Option>>();
+
   useEffect(() => {
     if (officerAssigned) {
-      applyData({ ...data, assignedTo: officerAssigned });
+      setData({ ...data, assignedTo: officerAssigned });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [officerAssigned]);
 
+  useEffect(() => {
+    if (sector && schedule) {
+      let options = scheduleSectorType.filter((item) => item.schedule === schedule).map(item => {
+        const record: Option = { label: item.longDescription, value: item.sector };
+        return record
+      });
+      setSectorList(options);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [officerAssigned]);
   //-- update the decision state by property
   const updateModel = (property: string, value: string | Date | undefined) => {
     const model = { ...data, [property]: value };
-    applyData(model);
+    setData(model);
   };
 
   const getValue = (property: string): Option | undefined | null => {
@@ -181,11 +195,21 @@ export const DecisionForm: FC<props> = ({
     updateModel("actionTakenDate", date);
   };
 
+  const handleScheduleChange = (schedule: string) => {
+    let options = scheduleSectorType.filter((item) => item.schedule === schedule).map(item => {
+      const record: Option = { label: item.longDescription, value: item.sector };
+      return record
+    });
+    const model = { ...data, sector: "", schedule: schedule };
+    setData(model);
+    setSectorList(options);
+  };
+
   const handleActionTakenChange = (value: string) => {
     //-- if the action taken changes make sure to clear the
     //-- lead agency and inspection number
     const update = { ...data, actionTaken: value, leadAgency: undefined, inspectionNumber: undefined };
-    applyData(update);
+    setData(update);
   };
 
   const handleCancelButtonClick = () => {
@@ -198,7 +222,7 @@ export const DecisionForm: FC<props> = ({
           description: "Your changes will be lost.",
           cancelConfirmed: () => {
             //-- reset the form to its original state
-            applyData({
+            setData({
               schedule,
               sector,
               discharge,
@@ -357,7 +381,9 @@ export const DecisionForm: FC<props> = ({
               errorMessage={scheduleErrorMessage}
               placeholder="Select "
               onChange={(evt) => {
-                updateModel("schedule", evt?.value);
+                if (evt?.value) {
+                  handleScheduleChange(evt.value);
+                }
               }}
               value={getValue("schedule")}
             />
@@ -373,7 +399,7 @@ export const DecisionForm: FC<props> = ({
               id="outcome-decision-sector-category"
               className="comp-details-input"
               classNamePrefix="comp-select"
-              options={sectorsOptions}
+              options={sectorList}
               enableValidation={true}
               errorMessage={sectorErrorMessage}
               placeholder="Select "

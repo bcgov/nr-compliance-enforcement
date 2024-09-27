@@ -1,5 +1,6 @@
 import { RootState } from "../store";
 import Option from "../../types/app/option";
+import { ScheduleSectorXref } from "../../types/app/code-tables/schedule-sector-xref";
 
 export const selectDischargeDropdown = (state: RootState): Array<Option> => {
   const {
@@ -37,6 +38,12 @@ export const selectSectorDropdown = (state: RootState): Array<Option> => {
   return data;
 };
 
+export const selectScheduleSectorXref = (state: RootState): Array<ScheduleSectorXref> => {
+  const {
+    codeTables: { "schedule-sector-type": scheduleSectorType },
+  } = state;
+  return scheduleSectorType;
+};
 export const selectScheduleDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { schedule: items },
