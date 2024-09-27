@@ -12,7 +12,7 @@ import {
   selectComplaintStatusWithPendingCodeDropdown,
   selectGirTypeCodeDropdown,
 } from "../../../store/reducers/code-table";
-import { selectOfficersDropdown } from "../../../store/reducers/officer";
+import { selectOfficersByAgency, selectOfficersByAgencyDropdown, selectOfficersDropdown } from "../../../store/reducers/officer";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import DatePicker from "react-datepicker";
 import { CompSelect } from "../../common/comp-select";
@@ -21,6 +21,7 @@ import { ComplaintFilterPayload, updateFilter } from "../../../store/reducers/co
 import Option from "../../../types/app/option";
 import { getUserAgency } from "../../../service/user-service";
 import { listActiveFilters } from "../../../store/reducers/app";
+import { Officer } from "../../../types/person/person";
 
 type Props = {
   type: string;
@@ -49,6 +50,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     officers.unshift({ value: "Unassigned", label: "Unassigned" });
   }
   const agency = getUserAgency();
+  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdown(agency));
   const natureOfComplaintTypes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown);
   const speciesTypes = useAppSelector(selectSpeciesCodeDropdown);
   const statusTypes = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
@@ -380,7 +382,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                   classNames={{
                     menu: () => "top-layer-select",
                   }}
-                  options={officers}
+                  options={officersByAgency}
                   defaultOption={{ label: "Unassigned", value: "Unassigned" }}
                   placeholder="Select"
                   enableValidation={false}
