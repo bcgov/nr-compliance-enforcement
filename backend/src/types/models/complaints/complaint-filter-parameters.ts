@@ -10,4 +10,5 @@ export interface ComplaintFilterParameters {
   incidentReportedEnd?: Date;
   status?: string;
   girTypeCode?: string;
+  complaintMethod?: string;
 }

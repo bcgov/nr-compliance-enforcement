@@ -41,8 +41,13 @@ export class ComplaintController {
 
   @Get("/map/search/:complaintType")
   @Roles(Role.COS_OFFICER, Role.CEEB)
-  mapSearch(@Param("complaintType") complaintType: COMPLAINT_TYPE, @Query() model: ComplaintSearchParameters) {
-    return this.service.mapSearch(complaintType, model);
+  mapSearch(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Query() model: ComplaintSearchParameters,
+    @Request() req,
+  ) {
+    const hasCEEBRole = hasRole(req, "CEEB");
+    return this.service.mapSearch(complaintType, model, hasCEEBRole);
   }
 
   @Get("/search/:complaintType")

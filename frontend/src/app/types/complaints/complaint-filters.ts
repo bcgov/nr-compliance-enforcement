@@ -14,6 +14,7 @@ export interface ComplaintFilters {
   startDateFilter?: Date;
   endDateFilter?: Date;
   complaintStatusFilter?: Option;
+  complaintMethodFilter?: Option;
   page?: number;
   pageSize?: number;
   query?: string;
