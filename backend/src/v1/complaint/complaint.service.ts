@@ -856,11 +856,9 @@ export class ComplaintService {
         builder = this._applyFilters(builder, filters as ComplaintFilterParameters, complaintType);
       }
 
-      //-- only return complaints for the agency the user is associated with
-      const agency = await this._getAgencyByUser();
-      if (agency) {
-        builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
-      }
+      // search for complaints based on the user's role
+      const agency = hasCEEBRole ? "EPO" : "COS";
+      builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency });
 
       //-- return Waste and Pestivide complaints for CEEB users
       if (hasCEEBRole && complaintType === "ERS") {
