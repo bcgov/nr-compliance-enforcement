@@ -9483,9 +9483,9 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
-UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agancy_code = 'COS'
-UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agancy_code = 'PARKS'
-UPDATE feature_agency_xref SET active_ind = true WHERE feature_code = 'METH_FLTR' AND agancy_code = 'EPO'
+UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'COS';
+UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'PARKS';
+UPDATE feature_agency_xref SET active_ind = true WHERE feature_code = 'METH_FLTR' AND agency_code = 'EPO';
 
 --------------------------
 -- New Changes above this line
