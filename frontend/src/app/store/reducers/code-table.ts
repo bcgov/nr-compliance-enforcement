@@ -37,10 +37,10 @@ import { getUserAgency } from "../../service/user-service";
 import {
   fetchDischargeTypes,
   fetchNonComplianceTypes,
-  fetchRationaleTypes,
   fetchSectorTypes,
   fetchScheduleTypes,
   fetchCEEBDecisionTypes,
+  fetchScheduleSectorTypes,
 } from "./code-table-thunks";
 import { TeamType } from "../../types/app/code-tables/team";
 
@@ -73,10 +73,11 @@ const initialState: CodeTableState = {
   "gir-type": [],
   discharge: [],
   "non-compliance": [],
-  rationale: [],
   sector: [],
   schedule: [],
   "decision-type": [],
+  scheduleSector: [],
+  "schedule-sector-type": [],
   team: [],
   "complaint-method-received-codes": [],
   "lead-agency": [],
@@ -134,10 +135,10 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "gir-type": girType,
       discharge,
       "non-compliance": nonCompliance,
-      rationale,
       sector,
       schedule,
       "decision-type": decisionType,
+      "schedule-sector-type": scheduleSectorType,
       team,
       "complaint-method-received-codes": complaintMethodReceived,
       "lead-agency": leadAgency,
@@ -240,14 +241,14 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(nonCompliance).any()) {
       dispatch(fetchNonComplianceTypes());
     }
-    if (!from(rationale).any()) {
-      dispatch(fetchRationaleTypes());
-    }
     if (!from(sector).any()) {
       dispatch(fetchSectorTypes());
     }
     if (!from(schedule).any()) {
       dispatch(fetchScheduleTypes());
+    }
+    if (!from(scheduleSectorType).any()) {
+      dispatch(fetchScheduleSectorTypes());
     }
     if (!from(decisionType).any()) {
       dispatch(fetchCEEBDecisionTypes());
@@ -301,10 +302,10 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchEquipment());
     dispatch(fetchDischargeTypes());
     dispatch(fetchNonComplianceTypes());
-    dispatch(fetchRationaleTypes());
     dispatch(fetchSectorTypes());
     dispatch(fetchScheduleTypes());
     dispatch(fetchCEEBDecisionTypes());
+    dispatch(fetchScheduleSectorTypes());
     dispatch(fetchLeadAgencies());
   } catch (error) {
     console.error(error);

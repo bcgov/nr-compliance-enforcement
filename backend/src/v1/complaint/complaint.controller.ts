@@ -46,7 +46,9 @@ export class ComplaintController {
     @Query() model: ComplaintSearchParameters,
     @Request() req,
   ) {
-    const hasCEEBRole = hasRole(req, "CEEB");
+
+    const hasCEEBRole = hasRole(req, Role.CEEB);
+
     return this.service.mapSearch(complaintType, model, hasCEEBRole);
   }
 
@@ -57,7 +59,7 @@ export class ComplaintController {
     @Query() model: ComplaintSearchParameters,
     @Request() req,
   ) {
-    const hasCEEBRole = hasRole(req, "CEEB");
+    const hasCEEBRole = hasRole(req, Role.CEEB);
     return this.service.search(complaintType, model, hasCEEBRole);
   }
 

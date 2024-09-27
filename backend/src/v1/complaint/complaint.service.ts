@@ -1010,6 +1010,7 @@ export class ComplaintService {
         });
       }
 
+
       //-- added this for consistency with search method
       //-- return Waste and Pestivide complaints for CEEB users
       if (hasCEEBRole && complaintType === "ERS") {
