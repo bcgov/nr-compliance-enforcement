@@ -4,7 +4,11 @@ import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import { assignOfficerToOffice, selectOfficersDropdown } from "../../../store/reducers/officer";
 import { CompSelect } from "../../common/comp-select";
 import Option from "../../../types/app/option";
-import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown } from "../../../store/reducers/office";
+import {
+  fetchOfficeAssignments,
+  selectOfficesForAssignmentDropdown,
+  selectOffices,
+} from "../../../store/reducers/office";
 import { ToastContainer } from "react-toastify";
 import { ToggleError, ToggleSuccess } from "../../../common/toast";
 import { clearNotification, selectNotification } from "../../../store/reducers/app";
@@ -14,7 +18,6 @@ import { generateApiParameters, get, patch } from "../../../common/api";
 import config from "../../../../config";
 import { Officer } from "../../../types/person/person";
 import { UUID } from "crypto";
-import Roles from "../../../types/app/roles";
 import { ValidationMultiSelect } from "../../../common/validation-multiselect";
 
 export const UserManagement: FC = () => {
@@ -24,6 +27,8 @@ export const UserManagement: FC = () => {
   const notification = useAppSelector(selectNotification);
   const teams = useAppSelector(selectTeamDropdown);
   const agency = useAppSelector(selectAgencyDropdown);
+
+  const availableOffices = useAppSelector(selectOffices);
 
   const [officer, setOfficer] = useState<Option>();
   const [officerError, setOfficerError] = useState<string>("");
@@ -35,9 +40,23 @@ export const UserManagement: FC = () => {
   const [userIdirs, setUserIdirs] = useState<any[]>([]);
   const [selectedUserIdir, setSelectedUserIdir] = useState<string>("");
   const [officerGuid, setOfficerGuid] = useState<string>("");
+  const [offices, setOffices] = useState<Array<Option>>([]);
 
   useEffect(() => {
-    if (officeAssignments) dispatch(fetchOfficeAssignments());
+    if (officeAssignments) {
+      dispatch(fetchOfficeAssignments());
+      let options = availableOffices.map((item) => {
+        const { id, name, agency } = item;
+        const record: Option = {
+          label: `${agency} - ${name}`,
+          value: id,
+        };
+
+        return record;
+      });
+      setOffices(options);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   useEffect(() => {
@@ -58,8 +77,25 @@ export const UserManagement: FC = () => {
           const currentUserRoles = mapRolesDropdown(current.roles);
           setSelectedRoles(currentUserRoles);
         }
+
+        if (current.agency) {
+          let filtered = availableOffices
+            .filter((item) => item.code === current.agency)
+            .map((item) => {
+              const { id, name, agency } = item;
+              const record: Option = {
+                label: `${agency} - ${name}`,
+                value: id,
+              };
+
+              return record;
+            });
+
+          setOffices(filtered);
+        }
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [officerGuid, selectedUserIdir]);
 
   const mapRolesDropdown = (userRoles: any): Option[] => {
@@ -143,6 +179,20 @@ export const UserManagement: FC = () => {
   };
   const handleAgencyChange = (input: any) => {
     if (input.value) {
+      let filtered = availableOffices
+        .filter((item) => item.code === input.value)
+        .map((item) => {
+          const { id, name, agency } = item;
+          const record: Option = {
+            label: `${agency} - ${name}`,
+            value: id,
+          };
+
+          return record;
+        });
+
+      setOffices(filtered);
+
       setSelectedAgency(input);
     }
   };
@@ -176,17 +226,23 @@ export const UserManagement: FC = () => {
       const mapRoles = selectedRoles?.map((role) => {
         return { name: role.value };
       });
-      let res;
+
       switch (selectedAgency.value) {
         case "EPO": {
           if (selectedUserIdir && selectedTeam && selectedRoles) {
-            res = await updateTeamRole(
+            let res = await updateTeamRole(
               selectedUserIdir,
               officerGuid,
               selectedAgency?.value,
               selectedTeam?.value,
               mapRoles,
             );
+
+            if (res?.team && res?.roles) {
+              ToggleSuccess("Officer updated successfully");
+            } else {
+              ToggleError("Unable to update");
+            }
           }
           break;
         }
@@ -201,15 +257,15 @@ export const UserManagement: FC = () => {
           const mapRoles = selectedRoles?.map((role) => {
             return { name: role.value };
           });
-          res = await updateTeamRole(selectedUserIdir, officerGuid, selectedAgency?.value, null, mapRoles);
+          let res = await updateTeamRole(selectedUserIdir, officerGuid, selectedAgency?.value, null, mapRoles);
+
+          if (res?.roles) {
+            ToggleSuccess("Officer updated successfully");
+          } else {
+            ToggleError("Unable to update");
+          }
           break;
         }
-      }
-      if (res && res.team && res.roles) {
-        ToggleSuccess("Success");
-      } else {
-        debugger;
-        ToggleError("Unable to update");
       }
     }
   };
@@ -339,7 +395,7 @@ export const UserManagement: FC = () => {
                   classNames={{
                     menu: () => "top-layer-select",
                   }}
-                  options={officeAssignments}
+                  options={offices}
                   placeholder="Select"
                   enableValidation={true}
                   value={office}
