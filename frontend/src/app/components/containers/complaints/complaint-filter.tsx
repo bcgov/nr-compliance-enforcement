@@ -13,7 +13,7 @@ import {
   selectGirTypeCodeDropdown,
   selectComplaintReceivedMethodDropdown,
 } from "../../../store/reducers/code-table";
-import { selectOfficersByAgencyDropdown, selectOfficersDropdown } from "../../../store/reducers/officer";
+import { selectOfficersByAgencyDropdown } from "../../../store/reducers/officer";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import DatePicker from "react-datepicker";
 import { CompSelect } from "../../common/comp-select";
