@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><database name="default" schema="public" type="PostgreSQL - 16.4 (Debian 16.4-1.pgdg110+1)">
+<?xml version="1.0" encoding="UTF-8"?><database name="default" schema="public" type="PostgreSQL - 16.4 (Debian 16.4-1.pgdg110+2)">
    <sequences>
       <sequence increment="1" name="complaint_sequence" startValue="40000"/>
    </sequences>
@@ -1020,7 +1020,7 @@ BEGIN
   -- Raises a NOTICE if it was deprecated in this version,
   -- a WARNING if in a previous version (only up to minor version checked)
   --
-	curver_text := '3.4.2';
+	curver_text := '3.4.3';
 	IF pg_catalog.split_part(curver_text,'.',1)::int > pg_catalog.split_part(version,'.',1)::int OR
 	   ( pg_catalog.split_part(curver_text,'.',1) = pg_catalog.split_part(version,'.',1) AND
 		 pg_catalog.split_part(curver_text,'.',2) != split_part(version,'.',2) )
@@ -5693,14 +5693,14 @@ END]]></definition>
       </routine>
       <routine dataAccess="MODIFIES" deterministic="true" name="postgis_scripts_build_date()" returnType="text" securityType="INVOKER" type="FUNCTION">
          <comment><![CDATA[Returns build date of the PostGIS scripts.]]></comment>
-         <definition language="sql"><![CDATA[SELECT '2024-02-08 17:55:49'::text AS version]]></definition>
+         <definition language="sql"><![CDATA[SELECT '2024-09-11 18:11:28'::text AS version]]></definition>
          <parameters>
             <parameter mode="IN"/>
          </parameters>
       </routine>
       <routine dataAccess="MODIFIES" deterministic="true" name="postgis_scripts_installed()" returnType="text" securityType="INVOKER" type="FUNCTION">
          <comment><![CDATA[Returns version of the PostGIS scripts installed in this database.]]></comment>
-         <definition language="sql"><![CDATA[SELECT trim('3.4.2'::text || $rev$ c19ce56 $rev$) AS version]]></definition>
+         <definition language="sql"><![CDATA[SELECT trim('3.4.3'::text || $rev$ e365945 $rev$) AS version]]></definition>
          <parameters>
             <parameter mode="IN"/>
          </parameters>
