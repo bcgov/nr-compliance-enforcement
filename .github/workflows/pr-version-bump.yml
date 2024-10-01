@@ -37,22 +37,18 @@ jobs:
 
       - name: Update package.json versions
         run: |
-          # Update package.json in the frontend directory
           cd frontend
           npm version ${{ steps.increment_version.outputs.new_version }} --no-git-tag-version
           echo "Frontend package.json version updated to ${{ steps.increment_version.outputs.new_version }}"
 
-          # Update package.json in the backend directory
           cd ../backend
           npm version ${{ steps.increment_version.outputs.new_version }} --no-git-tag-version
           echo "Backend package.json version updated to ${{ steps.increment_version.outputs.new_version }}"
 
-          # Update package.json in the webeoc directory
           cd ../webeoc
           npm version ${{ steps.increment_version.outputs.new_version }} --no-git-tag-version
           echo "WebEOC package.json version updated to ${{ steps.increment_version.outputs.new_version }}"
 
-          # Return to the original directory
           cd ..
 
       - name: Commit and Push Version Update
