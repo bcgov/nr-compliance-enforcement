@@ -33,12 +33,10 @@ jobs:
         id: bump_version
         run: |
           latest_tag="${{ steps.latest_tag.outputs.latest_tag }}"
-          # Extract major, minor, and patch versions
           version_array=(${latest_tag//./ })
           major_version=${version_array[0]//v/}
           minor_version=${version_array[1]}
           patch_version=${version_array[2]}
-          # Increment minor version and reset patch
           new_minor_version=$((minor_version + 1))
           new_version="v${major_version}.${new_minor_version}.0"
           echo "::set-output name=new_version::$new_version"
