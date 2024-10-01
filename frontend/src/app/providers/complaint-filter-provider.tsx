@@ -25,6 +25,7 @@ let initialState: ComplaintFilters = {
   natureOfComplaint: null,
   violationType: null,
   filters: [],
+  complaintMethod: null,
 };
 
 const ComplaintFilterContext = createContext<ComplaintFilterContextType>({

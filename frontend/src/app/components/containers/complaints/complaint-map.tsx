@@ -24,8 +24,19 @@ export const generateMapComplaintRequestPayload = (
   sortKey: string,
   sortDirection: string,
 ): ComplaintRequestPayload => {
-  const { region, zone, community, officer, startDate, endDate, status, species, natureOfComplaint, violationType } =
-    filters;
+  const {
+    region,
+    zone,
+    community,
+    officer,
+    startDate,
+    endDate,
+    status,
+    species,
+    natureOfComplaint,
+    violationType,
+    complaintMethod,
+  } = filters;
 
   const common = {
     sortColumn: sortKey,
@@ -44,6 +55,7 @@ export const generateMapComplaintRequestPayload = (
       return {
         ...common,
         violationFilter: violationType,
+        complaintMethodFilter: complaintMethod,
       } as ComplaintRequestPayload;
     case COMPLAINT_TYPES.HWCR:
     default:
