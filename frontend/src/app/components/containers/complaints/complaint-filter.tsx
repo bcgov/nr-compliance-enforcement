@@ -49,7 +49,10 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     officers.unshift({ value: "Unassigned", label: "Unassigned" });
   }
   const agency = getUserAgency();
-  const officersByAgency = useAppSelector(selectOfficersByAgencyDropdown(agency));
+  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdown(agency));
+  if (officersByAgency && officersByAgency[0]?.value !== "Unassigned") {
+    officersByAgency.unshift({ value: "Unassigned", label: "Unassigned" });
+  }
   const natureOfComplaintTypes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown);
   const speciesTypes = useAppSelector(selectSpeciesCodeDropdown);
   const statusTypes = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
