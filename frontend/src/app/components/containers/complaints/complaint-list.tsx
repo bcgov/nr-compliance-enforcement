@@ -106,24 +106,20 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(defaultPageSize); // Default to 10 results per page
 
-  const defaultZone = useAppSelector(selectDefaultZone);
-
   useEffect(() => {
-    if (defaultZone) {
-      let payload = generateComplaintRequestPayload(type, filters, page, pageSize, sortKey, sortDirection);
+    let payload = generateComplaintRequestPayload(type, filters, page, pageSize, sortKey, sortDirection);
 
-      if (searchQuery) {
-        payload = { ...payload, query: searchQuery };
-      }
-
-      dispatch(getComplaints(type, payload));
+    if (searchQuery) {
+      payload = { ...payload, query: searchQuery };
     }
+
+    dispatch(getComplaints(type, payload));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, sortKey, sortDirection, page, pageSize]);
 
   useEffect(() => {
     //Refresh the list with the current filters when the search is cleared
-    if (!searchQuery && defaultZone) {
+    if (!searchQuery) {
       let payload = generateComplaintRequestPayload(type, filters, page, pageSize, sortKey, sortDirection);
       payload = { ...payload, query: searchQuery };
       dispatch(getComplaints(type, payload));
