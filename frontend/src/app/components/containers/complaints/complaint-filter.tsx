@@ -46,10 +46,6 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     dispatch,
   } = useContext(ComplaintFilterContext);
 
-  let officers = useAppSelector(selectOfficersDropdown(false));
-  if (officers && officers[0]?.value !== "Unassigned") {
-    officers.unshift({ value: "Unassigned", label: "Unassigned" });
-  }
   const agency = getUserAgency();
   let officersByAgency = useAppSelector(selectOfficersByAgencyDropdown(agency));
   if (officersByAgency && officersByAgency[0]?.value !== "Unassigned") {
@@ -228,9 +224,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                   <div>
                     <button
                       aria-label="Previous Month"
-                      className={`react-datepicker__navigation react-datepicker__navigation--previous ${
-                        customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
-                      }`}
+                      className={`react-datepicker__navigation react-datepicker__navigation--previous ${customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
+                        }`}
                       onClick={decreaseMonth}
                     >
                       <span
@@ -249,9 +244,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                     </span>
                     <button
                       aria-label="Next Month"
-                      className={`react-datepicker__navigation react-datepicker__navigation--next ${
-                        customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
-                      }`}
+                      className={`react-datepicker__navigation react-datepicker__navigation--next ${customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
+                        }`}
                       onClick={increaseMonth}
                     >
                       <span
