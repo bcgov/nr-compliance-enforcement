@@ -138,10 +138,6 @@ export class Complaint {
   })
   location_geometry_point: Point;
 
-  /*
- @Column()
- location_geometry_point: string;
- */
   @ApiProperty({
     example: "Near Golden",
     description: "The summary text for the location of the complaint",
@@ -205,6 +201,14 @@ export class Complaint {
   @Column()
   update_utc_timestamp: Date;
 
+  @ApiProperty({
+    example: "true",
+    description:
+      "flag to represent that the caller has asked for special care when handling their personal information",
+  })
+  @Column()
+  is_privacy_requested: string;
+
   constructor(
     detail_text?: string,
     caller_name?: string,
@@ -232,6 +236,7 @@ export class Complaint {
     person_complaint_xref?: PersonComplaintXref[],
     webeoc_identifier?: string,
     comp_mthd_recv_cd_agcy_cd_xref?: CompMthdRecvCdAgcyCdXref,
+    is_privacy_requested?: string,
   ) {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -259,5 +264,6 @@ export class Complaint {
     this.person_complaint_xref = person_complaint_xref;
     this.webeoc_identifier = webeoc_identifier;
     this.comp_mthd_recv_cd_agcy_cd_xref = comp_mthd_recv_cd_agcy_cd_xref;
+    this.is_privacy_requested = is_privacy_requested;
   }
 }

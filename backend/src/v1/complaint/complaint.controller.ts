@@ -41,8 +41,15 @@ export class ComplaintController {
 
   @Get("/map/search/:complaintType")
   @Roles(Role.COS_OFFICER, Role.CEEB)
-  mapSearch(@Param("complaintType") complaintType: COMPLAINT_TYPE, @Query() model: ComplaintSearchParameters) {
-    return this.service.mapSearch(complaintType, model);
+  mapSearch(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Query() model: ComplaintSearchParameters,
+    @Request() req,
+  ) {
+
+    const hasCEEBRole = hasRole(req, Role.CEEB);
+
+    return this.service.mapSearch(complaintType, model, hasCEEBRole);
   }
 
   @Get("/search/:complaintType")
@@ -52,7 +59,7 @@ export class ComplaintController {
     @Query() model: ComplaintSearchParameters,
     @Request() req,
   ) {
-    const hasCEEBRole = hasRole(req, "CEEB");
+    const hasCEEBRole = hasRole(req, Role.CEEB);
     return this.service.search(complaintType, model, hasCEEBRole);
   }
 

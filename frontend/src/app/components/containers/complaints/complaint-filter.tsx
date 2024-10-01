@@ -11,8 +11,9 @@ import {
   selectCascadedCommunity,
   selectComplaintStatusWithPendingCodeDropdown,
   selectGirTypeCodeDropdown,
+  selectComplaintReceivedMethodDropdown,
 } from "../../../store/reducers/code-table";
-import { selectOfficersDropdown } from "../../../store/reducers/officer";
+import { selectOfficersByAgencyDropdown } from "../../../store/reducers/officer";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import DatePicker from "react-datepicker";
 import { CompSelect } from "../../common/comp-select";
@@ -40,15 +41,16 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       startDate,
       endDate,
       girType,
+      complaintMethod,
     },
     dispatch,
   } = useContext(ComplaintFilterContext);
 
-  let officers = useAppSelector(selectOfficersDropdown(false));
-  if (officers && officers[0]?.value !== "Unassigned") {
-    officers.unshift({ value: "Unassigned", label: "Unassigned" });
-  }
   const agency = getUserAgency();
+  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdown(agency));
+  if (officersByAgency && officersByAgency[0]?.value !== "Unassigned") {
+    officersByAgency.unshift({ value: "Unassigned", label: "Unassigned" });
+  }
   const natureOfComplaintTypes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown);
   const speciesTypes = useAppSelector(selectSpeciesCodeDropdown);
   const statusTypes = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
@@ -58,6 +60,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
   const communities = useAppSelector(selectCascadedCommunity(region?.value, zone?.value, community?.value));
+
+  const complaintMethods = useAppSelector(selectComplaintReceivedMethodDropdown);
 
   const activeFilters = useAppSelector(listActiveFilters());
 
@@ -112,98 +116,102 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const renderComplaintFilters = (): JSX.Element => {
     return (
       <div className="comp-filter-container">
-        {COMPLAINT_TYPES.HWCR === type && activeFilters.showNatureComplaintFilter && activeFilters.showSpeciesFilter && ( // wildlife only filter
-          <>
-            <div id="comp-filter-nature-of-complaint-id">
-              <label htmlFor="nature-of-complaint-select-id">Nature of Complaint</label>
+        {COMPLAINT_TYPES.HWCR === type &&
+          activeFilters.showNatureComplaintFilter &&
+          activeFilters.showSpeciesFilter && ( // wildlife only filter
+            <>
+              <div id="comp-filter-nature-of-complaint-id">
+                <label htmlFor="nature-of-complaint-select-id">Nature of Complaint</label>
+                <div className="filter-select-padding">
+                  <CompSelect
+                    id="nature-of-complaint-select-id"
+                    classNamePrefix="comp-select"
+                    onChange={(option) => {
+                      setFilter("natureOfComplaint", option);
+                    }}
+                    classNames={{
+                      menu: () => "top-layer-select",
+                    }}
+                    options={natureOfComplaintTypes}
+                    placeholder="Select"
+                    enableValidation={false}
+                    value={natureOfComplaint}
+                    isClearable={true}
+                  />
+                </div>
+              </div>
+
+              <div id="comp-species-filter-id">
+                <label htmlFor="species-select-id">Species</label>
+                <div className="filter-select-padding">
+                  <CompSelect
+                    id="species-select-id"
+                    classNamePrefix="comp-select"
+                    onChange={(option) => {
+                      setFilter("species", option);
+                    }}
+                    classNames={{
+                      menu: () => "top-layer-select",
+                    }}
+                    options={speciesTypes}
+                    placeholder="Select"
+                    enableValidation={false}
+                    value={species}
+                    isClearable={true}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+        {COMPLAINT_TYPES.ERS === type &&
+          activeFilters.showViolationFilter && ( // wildlife only filter
+            <div id="comp-filter-violation-id">
+              {/* <!-- violation types --> */}
+              <label htmlFor="violation-type-select-id">Violation Type</label>
               <div className="filter-select-padding">
                 <CompSelect
-                  id="nature-of-complaint-select-id"
+                  id="violation-type-select-id"
                   classNamePrefix="comp-select"
                   onChange={(option) => {
-                    setFilter("natureOfComplaint", option);
+                    setFilter("violationType", option);
                   }}
                   classNames={{
                     menu: () => "top-layer-select",
                   }}
-                  options={natureOfComplaintTypes}
+                  options={violationTypes}
                   placeholder="Select"
                   enableValidation={false}
-                  value={natureOfComplaint}
+                  value={violationType}
                   isClearable={true}
                 />
               </div>
             </div>
+          )}
 
-            <div id="comp-species-filter-id">
-              <label htmlFor="species-select-id">Species</label>
+        {COMPLAINT_TYPES.GIR === type &&
+          activeFilters.showGirTypeFilter && ( // GIR only filter
+            <div id="comp-filter-gir-id">
+              <label htmlFor="gir-type-select-id">Gir Type</label>
               <div className="filter-select-padding">
                 <CompSelect
-                  id="species-select-id"
+                  id="gir-type-select-id"
                   classNamePrefix="comp-select"
                   onChange={(option) => {
-                    setFilter("species", option);
+                    setFilter("girType", option);
                   }}
                   classNames={{
                     menu: () => "top-layer-select",
                   }}
-                  options={speciesTypes}
+                  options={girTypes}
                   placeholder="Select"
                   enableValidation={false}
-                  value={species}
+                  value={girType}
                   isClearable={true}
                 />
               </div>
             </div>
-          </>
-        )}
-
-        {COMPLAINT_TYPES.ERS === type && activeFilters.showViolationFilter && ( // wildlife only filter
-          <div id="comp-filter-violation-id">
-            {/* <!-- violation types --> */}
-            <label htmlFor="violation-type-select-id">Violation Type</label>
-            <div className="filter-select-padding">
-              <CompSelect
-                id="violation-type-select-id"
-                classNamePrefix="comp-select"
-                onChange={(option) => {
-                  setFilter("violationType", option);
-                }}
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                options={violationTypes}
-                placeholder="Select"
-                enableValidation={false}
-                value={violationType}
-                isClearable={true}
-              />
-            </div>
-          </div>
-        )}
-
-        {COMPLAINT_TYPES.GIR === type && activeFilters.showGirTypeFilter && ( // GIR only filter
-          <div id="comp-filter-gir-id">
-            <label htmlFor="gir-type-select-id">Gir Type</label>
-            <div className="filter-select-padding">
-              <CompSelect
-                id="gir-type-select-id"
-                classNamePrefix="comp-select"
-                onChange={(option) => {
-                  setFilter("girType", option);
-                }}
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                options={girTypes}
-                placeholder="Select"
-                enableValidation={false}
-                value={girType}
-                isClearable={true}
-              />
-            </div>
-          </div>
-        )}
+          )}
 
         {activeFilters.showDateFilter && (
           <div id="comp-filter-date-id">
@@ -284,6 +292,29 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 placeholder="Select"
                 enableValidation={false}
                 value={status}
+                isClearable={true}
+              />
+            </div>
+          </div>
+        )}
+
+        {COMPLAINT_TYPES.ERS === type && activeFilters.showMethodFilter && (
+          <div id="comp-filter-complaint-method-id">
+            <label htmlFor="complaint-method-select-id">Complaint Method</label>
+            <div className="filter-select-padding">
+              <CompSelect
+                id="complaint-method-select-id"
+                classNamePrefix="comp-select"
+                onChange={(option) => {
+                  setFilter("complaintMethod", option);
+                }}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={complaintMethods}
+                placeholder="Select"
+                enableValidation={false}
+                value={complaintMethod}
                 isClearable={true}
               />
             </div>
@@ -380,7 +411,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                   classNames={{
                     menu: () => "top-layer-select",
                   }}
-                  options={officers}
+                  options={officersByAgency}
                   defaultOption={{ label: "Unassigned", value: "Unassigned" }}
                   placeholder="Select"
                   enableValidation={false}

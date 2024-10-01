@@ -4,12 +4,12 @@ import { generateApiParameters, get } from "../../common/api";
 import { CODE_TABLE_TYPES } from "../../constants/code-table-types";
 import { Discharge } from "../../types/app/code-tables/discharge";
 import { NonCompliance } from "../../types/app/code-tables/non-compliance";
-import { Rationale } from "../../types/app/code-tables/rationale";
 import { Schedule } from "../../types/app/code-tables/schedule";
 import { Sector } from "../../types/app/code-tables/sector";
 import { AppThunk } from "../store";
 import { setCodeTable } from "./code-table";
 import { DecisionType } from "../../types/app/code-tables/decision-type";
+import { ScheduleSectorXref } from "../../types/app/code-tables/schedule-sector-xref";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
@@ -31,16 +31,6 @@ export const fetchNonComplianceTypes = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const fetchRationaleTypes = (): AppThunk => async (dispatch) => {
-  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.RATIONALE}`);
-
-  const response = await get<Array<Rationale>>(dispatch, parameters);
-  if (response && from(response).any()) {
-    const payload = { key: CODE_TABLE_TYPES.RATIONALE, data: response };
-    dispatch(setCodeTable(payload));
-  }
-};
-
 export const fetchSectorTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.SECTOR}`);
 
@@ -50,7 +40,17 @@ export const fetchSectorTypes = (): AppThunk => async (dispatch) => {
     dispatch(setCodeTable(payload));
   }
 };
+export const fetchScheduleSectorTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.SCHEDULE_SECTOR_TYPE}`,
+  );
 
+  const response = await get<Array<ScheduleSectorXref>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.SCHEDULE_SECTOR_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
 export const fetchScheduleTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.SCHEDULE}`);
 

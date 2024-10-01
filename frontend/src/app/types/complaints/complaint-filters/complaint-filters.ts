@@ -18,5 +18,7 @@ export type ComplaintFilters = {
 
   girType?: DropdownOption | null;
 
+  complaintMethod: DropdownOption | null;
+
   filters: Array<any>;
 };
