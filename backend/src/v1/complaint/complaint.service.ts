@@ -254,6 +254,7 @@ export class ComplaintService {
       speciesCode,
       violationCode,
       girTypeCode,
+      complaintMethod,
     }: ComplaintFilterParameters,
     complaintType: COMPLAINT_TYPE,
   ): SelectQueryBuilder<complaintAlias> {
@@ -309,6 +310,11 @@ export class ComplaintService {
         if (violationCode) {
           builder.andWhere("allegation.violation_code = :ViolationCode", {
             ViolationCode: violationCode,
+          });
+        }
+        if (complaintMethod) {
+          builder.andWhere("method_xref.complaint_method_received_code = :ComplaintMethod", {
+            ComplaintMethod: complaintMethod,
           });
         }
         break;
@@ -969,6 +975,7 @@ export class ComplaintService {
         });
       }
 
+      //-- added this for consistency with search method
       //-- return Waste and Pestivide complaints for CEEB users
       if (hasCEEBRole && complaintType === "ERS") {
         complaintBuilder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
@@ -1001,6 +1008,8 @@ export class ComplaintService {
         });
       }
 
+
+      //-- added this for consistency with search method
       //-- return Waste and Pestivide complaints for CEEB users
       if (hasCEEBRole && complaintType === "ERS") {
         unMappedBuilder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });

@@ -51,6 +51,7 @@ export const generateComplaintRequestPayload = (
     natureOfComplaint,
     violationType,
     girType,
+    complaintMethod,
   } = filters;
 
   const common = {
@@ -78,6 +79,7 @@ export const generateComplaintRequestPayload = (
       return {
         ...common,
         violationFilter: violationType,
+        complaintMethodFilter: complaintMethod,
       } as ComplaintRequestPayload;
     case COMPLAINT_TYPES.HWCR:
     default:

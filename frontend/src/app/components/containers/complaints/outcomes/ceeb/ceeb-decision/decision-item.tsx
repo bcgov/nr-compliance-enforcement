@@ -45,6 +45,7 @@ export const DecisionItem: FC<props> = ({
   const nonComplianceOptions = useAppSelector(selectNonComplianceDropdown);
   const sectorsOptions = useAppSelector(selectSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
+  const scheduleSectorsOptions = useAppSelector(selectSectorDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const officerOptions = useAppSelector(selectOfficersDropdown(true));
@@ -62,7 +63,14 @@ export const DecisionItem: FC<props> = ({
         result = sectorsOptions.find((item) => item.value === sector);
         break;
       }
-
+      case "schedule-sector": {
+        result = scheduleSectorsOptions.find((item) => item.value === sector);
+        break;
+      }
+      case "schedule-sector-type": {
+        result = scheduleSectorsOptions.find((item) => item.value === sector);
+        break;
+      }
       case "discharge": {
         result = dischargesOptions.find((item) => item.value === discharge);
         break;
