@@ -6,7 +6,7 @@ export interface OfficerDto {
   id: UUID;
   userId: string;
   authorizedUserId: string;
-  office: OfficeDto;
+  office?: OfficeDto;
   person: Person;
 }
 
