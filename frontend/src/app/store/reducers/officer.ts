@@ -464,18 +464,28 @@ export const selectCurrentOfficer =
     if (selected?.person_guid) {
       const { person_guid: person, office_guid: office, officer_guid, user_id, auth_user_guid } = selected;
       const { person_guid, first_name: firstName, last_name: lastName } = person;
-      const { office_guid, cos_geo_org_unit: location } = office;
+
       const officerId = officer_guid as UUID;
       const personId = person_guid as UUID;
-      const officeId = office_guid as UUID;
 
-      return {
+      const officerData = {
         id: officerId,
         userId: user_id,
         authorizedUserId: auth_user_guid,
         person: { id: personId, firstName, lastName },
-        office: { ...location, id: officeId },
       };
+
+      // Add office details if officer has an office
+      if (office) {
+        const { office_guid, cos_geo_org_unit: location } = office;
+        const officeId = office_guid as UUID;
+        return {
+          ...officerData,
+          office: { ...location, id: officeId },
+        };
+      }
+
+      return officerData;
     }
 
     return null;
