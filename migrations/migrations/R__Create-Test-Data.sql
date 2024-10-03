@@ -1637,6 +1637,32 @@ VALUES
   ) ON CONFLICT
 DO NOTHING;
 
+INSERT INTO
+  public.person (
+    person_guid,
+    first_name,
+    middle_name_1,
+    middle_name_2,
+    last_name,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    '0667495f-61a5-4d3b-b756-1ee58cb38e23'::uuid,
+    'Ryan',
+    NULL,
+    NULL,
+    'Rondeau',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754'
+  ) ON CONFLICT
+DO NOTHING;
+
 -------------------------
 -- INSERT OFFICER RECORDS
 -------------------------
@@ -2281,6 +2307,30 @@ VALUES
     'FLYWAY',
     '2024-01-22 22:20:48.186',
     '2eaffabd-720d-48ed-aa82-b31f828487c4'::uuid,
+    '4a5a94b1-bd47-4611-a577-861d97089903'::uuid
+  ) ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    office_guid
+  )
+VALUES
+  (
+    '06ff894b-3895-4d32-8a4a-1fcc0be23e47'::uuid,
+    'RRONDEAU',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754',
+    'FLYWAY',
+    '2024-01-22 22:20:48.186',
+    '0667495f-61a5-4d3b-b756-1ee58cb38e23'::uuid,
     '4a5a94b1-bd47-4611-a577-861d97089903'::uuid
   ) ON CONFLICT
 DO NOTHING;
