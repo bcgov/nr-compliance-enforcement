@@ -105,7 +105,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
         modalSize: "md",
         modalType: CANCEL_CONFIRM,
         data: {
-          title: "Cancel Changes?",
+          title: "Cancel changes?",
           description: "Your changes will be lost.",
           cancelConfirmed: () => {
             //-- reset the form to its original state

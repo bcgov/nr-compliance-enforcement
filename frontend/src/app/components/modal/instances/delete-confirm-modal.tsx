@@ -21,7 +21,9 @@ export const DeleteConfirmModal: FC<DeleteConfirmModalProps> = (props) => {
         <Modal.Title id="contained-modal-title-vcenter">{props.title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="cancel_confirm_modal_description">{props.content}</div>
+        <div className="cancel_confirm_modal_description">
+          <p>{props.content}</p>
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <Button

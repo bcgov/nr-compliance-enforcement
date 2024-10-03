@@ -71,7 +71,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
         data: {
           caseFileId: id,
           outcomeId, //-- this is the id of the animal outcome thats being deleted
-          title: "Delete Animal Outcome",
+          title: "Delete animal outcome?",
           description: "All the data in this section will be lost.",
           ok: "Yes, delete animal outcome",
           cancel: "No, go back",
@@ -116,7 +116,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
         modalSize: "md",
         modalType: CANCEL_CONFIRM,
         data: {
-          title: "Cancel Changes?",
+          title: "Cancel changes?",
           description: "Your changes will be lost.",
           cancelConfirmed: () => {
             setShowForm(false);

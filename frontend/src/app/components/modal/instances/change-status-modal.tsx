@@ -165,43 +165,30 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   return (
     <>
       {title && (
-        <Modal.Header
-          closeButton={true}
-          className="border-0"
-        >
-          <Modal.Title style={{ fontSize: "20px" }}>{title}</Modal.Title>
+        <Modal.Header closeButton={true}>
+          <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
       )}
       <Modal.Body>
-        <div className="change_status_modal">
-          {statusChangeDisabledInd && (
-            <Row className="status-change-subtext">
-              <Col
-                xs="auto"
-                className="change_status_modal_icon"
-              >
-                <i className="bi bi-exclamation-circle"></i>
-              </Col>
-              <Col>
-                <div>Complaint is pending review.</div>
-                <div>Complete or cancel review before updating status.</div>
-              </Col>
-            </Row>
-          )}
-          <Row>
+        {statusChangeDisabledInd && (
+          <Row className="status-change-subtext">
+            <Col
+              xs="auto"
+              className="change_status_modal_icon"
+            >
+              <i className="bi bi-exclamation-circle"></i>
+            </Col>
             <Col>
-              <label className="modal_description_label">{description}</label>
+              <div>Complaint is pending review.</div>
+              <div>Complete or cancel review before updating status.</div>
             </Col>
           </Row>
-          <Row>
-            <Col>
-              <ComplaintStatusSelect
-                isDisabled={statusChangeDisabledInd}
-                onSelectChange={handleSelectChange}
-              />
-            </Col>
-          </Row>
-        </div>
+        )}
+        <label style={{ marginBottom: "8px" }}>{description}</label>
+        <ComplaintStatusSelect
+          isDisabled={statusChangeDisabledInd}
+          onSelectChange={handleSelectChange}
+        />
       </Modal.Body>
       <Modal.Footer>
         <Button
