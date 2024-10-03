@@ -218,11 +218,12 @@ export const searchOfficers =
       results = items.filter((officer) => {
         const {
           person_guid: { first_name: firstName, last_name: lastName },
-          office_guid: {
-            cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
-          },
+          office_guid,
           user_roles,
         } = officer;
+
+        // Safely handle office_guid and cos_geo_org_unit
+        const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? undefined; // Will be undefined if cos_geo_org_unit is null or undefined
 
         const nameMatch =
           firstName.toLocaleLowerCase().includes(searchInput) || lastName.toLocaleLowerCase().includes(searchInput);
@@ -249,11 +250,11 @@ export const selectOfficersDropdown =
 
     const results = officers
       ?.filter((officer) => {
-        const {
-          office_guid: {
-            cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
-          },
-        } = officer;
+        const { office_guid } = officer;
+
+        // Safely handle office_guid and cos_geo_org_unit
+        const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? undefined; // Will be undefined if cos_geo_org_unit is null or undefined
+
         return includeAdminOffice ? true : !fromAdminOffice;
       })
       .map((item) => {
@@ -298,12 +299,10 @@ const mapAgencyToRole = (agency: string): string => {
 const filterOfficerByAgency = (agency: string, officers: Officer[]) => {
   const role = mapAgencyToRole(agency);
   const result = officers.filter((officer) => {
-    const {
-      office_guid: {
-        cos_geo_org_unit: { administrative_office_ind: fromAdminOffice },
-      },
-      user_roles,
-    } = officer;
+    const { office_guid, user_roles } = officer;
+
+    // Safely handle office_guid and cos_geo_org_unit
+    const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? undefined; // Will be undefined if cos_geo_org_unit is null or undefined
 
     const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
     const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
@@ -465,18 +464,28 @@ export const selectCurrentOfficer =
     if (selected?.person_guid) {
       const { person_guid: person, office_guid: office, officer_guid, user_id, auth_user_guid } = selected;
       const { person_guid, first_name: firstName, last_name: lastName } = person;
-      const { office_guid, cos_geo_org_unit: location } = office;
+
       const officerId = officer_guid as UUID;
       const personId = person_guid as UUID;
-      const officeId = office_guid as UUID;
 
-      return {
+      const officerData = {
         id: officerId,
         userId: user_id,
         authorizedUserId: auth_user_guid,
         person: { id: personId, firstName, lastName },
-        office: { ...location, id: officeId },
       };
+
+      // Add office details if officer has an office
+      if (office) {
+        const { office_guid, cos_geo_org_unit: location } = office;
+        const officeId = office_guid as UUID;
+        return {
+          ...officerData,
+          office: { ...location, id: officeId },
+        };
+      }
+
+      return officerData;
     }
 
     return null;

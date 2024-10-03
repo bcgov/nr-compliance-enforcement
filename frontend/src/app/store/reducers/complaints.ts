@@ -276,6 +276,7 @@ export const getComplaints =
       violationFilter,
       girTypeFilter,
       complaintStatusFilter,
+      complaintMethodFilter,
       page,
       pageSize,
       query,
@@ -298,6 +299,7 @@ export const getComplaints =
         violationCode: violationFilter?.value,
         girTypeCode: girTypeFilter?.value,
         status: complaintStatusFilter?.value,
+        complaintMethod: complaintMethodFilter?.value,
         page: page,
         pageSize: pageSize,
         query: query,
@@ -328,6 +330,7 @@ export const getMappedComplaints =
       endDateFilter,
       violationFilter,
       complaintStatusFilter,
+      complaintMethodFilter,
       page,
       pageSize,
       query,
@@ -349,6 +352,7 @@ export const getMappedComplaints =
         incidentReportedEnd: endDateFilter,
         violationCode: violationFilter?.value,
         status: complaintStatusFilter?.value,
+        complaintMethod: complaintMethodFilter?.value,
         page: page,
         pageSize: pageSize,
         query: query,
@@ -661,7 +665,6 @@ export const createComplaint =
       return result;
     } catch (error) {
       ToggleError("Unable to create complaint");
-      //-- add error handling
     }
   };
 
@@ -748,14 +751,8 @@ export const selectTotalMappedComplaints = (state: RootState): number => {
       mappedItems: { items, unmapped },
     },
   } = state;
-
-  if (items && unmapped) {
-    return items.length + unmapped;
-  } else if (!items && !unmapped) {
-    return 0;
-  } else {
-    return 0 + unmapped;
-  }
+  if (!items && !unmapped) return 0;
+  return items.length + unmapped;
 };
 
 export const selectTotalUnmappedComplaints = (state: RootState): number => {
@@ -1070,7 +1067,7 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
   let results = {} as ComplaintCallerInformation;
 
   if (complaint) {
-    const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy }: any = complaint;
+    const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy, isPrivacyRequested }: any = complaint;
     const reportedByCode = getReportedByReportedByCode(reportedBy, reportedByCodes);
     const ownedByAgencyCode = getAgencyByAgencyCode(ownedBy, agencyCodes);
 
@@ -1082,6 +1079,7 @@ export const selectComplaintCallerInformation = (state: RootState): ComplaintCal
       alternatePhone: phone3,
       address,
       email,
+      isPrivacyRequested,
     };
 
     if (reportedByCode) {

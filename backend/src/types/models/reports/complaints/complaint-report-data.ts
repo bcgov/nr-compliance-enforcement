@@ -25,6 +25,7 @@ export interface ComplaintReportData {
   complaintMethodReceivedCode: string;
 
   //-- caller information
+  privacyRequested: string;
   name: string;
   phone1: string;
   phone2: string;
