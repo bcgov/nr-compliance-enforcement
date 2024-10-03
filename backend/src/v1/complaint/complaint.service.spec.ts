@@ -286,7 +286,7 @@ describe("Testing: Complaint Service", () => {
     expect(totalCount).toBe(35);
   });
 
-  it("should return list of complaints by mapSearch", async () => {
+  it("should return list of complaints by mapSearch for non ceeb role users", async () => {
     //-- arrange
     const _complaintType: COMPLAINT_TYPE = "HWCR";
     const payload: ComplaintSearchParameters = {
@@ -300,7 +300,7 @@ describe("Testing: Complaint Service", () => {
     };
 
     //-- act
-    const results = await service.mapSearch(_complaintType, payload);
+    const results = await service.mapSearch(_complaintType, payload, false);
 
     //-- assert
     expect(results).not.toBe(null);
@@ -311,23 +311,30 @@ describe("Testing: Complaint Service", () => {
     expect(unmappedComplaints).toBe(55);
   });
 
-  // it("should return zone at a glance stats by complaint type: HWCR", async () => {
-  //   //-- arrange
+  it("should return list of complaints by mapSearch for user with ceeb role", async () => {
+    //-- arrange
+    const _complaintType: COMPLAINT_TYPE = "HWCR";
+    const payload: ComplaintSearchParameters = {
+      sortBy: "incident_reported_utc_timestmp",
+      orderBy: "DESC",
+      zone: "CRBOTMPSN",
+      status: "OPEN",
+      page: 1,
+      pageSize: 50,
+      query: "bear",
+    };
 
-  //   //-- act
+    //-- act
+    const results = await service.mapSearch(_complaintType, payload, true);
 
-  //   //-- assert
-  //   fail();
-  // });
+    //-- assert
+    expect(results).not.toBe(null);
 
-  // it("should return zone at a glance stats by complaint type: ERS", async () => {
-  //   //-- arrange
+    const { unmappedComplaints, complaints } = results;
 
-  //   //-- act
-
-  //   //-- assert
-  //   fail();
-  // });
+    expect(complaints.length).toBe(5);
+    expect(unmappedComplaints).toBe(55);
+  });
 });
 
 describe("Testing: Complaint Service", () => {

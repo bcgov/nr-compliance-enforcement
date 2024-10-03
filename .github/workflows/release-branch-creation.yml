@@ -1,0 +1,50 @@
+name: Create New Tag on Release Branch Creation
+
+on:
+  create:
+
+jobs:
+  bump_minor_version:
+    name: Bump Minor Version and Create New Tag
+    runs-on: ubuntu-22.04
+    # Only trigger for main release branches
+    if: startsWith(github.ref, 'refs/heads/release/') && !contains(github.ref, '/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install npm
+        run: sudo apt-get install -y npm
+
+      # Fetch the latest tag (sort by creation date)
+      - name: Fetch latest tag
+        id: latest_tag
+        run: |
+          git fetch --tags
+          latest_tag=$(git tag --sort=-creatordate | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+          if [ -z "$latest_tag" ]; then
+            echo "No previous tags found, starting with v0.1.0"
+            latest_tag="v0.0.0"
+          fi
+          echo "::set-output name=latest_tag::$latest_tag"
+          echo "Latest tag: $latest_tag"
+
+      # Bump the minor version and reset the patch to 0
+      - name: Bump minor version
+        id: bump_version
+        run: |
+          latest_tag="${{ steps.latest_tag.outputs.latest_tag }}"
+          version_array=(${latest_tag//./ })
+          major_version=${version_array[0]//v/}
+          minor_version=${version_array[1]}
+          patch_version=${version_array[2]}
+          new_minor_version=$((minor_version + 1))
+          new_version="v${major_version}.${new_minor_version}.0"
+          echo "::set-output name=new_version::$new_version"
+          echo "New version: $new_version"
+
+      # Create a new tag with the bumped minor version
+      - name: Create and push the new tag
+        run: |
+          new_version="${{ steps.bump_version.outputs.new_version }}"
+          git tag "$new_version"
+          git push origin "$new_version"
