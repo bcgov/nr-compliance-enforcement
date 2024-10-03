@@ -2333,7 +2333,7 @@ VALUES
     '2024-01-22 22:20:48.186',
     '0667495f-61a5-4d3b-b756-1ee58cb38e23'::uuid,
     'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid,
-    '77c6040d69b74757903f1cba37404db4'::uuid,
+    '77c6040d69b74757903f1cba37404db4'::uuid
   ) ON CONFLICT
 DO NOTHING;
 
