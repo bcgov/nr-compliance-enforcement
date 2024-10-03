@@ -144,9 +144,9 @@ export const ComplaintDetailsEdit: FC = () => {
   let assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-        }))
+        value: officer.person_guid.person_guid,
+        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+      }))
       : [];
 
   assignableOfficers.unshift({ value: "Unassigned", label: "None" });
@@ -286,6 +286,9 @@ export const ComplaintDetailsEdit: FC = () => {
           cancelConfirmed: resetErrorMessages,
         },
         hideCallback: () => {
+          // Set these values back to the originally saved values as this is a 'cancel pending changes' action
+          setLongitude(getEditableCoordinates(coordinates, Coordinates.Longitude));
+          setLatitude(getEditableCoordinates(coordinates, Coordinates.Latitude));
           window.scrollTo({ top: 0, behavior: "smooth" });
         },
       }),
