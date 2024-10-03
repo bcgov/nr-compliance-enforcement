@@ -478,6 +478,7 @@ UPDATE public.officer SET office_guid = '313f4ec3-e88a-41c2-9956-78c7b18cb71d' W
 UPDATE public.officer SET office_guid = 'db343458-8eca-42c2-91ec-070b3e6de663' WHERE user_id='TSPRADO';
 UPDATE public.officer SET office_guid = 'db343458-8eca-42c2-91ec-070b3e6de663' WHERE user_id='M2SEARS';
 UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE user_id='GRLAVERY';
+UPDATE public.officer SET office_guid = '4a5a94b1-bd47-4611-a577-861d97089903' WHERE user_id='RRONDEAU';
 
 -------------------------
 -- INSERT COMPLAINT RECORDS
