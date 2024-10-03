@@ -286,6 +286,7 @@ export const ComplaintDetailsEdit: FC = () => {
           cancelConfirmed: resetErrorMessages,
         },
         hideCallback: () => {
+          // Set these values back to the originally saved values as this is a 'cancel pending changes' action
           setLongitude(getEditableCoordinates(coordinates, Coordinates.Longitude));
           setLatitude(getEditableCoordinates(coordinates, Coordinates.Latitude));
           window.scrollTo({ top: 0, behavior: "smooth" });
