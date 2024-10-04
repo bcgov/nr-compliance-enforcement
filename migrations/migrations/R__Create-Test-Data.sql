@@ -1923,7 +1923,7 @@ VALUES
     'FLYWAY',
     '2024-01-22 22:20:48.186',
     '97f3cee5-6f4a-410f-810f-d431595fccee'::uuid,
-    '4a5a94b1-bd47-4611-a577-861d97089903'::uuid,
+    'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid,
     'f896cbb2d5254e54a4ad581dc80681d1'::uuid
   ) ON CONFLICT
 DO NOTHING;
