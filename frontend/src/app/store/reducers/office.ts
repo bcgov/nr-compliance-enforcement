@@ -86,4 +86,12 @@ export const selectOfficesForAssignmentDropdown = (state: RootState): Array<Drop
   return data;
 };
 
+export const selectOffices = (state: RootState): Array<OfficeAssignment> => {
+  const {
+    offices: { officeAssignments },
+  } = state;
+
+  return officeAssignments;
+};
+
 export default officeSlice.reducer;

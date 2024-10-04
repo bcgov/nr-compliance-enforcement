@@ -25,6 +25,7 @@ import {
   selectGirTypeCodeDropdown,
   selectReportedByDropdown,
   selectComplaintReceivedMethodDropdown,
+  selectPrivacyDropdown,
 } from "../../../../store/reducers/code-table";
 import { useSelector } from "react-redux";
 import { Officer } from "../../../../types/person/person";
@@ -42,7 +43,7 @@ import notificationInvalid from "../../../../../assets/images/notification-inval
 import { CompSelect } from "../../../common/comp-select";
 import { CompInput } from "../../../common/comp-input";
 import { from } from "linq-to-typescript";
-import { openModal } from "../../../../store/reducers/app";
+import { openModal, isFeatureActive } from "../../../../store/reducers/app";
 import { useParams } from "react-router-dom";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import { ToggleError } from "../../../../common/toast";
@@ -72,6 +73,8 @@ import { WebEOCComplaintUpdateList } from "../webeoc-complaint-updates/webeoc-co
 import { getUserAgency } from "../../../../service/user-service";
 import { AgencyType } from "../../../../types/app/agency-types";
 import { CeebOutcomeReport } from "../outcomes/ceeb/ceeb-outcome-report";
+import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
+import { FeatureFlag } from "../../../common/feature-flag";
 
 export type ComplaintParams = {
   id: string;
@@ -85,6 +88,8 @@ export const ComplaintDetailsEdit: FC = () => {
 
   //-- selectors
   const data = useAppSelector(selectComplaint);
+  const privacyDropdown = useAppSelector(selectPrivacyDropdown);
+  const enablePrivacyFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.PRIV_REQ));
 
   const {
     details,
@@ -108,8 +113,17 @@ export const ComplaintDetailsEdit: FC = () => {
     selectComplaintHeader(complaintType),
   );
 
-  const { name, primaryPhone, secondaryPhone, alternatePhone, address, email, reportedByCode, ownedByAgencyCode } =
-    useAppSelector(selectComplaintCallerInformation);
+  const {
+    name,
+    primaryPhone,
+    secondaryPhone,
+    alternatePhone,
+    address,
+    email,
+    reportedByCode,
+    ownedByAgencyCode,
+    isPrivacyRequested,
+  } = useAppSelector(selectComplaintCallerInformation);
 
   // Get the code table lists to populate the Selects
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
@@ -130,9 +144,9 @@ export const ComplaintDetailsEdit: FC = () => {
   let assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-        }))
+        value: officer.person_guid.person_guid,
+        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+      }))
       : [];
 
   assignableOfficers.unshift({ value: "Unassigned", label: "None" });
@@ -272,6 +286,9 @@ export const ComplaintDetailsEdit: FC = () => {
           cancelConfirmed: resetErrorMessages,
         },
         hideCallback: () => {
+          // Set these values back to the originally saved values as this is a 'cancel pending changes' action
+          setLongitude(getEditableCoordinates(coordinates, Coordinates.Longitude));
+          setLatitude(getEditableCoordinates(coordinates, Coordinates.Latitude));
           window.scrollTo({ top: 0, behavior: "smooth" });
         },
       }),
@@ -616,6 +633,19 @@ export const ComplaintDetailsEdit: FC = () => {
   const handleNameChange = (value: string) => {
     const updatedComplaint = { ...complaintUpdate, name: value } as ComplaintDto;
     applyComplaintUpdate(updatedComplaint);
+  };
+
+  const handlePrivacyRequestedChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+      if (value) {
+        let updatedComplaint = {
+          ...complaintUpdate,
+          isPrivacyRequested: value,
+        } as ComplaintDto;
+        applyComplaintUpdate(updatedComplaint);
+      }
+    }
   };
 
   const handlePrimaryPhoneChange = (value: string) => {
@@ -1068,19 +1098,21 @@ export const ComplaintDetailsEdit: FC = () => {
                   />
                 </div>
               </div>
-              <div
-                className="comp-details-form-row"
-                id="office-pair-id"
-              >
-                <label>Office</label>
-                <input
-                  type="text"
-                  id="office-edit-readonly-id"
-                  className="comp-form-control"
-                  disabled
-                  defaultValue={office}
-                />
-              </div>
+              <FeatureFlag feature={FEATURE_TYPES.ENABLE_OFFICE}>
+                <div
+                  className="comp-details-form-row"
+                  id="office-pair-id"
+                >
+                  <label>Office</label>
+                  <input
+                    type="text"
+                    id="office-edit-readonly-id"
+                    className="comp-form-control"
+                    disabled
+                    defaultValue={office}
+                  />
+                </div>
+              </FeatureFlag>
               <div
                 className="comp-details-form-row"
                 id="zone-pair-id"
@@ -1130,6 +1162,31 @@ export const ComplaintDetailsEdit: FC = () => {
             {/* Call Information */}
             <fieldset>
               <legend>Caller Information</legend>
+
+              {enablePrivacyFeature && (
+                <div
+                  className="comp-details-form-row"
+                  id="privacy-requested-id"
+                >
+                  <label
+                    id="complaint-caller-info-privacy-label-id"
+                    className="col-auto"
+                    htmlFor="caller-privacy-id"
+                  >
+                    Privacy requested
+                  </label>
+                  <div className="comp-details-edit-input">
+                    <Select
+                      options={privacyDropdown}
+                      defaultValue={privacyDropdown.find((item) => item.value === isPrivacyRequested)}
+                      placeholder="Select"
+                      id="caller-privacy-id"
+                      classNamePrefix="comp-select"
+                      onChange={(e) => handlePrivacyRequestedChange(e)}
+                    />
+                  </div>
+                </div>
+              )}
 
               <div
                 className="comp-details-form-row"
