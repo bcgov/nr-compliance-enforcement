@@ -452,7 +452,7 @@ export const HWCRComplaintAssessment: FC = () => {
             </div>
           ) : (
             <dl>
-              <div>
+              <div id="action-required-div">
                 <dt>Action Required</dt>
                 <dd>{selectedActionRequired?.value}</dd>
               </div>
