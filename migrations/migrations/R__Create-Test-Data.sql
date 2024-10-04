@@ -1154,6 +1154,32 @@ INSERT INTO
   )
 VALUES
   (
+    '97f3cee5-6f4a-410f-810f-d431595fccee'::uuid,
+    'Jonathan',
+    NULL,
+    NULL,
+    'Funk',
+    'FLYWAY',
+    '2023-06-29 22:16:16.754',
+    'FLYWAY',
+    '2023-06-29 22:16:16.754'
+  ) ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  public.person (
+    person_guid,
+    first_name,
+    middle_name_1,
+    middle_name_2,
+    last_name,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
     '7de151c1-ae52-41c3-834d-d538bbb50cda'::uuid,
     'Tobe',
     NULL,
@@ -1873,6 +1899,32 @@ VALUES
     '666c0f30-d707-4ade-b67f-9b888fe234e6'::uuid,
     'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid,
     '287d4e72-8409-4dd1-991a-8b1117b8eb2a'::uuid
+  ) ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    office_guid,
+    auth_user_guid
+  )
+VALUES
+  (
+    'b17ee2c1-a26b-4911-ac6f-810b8fdfaab3'::uuid,
+    'JFUNK',
+    'FLYWAY',
+    '2023-06-29 22:16:16.754',
+    'FLYWAY',
+    '2024-01-22 22:20:48.186',
+    '97f3cee5-6f4a-410f-810f-d431595fccee'::uuid,
+    'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid,
+    'f896cbb2d5254e54a4ad581dc80681d1'::uuid
   ) ON CONFLICT
 DO NOTHING;
 
