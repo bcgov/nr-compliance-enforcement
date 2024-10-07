@@ -127,6 +127,18 @@ Cypress.Commands.add("kcLogout", () => {
   });
 });
 
+Cypress.Commands.add("hasErrorMessage", (inputs: Array<string>, toastText: string) => {
+  //validate all the inputs
+  Cypress._.times(inputs.length, (index) => {
+    cy.get(inputs[index]).find(".error-message").should("exist");
+  });
+
+  //validate the toast
+  cy.get(".Toastify__toast-body").then(($toast) => {
+    expect($toast).to.contain.text(toastText);
+  });
+});
+
 Cypress.Commands.add("applyRoles", (roles: Array<string>) => {
   Cypress.log({ name: "Apply User Roles" });
   const apiUrl = Cypress.env("css_api_url");

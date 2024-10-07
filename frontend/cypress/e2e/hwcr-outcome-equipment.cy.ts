@@ -33,23 +33,15 @@ describe("HWCR Outcome Equipment", () => {
         //click Save Button
         cy.get("#equipment-save-button").click();
 
-        //validate Equipment type is required
-        cy.get("#equipment-type-div").find(".error-message").should("exist");
-
-        //validate Address is required
-        cy.get("#equipment-address-div").find(".error-message").should("exist");
-
-        //validate XY coordinates is required
-        cy.get("#equipment-coordinate-div").find(".error-message").should("exist");
-        cy.get("#equipment-coordinate-div").find(".error-message").should("exist");
-
-        //validate the Set-by is required
-        cy.get("#equipment-officer-set-div").find(".error-message").should("exist");
-
-        // //validate the toast
-        cy.get(".Toastify__toast-body").then(($toast) => {
-          expect($toast).to.contain.text("Errors creating equipment");
-        });
+        //validate
+        let inputs = [
+          "#equipment-type-div",
+          "#equipment-address-div",
+          "#equipment-coordinate-div",
+          "#equipment-coordinate-div",
+          "#equipment-officer-set-div",
+        ];
+        cy.hasErrorMessage(inputs, "Errors creating equipment");
       } else {
         cy.log("Test was previously run. Skip the Test");
         this.skip();
