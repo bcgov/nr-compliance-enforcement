@@ -1310,6 +1310,32 @@ INSERT INTO
   )
 VALUES
   (
+    '141ebe0c-84c5-487d-8676-caee5de53b36'::uuid,
+    'Mike',
+    NULL,
+    NULL,
+    'Vesprini',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754'
+  ) ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  public.person (
+    person_guid,
+    first_name,
+    middle_name_1,
+    middle_name_2,
+    last_name,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
     '73e2a6f1-f438-495f-a5e7-12e850a5e4e3'::uuid,
     'Miwa',
     NULL,
@@ -2021,6 +2047,32 @@ VALUES
     '2024-01-22 22:20:48.186',
     'b48487c2-055a-4711-bba8-282a28e52e69'::uuid,
     'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid
+  ) ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    office_guid,
+    auth_user_guid
+  )
+VALUES
+  (
+    '44123934-a2cf-4eae-88af-f682f7548f89'::uuid,
+    'MVESPRIN',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754',
+    'FLYWAY',
+    '2024-01-22 22:20:48.186',
+    '141ebe0c-84c5-487d-8676-caee5de53b36'::uuid,
+    'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid,
+    '01a5ad69-0675-4359-a0a7-909f55e2c67a'::uuid
   ) ON CONFLICT
 DO NOTHING;
 
@@ -9590,6 +9642,7 @@ DO NOTHING;
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'COS';
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'PARKS';
 UPDATE feature_agency_xref SET active_ind = true WHERE feature_code = 'METH_FLTR' AND agency_code = 'EPO';
+
 
 --------------------------
 -- New Changes above this line
