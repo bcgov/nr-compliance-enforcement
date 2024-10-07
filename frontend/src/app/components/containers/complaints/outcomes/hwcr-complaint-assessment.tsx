@@ -314,6 +314,7 @@ export const HWCRComplaintAssessment: FC = () => {
         {!editable && (
           <div className="comp-details-section-header-actions">
             <Button
+              id="assessment-edit-button"
               variant="outline-primary"
               size="sm"
               onClick={toggleEdit}
@@ -456,7 +457,10 @@ export const HWCRComplaintAssessment: FC = () => {
                 <dt>Action Required</dt>
                 <dd>{selectedActionRequired?.value}</dd>
               </div>
-              <div className={justificationLabelClass}>
+              <div
+                id="justification-div"
+                className={justificationLabelClass}
+              >
                 <dt>Justification</dt>
                 <dd>
                   <span>{selectedJustification?.label || ""}</span>
