@@ -2059,7 +2059,8 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     person_guid,
-    office_guid
+    office_guid,
+    auth_user_guid
   )
 VALUES
   (
@@ -2070,7 +2071,8 @@ VALUES
     'FLYWAY',
     '2024-01-22 22:20:48.186',
     '141ebe0c-84c5-487d-8676-caee5de53b36'::uuid,
-    'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid
+    'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid,
+    '01a5ad69-0675-4359-a0a7-909f55e2c67a'::uuid
   ) ON CONFLICT
 DO NOTHING;
 
