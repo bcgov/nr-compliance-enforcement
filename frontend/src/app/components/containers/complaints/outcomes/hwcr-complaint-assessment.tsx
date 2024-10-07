@@ -462,7 +462,10 @@ export const HWCRComplaintAssessment: FC = () => {
                   <span>{selectedJustification?.label || ""}</span>
                 </dd>
               </div>
-              <div className={assessmentDivClass}>
+              <div
+                id="assessment-checkbox-div"
+                className={assessmentDivClass}
+              >
                 <dt>Actions</dt>
                 <dd>
                   <ul>
@@ -480,10 +483,10 @@ export const HWCRComplaintAssessment: FC = () => {
               <div>
                 <dt>Officer</dt>
                 <dd>
-                  <span id="comp-review-required-officer">{selectedOfficer?.label ?? ""}</span>
+                  <span id="assessment-officer-div">{selectedOfficer?.label ?? ""}</span>
                 </dd>
               </div>
-              <div>
+              <div id="assessment-date-div">
                 <dt>Date</dt>
                 <dd>{formatDate(`${selectedDate}`)}</dd>
               </div>

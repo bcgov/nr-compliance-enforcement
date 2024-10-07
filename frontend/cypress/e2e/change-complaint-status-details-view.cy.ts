@@ -20,7 +20,7 @@ describe("Complaint Change Status spec - Details View", () => {
         officer: "TestAcct, ENV",
         date: "01",
         actionRequired: "Yes",
-        toastText: "Assessment has been saved",
+        toastText: "Assessment has been updated",
       };
 
       if ("#hwcr-tab".includes(complaintTypes[index])) {

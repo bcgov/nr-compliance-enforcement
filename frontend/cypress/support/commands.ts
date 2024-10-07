@@ -401,8 +401,8 @@ Cypress.Commands.add(
 
     if (section === "ASSESSMENT") {
       checkboxDiv = "#assessment-checkbox-div";
-      officerDiv = "#outcome-officer-div";
-      dateDiv = "#complaint-outcome-date-div";
+      officerDiv = "#assessment-officer-div";
+      dateDiv = "#assessment-date-div";
     } else if (section === "EQUIPMENT") {
       officerDiv = "#equipment-officer-set-div";
       dateDiv = "#equipment-date-set-div";
