@@ -55,7 +55,7 @@ services:
       POSTGRESQL_PASSWORD: default
       POSTGRESQL_DATABASE: postgres
     hostname: backend
-    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
+    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:c9b5f281f2abf803c08b60cdd7e1a4cd4b9d9a8099031126829e21a4eda569a3
     links:
       - database
     ports:
@@ -81,7 +81,7 @@ services:
       REACT_APP_API_URL: http://localhost:3001/api
       REACT_APP_ENVIRONMENT_NAME: DEVELOPMENT
     hostname: frontend
-    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
+    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:c9b5f281f2abf803c08b60cdd7e1a4cd4b9d9a8099031126829e21a4eda569a3
     links:
       - backend
     ports:
@@ -109,7 +109,7 @@ services:
       - "-c"
       - "npm i && npm run start"
     hostname: webeoc
-    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
+    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:c9b5f281f2abf803c08b60cdd7e1a4cd4b9d9a8099031126829e21a4eda569a3
     links:
       - nats
     ports:
