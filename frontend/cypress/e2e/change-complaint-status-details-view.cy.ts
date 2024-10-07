@@ -12,27 +12,30 @@ describe("Complaint Change Status spec - Details View", () => {
     cy.kcLogout().kcLogin();
   });
 
+  function fillInAssessmentSection() {
+    let sectionParams = {
+      section: "ASSESSMENT",
+      checkboxes: ["#ASSESSRISK"],
+      officer: "TestAcct, ENV",
+      date: "01",
+      actionRequired: "Yes",
+      toastText: "Assessment has been updated",
+    };
+    cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
+      if ($assessment.find("#outcome-save-button").length) {
+        cy.fillInHWCSection(sectionParams).then(() => {
+          sectionParams.checkboxes = ["Assessed public safety risk"];
+          cy.validateHWCSection(sectionParams);
+        });
+      }
+    });
+  }
+
   Cypress._.times(complaintTypes.length, (index) => {
     it("Changes status of closeable complaint to open, closed, and back to open", () => {
-      let sectionParams = {
-        section: "ASSESSMENT",
-        checkboxes: ["#ASSESSRISK"],
-        officer: "TestAcct, ENV",
-        date: "01",
-        actionRequired: "Yes",
-        toastText: "Assessment has been updated",
-      };
-
       if ("#hwcr-tab".includes(complaintTypes[index])) {
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
-        cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
-          if ($assessment.find("#outcome-save-button").length) {
-            cy.fillInHWCSection(sectionParams).then(() => {
-              sectionParams.checkboxes = ["Assessed public safety risk"];
-              cy.validateHWCSection(sectionParams);
-            });
-          }
-        });
+        fillInAssessmentSection();
       } else {
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
       }
