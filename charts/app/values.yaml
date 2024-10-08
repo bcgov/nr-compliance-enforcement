@@ -72,7 +72,7 @@ backend:
   #-- enable or disable backend
   enabled: true
   #-- the deployment strategy, can be "Recreate" or "RollingUpdate"
-  deploymentStrategy: Recreate
+  deploymentStrategy: RollingUpdate
   #-- autoscaling for the component. it is optional and is an object.
   autoscaling:
     #-- enable or disable autoscaling.
@@ -119,7 +119,7 @@ frontend:
   # -- enable or disable a component deployment.
   enabled: true
   # -- the deployment strategy, can be "Recreate" or "RollingUpdate"
-  deploymentStrategy: Recreate
+  deploymentStrategy: RollingUpdate
 
   #-- autoscaling for the component. it is optional and is an object.
   autoscaling:
