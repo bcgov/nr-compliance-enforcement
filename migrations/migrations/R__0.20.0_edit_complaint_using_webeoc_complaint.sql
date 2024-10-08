@@ -251,11 +251,6 @@ BEGIN
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
-
-      -- Remove the updates to the status but preserve the logic on indicators
-  if (_edit_complaint_status_code <> current_complaint_record.complaint_status_code) then 
-	    update_edit_ind = true;
-  end if;
    
   -- the update caused an edit, set the audit fields
   if (update_edit_ind) then
