@@ -1,6 +1,5 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
-import { ValidationSelect } from "../../../../common/validation-select";
 import { CompSelect } from "../../../common/comp-select";
 import { bcBoundaries } from "../../../../common/methods";
 import { ValidationTextArea } from "../../../../common/validation-textarea";
@@ -9,7 +8,6 @@ import Select from "react-select";
 import { ValidationMultiSelect } from "../../../../common/validation-multiselect";
 import { CompInput } from "../../../common/comp-input";
 import { ValidationPhoneInput } from "../../../../common/validation-phone-input";
-import { ValidationInput } from "../../../../common/validation-input";
 import Option from "../../../../types/app/option";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
@@ -688,15 +686,16 @@ export const CreateComplaint: FC = () => {
                 Complaint Type<span className="required-ind">*</span>
               </label>
               <div className="comp-details-edit-input">
-                <ValidationSelect
+                <CompSelect
                   id="complaint-type-select-id"
-                  options={complaintTypeCodes}
-                  placeholder="Select"
-                  className="comp-details-input"
                   classNamePrefix="comp-select"
-                  defaultValue={complaintTypeCodes.find((option) => option.value === complaintType)}
                   onChange={(e) => handleComplaintChange(e)}
-                  errMsg={complaintTypeMsg}
+                  className="comp-details-input"
+                  options={complaintTypeCodes}
+                  defaultOption={complaintTypeCodes.find((option) => option.value === complaintType)}
+                  placeholder="Select"
+                  enableValidation={true}
+                  errorMessage={complaintTypeMsg}
                 />
               </div>
             </div>
@@ -740,14 +739,15 @@ export const CreateComplaint: FC = () => {
                   Species<span className="required-ind">*</span>
                 </label>
                 <div className="comp-details-edit-input">
-                  <ValidationSelect
-                    className="comp-details-input"
-                    options={speciesCodes}
-                    placeholder="Select"
+                  <CompSelect
                     id="species-select-id"
                     classNamePrefix="comp-select"
                     onChange={(e) => handleSpeciesChange(e)}
-                    errMsg={speciesErrorMsg}
+                    className="comp-details-input"
+                    options={speciesCodes}
+                    placeholder="Select"
+                    enableValidation={true}
+                    errorMessage={speciesErrorMsg}
                   />
                 </div>
               </div>
@@ -762,14 +762,15 @@ export const CreateComplaint: FC = () => {
                   Nature of Complaint<span className="required-ind">*</span>
                 </label>
                 <div className="comp-details-edit-input">
-                  <ValidationSelect
+                  <CompSelect
                     id="nature-of-complaint-select-id"
-                    options={hwcrNatureOfComplaintCodes}
-                    placeholder="Select"
-                    className="comp-details-input"
                     classNamePrefix="comp-select"
                     onChange={(e) => handleNatureOfComplaintChange(e)}
-                    errMsg={natureOfComplaintErrorMsg}
+                    className="comp-details-input"
+                    options={hwcrNatureOfComplaintCodes}
+                    placeholder="Select"
+                    enableValidation={true}
+                    errorMessage={natureOfComplaintErrorMsg}
                   />
                 </div>
               </div>
@@ -786,14 +787,15 @@ export const CreateComplaint: FC = () => {
                 Violation Type<span className="required-ind">*</span>
               </label>
               <div className="comp-details-edit-input">
-                <ValidationSelect
+                <CompSelect
+                  id="violation-type-select-id"
+                  classNamePrefix="comp-select"
+                  onChange={(e) => handleViolationTypeChange(e)}
                   className="comp-details-input"
                   options={violationTypeCodes}
                   placeholder="Select"
-                  id="violation-type-select-id"
-                  onChange={(e) => handleViolationTypeChange(e)}
-                  classNamePrefix="comp-select"
-                  errMsg={violationTypeErrorMsg}
+                  enableValidation={true}
+                  errorMessage={violationTypeErrorMsg}
                 />
               </div>
             </div>
@@ -966,14 +968,15 @@ export const CreateComplaint: FC = () => {
               Community<span className="required-ind">*</span>
             </label>
             <div className="comp-details-edit-input">
-              <ValidationSelect
-                className="comp-details-input"
-                options={areaCodes}
-                placeholder="Select"
+              <CompSelect
                 id="community-select-id"
                 classNamePrefix="comp-select"
                 onChange={(e) => handleCommunityChange(e)}
-                errMsg={communityErrorMsg}
+                className="comp-details-input"
+                options={areaCodes}
+                placeholder="Select"
+                enableValidation={true}
+                errorMessage={communityErrorMsg}
               />
             </div>
           </div>
@@ -1176,13 +1179,14 @@ export const CreateComplaint: FC = () => {
           >
             <label htmlFor="complaint-email-id">Email</label>
             <div className="comp-details-edit-input">
-              <ValidationInput
-                type="text"
-                className="comp-form-control"
+              <CompInput
                 id="complaint-email-id"
-                onChange={handleEmailChange}
-                errMsg={emailMsg}
+                divid="complaint-email-id-value"
+                type="input"
+                inputClass="comp-form-control"
+                error={emailMsg}
                 maxLength={120}
+                onChange={(evt: any) => handleEmailChange(evt.target.value)}
               />
             </div>
           </div>
