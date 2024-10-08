@@ -11,6 +11,8 @@ spec:
     type: {{ .Values.frontend.deploymentStrategy }}
   {{- if not .Values.frontend.autoscaling.enabled }}
   replicas: {{ .Values.frontend.replicaCount }}
+  {{- else if and (not .Values.frontend.autoscaling.enabled) (eq .Release.Namespace .Values.global.testNamespace) }}
+  replicas: {{ .Values.global.testNamespaceDeploymentReplicas }}
   {{- end }}
   selector:
     matchLabels:

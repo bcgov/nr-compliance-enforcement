@@ -57,6 +57,10 @@ global:
       dev: "filesystem:/flyway/sql, filesystem:/flyway/sql-test"
       test: "filesystem:/flyway/sql, filesystem:/flyway/sql-test"
       prod: "filesystem:/flyway/sql"
+  testNamespaceDeploymentReplicas: 3
+  devNamespace: "c1c7ed-dev"
+  testNamespace: "c1c7ed-test"
+  prodNamespace: "c1c7ed-prod"
 
   #-- domain of the application, it is required, apps.silver.devops.gov.bc.ca for silver cluster and apps.devops.gov.bc.ca for gold cluster
   domain: "apps.silver.devops.gov.bc.ca" # it is apps.gold.devops.gov.bc.ca for gold cluster
