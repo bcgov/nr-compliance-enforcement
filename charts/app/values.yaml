@@ -57,10 +57,6 @@ global:
       dev: "filesystem:/flyway/sql, filesystem:/flyway/sql-test"
       test: "filesystem:/flyway/sql, filesystem:/flyway/sql-test"
       prod: "filesystem:/flyway/sql"
-  testNamespaceDeploymentReplicas: 3
-  devNamespace: "c1c7ed-dev"
-  testNamespace: "c1c7ed-test"
-  prodNamespace: "c1c7ed-prod"
 
   #-- domain of the application, it is required, apps.silver.devops.gov.bc.ca for silver cluster and apps.devops.gov.bc.ca for gold cluster
   domain: "apps.silver.devops.gov.bc.ca" # it is apps.gold.devops.gov.bc.ca for gold cluster
@@ -72,7 +68,7 @@ backend:
   #-- enable or disable backend
   enabled: true
   #-- the deployment strategy, can be "Recreate" or "RollingUpdate"
-  deploymentStrategy: RollingUpdate
+  deploymentStrategy: Recreate
   #-- autoscaling for the component. it is optional and is an object.
   autoscaling:
     #-- enable or disable autoscaling.
@@ -119,7 +115,7 @@ frontend:
   # -- enable or disable a component deployment.
   enabled: true
   # -- the deployment strategy, can be "Recreate" or "RollingUpdate"
-  deploymentStrategy: RollingUpdate
+  deploymentStrategy: Recreate
 
   #-- autoscaling for the component. it is optional and is an object.
   autoscaling:
