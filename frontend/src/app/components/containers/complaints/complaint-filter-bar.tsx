@@ -44,12 +44,13 @@ export const ComplaintFilterBar: FC<Props> = ({
   } = state;
 
   const dateRangeLabel = (): string | undefined => {
+    const currentDate = new Date().toLocaleDateString();
     if (startDate !== null && endDate !== null) {
       return `${startDate?.toLocaleDateString()} - ${endDate?.toLocaleDateString()}`;
     } else if (startDate !== null) {
-      return `${startDate?.toLocaleDateString()} - `;
+      return `${startDate?.toLocaleDateString()} - ${currentDate}`;
     } else if (endDate !== null) {
-      return ` - ${endDate?.toLocaleDateString()}`;
+      return `${currentDate} - ${endDate?.toLocaleDateString()}`;
     } else {
       return undefined;
     }
