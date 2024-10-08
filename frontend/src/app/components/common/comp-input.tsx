@@ -72,7 +72,7 @@ export const CompInput: FC<Props> = ({
     id: id,
     divid,
     value: value,
-    //  defaultValue: defaultValue,
+    defaultValue: defaultValue,
     className: inputClasses.join(" "),
     onChange: (event: any) => onChange(event),
     onBlur: (event: any) => onBlur(event),
