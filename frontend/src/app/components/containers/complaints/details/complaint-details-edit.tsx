@@ -144,9 +144,9 @@ export const ComplaintDetailsEdit: FC = () => {
   let assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
-        value: officer.person_guid.person_guid,
-        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-      }))
+          value: officer.person_guid.person_guid,
+          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+        }))
       : [];
 
   assignableOfficers.unshift({ value: "Unassigned", label: "None" });
@@ -281,7 +281,7 @@ export const ComplaintDetailsEdit: FC = () => {
         modalSize: "md",
         modalType: CANCEL_CONFIRM,
         data: {
-          title: "Cancel Changes?",
+          title: "Cancel changes?",
           description: "Your changes will be lost.",
           cancelConfirmed: resetErrorMessages,
         },

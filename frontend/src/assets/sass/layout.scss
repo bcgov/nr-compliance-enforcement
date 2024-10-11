@@ -302,10 +302,6 @@ a {
   margin-right: 0;
 }
 
-div.modal-footer {
-  padding: 12px 12px 12px 0px;
-}
-
 button.modal-buttons {
   margin-right: 8px !important;
 }
@@ -327,15 +323,27 @@ button.modal-buttons {
   background-color: $gray-100;
 }
 
+.comp-profile-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 16px;
+}
+
+.comp-profile-card-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .assign_officer_modal_profile_card {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  padding: 16px 24px;
-  gap: 24px;
-
-  width: 498px;
-  height: 80px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 24px;
 
   flex: none;
   order: 4;
@@ -365,13 +373,6 @@ button.modal-buttons {
   background-color: $gray-100;
 }
 
-.modal-scroll {
-  min-height: 70px;
-  max-height: 264px;
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
 .self-assign {
   margin-bottom: 10px;
   &:hover {
@@ -384,50 +385,6 @@ button.modal-buttons {
   display: grid;
   align-items: center;
   height: 48px;
-}
-
-#assign_officer_modal_search {
-  .input_row {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 0px 24px 32px 24px;
-    color: $gray-500;
-  }
-
-  .input_row input {
-    padding-left: 32px;
-  }
-
-  .input_row svg {
-    position: absolute;
-    left: 36px;
-  }
-
-  button {
-    position: absolute;
-    border: none;
-    display: block;
-    width: 24px;
-    height: 24px;
-    line-height: 16px;
-    font-size: 26px;
-    border-radius: 20%;
-    top: 144px;
-    right: 31px;
-    margin: auto;
-    padding: 0;
-    outline: none;
-    cursor: pointer;
-    background-color: $bc-gov-primary;
-    color: $white;
-  }
-}
-
-#assign_officer_modal_search_input {
-  display: flex;
-  flex-direction: column;
 }
 
 .assign_officer_modal_profile_card_profile-picture {
@@ -447,17 +404,12 @@ button.modal-buttons {
   padding: 0px 16px 16px 16px;
 }
 
-.cancel_confirm_modal_description {
-  height: 70px;
-  padding: 16px 16px 16px 16px;
-}
-
 .assign_officer_modal_subtitle {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  padding: 14px 10px 10px 24px;
+  padding: 10px 24px;
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
@@ -484,11 +436,6 @@ button.modal-buttons {
   font-weight: 400;
   font-size: 16px;
   color: $gray-500;
-}
-
-.assign_officer_modal_profile_card_column:last-child {
-  width: 110px;
-  text-align: right;
 }
 
 .modal_hr {
@@ -869,11 +816,6 @@ td.actions-col {
 .offcanvas-title {
   font-size: 1.5rem;
   font-weight: 700;
-}
-
-// OVERRIDES
-.modal-body {
-  padding: 0;
 }
 
 .environment-banner {
