@@ -1,10 +1,9 @@
-/// <reference types="cypress" />
+// <reference types="cypress" />
 // ***********************************************
 // For comprehensive examples of custom
 // commands please read more here:
 // https://on.cypress.io/custom-commands
 // ***********************************************
-
 require("cy-verify-downloads").addCustomCommand();
 require("cypress-delete-downloads-folder").addCustomCommand();
 
@@ -34,9 +33,14 @@ const sha256 = async (plain) => {
   return hashHex;
 };
 
-Cypress.Commands.add("kcLogin", (account?: string) => {
+Cypress.Commands.add("kcLogin", (role?: string) => {
   Cypress.log({ name: "Login to Keycloak" });
-  console.log("account: ", account);
+  let account = "keycloak_user";
+
+  // Convert this to a switch in the future as more roles are added to the tests
+  if (role === Cypress.env("roles").CEEB) {
+    account = "keycloak_user_02";
+  }
 
   cy.log("Keyloak Login").then(async () => {
     const authBaseUrl = Cypress.env("auth_base_url");
@@ -76,7 +80,7 @@ Cypress.Commands.add("kcLogin", (account?: string) => {
       const url = Array.isArray(redirectUrls) ? redirectUrls[0] : redirectUrls;
       // Visit redirect URL.
       const credentials = {
-        username: Cypress.env(!account ? "keycloak_user" : account),
+        username: Cypress.env(account),
         password: Cypress.env("keycloak_password"),
         url: url,
       };
