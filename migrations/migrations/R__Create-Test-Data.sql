@@ -1956,8 +1956,13 @@ DO NOTHING;
 -- Fix keycloak name
 UPDATE
   public.officer
-SET user_id = 'JONFUNK'
-WHERE officer_guid = 'b17ee2c1-a26b-4911-ac6f-810b8fdfaab3';
+SET
+  user_id = 'JONFUNK'
+WHERE
+  (
+    officer_guid = 'b17ee2c1-a26b-4911-ac6f-810b8fdfaab3'
+    AND user_id = 'JFUNK'
+  );
 
 INSERT INTO
   public.officer (
