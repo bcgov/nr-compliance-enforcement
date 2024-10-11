@@ -361,7 +361,7 @@ backup:
 nats:
   enabled: true
   config:
-    replicaCount: 1
+    replicaCount: 2
     resources:
       requests:
         cpu: 100m
@@ -407,9 +407,9 @@ webeoc:
     #-- enable or disable autoscaling.
     enabled: true
     #-- the minimum number of replicas.
-    minReplicas: 1
+    minReplicas: 2
     #-- the maximum number of replicas.
-    maxReplicas: 2
+    maxReplicas: 3
     #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
     targetCPUUtilizationPercentage: 80
   service:
