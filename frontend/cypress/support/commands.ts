@@ -139,40 +139,6 @@ Cypress.Commands.add("hasErrorMessage", (inputs: Array<string>, toastText: strin
   });
 });
 
-Cypress.Commands.add("applyRoles", (roles: Array<string>) => {
-  Cypress.log({ name: "Apply User Roles" });
-  const apiUrl = Cypress.env("css_api_url");
-  const testAccountGuid = Cypress.env("keycloak_user_guid");
-  const integrationId = Cypress.env("css_integration_id");
-
-  const _authorize = (): string => {
-    const authUrl = Cypress.env("auth_realm");
-    const clientId = Cypress.env("");
-    const clientSecret = Cypress.env("");
-
-    cy.request({
-      method: "POST",
-      url: authUrl,
-      form: true,
-      body: {
-        client_id: clientId,
-        client_secret: clientSecret,
-        grant_type: "client_credentials",
-      },
-    }).then((res) => {
-      cy.log(JSON.stringify(res));
-    });
-
-    return "moo";
-  };
-
-  _authorize();
-});
-
-Cypress.Commands.add("resetRoles", () => {
-  Cypress.log({ name: "Reset Roles" });
-});
-
 Cypress.Commands.add("verifyMapMarkerExists", (existIndicator: boolean) => {
   cy.get(".leaflet-container").should("exist");
   cy.get(".leaflet-marker-icon").should(existIndicator ? "exist" : "not.exist");
