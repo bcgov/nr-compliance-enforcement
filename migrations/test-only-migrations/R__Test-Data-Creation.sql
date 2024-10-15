@@ -271,6 +271,10 @@ INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('0667495f-61a5-4d3b-b756-1ee58cb38e23'::uuid, 'Ryan', NULL, NULL, 'Rondeau', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
 ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('141ebe0c-84c5-487d-8676-caee5de53b36'::uuid, 'Mike', NULL, NULL, 'Vesprini', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
 
 -------------------------
 -- INSERT OFFICER RECORDS
@@ -356,6 +360,11 @@ INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
 VALUES('06ff894b-3895-4d32-8a4a-1fcc0be23e47'::uuid, 'RRONDEAU', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '0667495f-61a5-4d3b-b756-1ee58cb38e23'::uuid, '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '77c6040d69b74757903f1cba37404db4'::uuid)
 ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
+VALUES('44123934-a2cf-4eae-88af-f682f7548f89'::uuid, 'MVESPRIN', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '141ebe0c-84c5-487d-8676-caee5de53b36'::uuid, '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '01a5ad69-0675-4359-a0a7-909f55e2c67a'::uuid)
+ON CONFLICT DO NOTHING;
+
 --------------------------------
 ---  Scatter our team throughout the province for testing
 ---  Note that this script runs after the seed data script (which runs in prod) and moves us out of COSH
@@ -376,6 +385,7 @@ UPDATE public.officer SET office_guid = 'db343458-8eca-42c2-91ec-070b3e6de663' W
 UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE user_id='GRLAVERY';
 UPDATE public.officer SET office_guid = '9fc7327b-b206-4a5c-88f1-2875a456eb49' WHERE user_id='JFUNK';
 UPDATE public.officer SET office_guid = '4a5a94b1-bd47-4611-a577-861d97089903' WHERE user_id='RRONDEAU';
+UPDATE public.officer SET office_guid = '4a5a94b1-bd47-4611-a577-861d97089903' WHERE user_id='MVESPRIN';
 
 -------------------------
 -- INSERT COMPLAINT RECORDS

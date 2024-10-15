@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, CloseButton, ListGroup, ListGroupItem, Card } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
 import {
   profileDisplayName,
@@ -121,26 +121,21 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
         // don't display the current user in the list since we already have the current user at the top of the modal
         if (authUserId === undefined || !compareUuidToString(authUserId, idir)) {
           return (
-            <div
-              className={`${
-                selectedAssignee === personId
-                  ? "assign_officer_modal_profile_card_selected"
-                  : "assign_officer_modal_profile_card"
-              }`}
+            <ListGroupItem
+              action
+              className={`${selectedAssignee === personId ? "comp-profile-card comp-profile-card-selected" : "comp-profile-card"}`}
               key={personId}
               onClick={() => handleAssigneeClick(personId)}
             >
-              <div className="assign_officer_modal_profile_card_column">
-                <div className="assign_officer_modal_profile_card_profile-picture">
-                  <div data-initials-modal={officerInitials}></div>
-                </div>
-              </div>
-              <div className="assign_officer_modal_profile_card_column">
+              <div className="comp-profile-card-info">
+                <div
+                  className="comp-avatar comp-avatar-sm comp-avatar-orange"
+                  data-initials-modal={officerInitials}
+                ></div>
                 <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
                 {showExperimentalFeature && <div className="assign_officer_modal_profile_card_row_2">Officer</div>}
               </div>
-              <div className="assign_officer_modal_profile_card_column"></div>
-            </div>
+            </ListGroupItem>
           );
         } else {
           return <></>;
@@ -161,66 +156,67 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
   return (
     <>
       {title && (
-        <Modal.Header
-          closeButton={true}
-          className="border-0"
-        >
-          <Modal.Title style={{ fontSize: "20px" }}>{title}</Modal.Title>
+        <Modal.Header closeButton={true}>
+          <Modal.Title as="h3">{title}</Modal.Title>
         </Modal.Header>
       )}
       <Modal.Body>
-        <div className="assign_officer_modal_profile_card self-assign">
-          <div className="assign_officer_modal_profile_card_column">
-            <div className="assign_officer_modal_profile_card_profile-picture">
-              <div
-                data-initials-modal={initials}
-                className="comp-profile-avatar"
-              ></div>
-            </div>
-          </div>
-          <div className="assign_officer_modal_profile_card_column">
+        <Card
+          className="comp-profile-card"
+          style={{ marginBottom: "24px" }}
+        >
+          <div className="comp-profile-card-info">
+            <div
+              className="comp-avatar comp-avatar-sm comp-avatar-orange"
+              data-initials-modal={initials}
+            ></div>
+
             <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
             {showExperimentalFeature && <div className="assign_officer_modal_profile_card_row_2">Officer</div>}
           </div>
-          <div className="assign_officer_modal_profile_card_column">
+          <div className="profile-card-actions">
             <Button
               id="self_assign_button"
-              title="Self Assign Button"
+              title="Self assign Button"
               onClick={handleSelfAssign}
             >
               Self assign
             </Button>
           </div>
-        </div>
-        <hr className="modal_hr" />
-        <div id="assign_officer_modal_search">
-          <div className="assign_officer_modal_subtitle">Everyone</div>
-          <div className="input_row">
-            <BsPerson className="icon" />
-            <input
-              id="officer-search"
-              className="comp-form-control"
-              placeholder="Type name to search"
-              type="input"
-              aria-label="Search"
-              aria-describedby="basic-addon2"
-              onChange={(evt) => handleInputChange(evt)}
-              onFocus={() => handleInputFocus()}
-              value={searchInput}
-            />
-            {searchInput && (
-              <button
-                type="reset"
-                onClick={() => setSearchInput("")}
-              >
-                &times;
-              </button>
-            )}
+        </Card>
+
+        <section
+          style={{ marginBottom: "24px" }}
+          id="assign_officer_modal_search"
+        >
+          <h4 style={{ marginBottom: "8px", fontSize: "16px", fontWeight: 700 }}>Everyone</h4>
+          <div className="assign-officer-search-container">
+            <div className="comp-search-input">
+              <BsPerson className="icon" />
+              <input
+                id="officer-search"
+                className="comp-form-control"
+                placeholder="Type name to search"
+                type="input"
+                aria-label="Search"
+                aria-describedby="basic-addon2"
+                onChange={(evt) => handleInputChange(evt)}
+                onFocus={() => handleInputFocus()}
+                value={searchInput}
+              />
+              {searchInput && (
+                <CloseButton
+                  onClick={() => setSearchInput("")}
+                  tabIndex={0}
+                ></CloseButton>
+              )}
+            </div>
           </div>
-        </div>
-        <hr className="modal_hr" />
-        <div className="assign_officer_modal_subtitle">{renderHeading()}</div>
-        <div className="modal-scroll">{renderOfficers()}</div>
+        </section>
+        <section>
+          <h4 style={{ marginBottom: "8px", fontSize: "16px", fontWeight: 700 }}>{renderHeading()}</h4>
+          <ListGroup>{renderOfficers()}</ListGroup>
+        </section>
       </Modal.Body>
       <Modal.Footer>
         <Button

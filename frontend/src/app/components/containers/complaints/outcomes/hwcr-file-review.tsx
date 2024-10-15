@@ -109,7 +109,7 @@ export const HWCRFileReview: FC = () => {
         modalSize: "md",
         modalType: CANCEL_CONFIRM,
         data: {
-          title: "Cancel Changes?",
+          title: "Cancel changes?",
           description: "Your changes will be lost.",
           cancelConfirmed: () => {
             setReviewRequired(isReviewRequired);

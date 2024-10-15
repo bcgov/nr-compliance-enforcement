@@ -31,7 +31,7 @@ export const SupplementalNote: FC = () => {
         modalSize: "md",
         modalType: DELETE_NOTE,
         data: {
-          title: "Delete Supplemental Note",
+          title: "Delete supplemental note",
           description: "All the data in this section will be lost.",
           caseIdentifier: id,
           ok: "Yes, delete note",

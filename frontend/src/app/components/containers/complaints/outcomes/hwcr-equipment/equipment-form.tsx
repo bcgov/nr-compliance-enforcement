@@ -301,7 +301,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         modalSize: "md",
         modalType: CANCEL_CONFIRM,
         data: {
-          title: "Cancel Changes?",
+          title: "Cancel changes?",
           description: "Your changes will be lost.",
           cancelConfirmed,
         },
@@ -382,7 +382,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
             </div>
 
             {/* ADDRESS */}
-            <div className="comp-details-form-row">
+            <div
+              id="equipment-address-div"
+              className="comp-details-form-row"
+            >
               <label htmlFor="equipment-address">Address</label>
               <div className="comp-details-input full-width">
                 <input
@@ -424,7 +427,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
             {/* COORDINATES */}
             <fieldset className="comp-details-form-row">
               <legend>Latitude / Longitude</legend>
-              <div className="comp-details-input full-width">
+              <div
+                id="equipment-coordinate-div"
+                className="comp-details-input full-width"
+              >
                 <div className="comp-lat-long-input">
                   <div>
                     <input

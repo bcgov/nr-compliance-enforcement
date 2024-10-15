@@ -30,6 +30,7 @@ declare namespace Cypress {
     validateComplaint(complaintIdentifier: string, species: string): Chainable<void>;
     fillInHWCSection(section: HwcSection): Chainable<void>;
     validateHWCSection(section: HwcSection): Chainable<void>;
+    hasErrorMessage(inputs: Array<string>, toastText: string): Chainable<void>;
     applyRoles(roles: Array<string>): Chainable<void>;
     resetRoles(): Chainable<void>;
   }

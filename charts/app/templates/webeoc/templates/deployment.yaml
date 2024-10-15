@@ -52,12 +52,8 @@ spec:
               containerPort: {{ .Values.webeoc.service.targetPort }}
               protocol: TCP
           readinessProbe:
-            exec:
-              command:
-                - /usr/bin/env
-                - bash
-                - -c
-                - ls
+            tcpSocket:
+              port: {{ .Values.webeoc.service.targetPort }}
             initialDelaySeconds: 5
             periodSeconds: 2
             timeoutSeconds: 2
@@ -66,12 +62,8 @@ spec:
           livenessProbe:
             successThreshold: 1
             failureThreshold: 3
-            exec:
-              command:
-                - /usr/bin/env
-                - bash
-                - -c
-                - ls
+            tcpSocket:
+              port: {{ .Values.webeoc.service.targetPort }}
             initialDelaySeconds: 15
             periodSeconds: 30
             timeoutSeconds: 5

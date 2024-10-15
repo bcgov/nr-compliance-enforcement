@@ -8,7 +8,7 @@ describe("HWCR Outcome Equipment", () => {
   });
 
   function deleteAllEquipments() {
-    cy.get(".comp-outcome-report-complaint-assessment").then(function ($equipment) {
+    cy.get(".comp-equipment-items").then(function ($equipment) {
       const isVisible = $equipment.find("#equipment-delete-button").is(":visible");
       if (isVisible) {
         cy.get("#equipment-delete-button").click();
@@ -16,42 +16,32 @@ describe("HWCR Outcome Equipment", () => {
         deleteAllEquipments();
       }
     });
+
+    cy.get(".comp-outcome-equipment").then(function ($equipment) {
+      cy.get("#outcome-report-add-equipment").click();
+    });
   }
 
   it("it requires valid user input", () => {
-    cy.get(".comp-outcome-report-button").then(function ($equipment) {
-      if ($equipment.find("#outcome-report-add-equipment").length > 0) {
-        deleteAllEquipments();
-        cy.get("#outcome-report-add-equipment").click();
-      } else {
-        cy.log("Test was previously run. Skip the Test");
-        this.skip();
-      }
-    });
-    cy.get(".comp-outcome-report-complaint-assessment").then(function ($equipment) {
+    //Run before exery test in order to make re-runnable.
+    deleteAllEquipments();
+
+    cy.get(".comp-outcome-equipment").then(function ($equipment) {
       if ($equipment.find("#equipment-save-button").length) {
         cy.validateComplaint("23-032456", "Racoon");
 
         //click Save Button
         cy.get("#equipment-save-button").click();
 
-        //validate Equipment type is required
-        cy.get("#equipment-type-div").find(".error-message").should("exist");
-
-        //validate Address is required
-        cy.get("#equipment-address-container").find(".equipment-form-error-msg").should("exist");
-
-        //validate XY coordinates is required
-        cy.get("#equipment-x-coordinate-container").find(".equipment-form-error-msg").should("exist");
-        cy.get("#equipment-y-coordinate-container").find(".equipment-form-error-msg").should("exist");
-
-        //validate the Set-by is required
-        cy.get("#equipment-officer-set-div").find(".error-message").should("exist");
-
-        // //validate the toast
-        cy.get(".Toastify__toast-body").then(($toast) => {
-          expect($toast).to.contain.text("Errors creating equipment");
-        });
+        //validate
+        let inputs = [
+          "#equipment-type-div",
+          "#equipment-address-div",
+          "#equipment-coordinate-div",
+          "#equipment-coordinate-div",
+          "#equipment-officer-set-div",
+        ];
+        cy.hasErrorMessage(inputs, "Errors creating equipment");
       } else {
         cy.log("Test was previously run. Skip the Test");
         this.skip();
@@ -60,20 +50,14 @@ describe("HWCR Outcome Equipment", () => {
   });
 
   it("it can save equipment", () => {
-    cy.get(".comp-outcome-report-button").then(function ($equipment) {
-      if ($equipment.find("#outcome-report-add-equipment").length > 0) {
-        cy.get("#outcome-report-add-equipment").click();
-      } else {
-        cy.log("Test was previously run. Skip the Test");
-        this.skip();
-      }
-    });
+    //Run before exery test in order to make re-runnable.
+    deleteAllEquipments();
 
-    cy.get(".comp-outcome-report-complaint-assessment").then(function ($equipment) {
+    cy.get(".comp-outcome-equipment").then(function ($equipment) {
       if ($equipment.find("#equipment-save-button").length) {
         let sectionParams = {
           section: "EQUIPMENT",
-          officer: "Benson, Olivia",
+          officer: "TestAcct, ENV",
           date: "01",
           toastText: "Equipment has been updated",
           equipmentType: "Bear snare",
@@ -94,13 +78,13 @@ describe("HWCR Outcome Equipment", () => {
   it("it can edit an existing equipment", () => {
     cy.validateComplaint("23-032456", "Racoon");
 
-    cy.get(".comp-outcome-report-complaint-assessment").then(function ($equipment) {
+    cy.get(".comp-outcome-equipment").then(function ($equipment) {
       if ($equipment.find("#equipment-edit-button").length) {
         cy.get("#equipment-edit-button").click();
 
         let sectionParams = {
           section: "EQUIPMENT",
-          officer: "Nancy Drew",
+          officer: "TestAcct, ENV",
           date: "02",
           toastText: "Equipment has been updated",
           equipmentType: "Bear live trap",
@@ -117,7 +101,7 @@ describe("HWCR Outcome Equipment", () => {
   });
 
   it("it can delete an existing equipment", () => {
-    cy.get(".comp-outcome-report-complaint-assessment").then(function ($equipment) {
+    cy.get(".comp-outcome-equipment").then(function ($equipment) {
       if ($equipment.find("#equipment-delete-button").length) {
         cy.get("#equipment-delete-button").click();
         cy.get(".modal-footer > .btn-primary").click();
