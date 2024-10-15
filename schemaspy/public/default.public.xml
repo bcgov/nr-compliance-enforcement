@@ -2385,13 +2385,6 @@ BEGIN
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
-
-  if (_edit_complaint_status_code <> current_complaint_record.complaint_status_code) then 
-	    UPDATE complaint
-	    SET complaint_status_code  = _edit_complaint_status_code
-	    WHERE complaint_identifier = _complaint_identifier;
-	    update_edit_ind = true;
-  end if;
    
   -- the update caused an edit, set the audit fields
   if (update_edit_ind) then
@@ -4191,7 +4184,7 @@ END;]]></definition>
 
       IF _violation_code = 'WASTE' OR _violation_code = 'PESTICDE' THEN
         UPDATE PUBLIC.complaint
-        SET    owned_by_agency_code = 'EPO'
+        SET    owned_by_agency_code = 'EPO', complaint_status_code = 'OPEN'
         WHERE  complaint_identifier = _complaint_identifier;
       END IF;
 
