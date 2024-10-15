@@ -13,7 +13,7 @@ import {
   selectGirTypeCodeDropdown,
   selectComplaintReceivedMethodDropdown,
 } from "../../../store/reducers/code-table";
-import { selectOfficersByAgencyDropdown } from "../../../store/reducers/officer";
+import { selectOfficersByAgencyDropdownUsingPersonGuid } from "../../../store/reducers/officer";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import DatePicker from "react-datepicker";
 import { CompSelect } from "../../common/comp-select";
@@ -47,7 +47,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   } = useContext(ComplaintFilterContext);
 
   const agency = getUserAgency();
-  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdown(agency));
+  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdownUsingPersonGuid(agency));
   if (officersByAgency && officersByAgency[0]?.value !== "Unassigned") {
     officersByAgency.unshift({ value: "Unassigned", label: "Unassigned" });
   }
@@ -224,8 +224,9 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                   <div>
                     <button
                       aria-label="Previous Month"
-                      className={`react-datepicker__navigation react-datepicker__navigation--previous ${customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
-                        }`}
+                      className={`react-datepicker__navigation react-datepicker__navigation--previous ${
+                        customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
+                      }`}
                       onClick={decreaseMonth}
                     >
                       <span
@@ -244,8 +245,9 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                     </span>
                     <button
                       aria-label="Next Month"
-                      className={`react-datepicker__navigation react-datepicker__navigation--next ${customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
-                        }`}
+                      className={`react-datepicker__navigation react-datepicker__navigation--next ${
+                        customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
+                      }`}
                       onClick={increaseMonth}
                     >
                       <span

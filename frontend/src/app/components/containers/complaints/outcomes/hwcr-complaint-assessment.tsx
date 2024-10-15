@@ -76,7 +76,7 @@ export const HWCRComplaintAssessment: FC = () => {
   const assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
+          value: officer.auth_user_guid,
           label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
         }))
       : [];
@@ -189,7 +189,7 @@ export const HWCRComplaintAssessment: FC = () => {
         .map((item) => {
           return {
             label: `${item.person_guid?.last_name}, ${item.person_guid?.first_name}`,
-            value: assigned,
+            value: item.auth_user_guid,
           } as Option;
         });
       if (

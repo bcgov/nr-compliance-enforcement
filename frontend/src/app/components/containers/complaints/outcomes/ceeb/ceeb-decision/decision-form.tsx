@@ -19,7 +19,12 @@ import { CompInput } from "../../../../../common/comp-input";
 import { openModal } from "../../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../../types/modal/modal-types";
 import { getCaseFile, upsertDecisionOutcome } from "../../../../../../store/reducers/case-thunks";
-import { assignComplaintToOfficer, selectOfficersByAgencyDropdown } from "../../../../../../store/reducers/officer";
+import {
+  assignComplaintToOfficer,
+  selectOfficersByAgencyDropdown,
+  selectOfficersByAgency,
+  selectOfficersByAgencyDropdownUsingPersonGuid,
+} from "../../../../../../store/reducers/officer";
 import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
 import { UUID } from "crypto";
 import { getComplaintById, selectComplaintCallerInformation } from "../../../../../../store/reducers/complaints";
@@ -64,6 +69,7 @@ export const DecisionForm: FC<props> = ({
   actionTakenDate,
 }) => {
   const dispatch = useAppDispatch();
+  console.log(assignedTo);
 
   //-- select data from redux
   const caseId = useAppSelector(selectCaseId) as UUID;
@@ -77,6 +83,10 @@ export const DecisionForm: FC<props> = ({
   const leadAgencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officerOptions = useAppSelector(selectOfficersByAgencyDropdown(ownedByAgencyCode?.agency));
+  const officerOptionsByPersonGuid = useAppSelector(
+    selectOfficersByAgencyDropdownUsingPersonGuid(ownedByAgencyCode?.agency),
+  );
+  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const scheduleSectorType = useAppSelector(selectScheduleSectorXref);
 
   //-- error messgaes
@@ -116,10 +126,12 @@ export const DecisionForm: FC<props> = ({
 
   useEffect(() => {
     if (sector && schedule) {
-      let options = scheduleSectorType.filter((item) => item.schedule === schedule).map(item => {
-        const record: Option = { label: item.longDescription, value: item.sector };
-        return record
-      });
+      let options = scheduleSectorType
+        .filter((item) => item.schedule === schedule)
+        .map((item) => {
+          const record: Option = { label: item.longDescription, value: item.sector };
+          return record;
+        });
       setSectorList(options);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -172,7 +184,9 @@ export const DecisionForm: FC<props> = ({
 
       case "assignedTo": {
         const { assignedTo } = data;
+        console.log(assignedTo);
         result = officerOptions.find((item) => item.value === assignedTo);
+        console.log(result);
         break;
       }
     }
@@ -196,10 +210,12 @@ export const DecisionForm: FC<props> = ({
   };
 
   const handleScheduleChange = (schedule: string) => {
-    let options = scheduleSectorType.filter((item) => item.schedule === schedule).map(item => {
-      const record: Option = { label: item.longDescription, value: item.sector };
-      return record
-    });
+    let options = scheduleSectorType
+      .filter((item) => item.schedule === schedule)
+      .map((item) => {
+        const record: Option = { label: item.longDescription, value: item.sector };
+        return record;
+      });
     const model = { ...data, sector: "", schedule: schedule };
     setData(model);
     setSectorList(options);
@@ -266,14 +282,20 @@ export const DecisionForm: FC<props> = ({
         if (response === "success") {
           //-- update the assignment of the complaint to the selected officer
           const { assignedTo } = data;
-          if (assignedTo) {
-            const result = await dispatch(assignComplaintToOfficer(leadIdentifier, assignedTo));
+          if (assignedTo && officersInAgencyList) {
+            const officerAssignedObj = officersInAgencyList.find((officer) => officer.auth_user_guid === assignedTo);
 
-            if (result) {
-              //-- update the complaint
-              dispatch(getComplaintById(leadIdentifier, COMPLAINT_TYPES.ERS));
-            } else {
-              ToggleError("Error, unable to to assign officer to complaint");
+            if (officerAssignedObj?.person_guid) {
+              const result = await dispatch(
+                assignComplaintToOfficer(leadIdentifier, officerAssignedObj.person_guid.person_guid),
+              );
+
+              if (result) {
+                //-- update the complaint
+                dispatch(getComplaintById(leadIdentifier, COMPLAINT_TYPES.ERS));
+              } else {
+                ToggleError("Error, unable to to assign officer to complaint");
+              }
             }
           }
 

@@ -54,7 +54,7 @@ export const selectNotesOfficer = (state: RootState) => {
     };
   } else {
     const { actor } = action;
-    const officer = data.find((item) => item.officer_guid === actor);
+    const officer = data.find((item) => item.auth_user_guid === actor);
     if (officer) {
       const {
         person_guid: { first_name: givenName, last_name: surName },

@@ -41,7 +41,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const [type, setType] = useState<Option>();
   const [dateSet, setDateSet] = useState<Date>(new Date());
   const [dateRemoved, setDateRemoved] = useState<Date>();
-  const [officerSet, setOfficerSet] = useState<Option>();
+  const [officerSet, setOfficerSet] = useState<Option | undefined>();
   const [officerRemoved, setOfficerRemoved] = useState<Option>();
   const [address, setAddress] = useState<string | undefined>("");
   const [xCoordinate, setXCoordinate] = useState<string | undefined>("");
@@ -74,17 +74,24 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
+          value: officer.auth_user_guid,
           label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
         }))
       : [];
 
   useEffect(() => {
-    if (assignedOfficer) {
-      const setOfficer = getSelectedItem(assignedOfficer, assignableOfficers);
-      setOfficerSet(setOfficer);
+    if (assignedOfficer && officersInAgencyList) {
+      const officerAssigned: any = officersInAgencyList
+        .filter((officer) => officer.person_guid.person_guid === assignedOfficer)
+        .map((item) => {
+          return {
+            label: `${item.person_guid?.last_name}, ${item.person_guid?.first_name}`,
+            value: item.auth_user_guid,
+          } as Option;
+        });
+      setOfficerSet(officerAssigned);
     }
-  }, [complaintData]);
+  }, [assignedOfficer]);
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {

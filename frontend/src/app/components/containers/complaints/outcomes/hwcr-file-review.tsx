@@ -18,7 +18,7 @@ export const HWCRFileReview: FC = () => {
   const DISPLAY_STATE = 2;
   const dispatch = useAppDispatch();
   const complaintData = useAppSelector(selectComplaint);
-  const personGuid = useAppSelector((state) => state.app.profile.personGuid);
+  const authUserGuid = useAppSelector((state) => state.app.profile.idir);
   const isReviewRequired = useAppSelector((state) => state.cases.isReviewRequired);
   const reviewCompleteAction = useAppSelector((state) => state.cases.reviewComplete);
   const { officers } = useAppSelector((state) => state.officers);
@@ -49,7 +49,7 @@ export const HWCRFileReview: FC = () => {
     if (reviewCompleteAction) {
       let displayName = "Unknown";
       if (officers) {
-        const officer = officers.filter((person) => person.person_guid.person_guid === reviewCompleteAction.actor);
+        const officer = officers.filter((person) => person.auth_user_guid === reviewCompleteAction.actor);
         if (officer.length > 0) {
           const {
             person_guid: { first_name: givenName, last_name: surName },
@@ -79,7 +79,7 @@ export const HWCRFileReview: FC = () => {
           dispatch(createReview(complaintData.id, reviewRequired, null));
         } else {
           const completeAction = {
-            actor: personGuid,
+            actor: authUserGuid,
             date: new Date(),
             actionCode: "COMPLTREVW",
             activeIndicator: reviewCompleted,
@@ -89,7 +89,7 @@ export const HWCRFileReview: FC = () => {
         }
       } else {
         const completeAction = {
-          actor: personGuid,
+          actor: authUserGuid,
           date: new Date(),
           actionCode: "COMPLTREVW",
           activeIndicator: reviewCompleted,

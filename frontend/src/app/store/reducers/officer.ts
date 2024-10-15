@@ -335,6 +335,20 @@ export const selectOfficersByAgencyDropdown =
     const { officers } = officerRoot;
     const officerList = filterOfficerByAgency(agency, officers);
     const officerDropdown = officerList.map((officer: Officer) => ({
+      value: officer.auth_user_guid,
+      label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+    }));
+
+    return officerDropdown;
+  };
+
+export const selectOfficersByAgencyDropdownUsingPersonGuid =
+  (agency: string) =>
+  (state: RootState): Array<Option> => {
+    const { officers: officerRoot } = state;
+    const { officers } = officerRoot;
+    const officerList = filterOfficerByAgency(agency, officers);
+    const officerDropdown = officerList.map((officer: Officer) => ({
       value: officer.person_guid.person_guid,
       label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
     }));
@@ -435,15 +449,15 @@ export const selectOfficerByIdir =
     return null;
   };
 
-export const selectOfficerByPersonGuid =
-  (personGuid: string) =>
+export const selectOfficerByAuthUserGuid =
+  (userGuid: string) =>
   (state: RootState): Officer | null => {
     const {
       officers: { officers: data },
     } = state;
-    const selected = data.find(({ person_guid }) => person_guid.person_guid === personGuid);
+    const selected = data.find(({ auth_user_guid }) => auth_user_guid === userGuid);
 
-    if (selected?.person_guid) {
+    if (selected?.auth_user_guid) {
       return selected;
     }
 

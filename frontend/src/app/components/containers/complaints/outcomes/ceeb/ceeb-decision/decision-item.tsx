@@ -9,9 +9,10 @@ import {
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
 } from "../../../../../../store/reducers/code-table-selectors";
-import { selectOfficersDropdown } from "../../../../../../store/reducers/officer";
+import { selectOfficersByAgencyDropdown, selectOfficersDropdown } from "../../../../../../store/reducers/officer";
 import Option from "../../../../../../types/app/option";
 import { CASE_ACTION_CODE } from "../../../../../../constants/case_actions";
+import { selectComplaintCallerInformation } from "../../../../../../store/reducers/complaints";
 
 type props = {
   id?: string;
@@ -48,7 +49,8 @@ export const DecisionItem: FC<props> = ({
   const scheduleSectorsOptions = useAppSelector(selectSectorDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectLeadAgencyDropdown);
-  const officerOptions = useAppSelector(selectOfficersDropdown(true));
+  const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
+  const officerOptions = useAppSelector(selectOfficersByAgencyDropdown(ownedByAgencyCode?.agency));
 
   const getValue = (property: string): Option | undefined | null => {
     let result: Option | undefined;

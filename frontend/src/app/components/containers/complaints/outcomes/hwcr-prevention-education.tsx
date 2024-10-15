@@ -59,7 +59,7 @@ export const HWCRComplaintPrevention: FC = () => {
   const assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
+          value: officer.auth_user_guid,
           label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
         }))
       : [];
@@ -140,7 +140,7 @@ export const HWCRComplaintPrevention: FC = () => {
         .map((element: Officer) => {
           return {
             label: `${element.person_guid?.last_name}, ${element.person_guid?.first_name}`,
-            value: assigned,
+            value: element.auth_user_guid,
           } as Option;
         });
       if (
