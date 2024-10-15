@@ -17,6 +17,7 @@ const originalCallDetails = {
   officeCode: "BURNSLK",
   zoneCode: "NCHKOLKS",
   regionCode: "OMINECA",
+  methodComplaintReceived: "Observed in field",
   status: "Open",
   statusIndex: 0,
   assigned: "None",
@@ -57,6 +58,7 @@ const editCallDetails = {
   office: "Golden",
   zone: "Columbia/Kootenay",
   region: "Kootenay",
+  methodComplaintReceived: "BC wildlife federation app",
   communityIndex: 0,
   communityCode: "Blaeberry",
   officeCode: "GLDN",
@@ -151,6 +153,8 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     cy.selectItemById("community-select-id", editCallDetails.community);
 
+    cy.selectItemById("complaint-received-method-select-id", editCallDetails.methodComplaintReceived);
+
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
     cy.selectItemById("violation-in-progress-select-id", editCallDetails.violationInProgressString);
@@ -201,6 +205,8 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     });
 
     cy.get('dd[id="comp-details-community"]').contains(editCallDetails.community);
+
+    cy.get('dd[id="comp-method-complaint-received"]').contains(editCallDetails.methodComplaintReceived);
 
     cy.get('dd[id="comp-details-violation-in-progress"]').contains(editCallDetails.violationInProgressString);
 
@@ -269,6 +275,8 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     cy.selectItemById("community-select-id", originalCallDetails.community);
 
+    cy.selectItemById("complaint-received-method-select-id", originalCallDetails.methodComplaintReceived);
+
     cy.selectItemById("violation-in-progress-select-id", originalCallDetails.violationInProgressString);
 
     cy.selectItemById("violation-observed-select-id", originalCallDetails.violationObservedString);
@@ -318,6 +326,8 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     cy.get('dd[id="comp-details-community"]').contains(originalCallDetails.community);
 
+    cy.get('dd[id="comp-method-complaint-received"]').contains(originalCallDetails.methodComplaintReceived);
+
     cy.get('dd[id="comp-details-violation-in-progress"]').contains(originalCallDetails.violationInProgressString);
 
     cy.get('dd[id="comp-details-violation-observed"]').contains(originalCallDetails.violationObservedString);
@@ -329,6 +339,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     cy.get('dd[id="comp-details-zone"]').contains(originalCallDetails.zone);
 
     cy.get('dd[id="comp-details-region"]').contains(originalCallDetails.region);
+
     //end verifying changes are reverted
   });
 
@@ -430,6 +441,12 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     cy.get("#region-edit-readonly-id").should(($input) => {
       expect($input).to.have.prop("disabled", true);
     });
+
+    //Method Complaint Received
+    cy.get('[for="complaint-received-method-label-id"]').should(($label) => {
+      expect($label).to.contain.text("Method complaint was received");
+    });
+    cy.get("#complaint-received-method-pair-id").should("exist");
 
     // Check the Caller Information inputs
     // Name
