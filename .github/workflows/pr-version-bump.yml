@@ -20,7 +20,7 @@ jobs:
         id: get_latest_tag
         run: |
           git fetch origin main --tags
-          latest_tag=$(git describe --tags --abbrev=0 origin/main)
+          latest_tag=$(git tag --list --sort=-authordate --merged | head -n1)
           echo "::set-output name=latest_tag::$latest_tag"
           echo "Latest tag: $latest_tag"
 
