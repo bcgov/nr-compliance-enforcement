@@ -11,4 +11,5 @@ export interface ComplaintFilterParameters {
   status?: string;
   girTypeCode?: string;
   complaintMethod?: string;
+  actionTaken?: string;
 }

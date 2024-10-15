@@ -50,6 +50,11 @@ describe("CEEB User Stuff?", () => {
   beforeEach(function () {
     cy.viewport("macbook-16");
     cy.kcLogout().kcLogin();
+    cy.applyRoles(roles);
+  });
+
+  afterEach(function () {
+    cy.resetRoles();
   });
 
   Cypress._.times(roles.length, (index) => {

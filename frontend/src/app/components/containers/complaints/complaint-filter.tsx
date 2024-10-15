@@ -13,6 +13,7 @@ import {
   selectGirTypeCodeDropdown,
   selectComplaintReceivedMethodDropdown,
 } from "../../../store/reducers/code-table";
+import { selectDecisionTypeDropdown } from "../../../store/reducers/code-table-selectors";
 import { selectOfficersByAgencyDropdown } from "../../../store/reducers/officer";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import DatePicker from "react-datepicker";
@@ -22,6 +23,8 @@ import { ComplaintFilterPayload, updateFilter } from "../../../store/reducers/co
 import Option from "../../../types/app/option";
 import { getUserAgency } from "../../../service/user-service";
 import { listActiveFilters } from "../../../store/reducers/app";
+import UserService from "../../../service/user-service";
+import Roles from "../../../types/app/roles";
 
 type Props = {
   type: string;
@@ -42,6 +45,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       endDate,
       girType,
       complaintMethod,
+      actionTaken,
     },
     dispatch,
   } = useContext(ComplaintFilterContext);
@@ -62,6 +66,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const communities = useAppSelector(selectCascadedCommunity(region?.value, zone?.value, community?.value));
 
   const complaintMethods = useAppSelector(selectComplaintReceivedMethodDropdown);
+  const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
 
   const activeFilters = useAppSelector(listActiveFilters());
 
@@ -224,8 +229,9 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                   <div>
                     <button
                       aria-label="Previous Month"
-                      className={`react-datepicker__navigation react-datepicker__navigation--previous ${customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
-                        }`}
+                      className={`react-datepicker__navigation react-datepicker__navigation--previous ${
+                        customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
+                      }`}
                       onClick={decreaseMonth}
                     >
                       <span
@@ -244,8 +250,9 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                     </span>
                     <button
                       aria-label="Next Month"
-                      className={`react-datepicker__navigation react-datepicker__navigation--next ${customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
-                        }`}
+                      className={`react-datepicker__navigation react-datepicker__navigation--next ${
+                        customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
+                      }`}
                       onClick={increaseMonth}
                     >
                       <span
@@ -315,6 +322,28 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 placeholder="Select"
                 enableValidation={false}
                 value={complaintMethod}
+                isClearable={true}
+              />
+            </div>
+          </div>
+        )}
+        {UserService.hasRole(Roles.CEEB) && (
+          <div id="comp-filter-action-taken-id">
+            <label htmlFor="action-taken-select-id">Action Taken</label>
+            <div className="filter-select-padding">
+              <CompSelect
+                id="action-taken-select-id"
+                classNamePrefix="comp-select"
+                onChange={(option) => {
+                  setFilter("actionTaken", option);
+                }}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={decisionTypeOptions}
+                placeholder="Select"
+                enableValidation={false}
+                value={actionTaken}
                 isClearable={true}
               />
             </div>

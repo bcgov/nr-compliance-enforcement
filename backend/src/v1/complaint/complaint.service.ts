@@ -4,6 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
+import { get } from "../../external_api/case_management";
 
 import {
   applyAllegationComplaintMap,
@@ -843,6 +844,7 @@ export class ComplaintService {
     complaintType: COMPLAINT_TYPE,
     model: ComplaintSearchParameters,
     hasCEEBRole: boolean,
+    token?: string,
   ): Promise<SearchResults> => {
     try {
       let results: SearchResults = { totalCount: 0, complaints: [] };
@@ -869,6 +871,30 @@ export class ComplaintService {
       //-- return Waste and Pestivide complaints for CEEB users
       if (hasCEEBRole && complaintType === "ERS") {
         builder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+      }
+
+      // -- filter by complaint identifiers returned by case management if actionTaken filter is present
+      if (hasCEEBRole && filters.actionTaken) {
+        const { data, errors } = await get(token, {
+          query: `{getLeadsByActionTaken (actionCode: "${filters.actionTaken}")}`,
+        });
+
+        if (errors) {
+          this.logger.error("GraphQL errors:", errors);
+          throw new Error("GraphQL errors occurred");
+        }
+        /**
+         * If no leads in the case manangement database have had the selected action taken, `getLeadsByActionTaken`
+         * returns an empty array, and WHERE...IN () does not accept an empty set, it throws an error. In our use
+         * case, if `getLeadsByActionTaken` returns an empty array, we do not want the entire search to error, it
+         * should simply return an empty result set. To handle this, if `getLeadsByActionTaken` returns an empty
+         * array, we populate the array with a value that would never match on a complaint_identifier, -1.
+         */
+        const complaintIdentifiers = data.getLeadsByActionTaken.length > 0 ? data.getLeadsByActionTaken : [-1];
+
+        builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
       }
 
       //-- apply search
@@ -946,6 +972,7 @@ export class ComplaintService {
     complaintType: COMPLAINT_TYPE,
     model: ComplaintSearchParameters,
     hasCEEBRole: boolean,
+    token?: string,
   ): Promise<MapSearchResults> => {
     const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
 
@@ -985,6 +1012,29 @@ export class ComplaintService {
       complaintBuilder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
       complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
 
+      // -- filter by complaint identifiers returned by case management if actionTaken filter is present
+      if (hasCEEBRole && filters.actionTaken) {
+        const { data, errors } = await get(token, {
+          query: `{getLeadsByActionTaken (actionCode: "${filters.actionTaken}")}`,
+        });
+        if (errors) {
+          this.logger.error("GraphQL errors:", errors);
+          throw new Error("GraphQL errors occurred");
+        }
+        /**
+         * If no leads in the case manangement database have had the selected action taken, `getLeadsByActionTaken`
+         * returns an empty array, and WHERE...IN () does not accept an empty set, it throws an error. In our use
+         * case, if `getLeadsByActionTaken` returns an empty array, we do not want the entire search to error, it
+         * should simply return an empty result set. To handle this, if `getLeadsByActionTaken` returns an empty
+         * array, we populate the array with a value that would never match on a complaint_identifier, -1.
+         */
+        const complaintIdentifiers = data.getLeadsByActionTaken.length > 0 ? data.getLeadsByActionTaken : [-1];
+
+        complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
       //-- run query
       const mappedComplaints = await complaintBuilder.getMany();
 
@@ -1008,11 +1058,28 @@ export class ComplaintService {
         });
       }
 
-
       //-- added this for consistency with search method
       //-- return Waste and Pestivide complaints for CEEB users
       if (hasCEEBRole && complaintType === "ERS") {
         unMappedBuilder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+      }
+
+      // -- filter by complaint identifiers returned by case management if actionTaken filter is present
+      if (hasCEEBRole && filters.actionTaken) {
+        const { data, errors } = await get(token, {
+          query: `{getLeadsByActionTaken (actionCode: "${filters.actionTaken}")}`,
+        });
+        if (errors) {
+          this.logger.error("GraphQL errors:", errors);
+          throw new Error("GraphQL errors occurred");
+        }
+        // If no complaint indentifiers are returned by the CM database, provide a non-empty non-matching list to avoid
+        // the SQL error of IN empty set.
+        const complaintIdentifiers = data.getLeadsByActionTaken.length > 0 ? data.getLeadsByActionTaken : [-1];
+
+        unMappedBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
       }
 
       //-- filter locations without coordinates
