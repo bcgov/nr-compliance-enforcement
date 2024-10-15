@@ -369,7 +369,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   return (
     <>
       <StandaloneConfirmCancelModal
-        title="Cancel Changes?"
+        title="Cancel changes?"
         description="Your changes will be lost."
         show={showModal}
         closeAndCancel={cancel}

@@ -342,7 +342,7 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
 
       IF _violation_code = 'WASTE' OR _violation_code = 'PESTICDE' THEN
         UPDATE PUBLIC.complaint
-        SET    owned_by_agency_code = 'EPO'
+        SET    owned_by_agency_code = 'EPO', complaint_status_code = 'OPEN'
         WHERE  complaint_identifier = _complaint_identifier;
       END IF;
 
