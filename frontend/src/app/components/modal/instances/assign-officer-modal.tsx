@@ -171,7 +171,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
               data-initials-modal={initials}
             ></div>
 
-            <div>{displayName}</div>
+            <div className="assign_officer_modal_profile_card_row_1">{displayName}</div>
             {showExperimentalFeature && <div className="assign_officer_modal_profile_card_row_2">Officer</div>}
           </div>
           <div className="profile-card-actions">
