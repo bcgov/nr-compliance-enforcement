@@ -377,7 +377,7 @@ nats:
         enabled: true
         maxSize: 250Mi
     cluster:
-      enabled: true
+      enabled: false
       replicas: 1
   natsBox:
     enabled: false
