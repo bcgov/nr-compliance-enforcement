@@ -116,10 +116,12 @@ export const DecisionForm: FC<props> = ({
 
   useEffect(() => {
     if (sector && schedule) {
-      let options = scheduleSectorType.filter((item) => item.schedule === schedule).map(item => {
-        const record: Option = { label: item.longDescription, value: item.sector };
-        return record
-      });
+      let options = scheduleSectorType
+        .filter((item) => item.schedule === schedule)
+        .map((item) => {
+          const record: Option = { label: item.longDescription, value: item.sector };
+          return record;
+        });
       setSectorList(options);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -196,10 +198,12 @@ export const DecisionForm: FC<props> = ({
   };
 
   const handleScheduleChange = (schedule: string) => {
-    let options = scheduleSectorType.filter((item) => item.schedule === schedule).map(item => {
-      const record: Option = { label: item.longDescription, value: item.sector };
-      return record
-    });
+    let options = scheduleSectorType
+      .filter((item) => item.schedule === schedule)
+      .map((item) => {
+        const record: Option = { label: item.longDescription, value: item.sector };
+        return record;
+      });
     const model = { ...data, sector: "", schedule: schedule };
     setData(model);
     setSectorList(options);
@@ -218,7 +222,7 @@ export const DecisionForm: FC<props> = ({
         modalSize: "md",
         modalType: CANCEL_CONFIRM,
         data: {
-          title: "Cancel Changes?",
+          title: "Cancel changes?",
           description: "Your changes will be lost.",
           cancelConfirmed: () => {
             //-- reset the form to its original state

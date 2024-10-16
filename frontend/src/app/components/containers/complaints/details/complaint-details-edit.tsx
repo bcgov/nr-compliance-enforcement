@@ -34,10 +34,8 @@ import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
 import { selectOfficersByAgency } from "../../../../store/reducers/officer";
 import { ComplaintLocation } from "./complaint-location";
-import { ValidationSelect } from "../../../../common/validation-select";
 import { ValidationTextArea } from "../../../../common/validation-textarea";
 import { ValidationMultiSelect } from "../../../../common/validation-multiselect";
-import { ValidationInput } from "../../../../common/validation-input";
 import { ValidationPhoneInput } from "../../../../common/validation-phone-input";
 import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
 import { CompSelect } from "../../../common/comp-select";
@@ -144,9 +142,9 @@ export const ComplaintDetailsEdit: FC = () => {
   let assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({
-        value: officer.person_guid.person_guid,
-        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-      }))
+          value: officer.person_guid.person_guid,
+          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+        }))
       : [];
 
   assignableOfficers.unshift({ value: "Unassigned", label: "None" });
@@ -281,7 +279,7 @@ export const ComplaintDetailsEdit: FC = () => {
         modalSize: "md",
         modalType: CANCEL_CONFIRM,
         data: {
-          title: "Cancel Changes?",
+          title: "Cancel changes?",
           description: "Your changes will be lost.",
           cancelConfirmed: resetErrorMessages,
         },
@@ -848,15 +846,16 @@ export const ComplaintDetailsEdit: FC = () => {
                     <label id="species-label-id">
                       Species<span className="required-ind">*</span>
                     </label>
-                    <ValidationSelect
-                      className="comp-details-input full-width"
-                      options={speciesCodes}
-                      defaultValue={selectedSpecies}
-                      placeholder="Select"
+                    <CompSelect
                       id="species-select-id"
                       classNamePrefix="comp-select"
                       onChange={(e) => handleSpeciesChange(e)}
-                      errMsg={speciesError}
+                      className="comp-details-input full-width"
+                      options={speciesCodes}
+                      defaultOption={selectedSpecies}
+                      placeholder="Select"
+                      enableValidation={true}
+                      errorMessage={speciesError}
                     />
                   </div>
                   <div
@@ -866,15 +865,16 @@ export const ComplaintDetailsEdit: FC = () => {
                     <label id="nature-of-complaint-label-id">
                       Nature of Complaint<span className="required-ind">*</span>
                     </label>
-                    <ValidationSelect
+                    <CompSelect
                       id="nature-of-complaint-select-id"
-                      options={hwcrNatureOfComplaintCodes}
-                      placeholder="Select"
-                      className="comp-details-input full-width"
                       classNamePrefix="comp-select"
-                      defaultValue={selectedNatureOfComplaint}
                       onChange={(e) => handleNatureOfComplaintChange(e)}
-                      errMsg={natureOfComplaintError}
+                      className="comp-details-input full-width"
+                      options={hwcrNatureOfComplaintCodes}
+                      defaultOption={selectedNatureOfComplaint}
+                      placeholder="Select"
+                      enableValidation={true}
+                      errorMessage={natureOfComplaintError}
                     />
                   </div>
                 </>
@@ -1086,15 +1086,16 @@ export const ComplaintDetailsEdit: FC = () => {
                   Community<span className="required-ind">*</span>
                 </label>
                 <div className="comp-details-edit-input">
-                  <ValidationSelect
-                    className="comp-details-input"
-                    options={areaCodes}
-                    defaultValue={selectedAreaCode}
-                    placeholder="Select"
+                  <CompSelect
                     id="community-select-id"
                     classNamePrefix="comp-select"
                     onChange={(e) => handleCommunityChange(e)}
-                    errMsg={communityError}
+                    className="comp-details-input"
+                    options={areaCodes}
+                    defaultOption={selectedAreaCode}
+                    placeholder="Select"
+                    enableValidation={true}
+                    errorMessage={communityError}
                   />
                 </div>
               </div>
@@ -1308,14 +1309,15 @@ export const ComplaintDetailsEdit: FC = () => {
               >
                 <label>Email</label>
                 <div className="comp-details-edit-input">
-                  <ValidationInput
-                    type="text"
-                    className="comp-form-control"
-                    defaultValue={email !== undefined ? email : ""}
+                  <CompInput
                     id="complaint-email-id"
-                    onChange={handleEmailChange}
-                    errMsg={emailMsg}
+                    divid="complaint-email-id-value"
+                    type="input"
+                    inputClass="comp-form-control"
+                    defaultValue={email !== undefined ? email : ""}
+                    error={emailMsg}
                     maxLength={120}
+                    onChange={(evt: any) => handleEmailChange(evt.target.value)}
                   />
                 </div>
               </div>
