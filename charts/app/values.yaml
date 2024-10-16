@@ -361,7 +361,6 @@ backup:
 nats:
   enabled: true
   config:
-    replicaCount: 2
     resources:
       requests:
         cpu: 100m
@@ -377,8 +376,9 @@ nats:
       memoryStore:
         enabled: true
         maxSize: 250Mi
-  cluster:
-    enabled: true
+    cluster:
+      enabled: true
+      replicas: 3
   natsBox:
     enabled: false
   persistence:
