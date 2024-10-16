@@ -20,7 +20,7 @@ jobs:
         id: latest_tag
         run: |
           git fetch --tags
-          latest_tag=$(git tag --sort=-creatordate | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+          latest_tag=$(git tag --list --sort=-v:refname --merged | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
           if [ -z "$latest_tag" ]; then
             echo "No previous tags found, starting with v0.1.0"
             latest_tag="v0.0.0"
