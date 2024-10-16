@@ -25,6 +25,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
     officeCode: "KMLPS",
     zoneCode: "TMPSNNCLA",
     regionCode: "TMPSNCRBO",
+    methodComplaintReceived: "Observed in field",
     natureOfComplaint: "Aggressive - present/recent",
     natureOfComplaintIndex: 1,
     species: "Black Bear",
@@ -70,6 +71,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
     officeCode: "GLDN",
     zoneCode: "CLMBAKTNY",
     regionCode: "KTNY",
+    methodComplaintReceived: "BC wildlife federation app",
     natureOfComplaint: "Dead wildlife - no violation suspected",
     natureOfComplaintIndex: 5,
     species: "Coyote",
@@ -153,6 +155,8 @@ describe("Complaint Edit Page spec - Edit View", () => {
 
     cy.selectItemById("community-select-id", editCallDetails.community);
 
+    cy.selectItemById("complaint-received-method-select-id", editCallDetails.methodComplaintReceived);
+
     cy.selectItemById("nature-of-complaint-select-id", editCallDetails.natureOfComplaint);
 
     cy.selectItemById("species-select-id", editCallDetails.species);
@@ -192,6 +196,8 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get('dd[id="comp-details-zone"]').contains(editCallDetails.zone);
 
     cy.get('dd[id="comp-details-region"]').contains(editCallDetails.region);
+
+    cy.get('dd[id="comp-method-complaint-received"]').contains(editCallDetails.methodComplaintReceived);
 
     cy.get(".comp-attractant-badge").then(function ($defaultValue) {
       expect($defaultValue).to.contain("Livestock");
@@ -245,6 +251,8 @@ describe("Complaint Edit Page spec - Edit View", () => {
 
     cy.selectItemById("community-select-id", originalCallDetails.community);
 
+    cy.selectItemById("complaint-received-method-select-id", originalCallDetails.methodComplaintReceived);
+
     cy.selectItemById("nature-of-complaint-select-id", originalCallDetails.natureOfComplaint);
 
     cy.selectItemById("species-select-id", originalCallDetails.species);
@@ -285,6 +293,8 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get('dd[id="comp-details-zone"]').contains(originalCallDetails.zone);
 
     cy.get('dd[id="comp-details-region"]').contains(originalCallDetails.region);
+
+    cy.get('dd[id="comp-method-complaint-received"]').contains(originalCallDetails.methodComplaintReceived);
 
     cy.get(".comp-attractant-badge").then(function ($defaultValue) {
       expect($defaultValue).to.contain("Garbage");
@@ -383,6 +393,12 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get("#region-edit-readonly-id").should(($input) => {
       expect($input).to.have.prop("disabled", true);
     });
+
+    //Method Complaint Received
+    cy.get('[for="complaint-received-method-label-id"]').should(($label) => {
+      expect($label).to.contain.text("Method complaint was received");
+    });
+    cy.get("#complaint-received-method-pair-id").should("exist");
 
     // Check the Caller Information inputs
     // Name
