@@ -174,7 +174,7 @@ describe("Verify CEEB specific search filters work", () => {
     cy.get("#details-screen-assign-button").should("exist").click();
     cy.get("#self_assign_button").should("exist").click();
     cy.get(".modal").should("not.exist");
-    cy.get("#outcome-decision-save-button").click();
+    cy.get("#ceeb-decision > .card-body > .comp-details-form-buttons > #outcome-decision-save-button").click();
     cy.contains("div", "Decision added").should("exist");
 
     // Return to the complaints view
