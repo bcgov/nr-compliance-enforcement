@@ -1,3 +1,4 @@
+import Roles from "../../src/app/types/app/roles";
 /*
 Tests to verify complaint list specification functionality
 */
@@ -144,5 +145,47 @@ describe("Complaint Search Functionality", () => {
       .should(({ length }) => {
         expect(length).to.eq(5);
       });
+  });
+});
+
+/**
+ * Test that CEEB specific search filters work
+ */
+describe("Verify CEEB specific search filters work", () => {
+  beforeEach(function () {
+    cy.viewport("macbook-16");
+    cy.kcLogout().kcLogin(Roles.CEEB);
+  });
+
+  it.only("allows filtering of complaints by Action Taken", function () {
+    // Navigate to the complaint list
+    const complaintWithActionTakenID = "23-030990";
+    const actionTaken = "Forward to lead agency";
+    cy.visit("/");
+    cy.waitForSpinner();
+
+    // Set an 'action taken' on a complaint, so it can be filtered
+    cy.get("#comp-officer-filter").should("exist").click();
+    cy.get(`#${complaintWithActionTakenID}`).should("exist").click();
+    // cy.get(".input-group > .comp-form-control").should("exist").click().type("111");
+    cy.selectItemById("outcome-decision-schedule-sector", "Other");
+    cy.selectItemById("outcome-decision-sector-category", "None");
+    cy.selectItemById("outcome-decision-discharge", "Pesticides");
+    cy.selectItemById("outcome-decision-action-taken", actionTaken);
+    cy.selectItemById("outcome-decision-lead-agency", "Other");
+    cy.enterDateTimeInDatePicker("outcome-decision-outcome-date", "01");
+    cy.get("#details-screen-assign-button").should("exist").click();
+    cy.get("#self_assign_button").should("exist").click();
+    cy.get(".modal").should("not.exist");
+    cy.get("#outcome-decision-save-button").click();
+    cy.contains("div", "Decision added").should("exist");
+
+    // Return to the complaints view
+    cy.get("#complaints-link").click();
+
+    // Filter by action taken
+    cy.get("#comp-filter-btn").should("exist").click({ force: true });
+    cy.selectItemById("action-taken-select-id", actionTaken);
+    cy.get(`#${complaintWithActionTakenID}`).should("exist");
   });
 });
