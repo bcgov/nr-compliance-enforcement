@@ -102,8 +102,14 @@ export class StagingComplaintService {
   // Given two WebEOCComplaint objects, compare them and return true if they're the same.  This function
   // ignores some attributes (specifically the back_number_of* attributes)
   _compareWebEOCComplaints = (complaint1: WebEOCComplaint, complaint2: WebEOCComplaint): boolean => {
-    // Attributes to ignore
-    const attributesToIgnore = ["back_number_of_days", "back_number_of_hours", "back_number_of_minutes", "entrydate"];
+    // Attributes to ignore, if these are changed we don't consider it an edit
+    const attributesToIgnore = [
+      "back_number_of_days",
+      "back_number_of_hours",
+      "back_number_of_minutes",
+      "entrydate",
+      "status",
+    ];
 
     // Omit the attributes to ignore
     const complaint1Filtered = omit(complaint1, attributesToIgnore);
