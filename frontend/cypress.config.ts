@@ -1,5 +1,6 @@
 import { defineConfig } from "cypress";
 import dotenv from "dotenv";
+import Roles from "./src/app/types/app/roles";
 dotenv.config({ path: "./.env" });
 
 const { isFileExist } = require("cy-verify-downloads");
@@ -39,6 +40,8 @@ export default defineConfig({
       css_client_id: process.env.REACT_APP_CSS_CLIENT_ID,
       css_client_secret: process.env.REACT_APP_CSS_CLIENT_SECRET,
       css_api_url: process.env.REACT_APP_CSS_API_URL,
+      //Provide access to Role Enum for use in custom commands
+      roles: Roles,
     },
   },
   retries: 2,
