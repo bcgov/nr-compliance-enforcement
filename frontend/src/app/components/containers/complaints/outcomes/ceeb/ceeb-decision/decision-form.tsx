@@ -69,7 +69,6 @@ export const DecisionForm: FC<props> = ({
   actionTakenDate,
 }) => {
   const dispatch = useAppDispatch();
-  console.log(assignedTo);
 
   //-- select data from redux
   const caseId = useAppSelector(selectCaseId) as UUID;
@@ -184,9 +183,7 @@ export const DecisionForm: FC<props> = ({
 
       case "assignedTo": {
         const { assignedTo } = data;
-        console.log(assignedTo);
         result = officerOptions.find((item) => item.value === assignedTo);
-        console.log(result);
         break;
       }
     }
