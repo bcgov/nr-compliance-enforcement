@@ -157,7 +157,7 @@ describe("Verify CEEB specific search filters work", () => {
     cy.kcLogout().kcLogin(Roles.CEEB);
   });
 
-  it.only("allows filtering of complaints by Action Taken", function () {
+  it("allows filtering of complaints by Action Taken", function () {
     // Navigate to the complaint list
     const complaintWithActionTakenID = "23-030990";
     const actionTaken = "Forward to lead agency";
