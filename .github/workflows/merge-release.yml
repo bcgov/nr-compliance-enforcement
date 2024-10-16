@@ -54,6 +54,7 @@ jobs:
         --set frontend.pdb.enabled=true
         --set backend.pdb.enabled=true
         --set webeoc.pdb.enabled=true
+        --set nats.config.cluster.replicas=3
 
   promote:
     name: Promote Images
