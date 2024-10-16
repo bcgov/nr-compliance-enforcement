@@ -25,10 +25,12 @@ jobs:
         run: |
           git fetch origin main --tags
           latest_tag=$(git tag -l --sort=-taggerdate | tail -n1)
+          latest_tag2=$(git tag -l --sort=-authordate | tail -n1)
+          latest_tag3=$(git tag --list --sort=-v:refname --merged | head -n 1)
           echo "::set-output name=latest_tag::$latest_tag"
           echo "Latest tag: $latest_tag"
-          echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
-          echo "Tag name from github.ref_name: ${{ github.ref_name }}"
+          echo "Latest tag 2: $latest_tag2"
+          echo "Latest tag 3: $latest_tag3"
 
   # https://github.com/bcgov-nr/action-builder-ghcr
   builds:
