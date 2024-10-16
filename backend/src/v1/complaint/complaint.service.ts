@@ -738,6 +738,25 @@ export class ComplaintService {
     return Promise.resolve(results);
   };
 
+  private _getComplaintsByActionTaken = async (token: string, actionTaken: string): Promise<string[]> => {
+    const { data, errors } = await get(token, {
+      query: `{getLeadsByActionTaken (actionCode: "${actionTaken}")}`,
+    });
+    if (errors) {
+      this.logger.error("GraphQL errors:", errors);
+      throw new Error("GraphQL errors occurred");
+    }
+    /**
+     * If no leads in the case manangement database have had the selected action taken, `getLeadsByActionTaken`
+     * returns an empty array, and WHERE...IN () does not accept an empty set, it throws an error. In our use
+     * case, if `getLeadsByActionTaken` returns an empty array, we do not want the entire search to error, it
+     * should simply return an empty result set. To handle this, if `getLeadsByActionTaken` returns an empty
+     * array, we populate the array with a value that would never match on a complaint_identifier: -1.
+     */
+    const complaintIdentifiers = data.getLeadsByActionTaken.length > 0 ? data.getLeadsByActionTaken : ["-1"];
+    return complaintIdentifiers;
+  };
+
   findAllByType = async (
     complaintType: COMPLAINT_TYPE,
   ): Promise<Array<WildlifeComplaintDto> | Array<AllegationComplaintDto>> => {
@@ -875,22 +894,7 @@ export class ComplaintService {
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (hasCEEBRole && filters.actionTaken) {
-        const { data, errors } = await get(token, {
-          query: `{getLeadsByActionTaken (actionCode: "${filters.actionTaken}")}`,
-        });
-
-        if (errors) {
-          this.logger.error("GraphQL errors:", errors);
-          throw new Error("GraphQL errors occurred");
-        }
-        /**
-         * If no leads in the case manangement database have had the selected action taken, `getLeadsByActionTaken`
-         * returns an empty array, and WHERE...IN () does not accept an empty set, it throws an error. In our use
-         * case, if `getLeadsByActionTaken` returns an empty array, we do not want the entire search to error, it
-         * should simply return an empty result set. To handle this, if `getLeadsByActionTaken` returns an empty
-         * array, we populate the array with a value that would never match on a complaint_identifier, -1.
-         */
-        const complaintIdentifiers = data.getLeadsByActionTaken.length > 0 ? data.getLeadsByActionTaken : [-1];
+        const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
 
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
@@ -1013,25 +1017,14 @@ export class ComplaintService {
       complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
+      // -- Declaring complaintIdentifiersByActionTaken outside of the 'if' so that we have it in scope
+      // for the unmappedBuilder below without making the same call to CM again.
+      const complaintIdentifiersByActionTaken: string[] = [];
       if (hasCEEBRole && filters.actionTaken) {
-        const { data, errors } = await get(token, {
-          query: `{getLeadsByActionTaken (actionCode: "${filters.actionTaken}")}`,
-        });
-        if (errors) {
-          this.logger.error("GraphQL errors:", errors);
-          throw new Error("GraphQL errors occurred");
-        }
-        /**
-         * If no leads in the case manangement database have had the selected action taken, `getLeadsByActionTaken`
-         * returns an empty array, and WHERE...IN () does not accept an empty set, it throws an error. In our use
-         * case, if `getLeadsByActionTaken` returns an empty array, we do not want the entire search to error, it
-         * should simply return an empty result set. To handle this, if `getLeadsByActionTaken` returns an empty
-         * array, we populate the array with a value that would never match on a complaint_identifier, -1.
-         */
-        const complaintIdentifiers = data.getLeadsByActionTaken.length > 0 ? data.getLeadsByActionTaken : [-1];
-
+        const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
+        complaintIdentifiersByActionTaken.push(...complaintIdentifiers);
         complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
-          complaint_identifiers: complaintIdentifiers,
+          complaint_identifiers: complaintIdentifiersByActionTaken,
         });
       }
 
@@ -1066,19 +1059,8 @@ export class ComplaintService {
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (hasCEEBRole && filters.actionTaken) {
-        const { data, errors } = await get(token, {
-          query: `{getLeadsByActionTaken (actionCode: "${filters.actionTaken}")}`,
-        });
-        if (errors) {
-          this.logger.error("GraphQL errors:", errors);
-          throw new Error("GraphQL errors occurred");
-        }
-        // If no complaint indentifiers are returned by the CM database, provide a non-empty non-matching list to avoid
-        // the SQL error of IN empty set.
-        const complaintIdentifiers = data.getLeadsByActionTaken.length > 0 ? data.getLeadsByActionTaken : [-1];
-
         unMappedBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
-          complaint_identifiers: complaintIdentifiers,
+          complaint_identifiers: complaintIdentifiersByActionTaken,
         });
       }
 

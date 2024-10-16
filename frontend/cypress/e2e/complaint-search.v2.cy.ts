@@ -1,4 +1,5 @@
 import Roles from "../../src/app/types/app/roles";
+import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 /*
 Tests to verify complaint list specification functionality
 */
@@ -161,13 +162,9 @@ describe("Verify CEEB specific search filters work", () => {
     // Navigate to the complaint list
     const complaintWithActionTakenID = "23-030990";
     const actionTaken = "Forward to lead agency";
-    cy.visit("/");
-    cy.waitForSpinner();
 
     // Set an 'action taken' on a complaint, so it can be filtered
-    cy.get("#comp-officer-filter").should("exist").click();
-    cy.get(`#${complaintWithActionTakenID}`).should("exist").click();
-    // cy.get(".input-group > .comp-form-control").should("exist").click().type("111");
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, complaintWithActionTakenID, true);
     cy.selectItemById("outcome-decision-schedule-sector", "Other");
     cy.selectItemById("outcome-decision-sector-category", "None");
     cy.selectItemById("outcome-decision-discharge", "Pesticides");

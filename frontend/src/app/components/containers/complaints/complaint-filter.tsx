@@ -21,7 +21,6 @@ import { CompSelect } from "../../common/comp-select";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 import { ComplaintFilterPayload, updateFilter } from "../../../store/reducers/complaint-filters";
 import Option from "../../../types/app/option";
-import { getUserAgency } from "../../../service/user-service";
 import { listActiveFilters } from "../../../store/reducers/app";
 import UserService from "../../../service/user-service";
 import Roles from "../../../types/app/roles";
@@ -50,7 +49,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     dispatch,
   } = useContext(ComplaintFilterContext);
 
-  const agency = getUserAgency();
+  const agency = UserService.getUserAgency();
   let officersByAgency = useAppSelector(selectOfficersByAgencyDropdown(agency));
   if (officersByAgency && officersByAgency[0]?.value !== "Unassigned") {
     officersByAgency.unshift({ value: "Unassigned", label: "Unassigned" });
