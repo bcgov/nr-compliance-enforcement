@@ -89,7 +89,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
             value: item.auth_user_guid,
           } as Option;
         });
-      setOfficerSet(officerAssigned);
+      if (officerAssigned.length === 1) {
+        setOfficerSet(officerAssigned[0]);
+      }
     }
   }, [assignedOfficer]);
 
