@@ -476,6 +476,8 @@ INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
 VALUES('b17ee2c1-a26b-4911-ac6f-810b8fdfaab3'::uuid, 'JFUNK', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '97f3cee5-6f4a-410f-810f-d431595fccee'::uuid, '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, 'f896cbb2d5254e54a4ad581dc80681d1'::uuid)
 ON CONFLICT DO NOTHING;
+-- Fix keycloak name
+UPDATE public.officer SET user_id = 'JONFUNK' WHERE (officer_guid = 'b17ee2c1-a26b-4911-ac6f-810b8fdfaab3' AND user_id = 'JFUNK');
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
 VALUES('06ff894b-3895-4d32-8a4a-1fcc0be23e47'::uuid, 'RRONDEAU', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '0667495f-61a5-4d3b-b756-1ee58cb38e23'::uuid, '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '77c6040d69b74757903f1cba37404db4'::uuid)
