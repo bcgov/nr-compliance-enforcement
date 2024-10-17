@@ -374,6 +374,13 @@ button.modal-buttons {
   background-color: $gray-100;
 }
 
+.modal-scroll {
+  min-height: 70px;
+  max-height: 264px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
 .self-assign {
   margin-bottom: 10px;
   &:hover {
