@@ -18,6 +18,7 @@ describe("Complaint Create Page spec - Create View", () => {
     office: "Victoria",
     zone: "South Island",
     region: "West Coast",
+    methodComplaintReceived: "RAPP",
     natureOfComplaint: "Dead wildlife - no violation suspected",
     natureOfComplaintIndex: 5,
     species: "Coyote",
@@ -86,6 +87,8 @@ describe("Complaint Create Page spec - Create View", () => {
 
     cy.selectItemById("community-select-id", createCallDetails.community);
 
+    cy.selectItemById("complaint-received-method-select-id", createCallDetails.methodComplaintReceived);
+
     cy.selectItemById("nature-of-complaint-select-id", createCallDetails.natureOfComplaint);
 
     cy.selectItemById("species-select-id", createCallDetails.species);
@@ -116,6 +119,7 @@ describe("Complaint Create Page spec - Create View", () => {
     cy.get('dd[id="comp-details-office"]').contains(createCallDetails.office);
     cy.get('dd[id="comp-details-zone"]').contains(createCallDetails.zone);
     cy.get('dd[id="comp-details-region"]').contains(createCallDetails.region);
+    cy.get('dd[id="comp-method-complaint-received"]').contains(createCallDetails.methodComplaintReceived);
     cy.get('dd[id="comp-details-reported"]').contains(createCallerInformation.reported);
 
     //-- verify the caller information block

@@ -28,11 +28,7 @@ export const DeleteConfirmModalV2: FC<CancelConfirmProps> = ({ close, submit, de
       )}
       <Modal.Body>
         <div className="cancel_confirm_modal_description">
-          <Row>
-            <Col>
-              <label>{description}</label>
-            </Col>
-          </Row>
+          <p>{description}</p>
         </div>
       </Modal.Body>
       <Modal.Footer>

@@ -27,13 +27,7 @@ export const CancelConfirmModal: FC<CancelConfirmProps> = ({ close, submit, canc
         </Modal.Header>
       )}
       <Modal.Body>
-        <div className="cancel_confirm_modal_description">
-          <Row>
-            <Col>
-              <label>{description}</label>
-            </Col>
-          </Row>
-        </div>
+        <p>{description}</p>
       </Modal.Body>
       <Modal.Footer>
         <Button

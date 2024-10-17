@@ -24,19 +24,8 @@ describe("HWCR Outcome Assessments", () => {
           expect($error).to.contain.text("Required");
         });
 
-        //validate Action Required is required
-        cy.get("#action-required-div").find(".error-message").should("exist");
-
-        //validate officer is required
-        cy.get("#outcome-officer-div").find(".error-message").should("exist");
-
-        //validate the date is required
-        cy.get("#assessment-checkbox-div").find(".error-message").should("exist");
-
-        //validate the toast
-        cy.get(".Toastify__toast-body").then(($toast) => {
-          expect($toast).to.contain.text("Errors in form");
-        });
+        let inputs = ["#action-required-div", "#outcome-officer-div", "#assessment-checkbox-div"];
+        cy.hasErrorMessage(inputs, "Errors in form");
       } else {
         cy.log("Test was previously run. Skip the Test");
         this.skip();
@@ -57,7 +46,7 @@ describe("HWCR Outcome Assessments", () => {
         let sectionParams = {
           section: "ASSESSMENT",
           checkboxes: ["#ASSESSRISK"],
-          officer: "Benson, Olivia",
+          officer: "TestAcct, ENV",
           date: "01",
           actionRequired: "Yes",
           toastText: "Assessment has been saved",
@@ -124,7 +113,7 @@ describe("HWCR Outcome Assessments", () => {
         let sectionParams = {
           section: "ASSESSMENT",
           checkboxes: ["#ASSESSHIST"],
-          officer: "Peralta, Jake",
+          officer: "TestAcct, ENV",
           date: "01",
           actionRequired: "No",
           justification: "No public safety concern",

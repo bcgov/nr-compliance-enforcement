@@ -19,3 +19,12 @@ jobs:
     with:
       cleanup: helm
       packages: backend frontend migrations
+
+  cleanup-labeled:
+    name: Cleanup Labeled Resources
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.5.0
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+    with:
+      cleanup: label

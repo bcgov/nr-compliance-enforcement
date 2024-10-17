@@ -48,13 +48,26 @@ $modal-md: 508px !default;
 .modal {
   z-index: 10000 !important;
 }
+.modal-header {
+  align-items: flex-start;
+}
+
+.modal-header,
+.modal-footer {
+  border: none;
+}
 
 .modal-header .btn-close {
-  padding-right: 16px !important;
+  margin-top: -1px;
+  margin-right: 0;
 }
 
 .modal-backdrop {
   z-index: 9000 !important;
+}
+
+.modal-title {
+  font-size: 20px;
 }
 
 //body > div.fade.modal.show > div > div > div.border-0.modal-header > button

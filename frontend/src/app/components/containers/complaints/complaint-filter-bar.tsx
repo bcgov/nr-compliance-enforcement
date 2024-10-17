@@ -41,15 +41,17 @@ export const ComplaintFilterBar: FC<Props> = ({
     violationType,
     girType,
     complaintMethod,
+    actionTaken,
   } = state;
 
   const dateRangeLabel = (): string | undefined => {
+    const currentDate = new Date().toLocaleDateString();
     if (startDate !== null && endDate !== null) {
       return `${startDate?.toLocaleDateString()} - ${endDate?.toLocaleDateString()}`;
     } else if (startDate !== null) {
-      return `${startDate?.toLocaleDateString()} - `;
+      return `${startDate?.toLocaleDateString()} - ${currentDate}`;
     } else if (endDate !== null) {
-      return ` - ${endDate?.toLocaleDateString()}`;
+      return `${currentDate} - ${endDate?.toLocaleDateString()}`;
     } else {
       return undefined;
     }
@@ -216,6 +218,15 @@ export const ComplaintFilterBar: FC<Props> = ({
             id="comp-complaint-method-filter"
             label={complaintMethod?.label}
             name="complaintMethod"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("actionTaken") && (
+          <FilterButton
+            id="comp-complaint-method-filter"
+            label={actionTaken?.label}
+            name="actionTaken"
             clear={removeFilter}
           />
         )}

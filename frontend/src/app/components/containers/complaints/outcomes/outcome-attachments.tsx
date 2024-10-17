@@ -139,7 +139,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
         modalSize: "md",
         modalType: CANCEL_CONFIRM,
         data: {
-          title: "Cancel Changes?",
+          title: "Cancel changes?",
           description: "Your changes will be lost.",
           cancelConfirmed,
         },

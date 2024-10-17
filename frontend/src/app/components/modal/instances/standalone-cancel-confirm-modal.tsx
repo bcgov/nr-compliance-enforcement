@@ -26,13 +26,9 @@ export const StandaloneConfirmCancelModal: FC<props> = ({ show, title, descripti
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
       )}
-      <Modal.Body>
+      <Modal.Body style={{ paddingTop: 0, paddingBottom: 0 }}>
         <div className="cancel_confirm_modal_description">
-          <Row>
-            <Col>
-              <label>{description}</label>
-            </Col>
-          </Row>
+          <p>{description}</p>
         </div>
       </Modal.Body>
       <Modal.Footer>

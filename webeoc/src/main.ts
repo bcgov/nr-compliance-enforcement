@@ -11,6 +11,7 @@ async function bootstrap() {
   const server = express();
   server.disable("x-powered-by");
   server.get("/health", (req, res) => res.status(200).send("ok"));
+  server.listen(3002);
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
   await app.listen(3002);
 }

@@ -36,7 +36,7 @@ export const DeleteNoteModal: FC<props> = ({ close, submit }) => {
         </Modal.Header>
       )}
       <Modal.Body>
-        <div className="cancel_confirm_modal_description">{description}</div>
+        <p>{description}</p>
       </Modal.Body>
       <Modal.Footer>
         <Button

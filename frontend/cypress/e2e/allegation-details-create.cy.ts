@@ -16,6 +16,7 @@ describe("Complaint Create Page spec - Create View", () => {
     office: "Victoria",
     zone: "South Island",
     region: "West Coast",
+    methodComplaintReceived: "RAPP",
     status: "Closed",
     statusIndex: 1,
     assigned: "Kot, Steve",
@@ -94,6 +95,8 @@ describe("Complaint Create Page spec - Create View", () => {
 
     cy.selectItemById("community-select-id", createCallDetails.community);
 
+    cy.selectItemById("complaint-received-method-select-id", createCallDetails.methodComplaintReceived);
+
     cy.selectItemById("violation-type-select-id", createCallDetails.violationType);
 
     cy.selectItemById("officer-assigned-select-id", createCallDetails.assigned);
@@ -118,6 +121,7 @@ describe("Complaint Create Page spec - Create View", () => {
     cy.get('dd[id="comp-details-office"]').contains(createCallDetails.office);
     cy.get('dd[id="comp-details-zone"]').contains(createCallDetails.zone);
     cy.get('dd[id="comp-details-region"]').contains(createCallDetails.region);
+    cy.get('dd[id="comp-method-complaint-received"]').contains(createCallDetails.methodComplaintReceived);
     cy.get('dd[id="comp-details-reported"]').contains(createCallerInformation.reported);
 
     //-- verify caller information

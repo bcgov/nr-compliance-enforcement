@@ -216,7 +216,7 @@ export const HWCRComplaintAssessment: FC = () => {
         modalSize: "md",
         modalType: CANCEL_CONFIRM,
         data: {
-          title: "Cancel Changes?",
+          title: "Cancel changes?",
           description: "Your changes will be lost.",
           cancelConfirmed,
         },
@@ -314,6 +314,7 @@ export const HWCRComplaintAssessment: FC = () => {
         {!editable && (
           <div className="comp-details-section-header-actions">
             <Button
+              id="assessment-edit-button"
               variant="outline-primary"
               size="sm"
               onClick={toggleEdit}
@@ -452,17 +453,23 @@ export const HWCRComplaintAssessment: FC = () => {
             </div>
           ) : (
             <dl>
-              <div>
+              <div id="action-required-div">
                 <dt>Action Required</dt>
                 <dd>{selectedActionRequired?.value}</dd>
               </div>
-              <div className={justificationLabelClass}>
+              <div
+                id="justification-div"
+                className={justificationLabelClass}
+              >
                 <dt>Justification</dt>
                 <dd>
                   <span>{selectedJustification?.label || ""}</span>
                 </dd>
               </div>
-              <div className={assessmentDivClass}>
+              <div
+                id="assessment-checkbox-div"
+                className={assessmentDivClass}
+              >
                 <dt>Actions</dt>
                 <dd>
                   <ul>
@@ -480,10 +487,10 @@ export const HWCRComplaintAssessment: FC = () => {
               <div>
                 <dt>Officer</dt>
                 <dd>
-                  <span id="comp-review-required-officer">{selectedOfficer?.label ?? ""}</span>
+                  <span id="assessment-officer-div">{selectedOfficer?.label ?? ""}</span>
                 </dd>
               </div>
-              <div>
+              <div id="assessment-date-div">
                 <dt>Date</dt>
                 <dd>{formatDate(`${selectedDate}`)}</dd>
               </div>

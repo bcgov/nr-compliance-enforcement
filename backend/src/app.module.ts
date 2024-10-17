@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { MiddlewareConsumer, Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { AutomapperModule } from "@automapper/nestjs";
@@ -135,7 +135,9 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
 export class AppModule {
   // let's add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(HTTPLoggerMiddleware).forRoutes("*");
-    consumer.apply(RequestTokenMiddleware).forRoutes("v1/code-table", "v1/case", "v1/configuration");
+    consumer.apply(HTTPLoggerMiddleware).exclude({ path: "", method: RequestMethod.ALL }).forRoutes("*");
+    consumer
+      .apply(RequestTokenMiddleware)
+      .forRoutes("v1/code-table", "v1/case", "v1/configuration", "v1/complaint/search", "v1/complaint/map/search");
   }
 }

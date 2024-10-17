@@ -361,7 +361,6 @@ backup:
 nats:
   enabled: true
   config:
-    replicaCount: 1
     resources:
       requests:
         cpu: 100m
@@ -377,8 +376,9 @@ nats:
       memoryStore:
         enabled: true
         maxSize: 250Mi
-  cluster:
-    enabled: true
+    cluster:
+      enabled: false
+      replicas: 1
   natsBox:
     enabled: false
   persistence:
@@ -407,9 +407,9 @@ webeoc:
     #-- enable or disable autoscaling.
     enabled: true
     #-- the minimum number of replicas.
-    minReplicas: 1
+    minReplicas: 2
     #-- the maximum number of replicas.
-    maxReplicas: 2
+    maxReplicas: 3
     #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
     targetCPUUtilizationPercentage: 80
   service:
