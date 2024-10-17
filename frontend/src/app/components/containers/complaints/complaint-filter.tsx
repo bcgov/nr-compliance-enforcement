@@ -14,14 +14,16 @@ import {
   selectComplaintReceivedMethodDropdown,
 } from "../../../store/reducers/code-table";
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "../../../store/reducers/officer";
+import { selectDecisionTypeDropdown } from "../../../store/reducers/code-table-selectors";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import DatePicker from "react-datepicker";
 import { CompSelect } from "../../common/comp-select";
 import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
 import { ComplaintFilterPayload, updateFilter } from "../../../store/reducers/complaint-filters";
 import Option from "../../../types/app/option";
-import { getUserAgency } from "../../../service/user-service";
 import { listActiveFilters } from "../../../store/reducers/app";
+import UserService from "../../../service/user-service";
+import Roles from "../../../types/app/roles";
 
 type Props = {
   type: string;
@@ -42,11 +44,12 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       endDate,
       girType,
       complaintMethod,
+      actionTaken,
     },
     dispatch,
   } = useContext(ComplaintFilterContext);
 
-  const agency = getUserAgency();
+  const agency = UserService.getUserAgency();
   let officersByAgency = useAppSelector(selectOfficersByAgencyDropdownUsingPersonGuid(agency));
   if (officersByAgency && officersByAgency[0]?.value !== "Unassigned") {
     officersByAgency.unshift({ value: "Unassigned", label: "Unassigned" });
@@ -62,6 +65,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const communities = useAppSelector(selectCascadedCommunity(region?.value, zone?.value, community?.value));
 
   const complaintMethods = useAppSelector(selectComplaintReceivedMethodDropdown);
+  const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
 
   const activeFilters = useAppSelector(listActiveFilters());
 
@@ -317,6 +321,28 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 placeholder="Select"
                 enableValidation={false}
                 value={complaintMethod}
+                isClearable={true}
+              />
+            </div>
+          </div>
+        )}
+        {UserService.hasRole(Roles.CEEB) && (
+          <div id="comp-filter-action-taken-id">
+            <label htmlFor="action-taken-select-id">Action Taken</label>
+            <div className="filter-select-padding">
+              <CompSelect
+                id="action-taken-select-id"
+                classNamePrefix="comp-select"
+                onChange={(option) => {
+                  setFilter("actionTaken", option);
+                }}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={decisionTypeOptions}
+                placeholder="Select"
+                enableValidation={false}
+                value={actionTaken}
                 isClearable={true}
               />
             </div>

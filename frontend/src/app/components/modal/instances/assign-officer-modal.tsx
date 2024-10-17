@@ -215,7 +215,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
         </section>
         <section>
           <h4 style={{ marginBottom: "8px", fontSize: "16px", fontWeight: 700 }}>{renderHeading()}</h4>
-          <ListGroup>{renderOfficers()}</ListGroup>
+          <ListGroup className="modal-scroll">{renderOfficers()}</ListGroup>
         </section>
       </Modal.Body>
       <Modal.Footer>

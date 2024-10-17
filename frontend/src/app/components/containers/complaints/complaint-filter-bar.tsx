@@ -41,6 +41,7 @@ export const ComplaintFilterBar: FC<Props> = ({
     violationType,
     girType,
     complaintMethod,
+    actionTaken,
   } = state;
 
   const dateRangeLabel = (): string | undefined => {
@@ -217,6 +218,15 @@ export const ComplaintFilterBar: FC<Props> = ({
             id="comp-complaint-method-filter"
             label={complaintMethod?.label}
             name="complaintMethod"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("actionTaken") && (
+          <FilterButton
+            id="comp-complaint-method-filter"
+            label={actionTaken?.label}
+            name="actionTaken"
             clear={removeFilter}
           />
         )}

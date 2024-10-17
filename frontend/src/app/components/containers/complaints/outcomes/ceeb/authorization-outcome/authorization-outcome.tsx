@@ -47,7 +47,7 @@ export const AuthoizationOutcome: FC = () => {
         modalSize: "md",
         modalType: DELETE_CONFIRM,
         data: {
-          title: "Delete Authorization?",
+          title: "Delete authorization?",
           description: "Your changes will be lost.",
           confirmText: "delete authorization",
           deleteConfirmed: () => {

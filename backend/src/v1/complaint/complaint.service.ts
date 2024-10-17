@@ -4,6 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
+import { get } from "../../external_api/case_management";
 
 import {
   applyAllegationComplaintMap,
@@ -737,6 +738,25 @@ export class ComplaintService {
     return Promise.resolve(results);
   };
 
+  private _getComplaintsByActionTaken = async (token: string, actionTaken: string): Promise<string[]> => {
+    const { data, errors } = await get(token, {
+      query: `{getLeadsByActionTaken (actionCode: "${actionTaken}")}`,
+    });
+    if (errors) {
+      this.logger.error("GraphQL errors:", errors);
+      throw new Error("GraphQL errors occurred");
+    }
+    /**
+     * If no leads in the case manangement database have had the selected action taken, `getLeadsByActionTaken`
+     * returns an empty array, and WHERE...IN () does not accept an empty set, it throws an error. In our use
+     * case, if `getLeadsByActionTaken` returns an empty array, we do not want the entire search to error, it
+     * should simply return an empty result set. To handle this, if `getLeadsByActionTaken` returns an empty
+     * array, we populate the array with a value that would never match on a complaint_identifier: -1.
+     */
+    const complaintIdentifiers = data.getLeadsByActionTaken.length > 0 ? data.getLeadsByActionTaken : ["-1"];
+    return complaintIdentifiers;
+  };
+
   findAllByType = async (
     complaintType: COMPLAINT_TYPE,
   ): Promise<Array<WildlifeComplaintDto> | Array<AllegationComplaintDto>> => {
@@ -843,6 +863,7 @@ export class ComplaintService {
     complaintType: COMPLAINT_TYPE,
     model: ComplaintSearchParameters,
     hasCEEBRole: boolean,
+    token?: string,
   ): Promise<SearchResults> => {
     try {
       let results: SearchResults = { totalCount: 0, complaints: [] };
@@ -869,6 +890,15 @@ export class ComplaintService {
       //-- return Waste and Pestivide complaints for CEEB users
       if (hasCEEBRole && complaintType === "ERS") {
         builder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+      }
+
+      // -- filter by complaint identifiers returned by case management if actionTaken filter is present
+      if (hasCEEBRole && filters.actionTaken) {
+        const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
+
+        builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
       }
 
       //-- apply search
@@ -946,6 +976,7 @@ export class ComplaintService {
     complaintType: COMPLAINT_TYPE,
     model: ComplaintSearchParameters,
     hasCEEBRole: boolean,
+    token?: string,
   ): Promise<MapSearchResults> => {
     const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
 
@@ -985,9 +1016,6 @@ export class ComplaintService {
       complaintBuilder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
       complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
 
-      //-- run query
-      const mappedComplaints = await complaintBuilder.getMany();
-
       //-- get unmapable complaints
       let unMappedBuilder = this._generateQueryBuilder(complaintType);
 
@@ -1008,7 +1036,6 @@ export class ComplaintService {
         });
       }
 
-
       //-- added this for consistency with search method
       //-- return Waste and Pestivide complaints for CEEB users
       if (hasCEEBRole && complaintType === "ERS") {
@@ -1019,7 +1046,19 @@ export class ComplaintService {
       unMappedBuilder.andWhere("ST_X(complaint.location_geometry_point) = 0");
       unMappedBuilder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
 
-      //-- run query
+      // -- filter by complaint identifiers returned by case management if actionTaken filter is present
+      if (hasCEEBRole && filters.actionTaken) {
+        const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
+        complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+        unMappedBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
+      //-- run queries
+      const mappedComplaints = await complaintBuilder.getMany();
       const unmappedComplaints = await unMappedBuilder.getCount();
       results = { ...results, unmappedComplaints };
 
