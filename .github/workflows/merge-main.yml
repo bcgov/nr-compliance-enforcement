@@ -79,9 +79,14 @@ jobs:
       tag: ${{ needs.vars.outputs.pr }}
       params: --set backend.deploymentStrategy=RollingUpdate
         --set frontend.deploymentStrategy=RollingUpdate
+        --set webeoc.deploymentStrategy=RollingUpdate
         --set global.autoscaling=true
         --set frontend.pdb.enabled=true
         --set backend.pdb.enabled=true
+        --set webeoc.pdb.enabled=true
+        --set nats.config.cluster.replicas=3
+        --set nats.config.cluster.enabled=true
+
   promote:
     name: Promote Images
     needs: [deploy-prod, vars]
