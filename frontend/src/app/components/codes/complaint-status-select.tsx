@@ -7,6 +7,7 @@ interface Option {
   value: string | undefined;
   label: string | undefined;
 }
+
 type Props = {
   onSelectChange: (selectedValue: string) => void;
   isDisabled?: boolean;
