@@ -305,6 +305,10 @@ VALUES('74bb4bdd-5944-4a78-a20c-c5b494decc2a'::uuid, 'Dragos', NULL, NULL, 'Vuia
 ON CONFLICT DO NOTHING;
 INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('fd3654be-21f2-4fc9-ae6a-39615b732a1a'::uuid, 'Suha', NULL, NULL, 'Fatima', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('f67e52f5-ac3f-48e0-ad64-cab1eae51a18'::uuid, 'Dmitri', NULL, NULL, 'Korin', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.person
@@ -455,6 +459,10 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
 VALUES('3fc8a9db-e085-4461-bce2-b05462b79794'::uuid, 'DVUIA', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186', '74bb4bdd-5944-4a78-a20c-c5b494decc2a'::uuid, '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, auth_user_guid)
+VALUES('60e7403e-9933-4eff-89ae-508c0c827130'::uuid, 'SFATIMA', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186', 'fd3654be-21f2-4fc9-ae6a-39615b732a1a'::uuid, 'cafc87f3-738c-49bd-9bfb-33d7f01d50b9'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
