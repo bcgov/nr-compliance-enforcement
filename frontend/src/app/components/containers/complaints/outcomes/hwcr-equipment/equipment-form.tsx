@@ -4,7 +4,7 @@ import { Button, Card } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
-import { selectOfficersByAgency } from "../../../../../store/reducers/officer";
+import { selectOfficerListByAgency, selectOfficersByAgency } from "../../../../../store/reducers/officer";
 import { selectEquipmentDropdown, selectTrapEquipment } from "../../../../../store/reducers/code-table";
 import {
   getComplaintById,
@@ -67,17 +67,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const equipmentDropdownOptions = useAppSelector(selectEquipmentDropdown);
   const trapEquipment = useAppSelector(selectTrapEquipment);
+  const assignableOfficers = useAppSelector(selectOfficerListByAgency);
 
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
-
-  const assignableOfficers: Option[] =
-    officersInAgencyList !== null
-      ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.auth_user_guid,
-          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-        }))
-      : [];
 
   useEffect(() => {
     if (assignedOfficer && officersInAgencyList) {

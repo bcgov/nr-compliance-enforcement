@@ -9,7 +9,7 @@ import {
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
 } from "../../../../../../store/reducers/code-table-selectors";
-import { selectOfficersByAgencyDropdown, selectOfficersDropdown } from "../../../../../../store/reducers/officer";
+import { selectOfficersByAgencyDropdown } from "../../../../../../store/reducers/officer";
 import Option from "../../../../../../types/app/option";
 import { CASE_ACTION_CODE } from "../../../../../../constants/case_actions";
 import { selectComplaintCallerInformation } from "../../../../../../store/reducers/complaints";

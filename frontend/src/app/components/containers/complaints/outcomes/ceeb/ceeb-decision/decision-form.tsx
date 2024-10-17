@@ -82,9 +82,6 @@ export const DecisionForm: FC<props> = ({
   const leadAgencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officerOptions = useAppSelector(selectOfficersByAgencyDropdown(ownedByAgencyCode?.agency));
-  const officerOptionsByPersonGuid = useAppSelector(
-    selectOfficersByAgencyDropdownUsingPersonGuid(ownedByAgencyCode?.agency),
-  );
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const scheduleSectorType = useAppSelector(selectScheduleSectorXref);
 

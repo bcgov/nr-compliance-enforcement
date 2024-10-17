@@ -11,27 +11,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tag_playground:
-    name: Tag playground
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Fetch all tags
-        run: git fetch --tags --force
-
-      - name: Fetch tags from main
-        id: get_latest_tag
-        run: |
-          git fetch origin main --tags
-          latest_tag=$(git tag -l --sort=-creatordate | tail -n1)
-          latest_tag2=$(git tag -l --sort=-authordate | tail -n1)
-          latest_tag3=$(git tag --list --sort=-version:refname --merged | head -n1)
-          echo "::set-output name=latest_tag::$latest_tag"
-          echo "Latest tag: $latest_tag"
-          echo "Latest tag 2: $latest_tag2"
-          echo "Latest tag 3: $latest_tag3"
-
   # https://github.com/bcgov-nr/action-builder-ghcr
   builds:
     name: Builds
