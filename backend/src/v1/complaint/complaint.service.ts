@@ -1016,21 +1016,6 @@ export class ComplaintService {
       complaintBuilder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
       complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
 
-      // -- filter by complaint identifiers returned by case management if actionTaken filter is present
-      // -- Declaring complaintIdentifiersByActionTaken outside of the 'if' so that we have it in scope
-      // for the unmappedBuilder below without making the same call to CM again.
-      const complaintIdentifiersByActionTaken: string[] = [];
-      if (hasCEEBRole && filters.actionTaken) {
-        const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
-        complaintIdentifiersByActionTaken.push(...complaintIdentifiers);
-        complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
-          complaint_identifiers: complaintIdentifiersByActionTaken,
-        });
-      }
-
-      //-- run query
-      const mappedComplaints = await complaintBuilder.getMany();
-
       //-- get unmapable complaints
       let unMappedBuilder = this._generateQueryBuilder(complaintType);
 
@@ -1057,18 +1042,23 @@ export class ComplaintService {
         unMappedBuilder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
       }
 
-      // -- filter by complaint identifiers returned by case management if actionTaken filter is present
-      if (hasCEEBRole && filters.actionTaken) {
-        unMappedBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
-          complaint_identifiers: complaintIdentifiersByActionTaken,
-        });
-      }
-
       //-- filter locations without coordinates
       unMappedBuilder.andWhere("ST_X(complaint.location_geometry_point) = 0");
       unMappedBuilder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
 
-      //-- run query
+      // -- filter by complaint identifiers returned by case management if actionTaken filter is present
+      if (hasCEEBRole && filters.actionTaken) {
+        const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
+        complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+        unMappedBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
+      //-- run queries
+      const mappedComplaints = await complaintBuilder.getMany();
       const unmappedComplaints = await unMappedBuilder.getCount();
       results = { ...results, unmappedComplaints };
 
