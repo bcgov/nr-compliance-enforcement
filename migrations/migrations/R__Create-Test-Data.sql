@@ -1953,6 +1953,16 @@ VALUES
     'f896cbb2d5254e54a4ad581dc80681d1'::uuid
   ) ON CONFLICT
 DO NOTHING;
+-- Fix keycloak name
+UPDATE
+  public.officer
+SET
+  user_id = 'JONFUNK'
+WHERE
+  (
+    officer_guid = 'b17ee2c1-a26b-4911-ac6f-810b8fdfaab3'
+    AND user_id = 'JFUNK'
+  );
 
 INSERT INTO
   public.officer (
