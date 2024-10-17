@@ -4,7 +4,7 @@ import { Button, Card } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
-import { selectOfficersByAgency } from "../../../../../store/reducers/officer";
+import { selectOfficerListByAgency, selectOfficersByAgency } from "../../../../../store/reducers/officer";
 import { selectEquipmentDropdown, selectTrapEquipment } from "../../../../../store/reducers/code-table";
 import {
   getComplaintById,
@@ -41,7 +41,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const [type, setType] = useState<Option>();
   const [dateSet, setDateSet] = useState<Date>(new Date());
   const [dateRemoved, setDateRemoved] = useState<Date>();
-  const [officerSet, setOfficerSet] = useState<Option>();
+  const [officerSet, setOfficerSet] = useState<Option | undefined>();
   const [officerRemoved, setOfficerRemoved] = useState<Option>();
   const [address, setAddress] = useState<string | undefined>("");
   const [xCoordinate, setXCoordinate] = useState<string | undefined>("");
@@ -67,24 +67,26 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const equipmentDropdownOptions = useAppSelector(selectEquipmentDropdown);
   const trapEquipment = useAppSelector(selectTrapEquipment);
+  const assignableOfficers = useAppSelector(selectOfficerListByAgency);
 
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
-  const assignableOfficers: Option[] =
-    officersInAgencyList !== null
-      ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-        }))
-      : [];
-
   useEffect(() => {
-    if (assignedOfficer) {
-      const setOfficer = getSelectedItem(assignedOfficer, assignableOfficers);
-      setOfficerSet(setOfficer);
+    if (assignedOfficer && officersInAgencyList) {
+      const officerAssigned: any = officersInAgencyList
+        .filter((officer) => officer.person_guid.person_guid === assignedOfficer)
+        .map((item) => {
+          return {
+            label: `${item.person_guid?.last_name}, ${item.person_guid?.first_name}`,
+            value: item.auth_user_guid,
+          } as Option;
+        });
+      if (officerAssigned.length === 1) {
+        setOfficerSet(officerAssigned[0]);
+      }
     }
-  }, [complaintData]);
+  }, [assignedOfficer]);
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {
