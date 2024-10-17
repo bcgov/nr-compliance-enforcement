@@ -2,14 +2,12 @@ name: Handle PR Merge and Version Update
 
 on:
   pull_request:
-    types: [closed]
     branches:
       - release/**
 jobs:
   handle_pr:
     name: Handle Merged PR
     runs-on: ubuntu-22.04
-    if: ${{ github.event.pull_request.merged == true }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -61,9 +59,9 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git add frontend/package.json backend/package.json webeoc/package.json
           git commit -m "chore: bump version to ${{ steps.increment_version.outputs.new_version }}"
-          git push origin HEAD:refs/heads/${{ github.head_ref }}
+          echo git push origin HEAD:refs/heads/${{ github.head_ref }}
 
       - name: Create Git Tag
         run: |
-          git tag "${{ steps.increment_version.outputs.new_version }}"
-          git push origin "${{ steps.increment_version.outputs.new_version }}"
+          echo git tag "${{ steps.increment_version.outputs.new_version }}"
+          echo git push origin "${{ steps.increment_version.outputs.new_version }}"
