@@ -201,6 +201,7 @@ describe("Verify CEEB specific search filters work", () => {
     // Filter by action taken
     cy.get("#comp-filter-btn").should("exist").click({ force: true });
     cy.selectItemById("action-taken-select-id", actionTaken);
+    cy.waitForSpinner();
     cy.get(`#${complaintWithActionTakenID}`).should("exist");
   });
 });
