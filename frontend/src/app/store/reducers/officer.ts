@@ -328,20 +328,6 @@ export const selectOfficersByAgency =
     return result;
   };
 
-export const selectOfficersByAgencyDropdown =
-  (agency: string) =>
-  (state: RootState): Array<Option> => {
-    const { officers: officerRoot } = state;
-    const { officers } = officerRoot;
-    const officerList = filterOfficerByAgency(agency, officers);
-    const officerDropdown = officerList.map((officer: Officer) => ({
-      value: officer.auth_user_guid,
-      label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-    }));
-
-    return officerDropdown;
-  };
-
 export const selectOfficerListByAgency = (state: RootState): Array<Option> => {
   const {
     officers: officerRoot,

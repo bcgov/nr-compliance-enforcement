@@ -21,9 +21,8 @@ import { CANCEL_CONFIRM } from "../../../../../../types/modal/modal-types";
 import { getCaseFile, upsertDecisionOutcome } from "../../../../../../store/reducers/case-thunks";
 import {
   assignComplaintToOfficer,
-  selectOfficersByAgencyDropdown,
   selectOfficersByAgency,
-  selectOfficersByAgencyDropdownUsingPersonGuid,
+  selectOfficerListByAgency,
 } from "../../../../../../store/reducers/officer";
 import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
 import { UUID } from "crypto";
@@ -81,7 +80,7 @@ export const DecisionForm: FC<props> = ({
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const leadAgencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
-  const officerOptions = useAppSelector(selectOfficersByAgencyDropdown(ownedByAgencyCode?.agency));
+  const officerOptions = useAppSelector(selectOfficerListByAgency);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const scheduleSectorType = useAppSelector(selectScheduleSectorXref);
 
