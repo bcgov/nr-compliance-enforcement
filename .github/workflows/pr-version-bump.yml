@@ -12,6 +12,10 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Fetch all tags
         run: git fetch --tags --force
@@ -19,7 +23,7 @@ jobs:
       - name: Fetch tags from main
         id: get_latest_tag
         run: |
-          git fetch origin main --tags
+          git fetch origin main --tags --force
           latest_tag=$(git tag --list --sort=-v:refname --merged | head -n 1)
           echo "::set-output name=latest_tag::$latest_tag"
           echo "Latest tag: $latest_tag"
