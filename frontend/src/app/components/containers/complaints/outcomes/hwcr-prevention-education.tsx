@@ -3,7 +3,7 @@ import Option from "../../../../types/app/option";
 import { Button, Card } from "react-bootstrap";
 import { Officer } from "../../../../types/person/person";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectOfficersByAgency } from "../../../../store/reducers/officer";
+import { selectOfficerListByAgency, selectOfficersByAgency } from "../../../../store/reducers/officer";
 import {
   getComplaintById,
   selectComplaint,
@@ -56,13 +56,8 @@ export const HWCRComplaintPrevention: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
-  const assignableOfficers: Option[] =
-    officersInAgencyList !== null
-      ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-        }))
-      : [];
+  const assignableOfficers = useAppSelector(selectOfficerListByAgency);
+
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
   };
@@ -140,7 +135,7 @@ export const HWCRComplaintPrevention: FC = () => {
         .map((element: Officer) => {
           return {
             label: `${element.person_guid?.last_name}, ${element.person_guid?.first_name}`,
-            value: assigned,
+            value: element.auth_user_guid,
           } as Option;
         });
       if (

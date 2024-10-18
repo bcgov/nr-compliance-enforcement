@@ -2,7 +2,7 @@ import { forwardRef, useImperativeHandle, useState } from "react";
 import { DrugAuthorizationV2 } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
 import { CompSelect } from "../../../../common/comp-select";
 import { useAppSelector } from "../../../../../hooks/hooks";
-import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
+import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
 import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
 import Option from "../../../../../types/app/option";
 import { REQUIRED } from "../../../../../constants/general";
@@ -24,7 +24,7 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
     drugAuthorization: { officer, date },
   } = props;
 
-  const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
+  const officers = useAppSelector(selectOfficerListByAgency);
 
   //-- errors
   const [officerError, setOfficerError] = useState("");

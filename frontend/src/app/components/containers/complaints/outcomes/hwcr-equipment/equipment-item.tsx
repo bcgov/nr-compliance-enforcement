@@ -5,7 +5,7 @@ import { formatDate } from "../../../../../common/methods";
 
 import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-modal";
 import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
-import { selectOfficerByPersonGuid } from "../../../../../store/reducers/officer";
+import { selectOfficerByAuthUserGuid } from "../../../../../store/reducers/officer";
 import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
 
 import Option from "../../../../../types/app/option";
@@ -57,9 +57,8 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
     (action) => action.actionCode === CASE_ACTION_CODE.REMEQUIPMT,
   )?.date;
   const removedEquipmentDate = removedEquipmentDateString ? new Date(new Date(removedEquipmentDateString)) : null;
-
-  const setEquipmentOfficer = useAppSelector(selectOfficerByPersonGuid(`${setEquipmentActor}`));
-  const removedEquipmentOfficer = useAppSelector(selectOfficerByPersonGuid(`${removedEquipmentActor}`));
+  const setEquipmentOfficer = useAppSelector(selectOfficerByAuthUserGuid(`${setEquipmentActor}`));
+  const removedEquipmentOfficer = useAppSelector(selectOfficerByAuthUserGuid(`${removedEquipmentActor}`));
 
   const setEquipmentFullName = setEquipmentOfficer
     ? `${setEquipmentOfficer.person_guid.last_name}, ${setEquipmentOfficer.person_guid.first_name}`
