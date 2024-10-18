@@ -19,6 +19,7 @@ import { selectDefaultPageSize, selectDefaultZone } from "../../../store/reducer
 import { WildlifeComplaintListItem } from "./list-items/wildlife-complaint-list-item";
 import { AllegationComplaintListItem } from "./list-items/allegation-complaint-list-item";
 import ComplaintPagination from "../../common/complaint-pagination";
+import { Alert } from "react-bootstrap";
 
 //-- new models
 import { AllegationComplaint } from "../../../types/app/complaints/allegation-complaint";
@@ -198,6 +199,15 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
     }
   };
 
+  const renderNoComplaintsFound = () => {
+    return (
+      <td colSpan={11}>
+        <i className="bi bi-info-circle-fill"></i>
+        <span>No complaints found using your current filters. Remove or change your filters to see complaints.</span>
+      </td>
+    );
+  };
+
   return (
     <div className="comp-table-container">
       <div
@@ -210,6 +220,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
         >
           {renderComplaintListHeader(type)}
           <tbody>
+            {totalComplaints === 0 && renderNoComplaintsFound()}
             {complaints.map((item) => {
               const { id } = item;
 
