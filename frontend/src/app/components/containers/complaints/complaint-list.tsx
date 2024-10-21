@@ -52,6 +52,7 @@ export const generateComplaintRequestPayload = (
     violationType,
     girType,
     complaintMethod,
+    actionTaken,
   } = filters;
 
   const common = {
@@ -80,6 +81,7 @@ export const generateComplaintRequestPayload = (
         ...common,
         violationFilter: violationType,
         complaintMethodFilter: complaintMethod,
+        actionTakenFilter: actionTaken,
       } as ComplaintRequestPayload;
     case COMPLAINT_TYPES.HWCR:
     default:
@@ -114,7 +116,6 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
     if (searchQuery) {
       payload = { ...payload, query: searchQuery };
     }
-
     dispatch(getComplaints(type, payload));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, sortKey, sortDirection, page, pageSize]);

@@ -3,6 +3,7 @@ import { ComplaintService } from "./complaint.service";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
+import { Token } from "../../auth/decorators/token.decorator";
 import { ApiTags } from "@nestjs/swagger";
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
@@ -45,22 +46,24 @@ export class ComplaintController {
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Query() model: ComplaintSearchParameters,
     @Request() req,
+    @Token() token,
   ) {
-
     const hasCEEBRole = hasRole(req, Role.CEEB);
 
-    return this.service.mapSearch(complaintType, model, hasCEEBRole);
+    return this.service.mapSearch(complaintType, model, hasCEEBRole, token);
   }
 
   @Get("/search/:complaintType")
   @Roles(Role.COS_OFFICER, Role.CEEB)
-  search(
+  async search(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Query() model: ComplaintSearchParameters,
     @Request() req,
+    @Token() token,
   ) {
     const hasCEEBRole = hasRole(req, Role.CEEB);
-    return this.service.search(complaintType, model, hasCEEBRole);
+    const result = await this.service.search(complaintType, model, hasCEEBRole, token);
+    return result;
   }
 
   @Patch("/update-status-by-id/:id")

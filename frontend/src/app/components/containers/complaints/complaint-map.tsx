@@ -36,6 +36,7 @@ export const generateMapComplaintRequestPayload = (
     natureOfComplaint,
     violationType,
     complaintMethod,
+    actionTaken,
   } = filters;
 
   const common = {
@@ -48,6 +49,7 @@ export const generateMapComplaintRequestPayload = (
     startDateFilter: startDate,
     endDateFilter: endDate,
     complaintStatusFilter: status,
+    actionTakenFilter: actionTaken,
   };
 
   switch (complaintType) {

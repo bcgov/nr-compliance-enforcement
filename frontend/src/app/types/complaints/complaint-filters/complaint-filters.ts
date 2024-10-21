@@ -20,5 +20,7 @@ export type ComplaintFilters = {
 
   complaintMethod: DropdownOption | null;
 
+  actionTaken?: DropdownOption | null;
+
   filters: Array<any>;
 };
