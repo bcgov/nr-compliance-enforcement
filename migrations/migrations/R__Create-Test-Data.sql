@@ -1348,6 +1348,32 @@ VALUES
   ) ON CONFLICT
 DO NOTHING;
 
+INSERT INTO
+  public.person (
+    person_guid,
+    first_name,
+    middle_name_1,
+    middle_name_2,
+    last_name,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    '0c002922-d315-4fda-8fc5-3793dac12be8'::uuid,
+    'Joshua',
+    NULL,
+    NULL,
+    'Gamache',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754'
+  ) ON CONFLICT
+DO NOTHING;
+
 -- Peace Pilot Users: Fort St. John --
 INSERT INTO
   public.person (
@@ -2083,6 +2109,32 @@ VALUES
     '141ebe0c-84c5-487d-8676-caee5de53b36'::uuid,
     'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid,
     '01a5ad69-0675-4359-a0a7-909f55e2c67a'::uuid
+  ) ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    office_guid,
+    auth_user_guid
+  )
+VALUES
+  (
+    '236fb546-fae1-47fd-b4c7-d108c0030ee2'::uuid,
+    'JGAMACHE',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754',
+    'FLYWAY',
+    '2024-01-22 22:20:48.186',
+    '0c002922-d315-4fda-8fc5-3793dac12be8'::uuid,
+    'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid,
+    '13D3F179-F4CE-4464-A981-141061FD4E58'::uuid
   ) ON CONFLICT
 DO NOTHING;
 

@@ -305,6 +305,10 @@ VALUES('74bb4bdd-5944-4a78-a20c-c5b494decc2a'::uuid, 'Dragos', NULL, NULL, 'Vuia
 ON CONFLICT DO NOTHING;
 INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('fd3654be-21f2-4fc9-ae6a-39615b732a1a'::uuid, 'Suha', NULL, NULL, 'Fatima', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('f67e52f5-ac3f-48e0-ad64-cab1eae51a18'::uuid, 'Dmitri', NULL, NULL, 'Korin', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.person
@@ -334,6 +338,10 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('141ebe0c-84c5-487d-8676-caee5de53b36'::uuid, 'Mike', NULL, NULL, 'Vesprini', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('0c002922-d315-4fda-8fc5-3793dac12be8'::uuid, 'Joshua', NULL, NULL, 'Gamache', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
 ON CONFLICT DO NOTHING;
 
 -------------------------
@@ -453,6 +461,10 @@ INSERT INTO public.officer
 VALUES('3fc8a9db-e085-4461-bce2-b05462b79794'::uuid, 'DVUIA', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186', '74bb4bdd-5944-4a78-a20c-c5b494decc2a'::uuid, '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, auth_user_guid)
+VALUES('60e7403e-9933-4eff-89ae-508c0c827130'::uuid, 'SFATIMA', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186', 'fd3654be-21f2-4fc9-ae6a-39615b732a1a'::uuid, 'cafc87f3-738c-49bd-9bfb-33d7f01d50b9'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
 VALUES('56582c3c-6819-43c8-8d89-8e43823500c3'::uuid, 'DKORIN', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', 'f67e52f5-ac3f-48e0-ad64-cab1eae51a18'::uuid, '79fe321b-7716-413f-b878-c5fd6100317d'::uuid)
 ON CONFLICT DO NOTHING;
@@ -486,6 +498,11 @@ INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
 VALUES('44123934-a2cf-4eae-88af-f682f7548f89'::uuid, 'MVESPRIN', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '141ebe0c-84c5-487d-8676-caee5de53b36'::uuid, '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '01a5ad69-0675-4359-a0a7-909f55e2c67a'::uuid)
 ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
+VALUES('236fb546-fae1-47fd-b4c7-d108c0030ee2'::uuid, 'JGAMACHE', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '0c002922-d315-4fda-8fc5-3793dac12be8'::uuid, '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '13D3F179-F4CE-4464-A981-141061FD4E58'::uuid)
+ON CONFLICT DO NOTHING;
+
 
 --------------------------------
 ---  Scatter our team throughout the province for testing
@@ -508,6 +525,7 @@ UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' W
 UPDATE public.officer SET office_guid = '9fc7327b-b206-4a5c-88f1-2875a456eb49' WHERE user_id='JFUNK';
 UPDATE public.officer SET office_guid = '4a5a94b1-bd47-4611-a577-861d97089903' WHERE user_id='RRONDEAU';
 UPDATE public.officer SET office_guid = '4a5a94b1-bd47-4611-a577-861d97089903' WHERE user_id='MVESPRIN';
+UPDATE public.officer SET office_guid = '4a5a94b1-bd47-4611-a577-861d97089903' WHERE user_id='JGAMACHE';
 
 -------------------------
 -- INSERT COMPLAINT RECORDS
