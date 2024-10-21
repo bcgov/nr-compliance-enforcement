@@ -13,7 +13,7 @@ import {
 import { from } from "linq-to-typescript";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { formatDate, pad } from "../../../../../common/methods";
-import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
+import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
 import { DrugItem } from "./drug-item";
 import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
 
@@ -34,7 +34,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
   const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
-  const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
+  const officers = useAppSelector(selectOfficerListByAgency);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = !data.outcome && !data.officer && !data.date && isInEdit.showSectionErrors;
 

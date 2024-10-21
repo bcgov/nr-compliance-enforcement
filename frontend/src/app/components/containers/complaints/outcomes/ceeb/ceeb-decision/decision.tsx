@@ -8,7 +8,7 @@ import { setIsInEdit } from "../../../../../../store/reducers/cases";
 import { DecisionForm } from "./decision-form";
 import { DecisionItem } from "./decision-item";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { selectComplaintAssignedBy } from "../../../../../../store/reducers/complaints";
+import { assignedOfficerAuthId } from "../../../../../../store/reducers/complaints";
 
 export const CeebDecision: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
@@ -18,7 +18,7 @@ export const CeebDecision: FC = () => {
   const data = useAppSelector(selectCaseDecision);
 
   //-- get the officer assigned to the complaint
-  const officerAssigned = useAppSelector(selectComplaintAssignedBy);
+  const officerAssigned = useAppSelector(assignedOfficerAuthId);
 
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const [editable, setEditable] = useState(true);

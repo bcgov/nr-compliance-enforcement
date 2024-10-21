@@ -1135,6 +1135,19 @@ export const selectComplaintAssignedBy = (state: RootState): string | null => {
   return null;
 };
 
+//Get officer's auth_user_id that is assigned in a complaint
+export const assignedOfficerAuthId = (state: RootState): string | null => {
+  const {
+    officers: { officers },
+  } = state;
+
+  const assignedOfficerPersonId = selectComplaintAssignedBy(state);
+  const result = officers.find((officer) => officer.person_guid.person_guid === assignedOfficerPersonId);
+
+  if (result?.auth_user_guid) return result.auth_user_guid;
+  return null;
+};
+
 export const selectWebEOCComplaintUpdates = (state: RootState): WebEOCComplaintUpdateDTO[] | null => {
   const {
     complaints: { webeocUpdates },

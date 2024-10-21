@@ -3,7 +3,7 @@ import { Row, Col, ListGroup } from "react-bootstrap";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
 import { formatDate } from "../../../../../common/methods";
-import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
+import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
 import { from } from "linq-to-typescript";
 import { selectComplaint } from "../../../../../store/reducers/complaints";
 
@@ -39,7 +39,7 @@ export const DrugItem: FC<props> = ({
   const drugs = useAppSelector(selectDrugs);
   const drugUseMethods = useAppSelector(selectDrugUseMethods);
   const remainingDrugUse = useAppSelector(selectRemainingDrugUse);
-  const officers = useAppSelector(selectOfficersByAgencyDropdown(complaintData?.ownedBy ?? "COS"));
+  const officers = useAppSelector(selectOfficerListByAgency);
 
   const [injectedMethod, setInjectedMethod] = useState("");
   const [remaining, setRemaining] = useState("");
