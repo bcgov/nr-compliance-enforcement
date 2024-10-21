@@ -16,7 +16,7 @@ import { AnimalOutcomeV2 } from "../../../../../types/app/complaints/outcomes/wi
 import { AnimalTagV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
 import { DrugUsedV2 } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
 import Option from "../../../../../types/app/option";
-import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
+import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
 import { from } from "linq-to-typescript";
 import { EarTag } from "./ear-tag";
 import { DrugUsed } from "./drug-used";
@@ -65,7 +65,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
   const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
-  const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
+  const officers = useAppSelector(selectOfficerListByAgency);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 

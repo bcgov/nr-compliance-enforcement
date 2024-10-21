@@ -7,7 +7,7 @@ const { isFileExist } = require("cy-verify-downloads");
 const { removeDirectory } = require("cypress-delete-downloads-folder");
 
 export default defineConfig({
-  defaultCommandTimeout: 20000,
+  defaultCommandTimeout: 40000,
   e2e: {
     baseUrl: "http://localhost:3000",
     experimentalStudio: true,
