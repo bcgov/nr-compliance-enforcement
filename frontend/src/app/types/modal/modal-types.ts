@@ -7,6 +7,7 @@ export const CANCEL_CONFIRM = "CANCEL_CONFIRM";
 export const DELETE_NOTE = "DELETE_NOTE";
 export const DELETE_ANIMAL_OUTCOME = "DELETE_ANIMAL_OUTCOME";
 export const DELETE_CONFIRM = "DELETE_CONFIRM";
+export const LINK_COMPLAINT = "LINK_COMPLAINT";
 
 export interface ModalProps {
   modalType: string;

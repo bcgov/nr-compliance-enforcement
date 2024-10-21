@@ -4,6 +4,7 @@ import { ChangeStatusModal } from "./change-status-modal";
 import { DeleteNoteModal } from "./delete-note-modal";
 import { DeleteAnimalOutcomeModal } from "./delete-animal-outcome-modal";
 import { DeleteConfirmModalV2 } from "./delete-confirm-modal-v2";
+import { LinkComplaintModal } from "./link-complaint-modal";
 
 export {
   SampleModal,
@@ -12,4 +13,5 @@ export {
   DeleteNoteModal,
   DeleteAnimalOutcomeModal,
   DeleteConfirmModalV2,
+  LinkComplaintModal,
 };

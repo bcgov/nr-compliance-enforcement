@@ -34,12 +34,19 @@ import { selectAssessment } from "../../../../store/reducers/case-selectors";
 import { getAssessment, upsertAssessment } from "../../../../store/reducers/case-thunks";
 import { OptionLabels } from "../../../../constants/option-labels";
 
-export const HWCRComplaintAssessment: FC = () => {
+type Props = { handleSave?: () => void; showHeader?: boolean; quickAssessment?: boolean };
+
+export const HWCRComplaintAssessment: FC<Props> = ({
+  handleSave = () => {},
+  showHeader = false,
+  quickAssessment = false,
+}) => {
   const dispatch = useAppDispatch();
   type ComplaintParams = {
     id: string;
     complaintType: string;
   };
+  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
   const [selectedJustification, setSelectedJustification] = useState<Option | null>();
   const [selectedDate, setSelectedDate] = useState<Date | null | undefined>();
@@ -59,7 +66,6 @@ export const HWCRComplaintAssessment: FC = () => {
 
   const complaintData = useAppSelector(selectComplaint);
   const assessmentState = useAppSelector(selectAssessment);
-  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const cases = useAppSelector((state) => state.cases);
@@ -89,11 +95,13 @@ export const HWCRComplaintAssessment: FC = () => {
   };
 
   const handleActionRequiredChange = (selected: Option | null) => {
+    console.log("hello");
+    console.log(selected);
     if (selected) {
       setSelectedActionRequired(selected);
       setSelectedJustification(null as unknown as Option);
     } else {
-      setSelectedActionRequired(undefined);
+      setSelectedActionRequired(null);
     }
   };
 
@@ -101,7 +109,7 @@ export const HWCRComplaintAssessment: FC = () => {
     if (selected) {
       setSelectedJustification(selected);
     } else {
-      setSelectedJustification(undefined);
+      setSelectedJustification(null);
     }
   };
 
@@ -148,14 +156,14 @@ export const HWCRComplaintAssessment: FC = () => {
         : null
     ) as Option;
 
-    const selectedActionRequired = (
-      assessmentState.action_required
-        ? {
-            label: assessmentState.action_required,
-            value: assessmentState.action_required,
-          }
-        : null
-    ) as Option;
+    let selectedActionRequired = quickAssessment ? ({ label: "No", value: "No" } as Option) : null;
+
+    if (assessmentState.action_required) {
+      selectedActionRequired = {
+        label: assessmentState.action_required,
+        value: assessmentState.action_required,
+      } as Option;
+    }
 
     const selectedJustification = (
       assessmentState.justification
@@ -251,6 +259,7 @@ export const HWCRComplaintAssessment: FC = () => {
 
       dispatch(upsertAssessment(id, updatedAssessmentData));
       setEditable(false);
+      handleSave();
     } else {
       handleFormErrors();
     }
@@ -309,22 +318,24 @@ export const HWCRComplaintAssessment: FC = () => {
 
   return (
     <section className="comp-details-section comp-outcome-report-complaint-assessment">
-      <div className="comp-details-section-header">
-        <h3>Complaint assessment</h3>
-        {!editable && (
-          <div className="comp-details-section-header-actions">
-            <Button
-              id="assessment-edit-button"
-              variant="outline-primary"
-              size="sm"
-              onClick={toggleEdit}
-            >
-              <i className="bi bi-pencil"></i>
-              <span>Edit</span>
-            </Button>
-          </div>
-        )}
-      </div>
+      {showHeader && (
+        <div className="comp-details-section-header">
+          <h3>Complaint assessment</h3>
+          {!editable && (
+            <div className="comp-details-section-header-actions">
+              <Button
+                id="assessment-edit-button"
+                variant="outline-primary"
+                size="sm"
+                onClick={toggleEdit}
+              >
+                <i className="bi bi-pencil"></i>
+                <span>Edit</span>
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       <Card
         id="outcome-assessment"
@@ -350,17 +361,21 @@ export const HWCRComplaintAssessment: FC = () => {
               >
                 <label htmlFor="action-required">Action required?</label>
                 <div className="comp-details-input full-width">
-                  <CompSelect
-                    id="action-required"
-                    className="comp-details-input"
-                    classNamePrefix="comp-select"
-                    options={actionRequiredList}
-                    enableValidation={true}
-                    errorMessage={actionRequiredErrorMessage}
-                    value={selectedActionRequired}
-                    placeholder="Select"
-                    onChange={(e) => handleActionRequiredChange(e)}
-                  />
+                  {quickAssessment ? (
+                    <span>{selectedActionRequired?.value}</span>
+                  ) : (
+                    <CompSelect
+                      id="action-required"
+                      className="comp-details-input"
+                      classNamePrefix="comp-select"
+                      options={actionRequiredList}
+                      enableValidation={true}
+                      errorMessage={actionRequiredErrorMessage}
+                      value={selectedActionRequired}
+                      placeholder="Select"
+                      onChange={(e) => handleActionRequiredChange(e)}
+                    />
+                  )}
                 </div>
               </div>
               <div
@@ -381,6 +396,23 @@ export const HWCRComplaintAssessment: FC = () => {
                   />
                 </div>
               </div>
+              {selectedJustification?.value === "DUPLICATE" && (
+                <div
+                  className={`comp-details-form-row`}
+                  id="linked-complaint-div"
+                >
+                  <label htmlFor="linkedComplaint">Linking current complaint to:</label>
+                  <div className="comp-details-input full-width">
+                    <CompSelect
+                      id="linkedComplaint"
+                      classNamePrefix="comp-select"
+                      enableValidation={true}
+                      placeholder="Select"
+                    />
+                  </div>
+                </div>
+              )}
+
               <div
                 className={assessmentDivClass}
                 id="assessment-checkbox-div"

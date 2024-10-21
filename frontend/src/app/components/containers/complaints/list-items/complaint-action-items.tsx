@@ -2,8 +2,8 @@ import { FC } from "react";
 import { BsSend } from "react-icons/bs";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { isFeatureActive, openModal } from "../../../../store/reducers/app";
-import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { ASSIGN_OFFICER, CHANGE_STATUS, LINK_COMPLAINT } from "../../../../types/modal/modal-types";
+import { Dropdown } from "react-bootstrap";
 import { getAssessment } from "../../../../store/reducers/case-thunks";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
 
@@ -61,76 +61,77 @@ export const ComplaintActionItems: FC<Props> = ({
     );
   };
 
+  const openLinkComplaintModal = async () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: LINK_COMPLAINT,
+        data: {
+          title: `Link Complaint ${complaint_identifier}`,
+          description: "",
+          complaint_identifier: complaint_identifier,
+          complaint_type: complaint_type,
+          complaint_status: complaint_status,
+        },
+      }),
+    );
+  };
+
   return (
-    <>
-      <OverlayTrigger
-        placement="top"
-        key={`tt-assign-${complaint_identifier}`}
-        overlay={
-          <Tooltip
-            id={`tt-assign-${complaint_identifier}`}
-            className="comp-tooltip"
-          >
-            Assign
-          </Tooltip>
-        }
+    <Dropdown
+      key={`tt-${complaint_identifier}`}
+      drop="start"
+    >
+      <Dropdown.Toggle
+        id={`tt-${complaint_identifier}`}
+        size="sm"
       >
-        <Button
-          variant="light"
-          className="icon-btn"
-          aria-label="Assign complaint"
-          onClick={openAsignOfficerModal}
-        >
+        Actions
+      </Dropdown.Toggle>
+      <Dropdown.Menu
+        popperConfig={{
+          modifiers: [
+            {
+              name: "offset",
+              options: {
+                offset: [0, 13],
+                placement: "start",
+              },
+            },
+          ],
+        }}
+      >
+        <Dropdown.Item onClick={openAsignOfficerModal}>
           <i
             className="bi bi-person-up"
             id="update-assignee-icon"
-          ></i>
-        </Button>
-      </OverlayTrigger>
-      {showExperimentalFeature && (
-        <>
-          <OverlayTrigger
-            placement="top"
-            key={`tt-update-${complaint_identifier}`}
-            overlay={
-              <Tooltip
-                id={`tt-update-${complaint_identifier}`}
-                className="comp-tooltip"
-              >
-                Update Status
-              </Tooltip>
-            }
-          >
-            <Button
-              variant="light"
-              className="icon-btn"
-              aria-label="Update status"
-              onClick={openStatusChangeModal}
-            >
+          />{" "}
+          Assign complaint
+        </Dropdown.Item>
+        <Dropdown.Item onClick={openLinkComplaintModal}>
+          <i
+            className="bi bi-link-45deg"
+            id="link-conplaint-icon"
+          />{" "}
+          Link Complaint
+        </Dropdown.Item>
+        {showExperimentalFeature && (
+          <>
+            <Dropdown.Item onClick={openStatusChangeModal}>
               <i
                 className="bi bi-arrow-repeat"
                 id="update-status-icon"
-              ></i>
-            </Button>
-          </OverlayTrigger>
-          <OverlayTrigger
-            placement="top"
-            key={`tt-refer-${complaint_identifier}`}
-            overlay={
-              <Tooltip
-                id="tt-refer"
-                className="comp-tooltip"
-              >
-                Refer
-              </Tooltip>
-            }
-          >
-            <span>
+              />{" "}
+              Update Status
+            </Dropdown.Item>
+            <Dropdown.Item>
               <BsSend className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
-            </span>
-          </OverlayTrigger>
-        </>
-      )}
-    </>
+              Refer
+            </Dropdown.Item>
+          </>
+        )}
+      </Dropdown.Menu>
+    </Dropdown>
   );
 };
