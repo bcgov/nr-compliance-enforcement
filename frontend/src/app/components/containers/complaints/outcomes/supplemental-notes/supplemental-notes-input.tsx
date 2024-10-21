@@ -36,10 +36,10 @@ export const SupplementalNotesInput: FC<props> = ({ id, complaintType, notes, cu
   useEffect(() => {
     if (currentOfficer) {
       const {
-        id,
+        authorizedUserId,
         person: { firstName, lastName },
       } = currentOfficer;
-      setDefaultOfficer({ label: `${lastName}, ${firstName}`, value: id });
+      setDefaultOfficer({ label: `${lastName}, ${firstName}`, value: authorizedUserId });
     } else {
       setDefaultOfficer({ label: "Unknown", value: "" });
     }
