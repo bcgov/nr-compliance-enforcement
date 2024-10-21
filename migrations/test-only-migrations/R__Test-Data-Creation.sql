@@ -503,6 +503,7 @@ INSERT INTO public.officer
 VALUES('236fb546-fae1-47fd-b4c7-d108c0030ee2'::uuid, 'JGAMACHE', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '0c002922-d315-4fda-8fc5-3793dac12be8'::uuid, '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '13D3F179-F4CE-4464-A981-141061FD4E58'::uuid)
 ON CONFLICT DO NOTHING;
 
+
 --------------------------------
 ---  Scatter our team throughout the province for testing
 ---  Note that this script runs after the seed data script (which runs in prod) and moves us out of COSH
