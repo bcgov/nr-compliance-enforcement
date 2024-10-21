@@ -1154,6 +1154,32 @@ INSERT INTO
   )
 VALUES
   (
+    '97f3cee5-6f4a-410f-810f-d431595fccee'::uuid,
+    'Jonathan',
+    NULL,
+    NULL,
+    'Funk',
+    'FLYWAY',
+    '2023-06-29 22:16:16.754',
+    'FLYWAY',
+    '2023-06-29 22:16:16.754'
+  ) ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  public.person (
+    person_guid,
+    first_name,
+    middle_name_1,
+    middle_name_2,
+    last_name,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
     '7de151c1-ae52-41c3-834d-d538bbb50cda'::uuid,
     'Tobe',
     NULL,
@@ -1263,6 +1289,32 @@ VALUES
     NULL,
     NULL,
     'Lavery',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754'
+  ) ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  public.person (
+    person_guid,
+    first_name,
+    middle_name_1,
+    middle_name_2,
+    last_name,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    '141ebe0c-84c5-487d-8676-caee5de53b36'::uuid,
+    'Mike',
+    NULL,
+    NULL,
+    'Vesprini',
     'FLYWAY',
     '2024-01-22 22:16:16.754',
     'FLYWAY',
@@ -1637,6 +1689,32 @@ VALUES
   ) ON CONFLICT
 DO NOTHING;
 
+INSERT INTO
+  public.person (
+    person_guid,
+    first_name,
+    middle_name_1,
+    middle_name_2,
+    last_name,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    '0667495f-61a5-4d3b-b756-1ee58cb38e23'::uuid,
+    'Ryan',
+    NULL,
+    NULL,
+    'Rondeau',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754'
+  ) ON CONFLICT
+DO NOTHING;
+
 -------------------------
 -- INSERT OFFICER RECORDS
 -------------------------
@@ -1859,6 +1937,42 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     person_guid,
+    office_guid,
+    auth_user_guid
+  )
+VALUES
+  (
+    'b17ee2c1-a26b-4911-ac6f-810b8fdfaab3'::uuid,
+    'JFUNK',
+    'FLYWAY',
+    '2023-06-29 22:16:16.754',
+    'FLYWAY',
+    '2024-01-22 22:20:48.186',
+    '97f3cee5-6f4a-410f-810f-d431595fccee'::uuid,
+    'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid,
+    'f896cbb2d5254e54a4ad581dc80681d1'::uuid
+  ) ON CONFLICT
+DO NOTHING;
+-- Fix keycloak name
+UPDATE
+  public.officer
+SET
+  user_id = 'JONFUNK'
+WHERE
+  (
+    officer_guid = 'b17ee2c1-a26b-4911-ac6f-810b8fdfaab3'
+    AND user_id = 'JFUNK'
+  );
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
     office_guid
   )
 VALUES
@@ -1943,6 +2057,32 @@ VALUES
     '2024-01-22 22:20:48.186',
     'b48487c2-055a-4711-bba8-282a28e52e69'::uuid,
     'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid
+  ) ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    office_guid,
+    auth_user_guid
+  )
+VALUES
+  (
+    '44123934-a2cf-4eae-88af-f682f7548f89'::uuid,
+    'MVESPRIN',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754',
+    'FLYWAY',
+    '2024-01-22 22:20:48.186',
+    '141ebe0c-84c5-487d-8676-caee5de53b36'::uuid,
+    'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid,
+    '01a5ad69-0675-4359-a0a7-909f55e2c67a'::uuid
   ) ON CONFLICT
 DO NOTHING;
 
@@ -2282,6 +2422,32 @@ VALUES
     '2024-01-22 22:20:48.186',
     '2eaffabd-720d-48ed-aa82-b31f828487c4'::uuid,
     '4a5a94b1-bd47-4611-a577-861d97089903'::uuid
+  ) ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  public.officer (
+    officer_guid,
+    user_id,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    person_guid,
+    office_guid,
+    auth_user_guid
+  )
+VALUES
+  (
+    '06ff894b-3895-4d32-8a4a-1fcc0be23e47'::uuid,
+    'RRONDEAU',
+    'FLYWAY',
+    '2024-01-22 22:16:16.754',
+    'FLYWAY',
+    '2024-01-22 22:20:48.186',
+    '0667495f-61a5-4d3b-b756-1ee58cb38e23'::uuid,
+    'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid,
+    '77c6040d69b74757903f1cba37404db4'::uuid
   ) ON CONFLICT
 DO NOTHING;
 
@@ -9486,6 +9652,7 @@ DO NOTHING;
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'COS';
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'PARKS';
 UPDATE feature_agency_xref SET active_ind = true WHERE feature_code = 'METH_FLTR' AND agency_code = 'EPO';
+
 
 --------------------------
 -- New Changes above this line
