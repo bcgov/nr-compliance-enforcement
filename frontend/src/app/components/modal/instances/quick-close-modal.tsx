@@ -4,7 +4,7 @@ import { useAppSelector } from "../../../hooks/hooks";
 import { selectModalData } from "../../../store/reducers/app";
 import { HWCRComplaintAssessment } from "@components/containers/complaints/outcomes/hwcr-complaint-assessment";
 
-type LinkComplaintModalProps = {
+type QuickCloseModalProps = {
   close: () => void;
   submit: () => void;
   complaint_type: string;
@@ -13,7 +13,7 @@ type LinkComplaintModalProps = {
 };
 
 // A modal dialog containing a list of officers in the current user's zone.  Used to select an officer to assign to a complaint.
-export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit, complaint_type, zone, agency }) => {
+export const QuickCloseModal: FC<QuickCloseModalProps> = ({ close, submit, complaint_type, zone, agency }) => {
   const modalData = useAppSelector(selectModalData);
   const { title, complaint_identifier } = modalData;
 
@@ -21,7 +21,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit,
     <>
       {title && (
         <Modal.Header closeButton={true}>
-          <Modal.Title as="h3">{title}</Modal.Title>
+          <Modal.Title as="h3">Quick close: {title}</Modal.Title>
         </Modal.Header>
       )}
       <Modal.Body>

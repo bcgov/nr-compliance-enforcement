@@ -6,7 +6,7 @@ import {
   DELETE_NOTE,
   DELETE_ANIMAL_OUTCOME,
   DELETE_CONFIRM,
-  LINK_COMPLAINT,
+  QUICK_CLOSE,
 } from "../../types/modal/modal-types";
 
 import {
@@ -16,7 +16,7 @@ import {
   DeleteNoteModal,
   DeleteAnimalOutcomeModal,
   DeleteConfirmModalV2,
-  LinkComplaintModal,
+  QuickCloseModal,
 } from "./instances";
 import { CancelConfirmModal } from "./instances/cancel-confirm-modal";
 
@@ -28,5 +28,5 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [DELETE_NOTE]: DeleteNoteModal,
   [DELETE_ANIMAL_OUTCOME]: DeleteAnimalOutcomeModal,
   [DELETE_CONFIRM]: DeleteConfirmModalV2,
-  [LINK_COMPLAINT]: LinkComplaintModal,
+  [QUICK_CLOSE]: QuickCloseModal,
 };

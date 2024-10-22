@@ -2,7 +2,7 @@ import { FC } from "react";
 import { BsSend } from "react-icons/bs";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { isFeatureActive, openModal } from "../../../../store/reducers/app";
-import { ASSIGN_OFFICER, CHANGE_STATUS, LINK_COMPLAINT } from "../../../../types/modal/modal-types";
+import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "../../../../types/modal/modal-types";
 import { Dropdown } from "react-bootstrap";
 import { getAssessment } from "../../../../store/reducers/case-thunks";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
@@ -61,12 +61,12 @@ export const ComplaintActionItems: FC<Props> = ({
     );
   };
 
-  const openLinkComplaintModal = async () => {
+  const openQuickCloseModal = async () => {
     document.body.click();
     dispatch(
       openModal({
         modalSize: "lg",
-        modalType: LINK_COMPLAINT,
+        modalType: QUICK_CLOSE,
         data: {
           title: `Link Complaint ${complaint_identifier}`,
           description: "",
@@ -86,6 +86,7 @@ export const ComplaintActionItems: FC<Props> = ({
       <Dropdown.Toggle
         id={`tt-${complaint_identifier}`}
         size="sm"
+        variant="outline-primary"
       >
         Actions
       </Dropdown.Toggle>
@@ -109,7 +110,7 @@ export const ComplaintActionItems: FC<Props> = ({
           />{" "}
           Assign complaint
         </Dropdown.Item>
-        <Dropdown.Item onClick={openLinkComplaintModal}>
+        <Dropdown.Item onClick={openQuickCloseModal}>
           <i
             className="bi bi-link-45deg"
             id="link-conplaint-icon"
