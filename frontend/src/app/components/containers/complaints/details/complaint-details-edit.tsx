@@ -73,6 +73,7 @@ import { AgencyType } from "../../../../types/app/agency-types";
 import { CeebOutcomeReport } from "../outcomes/ceeb/ceeb-outcome-report";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
 import { FeatureFlag } from "../../../common/feature-flag";
+import { LinkedComplaintList } from "./linked-complaint-list";
 
 export type ComplaintParams = {
   id: string;
@@ -734,10 +735,12 @@ export const ComplaintDetailsEdit: FC = () => {
         saveButtonClick={saveButtonClick}
       />
 
-      {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
-
       <section className="comp-details-body comp-container">
         <hr className="comp-details-body-spacer"></hr>
+
+        {readOnly && <LinkedComplaintList complaintIdentifier={id} />}
+        {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
+
         <div className="comp-details-section-header">
           <h2>Complaint Details</h2>
           {readOnly && (
