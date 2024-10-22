@@ -55,16 +55,20 @@ const GenericErrorBoundary: FC<props> = ({ children }) => {
           <div className="message">
             <TbFaceIdError />
             {/* <br /> */}
-            <h1 className="comp-padding-top-25">System error</h1>
+            <div className="message-details">
+              <h1 className="comp-padding-top-25">System error</h1>
 
-            <p>
-              Please refresh the page or return to the <a href="/">home page</a> to try again.
-            </p>
+              {/* <!-- The link in this section can't use react router as it 
+             sits above the Routes in index.ts  --> */}
+              <p>
+                Refresh the page or return to the <a href="/">home page</a> to try again.
+              </p>
 
-            <p>
-              If you still have problems, please contact the Compliance & Enforcement Digital Services team at{" "}
-              <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a>
-            </p>
+              <p>
+                If the problem persists, contact the Compliance & Enforcement Digital Services team at{" "}
+                <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a>.
+              </p>
+            </div>
           </div>
         </div>
 

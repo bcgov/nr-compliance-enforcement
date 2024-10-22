@@ -3,4 +3,4 @@ import NotFound from "./not-found";
 
 export { NotFound };
 
-export default NotAuthorized;
+export { NotAuthorized };

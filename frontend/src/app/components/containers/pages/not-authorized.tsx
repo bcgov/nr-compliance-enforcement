@@ -11,15 +11,19 @@ const NotAuthorized: FC = () => {
       <div className="error-container">
         <div className="message">
           <BsPersonFillSlash />
-          <h1 className="comp-padding-top-25">Sorry, you are not authorized to access this site</h1>
+          <div className="message-details">
+            <h1 className="comp-padding-top-25">Sorry, you are not authorized to access this site.</h1>
 
-          <p>
-            Return to the <Link to="/complaints/">home page</Link> to try logging in again.
-          </p>
+            <p>
+              If you believe you should have access, return to the <Link to="/complaints/">home page</Link> to try
+              logging in again.
+            </p>
 
-          <p>
-            If you think you should have access, please contact <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a>
-          </p>
+            <p>
+              If the problem persists, contact the Compliance & Enforcement Digital Services team at{" "}
+              <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a>.
+            </p>
+          </div>
         </div>
       </div>
 
