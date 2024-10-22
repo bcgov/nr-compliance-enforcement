@@ -307,7 +307,9 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
     const { drugs: source } = data;
 
     const items = source.filter(({ id }) => id !== drug.id);
-    const update = [...items, drug];
+    const update = from([...items, drug])
+      .orderBy((item) => item.order)
+      .toArray();
 
     updateModel("drugs", update);
   };
