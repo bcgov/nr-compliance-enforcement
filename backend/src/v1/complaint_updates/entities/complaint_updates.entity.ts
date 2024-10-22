@@ -110,6 +110,14 @@ export class ComplaintUpdate {
   @Column({ length: 20 })
   webeoc_identifier: string;
 
+  @ApiProperty({
+    example: "54321",
+    description:
+      "Allows users to link complaints to files in external systems.   Currently labeled in the system as COORS reference number and initially only used for COORS linkages.",
+  })
+  @Column({ length: 20 })
+  reference_number: string;
+
   @ManyToOne(() => Complaint, (complaint) => complaint.complaint_identifier)
   @JoinColumn([
     {
