@@ -9,7 +9,7 @@ import {
   selectConflictHistoryDropdown,
   selectWildlifeComplaintOutcome,
 } from "../../../../../store/reducers/code-table";
-import { selectOfficersByAgencyDropdown } from "../../../../../store/reducers/officer";
+import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
 import { Button, Card, ListGroup } from "react-bootstrap";
 import { CompSelect } from "../../../../common/comp-select";
 import { BsExclamationCircleFill } from "react-icons/bs";
@@ -51,7 +51,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
   const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
-  const officers = useAppSelector(selectOfficersByAgencyDropdown(agency));
+  const officers = useAppSelector(selectOfficerListByAgency);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
@@ -278,7 +278,9 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
     const { drugs: source } = data;
 
     const items = source.filter(({ id }) => id !== drug.id);
-    const update = [...items, drug];
+    const update = from([...items, drug])
+      .orderBy((item) => item.order)
+      .toArray();
 
     updateModel("drugs", update);
   };

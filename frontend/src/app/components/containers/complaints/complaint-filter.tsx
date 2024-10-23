@@ -13,8 +13,8 @@ import {
   selectGirTypeCodeDropdown,
   selectComplaintReceivedMethodDropdown,
 } from "../../../store/reducers/code-table";
+import { selectOfficersByAgencyDropdownUsingPersonGuid } from "../../../store/reducers/officer";
 import { selectDecisionTypeDropdown } from "../../../store/reducers/code-table-selectors";
-import { selectOfficersByAgencyDropdown } from "../../../store/reducers/officer";
 import COMPLAINT_TYPES from "../../../types/app/complaint-types";
 import DatePicker from "react-datepicker";
 import { CompSelect } from "../../common/comp-select";
@@ -50,7 +50,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   } = useContext(ComplaintFilterContext);
 
   const agency = UserService.getUserAgency();
-  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdown(agency));
+  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdownUsingPersonGuid(agency));
   if (officersByAgency && officersByAgency[0]?.value !== "Unassigned") {
     officersByAgency.unshift({ value: "Unassigned", label: "Unassigned" });
   }

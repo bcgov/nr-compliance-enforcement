@@ -233,62 +233,6 @@ VALUES('7de151c1-ae52-41c3-834d-d538bbb50cda'::uuid, 'Tobe', NULL, NULL, 'Sprado
 ON CONFLICT DO NOTHING;
 INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('03b0b66a-fcd9-4bbf-88c8-d382d51db483'::uuid, 'Jim', NULL, NULL, 'Halpert', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('5595c1ba-6028-4a33-b20e-7fbcf6129a9c'::uuid, 'Andy', NULL, NULL, 'Bernard', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('6adcf594-181d-4331-884a-6c16bc982fb0'::uuid, 'Zack', NULL, NULL, 'Morris', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('04f7755c-e897-486e-97de-c0d17b5fcb1b'::uuid, 'Brock', NULL, NULL, 'Lee', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('49418234-75fb-45c2-9ad4-b1c2394f3c51'::uuid, 'Tom', NULL, NULL, 'Riddle', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('91cecf0d-5040-48cf-b2fb-21f510e6cb89'::uuid, 'Jane', NULL, NULL, 'Marple', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('9a47cdc6-8719-4985-a359-0c0853d7a997'::uuid, 'Nancy', NULL, NULL, 'Drew', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('18773a32-c737-4fb5-9020-a5da550f06ed'::uuid, 'Jake', NULL, NULL, 'Peralta', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('1a9a91e1-143d-4b54-82d4-c08137d929f7'::uuid, 'Rick', NULL, NULL, 'Grimes', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('b4e537e6-7315-4987-b1c3-97c915bb2b43'::uuid, 'Olivia', NULL, NULL, 'Benson', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('21ff3519-a725-4dfe-91a3-26850c5aafad'::uuid, 'Clancy', NULL, NULL, 'Wiggum', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('be475d13-ccef-4e41-8a70-556d4154002f'::uuid, 'Hieronymus', NULL, NULL, 'Bosch', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('6cab95c4-0469-4bbc-be57-ce61e29dd529'::uuid, 'Jessica', NULL, NULL, 'Jones', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('0c3c7f96-d142-4756-996b-b74179b8b9dd'::uuid, 'John', NULL, NULL, 'McClane', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('16dc87d5-2034-4d9a-bbf4-3ec0f927d3e8'::uuid, 'ENV', NULL, NULL, 'TestAcct', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.person
@@ -302,6 +246,10 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('74bb4bdd-5944-4a78-a20c-c5b494decc2a'::uuid, 'Dragos', NULL, NULL, 'Vuia', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('fd3654be-21f2-4fc9-ae6a-39615b732a1a'::uuid, 'Suha', NULL, NULL, 'Fatima', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
@@ -335,6 +283,10 @@ INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('141ebe0c-84c5-487d-8676-caee5de53b36'::uuid, 'Mike', NULL, NULL, 'Vesprini', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
 ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('0c002922-d315-4fda-8fc5-3793dac12be8'::uuid, 'Joshua', NULL, NULL, 'Gamache', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:16:16.754')
+ON CONFLICT DO NOTHING;
 
 -------------------------
 -- INSERT OFFICER RECORDS
@@ -359,62 +311,6 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
 VALUES('84ac75b9-c584-4f55-a70c-6fa35c8efde4'::uuid, 'TSPRADO', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '7de151c1-ae52-41c3-834d-d538bbb50cda'::uuid, 'b494082e-35a3-468f-8955-4aa002066b36'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('6f3e52b6-97aa-457d-999e-e36392e2eadd'::uuid, 'JHALPERT', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '03b0b66a-fcd9-4bbf-88c8-d382d51db483'::uuid, '643a4ff7-9135-4e6d-86ad-f2f8aac195ef'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('3cd1512d-53db-4cce-82d8-71e57de735df'::uuid, 'ABERNARD', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '5595c1ba-6028-4a33-b20e-7fbcf6129a9c'::uuid, '19addcac-91b2-4ab3-83b9-9a26baa1e635'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('2fcf06cf-675a-40eb-9ff6-8ea125147b4a'::uuid, 'ZMORRIS', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '6adcf594-181d-4331-884a-6c16bc982fb0'::uuid, 'edd4b298-ced7-4b10-9232-87512ec640b3'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('b5053585-cd8e-4392-b0a7-bc9d6ba7a1cd'::uuid, 'BLEE', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '04f7755c-e897-486e-97de-c0d17b5fcb1b'::uuid, '92bad201-cccc-4021-9c79-bbdcf13947f2'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('e3898d0e-8152-43df-9c71-8b173158dcaf'::uuid, 'TRIDDLE', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '49418234-75fb-45c2-9ad4-b1c2394f3c51'::uuid, '5c7023b9-710e-4333-bbcb-8a95350b747c'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('c325ec8f-98d6-4720-a339-bf08f21eeb64'::uuid, 'JMARPLE', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '91cecf0d-5040-48cf-b2fb-21f510e6cb89'::uuid, '55d7b990-8123-492f-8b5b-7cbbd14ac423'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('041430a7-d485-42a9-bda6-7e96b5b71fb3'::uuid, 'NDREW', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '9a47cdc6-8719-4985-a359-0c0853d7a997'::uuid, '491941e6-89a7-473f-b246-a2d8cd21b078'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('eb27498b-4d7f-4873-98ce-4ddafa65c4b7'::uuid, 'JPERALTA', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '18773a32-c737-4fb5-9020-a5da550f06ed'::uuid, '8f9e10a8-53b5-4125-8d8f-b7fbfdd6ae47'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('af70aeb7-2a6b-45a6-b722-926ebec005b5'::uuid, 'RGRIMES', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '1a9a91e1-143d-4b54-82d4-c08137d929f7'::uuid, '38105a68-c83d-44e5-af6e-9cfa40792118'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('a90768f2-ba0e-4786-a68d-1f8b80368e9f'::uuid, 'OBENSON', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', 'b4e537e6-7315-4987-b1c3-97c915bb2b43'::uuid, 'cd101564-6114-49e0-9e87-fa6e4925dbb7'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('7c4ad99d-0518-4a83-b12d-984d7c25beeb'::uuid, 'CWIGGUM', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '21ff3519-a725-4dfe-91a3-26850c5aafad'::uuid, '3a070028-2c6f-4ea9-a548-271cf076280a'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('5fa38f7d-cd7a-4c1b-b33b-dbac97444225'::uuid, 'HBOSCH', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', 'be475d13-ccef-4e41-8a70-556d4154002f'::uuid, '6496f00f-5397-470d-90db-490e6859256a'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('ce3a7c05-1ece-452c-a5a4-3e8fb5c3f1f4'::uuid, 'JJONES', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '6cab95c4-0469-4bbc-be57-ce61e29dd529'::uuid, '3338cb74-5be4-4ed3-8b11-41f83d72de00'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('60f9326f-7264-42f0-a80d-f0a33fcfabf6'::uuid, 'JMCCLANE', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '0c3c7f96-d142-4756-996b-b74179b8b9dd'::uuid, 'f7065a6e-2481-4526-b874-6ab98009481d'::uuid, NULL)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
@@ -453,6 +349,10 @@ INSERT INTO public.officer
 VALUES('3fc8a9db-e085-4461-bce2-b05462b79794'::uuid, 'DVUIA', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186', '74bb4bdd-5944-4a78-a20c-c5b494decc2a'::uuid, '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, auth_user_guid)
+VALUES('60e7403e-9933-4eff-89ae-508c0c827130'::uuid, 'SFATIMA', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186', 'fd3654be-21f2-4fc9-ae6a-39615b732a1a'::uuid, 'cafc87f3-738c-49bd-9bfb-33d7f01d50b9'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
 VALUES('56582c3c-6819-43c8-8d89-8e43823500c3'::uuid, 'DKORIN', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', 'f67e52f5-ac3f-48e0-ad64-cab1eae51a18'::uuid, '79fe321b-7716-413f-b878-c5fd6100317d'::uuid)
 ON CONFLICT DO NOTHING;
@@ -486,6 +386,11 @@ INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
 VALUES('44123934-a2cf-4eae-88af-f682f7548f89'::uuid, 'MVESPRIN', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '141ebe0c-84c5-487d-8676-caee5de53b36'::uuid, '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '01a5ad69-0675-4359-a0a7-909f55e2c67a'::uuid)
 ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
+VALUES('236fb546-fae1-47fd-b4c7-d108c0030ee2'::uuid, 'JGAMACHE', 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186', '0c002922-d315-4fda-8fc5-3793dac12be8'::uuid, '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '13D3F179-F4CE-4464-A981-141061FD4E58'::uuid)
+ON CONFLICT DO NOTHING;
+
 
 --------------------------------
 ---  Scatter our team throughout the province for testing
@@ -508,6 +413,7 @@ UPDATE public.officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' W
 UPDATE public.officer SET office_guid = '9fc7327b-b206-4a5c-88f1-2875a456eb49' WHERE user_id='JFUNK';
 UPDATE public.officer SET office_guid = '4a5a94b1-bd47-4611-a577-861d97089903' WHERE user_id='RRONDEAU';
 UPDATE public.officer SET office_guid = '4a5a94b1-bd47-4611-a577-861d97089903' WHERE user_id='MVESPRIN';
+UPDATE public.officer SET office_guid = '4a5a94b1-bd47-4611-a577-861d97089903' WHERE user_id='JGAMACHE';
 
 -------------------------
 -- INSERT COMPLAINT RECORDS

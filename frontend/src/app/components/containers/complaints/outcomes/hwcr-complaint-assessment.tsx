@@ -1,9 +1,8 @@
 import { FC, useEffect, useState } from "react";
 import Option from "../../../../types/app/option";
 import { Button, Card } from "react-bootstrap";
-import { Officer } from "../../../../types/person/person";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectOfficersByAgency } from "../../../../store/reducers/officer";
+import { selectOfficerListByAgency, selectOfficersByAgency } from "../../../../store/reducers/officer";
 import {
   getComplaintById,
   selectComplaint,
@@ -73,6 +72,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const cases = useAppSelector((state) => state.cases);
+  const assignableOfficers = useAppSelector(selectOfficerListByAgency);
 
   const hasAssessment = Object.keys(cases.assessment).length > 0;
   const showSectionErrors = (!hasAssessment || editable) && cases.isInEdit.showSectionErrors;
@@ -83,13 +83,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     } else dispatch(setIsInEdit({ assessment: editable }));
   }, [editable, hasAssessment]);
 
-  const assignableOfficers: Option[] =
-    officersInAgencyList !== null
-      ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-        }))
-      : [];
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
   };
@@ -212,7 +205,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
         .map((item) => {
           return {
             label: `${item.person_guid?.last_name}, ${item.person_guid?.first_name}`,
-            value: assigned,
+            value: item.auth_user_guid,
           } as Option;
         });
       if (

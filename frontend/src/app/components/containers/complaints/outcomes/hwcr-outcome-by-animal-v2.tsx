@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import { ComplaintParams } from "../details/complaint-details-edit";
 import { createAnimalOutcome, getCaseFile, updateAnimalOutcome } from "../../../../store/reducers/case-thunks";
 import { selectAnimalOutcomes, selectCaseId } from "../../../../store/reducers/case-selectors";
+import { selectOfficersByAgency } from "../../../../store/reducers/officer";
 import { openModal } from "../../../../store/reducers/app";
 import { CANCEL_CONFIRM, DELETE_ANIMAL_OUTCOME } from "../../../../types/modal/modal-types";
 import { EditOutcome } from "./oucome-by-animal/edit-outcome";
@@ -51,6 +52,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   const caseId = useAppSelector(selectCaseId) as UUID;
 
   const { species, ownedBy: agency } = (complaint as WildlifeComplaint) || {};
+  const officersInAgencyList = useAppSelector(selectOfficersByAgency(agency));
 
   //-- if there's an assigned officer pull them off
   //-- the complaint and pass as a kvp to the input
@@ -139,7 +141,12 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
           person: { id },
         } = assigned;
 
-        setAssignedOfficer(id);
+        if (officersInAgencyList) {
+          const officerAssigned: any = officersInAgencyList.filter((officer) => officer.person_guid.person_guid === id);
+          if (officerAssigned.length === 1) {
+            setAssignedOfficer(officerAssigned[0].auth_user_guid);
+          }
+        }
       }
     }
   }, [complaint]);
