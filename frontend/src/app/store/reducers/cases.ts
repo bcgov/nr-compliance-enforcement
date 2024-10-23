@@ -7,6 +7,7 @@ const initialState: CasesState = {
     action_required: undefined,
     date: undefined,
     justification: undefined,
+    linked_complaint: undefined,
     officer: undefined,
     assessment_type: [],
   },

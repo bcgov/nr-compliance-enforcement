@@ -4,6 +4,7 @@ export interface Assessment {
   assessment_type: KeyValuePair[];
   action_required?: string | null;
   justification?: KeyValuePair;
+  linked_complaint?: KeyValuePair;
   officer?: KeyValuePair;
   date?: Date | null;
   createdBy?: string;

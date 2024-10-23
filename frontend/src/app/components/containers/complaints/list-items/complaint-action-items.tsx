@@ -1,5 +1,4 @@
 import { FC } from "react";
-import { BsSend } from "react-icons/bs";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { isFeatureActive, openModal } from "../../../../store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "../../../../types/modal/modal-types";
@@ -68,7 +67,7 @@ export const ComplaintActionItems: FC<Props> = ({
         modalSize: "lg",
         modalType: QUICK_CLOSE,
         data: {
-          title: `Link Complaint ${complaint_identifier}`,
+          title: `Quick close: ${complaint_identifier}`,
           description: "",
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
@@ -110,13 +109,15 @@ export const ComplaintActionItems: FC<Props> = ({
           />{" "}
           Assign complaint
         </Dropdown.Item>
-        <Dropdown.Item onClick={openQuickCloseModal}>
-          <i
-            className="bi bi-link-45deg"
-            id="link-conplaint-icon"
-          />{" "}
-          Link Complaint
-        </Dropdown.Item>
+        {complaint_type === "HWCR" && (
+          <Dropdown.Item onClick={openQuickCloseModal}>
+            <i
+              className="bi bi-journal-check"
+              id="link-conplaint-icon"
+            />{" "}
+            Quick close
+          </Dropdown.Item>
+        )}
         {showExperimentalFeature && (
           <>
             <Dropdown.Item onClick={openStatusChangeModal}>
@@ -127,7 +128,10 @@ export const ComplaintActionItems: FC<Props> = ({
               Update Status
             </Dropdown.Item>
             <Dropdown.Item>
-              <BsSend className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
+              <i
+                className="bi bi-send"
+                id="update-status-icon"
+              />{" "}
               Refer
             </Dropdown.Item>
           </>
