@@ -3,6 +3,8 @@
   "version": "1.0.1",
   "private": true,
   "dependencies": {
+    "@craco/craco": "^7.1.0",
+    "@craco/types": "^7.1.0",
     "@faker-js/faker": "^8.0.2",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
@@ -145,8 +147,6 @@
     ]
   },
   "devDependencies": {
-    "@craco/craco": "^7.1.0",
-    "@craco/types": "^7.1.0",
     "@tsconfig/node16": "^1.0.3",
     "@types/jest": "^29.5.1",
     "@types/react-test-renderer": "^18.0.0",
