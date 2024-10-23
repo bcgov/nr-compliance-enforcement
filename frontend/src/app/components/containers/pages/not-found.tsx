@@ -12,7 +12,7 @@ const NotFound: FC = () => {
         <div className="message">
           <BsFileEarmarkX />
           <div className="message-details">
-            <h1 className="comp-padding-top-25">The page or content you are looking for is not found.</h1>
+            <h1 className="comp-padding-top-25">The page or content you are looking for could not be found.</h1>
 
             <p>
               Return to the <Link to="/complaints/">home page</Link> to try again.
