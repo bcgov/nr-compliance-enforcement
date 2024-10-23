@@ -10,8 +10,6 @@ import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { generateApiParameters, get } from "@common/api";
 import { applyStatusClass } from "@common/methods";
 import config from "@/config";
-import { is } from "cypress/types/bluebird";
-import { toggleLoading } from "@/app/store/reducers/app";
 
 type Props = {
   id?: string;
