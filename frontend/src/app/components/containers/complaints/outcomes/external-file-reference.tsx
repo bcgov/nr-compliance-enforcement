@@ -6,6 +6,7 @@ import { openModal } from "../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { selectComplaint, updateComplaintById } from "../../../../store/reducers/complaints";
+import { getComplaintType } from "../../../../common/methods";
 
 export const ExternalFileReference: FC = () => {
   const dispatch = useAppDispatch();
@@ -71,8 +72,7 @@ export const ExternalFileReference: FC = () => {
       let data = { ...complaintData, referenceNumber: referenceNumber };
       setIsEditable(false);
 
-      //TODO need to write a common function to determine the complaint type from the data.
-      let complaintType = COMPLAINT_TYPES.HWCR;
+      let complaintType = getComplaintType(complaintData);
 
       dispatch(updateComplaintById(data, complaintType));
     }
