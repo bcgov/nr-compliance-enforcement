@@ -7,6 +7,10 @@ import { toggleLoading, toggleNotification } from "../store/reducers/app";
 import { store } from "../../app/store/store";
 import { ToggleError } from "./toast";
 
+interface NatComRequestConfig extends AxiosRequestConfig {
+  toggleLoading: Boolean;
+}
+
 const STATUS_CODES = {
   Ok: 200,
   BadRequest: 400,
@@ -22,9 +26,9 @@ const STATUS_CODES = {
 let requestCounter = 0;
 
 // Request interceptor to enable the loading indicator
-axios.interceptors.request.use(function (config) {
+axios.interceptors.request.use((config) => {
   requestCounter++;
-  if (requestCounter > 0) {
+  if (requestCounter > 0 && (config as NatComRequestConfig).toggleLoading) {
     store.dispatch(toggleLoading(true));
   }
   return config;
@@ -83,8 +87,13 @@ export const generateApiParameters = <T = {}>(
   return result;
 };
 
-export const get = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParameters<M>, headers?: {}): Promise<T> => {
-  let config: AxiosRequestConfig = { headers: headers };
+export const get = <T, M = {}>(
+  dispatch: Dispatch,
+  parameters: ApiRequestParameters<M>,
+  headers?: {},
+  toggleLoading: Boolean = true,
+): Promise<T> => {
+  let config: NatComRequestConfig = { headers: headers, toggleLoading: toggleLoading };
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication, params } = parameters;
 
@@ -123,8 +132,9 @@ export const deleteMethod = <T, M = {}>(
   dispatch: Dispatch,
   parameters: ApiRequestParameters<M>,
   headers?: {},
+  toggleLoading: Boolean = true,
 ): Promise<T> => {
-  let config: AxiosRequestConfig = { headers: headers };
+  let config: NatComRequestConfig = { headers: headers, toggleLoading: toggleLoading };
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication, params } = parameters;
 
@@ -157,8 +167,12 @@ export const deleteMethod = <T, M = {}>(
   });
 };
 
-export const post = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParameters<M>): Promise<T> => {
-  let config: AxiosRequestConfig = { headers: {} };
+export const post = <T, M = {}>(
+  dispatch: Dispatch,
+  parameters: ApiRequestParameters<M>,
+  toggleLoading: Boolean = true,
+): Promise<T> => {
+  let config: NatComRequestConfig = { headers: {}, toggleLoading: toggleLoading };
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication, params } = parameters;
 
@@ -180,8 +194,12 @@ export const post = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParame
   });
 };
 
-export const patch = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParameters<M>): Promise<T> => {
-  let config: AxiosRequestConfig = { headers: {} };
+export const patch = <T, M = {}>(
+  dispatch: Dispatch,
+  parameters: ApiRequestParameters<M>,
+  toggleLoading: Boolean = true,
+): Promise<T> => {
+  let config: NatComRequestConfig = { headers: {}, toggleLoading: toggleLoading };
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication, params: data } = parameters;
 
@@ -209,8 +227,12 @@ export const patch = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParam
   });
 };
 
-export const put = <T, M = {}>(dispatch: Dispatch, parameters: ApiRequestParameters<M>): Promise<T> => {
-  let config: AxiosRequestConfig = { headers: {} };
+export const put = <T, M = {}>(
+  dispatch: Dispatch,
+  parameters: ApiRequestParameters<M>,
+  toggleLoading: Boolean = true,
+): Promise<T> => {
+  let config: NatComRequestConfig = { headers: {}, toggleLoading: toggleLoading };
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication, params: data } = parameters;
 
@@ -243,8 +265,9 @@ export const putFile = <T, M = {}>(
   parameters: ApiRequestParameters<M>,
   headers: {},
   file: File,
+  toggleLoading: Boolean = true,
 ): Promise<T> => {
-  let config: AxiosRequestConfig = { headers: headers };
+  let config: NatComRequestConfig = { headers: headers, toggleLoading: toggleLoading };
 
   const formData = new FormData();
   if (file) formData.append("file", file);

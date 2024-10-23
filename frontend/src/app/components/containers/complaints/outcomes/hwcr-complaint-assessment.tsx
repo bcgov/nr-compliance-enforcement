@@ -510,7 +510,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   title="Save Outcome"
                   onClick={saveButtonClick}
                 >
-                  Save
+                  <span>{quickClose ? "Save and Close" : "Save"}</span>
                 </Button>
               </div>
             </div>

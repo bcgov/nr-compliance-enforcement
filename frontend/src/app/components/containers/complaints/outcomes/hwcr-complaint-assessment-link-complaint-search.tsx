@@ -11,6 +11,7 @@ import { generateApiParameters, get } from "@common/api";
 import { applyStatusClass } from "@common/methods";
 import config from "@/config";
 import { is } from "cypress/types/bluebird";
+import { toggleLoading } from "@/app/store/reducers/app";
 
 type Props = {
   id?: string;
@@ -105,7 +106,7 @@ export const HWCRComplaintAssessmentLinkComplaintSearch: FC<Props> = ({
     const parameters = generateApiParameters(
       `${config.API_BASE_URL}/v1/complaint/search/HWCR?sortBy=incident_reported_utc_timestmp&orderBy=DESC&zone=SPCE&page=1&pageSize=10&query=${query}`,
     );
-    const response: any = await get(dispatch, parameters);
+    const response: any = await get(dispatch, parameters, {}, false);
     if (response) {
       setComplaintData(response.complaints);
     }
