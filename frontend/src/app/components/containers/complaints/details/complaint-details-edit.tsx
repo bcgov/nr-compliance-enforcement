@@ -73,6 +73,7 @@ import { AgencyType } from "../../../../types/app/agency-types";
 import { CeebOutcomeReport } from "../outcomes/ceeb/ceeb-outcome-report";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
 import { FeatureFlag } from "../../../common/feature-flag";
+import { ExternalFileReference } from "../outcomes/external-file-reference";
 
 export type ComplaintParams = {
   id: string;
@@ -1398,11 +1399,18 @@ export const ComplaintDetailsEdit: FC = () => {
         )}
       </section>
 
-      {/* HWCR Outcome Report */}
-      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
+      {/* HWCR Outcome Report and File Linkage */}
+      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && (
+        <>
+          <HWCROutcomeReport /> <ExternalFileReference />
+        </>
+      )}
 
       {/* CEEB ERS Outcome Report */}
       {readOnly && complaintType === COMPLAINT_TYPES.ERS && agency === AgencyType.CEEB && <CeebOutcomeReport />}
+
+      {/* COS ERS File Linkage */}
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && agency === AgencyType.COS && <ExternalFileReference />}
     </div>
   );
 };
