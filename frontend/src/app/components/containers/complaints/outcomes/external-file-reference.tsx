@@ -38,11 +38,12 @@ export const ExternalFileReference: FC = () => {
   };
 
   // function for handling the delete  modal
-  const deleteConfirmed = () => {
+  const deleteConfirmed = async () => {
     if (complaintData) {
       let data = { ...complaintData, referenceNumber: "" };
       let complaintType = getComplaintType(complaintData);
-      dispatch(updateComplaintById(data, complaintType));
+      //since the updateComplaintById thunk has an asynchronous operation inside it we need to make sure it finishes before moving on
+      await dispatch(updateComplaintById(data, complaintType));
       setReferenceNumber("");
       dispatch(getComplaintById(complaintData.id, complaintType));
     }
@@ -70,11 +71,12 @@ export const ExternalFileReference: FC = () => {
   };
 
   // function for handling the save button
-  const handleExternalFileReferenceSave = () => {
+  const handleExternalFileReferenceSave = async () => {
     if (complaintData && isValid()) {
       let data = { ...complaintData, referenceNumber: referenceNumber };
       let complaintType = getComplaintType(complaintData);
-      dispatch(updateComplaintById(data, complaintType));
+      //since the updateComplaintById thunk has an asynchronous operation inside it we need to make sure it finishes before moving on
+      await dispatch(updateComplaintById(data, complaintType));
       dispatch(getComplaintById(complaintData.id, complaintType));
     }
   };
