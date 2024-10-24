@@ -24,17 +24,16 @@ jobs:
   vars:
     name: Set Variables
     outputs:
-      pr: ${{ steps.pr.outputs.pr }}
+      pr: ${{ steps.latest-pr.outputs.pr }}
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
       - uses: actions/checkout@v4
-      # Get PR number for squash merges to release
-      - name: PR Number
-        id: pr
-        uses: ./.github/actions/get-pr-number
+      - name: Get Latest PR Number in release branch
+        id: latest-pr
+        uses: ./.github/actions/get-latest-pr-number
       - name: Set PR Output
-        run: echo "pr=${{ steps.pr.outputs.pr }}" >> $GITHUB_OUTPUT
+        run: echo "pr=${{ steps.latest-pr.outputs.pr }}" >> $GITHUB_OUTPUT
 
   create_release:
     name: Create GitHub Release (Keep Version)
