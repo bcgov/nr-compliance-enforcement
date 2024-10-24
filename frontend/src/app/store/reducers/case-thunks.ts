@@ -244,7 +244,7 @@ const parseAssessmentResponse = async (
     let officerFullName = null;
 
     let officerNames = officers
-      .filter((person) => person.person_guid.person_guid === actor)
+      .filter((person) => person.auth_user_guid === actor)
       .map((officer) => {
         return `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`;
       });
@@ -444,7 +444,7 @@ const parsePreventionResponse = async (
 
     let officerFullName = null;
     let officerNames = officers
-      .filter((person) => person.person_guid.person_guid === actor)
+      .filter((person) => person.auth_user_guid === actor)
       .map((officer) => {
         return `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`;
       });
@@ -535,7 +535,7 @@ export const upsertNote =
 
     let result;
     if (!currentNote?.action) {
-      result = await dispatch(_createNote(id, note, officer ? officer.officer_guid : "", idir));
+      result = await dispatch(_createNote(id, note, officer ? officer.auth_user_guid : "", idir));
 
       if (result !== null) {
         dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
@@ -548,7 +548,7 @@ export const upsertNote =
       const {
         action: { actionId },
       } = currentNote;
-      result = await dispatch(_updateNote(id as UUID, note, officer ? officer.officer_guid : "", idir, actionId));
+      result = await dispatch(_updateNote(id as UUID, note, officer ? officer.auth_user_guid : "", idir, actionId));
 
       if (result !== null) {
         dispatch(setCaseId(result.caseIdentifier));

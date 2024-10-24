@@ -9,7 +9,7 @@ import {
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
 } from "../../../../../../store/reducers/code-table-selectors";
-import { selectOfficersDropdown } from "../../../../../../store/reducers/officer";
+import { selectOfficerListByAgency } from "../../../../../../store/reducers/officer";
 import Option from "../../../../../../types/app/option";
 import { CASE_ACTION_CODE } from "../../../../../../constants/case_actions";
 
@@ -48,7 +48,7 @@ export const DecisionItem: FC<props> = ({
   const scheduleSectorsOptions = useAppSelector(selectSectorDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectLeadAgencyDropdown);
-  const officerOptions = useAppSelector(selectOfficersDropdown(true));
+  const officerOptions = useAppSelector(selectOfficerListByAgency);
 
   const getValue = (property: string): Option | undefined | null => {
     let result: Option | undefined;
