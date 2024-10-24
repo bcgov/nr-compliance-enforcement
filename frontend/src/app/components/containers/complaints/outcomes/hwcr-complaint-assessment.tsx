@@ -32,15 +32,25 @@ import "../../../../../assets/sass/hwcr-assessment.scss";
 import { selectAssessment } from "../../../../store/reducers/case-selectors";
 import { getAssessment, upsertAssessment } from "../../../../store/reducers/case-thunks";
 import { OptionLabels } from "../../../../constants/option-labels";
+import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
 
-export const HWCRComplaintAssessment: FC = () => {
+type Props = { handleSave?: () => void; showHeader?: boolean; quickClose?: boolean };
+
+export const HWCRComplaintAssessment: FC<Props> = ({
+  handleSave = () => {},
+  showHeader = false,
+  quickClose = false,
+}) => {
   const dispatch = useAppDispatch();
   type ComplaintParams = {
     id: string;
     complaintType: string;
   };
+  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
   const [selectedJustification, setSelectedJustification] = useState<Option | null>();
+  const [selectedLinkedComplaint, setSelectedLinkedComplaint] = useState<Option | null>();
+  const [selectedLinkedComplaintStatus, setSelectedLinkedComplaintStatus] = useState<string | null>();
   const [selectedDate, setSelectedDate] = useState<Date | null | undefined>();
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>();
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
@@ -54,11 +64,11 @@ export const HWCRComplaintAssessment: FC = () => {
   const [assessmentDateErrorMessage, setAssessmentDateErrorMessage] = useState<string>("");
   const [actionRequiredErrorMessage, setActionRequiredErrorMessage] = useState<string>("");
   const [justificationRequiredErrorMessage, setJustificationRequiredErrorMessage] = useState<string>("");
+  const [linkedComplaintErrorMessage, setLinkedComplaintErrorMessage] = useState<string>("");
   const [assessmentRequiredErrorMessage, setAssessmentRequiredErrorMessage] = useState<string>("");
 
   const complaintData = useAppSelector(selectComplaint);
   const assessmentState = useAppSelector(selectAssessment);
-  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const cases = useAppSelector((state) => state.cases);
@@ -86,15 +96,27 @@ export const HWCRComplaintAssessment: FC = () => {
       setSelectedActionRequired(selected);
       setSelectedJustification(null as unknown as Option);
     } else {
-      setSelectedActionRequired(undefined);
+      setSelectedActionRequired(null);
     }
   };
 
   const handleJustificationChange = (selected: Option | null) => {
     if (selected) {
       setSelectedJustification(selected);
+      if (selected.value !== "DUPLICATE") {
+        setSelectedLinkedComplaint(null);
+      }
     } else {
-      setSelectedJustification(undefined);
+      setSelectedJustification(null);
+    }
+  };
+
+  const handleLinkedComplaintChange = (selected: Option | null, status: string | null) => {
+    if (selected) {
+      setSelectedLinkedComplaint(selected);
+      setSelectedLinkedComplaintStatus(status);
+    } else {
+      setSelectedLinkedComplaint(null);
     }
   };
 
@@ -141,23 +163,23 @@ export const HWCRComplaintAssessment: FC = () => {
         : null
     ) as Option;
 
-    const selectedActionRequired = (
-      assessmentState.action_required
-        ? {
-            label: assessmentState.action_required,
-            value: assessmentState.action_required,
-          }
-        : null
-    ) as Option;
+    let selectedActionRequired = quickClose ? ({ label: "No", value: "No" } as Option) : null;
 
-    const selectedJustification = (
-      assessmentState.justification
-        ? {
-            label: assessmentState.justification?.key,
-            value: assessmentState.justification?.value,
-          }
-        : null
-    ) as Option;
+    if (assessmentState.action_required) {
+      selectedActionRequired = {
+        label: assessmentState.action_required,
+        value: assessmentState.action_required,
+      } as Option;
+    }
+
+    let selectedJustification = quickClose ? ({ label: "Duplicate", value: "DUPLICATE" } as Option) : null;
+
+    if (assessmentState.justification) {
+      selectedJustification = {
+        label: assessmentState.justification?.key,
+        value: assessmentState.justification?.value,
+      } as Option;
+    }
 
     const selectedAssessmentTypes = assessmentState.assessment_type?.map((item) => {
       return {
@@ -172,6 +194,7 @@ export const HWCRComplaintAssessment: FC = () => {
     setSelectedOfficer(selectedOfficer);
     setSelectedActionRequired(selectedActionRequired);
     setSelectedJustification(selectedJustification);
+    setSelectedLinkedComplaint(selectedLinkedComplaint);
     setSelectedAssessmentTypes(selectedAssessmentTypes);
     resetValidationErrors();
     setEditable(!assessmentState.date);
@@ -231,6 +254,10 @@ export const HWCRComplaintAssessment: FC = () => {
           key: selectedJustification?.label,
           value: selectedJustification?.value,
         },
+        linked_complaint: {
+          key: selectedLinkedComplaint?.label,
+          value: selectedLinkedComplaint?.value,
+        },
         assessment_type:
           selectedActionRequired?.label === OptionLabels.OPTION_NO
             ? []
@@ -244,6 +271,7 @@ export const HWCRComplaintAssessment: FC = () => {
 
       dispatch(upsertAssessment(id, updatedAssessmentData));
       setEditable(false);
+      handleSave();
     } else {
       handleFormErrors();
     }
@@ -259,6 +287,7 @@ export const HWCRComplaintAssessment: FC = () => {
     setActionRequiredErrorMessage("");
     setAssessmentDateErrorMessage("");
     setJustificationRequiredErrorMessage("");
+    setLinkedComplaintErrorMessage("");
     setAssessmentRequiredErrorMessage("");
   };
 
@@ -295,6 +324,18 @@ export const HWCRComplaintAssessment: FC = () => {
       hasErrors = true;
     }
 
+    console.log(selectedLinkedComplaintStatus);
+    if (selectedJustification?.value === "DUPLICATE") {
+      if (!selectedLinkedComplaint) {
+        setLinkedComplaintErrorMessage("Required when Justification is Duplicate");
+        hasErrors = true;
+      }
+      if (selectedLinkedComplaintStatus !== "OPEN") {
+        setLinkedComplaintErrorMessage("Linked complaint must be open");
+        hasErrors = true;
+      }
+    }
+
     return hasErrors;
   };
 
@@ -302,22 +343,24 @@ export const HWCRComplaintAssessment: FC = () => {
 
   return (
     <section className="comp-details-section comp-outcome-report-complaint-assessment">
-      <div className="comp-details-section-header">
-        <h3>Complaint assessment</h3>
-        {!editable && (
-          <div className="comp-details-section-header-actions">
-            <Button
-              id="assessment-edit-button"
-              variant="outline-primary"
-              size="sm"
-              onClick={toggleEdit}
-            >
-              <i className="bi bi-pencil"></i>
-              <span>Edit</span>
-            </Button>
-          </div>
-        )}
-      </div>
+      {showHeader && (
+        <div className="comp-details-section-header">
+          <h3>Complaint assessment</h3>
+          {!editable && (
+            <div className="comp-details-section-header-actions">
+              <Button
+                id="assessment-edit-button"
+                variant="outline-primary"
+                size="sm"
+                onClick={toggleEdit}
+              >
+                <i className="bi bi-pencil"></i>
+                <span>Edit</span>
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       <Card
         id="outcome-assessment"
@@ -343,17 +386,21 @@ export const HWCRComplaintAssessment: FC = () => {
               >
                 <label htmlFor="action-required">Action required?</label>
                 <div className="comp-details-input full-width">
-                  <CompSelect
-                    id="action-required"
-                    className="comp-details-input"
-                    classNamePrefix="comp-select"
-                    options={actionRequiredList}
-                    enableValidation={true}
-                    errorMessage={actionRequiredErrorMessage}
-                    value={selectedActionRequired}
-                    placeholder="Select"
-                    onChange={(e) => handleActionRequiredChange(e)}
-                  />
+                  {quickClose ? (
+                    <span>{selectedActionRequired?.value}</span>
+                  ) : (
+                    <CompSelect
+                      id="action-required"
+                      className="comp-details-input"
+                      classNamePrefix="comp-select"
+                      options={actionRequiredList}
+                      enableValidation={true}
+                      errorMessage={actionRequiredErrorMessage}
+                      value={selectedActionRequired}
+                      placeholder="Select"
+                      onChange={(e) => handleActionRequiredChange(e)}
+                    />
+                  )}
                 </div>
               </div>
               <div
@@ -374,6 +421,22 @@ export const HWCRComplaintAssessment: FC = () => {
                   />
                 </div>
               </div>
+              {selectedJustification?.value === "DUPLICATE" && (
+                <div
+                  className={`comp-details-form-row`}
+                  id="linked-complaint-div"
+                >
+                  <label htmlFor="linkedComplaint">Linking current complaint to:</label>
+                  <div className="comp-details-input full-width">
+                    <HWCRComplaintAssessmentLinkComplaintSearch
+                      id="linkedComplaint"
+                      onChange={(e, s) => handleLinkedComplaintChange(e, s)}
+                      errorMessage={linkedComplaintErrorMessage}
+                    />
+                  </div>
+                </div>
+              )}
+
               <div
                 className={assessmentDivClass}
                 id="assessment-checkbox-div"
@@ -440,7 +503,7 @@ export const HWCRComplaintAssessment: FC = () => {
                   title="Save Outcome"
                   onClick={saveButtonClick}
                 >
-                  Save
+                  <span>{quickClose ? "Save and Close" : "Save"}</span>
                 </Button>
               </div>
             </div>

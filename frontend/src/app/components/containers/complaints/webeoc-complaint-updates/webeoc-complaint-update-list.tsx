@@ -54,7 +54,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
   return (
     <>
       {((updates && updates.length > 0) || (changeCount && changeCount > 0) || (actions && actions.length > 0)) && (
-        <div className="comp-container comp-complaint-details-block">
+        <div className="comp-complaint-details-block">
           <div>
             <h6>Complaint Updates {updates && updates.length > 0 && "(" + updates.length + ")"}</h6>
             {changeCount && changeCount > 0 && (

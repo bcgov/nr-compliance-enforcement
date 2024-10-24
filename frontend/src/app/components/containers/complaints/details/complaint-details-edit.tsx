@@ -73,6 +73,9 @@ import { AgencyType } from "../../../../types/app/agency-types";
 import { CeebOutcomeReport } from "../outcomes/ceeb/ceeb-outcome-report";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
 import { FeatureFlag } from "../../../common/feature-flag";
+import { LinkedComplaintList } from "./linked-complaint-list";
+import { generateApiParameters, get } from "app/common/api";
+import config from "config";
 
 export type ComplaintParams = {
   id: string;
@@ -180,11 +183,21 @@ export const ComplaintDetailsEdit: FC = () => {
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
   const [latitude, setLatitude] = useState<string>("0");
   const [longitude, setLongitude] = useState<string>("0");
+  const [linkedComplaintData, setLinkedComplaintData] = useState();
 
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
 
   const handleSlideCountChange = (count: number) => {
     setComplaintAttachmentCount(count);
+  };
+
+  //-- api calls
+  const getLinkedComplaints = async (complaintId: string) => {
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/linked-complaint-xref/${complaintId}`);
+    const response: any = await get(dispatch, parameters);
+    if (response) {
+      setLinkedComplaintData(response);
+    }
   };
 
   //-- use effects
@@ -213,6 +226,11 @@ export const ComplaintDetailsEdit: FC = () => {
     setLongitude(getEditableCoordinates(coordinates, Coordinates.Longitude));
     setLatitude(getEditableCoordinates(coordinates, Coordinates.Latitude));
   }, [coordinates]);
+
+  useEffect(() => {
+    getLinkedComplaints(id);
+  }, [id]);
+  console.log(linkedComplaintData);
 
   //-- events
   const editButtonClick = () => {
@@ -734,10 +752,12 @@ export const ComplaintDetailsEdit: FC = () => {
         saveButtonClick={saveButtonClick}
       />
 
-      {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
-
       <section className="comp-details-body comp-container">
         <hr className="comp-details-body-spacer"></hr>
+
+        {readOnly && <LinkedComplaintList complaintIdentifier={id} />}
+        {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
+
         <div className="comp-details-section-header">
           <h2>Complaint Details</h2>
           {readOnly && (
