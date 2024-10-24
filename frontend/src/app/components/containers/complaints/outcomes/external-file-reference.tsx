@@ -3,14 +3,15 @@ import { Button, Card } from "react-bootstrap";
 import { useAppSelector, useAppDispatch } from "../../../../hooks/hooks";
 import { CompInput } from "../../../common/comp-input";
 import { openModal } from "../../../../store/reducers/app";
-import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
-import { selectComplaint, updateComplaintById } from "../../../../store/reducers/complaints";
+import { CANCEL_CONFIRM, DELETE_CONFIRM } from "../../../../types/modal/modal-types";
+import { getComplaintById, selectComplaint, updateComplaintById } from "../../../../store/reducers/complaints";
 import { getComplaintType } from "../../../../common/methods";
 
 export const ExternalFileReference: FC = () => {
   const dispatch = useAppDispatch();
 
   const complaintData = useAppSelector(selectComplaint);
+
   const [isEditable, setIsEditable] = useState<boolean>(true);
   const [referenceNumber, setReferenceNumber] = useState<string>("");
   const [referenceNumberError, setReferenceNumberError] = useState<string>("");
@@ -27,14 +28,13 @@ export const ExternalFileReference: FC = () => {
   const cancelConfirmed = () => {
     resetValidationErrors();
 
-    //determine if there is existing data on the complaint, otherwise set to blank
-    const refNum = complaintData?.referenceNumber ? complaintData?.referenceNumber : "";
-    setReferenceNumber(refNum);
+    if (complaintData) {
+      if (complaintData.referenceNumber !== "") {
+        setIsEditable(false);
+      } else setIsEditable(true); //allow the field to be editable
 
-    if (refNum !== "") {
-      //there is data - display the view
-      setIsEditable(false);
-    } else setIsEditable(true); //allow the field to be editable
+      setReferenceNumber(complaintData.referenceNumber);
+    }
   };
 
   // function for popping up the modal
@@ -59,8 +59,8 @@ export const ExternalFileReference: FC = () => {
       return false;
     }
 
-    if (!referenceNumber.match(/^\d{1,10}$/)) {
-      setReferenceNumberError("COORS number should include only numbers.");
+    if (!referenceNumber.match(/^\d{1,20}$/)) {
+      setReferenceNumberError("Invalid format. Please only include numbers.");
       return false;
     }
 
@@ -78,11 +78,39 @@ export const ExternalFileReference: FC = () => {
       resetValidationErrors();
       let data = { ...complaintData, referenceNumber: referenceNumber };
       setIsEditable(false);
-
       let complaintType = getComplaintType(complaintData);
-
       dispatch(updateComplaintById(data, complaintType));
+      dispatch(getComplaintById(complaintData.id, complaintType));
     }
+  };
+
+  // function for handling the delete  modal
+  const deleteConfirmed = () => {
+    if (complaintData) {
+      let data = { ...complaintData, referenceNumber: "" };
+      let complaintType = getComplaintType(complaintData);
+      dispatch(updateComplaintById(data, complaintType));
+      setReferenceNumber("");
+      setIsEditable(true);
+      dispatch(getComplaintById(complaintData.id, complaintType));
+    }
+  };
+
+  // function for handling the delete button
+  const handleExternalFileReferenceDelete = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: DELETE_CONFIRM,
+        data: {
+          title: "Delete external file reference",
+          description: "All the data in this section will be lost.",
+          ok: "Yes, delete",
+          cancel: "No, go back",
+          deleteConfirmed,
+        },
+      }),
+    );
   };
 
   // function for keeping the value on the component in sync with redux
@@ -104,11 +132,20 @@ export const ExternalFileReference: FC = () => {
               <Button
                 variant="outline-primary"
                 size="sm"
-                id="review-edit-button"
+                id="external-file-reference-edit-button"
                 onClick={(e) => setIsEditable(true)}
               >
                 <i className="bi bi-pencil"></i>
                 <span>Edit</span>
+              </Button>
+              <Button
+                size="sm"
+                variant="outline-primary"
+                id="external-file-reference-delete-button"
+                onClick={() => handleExternalFileReferenceDelete()}
+              >
+                <i className="bi bi-trash3"></i>
+                <span>Delete</span>
               </Button>
             </div>
           )}
@@ -128,7 +165,7 @@ export const ExternalFileReference: FC = () => {
                       inputClass="comp-form-control"
                       value={referenceNumber}
                       error={referenceNumberError}
-                      maxLength={10}
+                      maxLength={20}
                       onChange={(evt: any) => {
                         const {
                           target: { value },
