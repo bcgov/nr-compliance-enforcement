@@ -20,7 +20,6 @@ const config = {
   jest: {
     configure: {
       moduleNameMapper: {
-        "@(.*)$": "<rootDir>/src$1",
         "@assets(.*)$": "<rootDir>/src/assets$1",
         "@common(.*)$": "<rootDir>/src/app/common$1",
         "@components(.*)$": "<rootDir>/src/app/components$1",
