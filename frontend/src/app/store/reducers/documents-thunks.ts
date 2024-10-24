@@ -3,7 +3,7 @@ import { RootState } from "../store";
 import config from "../../../config";
 import { format } from "date-fns";
 import axios, { AxiosRequestConfig } from "axios";
-import { AUTH_TOKEN } from "../../service/user-service";
+import { AUTH_TOKEN, getUserAgency } from "../../service/user-service";
 
 //--
 //-- exports a complaint as a pdf document
@@ -12,7 +12,14 @@ export const exportComplaint =
   (type: string, id: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch) => {
     try {
-      const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
+      const agency = getUserAgency();
+      let tailored_filename = "";
+      if (agency != null && agency === "COS") {
+        tailored_filename = `${type}_${id}_${format(new Date(), "yyMMdd")}.pdf`;
+      } else {
+        tailored_filename = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
+      }
+
       const tz: string = encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
       const axiosConfig: AxiosRequestConfig = {
@@ -33,7 +40,7 @@ export const exportComplaint =
       let link = document.createElement("a");
       link.id = "hidden-details-screen-export-complaint";
       link.href = fileURL;
-      link.download = fileName;
+      link.download = tailored_filename;
 
       document.body.appendChild(link);
       link.click();
