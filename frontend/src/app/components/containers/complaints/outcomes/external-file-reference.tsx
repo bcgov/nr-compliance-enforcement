@@ -4,8 +4,8 @@ import { useAppSelector, useAppDispatch } from "../../../../hooks/hooks";
 import { CompInput } from "../../../common/comp-input";
 import { openModal } from "../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
-import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { selectComplaint, updateComplaintById } from "../../../../store/reducers/complaints";
+import { getComplaintType } from "../../../../common/methods";
 
 export const ExternalFileReference: FC = () => {
   const dispatch = useAppDispatch();
@@ -25,6 +25,8 @@ export const ExternalFileReference: FC = () => {
 
   // function for handling the cancel modal
   const cancelConfirmed = () => {
+    resetValidationErrors();
+
     //determine if there is existing data on the complaint, otherwise set to blank
     const refNum = complaintData?.referenceNumber ? complaintData?.referenceNumber : "";
     setReferenceNumber(refNum);
@@ -65,14 +67,19 @@ export const ExternalFileReference: FC = () => {
     return true;
   };
 
+  // Clear out existing validation errors
+  const resetValidationErrors = () => {
+    setReferenceNumberError("");
+  };
+
   // function for handling the save button
   const handleExternalFileReferenceSave = () => {
     if (complaintData && isValid()) {
+      resetValidationErrors();
       let data = { ...complaintData, referenceNumber: referenceNumber };
       setIsEditable(false);
 
-      //TODO need to write a common function to determine the complaint type from the data.
-      let complaintType = COMPLAINT_TYPES.HWCR;
+      let complaintType = getComplaintType(complaintData);
 
       dispatch(updateComplaintById(data, complaintType));
     }

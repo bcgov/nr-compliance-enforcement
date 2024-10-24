@@ -1402,7 +1402,10 @@ export const ComplaintDetailsEdit: FC = () => {
       {/* HWCR Outcome Report and File Linkage */}
       {readOnly && complaintType === COMPLAINT_TYPES.HWCR && (
         <>
-          <HWCROutcomeReport /> <ExternalFileReference />
+          <HWCROutcomeReport />
+          <FeatureFlag feature={FEATURE_TYPES.EXTERNAL_FILE_REFERENCE}>
+            <ExternalFileReference />
+          </FeatureFlag>
         </>
       )}
 
@@ -1410,7 +1413,11 @@ export const ComplaintDetailsEdit: FC = () => {
       {readOnly && complaintType === COMPLAINT_TYPES.ERS && agency === AgencyType.CEEB && <CeebOutcomeReport />}
 
       {/* COS ERS File Linkage */}
-      {readOnly && complaintType === COMPLAINT_TYPES.ERS && agency === AgencyType.COS && <ExternalFileReference />}
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && (
+        <FeatureFlag feature={FEATURE_TYPES.EXTERNAL_FILE_REFERENCE}>
+          <ExternalFileReference />
+        </FeatureFlag>
+      )}
     </div>
   );
 };
