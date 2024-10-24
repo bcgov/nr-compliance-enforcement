@@ -9638,6 +9638,7 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
+
 --
 -- create new xrefs for new enable office feature
 --
@@ -9701,9 +9702,98 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
+
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'COS';
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'PARKS';
 UPDATE feature_agency_xref SET active_ind = true WHERE feature_code = 'METH_FLTR' AND agency_code = 'EPO';
+
+--
+-- create new feature for External Reference
+--
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EXTRNALREF',
+  'Enable External Reference Number',
+  'Enables the ability to display the External Reference Number section on a complaint.',
+  150,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EXTRNALREF',
+  'COS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EXTRNALREF',
+  'PARKS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EXTRNALREF',
+  'EPO',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
 
 
 --------------------------

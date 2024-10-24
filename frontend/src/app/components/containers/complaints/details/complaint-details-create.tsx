@@ -150,6 +150,7 @@ export const CreateComplaint: FC = () => {
       const model: ComplaintDto = {
         id: "",
         webeocId: "",
+        referenceNumber: "",
         details: "",
         name: "",
         address: "",

@@ -388,6 +388,9 @@ export class ComplaintService {
         qb.orWhere("complaint.reported_by_other_text ILIKE :query", {
           query: `%${query}%`,
         });
+        qb.orWhere("complaint.reference_number ILIKE :query", {
+          query: `%${query}%`,
+        });
 
         qb.orWhere("reported_by.short_description ILIKE :query", {
           query: `%${query}%`,

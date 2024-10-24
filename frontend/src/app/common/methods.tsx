@@ -13,6 +13,9 @@ import { fromImage } from "imtool";
 import AttachmentEnum from "../constants/attachment-enum";
 import Option from "../types/app/option";
 import { GirType } from "../types/app/code-tables/gir-type";
+import { WildlifeComplaint as WildlifeComplaintDto } from "../types/app/complaints/wildlife-complaint";
+import { AllegationComplaint as AllegationComplaintDto } from "../types/app/complaints/allegation-complaint";
+import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../types/app/complaints/general-complaint";
 
 type Coordinate = number[] | string[] | undefined;
 
@@ -254,6 +257,26 @@ export const parseCoordinates = (coordinates: Coordinate, coordinateType: Coordi
   return coordinateType === Coordinates.Latitude
     ? coordinates[Coordinates.Latitude]
     : coordinates[Coordinates.Longitude];
+};
+
+// Helper function for determining what type of complaint your are working with
+// so you can pass that type onto the backend for proper processing
+export const getComplaintType = (
+  complaint: WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
+): string => {
+  if ("hwcrId" in complaint) {
+    return COMPLAINT_TYPES.HWCR;
+  }
+
+  if ("ersId" in complaint) {
+    return COMPLAINT_TYPES.ERS;
+  }
+
+  if ("girId" in complaint) {
+    return COMPLAINT_TYPES.GIR;
+  }
+
+  return "Unknown";
 };
 
 export const getComplaintTypeFromUrl = (): number => {

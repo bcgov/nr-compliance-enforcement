@@ -244,6 +244,10 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
       mapFrom((source) => source.webeoc_identifier),
     ),
     forMember(
+      (destination) => destination.referenceNumber,
+      mapFrom((source) => source.reference_number),
+    ),
+    forMember(
       (destination) => destination.complaintMethodReceivedCode,
       mapFrom((source) => {
         const xref = source.comp_mthd_recv_cd_agcy_cd_xref;
@@ -693,6 +697,10 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       mapFrom((source) => source.complaint_identifier.webeoc_identifier),
     ),
     forMember(
+      (destination) => destination.referenceNumber,
+      mapFrom((source) => source.complaint_identifier.reference_number),
+    ),
+    forMember(
       (destination) => destination.complaintMethodReceivedCode,
       mapFrom((source) => {
         const complaintIdentifier = source.complaint_identifier;
@@ -914,6 +922,10 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.webeocId,
       mapFrom((source) => source.complaint_identifier.webeoc_identifier),
+    ),
+    forMember(
+      (destination) => destination.referenceNumber,
+      mapFrom((source) => source.complaint_identifier.reference_number),
     ),
     forMember(
       (destination) => destination.complaintMethodReceivedCode,
@@ -1433,6 +1445,10 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
       mapFrom((source) => source.complaint_identifier.webeoc_identifier),
     ),
     forMember(
+      (destination) => destination.referenceNumber,
+      mapFrom((source) => source.complaint_identifier.reference_number),
+    ),
+    forMember(
       (destination) => destination.complaintMethodReceivedCode,
       mapFrom((source) => {
         const { complaint_identifier } = source;
@@ -1722,6 +1738,10 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     forMember(
       (destination) => destination.webeocId,
       mapFrom((source) => source.complaint_identifier.webeoc_identifier),
+    ),
+    forMember(
+      (destination) => destination.referenceNumber,
+      mapFrom((source) => source.complaint_identifier.reference_number),
     ),
     forMember(
       (destination) => destination.complaintMethodReceivedCode,

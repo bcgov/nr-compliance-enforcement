@@ -22,6 +22,7 @@ export interface ComplaintReportData {
   locationDescription: string;
   description: string;
   webeocId: string;
+  referenceNumber: string;
   complaintMethodReceivedCode: string;
 
   //-- caller information

@@ -127,6 +127,14 @@ export class Complaint {
   webeoc_identifier: string;
 
   @ApiProperty({
+    example: "54321",
+    description:
+      "Allows users to link complaints to files in external systems.   Currently labeled in the system as COORS reference number and initially only used for COORS linkages.",
+  })
+  @Column({ length: 20 })
+  reference_number: string;
+
+  @ApiProperty({
     example: "43.43,-123.55",
     description: "The lat/long point of the complaint",
   })
@@ -235,6 +243,7 @@ export class Complaint {
     cos_geo_org_unit?: CosGeoOrgUnit,
     person_complaint_xref?: PersonComplaintXref[],
     webeoc_identifier?: string,
+    reference_number?: string,
     comp_mthd_recv_cd_agcy_cd_xref?: CompMthdRecvCdAgcyCdXref,
     is_privacy_requested?: string,
   ) {
@@ -263,6 +272,7 @@ export class Complaint {
     this.cos_geo_org_unit = cos_geo_org_unit;
     this.person_complaint_xref = person_complaint_xref;
     this.webeoc_identifier = webeoc_identifier;
+    this.reference_number = reference_number;
     this.comp_mthd_recv_cd_agcy_cd_xref = comp_mthd_recv_cd_agcy_cd_xref;
     this.is_privacy_requested = is_privacy_requested;
   }
