@@ -37,53 +37,6 @@ export const ExternalFileReference: FC = () => {
     }
   };
 
-  // function for popping up the modal
-  const handleExternalFileReferenceCancel = () => {
-    dispatch(
-      openModal({
-        modalSize: "md",
-        modalType: CANCEL_CONFIRM,
-        data: {
-          title: "Cancel changes?",
-          description: "Your changes will be lost.",
-          cancelConfirmed,
-        },
-      }),
-    );
-  };
-
-  // function for form validation
-  const isValid = (): boolean => {
-    if (!referenceNumber) {
-      setReferenceNumberError("COORS number is required.");
-      return false;
-    }
-
-    if (!referenceNumber.match(/^\d{1,20}$/)) {
-      setReferenceNumberError("Invalid format. Please only include numbers.");
-      return false;
-    }
-
-    return true;
-  };
-
-  // Clear out existing validation errors
-  const resetValidationErrors = () => {
-    setReferenceNumberError("");
-  };
-
-  // function for handling the save button
-  const handleExternalFileReferenceSave = () => {
-    if (complaintData && isValid()) {
-      resetValidationErrors();
-      let data = { ...complaintData, referenceNumber: referenceNumber };
-      setIsEditable(false);
-      let complaintType = getComplaintType(complaintData);
-      dispatch(updateComplaintById(data, complaintType));
-      dispatch(getComplaintById(complaintData.id, complaintType));
-    }
-  };
-
   // function for handling the delete  modal
   const deleteConfirmed = () => {
     if (complaintData) {
@@ -91,7 +44,37 @@ export const ExternalFileReference: FC = () => {
       let complaintType = getComplaintType(complaintData);
       dispatch(updateComplaintById(data, complaintType));
       setReferenceNumber("");
-      setIsEditable(true);
+      dispatch(getComplaintById(complaintData.id, complaintType));
+    }
+  };
+
+  // Clear out existing validation errors
+  const resetValidationErrors = () => {
+    setReferenceNumberError("");
+  };
+
+  // function for form validation
+  const isValid = (): boolean => {
+    resetValidationErrors();
+    if (!referenceNumber) {
+      setReferenceNumberError("COORS number is required.");
+      return false;
+    }
+
+    if (!/^\d{1,20}$/.test(referenceNumber)) {
+      setReferenceNumberError("Invalid format. Please only include numbers.");
+      return false;
+    }
+
+    return true;
+  };
+
+  // function for handling the save button
+  const handleExternalFileReferenceSave = () => {
+    if (complaintData && isValid()) {
+      let data = { ...complaintData, referenceNumber: referenceNumber };
+      let complaintType = getComplaintType(complaintData);
+      dispatch(updateComplaintById(data, complaintType));
       dispatch(getComplaintById(complaintData.id, complaintType));
     }
   };
@@ -108,6 +91,21 @@ export const ExternalFileReference: FC = () => {
           ok: "Yes, delete",
           cancel: "No, go back",
           deleteConfirmed,
+        },
+      }),
+    );
+  };
+
+  // function for popping up the modal
+  const handleExternalFileReferenceCancel = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: CANCEL_CONFIRM,
+        data: {
+          title: "Cancel changes?",
+          description: "Your changes will be lost.",
+          cancelConfirmed,
         },
       }),
     );
