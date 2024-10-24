@@ -1,4 +1,3 @@
-import { truncateSync } from "fs";
 import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 
 const complaintTypes = [COMPLAINT_TYPES.HWCR, COMPLAINT_TYPES.ERS];
