@@ -1,6 +1,7 @@
 import { Complaint } from "../../complaint/entities/complaint.entity";
-import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
 import { UUID } from "crypto";
+import { HwcrComplaint } from "src/v1/hwcr_complaint/entities/hwcr_complaint.entity";
 
 @Index("PK_linked_complaint_xref_guid", ["linkedComplaintXrefGuid"], {
   unique: true,
@@ -30,10 +31,10 @@ export class LinkedComplaintXref {
   active_ind: boolean;
 
   @ManyToOne(() => Complaint, (complaint) => complaint.complaint_identifier)
-  @JoinColumn([{ name: "complaint_identifier" }])
+  @JoinColumn([{ name: "complaint_identifier", referencedColumnName: "complaint_identifier" }])
   complaint_identifier: Complaint;
 
   @ManyToOne(() => Complaint, (complaint) => complaint.complaint_identifier)
-  @JoinColumn([{ name: "complaint_identifier" }])
+  @JoinColumn([{ name: "linked_complaint_identifier", referencedColumnName: "complaint_identifier" }])
   linked_complaint_identifier: Complaint;
 }

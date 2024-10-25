@@ -3,7 +3,7 @@ import { Route, BrowserRouter as Router, Routes, useParams } from "react-router-
 
 import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
-import NotAuthorized, { NotFound } from "./components/containers/pages";
+import { NotAuthorized, NotFound } from "./components/containers/pages";
 import { ComplaintDetailsEdit } from "./components/containers/complaints/details/complaint-details-edit";
 import ColorReference, { MiscReference, SpaceReference } from "./components/reference";
 import { ModalComponent as Modal } from "./components/modal/modal";
