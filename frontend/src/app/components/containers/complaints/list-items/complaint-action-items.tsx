@@ -79,6 +79,7 @@ export const ComplaintActionItems: FC<Props> = ({
 
   return (
     <Dropdown
+      id="quick-action-button"
       key={`tt-${complaint_identifier}`}
       drop="start"
       className="comp-action-dropdown"
@@ -103,7 +104,10 @@ export const ComplaintActionItems: FC<Props> = ({
           ],
         }}
       >
-        <Dropdown.Item onClick={openAsignOfficerModal}>
+        <Dropdown.Item
+          id="update-assignee-menu-item"
+          onClick={openAsignOfficerModal}
+        >
           <i
             className="bi bi-person-up"
             id="update-assignee-icon"
