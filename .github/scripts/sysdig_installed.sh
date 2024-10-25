@@ -5,8 +5,8 @@
 # OC_SERVER
 # OC_TOKEN
 set -e # failfast
-if [ -z "$NAMESPACE" ]; then
-    echo "NAMESPACE not set"
+if [ -z "$OC_NAMESPACE" ]; then
+    echo "OC_NAMESPACE not set"
     exit 1
 fi
 if [ -z "$OC_SERVER" ]; then
