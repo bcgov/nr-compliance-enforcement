@@ -338,6 +338,14 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     return hasErrors;
   };
 
+  const determineBorder = (): string => {
+    let cardBorder = showSectionErrors ? "danger" : "default";
+    if (quickClose) {
+      cardBorder = "0";
+    }
+    return cardBorder;
+  };
+
   const assessmentDivClass = `comp-details-form-row ${selectedActionRequired?.value === "Yes" ? "inherit" : "hidden"}`;
 
   return (
@@ -360,12 +368,11 @@ export const HWCRComplaintAssessment: FC<Props> = ({
           )}
         </div>
       )}
-
       <Card
         id="outcome-assessment"
-        border={showSectionErrors ? "danger" : "default"}
+        border={determineBorder()}
       >
-        <Card.Body>
+        <Card.Body className={quickClose ? "p-0" : ""}>
           {showSectionErrors && (
             <div className="section-error-message">
               <BsExclamationCircleFill />
