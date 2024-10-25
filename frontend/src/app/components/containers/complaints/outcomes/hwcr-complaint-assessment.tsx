@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, Alert } from "react-bootstrap";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
@@ -420,9 +420,23 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   />
                 </div>
               </div>
+              {selectedJustification?.value === "DUPLICATE" && !quickClose && (
+                <div className="comp-details-form-row">
+                  <label />
+                  <div className="comp-details-input full-width">
+                    <Alert
+                      variant="warning"
+                      className="comp-complaint-details-alert"
+                    >
+                      <i className="bi bi-info-circle-fill" /> Note that assessing a complaint as duplicate will close
+                      the complaint and link it to the selected complaint.
+                    </Alert>
+                  </div>
+                </div>
+              )}
               {selectedJustification?.value === "DUPLICATE" && (
                 <div
-                  className={`comp-details-form-row`}
+                  className="comp-details-form-row"
                   id="linked-complaint-div"
                 >
                   <label htmlFor="linkedComplaint">Linking current complaint to:</label>
