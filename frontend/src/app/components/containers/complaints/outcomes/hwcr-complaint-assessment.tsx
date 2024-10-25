@@ -197,7 +197,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     setSelectedLinkedComplaint(selectedLinkedComplaint);
     setSelectedAssessmentTypes(selectedAssessmentTypes);
     resetValidationErrors();
-    console.log("assessmentState.date", assessmentState.date);
     setEditable(!assessmentState.date);
 
     if (!selectedOfficer && assigned && officersInAgencyList) {
