@@ -3,7 +3,8 @@ import { RootState } from "../store";
 import config from "../../../config";
 import { format } from "date-fns";
 import axios, { AxiosRequestConfig } from "axios";
-import { AUTH_TOKEN } from "../../service/user-service";
+import { AUTH_TOKEN, getUserAgency } from "../../service/user-service";
+import { AgencyType } from "../../types/app/agency-types";
 
 //--
 //-- exports a complaint as a pdf document
@@ -12,7 +13,31 @@ export const exportComplaint =
   (type: string, id: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch) => {
     try {
-      const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
+      const agency = getUserAgency();
+      let tailored_filename = "";
+      if (agency != null) {
+        switch (agency) {
+          case AgencyType.CEEB: {
+            tailored_filename = `${format(new Date(), "yyyy-MM-dd")} Complaint ${id}.pdf`;
+            break;
+          }
+          case AgencyType.COS:
+          default: {
+            let typeName = type;
+            if (type === "ERS") {
+              typeName = "EC";
+            } else if (type === "HWCR") {
+              typeName = "HWC";
+            }
+            tailored_filename = `${typeName}_${id}_${format(new Date(), "yyMMdd")}.pdf`;
+            break;
+          }
+        }
+      } else {
+        // Can't find any agency information - use previous standard
+        tailored_filename = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
+      }
+
       const tz: string = encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
       const axiosConfig: AxiosRequestConfig = {
@@ -33,7 +58,7 @@ export const exportComplaint =
       let link = document.createElement("a");
       link.id = "hidden-details-screen-export-complaint";
       link.href = fileURL;
-      link.download = fileName;
+      link.download = tailored_filename;
 
       document.body.appendChild(link);
       link.click();
