@@ -1,5 +1,6 @@
 #!/bin/bash
 # Fetches the sysdig team crd and checks at least 1 user is present in the config
+# IMPORTANT NOTE: requires a serviceaccount with get/list on sysdig-team
 # ENV:
 # OC_NAMESPACE
 # OC_SERVER
@@ -23,7 +24,7 @@ oc login --token=$OC_TEMP_TOKEN --server=$OC_SERVER
 oc project $OC_NAMESPACE # Safeguard!
 
 
-sysdig_config=$(oc -n $NAMESPACE get sysdig-team -ojson)
+sysdig_config=$(oc get sysdig-team -n $OC_NAMESPACE -ojson)
 num_users=$(echo $sysdig_config | jq -r '.items[0].spec.team.users | length')
 if [ $num_users -eq 0 ]; then
     echo "No users found in sysdig-team"
