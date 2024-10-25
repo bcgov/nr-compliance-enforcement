@@ -177,6 +177,10 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       } as Option;
     }
 
+    const selectedLinkedComplaint = assessmentState.linked_complaint
+      ? ({ label: assessmentState.linked_complaint.key, value: assessmentState.linked_complaint.value } as Option)
+      : null;
+
     const selectedAssessmentTypes = assessmentState.assessment_type?.map((item) => {
       return {
         label: item.key,
