@@ -42,6 +42,7 @@ jobs:
           STATE_BACKEND_SECRET_KEY: ${{ secrets.STATE_BACKEND_SECRET_KEY }}
           STATE_BACKEND_FILEPATH: ${{ secrets.STATE_BACKEND_FILEPATH }}
           STATE_BACKEND_ENDPOINT: ${{ secrets.STATE_BACKEND_ENDPOINT }}
+          TF_VAR_sysdig_api_token: ${{ secrets.TF_VAR_SYSDIG_API_TOKEN }}
 
   deploy:
     ### if: github.ref == 'refs/heads/main'
@@ -60,3 +61,4 @@ jobs:
           STATE_BACKEND_SECRET_KEY: ${{ secrets.STATE_BACKEND_SECRET_KEY }}
           STATE_BACKEND_FILEPATH: ${{ secrets.STATE_BACKEND_FILEPATH }}
           STATE_BACKEND_ENDPOINT: ${{ secrets.STATE_BACKEND_ENDPOINT }}
+          TF_VAR_sysdig_api_token: ${{ secrets.TF_VAR_SYSDIG_API_TOKEN }}
