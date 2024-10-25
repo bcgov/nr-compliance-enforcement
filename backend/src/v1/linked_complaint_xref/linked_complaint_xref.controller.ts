@@ -20,9 +20,9 @@ export class LinkedComplaintXrefController {
 
   @Get("/:complaint_id")
   @Roles(Role.COS_OFFICER)
-  findLinkedComplaintsById(@Param("complaint_id") complaintId: string) {
-    const res = this.linkedComplaintXrefService.findByComplaintId(complaintId);
-    console.log(res);
-    return res;
+  async findLinkedComplaintsById(@Param("complaint_id") complaintId: string) {
+    const childComplaints = await this.linkedComplaintXrefService.findChildComplaints(complaintId);
+    const parentComplaint = await this.linkedComplaintXrefService.findParentComplaint(complaintId);
+    return { parentComplaint, childComplaints };
   }
 }

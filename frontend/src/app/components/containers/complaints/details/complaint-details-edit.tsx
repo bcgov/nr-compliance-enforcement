@@ -183,7 +183,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
   const [latitude, setLatitude] = useState<string>("0");
   const [longitude, setLongitude] = useState<string>("0");
-  const [linkedComplaintData, setLinkedComplaintData] = useState();
+  const [linkedComplaintData, setLinkedComplaintData] = useState([]);
 
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
 
@@ -196,7 +196,12 @@ export const ComplaintDetailsEdit: FC = () => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/linked-complaint-xref/${complaintId}`);
     const response: any = await get(dispatch, parameters);
     if (response) {
-      setLinkedComplaintData(response);
+      const { childComplaints, parentComplaint } = response;
+      if (childComplaints.length > 0) {
+        setLinkedComplaintData(response.childComplaints);
+      } else if (parentComplaint.length > 0) {
+        setLinkedComplaintData(response.parentComplaint);
+      }
     }
   };
 
@@ -228,9 +233,11 @@ export const ComplaintDetailsEdit: FC = () => {
   }, [coordinates]);
 
   useEffect(() => {
-    getLinkedComplaints(id);
-  }, [id]);
-  console.log(linkedComplaintData);
+    //getLinkedComplaints api only applies for hwcr, for now
+    if (complaintType === "HWCR") {
+      getLinkedComplaints(id);
+    }
+  }, [id, complaintType]);
 
   //-- events
   const editButtonClick = () => {
@@ -755,7 +762,9 @@ export const ComplaintDetailsEdit: FC = () => {
       <section className="comp-details-body comp-container">
         <hr className="comp-details-body-spacer"></hr>
 
-        {readOnly && <LinkedComplaintList complaintIdentifier={id} />}
+        {readOnly && linkedComplaintData.length > 0 && (
+          <LinkedComplaintList linkedComplaintData={linkedComplaintData} />
+        )}
         {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
 
         <div className="comp-details-section-header">
