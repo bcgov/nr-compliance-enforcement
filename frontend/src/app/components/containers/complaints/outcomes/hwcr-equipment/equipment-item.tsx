@@ -1,7 +1,7 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Card, Button, Badge } from "react-bootstrap";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { formatDate } from "../../../../../common/methods";
+import { formatDate, latLngToUtm } from "../../../../../common/methods";
 
 import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-modal";
 import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
@@ -23,6 +23,21 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
   const dispatch = useAppDispatch();
 
   const [showModal, setShowModal] = useState(false);
+
+  const [easting, setEasting] = useState<string>("");
+  const [northing, setNorthing] = useState<string>("");
+  const [utmZone, setUtmZone] = useState<string>("");
+
+  useEffect(() => {
+    const {
+      easting: eastingValue,
+      northing: northingValue,
+      zone: zoneValue,
+    } = latLngToUtm(equipment.yCoordinate, equipment.xCoordinate);
+    setEasting(eastingValue);
+    setNorthing(northingValue);
+    setUtmZone(zoneValue);
+  }, [equipment.yCoordinate, equipment.xCoordinate]);
 
   const handleEdit = (equipment: EquipmentDetailsDto) => {
     if (equipment.id) {
@@ -136,13 +151,33 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
               <dd>{equipment.address}</dd>
             </div>
             <div>
-              <dt>Latitude/Longitude</dt>
-              <dd>
-                {equipment.yCoordinate && equipment.xCoordinate
-                  ? `${equipment.yCoordinate}, ${equipment.xCoordinate}`
-                  : ""}
+              <dt>Coordinates</dt>
+              <dd>Latitude: {equipment.yCoordinate ? `${equipment.yCoordinate}` : ""}</dd>
+            </div>
+            <div>
+              <dt></dt>
+              <dd>Longtitude: {equipment.xCoordinate ? `${equipment.xCoordinate}` : ""}</dd>
+            </div>
+            <br />
+            <div>
+              <dt></dt>
+              <dd className="comp-lat-long">
+                <span id="call-details-easting">Eeasting: {easting}</span>
               </dd>
             </div>
+            <div>
+              <dt></dt>
+              <dd className="comp-lat-long">
+                <span id="call-details-northing">Northing: {northing}</span>
+              </dd>
+            </div>
+            <div>
+              <dt></dt>
+              <dd className="comp-lat-long">
+                <span id="call-details-northing">Zone: {utmZone}</span>
+              </dd>
+            </div>
+            <br />
             <div>
               <dt>Set by</dt>
               <dd>

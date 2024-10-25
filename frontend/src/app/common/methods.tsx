@@ -13,6 +13,7 @@ import { fromImage } from "imtool";
 import AttachmentEnum from "../constants/attachment-enum";
 import Option from "../types/app/option";
 import { GirType } from "../types/app/code-tables/gir-type";
+let utmObj = require("utm-latlng");
 
 type Coordinate = number[] | string[] | undefined;
 
@@ -229,6 +230,15 @@ export const bcBoundaries = {
   maxLongitude: -114.0337,
 };
 
+export const bcUtmBoundaries = {
+  minEasting: 280220.6,
+  maxEasting: 720184.9,
+  minNorthing: 5346051.7,
+  maxNorthing: 6655120.8,
+};
+
+export const bcUtmZoneNumbers = ["7", "8", "9", "10", "11"];
+
 // given coordinates, return true if within BC or false if not within BC
 export const isWithinBC = (coordinates: Coordinate): boolean => {
   if (!coordinates) {
@@ -401,3 +411,26 @@ export const getThumbnailDataURL = async (file: File): Promise<string> => {
 export function isPositiveNum(number: string) {
   return !isNaN(Number(number)) && Number(number) >= 0;
 }
+
+export const formatLatLongCoordinate = (input: string | undefined): string | undefined => {
+  const regex = /^-?\d*\.?\d*$/;
+  let result = input;
+  if (regex.exec(input ?? "")) {
+    result = input ? Number(Number(input).toFixed(7)).toString() : "";
+  }
+  return result;
+};
+
+export const latLngToUtm = (lat: string, lng: string): { easting: string; northing: string; zone: string } => {
+  const regex = /^-?\d*\.?\d*$/;
+  if (regex.exec(lat) && regex.exec(lng) && ![lat, lng].includes("0")) {
+    let utm = new utmObj();
+    const utmCoordinates = utm.convertLatLngToUtm(lat, lng, 3);
+    return {
+      easting: utmCoordinates.Easting.toFixed(0),
+      northing: utmCoordinates.Northing.toFixed(0),
+      zone: utmCoordinates.ZoneNumber ?? "",
+    };
+  }
+  return { easting: "", northing: "", zone: "" };
+};

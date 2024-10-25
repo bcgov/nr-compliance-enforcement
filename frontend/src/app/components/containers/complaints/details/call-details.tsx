@@ -1,7 +1,7 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Badge, Card } from "react-bootstrap";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { formatDate, formatTime, renderCoordinates } from "../../../../common/methods";
+import { formatDate, formatTime, renderCoordinates, latLngToUtm } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import { ComplaintDetailsAttractant } from "../../../../types/complaints/details/complaint-attactant";
 import { selectComplaintDetails } from "../../../../store/reducers/complaints";
@@ -30,6 +30,24 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
     violationObserved,
     complaintMethodReceivedCode,
   } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
+
+  const [easting, setEasting] = useState<string>("");
+  const [northing, setNorthing] = useState<string>("");
+  const [utmZone, setUtmZone] = useState<string>("");
+
+  useEffect(() => {
+    const {
+      easting: eastingValue,
+      northing: northingValue,
+      zone: zoneValue,
+    } = latLngToUtm(
+      coordinates ? coordinates[Coordinates.Latitude].toString() : "",
+      coordinates ? coordinates[Coordinates.Longitude].toString() : "",
+    );
+    setEasting(eastingValue);
+    setNorthing(northingValue);
+    setUtmZone(zoneValue);
+  }, [coordinates]);
 
   return (
     <section className="comp-details-section">
@@ -114,12 +132,41 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
               <dd id="comp-details-location-description">{locationDescription}</dd>
             </div>
             <div>
-              <dt>Latitude/Longitude</dt>
+              <dt>Coordinates</dt>
               <dd className="comp-lat-long">
-                <span id="call-details-y-coordinate">{renderCoordinates(coordinates, Coordinates.Latitude)}</span>
-                <span id="call-details-x-coordinate">{renderCoordinates(coordinates, Coordinates.Longitude)}</span>
+                <span id="call-details-y-coordinate">
+                  Latitude: {renderCoordinates(coordinates, Coordinates.Latitude)}
+                </span>
               </dd>
             </div>
+            <div>
+              <dt></dt>
+              <dd className="comp-lat-long">
+                <span id="call-details-x-coordinate">
+                  Longtitude: {renderCoordinates(coordinates, Coordinates.Longitude)}
+                </span>
+              </dd>
+            </div>
+            <br />
+            <div>
+              <dt></dt>
+              <dd className="comp-lat-long">
+                <span id="call-details-easting">Eeasting: {easting}</span>
+              </dd>
+            </div>
+            <div>
+              <dt></dt>
+              <dd className="comp-lat-long">
+                <span id="call-details-northing">Northing: {northing}</span>
+              </dd>
+            </div>
+            <div>
+              <dt></dt>
+              <dd className="comp-lat-long">
+                <span id="call-details-northing">Zone: {utmZone}</span>
+              </dd>
+            </div>
+            <br />
           </dl>
 
           {/* Other Location Details */}

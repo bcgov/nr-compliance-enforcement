@@ -611,7 +611,7 @@
 
     & span:first-of-type {
       &::after {
-        content: ",";
+        // content: ",";
         display: inline-block;
       }
     }
@@ -1886,4 +1886,8 @@ p {
 .form-check-input:disabled {
   cursor: not-allowed;
   pointer-events: all;
+}
+
+.coordinate-zone-select .comp-select__control {
+  min-width: auto;
 }

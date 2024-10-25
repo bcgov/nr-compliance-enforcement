@@ -13,13 +13,12 @@ import {
 } from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
 import { ToggleError } from "../../../../../common/toast";
-import { bcBoundaries, getSelectedItem } from "../../../../../common/methods";
+import { bcUtmZoneNumbers, getSelectedItem } from "../../../../../common/methods";
 
 import Option from "../../../../../types/app/option";
 import { Officer } from "../../../../../types/person/person";
 
 import "react-toastify/dist/ReactToastify.css";
-import { Coordinates } from "../../../../../types/app/coordinate-type";
 import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
 import { openModal } from "../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
@@ -29,6 +28,8 @@ import { CASE_ACTION_CODE } from "../../../../../constants/case_actions";
 import { upsertEquipment } from "../../../../../store/reducers/case-thunks";
 import { CompRadioGroup } from "../../../../common/comp-radiogroup";
 import { BsExclamationCircleFill } from "react-icons/bs";
+import { CompCoordinateInput } from "../../../../common/comp-coordinate-input";
+import { formatLatLongCoordinate } from "../../../../../common/methods";
 
 export interface EquipmentFormProps {
   equipment?: EquipmentDetailsDto;
@@ -116,55 +117,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     });
     setWasAnimalCaptured(equipment?.wasAnimalCaptured ?? "U");
   }, [equipment]);
-
-  const handleCoordinateChange = (input: string, type: Coordinates) => {
-    if (type === Coordinates.Latitude) {
-      setYCoordinate(input);
-      if (xCoordinate) {
-        handleGeoPointChange(input, xCoordinate);
-      }
-    } else {
-      setXCoordinate(input);
-      if (yCoordinate) {
-        handleGeoPointChange(yCoordinate, input);
-      }
-    }
-  };
-
-  const handleGeoPointChange = async (latitude: string, longitude: string) => {
-    setYCoordinateErrorMsg("");
-    setXCoordinateErrorMsg("");
-    const regex = /^[a-zA-Z]+$/;
-    let hasErrors = false;
-    if (regex.exec(latitude)) {
-      setYCoordinateErrorMsg("Value must be a number");
-      hasErrors = true;
-    }
-    if (regex.exec(longitude)) {
-      setXCoordinateErrorMsg("Value must be a number");
-      hasErrors = true;
-    }
-    if (latitude && !Number.isNaN(latitude)) {
-      const item = parseFloat(latitude);
-      if (item > bcBoundaries.maxLatitude || item < bcBoundaries.minLatitude) {
-        setYCoordinateErrorMsg(
-          `Value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`,
-        );
-        hasErrors = true;
-      }
-    }
-
-    if (longitude && !Number.isNaN(longitude)) {
-      const item = parseFloat(longitude);
-      if (item > bcBoundaries.maxLongitude || item < bcBoundaries.minLongitude) {
-        setXCoordinateErrorMsg(
-          `Value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`,
-        );
-        hasErrors = true;
-      }
-    }
-    setCoordinateErrorsInd(hasErrors);
-  };
 
   // Reset error messages
   const resetValidationErrors = () => {
@@ -275,8 +227,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         typeCode: type.value,
         activeIndicator: true,
         address: address,
-        xCoordinate: xCoordinate,
-        yCoordinate: yCoordinate,
+        xCoordinate: formatLatLongCoordinate(xCoordinate),
+        yCoordinate: formatLatLongCoordinate(yCoordinate),
         actions: actions,
         wasAnimalCaptured: wasAnimalCaptured,
       } as EquipmentDetailsDto;
@@ -337,6 +289,15 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     if (!trapEquipment.includes(type?.value ?? "")) {
       setWasAnimalCaptured("U");
     }
+  };
+
+  const syncCoordinates = (yCoordinate: string | undefined, xCoordinate: string | undefined) => {
+    setXCoordinate(xCoordinate);
+    setYCoordinate(yCoordinate);
+  };
+
+  const throwError = (hasError: boolean) => {
+    setCoordinateErrorsInd(hasError);
   };
 
   return (
@@ -419,87 +380,19 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               </div>
             </div>
 
-            {/* COORDINATES */}
-            <fieldset className="comp-details-form-row">
-              <legend>Latitude / Longitude</legend>
-              <div
-                id="equipment-coordinate-div"
-                className="comp-details-input full-width"
-              >
-                <div className="comp-lat-long-input">
-                  <div>
-                    <input
-                      placeholder="Latitude"
-                      aria-label="Latitude"
-                      type="text"
-                      id="equipment-y-coordinate"
-                      className={yCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
-                      onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
-                      value={yCoordinate ?? ""}
-                      maxLength={120}
-                    />
-                    <label
-                      className="comp-form-label-below"
-                      htmlFor="equipment-y-coordinate"
-                      hidden
-                    >
-                      Latitude
-                    </label>
-                  </div>
-                  <div>
-                    <input
-                      placeholder="Longitude"
-                      aria-label="Longitude"
-                      type="text"
-                      id="equipment-x-coordinate"
-                      className={xCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
-                      onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
-                      value={xCoordinate ?? ""}
-                      maxLength={120}
-                    />
-                    <label
-                      className="comp-form-label-below"
-                      htmlFor="equipment-x-coordinate"
-                      hidden
-                    >
-                      Longitude
-                    </label>
-                  </div>
-                </div>
-                <div className="error-message">{yCoordinateErrorMsg}</div>
-                <div className="error-message">{xCoordinateErrorMsg}</div>
-                {hasCoordinates && (
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    className="btn-txt svg-icon mt-2"
-                    id="equipment-copy-coordinates-button"
-                    onClick={() => {
-                      const xCoordinate = complaintData?.location?.coordinates[0].toString() ?? "";
-                      const yCoordinate = complaintData?.location?.coordinates[1].toString() ?? "";
-                      setXCoordinate(xCoordinate);
-                      setYCoordinate(yCoordinate);
-                      handleGeoPointChange(yCoordinate, xCoordinate);
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="bi bi-copy"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"
-                      />
-                    </svg>
-                    <span>Copy coordinates from complaint details</span>
-                  </Button>
-                )}
-              </div>
-            </fieldset>
+            <CompCoordinateInput
+              id="equipment-coordinates"
+              utmZones={bcUtmZoneNumbers.map((zone: string) => {
+                return { value: zone, label: zone } as Option;
+              })}
+              initXCoordinate={equipment?.xCoordinate}
+              initYCoordinate={equipment?.yCoordinate}
+              syncCoordinates={syncCoordinates}
+              throwError={throwError}
+              sourceXCoordinate={complaintData?.location?.coordinates[0].toString() ?? ""}
+              sourceYCoordinate={complaintData?.location?.coordinates[1].toString() ?? ""}
+              enableCopyCoordinates={true}
+            />
 
             {/* SET BY */}
             <div
