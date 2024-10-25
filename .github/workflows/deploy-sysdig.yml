@@ -53,8 +53,8 @@ jobs:
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
-      - name: Validate Sysdig Terraform
-        run: APPLY=false ./.github/scripts/sysdig_deploy.sh
+      - name: Apply Sysdig Terraform
+        run: APPLY=true ./.github/scripts/sysdig_deploy.sh
         env:
           STATE_BACKEND_BUCKET: ${{ secrets.STATE_BACKEND_BUCKET }}
           STATE_BACKEND_ACCESS_KEY: ${{ secrets.STATE_BACKEND_ACCESS_KEY }}
