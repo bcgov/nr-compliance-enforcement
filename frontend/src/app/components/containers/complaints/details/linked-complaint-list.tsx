@@ -49,6 +49,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData }) => {
             style={{ display: `${index > 4 && !viewMore ? "none" : "flex"}` }}
             key={data.id}
             onClick={() => toggleExpand(data.id)}
+            onKeyDown={() => toggleExpand(data.id)}
           >
             <div className="item-header">
               <div className="item-link">
@@ -98,6 +99,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData }) => {
       <div
         className="viewMore"
         onClick={toggleViewMore}
+        onKeyDown={toggleViewMore}
       >
         {linkedComplaintData.length > 5 ? (
           !viewMore ? (
