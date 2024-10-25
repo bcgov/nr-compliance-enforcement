@@ -4,6 +4,7 @@ import config from "../../../config";
 import { format } from "date-fns";
 import axios, { AxiosRequestConfig } from "axios";
 import { AUTH_TOKEN, getUserAgency } from "../../service/user-service";
+import { AgencyType } from "../../types/app/agency-types";
 
 //--
 //-- exports a complaint as a pdf document
@@ -16,11 +17,11 @@ export const exportComplaint =
       let tailored_filename = "";
       if (agency != null) {
         switch (agency) {
-          case "CEEB": {
+          case AgencyType.CEEB: {
             tailored_filename = `${format(new Date(), "yyyy-MM-dd")} Complaint ${id}.pdf`;
             break;
           }
-          case "COS":
+          case AgencyType.COS:
           default: {
             let typeName = type;
             if (type === "ERS") {
