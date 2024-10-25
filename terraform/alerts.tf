@@ -8,12 +8,6 @@ resource "sysdig_monitor_alert_v2_metric" "all_containers_high_cpu" {
   threshold = 80
   group_by = ["container_name"]
 
-  scope {
-    label = "kube_cluster_name"
-    operator = "in"
-    values = ["c1c7ed-test", "c1c7ed-prod"]
-  }
-
   notification_channels {
     id = sysdig_monitor_notification_channel_email.general_alerts.id
     renotify_every_minutes = 120
