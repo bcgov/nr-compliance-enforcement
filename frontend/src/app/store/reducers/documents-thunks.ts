@@ -14,9 +14,26 @@ export const exportComplaint =
     try {
       const agency = getUserAgency();
       let tailored_filename = "";
-      if (agency != null && agency === "COS") {
-        tailored_filename = `${type}_${id}_${format(new Date(), "yyMMdd")}.pdf`;
+      if (agency != null) {
+        switch (agency) {
+          case "CEEB": {
+            tailored_filename = `${format(new Date(), "yyyy-MM-dd")} Complaint ${id}.pdf`;
+            break;
+          }
+          case "COS":
+          default: {
+            let typeName = type;
+            if (type === "ERS") {
+              typeName = "EC";
+            } else if (type === "HWCR") {
+              typeName = "HWC";
+            }
+            tailored_filename = `${typeName}_${id}_${format(new Date(), "yyMMdd")}.pdf`;
+            break;
+          }
+        }
       } else {
+        // Can't find any agency information - use previous standard
         tailored_filename = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
       }
 
