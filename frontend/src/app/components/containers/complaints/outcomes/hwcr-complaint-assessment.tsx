@@ -1,52 +1,48 @@
 import { FC, useEffect, useState } from "react";
-import Option from "../../../../types/app/option";
 import { Button, Card } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectOfficerListByAgency, selectOfficersByAgency } from "../../../../store/reducers/officer";
+import Option from "@apptypes/app/option";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
 import {
   getComplaintById,
   selectComplaint,
   selectComplaintCallerInformation,
   selectComplaintHeader,
   selectComplaintAssignedBy,
-} from "../../../../store/reducers/complaints";
+} from "@store/reducers/complaints";
 import {
   selectAssessmentTypeCodeDropdown,
   selectJustificationCodeDropdown,
   selectYesNoCodeDropdown,
-} from "../../../../store/reducers/code-table";
-import { useParams } from "react-router-dom";
-import { formatDate, getSelectedOfficer } from "../../../../common/methods";
-import { CompSelect } from "../../../common/comp-select";
-import { ValidationCheckboxGroup } from "../../../../common/validation-checkbox-group";
-import { resetAssessment, setIsInEdit } from "../../../../store/reducers/cases";
-import { openModal } from "../../../../store/reducers/app";
-import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
-import { ToggleError } from "../../../../common/toast";
+} from "@store/reducers/code-table";
+import { formatDate, getSelectedOfficer } from "@common/methods";
+import { CompSelect } from "@components/common/comp-select";
+import { ValidationCheckboxGroup } from "@common/validation-checkbox-group";
+import { resetAssessment, setIsInEdit } from "@store/reducers/cases";
+import { openModal } from "@store/reducers/app";
+import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { ToggleError } from "@common/toast";
 import "react-toastify/dist/ReactToastify.css";
-import { Assessment } from "../../../../types/outcomes/assessment";
-import { ValidationDatePicker } from "../../../../common/validation-date-picker";
+import { Assessment } from "@apptypes/outcomes/assessment";
+import { ValidationDatePicker } from "@common/validation-date-picker";
 import { BsExclamationCircleFill } from "react-icons/bs";
 
-import "../../../../../assets/sass/hwcr-assessment.scss";
-import { selectAssessment } from "../../../../store/reducers/case-selectors";
-import { getAssessment, upsertAssessment } from "../../../../store/reducers/case-thunks";
-import { OptionLabels } from "../../../../constants/option-labels";
+import "@assets/sass/hwcr-assessment.scss";
+import { selectAssessment } from "@store/reducers/case-selectors";
+import { getAssessment, upsertAssessment } from "@store/reducers/case-thunks";
+import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
 
-type Props = { handleSave?: () => void; showHeader?: boolean; quickClose?: boolean };
+type Props = { id: string; complaintType: string; handleSave?: () => void; showHeader?: boolean; quickClose?: boolean };
 
 export const HWCRComplaintAssessment: FC<Props> = ({
+  id,
+  complaintType,
   handleSave = () => {},
   showHeader = false,
   quickClose = false,
 }) => {
   const dispatch = useAppDispatch();
-  type ComplaintParams = {
-    id: string;
-    complaintType: string;
-  };
-  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
   const [selectedJustification, setSelectedJustification] = useState<Option | null>();
   const [selectedLinkedComplaint, setSelectedLinkedComplaint] = useState<Option | null>();
@@ -197,6 +193,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     setSelectedLinkedComplaint(selectedLinkedComplaint);
     setSelectedAssessmentTypes(selectedAssessmentTypes);
     resetValidationErrors();
+    console.log("assessmentState.date", assessmentState.date);
     setEditable(!assessmentState.date);
 
     if (!selectedOfficer && assigned && officersInAgencyList) {
@@ -219,8 +216,8 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     }
   };
 
-  const justificationLabelClass = selectedActionRequired?.value === "No" ? "visible" : "hidden";
-  const justificationEditClass = selectedActionRequired?.value === "No" ? "visible" : "hidden";
+  const justificationLabelClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
+  const justificationEditClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
 
   const cancelConfirmed = () => {
     populateAssessmentUI();
@@ -324,7 +321,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       hasErrors = true;
     }
 
-    console.log(selectedLinkedComplaintStatus);
     if (selectedJustification?.value === "DUPLICATE") {
       if (!selectedLinkedComplaint) {
         setLinkedComplaintErrorMessage("Required when Justification is Duplicate");
@@ -339,7 +335,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     return hasErrors;
   };
 
-  const assessmentDivClass = `comp-details-form-row ${selectedActionRequired?.value === "Yes" ? "visible" : "hidden"}`;
+  const assessmentDivClass = `comp-details-form-row ${selectedActionRequired?.value === "Yes" ? "inherit" : "hidden"}`;
 
   return (
     <section className="comp-details-section comp-outcome-report-complaint-assessment">

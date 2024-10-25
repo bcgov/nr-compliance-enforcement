@@ -1,8 +1,56 @@
-import { FC } from "react";
-import { Modal } from "react-bootstrap";
-import { useAppSelector } from "../../../hooks/hooks";
-import { selectModalData } from "../../../store/reducers/app";
+import { FC, memo } from "react";
+import { Modal, Spinner, Alert, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { useAppSelector } from "@hooks/hooks";
+import { selectModalData, isLoading } from "@store/reducers/app";
+import { selectComplaint } from "@store/reducers/complaints";
+import { selectAssessment } from "@store/reducers/case-selectors";
 import { HWCRComplaintAssessment } from "@components/containers/complaints/outcomes/hwcr-complaint-assessment";
+
+const ModalLoading: FC = memo(() => (
+  <div className="modal-loader">
+    <div className="comp-overlay-content d-flex align-items-center justify-content-center">
+      <Spinner
+        animation="border"
+        role="loading"
+        id="modal-loader"
+      />
+    </div>
+  </div>
+));
+
+type AssessedOrClosedAlertProps = {
+  alreadyAssessed: boolean;
+  isClosed: boolean;
+  complaint_identifier: string;
+  close: () => void;
+};
+const AssessedOrClosedAlert: FC<AssessedOrClosedAlertProps> = memo(
+  ({ isClosed, alreadyAssessed, complaint_identifier, close }) =>
+    alreadyAssessed || isClosed ? (
+      <Alert
+        variant="warning"
+        className="comp-complaint-details-alert"
+        id={`complaint-unmapped-notification`}
+      >
+        <div>
+          <i className="bi bi-info-circle-fill"></i>
+          <span>
+            {isClosed ? " This complaint is already closed. " : " This complaint has already been assessed. "}
+          </span>
+          <Link
+            to={`/complaint/HWCR/${complaint_identifier}`}
+            id={complaint_identifier}
+            onClick={close}
+          >
+            View its full details for more information.
+          </Link>
+        </div>
+      </Alert>
+    ) : (
+      <></>
+    ),
+);
 
 type QuickCloseModalProps = {
   close: () => void;
@@ -11,11 +59,17 @@ type QuickCloseModalProps = {
   zone: string;
   agency: string;
 };
-
-// A modal dialog containing a list of officers in the current user's zone.  Used to select an officer to assign to a complaint.
 export const QuickCloseModal: FC<QuickCloseModalProps> = ({ close, submit, complaint_type, zone, agency }) => {
+  // Selectors
+  const complaintData = useAppSelector(selectComplaint);
+  const assessmentData = useAppSelector(selectAssessment);
+  const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
-  const { title } = modalData;
+  const { title, complaint_identifier } = modalData;
+
+  // Vars
+  const alreadyAssessed = assessmentData?.date !== undefined;
+  const isClosed = complaintData?.status === "CLOSED";
 
   return (
     <>
@@ -25,12 +79,35 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({ close, submit, compl
         </Modal.Header>
       )}
       <Modal.Body>
-        <HWCRComplaintAssessment
-          showHeader={false}
-          handleSave={submit}
-          quickClose={true}
-        />
+        {loading && <ModalLoading />}
+        {!loading && (
+          <AssessedOrClosedAlert
+            isClosed={isClosed}
+            alreadyAssessed={alreadyAssessed}
+            complaint_identifier={complaint_identifier}
+            close={close}
+          />
+        )}
+        <div style={{ visibility: loading ? "hidden" : "inherit", display: alreadyAssessed ? "none" : "inherit" }}>
+          <HWCRComplaintAssessment
+            id={complaint_identifier}
+            complaintType={complaint_type}
+            showHeader={false}
+            handleSave={submit}
+            quickClose={true}
+          />
+        </div>
       </Modal.Body>
+      {(alreadyAssessed || isClosed) && (
+        <Modal.Footer>
+          <Button
+            variant="outline-primary"
+            onClick={close}
+          >
+            Close
+          </Button>
+        </Modal.Footer>
+      )}
     </>
   );
 };

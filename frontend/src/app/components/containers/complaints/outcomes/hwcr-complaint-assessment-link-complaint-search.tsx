@@ -23,6 +23,7 @@ type HintProps = {
   hintText: string;
 };
 
+// To override the hintText value, from react-bootstrap-typeahead docs
 const CustomHint = ({ children, className, hintText }: HintProps) => {
   const { hintRef } = useHint();
 
@@ -140,7 +141,7 @@ export const HWCRComplaintAssessmentLinkComplaintSearch: FC<Props> = ({
         renderMenuItemChildren={(option: any, props: any) => (
           <>
             <div>
-              <Highlighter search={props.text}>{`Incident #${option.id}`}</Highlighter>{" "}
+              <Highlighter search={props.text}>{`Complaint #${option.id}`}</Highlighter>{" "}
               <Badge bg="species-badge comp-species-badge">{getSpecies(option.species)}</Badge>{" "}
               <div className={`badge ${applyStatusClass(option.status)}`}>{getStatusDescription(option.status)}</div>
             </div>

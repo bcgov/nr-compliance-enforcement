@@ -90,6 +90,7 @@ export const getAssessment =
 export const upsertAssessment =
   (complaintIdentifier: string, assessment: Assessment): AppThunk =>
   async (dispatch) => {
+    console.log(complaintIdentifier, assessment);
     if (!assessment) {
       return;
     }
@@ -104,6 +105,7 @@ export const upsertAssessment =
 const addAssessment =
   (complaintIdentifier: string, assessment: Assessment): AppThunk =>
   async (dispatch, getState) => {
+    console.log(complaintIdentifier, assessment);
     const {
       codeTables: { "assessment-type": assessmentType },
       officers: { officers },
@@ -127,6 +129,7 @@ const addAssessment =
             };
           }),
           actionJustificationCode: assessment.justification?.value,
+          actionLinkedComplaintIdentifier: assessment.linked_complaint?.value,
         },
       },
     } as CreateAssessmentInput;

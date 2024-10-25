@@ -1,10 +1,10 @@
 import { FC } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { isFeatureActive, openModal } from "../../../../store/reducers/app";
-import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "../../../../types/modal/modal-types";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { isFeatureActive, openModal } from "@store/reducers/app";
+import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "@apptypes/modal/modal-types";
 import { Dropdown } from "react-bootstrap";
-import { getAssessment } from "../../../../store/reducers/case-thunks";
-import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
+import { getAssessment } from "@store/reducers/case-thunks";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
 type Props = {
   complaint_identifier: string;
@@ -81,6 +81,7 @@ export const ComplaintActionItems: FC<Props> = ({
     <Dropdown
       key={`tt-${complaint_identifier}`}
       drop="start"
+      className="comp-action-dropdown"
     >
       <Dropdown.Toggle
         id={`tt-${complaint_identifier}`}
