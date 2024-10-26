@@ -67,11 +67,11 @@ describe("Complaint Create Page spec - Enter Coordinates - Create View", () => {
 
     cy.selectItemById("reported-select-id", createCallerInformation.reported);
 
-    cy.get("#comp-details-edit-x-coordinate-input").click({ force: true });
-    cy.get("#comp-details-edit-x-coordinate-input").clear().type(createCallDetails.xCoord);
+    cy.get("#input-x-coordinate").click({ force: true });
+    cy.get("#input-x-coordinate").clear().type(createCallDetails.xCoord);
 
-    cy.get("#comp-details-edit-y-coordinate-input").click({ force: true });
-    cy.get("#comp-details-edit-y-coordinate-input").clear().type(createCallDetails.yCoord);
+    cy.get("#input-y-coordinate").click({ force: true });
+    cy.get("#input-y-coordinate").clear().type(createCallDetails.yCoord);
 
     cy.get("#complaint-location-description-textarea-id").click({
       force: true,

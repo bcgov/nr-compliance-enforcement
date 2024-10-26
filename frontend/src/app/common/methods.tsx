@@ -417,6 +417,9 @@ export const formatLatLongCoordinate = (input: string | undefined): string | und
   let result = input;
   if (regex.exec(input ?? "")) {
     result = input ? Number(Number(input).toFixed(7)).toString() : "";
+    if (input && input.endsWith(".")) {
+      result = result + ".";
+    }
   }
   return result;
 };
