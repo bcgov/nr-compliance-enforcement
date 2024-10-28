@@ -2,8 +2,6 @@ import { Delegate } from "../people/delegate";
 import { BaseComplaint } from "nrs-ce-common-types";
 
 export interface Complaint extends BaseComplaint {
-  reportedByOther: string;
-  incidentDateTime?: Date;
   organization: {
     area: string;
     areaName?: string;
