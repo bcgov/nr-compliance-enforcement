@@ -209,6 +209,7 @@
             <parent column="comp_mthd_recv_cd_agcy_cd_xref_guid" foreignKey="complaint_comp_mthd_recv_cd_agcy_cd_xref_fk" implied="false" onDeleteCascade="false" schema="public" table="comp_mthd_recv_cd_agcy_cd_xref"/>
          </column>
          <column autoUpdated="false" defaultValue="'U'::bpchar" digits="0" id="24" name="is_privacy_requested" nullable="true" remarks="flag to represent that the caller has asked for special care when handling their personal information" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="25" name="reference_number" nullable="true" remarks="Allows users to link complaints to files in external systems.   Currently labeled in the system as COORS reference number and initially only used for COORS linkages." size="20" type="varchar" typeCode="12"/>
          <primaryKey column="complaint_identifier" sequenceNumberInPK="1"/>
          <index name="PK_complaint" unique="true">
             <column ascending="true" name="complaint_identifier"/>
