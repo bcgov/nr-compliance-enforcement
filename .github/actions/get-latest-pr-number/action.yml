@@ -25,7 +25,7 @@ runs:
         release_branch="${{ github.event.pull_request.head.ref }}"
         echo "Detected release branch: $release_branch"
 
-        latest_pr=$(git log origin/$release_branch --merges --pretty=format:'%s' | grep -oP '(?<=#)\d+' | head -n 1)
+        latest_pr=$(git log origin/$release_branch --pretty=format:'%s' | grep -oP '(?<=#)\d+' | head -n 1)
 
         if [ -z "$latest_pr" ]; then
           echo "No merged PR found on $release_branch"
