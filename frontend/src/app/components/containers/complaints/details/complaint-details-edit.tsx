@@ -195,15 +195,10 @@ export const ComplaintDetailsEdit: FC = () => {
 
   //-- api calls
   const getLinkedComplaints = async (complaintId: string) => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/linked-complaint-xref/${complaintId}`);
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/linked-complaints/${complaintId}`);
     const response: any = await get(dispatch, parameters);
-    if (response) {
-      const { childComplaints, parentComplaint } = response;
-      if (childComplaints.length > 0) {
-        setLinkedComplaintData(response.childComplaints);
-      } else if (parentComplaint.length > 0) {
-        setLinkedComplaintData(response.parentComplaint);
-      }
+    if (response && response.length > 0) {
+      setLinkedComplaintData(response);
     }
   };
 

@@ -9,11 +9,9 @@ import { Complaint } from "../complaint/entities/complaint.entity";
 @Injectable()
 export class LinkedComplaintXrefService {
   @InjectRepository(LinkedComplaintXref)
-  private linkedComplaintXrefRepository: Repository<LinkedComplaintXref>;
+  private readonly linkedComplaintXrefRepository: Repository<LinkedComplaintXref>;
 
   private readonly logger = new Logger(LinkedComplaintXrefService.name);
-
-  constructor(private dataSource: DataSource) {}
 
   async create(createLinkedComplaintXrefDto: CreateLinkedComplaintXrefDto): Promise<LinkedComplaintXref> {
     const newLinkedComplaintXref = this.linkedComplaintXrefRepository.create(createLinkedComplaintXrefDto);
@@ -44,7 +42,7 @@ export class LinkedComplaintXrefService {
         .addSelect(["complaint_nature_code.hwcr_complaint_nature_code", "complaint_nature_code.long_description"])
         .where("linkedComplaint.complaint_identifier = :id", { id: parentComplaintId })
         .andWhere("linkedComplaint.active_ind = :active", { active: true })
-        .orderBy("linkedComplaint.update_utc_timestamp", "DESC");
+        .orderBy("complaint.incident_utc_datetime", "DESC");
       const data = await builder.getMany();
       const result = data.map((item: any) => {
         return {
@@ -87,8 +85,7 @@ export class LinkedComplaintXrefService {
         .leftJoin("hwcr_complaint.hwcr_complaint_nature_code", "complaint_nature_code")
         .addSelect(["complaint_nature_code.hwcr_complaint_nature_code", "complaint_nature_code.long_description"])
         .where("linkedComplaint.linked_complaint_identifier = :id", { id: childComplaintId })
-        .andWhere("linkedComplaint.active_ind = :active", { active: true })
-        .orderBy("linkedComplaint.update_utc_timestamp", "DESC");
+        .andWhere("linkedComplaint.active_ind = :active", { active: true });
       const data = await builder.getMany();
       const result = data.map((item: any) => {
         return {

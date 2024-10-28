@@ -1,5 +1,4 @@
-import { FC, useEffect, useState } from "react";
-import { useAppDispatch } from "../../../../hooks/hooks";
+import { FC, useState } from "react";
 import { applyStatusClass } from "../../../../common/methods";
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -35,6 +34,26 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData }) => {
 
   const toggleViewMore = () => {
     setViewMore(!viewMore);
+  };
+
+  const renderViewMore = () => {
+    if (linkedComplaintData.length > 5) {
+      if (!viewMore) {
+        return (
+          <>
+            View more <BsChevronDown />
+          </>
+        );
+      } else {
+        return (
+          <>
+            View less <BsChevronUp />
+          </>
+        );
+      }
+    } else {
+      return <></>;
+    }
   };
 
   return (
@@ -101,19 +120,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData }) => {
         onClick={toggleViewMore}
         onKeyDown={toggleViewMore}
       >
-        {linkedComplaintData.length > 5 ? (
-          !viewMore ? (
-            <>
-              View more <BsChevronDown />
-            </>
-          ) : (
-            <>
-              View less <BsChevronUp />
-            </>
-          )
-        ) : (
-          <></>
-        )}
+        {renderViewMore()}
       </div>
     </div>
   );
