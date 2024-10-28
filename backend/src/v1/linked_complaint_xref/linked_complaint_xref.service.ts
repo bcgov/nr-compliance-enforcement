@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { CreateLinkedComplaintXrefDto } from "./dto/create-linked_complaint_xref.dto";
 import { LinkedComplaintXref } from "./entities/linked_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
 import { Complaint } from "../complaint/entities/complaint.entity";
 

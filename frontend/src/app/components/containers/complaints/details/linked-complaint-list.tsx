@@ -67,6 +67,8 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData }) => {
             className="comp-linked-complaint-item"
             style={{ display: `${index > 4 && !viewMore ? "none" : "flex"}` }}
             key={data.id}
+            role="button"
+            tabIndex={index}
             onClick={() => toggleExpand(data.id)}
             onKeyDown={() => toggleExpand(data.id)}
           >
