@@ -161,6 +161,13 @@ export class UpdateComplaintDto {
   webeoc_identifier: string;
 
   @ApiProperty({
+    example: "54321",
+    description:
+      "Allows users to link complaints to files in external systems.   Currently labeled in the system as COORS reference number and initially only used for COORS linkages.",
+  })
+  reference_number: string;
+
+  @ApiProperty({
     example: "RAPP",
     description: "Method in which the complaint was created",
   })
