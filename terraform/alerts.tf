@@ -1,4 +1,3 @@
-#### TEST
 ### Backend Alerts
 resource "sysdig_monitor_alert_v2_prometheus" "backend_test_cpu_quota" {
   name = "Backend CPU Requests Quota Alert"
@@ -77,6 +76,103 @@ resource "sysdig_monitor_alert_v2_prometheus" "backend_test_http_silent" {
   }
   labels = {
     service = "NatCom Backend"
+    app = "NatCom"
+  }
+}
+### Frontend Alerts
+resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_cpu_quota" {
+  name = "Frontend CPU Requests Quota Alert"
+  description = "Alert when the CPU requests usage is too high"
+  severity = "medium"
+  query = "sysdig_container_cpu_quota_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\",container_name=\"nr-compliance-enforcement-test-frontend\"}  > 90"
+  enabled = true
+  duration_seconds = 30
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    renotify_every_minutes = 120
+  }
+  labels = {
+    service = "NatCom Frontend"
+    app = "NatCom"
+  }
+}
+resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_mem_usage" {
+  name = "Frontend Mem Usage Alert"
+  description = "Alert when the mem usage is too high"
+  severity = "medium"
+  query = "sysdig_container_memory_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\",container_name=\"nr-compliance-enforcement-test-frontend\"}  > 90"
+  enabled = true
+  duration_seconds = 30
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    renotify_every_minutes = 120
+  }
+  labels = {
+    service = "NatCom Frontend"
+    app = "NatCom"
+  }
+}
+resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_mem_limit" {
+  name = "Frontend Mem Limit Alert"
+  description = "Alert when the mem usage is near the limit for too long"
+  severity = "high"
+  query = "sysdig_container_memory_limit_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\",container_name=\"nr-compliance-enforcement-test-frontend\"}  > 70"
+  enabled = true
+  duration_seconds = 30
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    renotify_every_minutes = 120
+  }
+  labels = {
+    service = "NatCom Frontend"
+    app = "NatCom"
+  }
+}
+resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_uptime_score" {
+  name = "Frontend Uptime Alert"
+  description = "Alert when the frontend container has too much downtime"
+  severity = "high"
+  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\",container_name=\"nr-compliance-enforcement-test-frontend\"} < 0.7"
+  enabled = true
+  duration_seconds = 30
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    renotify_every_minutes = 120
+  }
+  labels = {
+    service = "NatCom Frontend"
+    app = "NatCom"
+  }
+}
+resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_http_silent" {
+  name = "Frontend Unresponsive Alert"
+  description = "Alert when the frontend container has been unresponsive or silent for too long"
+  severity = "high"
+  query = "sysdig_container_net_http_request_count{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\",container_name=\"nr-compliance-enforcement-test-frontend\"} < 0.1"
+  enabled = true
+  duration_seconds = 300
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    renotify_every_minutes = 120
+  }
+  labels = {
+    service = "NatCom Frontend"
+    app = "NatCom"
+  }
+}
+resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_http_error_rate" {
+  name = "Frontend HTTP Error Rate Alert"
+  description = "Alert when the frontend container has too many HTTP errors over a period"
+  severity = "high"
+  query = "(sysdig_container_net_http_error_count{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\"} / sysdig_container_net_http_request_count{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\"} ) > 0.05"
+  enabled = true
+  duration_seconds = 300
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    renotify_every_minutes = 120
+  }
+  labels = {
+    service = "NatCom Frontend"
     app = "NatCom"
   }
 }
