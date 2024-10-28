@@ -21,13 +21,13 @@ describe("Export Complaint Functionality", () => {
     it(`Can export complaint: ${index === 0 ? "HWCR" : "ERS"}`, () => {
       let fileName = "";
 
-      const date = fns.format(new Date(), "yyyy-MM-dd");
+      const date = fns.format(new Date(), "yyMMdd");
 
       if ("#hwcr-tab".includes(complaintTypes[index])) {
-        fileName = `Complaint-23-000076-HWCR-${date}.pdf`;
+        fileName = `HWC_23-000076_${date}.pdf`;
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
       } else {
-        fileName = `Complaint-23-006888-ERS-${date}.pdf`;
+        fileName = `EC_23-006888_${date}.pdf`;
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
       }
 
