@@ -6,6 +6,7 @@ set -e # failfast
 # APPLY: determines if plan is applied, lease as false for dry-run
 
 cd terraform || exit 1
+terraform -v
 terraform init \
     -backend-config="bucket=${STATE_BACKEND_BUCKET}" \
     -backend-config="key=${STATE_BACKEND_FILEPATH}" \
