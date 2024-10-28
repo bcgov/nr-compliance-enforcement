@@ -8,7 +8,7 @@ import { store } from "../../app/store/store";
 import { ToggleError } from "./toast";
 
 interface NatComRequestConfig extends AxiosRequestConfig {
-  toggleLoading: Boolean;
+  toggleLoading: boolean;
 }
 
 const STATUS_CODES = {
@@ -91,7 +91,7 @@ export const get = <T, M = {}>(
   dispatch: Dispatch,
   parameters: ApiRequestParameters<M>,
   headers?: {},
-  toggleLoading: Boolean = true,
+  toggleLoading: boolean = true,
 ): Promise<T> => {
   let config: NatComRequestConfig = { headers: headers, toggleLoading: toggleLoading };
   return new Promise<T>((resolve, reject) => {
@@ -132,7 +132,7 @@ export const deleteMethod = <T, M = {}>(
   dispatch: Dispatch,
   parameters: ApiRequestParameters<M>,
   headers?: {},
-  toggleLoading: Boolean = true,
+  toggleLoading: boolean = true,
 ): Promise<T> => {
   let config: NatComRequestConfig = { headers: headers, toggleLoading: toggleLoading };
   return new Promise<T>((resolve, reject) => {
@@ -170,7 +170,7 @@ export const deleteMethod = <T, M = {}>(
 export const post = <T, M = {}>(
   dispatch: Dispatch,
   parameters: ApiRequestParameters<M>,
-  toggleLoading: Boolean = true,
+  toggleLoading: boolean = true,
 ): Promise<T> => {
   let config: NatComRequestConfig = { headers: {}, toggleLoading: toggleLoading };
   return new Promise<T>((resolve, reject) => {
@@ -197,7 +197,7 @@ export const post = <T, M = {}>(
 export const patch = <T, M = {}>(
   dispatch: Dispatch,
   parameters: ApiRequestParameters<M>,
-  toggleLoading: Boolean = true,
+  toggleLoading: boolean = true,
 ): Promise<T> => {
   let config: NatComRequestConfig = { headers: {}, toggleLoading: toggleLoading };
   return new Promise<T>((resolve, reject) => {
@@ -230,7 +230,7 @@ export const patch = <T, M = {}>(
 export const put = <T, M = {}>(
   dispatch: Dispatch,
   parameters: ApiRequestParameters<M>,
-  toggleLoading: Boolean = true,
+  toggleLoading: boolean = true,
 ): Promise<T> => {
   let config: NatComRequestConfig = { headers: {}, toggleLoading: toggleLoading };
   return new Promise<T>((resolve, reject) => {
@@ -265,7 +265,7 @@ export const putFile = <T, M = {}>(
   parameters: ApiRequestParameters<M>,
   headers: {},
   file: File,
-  toggleLoading: Boolean = true,
+  toggleLoading: boolean = true,
 ): Promise<T> => {
   let config: NatComRequestConfig = { headers: headers, toggleLoading: toggleLoading };
 
