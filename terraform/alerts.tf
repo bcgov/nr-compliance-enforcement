@@ -7,7 +7,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "backend_test_cpu_quota" {
   enabled = true
   duration_seconds = 30
   notification_channels {
-    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
   }
   labels = {
@@ -23,7 +23,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "backend_test_mem_usage" {
   enabled = true
   duration_seconds = 30
   notification_channels {
-    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
   }
   labels = {
@@ -39,7 +39,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "backend_test_mem_limit" {
   enabled = true
   duration_seconds = 30
   notification_channels {
-    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
   }
   labels = {
@@ -55,7 +55,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "backend_test_uptime_score" {
   enabled = true
   duration_seconds = 30
   notification_channels {
-    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
   }
   labels = {
@@ -71,7 +71,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "backend_test_http_silent" {
   enabled = true
   duration_seconds = 300
   notification_channels {
-    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
   }
   labels = {
@@ -88,7 +88,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_cpu_quota" {
   enabled = true
   duration_seconds = 30
   notification_channels {
-    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
   }
   labels = {
@@ -104,7 +104,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_mem_usage" {
   enabled = true
   duration_seconds = 30
   notification_channels {
-    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
   }
   labels = {
@@ -120,7 +120,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_mem_limit" {
   enabled = true
   duration_seconds = 30
   notification_channels {
-    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
   }
   labels = {
@@ -136,7 +136,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_uptime_score" {
   enabled = true
   duration_seconds = 30
   notification_channels {
-    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
   }
   labels = {
@@ -152,7 +152,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_http_silent" {
   enabled = true
   duration_seconds = 300
   notification_channels {
-    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
   }
   labels = {
@@ -168,11 +168,92 @@ resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_http_error_rate" {
   enabled = true
   duration_seconds = 300
   notification_channels {
-    id = sysdig_monitor_notification_channel_email.general_alerts.id
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
   }
   labels = {
     service = "NatCom Frontend"
+    app = "NatCom"
+  }
+}
+### Databsae Alerts
+resource "sysdig_monitor_alert_v2_prometheus" "database_test_cpu_quota" {
+  name = "Database CPU Requests Quota Alert"
+  description = "Alert when the CPU requests usage is too high"
+  severity = "medium"
+  query = "sysdig_container_cpu_quota_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_name=\"nr-compliance-enforcement-test-bitnami-pg\"}  > 90"
+  enabled = true
+  duration_seconds = 30
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
+    renotify_every_minutes = 120
+  }
+  labels = {
+    service = "NatCom Database"
+    app = "NatCom"
+  }
+}
+resource "sysdig_monitor_alert_v2_prometheus" "database_test_mem_usage" {
+  name = "Database Mem Usage Alert"
+  description = "Alert when the mem usage is too high"
+  severity = "medium"
+  query = "sysdig_container_memory_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_name=\"nr-compliance-enforcement-test-bitnami-pg\"}  > 90"
+  enabled = true
+  duration_seconds = 30
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
+    renotify_every_minutes = 120
+  }
+  labels = {
+    service = "NatCom Database"
+    app = "NatCom"
+  }
+}
+resource "sysdig_monitor_alert_v2_prometheus" "database_test_mem_limit" {
+  name = "Database Mem Limit Alert"
+  description = "Alert when the mem usage is near the limit for too long"
+  severity = "high"
+  query = "sysdig_container_memory_limit_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_name=\"nr-compliance-enforcement-test-bitnami-pg\"}  > 70"
+  enabled = true
+  duration_seconds = 30
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
+    renotify_every_minutes = 120
+  }
+  labels = {
+    service = "NatCom Database"
+    app = "NatCom"
+  }
+}
+resource "sysdig_monitor_alert_v2_prometheus" "database_test_uptime_score" {
+  name = "Database Uptime Alert"
+  description = "Alert when the database container has too much downtime"
+  severity = "high"
+  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_name=\"nr-compliance-enforcement-test-bitnami-pg\"} < 0.7"
+  enabled = true
+  duration_seconds = 30
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
+    renotify_every_minutes = 120
+  }
+  labels = {
+    service = "NatCom Database"
+    app = "NatCom"
+  }
+}
+resource "sysdig_monitor_alert_v2_prometheus" "database_test_storage_usage" {
+  name = "Database Storage Alert"
+  description = "Alert when the database storage usage is too high"
+  severity = "high"
+  query = "sysdig_fs_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_name=\"nr-compliance-enforcement-test-bitnami-pg\"} > 70"
+  enabled = true
+  duration_seconds = 600
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
+    renotify_every_minutes = 120
+  }
+  labels = {
+    service = "NatCom Database"
     app = "NatCom"
   }
 }
