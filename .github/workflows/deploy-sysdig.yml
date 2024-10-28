@@ -49,7 +49,7 @@ jobs:
     environment: tools
     name: Deploy Sysdig Terraform
     runs-on: ubuntu-22.04
-    timeout-minutes: 3
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Apply Sysdig Terraform
