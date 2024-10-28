@@ -84,7 +84,7 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
       const info =
         unmappedComplaints >= 1
           ? `${unmappedComplaints} complaint${isPluralized} could not be mapped`
-          : "No complaints found.";
+          : "No complaints found using your current filters. Remove or change your filters to see complaints.";
 
       return (
         <Alert
