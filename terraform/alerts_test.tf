@@ -3,9 +3,9 @@ resource "sysdig_monitor_alert_v2_prometheus" "backend_test_cpu_quota" {
   name = "Backend CPU Requests Quota Alert"
   description = "Alert when the CPU requests usage is too high"
   severity = "medium"
-  query = "sysdig_container_cpu_quota_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-backend\",container_name=\"nr-compliance-enforcement-test-backend\"}  > 90"
+  query = "sysdig_container_cpu_quota_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-backend\",container_name=\"nr-compliance-enforcement-test-backend\"}  > 98"
   enabled = true
-  duration_seconds = 30
+  duration_seconds = 180
   notification_channels {
     id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
@@ -19,9 +19,9 @@ resource "sysdig_monitor_alert_v2_prometheus" "backend_test_mem_usage" {
   name = "Backend Mem Usage Alert"
   description = "Alert when the mem usage is too high"
   severity = "medium"
-  query = "sysdig_container_memory_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-backend\",container_name=\"nr-compliance-enforcement-test-backend\"}  > 90"
+  query = "sysdig_container_memory_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-backend\",container_name=\"nr-compliance-enforcement-test-backend\"}  > 98"
   enabled = true
-  duration_seconds = 30
+  duration_seconds = 180
   notification_channels {
     id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
@@ -37,7 +37,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "backend_test_mem_limit" {
   severity = "high"
   query = "sysdig_container_memory_limit_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-backend\",container_name=\"nr-compliance-enforcement-test-backend\"}  > 70"
   enabled = true
-  duration_seconds = 30
+  duration_seconds = 180
   notification_channels {
     id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
@@ -53,7 +53,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "backend_test_uptime_score" {
   severity = "high"
   query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-backend\",container_name=\"nr-compliance-enforcement-test-backend\"} < 0.7"
   enabled = true
-  duration_seconds = 30
+  duration_seconds = 180
   notification_channels {
     id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
@@ -84,9 +84,9 @@ resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_cpu_quota" {
   name = "Frontend CPU Requests Quota Alert"
   description = "Alert when the CPU requests usage is too high"
   severity = "medium"
-  query = "sysdig_container_cpu_quota_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\",container_name=\"nr-compliance-enforcement-test-frontend\"}  > 90"
+  query = "sysdig_container_cpu_quota_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\",container_name=\"nr-compliance-enforcement-test-frontend\"}  > 98"
   enabled = true
-  duration_seconds = 30
+  duration_seconds = 180
   notification_channels {
     id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
@@ -100,9 +100,9 @@ resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_mem_usage" {
   name = "Frontend Mem Usage Alert"
   description = "Alert when the mem usage is too high"
   severity = "medium"
-  query = "sysdig_container_memory_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\",container_name=\"nr-compliance-enforcement-test-frontend\"}  > 90"
+  query = "sysdig_container_memory_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\",container_name=\"nr-compliance-enforcement-test-frontend\"}  > 98"
   enabled = true
-  duration_seconds = 30
+  duration_seconds = 180
   notification_channels {
     id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
@@ -118,7 +118,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_mem_limit" {
   severity = "high"
   query = "sysdig_container_memory_limit_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\",container_name=\"nr-compliance-enforcement-test-frontend\"}  > 70"
   enabled = true
-  duration_seconds = 30
+  duration_seconds = 180
   notification_channels {
     id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
@@ -134,7 +134,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "frontend_test_uptime_score" {
   severity = "high"
   query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\",container_name=\"nr-compliance-enforcement-test-frontend\"} < 0.7"
   enabled = true
-  duration_seconds = 30
+  duration_seconds = 180
   notification_channels {
     id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
@@ -181,9 +181,9 @@ resource "sysdig_monitor_alert_v2_prometheus" "database_test_cpu_quota" {
   name = "Database CPU Requests Quota Alert"
   description = "Alert when the CPU requests usage is too high"
   severity = "medium"
-  query = "sysdig_container_cpu_quota_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_name=\"nr-compliance-enforcement-test-bitnami-pg\"}  > 90"
+  query = "sysdig_container_cpu_quota_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_name=\"nr-compliance-enforcement-test-bitnami-pg\"}  > 98"
   enabled = true
-  duration_seconds = 30
+  duration_seconds = 180
   notification_channels {
     id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
@@ -197,9 +197,9 @@ resource "sysdig_monitor_alert_v2_prometheus" "database_test_mem_usage" {
   name = "Database Mem Usage Alert"
   description = "Alert when the mem usage is too high"
   severity = "medium"
-  query = "sysdig_container_memory_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_name=\"nr-compliance-enforcement-test-bitnami-pg\"}  > 90"
+  query = "sysdig_container_memory_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_name=\"nr-compliance-enforcement-test-bitnami-pg\"}  > 98"
   enabled = true
-  duration_seconds = 30
+  duration_seconds = 180
   notification_channels {
     id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
@@ -215,7 +215,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "database_test_mem_limit" {
   severity = "high"
   query = "sysdig_container_memory_limit_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_name=\"nr-compliance-enforcement-test-bitnami-pg\"}  > 70"
   enabled = true
-  duration_seconds = 30
+  duration_seconds = 180
   notification_channels {
     id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120
@@ -231,7 +231,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "database_test_uptime_score" {
   severity = "high"
   query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_name=\"nr-compliance-enforcement-test-bitnami-pg\"} < 0.7"
   enabled = true
-  duration_seconds = 30
+  duration_seconds = 180
   notification_channels {
     id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
     renotify_every_minutes = 120

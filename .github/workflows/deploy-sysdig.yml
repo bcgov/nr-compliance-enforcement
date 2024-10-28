@@ -2,9 +2,8 @@ name: Deploy Sysdig Alerts
 
 on:
   push:
-    # branches: [main]
-    # paths:
-    #   - "terraform/**"
+    paths:
+      - "terraform/**"
 
 concurrency:
   # Do not interrupt previous workflows
