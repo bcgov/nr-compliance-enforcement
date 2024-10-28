@@ -215,8 +215,12 @@ export class CaseFileService {
     // scope it is at model.createAssessmentInput.leadIdentifier, which errors due to type violation.
     // This copies it into a new variable cast to any to allow access to the nested properties.
     let modelAsAny: any = { ...model };
-
-    if (modelAsAny.createAssessmentInput.assessmentDetails.actionLinkedComplaintIdentifier) {
+    // If changes need to be made in both databases (i.e. we need to create a link or change the status of a complaint)
+    // then the transactional approach is taken.
+    if (
+      modelAsAny.createAssessmentInput.assessmentDetails.actionLinkedComplaintIdentifier ||
+      modelAsAny.createAssessmentInput.assessmentDetails.closeComplaintOnSuccess
+    ) {
       const dateLinkCreated = new Date();
       const complaintBeingLinkedId = modelAsAny.createAssessmentInput.leadIdentifier;
       const linkingToComplaintId = modelAsAny.createAssessmentInput.assessmentDetails.actionLinkedComplaintIdentifier;
@@ -225,61 +229,65 @@ export class CaseFileService {
       await queryRunner.startTransaction();
       try {
         const idir = getIdirFromRequest(this.request);
-        // When linking complaint "A" to complaint "B", if "A" already has other complaints linked to it those links
-        // are marked as inactive, and new links are created with them pointing to "B".
-        const trailingComplaints = await this._linkedComplaintXrefRepository
-          .createQueryBuilder()
-          .update(LinkedComplaintXref)
-          .set({ active_ind: false })
-          .where({
-            complaint_identifier: complaintBeingLinkedId,
-          })
-          .andWhere({
-            active_ind: true,
-          })
-          .returning("*")
-          .execute();
-
-        if (trailingComplaints.affected > 0) {
-          trailingComplaints.raw.forEach(async (row) => {
-            const linkString = await this._linkedComplaintXrefRepository.create(<CreateLinkedComplaintXrefDto>{
-              // ...row,
-              complaint_identifier: { complaint_identifier: linkingToComplaintId },
-              linked_complaint_identifier: row.linked_complaint_identifier,
+        // If actionLinkedComplaintIdentifier is present the link must be created in the database
+        if (modelAsAny.createAssessmentInput.assessmentDetails.actionLinkedComplaintIdentifier) {
+          // When linking complaint "A" to complaint "B", if "A" already has other complaints linked to it those links
+          // are marked as inactive, and new links are created with them pointing to "B".
+          const trailingComplaints = await this._linkedComplaintXrefRepository
+            .createQueryBuilder()
+            .update(LinkedComplaintXref)
+            .set({ active_ind: false })
+            .where({
+              complaint_identifier: complaintBeingLinkedId,
+            })
+            .andWhere({
               active_ind: true,
-              create_user_id: idir,
-              create_utc_timestamp: dateLinkCreated,
+            })
+            .returning("*")
+            .execute();
+
+          if (trailingComplaints.affected > 0) {
+            trailingComplaints.raw.forEach(async (row) => {
+              const linkString = await this._linkedComplaintXrefRepository.create(<CreateLinkedComplaintXrefDto>{
+                // ...row,
+                complaint_identifier: { complaint_identifier: linkingToComplaintId },
+                linked_complaint_identifier: row.linked_complaint_identifier,
+                active_ind: true,
+                create_user_id: idir,
+                create_utc_timestamp: dateLinkCreated,
+              });
+              await queryRunner.manager.save(linkString);
             });
-            await queryRunner.manager.save(linkString);
-          });
+          }
+
+          // Create the new link between the complaints
+          let newLink = new CreateLinkedComplaintXrefDto();
+          newLink = {
+            ...newLink,
+            complaint_identifier: <Complaint>{
+              complaint_identifier: linkingToComplaintId,
+            },
+            linked_complaint_identifier: <Complaint>{ complaint_identifier: complaintBeingLinkedId },
+            active_ind: true,
+            create_user_id: idir,
+            create_utc_timestamp: dateLinkCreated,
+          };
+
+          const complaintLinkString = await this._linkedComplaintXrefRepository.create(
+            <CreateLinkedComplaintXrefDto>newLink,
+          );
+          await queryRunner.manager.save(complaintLinkString);
         }
-
-        // Create the new link between the complaints
-        let newLink = new CreateLinkedComplaintXrefDto();
-        newLink = {
-          ...newLink,
-          complaint_identifier: <Complaint>{
-            complaint_identifier: linkingToComplaintId,
-          },
-          linked_complaint_identifier: <Complaint>{ complaint_identifier: complaintBeingLinkedId },
-          active_ind: true,
-          create_user_id: idir,
-          create_utc_timestamp: dateLinkCreated,
-        };
-
-        const complaintLinkString = await this._linkedComplaintXrefRepository.create(
-          <CreateLinkedComplaintXrefDto>newLink,
-        );
-        const savedLink = await queryRunner.manager.save(complaintLinkString);
-
-        // Update the status of the complaint to "closed"
-        const statusCode = await this._codeTableService.getComplaintStatusCodeByStatus("CLOSED");
-        await this._complaintsRepository
-          .createQueryBuilder("complaint")
-          .update()
-          .set({ complaint_status_code: statusCode, update_user_id: idir })
-          .where({ complaint_identifier: complaintBeingLinkedId })
-          .execute();
+        // Update the status of the complaint to "closed" if closeComplaintOnSuccess is set to true
+        if (modelAsAny.createAssessmentInput.assessmentDetails.closeComplaintOnSuccess) {
+          const statusCode = await this._codeTableService.getComplaintStatusCodeByStatus("CLOSED");
+          await this._complaintsRepository
+            .createQueryBuilder("complaint")
+            .update()
+            .set({ complaint_status_code: statusCode, update_user_id: idir })
+            .where({ complaint_identifier: complaintBeingLinkedId })
+            .execute();
+        }
 
         // Create the assessment in the Case Management database
         const result = await post(token, {
@@ -295,6 +303,7 @@ export class CaseFileService {
       } catch (err) {
         this.logger.error(err);
         await queryRunner.rollbackTransaction();
+        Promise.reject("An error occurred while linking the complaints. " + err);
       } finally {
         await queryRunner.release();
       }
