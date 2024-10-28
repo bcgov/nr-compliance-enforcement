@@ -67,7 +67,7 @@ export const CompCoordinateInput: FC<Props> = ({
   const handleGeoPointChange = (latitude: string, longitude: string) => {
     setYCoordinateErrorMsg("");
     setXCoordinateErrorMsg("");
-    const regex = /^-?\d+\.?\d*$/;
+    const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
     let hasErrors = false;
     if (!regex.exec(latitude)) {
       setYCoordinateErrorMsg("Latitude value must be a number");
@@ -126,7 +126,7 @@ export const CompCoordinateInput: FC<Props> = ({
     setYCoordinateErrorMsg("");
     setXCoordinateErrorMsg("");
 
-    const regex = /^\d+\.?\d*$/;
+    const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
     let hasErrors = false;
     let lat;
     let lng;
@@ -255,7 +255,7 @@ export const CompCoordinateInput: FC<Props> = ({
   }, [initXCoordinate, initYCoordinate]);
 
   const formatUtmCoordinate = (input: string | undefined): string => {
-    const regex = /^-?\d+\.?\d*$/;
+    const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
     let result = input;
     if (regex.exec(input ?? "")) {
       result = input ? Number(input).toFixed(0).toString() : "";

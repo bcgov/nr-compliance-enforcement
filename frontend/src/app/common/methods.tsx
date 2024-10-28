@@ -413,7 +413,7 @@ export function isPositiveNum(number: string) {
 }
 
 export const formatLatLongCoordinate = (input: string | undefined): string | undefined => {
-  const regex = /^-?\d+\.?\d*$/;
+  const regex = /-?(?:\d+(\.\d+)?|.\d+)/;
   if (input && regex.exec(input)) {
     const tokens = input.split(".");
     if (tokens.length > 1) {
@@ -429,7 +429,7 @@ export const formatLatLongCoordinate = (input: string | undefined): string | und
 };
 
 export const latLngToUtm = (lat: string, lng: string): { easting: string; northing: string; zone: string } => {
-  const regex = /^-?\d+\.?\d*$/;
+  const regex = /-?(?:\d+(\.\d+)?|.\d+)/;
   if (regex.exec(lat) && regex.exec(lng) && ![lat, lng].includes("0")) {
     let utm = new utmObj();
     const utmCoordinates = utm.convertLatLngToUtm(lat, lng, 3);
