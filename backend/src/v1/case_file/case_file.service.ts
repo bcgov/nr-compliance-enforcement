@@ -219,7 +219,7 @@ export class CaseFileService {
     // then the transactional approach is taken.
     if (
       modelAsAny.createAssessmentInput.assessmentDetails.actionLinkedComplaintIdentifier ||
-      modelAsAny.createAssessmentInput.assessmentDetails.closeComplaintOnSuccess
+      modelAsAny.createAssessmentInput.assessmentDetails.actionCloseComplaint
     ) {
       const dateLinkCreated = new Date();
       const complaintBeingLinkedId = modelAsAny.createAssessmentInput.leadIdentifier;
@@ -278,8 +278,8 @@ export class CaseFileService {
           );
           await queryRunner.manager.save(complaintLinkString);
         }
-        // Update the status of the complaint to "closed" if closeComplaintOnSuccess is set to true
-        if (modelAsAny.createAssessmentInput.assessmentDetails.closeComplaintOnSuccess) {
+        // Update the status of the complaint to "closed" if actionCloseComplaint is set to true
+        if (modelAsAny.createAssessmentInput.assessmentDetails.actionCloseComplaint) {
           const statusCode = await this._codeTableService.getComplaintStatusCodeByStatus("CLOSED");
           await this._complaintsRepository
             .createQueryBuilder("complaint")
