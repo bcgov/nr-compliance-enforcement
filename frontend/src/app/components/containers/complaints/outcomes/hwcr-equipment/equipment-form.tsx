@@ -13,7 +13,7 @@ import {
 } from "../../../../../store/reducers/complaints";
 import { CompSelect } from "../../../../common/comp-select";
 import { ToggleError } from "../../../../../common/toast";
-import { bcUtmZoneNumbers, getSelectedItem } from "../../../../../common/methods";
+import { bcUtmZoneNumbers, getSelectedItem, formatLatLongCoordinate } from "../../../../../common/methods";
 
 import Option from "../../../../../types/app/option";
 import { Officer } from "../../../../../types/person/person";
@@ -29,7 +29,6 @@ import { upsertEquipment } from "../../../../../store/reducers/case-thunks";
 import { CompRadioGroup } from "../../../../common/comp-radiogroup";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { CompCoordinateInput } from "../../../../common/comp-coordinate-input";
-import { formatLatLongCoordinate } from "../../../../../common/methods";
 
 export interface EquipmentFormProps {
   equipment?: EquipmentDetailsDto;

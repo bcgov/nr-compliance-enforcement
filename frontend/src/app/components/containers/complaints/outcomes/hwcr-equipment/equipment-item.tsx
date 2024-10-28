@@ -24,9 +24,9 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
 
   const [showModal, setShowModal] = useState(false);
 
-  const [easting, setEasting] = useState<string>("");
-  const [northing, setNorthing] = useState<string>("");
   const [utmZone, setUtmZone] = useState<string>("");
+  const [northing, setNorthing] = useState<string>("");
+  const [easting, setEasting] = useState<string>("");
 
   useEffect(() => {
     const {
@@ -34,10 +34,10 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
       northing: northingValue,
       zone: zoneValue,
     } = latLngToUtm(equipment.yCoordinate, equipment.xCoordinate);
-    setEasting(eastingValue);
-    setNorthing(northingValue);
     setUtmZone(zoneValue);
-  }, [equipment.yCoordinate, equipment.xCoordinate]);
+    setNorthing(northingValue);
+    setEasting(eastingValue);
+  }, [equipment.xCoordinate, equipment.yCoordinate]);
 
   const handleEdit = (equipment: EquipmentDetailsDto) => {
     if (equipment.id) {

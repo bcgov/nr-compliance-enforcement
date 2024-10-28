@@ -3,20 +3,18 @@ import Option from "../../types/app/option";
 import { CompRadioGroup } from "./comp-radiogroup";
 import { Coordinates } from "../../types/app/coordinate-type";
 import { UTMCoordinates } from "../../types/app/utm-coordinate-type";
-import { bcBoundaries } from "../../common/methods";
-import { bcUtmBoundaries } from "../../common/methods";
+import { bcBoundaries, bcUtmBoundaries, formatLatLongCoordinate } from "../../common/methods";
 import { CompSelect } from "./comp-select";
 import { Button } from "react-bootstrap";
-import { formatLatLongCoordinate } from "../../common/methods";
 let utmObj = require("utm-latlng");
 
 type Props = {
   id?: string;
   utmZones?: Array<Option>;
-  initXCoordinate?: string | undefined;
-  initYCoordinate?: string | undefined;
-  initXCoordinateErrorMsg?: string | undefined;
-  initYCoordinateErrorMsg?: string | undefined;
+  initXCoordinate?: string;
+  initYCoordinate?: string;
+  initXCoordinateErrorMsg?: string;
+  initYCoordinateErrorMsg?: string;
   syncCoordinates: (yCoordinate: string | undefined, xCoordinate: string | undefined) => void;
   throwError: (hasError: boolean) => void;
   sourceXCoordinate?: string;
@@ -69,7 +67,7 @@ export const CompCoordinateInput: FC<Props> = ({
   const handleGeoPointChange = (latitude: string, longitude: string) => {
     setYCoordinateErrorMsg("");
     setXCoordinateErrorMsg("");
-    const regex = /^-?\d*\.?\d*$/;
+    const regex = /^-?\d+\.?\d*$/;
     let hasErrors = false;
     if (!regex.exec(latitude)) {
       setYCoordinateErrorMsg("Latitude value must be a number");
@@ -128,7 +126,7 @@ export const CompCoordinateInput: FC<Props> = ({
     setYCoordinateErrorMsg("");
     setXCoordinateErrorMsg("");
 
-    const regex = /^\d*\.?\d*$/;
+    const regex = /^\d+\.?\d*$/;
     let hasErrors = false;
     let lat;
     let lng;
@@ -197,14 +195,14 @@ export const CompCoordinateInput: FC<Props> = ({
 
   const handleChangeCoordinateType = (coordinateType: string) => {
     if (coordinateType === COORDINATE_TYPES.UTM) {
-      if (xCoordinateErrorMsg === "" && yCoordinateErrorMsg === "") {
+      if ([xCoordinateErrorMsg, yCoordinateErrorMsg].every((element) => element === "")) {
         if (yCoordinate && xCoordinate) {
           updateUtmFields(yCoordinate, xCoordinate);
         }
         setCoordinateType(coordinateType);
       }
     } else if (coordinateType === COORDINATE_TYPES.LatLong) {
-      if (eastingCoordinateErrorMsg === "" && northingCoordinateErrorMsg === "") {
+      if ([eastingCoordinateErrorMsg, northingCoordinateErrorMsg, zoneErrorMsg].every((element) => element === "")) {
         if (eastingCoordinate && northingCoordinate && zoneCoordinate?.value) {
           let utm = new utmObj();
           const latLongCoordinates = utm.convertUtmToLatLng(
@@ -250,14 +248,14 @@ export const CompCoordinateInput: FC<Props> = ({
       if (coordinateType === COORDINATE_TYPES.UTM) {
         const { easting, northing, zone } = updateUtmFields(lat, lng);
         if (easting && northing && zone) {
-          handleUtmGeoPointChange(easting, northing, zone as string);
+          handleUtmGeoPointChange(easting, northing, zone);
         }
       }
     }
   }, [initXCoordinate, initYCoordinate]);
 
   const formatUtmCoordinate = (input: string | undefined): string => {
-    const regex = /^-?\d*\.?\d*$/;
+    const regex = /^-?\d+\.?\d*$/;
     let result = input;
     if (regex.exec(input ?? "")) {
       result = input ? Number(input).toFixed(0).toString() : "";
@@ -417,7 +415,7 @@ export const CompCoordinateInput: FC<Props> = ({
                 if (sourceXCoordinate && sourceYCoordinate) {
                   const { easting, northing, zone } = updateUtmFields(sourceYCoordinate, sourceXCoordinate);
                   if (easting && northing && zone) {
-                    handleUtmGeoPointChange(easting, northing, zone as string);
+                    handleUtmGeoPointChange(easting, northing, zone);
                   }
                 }
               }
