@@ -429,9 +429,13 @@ export const HWCRComplaintAssessment: FC<Props> = ({
               </div>
               {selectedJustification?.value === "DUPLICATE" && !quickClose && (
                 <div className="comp-details-form-row">
-                  <label aria-label="warning" />
+                  <label
+                    htmlFor="duplicate-warning"
+                    aria-label="warning"
+                  />
                   <div className="comp-details-input full-width">
                     <Alert
+                      id="duplicate-warning"
                       variant="warning"
                       className="comp-complaint-details-alert"
                     >
