@@ -118,6 +118,7 @@ const addAssessment =
         caseCode: "HWCR",
         assessmentDetails: {
           actionNotRequired: assessment.action_required === "No",
+          actionCloseComplaint: assessment.close_complaint,
           actions: assessment.assessment_type.map((item) => {
             return {
               date: assessment.date,

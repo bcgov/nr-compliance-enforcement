@@ -250,6 +250,8 @@ export const HWCRComplaintAssessment: FC<Props> = ({
           value: selectedOfficer?.value,
         },
         action_required: selectedActionRequired?.label,
+        close_complaint:
+          selectedActionRequired?.value === "No" && (quickClose || selectedJustification?.value === "DUPLICATE"),
         justification: {
           key: selectedJustification?.label,
           value: selectedJustification?.value,
