@@ -273,6 +273,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
 
       dispatch(upsertAssessment(id, updatedAssessmentData));
       setEditable(false);
+      dispatch(getComplaintById(id, complaintType));
       handleSave();
     } else {
       handleFormErrors();
