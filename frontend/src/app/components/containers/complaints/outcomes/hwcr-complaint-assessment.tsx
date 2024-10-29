@@ -18,7 +18,7 @@ import {
 import { formatDate, getSelectedOfficer } from "@common/methods";
 import { CompSelect } from "@components/common/comp-select";
 import { ValidationCheckboxGroup } from "@common/validation-checkbox-group";
-import { resetAssessment, setIsInEdit } from "@store/reducers/cases";
+import { clearAssessment, setIsInEdit } from "@store/reducers/cases";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { ToggleError } from "@common/toast";
@@ -133,7 +133,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     if (complaintData) {
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
-      dispatch(resetAssessment());
+      dispatch(clearAssessment());
       dispatch(getAssessment(complaintData.id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
