@@ -1,9 +1,9 @@
 import { FC, memo } from "react";
 import { Modal, Spinner, Alert, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { useAppSelector } from "@hooks/hooks";
+import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
-import { selectComplaint } from "@store/reducers/complaints";
+import { selectComplaint, refreshComplaints } from "@store/reducers/complaints";
 import { selectAssessment } from "@store/reducers/case-selectors";
 import { HWCRComplaintAssessment } from "@components/containers/complaints/outcomes/hwcr-complaint-assessment";
 
@@ -56,10 +56,16 @@ type QuickCloseModalProps = {
   close: () => void;
   submit: () => void;
   complaint_type: string;
-  zone: string;
-  agency: string;
+  refreshComplaintsOnClose?: boolean;
 };
-export const QuickCloseModal: FC<QuickCloseModalProps> = ({ close, submit, complaint_type, zone, agency }) => {
+export const QuickCloseModal: FC<QuickCloseModalProps> = ({
+  close,
+  submit,
+  complaint_type,
+  refreshComplaintsOnClose = false,
+}) => {
+  const dispatch = useAppDispatch();
+
   // Selectors
   const complaintData = useAppSelector(selectComplaint);
   const assessmentData = useAppSelector(selectAssessment);
@@ -93,7 +99,10 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({ close, submit, compl
             id={complaint_identifier}
             complaintType={complaint_type}
             showHeader={false}
-            handleSave={submit}
+            handleSave={() => {
+              submit();
+              refreshComplaintsOnClose && dispatch(refreshComplaints(complaint_type));
+            }}
             quickClose={true}
           />
         </div>

@@ -6,8 +6,10 @@ import { AllegationComplaint as AllegationComplaintDto } from "../app/complaints
 import { GeneralIncidentComplaint as GeneralInformationComplaintDto } from "../app/complaints/general-complaint";
 import { WebEOCComplaintUpdateDTO } from "../app/complaints/webeoc-complaint-update";
 import { ActionTaken } from "../app/complaints/action-taken";
+import { ComplaintFilters } from "@apptypes/complaints/complaint-filters";
 
 export interface ComplaintState {
+  complaintSearchParameters: ComplaintFilters;
   complaintItems: ComplaintCollection;
   totalCount: number;
   complaint: WildlifeComplaintDto | AllegationComplaintDto | GeneralInformationComplaintDto | null;

@@ -24,7 +24,7 @@ export const ComplaintActionItems: FC<Props> = ({
   const dispatch = useAppDispatch();
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
-  const openAsignOfficerModal = () => {
+  const openAssignOfficerModal = () => {
     document.body.click();
     dispatch(
       openModal({
@@ -72,6 +72,7 @@ export const ComplaintActionItems: FC<Props> = ({
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
           complaint_status: complaint_status,
+          refreshComplaintsOnClose: true,
         },
       }),
     );
@@ -106,7 +107,7 @@ export const ComplaintActionItems: FC<Props> = ({
       >
         <Dropdown.Item
           id="update-assignee-menu-item"
-          onClick={openAsignOfficerModal}
+          onClick={openAssignOfficerModal}
         >
           <i
             className="bi bi-person-up"

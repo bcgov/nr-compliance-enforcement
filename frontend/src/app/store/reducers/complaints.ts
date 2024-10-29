@@ -47,6 +47,7 @@ import { ComplaintMethodReceivedType } from "../../types/app/code-tables/complai
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
 const initialState: ComplaintState = {
+  complaintSearchParameters: { sortColumn: "", sortOrder: "" },
   complaintItems: {
     wildlife: [],
     allegations: [],
@@ -73,6 +74,9 @@ export const complaintSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    setComplaintSearchParameters: (state, action) => {
+      return { ...state, complaintSearchParameters: action.payload };
+    },
     setComplaints: (state, action) => {
       const {
         payload: { type, data },
@@ -100,6 +104,10 @@ export const complaintSlice = createSlice({
     setComplaint: (state, action) => {
       const { payload: complaint } = action;
       return { ...state, complaint };
+    },
+
+    clearComplaint: (state) => {
+      return { ...state, complaint: null };
     },
 
     setGeocodedComplaintCoordinates: (state, action) => {
@@ -241,6 +249,7 @@ export const complaintSlice = createSlice({
 
 // export the actions/reducers
 export const {
+  setComplaintSearchParameters,
   setComplaints,
   setTotalCount,
   setComplaint,
@@ -256,9 +265,16 @@ export const {
   setActions,
   setWebEOCChangeCount,
   setComplaintStatus,
+  clearComplaint,
 } = complaintSlice.actions;
 
 //-- redux thunks
+export const refreshComplaints =
+  (complaintType: string): AppThunk =>
+  async (dispatch, getState) => {
+    const { complaintSearchParameters } = getState().complaints;
+    dispatch(getComplaints(complaintType, complaintSearchParameters));
+  };
 export const getComplaints =
   (complaintType: string, payload: ComplaintFilters): AppThunk =>
   async (dispatch, getState) => {
@@ -285,6 +301,7 @@ export const getComplaints =
 
     try {
       dispatch(setComplaint(null));
+      dispatch(setComplaintSearchParameters(payload));
 
       let parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/search/${complaintType}`, {
         sortBy: sortColumn,
