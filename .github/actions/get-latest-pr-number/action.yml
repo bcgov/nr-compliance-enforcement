@@ -1,0 +1,39 @@
+name: Get Latest Merged PR Number
+description: Get the latest merged PR number from the release branch, this is the production candidate
+branding:
+  icon: git-pull-request
+  color: blue
+
+inputs:
+  token:
+    description: Specify token (GH or PAT), instead of inheriting one from the calling workflow
+    default: ${{ github.token }}
+
+outputs:
+  pr:
+    description: "Latest merged pull request number"
+    value: ${{ steps.vars.outputs.pr }}
+
+runs:
+  using: composite
+  steps:
+    - id: vars
+      shell: bash
+      run: |
+        git fetch origin
+
+        release_branch="${{ github.event.pull_request.head.ref }}"
+        echo "Detected release branch: $release_branch"
+
+        latest_pr=$(git log origin/$release_branch --pretty=format:'%s' | grep -oP '(?<=#)\d+' | head -n 1)
+
+        if [ -z "$latest_pr" ]; then
+          echo "No merged PR found on $release_branch"
+          exit 1
+        elif [[ ! "$latest_pr" =~ ^[0-9]+$ ]]; then
+          echo "PR number format incorrect: $latest_pr"
+          exit 1
+        fi
+
+        echo "Latest PR number from $release_branch: $latest_pr"
+        echo "pr=$latest_pr" >> $GITHUB_OUTPUT
