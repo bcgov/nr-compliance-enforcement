@@ -13,6 +13,7 @@ import Option from "../../../../../types/app/option";
 import { selectEquipmentDropdown } from "../../../../../store/reducers/code-table";
 import { CASE_ACTION_CODE } from "../../../../../constants/case_actions";
 import { deleteEquipment } from "../../../../../store/reducers/case-thunks";
+import { CompLocationInfo } from "../../../../common/comp-location-info";
 
 interface EquipmentItemProps {
   equipment: EquipmentDetailsDto;
@@ -23,7 +24,6 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
   const dispatch = useAppDispatch();
 
   const [showModal, setShowModal] = useState(false);
-
   const handleEdit = (equipment: EquipmentDetailsDto) => {
     if (equipment.id) {
       onEdit(equipment.id);
@@ -135,14 +135,11 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
               <dt>Address</dt>
               <dd>{equipment.address}</dd>
             </div>
-            <div>
-              <dt>Latitude/Longitude</dt>
-              <dd>
-                {equipment.yCoordinate && equipment.xCoordinate
-                  ? `${equipment.yCoordinate}, ${equipment.xCoordinate}`
-                  : ""}
-              </dd>
-            </div>
+            <CompLocationInfo
+              xCoordinate={equipment.xCoordinate}
+              yCoordinate={equipment.yCoordinate}
+            />
+            <br />
             <div>
               <dt>Set by</dt>
               <dd>

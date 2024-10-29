@@ -16,6 +16,7 @@ import { GirType } from "../types/app/code-tables/gir-type";
 import { WildlifeComplaint as WildlifeComplaintDto } from "../types/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "../types/app/complaints/allegation-complaint";
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../types/app/complaints/general-complaint";
+let utmObj = require("utm-latlng");
 
 type Coordinate = number[] | string[] | undefined;
 
@@ -232,6 +233,15 @@ export const bcBoundaries = {
   maxLongitude: -114.0337,
 };
 
+export const bcUtmBoundaries = {
+  minEasting: 280220.6,
+  maxEasting: 720184.9,
+  minNorthing: 5346051.7,
+  maxNorthing: 6655120.8,
+};
+
+export const bcUtmZoneNumbers = ["7", "8", "9", "10", "11"];
+
 // given coordinates, return true if within BC or false if not within BC
 export const isWithinBC = (coordinates: Coordinate): boolean => {
   if (!coordinates) {
@@ -424,3 +434,33 @@ export const getThumbnailDataURL = async (file: File): Promise<string> => {
 export function isPositiveNum(number: string) {
   return !isNaN(Number(number)) && Number(number) >= 0;
 }
+
+export const formatLatLongCoordinate = (input: string | undefined): string | undefined => {
+  const regex = /-?(?:\d+(\.\d+)?|.\d+)/;
+  if (input && regex.exec(input)) {
+    const tokens = input.split(".");
+    if (tokens.length > 1) {
+      const decimals = tokens[1].length;
+      if (decimals <= 7) {
+        return input;
+      } else {
+        return tokens[0] + "." + tokens[1].substring(0, 7);
+      }
+    }
+  }
+  return input;
+};
+
+export const latLngToUtm = (lat: string, lng: string): { easting: string; northing: string; zone: string } => {
+  const regex = /-?(?:\d+(\.\d+)?|.\d+)/;
+  if (regex.exec(lat) && regex.exec(lng) && ![lat, lng].includes("0")) {
+    let utm = new utmObj();
+    const utmCoordinates = utm.convertLatLngToUtm(lat, lng, 3);
+    return {
+      easting: utmCoordinates.Easting.toFixed(0),
+      northing: utmCoordinates.Northing.toFixed(0),
+      zone: utmCoordinates.ZoneNumber ?? "",
+    };
+  }
+  return { easting: "", northing: "", zone: "" };
+};
