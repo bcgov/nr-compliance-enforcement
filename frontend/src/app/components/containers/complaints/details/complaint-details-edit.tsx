@@ -78,7 +78,6 @@ import { generateApiParameters, get } from "app/common/api";
 import config from "config";
 import { ExternalFileReference } from "../outcomes/external-file-reference";
 
-
 export type ComplaintParams = {
   id: string;
   complaintType: string;
@@ -234,7 +233,7 @@ export const ComplaintDetailsEdit: FC = () => {
     if (complaintType === "HWCR") {
       getLinkedComplaints(id);
     }
-  }, [id, complaintType]);
+  }, [id, complaintType, details]);
 
   //-- events
   const editButtonClick = () => {

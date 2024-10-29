@@ -273,9 +273,7 @@ export class CaseFileService {
             create_utc_timestamp: dateLinkCreated,
           };
 
-          const complaintLinkString = await this._linkedComplaintXrefRepository.create(
-            <CreateLinkedComplaintXrefDto>newLink,
-          );
+          const complaintLinkString = await this._linkedComplaintXrefRepository.create(newLink);
           await queryRunner.manager.save(complaintLinkString);
         }
         // Update the status of the complaint to "closed" if actionCloseComplaint is set to true
@@ -303,7 +301,7 @@ export class CaseFileService {
       } catch (err) {
         this.logger.error(err);
         await queryRunner.rollbackTransaction();
-        Promise.reject("An error occurred while linking the complaints. " + err);
+        Promise.reject(new Error("An error occurred while linking the complaints. " + err));
       } finally {
         await queryRunner.release();
       }
