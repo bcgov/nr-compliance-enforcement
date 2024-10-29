@@ -14,9 +14,6 @@ import AttachmentEnum from "../constants/attachment-enum";
 import Option from "../types/app/option";
 import { GirType } from "../types/app/code-tables/gir-type";
 let utmObj = require("utm-latlng");
-import { WildlifeComplaint as WildlifeComplaintDto } from "../types/app/complaints/wildlife-complaint";
-import { AllegationComplaint as AllegationComplaintDto } from "../types/app/complaints/allegation-complaint";
-import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../types/app/complaints/general-complaint";
 
 type Coordinate = number[] | string[] | undefined;
 
