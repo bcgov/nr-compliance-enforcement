@@ -32,6 +32,7 @@ import { ComplaintMethodReceivedCode } from "../complaint_method_received_code/e
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { CompMthdRecvCdAgcyCdXrefModule } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.module";
+import { LinkedComplaintXrefModule } from "../linked_complaint_xref/linked_complaint_xref.module";
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { CompMthdRecvCdAgcyCdXrefModule } from "../comp_mthd_recv_cd_agcy_cd_xre
     ComplaintUpdatesModule,
     StagingComplaintModule,
     CompMthdRecvCdAgcyCdXrefModule,
+    LinkedComplaintXrefModule,
   ],
   controllers: [ComplaintController],
   providers: [ComplaintService, CompMthdRecvCdAgcyCdXrefService],

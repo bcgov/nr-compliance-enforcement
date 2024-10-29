@@ -161,7 +161,7 @@ export class CaseFileService {
     @InjectMapper() mapper,
     private readonly complaintService: ComplaintService,
     private readonly _codeTableService: CodeTableService,
-    private dataSource: DataSource,
+    private readonly dataSource: DataSource,
   ) {
     this.mapper = mapper;
   }
@@ -190,9 +190,9 @@ export class CaseFileService {
   // The linked complaint xref and complaint repositories are needed if an assessment being created is also linking two
   // complaints. The codeTableService is needed to fetch the status used to update the closing complaint's status.
   @InjectRepository(LinkedComplaintXref)
-  private _linkedComplaintXrefRepository: Repository<LinkedComplaintXref>;
+  private readonly _linkedComplaintXrefRepository: Repository<LinkedComplaintXref>;
   @InjectRepository(Complaint)
-  private _complaintsRepository: Repository<Complaint>;
+  private readonly _complaintsRepository: Repository<Complaint>;
 
   async createAssessment(token: string, model: CaseFileDto): Promise<CaseFileDto> {
     /**
