@@ -12,6 +12,9 @@ import {
   selectComplaintHeader,
   selectComplaintCallerInformation,
   selectComplaintSuspectWitnessDetails,
+  getLinkedComplaints,
+  selectLinkedComplaints,
+  setLinkedComplaints,
 } from "../../../../store/reducers/complaints";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
@@ -74,11 +77,8 @@ import { CeebOutcomeReport } from "../outcomes/ceeb/ceeb-outcome-report";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
 import { FeatureFlag } from "../../../common/feature-flag";
 import { LinkedComplaintList } from "./linked-complaint-list";
-import { generateApiParameters, get } from "app/common/api";
-import config from "config";
 import { CompCoordinateInput } from "../../../common/comp-coordinate-input";
 import { ExternalFileReference } from "../outcomes/external-file-reference";
-
 
 export type ComplaintParams = {
   id: string;
@@ -159,6 +159,8 @@ export const ComplaintDetailsEdit: FC = () => {
     selectComplaintSuspectWitnessDetails,
   ) as ComplaintSuspectWitness;
 
+  const linkedComplaintData = useAppSelector(selectLinkedComplaints);
+
   //-- state
   const [readOnly, setReadOnly] = useState(true);
 
@@ -185,21 +187,11 @@ export const ComplaintDetailsEdit: FC = () => {
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
   const [latitude, setLatitude] = useState<string>("0");
   const [longitude, setLongitude] = useState<string>("0");
-  const [linkedComplaintData, setLinkedComplaintData] = useState([]);
 
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
 
   const handleSlideCountChange = (count: number) => {
     setComplaintAttachmentCount(count);
-  };
-
-  //-- api calls
-  const getLinkedComplaints = async (complaintId: string) => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/linked-complaints/${complaintId}`);
-    const response: any = await get(dispatch, parameters);
-    if (response && response.length > 0) {
-      setLinkedComplaintData(response);
-    }
   };
 
   //-- use effects
@@ -208,6 +200,7 @@ export const ComplaintDetailsEdit: FC = () => {
     return () => {
       dispatch(setComplaint(null));
       dispatch(setGeocodedComplaintCoordinates(null));
+      dispatch(setLinkedComplaints([]));
     };
   }, [dispatch]);
 
@@ -232,7 +225,7 @@ export const ComplaintDetailsEdit: FC = () => {
   useEffect(() => {
     //getLinkedComplaints api only applies for hwcr, for now
     if (complaintType === "HWCR") {
-      getLinkedComplaints(id);
+      dispatch(getLinkedComplaints(id));
     }
   }, [id, complaintType, details]);
 

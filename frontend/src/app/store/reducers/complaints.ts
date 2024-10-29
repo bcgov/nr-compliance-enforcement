@@ -43,6 +43,7 @@ import { ActionTaken } from "../../types/app/complaints/action-taken";
 
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../../types/app/complaints/general-complaint";
 import { ComplaintMethodReceivedType } from "../../types/app/code-tables/complaint-method-received-type";
+import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
@@ -68,6 +69,7 @@ const initialState: ComplaintState = {
   actions: [],
 
   webeocChangeCount: 0,
+  linkedComplaints: [],
 };
 export const complaintSlice = createSlice({
   name: "complaints",
@@ -240,6 +242,9 @@ export const complaintSlice = createSlice({
         state.complaint.status = action.payload;
       }
     },
+    setLinkedComplaints: (state, action) => {
+      return { ...state, linkedComplaints: action.payload };
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -266,6 +271,7 @@ export const {
   setWebEOCChangeCount,
   setComplaintStatus,
   clearComplaint,
+  setLinkedComplaints,
 } = complaintSlice.actions;
 
 //-- redux thunks
@@ -630,6 +636,20 @@ export const getComplaintStatusById =
       }
     } catch (error) {
       //-- handle the error
+    }
+  };
+
+export const getLinkedComplaints =
+  (complaintIdentifier: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/linked-complaints/${complaintIdentifier}`,
+      );
+      const response: any = await get(dispatch, parameters);
+      dispatch(setLinkedComplaints(response));
+    } catch (error) {
+      console.error(`Unable to retrieve linked complaints for complaint ${complaintIdentifier}: ${error}`);
     }
   };
 
@@ -1150,6 +1170,13 @@ export const selectComplaintAssignedBy = (state: RootState): string | null => {
   }
 
   return null;
+};
+
+export const selectLinkedComplaints = (state: RootState): LinkedComplaint[] => {
+  const {
+    complaints: { linkedComplaints },
+  } = state;
+  return linkedComplaints;
 };
 
 //Get officer's auth_user_id that is assigned in a complaint

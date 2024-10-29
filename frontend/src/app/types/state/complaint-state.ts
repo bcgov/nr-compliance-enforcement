@@ -19,6 +19,7 @@ export interface ComplaintState {
   webeocUpdates: WebEOCComplaintUpdateDTO[];
   actions: ActionTaken[];
   webeocChangeCount: number;
+  linkedComplaints: [];
 }
 
 export interface ComplaintCollection {
