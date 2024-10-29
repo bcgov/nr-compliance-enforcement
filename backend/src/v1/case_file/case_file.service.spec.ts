@@ -63,6 +63,7 @@ import { StagingComplaint } from "../staging_complaint/entities/staging_complain
 import { TeamCode } from "../team_code/entities/team_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
+import { LinkedComplaintXref } from "../linked_complaint_xref/entities/linked_complaint_xref.entity";
 
 describe("Testing: Case File Service", () => {
   let service: CaseFileService;
@@ -186,6 +187,10 @@ describe("Testing: Case File Service", () => {
         {
           provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
           useFactory: MockCompMthdRecvCdAgcyCdXrefRepository,
+        },
+        {
+          provide: getRepositoryToken(LinkedComplaintXref),
+          useValue: {},
         },
         ComplaintUpdatesService,
         CaseFileService,

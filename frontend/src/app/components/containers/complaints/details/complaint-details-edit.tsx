@@ -12,6 +12,9 @@ import {
   selectComplaintHeader,
   selectComplaintCallerInformation,
   selectComplaintSuspectWitnessDetails,
+  getLinkedComplaints,
+  selectLinkedComplaints,
+  setLinkedComplaints,
 } from "../../../../store/reducers/complaints";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
@@ -73,9 +76,9 @@ import { AgencyType } from "../../../../types/app/agency-types";
 import { CeebOutcomeReport } from "../outcomes/ceeb/ceeb-outcome-report";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
 import { FeatureFlag } from "../../../common/feature-flag";
+import { LinkedComplaintList } from "./linked-complaint-list";
 import { CompCoordinateInput } from "../../../common/comp-coordinate-input";
 import { ExternalFileReference } from "../outcomes/external-file-reference";
-
 
 export type ComplaintParams = {
   id: string;
@@ -156,6 +159,8 @@ export const ComplaintDetailsEdit: FC = () => {
     selectComplaintSuspectWitnessDetails,
   ) as ComplaintSuspectWitness;
 
+  const linkedComplaintData = useAppSelector(selectLinkedComplaints);
+
   //-- state
   const [readOnly, setReadOnly] = useState(true);
 
@@ -195,6 +200,7 @@ export const ComplaintDetailsEdit: FC = () => {
     return () => {
       dispatch(setComplaint(null));
       dispatch(setGeocodedComplaintCoordinates(null));
+      dispatch(setLinkedComplaints([]));
     };
   }, [dispatch]);
 
@@ -215,6 +221,13 @@ export const ComplaintDetailsEdit: FC = () => {
     setLongitude(getEditableCoordinates(coordinates, Coordinates.Longitude));
     setLatitude(getEditableCoordinates(coordinates, Coordinates.Latitude));
   }, [coordinates]);
+
+  useEffect(() => {
+    //getLinkedComplaints api only applies for hwcr, for now
+    if (complaintType === "HWCR") {
+      dispatch(getLinkedComplaints(id));
+    }
+  }, [id, complaintType, details]);
 
   //-- events
   const editButtonClick = () => {
@@ -713,10 +726,14 @@ export const ComplaintDetailsEdit: FC = () => {
         saveButtonClick={saveButtonClick}
       />
 
-      {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
-
       <section className="comp-details-body comp-container">
         <hr className="comp-details-body-spacer"></hr>
+
+        {readOnly && linkedComplaintData.length > 0 && (
+          <LinkedComplaintList linkedComplaintData={linkedComplaintData} />
+        )}
+        {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
+
         <div className="comp-details-section-header">
           <h2>Complaint Details</h2>
           {readOnly && (
