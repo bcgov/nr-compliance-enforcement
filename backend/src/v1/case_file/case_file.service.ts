@@ -22,7 +22,7 @@ import { DeleteAuthorizationOutcomeInput } from "src/types/models/case-files/cee
 import { DataSource, Repository } from "typeorm";
 import { LinkedComplaintXref } from "../linked_complaint_xref/entities/linked_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { getIdirFromRequest } from "src/common/get-idir-from-request";
+import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { CodeTableService } from "../code-table/code-table.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { CreateLinkedComplaintXrefDto } from "../linked_complaint_xref/dto/create-linked_complaint_xref.dto";
