@@ -39,7 +39,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   id,
   complaintType,
   handleSave = () => {},
-  showHeader = false,
+  showHeader = true,
   quickClose = false,
 }) => {
   const dispatch = useAppDispatch();
