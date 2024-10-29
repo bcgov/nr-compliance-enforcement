@@ -133,6 +133,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     if (complaintData) {
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
+      dispatch(resetAssessment());
       dispatch(getAssessment(complaintData.id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -142,13 +143,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     populateAssessmentUI();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessmentState]);
-
-  // clear the redux state
-  useEffect(() => {
-    return () => {
-      dispatch(resetAssessment());
-    };
-  }, [dispatch]);
 
   const populateAssessmentUI = () => {
     const selectedOfficer = (
