@@ -94,7 +94,12 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
             close={close}
           />
         )}
-        <div style={{ visibility: loading ? "hidden" : "inherit", display: alreadyAssessed ? "none" : "inherit" }}>
+        <div
+          style={{
+            visibility: loading ? "hidden" : "inherit",
+            display: alreadyAssessed || isClosed ? "none" : "inherit",
+          }}
+        >
           <HWCRComplaintAssessment
             id={complaint_identifier}
             complaintType={complaint_type}

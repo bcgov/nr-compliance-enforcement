@@ -103,7 +103,7 @@ export const HWCRComplaintAssessmentLinkComplaintSearch: FC<Props> = ({
   };
   const handleSearch = async (query: string) => {
     const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/complaint/search/HWCR?sortBy=incident_reported_utc_timestmp&orderBy=DESC&zone=SPCE&page=1&pageSize=10&query=${query}`,
+      `${config.API_BASE_URL}/v1/complaint/search/HWCR?sortBy=incident_reported_utc_timestmp&orderBy=DESC&page=1&pageSize=10&query=${query}`,
     );
     const response: any = await get(dispatch, parameters, {}, false);
     if (response) {

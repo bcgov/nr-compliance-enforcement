@@ -330,8 +330,10 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       if (!selectedLinkedComplaint) {
         setLinkedComplaintErrorMessage("Required when Justification is Duplicate");
         hasErrors = true;
-      }
-      if (selectedLinkedComplaintStatus !== "OPEN") {
+      } else if (selectedLinkedComplaint.value === id) {
+        setLinkedComplaintErrorMessage("Linked complaint cannot be the same as the current complaint");
+        hasErrors = true;
+      } else if (selectedLinkedComplaintStatus !== "OPEN") {
         setLinkedComplaintErrorMessage("Linked complaint must be open");
         hasErrors = true;
       }
