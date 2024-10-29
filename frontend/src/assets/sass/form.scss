@@ -77,4 +77,26 @@
   grid-template-columns: auto auto;
   gap: 8px;
   max-width: 500px;
+  margin-top: 0.8rem;
+}
+
+// LAT/LONG UTM INPUTS
+.comp-lat-long-utm-input {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 8px;
+  max-width: 500px;
+  margin-top: 0.8rem;
+}
+
+@media screen and (max-width: 768px) {
+  .comp-lat-long-utm-input {
+    grid-template-columns: auto;
+  }
+}
+
+.comp-coordinate-type-radio-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }

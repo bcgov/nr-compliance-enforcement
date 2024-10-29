@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { CompSelect } from "../../../common/comp-select";
-import { bcBoundaries } from "../../../../common/methods";
+import { bcUtmZoneNumbers, formatLatLongCoordinate } from "../../../../common/methods";
 import { ValidationTextArea } from "../../../../common/validation-textarea";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
@@ -13,6 +13,7 @@ import { Coordinates } from "../../../../types/app/coordinate-type";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { openModal, selectActiveTab, userId, isFeatureActive } from "../../../../store/reducers/app";
 import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
+import { CompCoordinateInput } from "../../../common/comp-coordinate-input";
 
 import {
   selectAttractantCodeDropdown,
@@ -118,8 +119,7 @@ export const CreateComplaint: FC = () => {
   const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
   const [complaintDescriptionErrorMsg, setComplaintDescriptionErrorMsg] = useState<string>("");
   const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
-  const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
-  const [geoPointYMsg, setGeoPointYMsg] = useState<string>("");
+  const [coordinateErrorsInd, setCoordinateErrorsInd] = useState<boolean>(false);
   const [emailMsg, setEmailMsg] = useState<string>("");
   const [primaryPhoneMsg, setPrimaryPhoneMsg] = useState<string>("");
   const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
@@ -150,6 +150,7 @@ export const CreateComplaint: FC = () => {
       const model: ComplaintDto = {
         id: "",
         webeocId: "",
+        referenceNumber: "",
         details: "",
         name: "",
         address: "",
@@ -409,36 +410,21 @@ export const CreateComplaint: FC = () => {
     }
   };
 
-  const handleGeoPointChange = async (latitude: string, longitude: string) => {
-    //-- clear errors
-    setGeoPointXMsg("");
-    setGeoPointYMsg("");
-
+  const syncCoordinates = (yCoordinate: string | undefined, xCoordinate: string | undefined) => {
     let coordinates: Array<number> = [0, 0];
+    setLongitude(xCoordinate ?? "0");
+    setLatitude(yCoordinate ?? "0");
 
-    //-- verify latitude and longitude
-    if (latitude && !Number.isNaN(latitude)) {
-      const item = parseFloat(latitude);
-      if (item > bcBoundaries.maxLatitude || item < bcBoundaries.minLatitude) {
-        setGeoPointYMsg(`Value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`);
-      }
-    }
-
-    if (longitude && !Number.isNaN(longitude)) {
-      const item = parseFloat(longitude);
-      if (item > bcBoundaries.maxLongitude || item < bcBoundaries.minLongitude) {
-        setGeoPointXMsg(`Value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`);
-      }
-    }
-
-    //-- update coordinates
     if (latitude && longitude && !Number.isNaN(latitude) && !Number.isNaN(longitude)) {
-      coordinates[Coordinates.Longitude] = parseFloat(longitude);
-      coordinates[Coordinates.Latitude] = parseFloat(latitude);
+      coordinates[Coordinates.Longitude] = parseFloat(formatLatLongCoordinate(longitude) ?? "");
+      coordinates[Coordinates.Latitude] = parseFloat(formatLatLongCoordinate(latitude) ?? "");
     }
-
     const complaint = { ...complaintData, location: { type: "Point", coordinates } } as ComplaintDto;
     applyComplaintData(complaint);
+  };
+
+  const throwError = (hasError: boolean) => {
+    setCoordinateErrorsInd(hasError);
   };
 
   const handleNameChange = (value: string) => {
@@ -522,16 +508,6 @@ export const CreateComplaint: FC = () => {
     applyComplaintData(complaint);
   };
 
-  const handleCoordinateChange = (input: string, type: Coordinates) => {
-    if (type === Coordinates.Latitude) {
-      setLatitude(input);
-      handleGeoPointChange(input, longitude);
-    } else {
-      setLongitude(input);
-      handleGeoPointChange(latitude, input);
-    }
-  };
-
   const cancelConfirmed = () => {
     navigate(`/`);
   };
@@ -594,6 +570,10 @@ export const CreateComplaint: FC = () => {
         }
         break;
       }
+    }
+
+    if (coordinateErrorsInd) {
+      result = true;
     }
 
     return result;
@@ -934,30 +914,16 @@ export const CreateComplaint: FC = () => {
               />
             </div>
           </div>
-          <CompInput
-            id="comp-details-edit-y-coordinate-input"
-            divid="comp-details-edit-y-coordinate-div"
-            type="input"
-            label="Latitude"
-            containerClass="comp-details-edit-input"
-            formClass="comp-details-form-row"
-            inputClass="comp-form-control"
-            error={geoPointYMsg}
-            step="any"
-            onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
-          />
-
-          <CompInput
-            id="comp-details-edit-x-coordinate-input"
-            divid="comp-details-edit-x-coordinate-div"
-            type="input"
-            label="Longitude"
-            containerClass="comp-details-edit-input"
-            formClass="comp-details-form-row"
-            inputClass="comp-form-control"
-            error={geoPointXMsg}
-            step="any"
-            onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
+          <CompCoordinateInput
+            id="create-complaint-coordinates"
+            utmZones={bcUtmZoneNumbers.map((zone: string) => {
+              return { value: zone, label: zone } as Option;
+            })}
+            initXCoordinate={longitude}
+            initYCoordinate={latitude}
+            syncCoordinates={syncCoordinates}
+            throwError={throwError}
+            enableCopyCoordinates={false}
           />
 
           <div

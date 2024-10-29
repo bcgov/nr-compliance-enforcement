@@ -96,6 +96,7 @@
     "uncontrollable": "^8.0.2",
     "urlpattern-polyfill": "^9.0.0",
     "util": "^0.12.5",
+    "utm-latlng": "^1.0.8",
     "uuid": "^9.0.1",
     "warning": "^4.0.3",
     "web-vitals": "^3.0.0"
