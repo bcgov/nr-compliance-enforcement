@@ -114,8 +114,8 @@ describe("Complaint Create Page spec - Enter Coordinates - Create View", () => {
     });
 
     cy.get('dd[id="comp-details-location-description"]').should("have.text", createCallDetails.locationDescription);
-    cy.get('span[id="call-details-x-coordinate"]').contains(createCallDetails.xCoord);
-    cy.get('span[id="call-details-y-coordinate"]').contains(createCallDetails.yCoord);
+    cy.get('span[id="geo-details-x-coordinate"]').contains(createCallDetails.xCoord);
+    cy.get('span[id="geo-details-y-coordinate"]').contains(createCallDetails.yCoord);
     cy.get('dd[id="comp-details-community"]').contains(createCallDetails.community);
     cy.get('dd[id="comp-details-office"]').contains(createCallDetails.office);
     cy.get('dd[id="comp-details-zone"]').contains(createCallDetails.zone);

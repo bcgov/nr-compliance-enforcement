@@ -19,29 +19,32 @@ export const CompLocationInfo: FC<CompLocationInfoProps> = ({ yCoordinate, xCoor
     <>
       <div>
         <dt>Coordinates</dt>
-        <dd>Latitude: {yCoordinate ? `${yCoordinate}` : ""}</dd>
+        <dd>
+          <span id="geo-details-y-coordinate">Latitude: {yCoordinate ? `${yCoordinate}` : ""}</span>
+        </dd>
       </div>
       <div>
-        <dt></dt>
-        <dd>Longitude: {xCoordinate ? `${xCoordinate}` : ""}</dd>
+        <dt>
+          <span id="geo-details-x-coordinate">Longitude: {xCoordinate ? `${xCoordinate}` : ""}</span>
+        </dt>
       </div>
       <br />
       <div>
         <dt></dt>
         <dd className="comp-lat-long">
-          <span id="call-details-easting">Easting: {easting}</span>
+          <span id="geo-details-easting-coordinate">Easting: {easting}</span>
         </dd>
       </div>
       <div>
         <dt></dt>
         <dd className="comp-lat-long">
-          <span id="call-details-northing">Northing: {northing}</span>
+          <span id="geo-details-northing-coordinate">Northing: {northing}</span>
         </dd>
       </div>
       <div>
         <dt></dt>
         <dd className="comp-lat-long">
-          <span id="call-details-northing">Zone: {utmZone}</span>
+          <span id="geo-details-zone-coordinate">Zone: {utmZone}</span>
         </dd>
       </div>
     </>
