@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, useCallback } from "react";
 import { Button, Card, Alert } from "react-bootstrap";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
@@ -51,6 +51,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>();
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
   const [editable, setEditable] = useState<boolean>(true);
+  const [validateOnChange, setValidateOnChange] = useState<boolean>(false);
 
   const handleAssessmentTypesChange = (selectedItems: Option[]) => {
     setSelectedAssessmentTypes(selectedItems);
@@ -281,6 +282,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
 
   const handleFormErrors = () => {
     ToggleError("Errors in form");
+    setValidateOnChange(true);
   };
 
   // Clear out existing validation errors
@@ -294,7 +296,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   };
 
   // Validates the assessment
-  const hasErrors = (): boolean => {
+  const hasErrors = useCallback((): boolean => {
     let hasErrors: boolean = false;
     resetValidationErrors();
 
@@ -340,7 +342,29 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     }
 
     return hasErrors;
-  };
+  }, [
+    id,
+    selectedOfficer,
+    selectedDate,
+    selectedActionRequired,
+    selectedJustification,
+    selectedLinkedComplaint,
+    selectedLinkedComplaintStatus,
+    selectedAssessmentTypes,
+  ]);
+
+  // Validate on selected value change
+  useEffect(() => {
+    validateOnChange && hasErrors();
+  }, [
+    validateOnChange,
+    hasErrors,
+    selectedOfficer,
+    selectedActionRequired,
+    selectedJustification,
+    selectedLinkedComplaint,
+    selectedAssessmentTypes,
+  ]);
 
   const determineBorder = (): string => {
     let cardBorder = showSectionErrors ? "danger" : "default";
