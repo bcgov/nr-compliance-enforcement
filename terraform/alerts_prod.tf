@@ -51,7 +51,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_backend_prod_uptime_score" {
   name = "Prod Backend Uptime Alert"
   description = "Alert when the backend container has too much downtime"
   severity = "high"
-  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_deployment_name=\"nr-compliance-enforcement-prod-backend\",container_name=\"nr-compliance-enforcement-prod-backend\"} < 0.7"
+  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_deployment_name=\"nr-compliance-enforcement-prod-backend\",container_name=\"nr-compliance-enforcement-prod-backend\"} < 0.5"
   enabled = true
   duration_seconds = 180
   notification_channels {
@@ -132,7 +132,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_frontend_prod_uptime_score" {
   name = "Prod Frontend Uptime Alert"
   description = "Alert when the frontend container has too much downtime"
   severity = "high"
-  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_deployment_name=\"nr-compliance-enforcement-prod-frontend\",container_name=\"nr-compliance-enforcement-prod-frontend\"} < 0.7"
+  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_deployment_name=\"nr-compliance-enforcement-prod-frontend\",container_name=\"nr-compliance-enforcement-prod-frontend\"} < 0.5"
   enabled = true
   duration_seconds = 180
   notification_channels {

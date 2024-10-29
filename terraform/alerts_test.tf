@@ -51,7 +51,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_backend_test_uptime_score" {
   name = "Test Backend Uptime Alert"
   description = "Alert when the backend container has too much downtime"
   severity = "high"
-  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-backend\",container_name=\"nr-compliance-enforcement-test-backend\"} < 0.7"
+  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-backend\",container_name=\"nr-compliance-enforcement-test-backend\"} < 0.5"
   enabled = true
   duration_seconds = 180
   notification_channels {
@@ -132,7 +132,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_frontend_test_uptime_score" {
   name = "Test Frontend Uptime Alert"
   description = "Alert when the frontend container has too much downtime"
   severity = "high"
-  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\",container_name=\"nr-compliance-enforcement-test-frontend\"} < 0.7"
+  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-frontend\",container_name=\"nr-compliance-enforcement-test-frontend\"} < 0.5"
   enabled = true
   duration_seconds = 180
   notification_channels {
@@ -229,7 +229,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_uptime_score" {
   name = "Test Database Uptime Alert"
   description = "Alert when the database container has too much downtime"
   severity = "high"
-  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_name=\"nr-compliance-enforcement-test-bitnami-pg\"} < 0.7"
+  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_name=\"nr-compliance-enforcement-test-bitnami-pg\"} < 0.5"
   enabled = true
   duration_seconds = 180
   notification_channels {
