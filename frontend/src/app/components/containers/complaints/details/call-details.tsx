@@ -9,6 +9,7 @@ import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
 import { FeatureFlag } from "../../../common/feature-flag";
+import { CompLocationInfo } from "../../../common/comp-location-info";
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -131,41 +132,10 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
               <dt>Location Description</dt>
               <dd id="comp-details-location-description">{locationDescription}</dd>
             </div>
-            <div>
-              <dt>Coordinates</dt>
-              <dd className="comp-lat-long">
-                <span id="call-details-y-coordinate">
-                  Latitude: {renderCoordinates(coordinates, Coordinates.Latitude)}
-                </span>
-              </dd>
-            </div>
-            <div>
-              <dt></dt>
-              <dd className="comp-lat-long">
-                <span id="call-details-x-coordinate">
-                  Longtitude: {renderCoordinates(coordinates, Coordinates.Longitude)}
-                </span>
-              </dd>
-            </div>
-            <br />
-            <div>
-              <dt></dt>
-              <dd className="comp-lat-long">
-                <span id="call-details-easting">Eeasting: {easting}</span>
-              </dd>
-            </div>
-            <div>
-              <dt></dt>
-              <dd className="comp-lat-long">
-                <span id="call-details-northing">Northing: {northing}</span>
-              </dd>
-            </div>
-            <div>
-              <dt></dt>
-              <dd className="comp-lat-long">
-                <span id="call-details-northing">Zone: {utmZone}</span>
-              </dd>
-            </div>
+            <CompLocationInfo
+              xCoordinate={coordinates?.[0] === 0 ? "" : coordinates?.[0].toString() ?? ""}
+              yCoordinate={coordinates?.[1] === 0 ? "" : coordinates?.[1].toString() ?? ""}
+            />
             <br />
           </dl>
 

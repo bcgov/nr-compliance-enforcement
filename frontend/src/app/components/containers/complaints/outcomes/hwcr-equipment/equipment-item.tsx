@@ -13,6 +13,7 @@ import Option from "../../../../../types/app/option";
 import { selectEquipmentDropdown } from "../../../../../store/reducers/code-table";
 import { CASE_ACTION_CODE } from "../../../../../constants/case_actions";
 import { deleteEquipment } from "../../../../../store/reducers/case-thunks";
+import { CompLocationInfo } from "../../../../common/comp-location-info";
 
 interface EquipmentItemProps {
   equipment: EquipmentDetailsDto;
@@ -150,33 +151,10 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
               <dt>Address</dt>
               <dd>{equipment.address}</dd>
             </div>
-            <div>
-              <dt>Coordinates</dt>
-              <dd>Latitude: {equipment.yCoordinate ? `${equipment.yCoordinate}` : ""}</dd>
-            </div>
-            <div>
-              <dt></dt>
-              <dd>Longtitude: {equipment.xCoordinate ? `${equipment.xCoordinate}` : ""}</dd>
-            </div>
-            <br />
-            <div>
-              <dt></dt>
-              <dd className="comp-lat-long">
-                <span id="call-details-easting">Eeasting: {easting}</span>
-              </dd>
-            </div>
-            <div>
-              <dt></dt>
-              <dd className="comp-lat-long">
-                <span id="call-details-northing">Northing: {northing}</span>
-              </dd>
-            </div>
-            <div>
-              <dt></dt>
-              <dd className="comp-lat-long">
-                <span id="call-details-northing">Zone: {utmZone}</span>
-              </dd>
-            </div>
+            <CompLocationInfo
+              xCoordinate={equipment.xCoordinate}
+              yCoordinate={equipment.yCoordinate}
+            />
             <br />
             <div>
               <dt>Set by</dt>

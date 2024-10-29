@@ -678,18 +678,18 @@ export const ComplaintDetailsEdit: FC = () => {
     setLongitude(xCoordinate ?? "0");
     setLatitude(yCoordinate ?? "0");
 
-    if (latitude && longitude && !Number.isNaN(latitude) && !Number.isNaN(longitude)) {
+    if (yCoordinate && xCoordinate && !Number.isNaN(yCoordinate) && !Number.isNaN(xCoordinate)) {
       const location = {
         type: "point",
         coordinates: [
-          parseFloat(formatLatLongCoordinate(longitude) ?? ""),
-          parseFloat(formatLatLongCoordinate(latitude) ?? ""),
+          parseFloat(formatLatLongCoordinate(xCoordinate) ?? ""),
+          parseFloat(formatLatLongCoordinate(yCoordinate) ?? ""),
         ],
       };
 
       const updatedComplaint = { ...complaintUpdate, location } as ComplaintDto;
       applyComplaintUpdate(updatedComplaint);
-    } else if (latitude === "" && longitude === "") {
+    } else if (yCoordinate === "" && xCoordinate === "") {
       const location = { type: "point", coordinates: [0, 0] };
 
       const updatedComplaint = { ...complaintUpdate, location } as ComplaintDto;

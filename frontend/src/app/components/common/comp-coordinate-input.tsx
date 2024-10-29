@@ -1,8 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import Option from "../../types/app/option";
 import { CompRadioGroup } from "./comp-radiogroup";
-import { Coordinates } from "../../types/app/coordinate-type";
-import { UTMCoordinates } from "../../types/app/utm-coordinate-type";
 import { bcBoundaries, bcUtmBoundaries, formatLatLongCoordinate } from "../../common/methods";
 import { CompSelect } from "./comp-select";
 import { Button } from "react-bootstrap";
@@ -23,7 +21,7 @@ type Props = {
 };
 
 const COORDINATE_TYPES = {
-  LatLong: "Lat/Long",
+  LatLong: "Latitude/Longitude",
   UTM: "UTM",
 };
 
@@ -47,26 +45,21 @@ export const CompCoordinateInput: FC<Props> = ({
   const [northingCoordinate, setNorthingCoordinate] = useState<string | undefined>("");
   const [eastingCoordinateErrorMsg, setEastingCoordinateErrorMsg] = useState<string | undefined>("");
   const [northingCoordinateErrorMsg, setNorthingCoordinateErrorMsg] = useState<string | undefined>("");
-  const [zoneCoordinate, setZoneCoordinate] = useState<Option | undefined>();
+  const [zoneCoordinate, setZoneCoordinate] = useState<Option | undefined | null>();
   const [zoneErrorMsg, setZoneErrorMsg] = useState<string | undefined>("");
-
-  const handleCoordinateChange = (input: string, type: Coordinates) => {
-    if (type === Coordinates.Latitude) {
-      setYCoordinate(input);
-      if (xCoordinate) {
-        handleGeoPointChange(input, xCoordinate);
-      }
-    } else {
-      setXCoordinate(input);
-      if (yCoordinate) {
-        handleGeoPointChange(yCoordinate, input);
-      }
-    }
-  };
 
   const handleGeoPointChange = (latitude: string, longitude: string) => {
     setYCoordinateErrorMsg("");
     setXCoordinateErrorMsg("");
+    setYCoordinate(latitude);
+    setXCoordinate(longitude);
+
+    // handling removal of coordinates here
+    if ([latitude?.trim(), longitude?.trim()].every((item) => item === "")) {
+      throwError(false);
+      syncCoordinates("", "");
+      return;
+    }
     const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
     let hasErrors = false;
     if (!regex.exec(latitude)) {
@@ -100,25 +93,6 @@ export const CompCoordinateInput: FC<Props> = ({
     throwError(hasErrors);
   };
 
-  const handleUtmCoordinateChange = (input: string | Option, type: UTMCoordinates) => {
-    if (type === UTMCoordinates.Easting) {
-      setEastingCoordinate(input.toString());
-      if (northingCoordinate && zoneCoordinate) {
-        handleUtmGeoPointChange(input.toString(), northingCoordinate, zoneCoordinate.value as string);
-      }
-    } else if (type === UTMCoordinates.Northing) {
-      setNorthingCoordinate(input.toString());
-      if (eastingCoordinate && zoneCoordinate) {
-        handleUtmGeoPointChange(eastingCoordinate, input.toString(), zoneCoordinate.value as string);
-      }
-    } else {
-      setZoneCoordinate(input as Option);
-      if (northingCoordinate && eastingCoordinate) {
-        handleUtmGeoPointChange(eastingCoordinate, northingCoordinate, (input as Option).value as string);
-      }
-    }
-  };
-
   const handleUtmGeoPointChange = (easting: string, northing: string, zone: string) => {
     setEastingCoordinateErrorMsg("");
     setNorthingCoordinateErrorMsg("");
@@ -126,13 +100,27 @@ export const CompCoordinateInput: FC<Props> = ({
     setYCoordinateErrorMsg("");
     setXCoordinateErrorMsg("");
 
+    setEastingCoordinate(easting);
+    setNorthingCoordinate(northing);
+    setZoneCoordinate(zone ? ({ label: zone, value: zone } as Option) : undefined);
+
+    if (
+      [easting.toString().trim(), northing.toString().trim()].every((item) => item === "") &&
+      [undefined, ""].includes(zone)
+    ) {
+      throwError(false);
+      syncCoordinates("", "");
+      return;
+    }
+
     const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
     let hasErrors = false;
     let lat;
     let lng;
 
     const errorTextSuffix = `The corresponding longitude value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`;
-    const eastingErrorText = `Invalid Easting. ` + errorTextSuffix;
+    const eastingErrorText =
+      `Invalid Easting. Easting value must be between 290220.6 and 720184.9 metres.` + errorTextSuffix;
     const northingErrorText = `Invalid Northing. ` + errorTextSuffix;
     const zoneErrorText = `Invalid Zone. Must be in 7-11 range`;
 
@@ -162,17 +150,18 @@ export const CompCoordinateInput: FC<Props> = ({
       }
     }
 
-    if (zone && !Number.isNaN(zone)) {
-      if (
-        !utmZones
-          ?.map((item) => {
-            return item.value;
-          })
-          .includes(zone.toString())
-      ) {
-        setZoneErrorMsg(zoneErrorText);
-        hasErrors = true;
-      }
+    if (
+      zone &&
+      !Number.isNaN(zone) &&
+      utmZones
+        ?.map((item) => {
+          return item.value;
+        })
+        .includes(zone.toString())
+    ) {
+    } else {
+      setZoneErrorMsg(zoneErrorText);
+      hasErrors = true;
     }
 
     if (hasErrors === false && easting && !Number.isNaN(easting) && northing && !Number.isNaN(northing)) {
@@ -198,6 +187,10 @@ export const CompCoordinateInput: FC<Props> = ({
       if ([xCoordinateErrorMsg, yCoordinateErrorMsg].every((element) => element === "")) {
         if (yCoordinate && xCoordinate) {
           updateUtmFields(yCoordinate, xCoordinate);
+        } else {
+          setEastingCoordinate("");
+          setNorthingCoordinate("");
+          setZoneCoordinate(undefined);
         }
         setCoordinateType(coordinateType);
       }
@@ -305,7 +298,7 @@ export const CompCoordinateInput: FC<Props> = ({
                 type="text"
                 id="input-y-coordinate"
                 className={yCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
-                onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
+                onChange={(evt: any) => handleGeoPointChange(evt.target.value, xCoordinate ?? "")}
                 value={yCoordinate ?? ""}
                 maxLength={120}
               />
@@ -324,7 +317,7 @@ export const CompCoordinateInput: FC<Props> = ({
                 type="text"
                 id="input-x-coordinate"
                 className={xCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
-                onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
+                onChange={(evt: any) => handleGeoPointChange(yCoordinate ?? "", evt.target.value)}
                 value={xCoordinate ?? ""}
                 maxLength={120}
               />
@@ -346,7 +339,9 @@ export const CompCoordinateInput: FC<Props> = ({
               type="text"
               id="input-easting-coordinate"
               className={eastingCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
-              onChange={(evt: any) => handleUtmCoordinateChange(evt.target.value, UTMCoordinates.Easting)}
+              onChange={(evt: any) =>
+                handleUtmGeoPointChange(evt.target.value, northingCoordinate ?? "", zoneCoordinate?.value ?? "")
+              }
               value={formatUtmCoordinate(eastingCoordinate) ?? ""}
             />
             <label
@@ -363,7 +358,9 @@ export const CompCoordinateInput: FC<Props> = ({
               type="text"
               id="input-northing-coordinate"
               className={northingCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
-              onChange={(evt: any) => handleUtmCoordinateChange(evt.target.value, UTMCoordinates.Northing)}
+              onChange={(evt: any) =>
+                handleUtmGeoPointChange(eastingCoordinate ?? "", evt.target.value, zoneCoordinate?.value ?? "")
+              }
               value={formatUtmCoordinate(northingCoordinate) ?? ""}
             />
             <label
@@ -381,8 +378,11 @@ export const CompCoordinateInput: FC<Props> = ({
               placeholder="Zone"
               options={utmZones}
               enableValidation={false}
-              onChange={(e: any) => handleUtmCoordinateChange(e, UTMCoordinates.Zone)}
+              onChange={(e: any) =>
+                handleUtmGeoPointChange(eastingCoordinate ?? "", northingCoordinate ?? "", e?.value)
+              }
               value={zoneCoordinate}
+              isClearable={true}
             />
             <label
               className="comp-form-label-below"
