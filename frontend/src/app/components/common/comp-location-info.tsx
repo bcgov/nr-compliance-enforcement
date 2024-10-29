@@ -23,7 +23,7 @@ export const CompLocationInfo: FC<CompLocationInfoProps> = ({ yCoordinate, xCoor
       </div>
       <div>
         <dt></dt>
-        <dd>Longtitude: {xCoordinate ? `${xCoordinate}` : ""}</dd>
+        <dd>Longitude: {xCoordinate ? `${xCoordinate}` : ""}</dd>
       </div>
       <br />
       <div>

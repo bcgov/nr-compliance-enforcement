@@ -11,8 +11,6 @@ type Props = {
   utmZones?: Array<Option>;
   initXCoordinate?: string;
   initYCoordinate?: string;
-  initXCoordinateErrorMsg?: string;
-  initYCoordinateErrorMsg?: string;
   syncCoordinates: (yCoordinate: string | undefined, xCoordinate: string | undefined) => void;
   throwError: (hasError: boolean) => void;
   sourceXCoordinate?: string;

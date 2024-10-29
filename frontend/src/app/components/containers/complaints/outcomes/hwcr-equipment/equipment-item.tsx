@@ -24,22 +24,6 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
   const dispatch = useAppDispatch();
 
   const [showModal, setShowModal] = useState(false);
-
-  const [utmZone, setUtmZone] = useState<string>("");
-  const [northing, setNorthing] = useState<string>("");
-  const [easting, setEasting] = useState<string>("");
-
-  useEffect(() => {
-    const {
-      easting: eastingValue,
-      northing: northingValue,
-      zone: zoneValue,
-    } = latLngToUtm(equipment.yCoordinate, equipment.xCoordinate);
-    setUtmZone(zoneValue);
-    setNorthing(northingValue);
-    setEasting(eastingValue);
-  }, [equipment.xCoordinate, equipment.yCoordinate]);
-
   const handleEdit = (equipment: EquipmentDetailsDto) => {
     if (equipment.id) {
       onEdit(equipment.id);
