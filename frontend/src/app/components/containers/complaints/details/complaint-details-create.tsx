@@ -86,9 +86,9 @@ export const CreateComplaint: FC = () => {
 
   let assignableOfficers: Option[] = officerList
     ? officerList.map((officer: Officer) => ({
-        value: officer.person_guid.person_guid,
-        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-      }))
+      value: officer.person_guid.person_guid,
+      label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+    }))
     : [];
 
   const yesNoOptions: Option[] = [
@@ -175,6 +175,7 @@ export const CreateComplaint: FC = () => {
         updatedBy: userid,
         complaintMethodReceivedCode: "",
         isPrivacyRequested: "U",
+        referenceNumber: ""
       };
 
       applyComplaintData(model);
