@@ -6,6 +6,7 @@ export const AddComplaintSearchParameters = {
       complaints: {
         ...state.complaints,
         complaintSearchParameters: { sortColumn: "", sortOrder: "" },
+        linkedComplaints: [],
       },
     };
   },

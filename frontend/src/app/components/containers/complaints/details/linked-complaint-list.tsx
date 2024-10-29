@@ -4,21 +4,10 @@ import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 import { formatPhoneNumber } from "react-phone-number-input/input";
+import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
 
 type Props = {
-  linkedComplaintData: LinkedComplaintDataProps[];
-};
-
-type LinkedComplaintDataProps = {
-  id: string;
-  details: string;
-  name: string;
-  address: string;
-  email: string;
-  phone: string;
-  status: string;
-  species: string;
-  natureOfComplaint: string;
+  linkedComplaintData: LinkedComplaint[];
 };
 
 export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData }) => {
