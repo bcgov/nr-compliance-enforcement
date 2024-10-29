@@ -44,7 +44,7 @@ jobs:
           TF_VAR_sysdig_api_token: ${{ secrets.TF_VAR_SYSDIG_API_TOKEN }}
           AWS_NO_SIGN_REQUEST: 1
   deploy:
-    ### if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     needs: validate
     environment: tools
     name: Deploy Sysdig Terraform
