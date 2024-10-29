@@ -275,7 +275,7 @@ export const CompCoordinateInput: FC<Props> = ({
             <CompRadioGroup
               id="coordinate-type-radio-group"
               options={[
-                { value: COORDINATE_TYPES.LatLong, label: "Lat/Long" } as Option,
+                { value: COORDINATE_TYPES.LatLong, label: "Latitude/Longitude" } as Option,
                 { value: COORDINATE_TYPES.UTM, label: "UTM" } as Option,
               ]}
               enableValidation={true}
