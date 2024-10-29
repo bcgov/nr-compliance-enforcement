@@ -1,8 +1,7 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { Badge, Card } from "react-bootstrap";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { formatDate, formatTime, latLngToUtm } from "../../../../common/methods";
-import { Coordinates } from "../../../../types/app/coordinate-type";
+import { formatDate, formatTime } from "../../../../common/methods";
 import { ComplaintDetailsAttractant } from "../../../../types/complaints/details/complaint-attactant";
 import { selectComplaintDetails } from "../../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
