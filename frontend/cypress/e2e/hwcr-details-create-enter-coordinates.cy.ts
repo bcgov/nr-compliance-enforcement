@@ -67,11 +67,11 @@ describe("Complaint Create Page spec - Enter Coordinates - Create View", () => {
 
     cy.selectItemById("reported-select-id", createCallerInformation.reported);
 
-    cy.get("#comp-details-edit-x-coordinate-input").click({ force: true });
-    cy.get("#comp-details-edit-x-coordinate-input").clear().type(createCallDetails.xCoord);
+    cy.get("#input-x-coordinate").click({ force: true });
+    cy.get("#input-x-coordinate").clear().type(createCallDetails.xCoord);
 
-    cy.get("#comp-details-edit-y-coordinate-input").click({ force: true });
-    cy.get("#comp-details-edit-y-coordinate-input").clear().type(createCallDetails.yCoord);
+    cy.get("#input-y-coordinate").click({ force: true });
+    cy.get("#input-y-coordinate").clear().type(createCallDetails.yCoord);
 
     cy.get("#complaint-location-description-textarea-id").click({
       force: true,
@@ -114,8 +114,8 @@ describe("Complaint Create Page spec - Enter Coordinates - Create View", () => {
     });
 
     cy.get('dd[id="comp-details-location-description"]').should("have.text", createCallDetails.locationDescription);
-    cy.get('span[id="call-details-x-coordinate"]').contains(createCallDetails.xCoord);
-    cy.get('span[id="call-details-y-coordinate"]').contains(createCallDetails.yCoord);
+    cy.get('span[id="geo-details-x-coordinate"]').contains(createCallDetails.xCoord);
+    cy.get('span[id="geo-details-y-coordinate"]').contains(createCallDetails.yCoord);
     cy.get('dd[id="comp-details-community"]').contains(createCallDetails.community);
     cy.get('dd[id="comp-details-office"]').contains(createCallDetails.office);
     cy.get('dd[id="comp-details-zone"]').contains(createCallDetails.zone);

@@ -607,7 +607,6 @@
 
     & span:first-of-type {
       &::after {
-        content: ",";
         display: inline-block;
       }
     }
@@ -1930,4 +1929,8 @@ p {
 
 .comp-action-dropdown {
   margin-top: 0.2rem;
+}
+
+.coordinate-zone-select .comp-select__control {
+  min-width: auto;
 }
