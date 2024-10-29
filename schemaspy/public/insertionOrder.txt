@@ -31,6 +31,7 @@ allegation_complaint
 attractant_hwcr_xref
 feature_agency_xref
 gir_complaint
+linked_complaint_xref
 officer_team_xref
 geo_org_unit_structure
 person_complaint_xref
