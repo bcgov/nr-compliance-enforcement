@@ -116,11 +116,12 @@ export const CompCoordinateInput: FC<Props> = ({
     let lat;
     let lng;
 
-    const errorTextSuffix = `The corresponding longitude value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`;
+    const errorTextSuffixLat = `The corresponding latitude value must be between ${bcBoundaries.minLatitude} and ${bcBoundaries.maxLatitude} degrees`;
+    const errorTextSuffixLng = `The corresponding longitude value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`;
     const eastingErrorText =
-      `Invalid Easting. Easting value must be between 290220.6 and 720184.9 metres.` + errorTextSuffix;
+      `Invalid Easting. Easting value must be between 290220.6 and 720184.9 metres. ` + errorTextSuffixLng;
     const northingErrorText =
-      `Invalid Northing. Northing value must be between 5346051.7 and 6655120.8 metres.` + errorTextSuffix;
+      `Invalid Northing. Northing value must be between 5346051.7 and 6655120.8 metres. ` + errorTextSuffixLat;
     const zoneErrorText = `Invalid Zone. Must be in 7-11 range`;
 
     let utm = new utmObj();

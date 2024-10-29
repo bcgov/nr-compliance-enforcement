@@ -8,7 +8,7 @@ import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "../
 import { Badge, Button, Dropdown } from "react-bootstrap";
 
 import { isFeatureActive, openModal } from "../../../../store/reducers/app";
-import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
+import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "../../../../types/modal/modal-types";
 import { exportComplaint } from "../../../../store/reducers/documents-thunks";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
 
@@ -46,7 +46,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   const dispatch = useAppDispatch();
-  const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
+  const assignText = officerAssigned === "Not assigned" ? "Assign" : "Reassign";
 
   const openStatusChangeModal = () => {
     document.body.click();
@@ -78,6 +78,23 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           complaint_type: complaintType,
           zone: zone,
           agency_code: complaintAgency,
+        },
+      }),
+    );
+  };
+
+  const openQuickCloseModal = () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: QUICK_CLOSE,
+        data: {
+          title: `Quick close: ${id}`,
+          description: "",
+          complaint_identifier: id,
+          complaint_type: complaintType,
+          complaint_status: status,
         },
       }),
     );
@@ -146,6 +163,15 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       <i className="bi bi-three-dots-vertical"></i>
                     </Dropdown.Toggle>
                     <Dropdown.Menu align="end">
+                      {complaintType === "HWCR" && (
+                        <Dropdown.Item
+                          as="button"
+                          onClick={openQuickCloseModal}
+                        >
+                          <i className="bi bi-journal-check"></i>
+                          <span>Quick close</span>
+                        </Dropdown.Item>
+                      )}
                       <Dropdown.Item
                         as="button"
                         onClick={openAsignOfficerModal}
@@ -171,9 +197,20 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                   </Dropdown>
                 </div>
                 <div className="comp-header-actions-desktop">
+                  {complaintType === "HWCR" && (
+                    <Button
+                      id="details-screen-close-button"
+                      title="Quick close"
+                      variant="outline-light"
+                      onClick={openQuickCloseModal}
+                    >
+                      <i className="bi bi-journal-check"></i>
+                      <span>Quick close</span>
+                    </Button>
+                  )}
                   <Button
                     id="details-screen-assign-button"
-                    title="Assign to Officer"
+                    title="Assign to officer"
                     variant="outline-light"
                     onClick={openAsignOfficerModal}
                   >
@@ -182,12 +219,12 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                   </Button>
                   <Button
                     id="details-screen-update-status-button"
-                    title="Update Status"
+                    title="Update status"
                     variant="outline-light"
                     onClick={openStatusChangeModal}
                   >
                     <i className="bi bi-arrow-repeat"></i>
-                    <span>Update Status</span>
+                    <span>Update status</span>
                   </Button>
                   <Button
                     id="details-screen-export-complaint-button"
