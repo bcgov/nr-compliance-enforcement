@@ -30,6 +30,7 @@ export interface Complaint {
   };
   delegates: Array<Delegate>;
   webeocId: string;
+  referenceNumber: string;
   complaintMethodReceivedCode: string;
   isPrivacyRequested: string;
 }
