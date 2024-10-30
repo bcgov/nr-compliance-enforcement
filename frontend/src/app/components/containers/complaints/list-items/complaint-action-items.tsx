@@ -1,11 +1,10 @@
 import { FC } from "react";
-import { BsSend } from "react-icons/bs";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { isFeatureActive, openModal } from "../../../../store/reducers/app";
-import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../../types/modal/modal-types";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { getAssessment } from "../../../../store/reducers/case-thunks";
-import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { isFeatureActive, openModal } from "@store/reducers/app";
+import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "@apptypes/modal/modal-types";
+import { Dropdown } from "react-bootstrap";
+import { getAssessment } from "@store/reducers/case-thunks";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
 type Props = {
   complaint_identifier: string;
@@ -25,7 +24,7 @@ export const ComplaintActionItems: FC<Props> = ({
   const dispatch = useAppDispatch();
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
-  const openAsignOfficerModal = () => {
+  const openAssignOfficerModal = () => {
     document.body.click();
     dispatch(
       openModal({
@@ -61,76 +60,89 @@ export const ComplaintActionItems: FC<Props> = ({
     );
   };
 
+  const openQuickCloseModal = async () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: QUICK_CLOSE,
+        data: {
+          title: `Quick close: ${complaint_identifier}`,
+          description: "",
+          complaint_identifier: complaint_identifier,
+          complaint_type: complaint_type,
+          complaint_status: complaint_status,
+          refreshComplaintsOnClose: true,
+        },
+      }),
+    );
+  };
+
   return (
-    <>
-      <OverlayTrigger
-        placement="top"
-        key={`tt-assign-${complaint_identifier}`}
-        overlay={
-          <Tooltip
-            id={`tt-assign-${complaint_identifier}`}
-            className="comp-tooltip"
-          >
-            Assign
-          </Tooltip>
-        }
+    <Dropdown
+      id="quick-action-button"
+      key={`tt-${complaint_identifier}`}
+      drop="start"
+      className="comp-action-dropdown"
+    >
+      <Dropdown.Toggle
+        id={`tt-${complaint_identifier}`}
+        size="sm"
+        variant="outline-primary"
       >
-        <Button
-          variant="light"
-          className="icon-btn"
-          aria-label="Assign complaint"
-          onClick={openAsignOfficerModal}
+        Actions
+      </Dropdown.Toggle>
+      <Dropdown.Menu
+        popperConfig={{
+          modifiers: [
+            {
+              name: "offset",
+              options: {
+                offset: [0, 13],
+                placement: "start",
+              },
+            },
+          ],
+        }}
+      >
+        <Dropdown.Item
+          id="update-assignee-menu-item"
+          onClick={openAssignOfficerModal}
         >
           <i
             className="bi bi-person-up"
             id="update-assignee-icon"
-          ></i>
-        </Button>
-      </OverlayTrigger>
-      {showExperimentalFeature && (
-        <>
-          <OverlayTrigger
-            placement="top"
-            key={`tt-update-${complaint_identifier}`}
-            overlay={
-              <Tooltip
-                id={`tt-update-${complaint_identifier}`}
-                className="comp-tooltip"
-              >
-                Update Status
-              </Tooltip>
-            }
-          >
-            <Button
-              variant="light"
-              className="icon-btn"
-              aria-label="Update status"
-              onClick={openStatusChangeModal}
-            >
+          />{" "}
+          Assign complaint
+        </Dropdown.Item>
+        {complaint_type === "HWCR" && (
+          <Dropdown.Item onClick={openQuickCloseModal}>
+            <i
+              className="bi bi-journal-check"
+              id="link-conplaint-icon"
+            />{" "}
+            Quick close
+          </Dropdown.Item>
+        )}
+        {showExperimentalFeature && (
+          <>
+            <Dropdown.Item onClick={openStatusChangeModal}>
               <i
                 className="bi bi-arrow-repeat"
                 id="update-status-icon"
-              ></i>
-            </Button>
-          </OverlayTrigger>
-          <OverlayTrigger
-            placement="top"
-            key={`tt-refer-${complaint_identifier}`}
-            overlay={
-              <Tooltip
-                id="tt-refer"
-                className="comp-tooltip"
-              >
-                Refer
-              </Tooltip>
-            }
-          >
-            <span>
-              <BsSend className="comp-table-row-hover-icons comp-table-icon comp-table-icon-weighted" />
-            </span>
-          </OverlayTrigger>
-        </>
-      )}
-    </>
+              />{" "}
+              Update Status
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <i
+                className="bi bi-send"
+                id="update-status-icon"
+              />{" "}
+              Refer
+            </Dropdown.Item>
+          </>
+        )}
+      </Dropdown.Menu>
+    </Dropdown>
   );
 };

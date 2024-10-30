@@ -21,6 +21,7 @@ import { dtoAlias } from "../../types/models/complaints/dtoAlias-type";
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { ACTION_TAKEN_ACTION_TYPES } from "src/types/constants";
 import { hasRole } from "src/common/has-role";
+import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -29,7 +30,11 @@ import { hasRole } from "src/common/has-role";
   version: "1",
 })
 export class ComplaintController {
-  constructor(private readonly service: ComplaintService, private readonly stagingService: StagingComplaintService) {}
+  constructor(
+    private readonly service: ComplaintService,
+    private readonly stagingService: StagingComplaintService,
+    private readonly linkedComplaintXrefService: LinkedComplaintXrefService,
+  ) {}
   private readonly logger = new Logger(ComplaintController.name);
 
   @Get(":complaintType")
@@ -120,6 +125,17 @@ export class ComplaintController {
     @Param("zone") zone: string,
   ): Promise<ZoneAtAGlanceStats> {
     return this.service.getZoneAtAGlanceStatistics(complaintType, zone);
+  }
+
+  @Get("/linked-complaints/:complaint_id")
+  @Roles(Role.COS_OFFICER)
+  async findLinkedComplaintsById(@Param("complaint_id") complaintId: string) {
+    const childComplaints = await this.linkedComplaintXrefService.findChildComplaints(complaintId);
+    if (childComplaints.length > 0) return childComplaints;
+    else {
+      const parentComplaint = await this.linkedComplaintXrefService.findParentComplaint(complaintId);
+      return parentComplaint;
+    }
   }
 
   @Public()

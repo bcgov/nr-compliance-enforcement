@@ -12,7 +12,7 @@ import { getCaseFile } from "../../../../store/reducers/case-thunks";
 import { HWCROutcomeByAnimalv2 } from "./hwcr-outcome-by-animal-v2";
 
 export const HWCROutcomeReport: FC = () => {
-  const { id = "" } = useParams<ComplaintParams>();
+  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -26,7 +26,10 @@ export const HWCROutcomeReport: FC = () => {
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
-      <HWCRComplaintAssessment />
+      <HWCRComplaintAssessment
+        id={id}
+        complaintType={complaintType}
+      />
       <HWCRComplaintPrevention />
       <HWCREquipment />
       <HWCROutcomeByAnimalv2 />

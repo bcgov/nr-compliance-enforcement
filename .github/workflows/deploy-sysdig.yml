@@ -1,0 +1,64 @@
+name: Deploy Sysdig Alerts
+
+on:
+  push:
+    paths:
+      - "terraform/**"
+
+concurrency:
+  # Do not interrupt previous workflows
+  # avoid state corruption from cancels
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  installed:
+    environment: tools
+    name: Check Sysdig Installed
+    runs-on: ubuntu-22.04
+    timeout-minutes: 1
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./.github/scripts/sysdig_installed.sh
+        env:
+          OC_NAMESPACE: ${{ secrets.OC_NAMESPACE }}
+          OC_SERVER: ${{ secrets.OC_SERVER }}
+          OC_TOKEN: ${{ secrets.OC_TOKEN }}
+
+  validate:
+    environment: tools
+    needs: installed
+    name: Validate Sysdig Terraform
+    runs-on: ubuntu-22.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Sysdig Terraform
+        run: APPLY=false ./.github/scripts/sysdig_deploy.sh
+        env:
+          STATE_BACKEND_BUCKET: ${{ secrets.STATE_BACKEND_BUCKET }}
+          STATE_BACKEND_ACCESS_KEY: ${{ secrets.STATE_BACKEND_ACCESS_KEY }}
+          STATE_BACKEND_SECRET_KEY: ${{ secrets.STATE_BACKEND_SECRET_KEY }}
+          STATE_BACKEND_FILEPATH: ${{ secrets.STATE_BACKEND_FILEPATH }}
+          STATE_BACKEND_ENDPOINT: ${{ secrets.STATE_BACKEND_ENDPOINT }}
+          TF_VAR_sysdig_api_token: ${{ secrets.TF_VAR_SYSDIG_API_TOKEN }}
+          AWS_NO_SIGN_REQUEST: 1
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: validate
+    environment: tools
+    name: Deploy Sysdig Terraform
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply Sysdig Terraform
+        run: APPLY=true ./.github/scripts/sysdig_deploy.sh
+        env:
+          STATE_BACKEND_BUCKET: ${{ secrets.STATE_BACKEND_BUCKET }}
+          STATE_BACKEND_ACCESS_KEY: ${{ secrets.STATE_BACKEND_ACCESS_KEY }}
+          STATE_BACKEND_SECRET_KEY: ${{ secrets.STATE_BACKEND_SECRET_KEY }}
+          STATE_BACKEND_FILEPATH: ${{ secrets.STATE_BACKEND_FILEPATH }}
+          STATE_BACKEND_ENDPOINT: ${{ secrets.STATE_BACKEND_ENDPOINT }}
+          TF_VAR_sysdig_api_token: ${{ secrets.TF_VAR_SYSDIG_API_TOKEN }}
+          AWS_NO_SIGN_REQUEST: 1

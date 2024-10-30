@@ -246,10 +246,6 @@
       }
     }
 
-    td {
-      overflow: hidden;
-    }
-
     .comp-table-row-hover-style {
       background-color: $gray-110;
     }
@@ -611,7 +607,6 @@
 
     & span:first-of-type {
       &::after {
-        content: ",";
         display: inline-block;
       }
     }
@@ -979,6 +974,7 @@ p {
 }
 
 .comp-complaint-details-block {
+  margin-bottom: 48px;
   h6 {
     padding-top: 0px;
     font-weight: 700;
@@ -1042,6 +1038,49 @@ p {
     flex-direction: row;
     align-items: flex-start;
     gap: 8px;
+  }
+
+  .comp-linked-complaint-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+    border: 1px solid $bc-brand-links;
+    border-radius: 4px;
+    padding: 13px 26px;
+    cursor: pointer;
+    &:hover {
+      background-color: $gray-110;
+    }
+
+    .item-header {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+      .item-link {
+        color: $bc-brand-links;
+      }
+    }
+
+    .comp-details-section {
+      div {
+        margin-top: 13px;
+      }
+    }
+  }
+
+  .viewMore {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    margin: 13px 26px 0px 26px;
+    cursor: pointer;
+    color: $bc-brand-links;
+    font-size: 15px;
+    &:hover {
+      color: $bc-brand-blue;
+    }
   }
 
   .comp-complaint-update-count {
@@ -1886,4 +1925,12 @@ p {
 .form-check-input:disabled {
   cursor: not-allowed;
   pointer-events: all;
+}
+
+.comp-action-dropdown {
+  margin-top: 0.2rem;
+}
+
+.coordinate-zone-select .comp-select__control {
+  min-width: auto;
 }
