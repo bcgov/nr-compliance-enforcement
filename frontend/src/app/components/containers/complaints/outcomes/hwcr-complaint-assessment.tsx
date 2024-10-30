@@ -1,50 +1,57 @@
-import { FC, useEffect, useState } from "react";
-import Option from "../../../../types/app/option";
-import { Button, Card } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectOfficerListByAgency, selectOfficersByAgency } from "../../../../store/reducers/officer";
+import { FC, useEffect, useState, useCallback } from "react";
+import { Button, Card, Alert } from "react-bootstrap";
+import Option from "@apptypes/app/option";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
 import {
   getComplaintById,
   selectComplaint,
   selectComplaintCallerInformation,
   selectComplaintHeader,
   selectComplaintAssignedBy,
-} from "../../../../store/reducers/complaints";
+} from "@store/reducers/complaints";
 import {
   selectAssessmentTypeCodeDropdown,
   selectJustificationCodeDropdown,
   selectYesNoCodeDropdown,
-} from "../../../../store/reducers/code-table";
-import { useParams } from "react-router-dom";
-import { formatDate, getSelectedOfficer } from "../../../../common/methods";
-import { CompSelect } from "../../../common/comp-select";
-import { ValidationCheckboxGroup } from "../../../../common/validation-checkbox-group";
-import { resetAssessment, setIsInEdit } from "../../../../store/reducers/cases";
-import { openModal } from "../../../../store/reducers/app";
-import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
-import { ToggleError } from "../../../../common/toast";
+} from "@store/reducers/code-table";
+import { formatDate, getSelectedOfficer } from "@common/methods";
+import { CompSelect } from "@components/common/comp-select";
+import { ValidationCheckboxGroup } from "@common/validation-checkbox-group";
+import { clearAssessment, setIsInEdit } from "@store/reducers/cases";
+import { openModal } from "@store/reducers/app";
+import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { ToggleError } from "@common/toast";
 import "react-toastify/dist/ReactToastify.css";
-import { Assessment } from "../../../../types/outcomes/assessment";
-import { ValidationDatePicker } from "../../../../common/validation-date-picker";
+import { Assessment } from "@apptypes/outcomes/assessment";
+import { ValidationDatePicker } from "@common/validation-date-picker";
 import { BsExclamationCircleFill } from "react-icons/bs";
 
-import "../../../../../assets/sass/hwcr-assessment.scss";
-import { selectAssessment } from "../../../../store/reducers/case-selectors";
-import { getAssessment, upsertAssessment } from "../../../../store/reducers/case-thunks";
-import { OptionLabels } from "../../../../constants/option-labels";
+import "@assets/sass/hwcr-assessment.scss";
+import { selectAssessment } from "@store/reducers/case-selectors";
+import { getAssessment, upsertAssessment } from "@store/reducers/case-thunks";
+import { OptionLabels } from "@constants/option-labels";
+import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
 
-export const HWCRComplaintAssessment: FC = () => {
+type Props = { id: string; complaintType: string; handleSave?: () => void; showHeader?: boolean; quickClose?: boolean };
+
+export const HWCRComplaintAssessment: FC<Props> = ({
+  id,
+  complaintType,
+  handleSave = () => {},
+  showHeader = true,
+  quickClose = false,
+}) => {
   const dispatch = useAppDispatch();
-  type ComplaintParams = {
-    id: string;
-    complaintType: string;
-  };
   const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
   const [selectedJustification, setSelectedJustification] = useState<Option | null>();
+  const [selectedLinkedComplaint, setSelectedLinkedComplaint] = useState<Option | null>();
+  const [selectedLinkedComplaintStatus, setSelectedLinkedComplaintStatus] = useState<string | null>();
   const [selectedDate, setSelectedDate] = useState<Date | null | undefined>();
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>();
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
   const [editable, setEditable] = useState<boolean>(true);
+  const [validateOnChange, setValidateOnChange] = useState<boolean>(false);
 
   const handleAssessmentTypesChange = (selectedItems: Option[]) => {
     setSelectedAssessmentTypes(selectedItems);
@@ -54,11 +61,11 @@ export const HWCRComplaintAssessment: FC = () => {
   const [assessmentDateErrorMessage, setAssessmentDateErrorMessage] = useState<string>("");
   const [actionRequiredErrorMessage, setActionRequiredErrorMessage] = useState<string>("");
   const [justificationRequiredErrorMessage, setJustificationRequiredErrorMessage] = useState<string>("");
+  const [linkedComplaintErrorMessage, setLinkedComplaintErrorMessage] = useState<string>("");
   const [assessmentRequiredErrorMessage, setAssessmentRequiredErrorMessage] = useState<string>("");
 
   const complaintData = useAppSelector(selectComplaint);
   const assessmentState = useAppSelector(selectAssessment);
-  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const cases = useAppSelector((state) => state.cases);
@@ -86,15 +93,27 @@ export const HWCRComplaintAssessment: FC = () => {
       setSelectedActionRequired(selected);
       setSelectedJustification(null as unknown as Option);
     } else {
-      setSelectedActionRequired(undefined);
+      setSelectedActionRequired(null);
     }
   };
 
   const handleJustificationChange = (selected: Option | null) => {
     if (selected) {
       setSelectedJustification(selected);
+      if (selected.value !== "DUPLICATE") {
+        setSelectedLinkedComplaint(null);
+      }
     } else {
-      setSelectedJustification(undefined);
+      setSelectedJustification(null);
+    }
+  };
+
+  const handleLinkedComplaintChange = (selected: Option | null, status: string | null) => {
+    if (selected) {
+      setSelectedLinkedComplaint(selected);
+      setSelectedLinkedComplaintStatus(status);
+    } else {
+      setSelectedLinkedComplaint(null);
     }
   };
 
@@ -114,6 +133,7 @@ export const HWCRComplaintAssessment: FC = () => {
     if (complaintData) {
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
+      dispatch(clearAssessment());
       dispatch(getAssessment(complaintData.id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -123,13 +143,6 @@ export const HWCRComplaintAssessment: FC = () => {
     populateAssessmentUI();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessmentState]);
-
-  // clear the redux state
-  useEffect(() => {
-    return () => {
-      dispatch(resetAssessment());
-    };
-  }, [dispatch]);
 
   const populateAssessmentUI = () => {
     const selectedOfficer = (
@@ -141,23 +154,27 @@ export const HWCRComplaintAssessment: FC = () => {
         : null
     ) as Option;
 
-    const selectedActionRequired = (
-      assessmentState.action_required
-        ? {
-            label: assessmentState.action_required,
-            value: assessmentState.action_required,
-          }
-        : null
-    ) as Option;
+    let selectedActionRequired = quickClose ? ({ label: "No", value: "No" } as Option) : null;
 
-    const selectedJustification = (
-      assessmentState.justification
-        ? {
-            label: assessmentState.justification?.key,
-            value: assessmentState.justification?.value,
-          }
-        : null
-    ) as Option;
+    if (assessmentState.action_required) {
+      selectedActionRequired = {
+        label: assessmentState.action_required,
+        value: assessmentState.action_required,
+      } as Option;
+    }
+
+    let selectedJustification = quickClose ? ({ label: "Duplicate", value: "DUPLICATE" } as Option) : null;
+
+    if (assessmentState.justification) {
+      selectedJustification = {
+        label: assessmentState.justification?.key,
+        value: assessmentState.justification?.value,
+      } as Option;
+    }
+
+    const selectedLinkedComplaint = assessmentState.linked_complaint
+      ? ({ label: assessmentState.linked_complaint.key, value: assessmentState.linked_complaint.value } as Option)
+      : null;
 
     const selectedAssessmentTypes = assessmentState.assessment_type?.map((item) => {
       return {
@@ -172,6 +189,7 @@ export const HWCRComplaintAssessment: FC = () => {
     setSelectedOfficer(selectedOfficer);
     setSelectedActionRequired(selectedActionRequired);
     setSelectedJustification(selectedJustification);
+    setSelectedLinkedComplaint(selectedLinkedComplaint);
     setSelectedAssessmentTypes(selectedAssessmentTypes);
     resetValidationErrors();
     setEditable(!assessmentState.date);
@@ -196,8 +214,8 @@ export const HWCRComplaintAssessment: FC = () => {
     }
   };
 
-  const justificationLabelClass = selectedActionRequired?.value === "No" ? "visible" : "hidden";
-  const justificationEditClass = selectedActionRequired?.value === "No" ? "visible" : "hidden";
+  const justificationLabelClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
+  const justificationEditClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
 
   const cancelConfirmed = () => {
     populateAssessmentUI();
@@ -227,9 +245,15 @@ export const HWCRComplaintAssessment: FC = () => {
           value: selectedOfficer?.value,
         },
         action_required: selectedActionRequired?.label,
+        close_complaint:
+          selectedActionRequired?.value === "No" && (quickClose || selectedJustification?.value === "DUPLICATE"),
         justification: {
           key: selectedJustification?.label,
           value: selectedJustification?.value,
+        },
+        linked_complaint: {
+          key: selectedLinkedComplaint?.label,
+          value: selectedLinkedComplaint?.value,
         },
         assessment_type:
           selectedActionRequired?.label === OptionLabels.OPTION_NO
@@ -242,8 +266,9 @@ export const HWCRComplaintAssessment: FC = () => {
               }),
       };
 
-      dispatch(upsertAssessment(id, updatedAssessmentData));
+      await dispatch(upsertAssessment(id, updatedAssessmentData));
       setEditable(false);
+      handleSave();
     } else {
       handleFormErrors();
     }
@@ -251,6 +276,7 @@ export const HWCRComplaintAssessment: FC = () => {
 
   const handleFormErrors = () => {
     ToggleError("Errors in form");
+    setValidateOnChange(true);
   };
 
   // Clear out existing validation errors
@@ -259,11 +285,12 @@ export const HWCRComplaintAssessment: FC = () => {
     setActionRequiredErrorMessage("");
     setAssessmentDateErrorMessage("");
     setJustificationRequiredErrorMessage("");
+    setLinkedComplaintErrorMessage("");
     setAssessmentRequiredErrorMessage("");
   };
 
   // Validates the assessment
-  const hasErrors = (): boolean => {
+  const hasErrors = useCallback((): boolean => {
     let hasErrors: boolean = false;
     resetValidationErrors();
 
@@ -295,35 +322,79 @@ export const HWCRComplaintAssessment: FC = () => {
       hasErrors = true;
     }
 
+    if (selectedJustification?.value === "DUPLICATE") {
+      if (!selectedLinkedComplaint) {
+        setLinkedComplaintErrorMessage("Required when Justification is Duplicate");
+        hasErrors = true;
+      } else if (selectedLinkedComplaint.value === id) {
+        setLinkedComplaintErrorMessage("Linked complaint cannot be the same as the current complaint");
+        hasErrors = true;
+      } else if (selectedLinkedComplaintStatus !== "OPEN") {
+        setLinkedComplaintErrorMessage("Linked complaint must be open");
+        hasErrors = true;
+      }
+    }
+
     return hasErrors;
+  }, [
+    id,
+    selectedOfficer,
+    selectedDate,
+    selectedActionRequired,
+    selectedJustification,
+    selectedLinkedComplaint,
+    selectedLinkedComplaintStatus,
+    selectedAssessmentTypes,
+  ]);
+
+  // Validate on selected value change
+  useEffect(() => {
+    validateOnChange && hasErrors();
+  }, [
+    validateOnChange,
+    hasErrors,
+    selectedOfficer,
+    selectedActionRequired,
+    selectedJustification,
+    selectedLinkedComplaint,
+    selectedAssessmentTypes,
+  ]);
+
+  const determineBorder = (): string => {
+    let cardBorder = showSectionErrors ? "danger" : "default";
+    if (quickClose) {
+      cardBorder = "0";
+    }
+    return cardBorder;
   };
 
-  const assessmentDivClass = `comp-details-form-row ${selectedActionRequired?.value === "Yes" ? "visible" : "hidden"}`;
+  const assessmentDivClass = `comp-details-form-row ${selectedActionRequired?.value === "Yes" ? "inherit" : "hidden"}`;
 
   return (
     <section className="comp-details-section comp-outcome-report-complaint-assessment">
-      <div className="comp-details-section-header">
-        <h3>Complaint assessment</h3>
-        {!editable && (
-          <div className="comp-details-section-header-actions">
-            <Button
-              id="assessment-edit-button"
-              variant="outline-primary"
-              size="sm"
-              onClick={toggleEdit}
-            >
-              <i className="bi bi-pencil"></i>
-              <span>Edit</span>
-            </Button>
-          </div>
-        )}
-      </div>
-
+      {showHeader && (
+        <div className="comp-details-section-header">
+          <h3>Complaint assessment</h3>
+          {!editable && (
+            <div className="comp-details-section-header-actions">
+              <Button
+                id="assessment-edit-button"
+                variant="outline-primary"
+                size="sm"
+                onClick={toggleEdit}
+              >
+                <i className="bi bi-pencil"></i>
+                <span>Edit</span>
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
       <Card
         id="outcome-assessment"
-        border={showSectionErrors ? "danger" : "default"}
+        border={determineBorder()}
       >
-        <Card.Body>
+        <Card.Body className={quickClose ? "p-0" : ""}>
           {showSectionErrors && (
             <div className="section-error-message">
               <BsExclamationCircleFill />
@@ -343,17 +414,21 @@ export const HWCRComplaintAssessment: FC = () => {
               >
                 <label htmlFor="action-required">Action required?</label>
                 <div className="comp-details-input full-width">
-                  <CompSelect
-                    id="action-required"
-                    className="comp-details-input"
-                    classNamePrefix="comp-select"
-                    options={actionRequiredList}
-                    enableValidation={true}
-                    errorMessage={actionRequiredErrorMessage}
-                    value={selectedActionRequired}
-                    placeholder="Select"
-                    onChange={(e) => handleActionRequiredChange(e)}
-                  />
+                  {quickClose ? (
+                    <span>{selectedActionRequired?.value}</span>
+                  ) : (
+                    <CompSelect
+                      id="action-required"
+                      className="comp-details-input"
+                      classNamePrefix="comp-select"
+                      options={actionRequiredList}
+                      enableValidation={true}
+                      errorMessage={actionRequiredErrorMessage}
+                      value={selectedActionRequired}
+                      placeholder="Select"
+                      onChange={(e) => handleActionRequiredChange(e)}
+                    />
+                  )}
                 </div>
               </div>
               <div
@@ -374,6 +449,40 @@ export const HWCRComplaintAssessment: FC = () => {
                   />
                 </div>
               </div>
+              {selectedJustification?.value === "DUPLICATE" && !quickClose && (
+                <div className="comp-details-form-row">
+                  <label
+                    htmlFor="duplicate-warning"
+                    aria-label="warning"
+                  />
+                  <div className="comp-details-input full-width">
+                    <Alert
+                      id="duplicate-warning"
+                      variant="warning"
+                      className="comp-complaint-details-alert"
+                    >
+                      <i className="bi bi-info-circle-fill" /> Note that assessing a complaint as duplicate will close
+                      the complaint and link it to the selected complaint.
+                    </Alert>
+                  </div>
+                </div>
+              )}
+              {selectedJustification?.value === "DUPLICATE" && (
+                <div
+                  className="comp-details-form-row"
+                  id="linked-complaint-div"
+                >
+                  <label htmlFor="linkedComplaint">Linking current complaint to:</label>
+                  <div className="comp-details-input full-width">
+                    <HWCRComplaintAssessmentLinkComplaintSearch
+                      id="linkedComplaint"
+                      onChange={(e, s) => handleLinkedComplaintChange(e, s)}
+                      errorMessage={linkedComplaintErrorMessage}
+                    />
+                  </div>
+                </div>
+              )}
+
               <div
                 className={assessmentDivClass}
                 id="assessment-checkbox-div"
@@ -440,7 +549,7 @@ export const HWCRComplaintAssessment: FC = () => {
                   title="Save Outcome"
                   onClick={saveButtonClick}
                 >
-                  Save
+                  <span>{quickClose ? "Save and Close" : "Save"}</span>
                 </Button>
               </div>
             </div>

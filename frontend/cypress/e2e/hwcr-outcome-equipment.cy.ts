@@ -37,8 +37,8 @@ describe("HWCR Outcome Equipment", () => {
         let inputs = [
           "#equipment-type-div",
           "#equipment-address-div",
-          "#equipment-coordinate-div",
-          "#equipment-coordinate-div",
+          "#equipment-coordinates",
+          "#equipment-coordinates",
           "#equipment-officer-set-div",
         ];
         cy.hasErrorMessage(inputs, "Errors creating equipment");
@@ -63,7 +63,7 @@ describe("HWCR Outcome Equipment", () => {
           equipmentType: "Bear snare",
         };
         cy.get("#equipment-copy-address-button").click();
-        cy.get("#equipment-copy-coordinates-button").click();
+        cy.get("#copy-coordinates-button").click();
 
         cy.fillInHWCSection(sectionParams).then(() => {
           cy.validateHWCSection(sectionParams);

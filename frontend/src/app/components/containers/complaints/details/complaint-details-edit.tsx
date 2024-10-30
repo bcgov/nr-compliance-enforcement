@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { bcBoundaries, getSelectedOfficer } from "../../../../common/methods";
+import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate } from "../../../../common/methods";
 import { Coordinates } from "../../../../types/app/coordinate-type";
 import {
   setComplaint,
@@ -12,6 +12,9 @@ import {
   selectComplaintHeader,
   selectComplaintCallerInformation,
   selectComplaintSuspectWitnessDetails,
+  getLinkedComplaints,
+  selectLinkedComplaints,
+  setLinkedComplaints,
 } from "../../../../store/reducers/complaints";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
@@ -73,6 +76,9 @@ import { AgencyType } from "../../../../types/app/agency-types";
 import { CeebOutcomeReport } from "../outcomes/ceeb/ceeb-outcome-report";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
 import { FeatureFlag } from "../../../common/feature-flag";
+import { LinkedComplaintList } from "./linked-complaint-list";
+import { CompCoordinateInput } from "../../../common/comp-coordinate-input";
+import { ExternalFileReference } from "../outcomes/external-file-reference";
 
 export type ComplaintParams = {
   id: string;
@@ -153,6 +159,8 @@ export const ComplaintDetailsEdit: FC = () => {
     selectComplaintSuspectWitnessDetails,
   ) as ComplaintSuspectWitness;
 
+  const linkedComplaintData = useAppSelector(selectLinkedComplaints);
+
   //-- state
   const [readOnly, setReadOnly] = useState(true);
 
@@ -171,8 +179,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const [complaintDescriptionError, setComplaintDescriptionError] = useState<string>("");
   const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
   const [communityError, setCommunityError] = useState<string>("");
-  const [geoPointXMsg, setGeoPointXMsg] = useState<string>("");
-  const [geoPointYMsg, setGeoPointYMsg] = useState<string>("");
+  const [coordinateErrorsInd, setCoordinateErrorsInd] = useState<boolean>(false);
   const [emailMsg, setEmailMsg] = useState<string>("");
   const [primaryPhoneMsg, setPrimaryPhoneMsg] = useState<string>("");
   const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
@@ -193,6 +200,7 @@ export const ComplaintDetailsEdit: FC = () => {
     return () => {
       dispatch(setComplaint(null));
       dispatch(setGeocodedComplaintCoordinates(null));
+      dispatch(setLinkedComplaints([]));
     };
   }, [dispatch]);
 
@@ -213,6 +221,13 @@ export const ComplaintDetailsEdit: FC = () => {
     setLongitude(getEditableCoordinates(coordinates, Coordinates.Longitude));
     setLatitude(getEditableCoordinates(coordinates, Coordinates.Latitude));
   }, [coordinates]);
+
+  useEffect(() => {
+    //getLinkedComplaints api only applies for hwcr, for now
+    if (complaintType === "HWCR") {
+      dispatch(getLinkedComplaints(id));
+    }
+  }, [id, complaintType, details]);
 
   //-- events
   const editButtonClick = () => {
@@ -263,8 +278,6 @@ export const ComplaintDetailsEdit: FC = () => {
     setComplaintDescriptionError("");
     setAttractantsErrorMsg("");
     setCommunityError("");
-    setGeoPointXMsg("");
-    setGeoPointYMsg("");
     setEmailMsg("");
     setPrimaryPhoneMsg("");
     setSecondaryPhoneMsg("");
@@ -309,8 +322,7 @@ export const ComplaintDetailsEdit: FC = () => {
       complaintDescriptionError === "" &&
       attractantsErrorMsg === "" &&
       communityError === "" &&
-      geoPointXMsg === "" &&
-      geoPointYMsg === "" &&
+      coordinateErrorsInd === false &&
       emailMsg === "" &&
       primaryPhoneMsg === "" &&
       secondaryPhoneMsg === "" &&
@@ -366,7 +378,6 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const handleMarkerMove = async (lat: number, lng: number) => {
     await updateCoordinates(lat, lng);
-    await updateValidation(lat, lng);
   };
 
   const updateCoordinates = async (lat: number, lng: number) => {
@@ -374,9 +385,6 @@ export const ComplaintDetailsEdit: FC = () => {
     setLongitude(lng.toString());
   };
 
-  const updateValidation = async (lat: number, lng: number) => {
-    handleGeoPointChange(lat.toString(), lng.toString());
-  };
   //-- general incident complaint updates
   const handleGirTypeChange = (selected: Option | null) => {
     if (selected) {
@@ -564,49 +572,6 @@ export const ComplaintDetailsEdit: FC = () => {
     applyComplaintUpdate(updatedComplaint);
   };
 
-  const handleCoordinateChange = (input: string, type: Coordinates) => {
-    if (type === Coordinates.Latitude) {
-      setLatitude(input);
-      handleGeoPointChange(input, longitude);
-    } else {
-      setLongitude(input);
-      handleGeoPointChange(latitude, input);
-    }
-  };
-
-  const handleGeoPointChange = (latitude: string, longitude: string) => {
-    //-- clear errors
-    setGeoPointXMsg("");
-    setGeoPointYMsg("");
-
-    //-- verify latitude and longitude
-    if (latitude && !Number.isNaN(latitude)) {
-      const item = parseFloat(latitude);
-      if (item > bcBoundaries.maxLatitude || item < bcBoundaries.minLatitude) {
-        setGeoPointYMsg(`Value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`);
-      }
-    }
-
-    if (longitude && !Number.isNaN(longitude)) {
-      const item = parseFloat(longitude);
-      if (item > bcBoundaries.maxLongitude || item < bcBoundaries.minLongitude) {
-        setGeoPointXMsg(`Value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`);
-      }
-    }
-
-    if (latitude && longitude && !Number.isNaN(latitude) && !Number.isNaN(longitude)) {
-      const location = { type: "point", coordinates: [parseFloat(longitude), parseFloat(latitude)] };
-
-      const updatedComplaint = { ...complaintUpdate, location } as ComplaintDto;
-      applyComplaintUpdate(updatedComplaint);
-    } else if (latitude === "" && longitude === "") {
-      const location = { type: "point", coordinates: [0, 0] };
-
-      const updatedComplaint = { ...complaintUpdate, location } as ComplaintDto;
-      applyComplaintUpdate(updatedComplaint);
-    }
-  };
-
   const handleCommunityChange = (selectedOption: Option | null) => {
     if (!selectedOption) {
       return;
@@ -722,6 +687,33 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const maxDate = new Date();
 
+  const syncCoordinates = (yCoordinate: string | undefined, xCoordinate: string | undefined) => {
+    setLongitude(xCoordinate ?? "0");
+    setLatitude(yCoordinate ?? "0");
+
+    if (yCoordinate && xCoordinate && !Number.isNaN(yCoordinate) && !Number.isNaN(xCoordinate)) {
+      const location = {
+        type: "point",
+        coordinates: [
+          parseFloat(formatLatLongCoordinate(xCoordinate) ?? ""),
+          parseFloat(formatLatLongCoordinate(yCoordinate) ?? ""),
+        ],
+      };
+
+      const updatedComplaint = { ...complaintUpdate, location } as ComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
+    } else if (yCoordinate === "" && xCoordinate === "") {
+      const location = { type: "point", coordinates: [0, 0] };
+
+      const updatedComplaint = { ...complaintUpdate, location } as ComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
+    }
+  };
+
+  const throwError = (hasError: boolean) => {
+    setCoordinateErrorsInd(hasError);
+  };
+
   return (
     <div className="comp-complaint-details">
       <ToastContainer />
@@ -734,10 +726,14 @@ export const ComplaintDetailsEdit: FC = () => {
         saveButtonClick={saveButtonClick}
       />
 
-      {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
-
       <section className="comp-details-body comp-container">
         <hr className="comp-details-body-spacer"></hr>
+
+        {readOnly && linkedComplaintData.length > 0 && (
+          <LinkedComplaintList linkedComplaintData={linkedComplaintData} />
+        )}
+        {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
+
         <div className="comp-details-section-header">
           <h2>Complaint Details</h2>
           {readOnly && (
@@ -1050,34 +1046,17 @@ export const ComplaintDetailsEdit: FC = () => {
                 />
               </div>
 
-              {/* Latitude / Longitude */}
-              <CompInput
-                id="comp-details-edit-y-coordinate-input"
-                divid="comp-details-edit-y-coordinate-input-div"
-                type="input"
-                label="Latitude"
-                containerClass="comp-details-edit-input"
-                formClass="comp-details-form-row"
-                inputClass="comp-form-control"
-                value={latitude}
-                error={geoPointYMsg}
-                step="any"
-                onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Latitude)}
+              <CompCoordinateInput
+                id="edit-complaint-coordinates"
+                utmZones={bcUtmZoneNumbers.map((zone: string) => {
+                  return { value: zone, label: zone } as Option;
+                })}
+                initXCoordinate={longitude}
+                initYCoordinate={latitude}
+                syncCoordinates={syncCoordinates}
+                throwError={throwError}
+                enableCopyCoordinates={false}
               />
-              <CompInput
-                id="comp-details-edit-x-coordinate-input"
-                divid="comp-details-edit-x-coordinate-input-div"
-                type="input"
-                label="Longitude"
-                containerClass="comp-details-edit-input"
-                formClass="comp-details-form-row"
-                inputClass="comp-form-control"
-                value={longitude}
-                error={geoPointXMsg}
-                step="any"
-                onChange={(evt: any) => handleCoordinateChange(evt.target.value, Coordinates.Longitude)}
-              />
-
               <div
                 className="comp-details-form-row"
                 id="area-community-pair-id"
@@ -1398,11 +1377,25 @@ export const ComplaintDetailsEdit: FC = () => {
         )}
       </section>
 
-      {/* HWCR Outcome Report */}
-      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
+      {/* HWCR Outcome Report and File Linkage */}
+      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && (
+        <>
+          <HWCROutcomeReport />
+          <FeatureFlag feature={FEATURE_TYPES.EXTERNAL_FILE_REFERENCE}>
+            <ExternalFileReference />
+          </FeatureFlag>
+        </>
+      )}
 
       {/* CEEB ERS Outcome Report */}
       {readOnly && complaintType === COMPLAINT_TYPES.ERS && agency === AgencyType.CEEB && <CeebOutcomeReport />}
+
+      {/* COS ERS File Linkage */}
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && (
+        <FeatureFlag feature={FEATURE_TYPES.EXTERNAL_FILE_REFERENCE}>
+          <ExternalFileReference />
+        </FeatureFlag>
+      )}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { FC, useState, useContext, useCallback, useEffect } from "react";
 import { shallowEqual } from "react-redux";
 import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
+import { ToastContainer } from "react-toastify";
 
 import { useAppSelector, useAppDispatch } from "../../../hooks/hooks";
 import { ComplaintFilter } from "./complaint-filter";
@@ -80,6 +81,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   return (
     <div className="comp-page-container comp-page-container--noscroll">
+      <ToastContainer />
       <div className="comp-page-header">
         <div className="comp-page-title-container">
           <h1>Complaints</h1>

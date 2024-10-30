@@ -19,6 +19,13 @@ import { UpdateDecisionInput } from "src/types/models/case-files/ceeb/decision/u
 import { CreateAuthorizationOutcomeInput } from "src/types/models/case-files/ceeb/site/create-authorization-outcome-input";
 import { UpdateAuthorizationOutcomeInput } from "src/types/models/case-files/ceeb/site/update-authorization-outcome-input";
 import { DeleteAuthorizationOutcomeInput } from "src/types/models/case-files/ceeb/site/delete-authorization-outcome-input";
+import { DataSource, Repository } from "typeorm";
+import { LinkedComplaintXref } from "../linked_complaint_xref/entities/linked_complaint_xref.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { getIdirFromRequest } from "../../common/get-idir-from-request";
+import { CodeTableService } from "../code-table/code-table.service";
+import { Complaint } from "../complaint/entities/complaint.entity";
+import { CreateLinkedComplaintXrefDto } from "../linked_complaint_xref/dto/create-linked_complaint_xref.dto";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -153,6 +160,8 @@ export class CaseFileService {
     @Inject(REQUEST) private request: Request,
     @InjectMapper() mapper,
     private readonly complaintService: ComplaintService,
+    private readonly _codeTableService: CodeTableService,
+    private readonly dataSource: DataSource,
   ) {
     this.mapper = mapper;
   }
@@ -178,17 +187,138 @@ export class CaseFileService {
     }
   };
 
-  createAssessment = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
-    const result = await post(token, {
-      query: `mutation CreateAssessment($createAssessmentInput: CreateAssessmentInput!) {
-        createAssessment(createAssessmentInput: $createAssessmentInput) 
-        ${this.caseFileQueryFields}
-      }`,
-      variables: model,
-    });
-    const returnValue = await this.handleAPIResponse(result);
+  // The linked complaint xref and complaint repositories are needed if an assessment being created is also linking two
+  // complaints. The codeTableService is needed to fetch the status used to update the closing complaint's status.
+  @InjectRepository(LinkedComplaintXref)
+  private readonly _linkedComplaintXrefRepository: Repository<LinkedComplaintXref>;
+  @InjectRepository(Complaint)
+  private readonly _complaintsRepository: Repository<Complaint>;
+
+  async createAssessment(token: string, model: CaseFileDto): Promise<CaseFileDto> {
+    /**
+     * If the assessment is linking the complaint to another, the assessment (CM db) and a linked complaint xref
+     * (NATCom db) both need to be created. To ensure that either both are successfully created, or neither of them
+     * are, the following takes place:
+     * A transaction is started in the NATCom database. If anything beyond this point fails, the transaction is
+     * rolled back. With the transaction open, the db's ability to fulfill the creation of the link is confirmed.
+     * Once confirmed, the assessment is created in the CM database. If this is successful, the transaction in the
+     * NATCom database is commit, the connection is closed, and the new assessmentis returned.
+     *
+     * This process of creating the complaint links is handled here to accommodate this pseudo two phase commit
+     * pattern.
+     */
+
+    let returnValue;
+    // The model reaches this function in the shape { "createAssessmentInput": {...CaseFlieDTO} } despite that property
+    // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.
+    // For example, leadIdentifier would be found in model.leadIdentifier by the type's definition, however in this
+    // scope it is at model.createAssessmentInput.leadIdentifier, which errors due to type violation.
+    // This copies it into a new variable cast to any to allow access to the nested properties.
+    let modelAsAny: any = { ...model };
+    // If changes need to be made in both databases (i.e. we need to create a link or change the status of a complaint)
+    // then the transactional approach is taken.
+    if (
+      modelAsAny.createAssessmentInput.assessmentDetails.actionLinkedComplaintIdentifier ||
+      modelAsAny.createAssessmentInput.assessmentDetails.actionCloseComplaint
+    ) {
+      const dateLinkCreated = new Date();
+      const complaintBeingLinkedId = modelAsAny.createAssessmentInput.leadIdentifier;
+      const linkingToComplaintId = modelAsAny.createAssessmentInput.assessmentDetails.actionLinkedComplaintIdentifier;
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        const idir = getIdirFromRequest(this.request);
+        // If actionLinkedComplaintIdentifier is present the link must be created in the database
+        if (modelAsAny.createAssessmentInput.assessmentDetails.actionLinkedComplaintIdentifier) {
+          // When linking complaint "A" to complaint "B", if "A" already has other complaints linked to it those links
+          // are marked as inactive, and new links are created with them pointing to "B".
+          const trailingComplaints = await this._linkedComplaintXrefRepository
+            .createQueryBuilder()
+            .update(LinkedComplaintXref)
+            .set({ active_ind: false })
+            .where({
+              complaint_identifier: complaintBeingLinkedId,
+            })
+            .andWhere({
+              active_ind: true,
+            })
+            .returning("*")
+            .execute();
+
+          if (trailingComplaints.affected > 0) {
+            trailingComplaints.raw.forEach(async (row) => {
+              const linkString = await this._linkedComplaintXrefRepository.create(<CreateLinkedComplaintXrefDto>{
+                // ...row,
+                complaint_identifier: { complaint_identifier: linkingToComplaintId },
+                linked_complaint_identifier: row.linked_complaint_identifier,
+                active_ind: true,
+                create_user_id: idir,
+                create_utc_timestamp: dateLinkCreated,
+              });
+              await queryRunner.manager.save(linkString);
+            });
+          }
+
+          // Create the new link between the complaints
+          let newLink = new CreateLinkedComplaintXrefDto();
+          newLink = {
+            ...newLink,
+            complaint_identifier: <Complaint>{
+              complaint_identifier: linkingToComplaintId,
+            },
+            linked_complaint_identifier: <Complaint>{ complaint_identifier: complaintBeingLinkedId },
+            active_ind: true,
+            create_user_id: idir,
+            create_utc_timestamp: dateLinkCreated,
+          };
+
+          const complaintLinkString = await this._linkedComplaintXrefRepository.create(newLink);
+          await queryRunner.manager.save(complaintLinkString);
+        }
+        // Update the status of the complaint to "closed" if actionCloseComplaint is set to true
+        if (modelAsAny.createAssessmentInput.assessmentDetails.actionCloseComplaint) {
+          const statusCode = await this._codeTableService.getComplaintStatusCodeByStatus("CLOSED");
+          await this._complaintsRepository
+            .createQueryBuilder("complaint")
+            .update()
+            .set({ complaint_status_code: statusCode, update_user_id: idir })
+            .where({ complaint_identifier: complaintBeingLinkedId })
+            .execute();
+        }
+
+        // Create the assessment in the Case Management database
+        const result = await post(token, {
+          query: `mutation CreateAssessment($createAssessmentInput: CreateAssessmentInput!) {
+            createAssessment(createAssessmentInput: $createAssessmentInput)
+            ${this.caseFileQueryFields}
+          }`,
+          variables: model,
+        });
+        returnValue = await this.handleAPIResponse(result);
+        // If the mutation succeeded, commit the pending transaction
+        await queryRunner.commitTransaction();
+      } catch (err) {
+        this.logger.error(err);
+        await queryRunner.rollbackTransaction();
+        Promise.reject(new Error("An error occurred while linking the complaints. " + err));
+      } finally {
+        await queryRunner.release();
+      }
+    } else {
+      // If the assessment is not linking two complaints then simply create the new assessment in CM.
+      const result = await post(token, {
+        query: `mutation CreateAssessment($createAssessmentInput: CreateAssessmentInput!) {
+          createAssessment(createAssessmentInput: $createAssessmentInput)
+          ${this.caseFileQueryFields}
+        }`,
+        variables: model,
+      });
+      returnValue = await this.handleAPIResponse(result);
+    }
+
     return returnValue?.createAssessment;
-  };
+  }
 
   updateAssessment = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
     const result = await post(token, {
