@@ -16,9 +16,9 @@ on:
         required: true
 
 concurrency:
-  # Do not interrupt previous workflows
+  # Cancel previous pending/running workflows
   group: ${{ github.workflow }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   vars:
