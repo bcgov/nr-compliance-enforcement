@@ -27,7 +27,9 @@ describe("Complaint Assign Popover spec", { scrollBehavior: false }, () => {
 
       cy.get("td").first().click({ force: true });
 
-      cy.get("#update-assignee-icon").filter(":visible").click({ force: true });
+      cy.get("#quick-action-button").first().children("button").first().click({ force: true });
+      cy.get("#update-assignee-menu-item").should("exist"); //Wait for the options to show
+      cy.contains("Assign complaint").click({ force: true });
 
       // self assign the complaint
       cy.get("#self_assign_button").click();
