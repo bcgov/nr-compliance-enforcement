@@ -14,7 +14,7 @@ trap 'echo "Error occurred at line $LINENO while executing function $FUNCNAME"' 
 # SKIP_AUTH: set to true to skip auth and use your existing local kubeconfig
 # OC_SERVER: OpenShift server URL
 # OC_TOKEN: OpenShift token
-# ALLOW_EXPR: comma separated list of workloads to ignore
+# ALLOW_EXPR: expression passed into grep extended search to allow certain resources to be skipped
 
 # THIRTY_DAYS_IN_SECONDS=2592000 - variables in the jq dont play nice so we will just hardcode it
 
