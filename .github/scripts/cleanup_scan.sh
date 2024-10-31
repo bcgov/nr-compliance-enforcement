@@ -20,7 +20,7 @@ trap 'echo "Error occurred at line $LINENO while executing function $FUNCNAME"' 
 
 # Configure globals
 if [ -z "$ALLOW_EXPR" ]; then
-    ALLOW_EXPR="placeholder"
+    ALLOW_EXPR="default|pipeline|artifact|vault|deployer|logging|builder|keycloak|openshift|bundle|kube|cypress|object-store"
 fi
 echo "ALLOW_EXPR: $ALLOW_EXPR"
 
@@ -106,7 +106,8 @@ echo ""
 # Get all secret names used by pods and write to a file
 echo "Scanning for dangling secrets not used by workloads"
 echo "..."
-oc get pods -n $OC_NAMESPACE -ojson | jq -r '.items[] | "\(.metadata.name):\(.spec.containers[].envFrom[]?.secretRef.name)"' > /tmp/in_use_secrets.txt
+oc get pods -n $OC_NAMESPACE -ojson | jq -r '.items[] | "\(.metadata.name):\(.spec.containers[].envFrom[]?.secretRef.name)"' | grep -v null > /tmp/in_use_secrets.txt
+oc get pods -n $OC_NAMESPACE -ojson | jq -r '.items[] | "\(.metadata.name):\(.spec.containers[].env[].valueFrom?.secretKeyRef?.name)"' | grep -v null >> /tmp/in_use_secrets.txt
 secret_names=$(oc get secret -n $OC_NAMESPACE -ojson | jq -r '.items[] | select(.metadata.creationTimestamp | fromdateiso8601 | (. + 2592000) < now) | .metadata.name')
 secrets_to_delete=()
 for secret in $secret_names; do
@@ -173,7 +174,7 @@ if [ $OK -eq 1 ]; then
     echo "To delete these found workloads, locally run the following to see them:"
     echo "Note: skip flag uses your existing oc authentication"
     echo ""
-    echo "SKIP_AUTH=true ./.github/scripts/cleanup_scan.sh"
+    echo "ALLOW_EXPR=\"$ALLOW_EXPR\" SKIP_AUTH=true ./.github/scripts/cleanup_scan.sh"
     echo "cat /tmp/old_workloads_to_delete.txt && cat /tmp/secrets_to_delete.txt && cat /tmp/pvcs_to_delete.txt && cat /tmp/configmaps_to_delete.txt"
 
 fi
