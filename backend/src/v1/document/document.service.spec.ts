@@ -57,6 +57,7 @@ import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.en
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CdogsService } from "../../external_api/cdogs/cdogs.service";
+import { CaseFileService } from "../case_file/case_file.service";
 import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
@@ -204,6 +205,7 @@ describe("DocumentService", () => {
         },
         DocumentService,
         CdogsService,
+        CaseFileService,
         ConfigurationService,
         {
           provide: getRepositoryToken(Configuration),
