@@ -325,14 +325,9 @@ export const DecisionForm: FC<props> = ({
     };
 
     const _isActionValid = (data: Decision, _isValid: boolean): boolean => {
-      if (data.actionTaken && (!data.actionTakenDate || !data.assignedTo)) {
+      if (data.actionTaken && (!data.actionTakenDate)) {
         if (!data.actionTakenDate) {
           setDateActionTakenErrorMessage("Date required when action taken selected");
-          _isValid = false;
-        }
-
-        if (!data.assignedTo) {
-          setAssignedToErrorMessage("Assigned to required when action taken selected");
           _isValid = false;
         }
       }
@@ -340,8 +335,8 @@ export const DecisionForm: FC<props> = ({
       return _isValid;
     };
 
-    const _isAssignedToValid = (data: Decision, _isValid: boolean): boolean => {
-      if (data.assignedTo && (!data.actionTaken || !data.actionTakenDate)) {
+    const _isAssignedToAndDateValid = (data: Decision, _isValid: boolean): boolean => {
+      if (!data.actionTaken || !data.actionTakenDate) {
         if (!data.actionTakenDate) {
           setDateActionTakenErrorMessage("Date required when action taken selected");
           _isValid = false;
@@ -373,7 +368,7 @@ export const DecisionForm: FC<props> = ({
     }
 
     _isValid = _isActionValid(data, _isValid);
-    _isValid = _isAssignedToValid(data, _isValid);
+    _isValid = _isAssignedToAndDateValid(data, _isValid);
 
     return _isValid;
   };
@@ -553,27 +548,6 @@ export const DecisionForm: FC<props> = ({
               errMsg={""}
               maxLength={4000}
               onChange={handleRationaleChange}
-            />
-          </div>
-        </div>
-        <div
-          className="comp-details-form-row"
-          id="decision-assigned-to"
-        >
-          <label htmlFor="outcome-decision-assigned-to">Assigned to</label>
-          <div className="comp-details-input full-width">
-            <CompSelect
-              id="outcome-decision-assigned-to"
-              className="comp-details-input"
-              classNamePrefix="comp-select"
-              options={officerOptions}
-              enableValidation={true}
-              errorMessage={assignedToErrorMessage}
-              placeholder="Select"
-              onChange={(evt) => {
-                updateAssignment(evt?.value);
-              }}
-              value={getValue("assignedTo")}
             />
           </div>
         </div>

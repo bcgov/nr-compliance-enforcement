@@ -140,11 +140,6 @@ export const DecisionItem: FC<props> = ({
         <dd>{rationale}</dd>
       </div>
       <div>
-        <dt>Assigned to</dt>
-        <dd>{getValue("assignedTo")?.label}</dd>
-      </div>
-
-      <div>
         <dt>Date action taken</dt>
         <dd>{actionTakenDate !== null && formatDate(new Date(actionTakenDate).toString())}</dd>
       </div>
