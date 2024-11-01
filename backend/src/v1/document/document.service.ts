@@ -1,7 +1,6 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ComplaintService } from "../complaint/complaint.service";
-import { CaseFileService } from "../case_file/case_file.service";
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 
 @Injectable()
@@ -14,9 +13,6 @@ export class DocumentService {
   @Inject(ComplaintService)
   private readonly ceds: ComplaintService;
 
-  @Inject(CaseFileService)
-  private readonly caseFile: CaseFileService;
-
   //--
   //-- using the cdogs api generate a new document from the specified
   //-- complaint-id and complaint type
@@ -25,18 +21,9 @@ export class DocumentService {
     try {
       //-- get the complaint from the system, but do not include anything other
       //-- than the base complaint. no maps, no attachments, no outcome data
-      const complaintData = await this.ceds.getReportData(id, type, tz);
+      const data = await this.ceds.getReportData(id, type, tz, token);
 
-      // TODO: Move this to getReportData
-      //-- Get the Outcome Data
-      const outcomeData = await this.caseFile.find(id, token);
-      //-- create a new object, in the templates all complaint stuff will be accessed via complaint, outcome via outcome
-      let data = { complaint: { ...complaintData }, outcome: { ...outcomeData } };
-      //-- Clean up the data to make it easier for formatting
-      if (data.outcome.authorization && data.outcome.authorization.type !== "permit") {
-        data.outcome.authorization.value = "UA" + data.outcome.authorization.value;
-      }
-      //END TODO
+      console.log(data);
 
       //--
       return await this.cdogs.generate(name, data, type);

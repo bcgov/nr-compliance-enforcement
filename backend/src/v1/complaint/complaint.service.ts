@@ -4,7 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { get } from "../../external_api/case_management";
+import { caseFileQueryFields, get } from "../../external_api/case_management";
 
 import {
   applyAllegationComplaintMap,
@@ -91,7 +91,8 @@ export class ComplaintService {
   private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
 
   constructor(
-    @Inject(REQUEST) private request: Request,
+    @Inject(REQUEST)
+    private request: Request,
     @InjectMapper() mapper,
     private readonly _codeTableService: CodeTableService,
     private readonly _compliantUpdatesService: ComplaintUpdatesService,
@@ -1508,7 +1509,7 @@ export class ComplaintService {
     return results;
   };
 
-  getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string) => {
+  getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string, token: string) => {
     let data;
     mapWildlifeReport(this.mapper, tz);
     mapAllegationReport(this.mapper, tz);
@@ -1569,6 +1570,31 @@ export class ComplaintService {
         default:
           return format(zonedDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
       }
+    };
+
+    const _getCaseData = async (id: string, token: string) => {
+      //-- Get the Outcome Data
+      const { data, errors } = await get(token, {
+        query: `{getCaseFileByLeadId (leadIdentifier: "${id}")
+        ${caseFileQueryFields}
+      }`,
+      });
+      if (errors) {
+        this.logger.error("GraphQL errors:", errors);
+        throw new Error("GraphQL errors occurred");
+      }
+
+      //-- Clean up the data to make it easier for formatting
+      let outcomeData = data;
+      //-- Add UA to unpermitted sites
+      if (
+        outcomeData.getCaseFileByLeadId.authorization &&
+        outcomeData.getCaseFileByLeadId.authorization.type !== "permit"
+      ) {
+        outcomeData.getCaseFileByLeadId.authorization.value =
+          "UA" + outcomeData.getCaseFileByLeadId.authorization.value;
+      }
+      return outcomeData.getCaseFileByLeadId;
     };
 
     try {
@@ -1634,6 +1660,9 @@ export class ComplaintService {
           break;
         }
       }
+
+      //-- get case data
+      data.outcome = await _getCaseData(id, token);
 
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);

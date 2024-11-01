@@ -180,7 +180,7 @@ export class CdogsService implements ExternalApiService {
         templateCode = CONFIGURATION_CODES.HWCTMPLATE;
         break;
       case "ERS":
-        if (data.complaint.ownedBy === "EPO") {
+        if (data.ownedBy === "EPO") {
           templateCode = CONFIGURATION_CODES.CEEBTMPLATE;
         } else {
           templateCode = CONFIGURATION_CODES.ERSTMPLATE;
