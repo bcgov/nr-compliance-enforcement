@@ -26,10 +26,17 @@ export class DocumentService {
       //-- get the complaint from the system, but do not include anything other
       //-- than the base complaint. no maps, no attachments, no outcome data
       const complaintData = await this.ceds.getReportData(id, type, tz);
+
+      // TODO: Move this to getReportData
       //-- Get the Outcome Data
       const outcomeData = await this.caseFile.find(id, token);
-      //create a new object, in the templates all complaint stuff will be accessed via complaint, outcome via outcome
-      const data = { complaint: { ...complaintData }, outcome: { ...outcomeData } };
+      //-- create a new object, in the templates all complaint stuff will be accessed via complaint, outcome via outcome
+      let data = { complaint: { ...complaintData }, outcome: { ...outcomeData } };
+      //-- Clean up the data to make it easier for formatting
+      if (data.outcome.authorization && data.outcome.authorization.type !== "permit") {
+        data.outcome.authorization.value = "UA" + data.outcome.authorization.value;
+      }
+      //END TODO
 
       //--
       return await this.cdogs.generate(name, data, type);

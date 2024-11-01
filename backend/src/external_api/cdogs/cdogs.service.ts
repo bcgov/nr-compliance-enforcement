@@ -123,10 +123,17 @@ export class CdogsService implements ExternalApiService {
   upload = async (apiToken: string, type: string, templateCode: string) => {
     const url = `${this.baseUri}/api/v2/template`;
 
-    const template =
-      type === "HWCR"
-        ? "templates/complaint/CDOGS-HWCR-COMPLAINT-TEMPLATE-v1.docx"
-        : "templates/complaint/CDOGS-ERS-COMPLAINT-TEMPLATE-v1.docx";
+    let template = "";
+
+    switch (templateCode) {
+      case "HWCTMPLATE":
+        template = "templates/complaint/CDOGS-HWCR-COMPLAINT-TEMPLATE-v1.docx";
+      case "ERSTMPLATE":
+        template = "templates/complaint/CDOGS-ERS-COMPLAINT-TEMPLATE-v1.docx";
+      case "CEEBTMPLAT":
+        template = "templates/complaint/CDOGS-CEEB-COMPLAINT-TEMPLATE-v1.docx";
+    }
+
     const path = join(process.cwd(), template);
 
     try {
@@ -166,7 +173,20 @@ export class CdogsService implements ExternalApiService {
   //-- render complaint to pdf
   //--
   generate = async (documentName: string, data: any, type: COMPLAINT_TYPE): Promise<AxiosResponse> => {
-    const templateCode = type === "HWCR" ? CONFIGURATION_CODES.HWCTMPLATE : CONFIGURATION_CODES.ERSTMPLATE;
+    //-- Determine template to use
+    let templateCode: string;
+    switch (type) {
+      case "HWCR":
+        templateCode = CONFIGURATION_CODES.HWCTMPLATE;
+        break;
+      case "ERS":
+        if (data.complaint.ownedBy === "EPO") {
+          templateCode = CONFIGURATION_CODES.CEEBTMPLATE;
+        } else {
+          templateCode = CONFIGURATION_CODES.ERSTMPLATE;
+        }
+        break;
+    }
 
     try {
       const apiToken = await this.authenticate();
