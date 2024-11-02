@@ -18,8 +18,6 @@ digraph "twoDegreesRelationshipsDiagram" {
   "geo_org_unit_structure":"parent_geo_org_unit_code":w -> "geo_organization_unit_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "gir_complaint":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=teeodot];
   "hwcr_complaint":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=teeodot];
-  "linked_complaint_xref":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot];
-  "linked_complaint_xref":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot];
   "officer_team_xref":"elipses":w -> "team":"team_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "person_complaint_xref":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot];
   "team":"agency_code":w -> "agency_code":"agency_code.type":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -71,7 +69,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="60" HEIGHT="16"><B>complaint</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">7 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">5 &gt;</TD></TR>
     </TABLE>>
     URL="complaint.html"
     target="_top"
@@ -195,17 +193,6 @@ digraph "twoDegreesRelationshipsDiagram" {
     URL="hwcr_complaint.html"
     target="_top"
     tooltip="hwcr_complaint"
-  ];
-  "linked_complaint_xref" [
-   label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="131" HEIGHT="16"><B>linked_complaint_xref</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
-    </TABLE>>
-    URL="linked_complaint_xref.html"
-    target="_top"
-    tooltip="linked_complaint_xref"
   ];
   "officer_team_xref" [
    label=<

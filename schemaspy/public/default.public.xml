@@ -172,8 +172,6 @@
             <child column="complaint_identifier" foreignKey="complaint_update_fk" implied="false" onDeleteCascade="false" schema="public" table="complaint_update"/>
             <child column="complaint_identifier" foreignKey="FK_gircmplnt_complaint" implied="false" onDeleteCascade="false" schema="public" table="gir_complaint"/>
             <child column="complaint_identifier" foreignKey="FK_hwcrcmplnt_complaint" implied="false" onDeleteCascade="false" schema="public" table="hwcr_complaint"/>
-            <child column="complaint_identifier" foreignKey="FK_lnkcmplxref_complaint" implied="false" onDeleteCascade="false" schema="public" table="linked_complaint_xref"/>
-            <child column="linked_complaint_identifier" foreignKey="FK_lnkcmplxref_linked_complaint" implied="false" onDeleteCascade="false" schema="public" table="linked_complaint_xref"/>
             <child column="complaint_identifier" foreignKey="FK_person_complaint_xref__complaint_identifier" implied="false" onDeleteCascade="false" schema="public" table="person_complaint_xref"/>
             <child column="complaint_identifier" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="staging_complaint"/>
          </column>
@@ -211,7 +209,6 @@
             <parent column="comp_mthd_recv_cd_agcy_cd_xref_guid" foreignKey="complaint_comp_mthd_recv_cd_agcy_cd_xref_fk" implied="false" onDeleteCascade="false" schema="public" table="comp_mthd_recv_cd_agcy_cd_xref"/>
          </column>
          <column autoUpdated="false" defaultValue="'U'::bpchar" digits="0" id="24" name="is_privacy_requested" nullable="true" remarks="flag to represent that the caller has asked for special care when handling their personal information" size="1" type="bpchar" typeCode="1"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="25" name="reference_number" nullable="true" remarks="Allows users to link complaints to files in external systems.   Currently labeled in the system as COORS reference number and initially only used for COORS linkages." size="20" type="varchar" typeCode="12"/>
          <primaryKey column="complaint_identifier" sequenceNumberInPK="1"/>
          <index name="PK_complaint" unique="true">
             <column ascending="true" name="complaint_identifier"/>
@@ -638,29 +635,6 @@
          <index name="PK_cmpltntrcd" unique="true">
             <column ascending="true" name="hwcr_complaint_nature_code"/>
          </index>
-      </table>
-      <table name="linked_complaint_xref" remarks="Provides the ability to link one COMPLAINT to another COMPLAINT.   The initial use case for this table is to identify duplicate complaints, however additional linkages maybe possible in the future." schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="linked_complaint_xref_guid" nullable="false" remarks="A human readable code used to identify a complaint linkage." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="complaint_identifier" nullable="false" remarks="One half of a linked complaint pair.  If the type requires a context of hierarchy, the complaint that is higher in the hierarchy.  For example, in the case of duplicate complaints, this would be the complaint that would remain open and where the majority of the information should be contained." size="20" type="varchar" typeCode="12">
-            <parent column="complaint_identifier" foreignKey="FK_lnkcmplxref_complaint" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="linked_complaint_identifier" nullable="false" remarks="One half of a linked complaint pair.  If the type requires a context of hierarchy, the complaint that is lower in the hierarchy.  For example, in the case of duplicate complaints, this would be the complaint that would be closed as a duplicate of the parent." size="20" type="varchar" typeCode="12">
-            <parent column="complaint_identifier" foreignKey="FK_lnkcmplxref_linked_complaint" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active_ind" nullable="false" remarks="Flag indicating if the linkage is active." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the complaint linkage." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the complaint linkage was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the complaint linkage." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the complaint linkage was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="linked_complaint_xref_guid" sequenceNumberInPK="1"/>
-         <index name="PK_lnkcmplxref" unique="true">
-            <column ascending="true" name="linked_complaint_xref_guid"/>
-         </index>
-         <index name="linked_complaint_xref_linked_complaint_identifier_active_in_idx" unique="true">
-            <column ascending="true" name="linked_complaint_identifier"/>
-            <column ascending="true" name="active_ind"/>
-         </index>
-         <checkConstraint constraint="(((complaint_identifier)::text &lt;&gt; (linked_complaint_identifier)::text))" name="NE_lnkcmplxref_no_self_link"/>
       </table>
       <table name="office" remarks="An office is a physical location that serves as a central organization point for groups of users of the system." schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="office_guid" nullable="false" remarks="System generated unique key for an office. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">

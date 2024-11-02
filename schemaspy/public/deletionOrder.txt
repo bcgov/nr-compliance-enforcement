@@ -19,7 +19,6 @@ staging_complaint
 person_complaint_xref
 geo_org_unit_structure
 officer_team_xref
-linked_complaint_xref
 gir_complaint
 feature_agency_xref
 attractant_hwcr_xref
