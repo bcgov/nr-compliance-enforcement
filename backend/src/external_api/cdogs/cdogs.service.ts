@@ -123,15 +123,21 @@ export class CdogsService implements ExternalApiService {
   upload = async (apiToken: string, type: string, templateCode: string) => {
     const url = `${this.baseUri}/api/v2/template`;
 
-    let template = "";
+    let template: string;
 
     switch (templateCode) {
       case "HWCTMPLATE":
         template = "templates/complaint/CDOGS-HWCR-COMPLAINT-TEMPLATE-v1.docx";
+        break;
       case "ERSTMPLATE":
         template = "templates/complaint/CDOGS-ERS-COMPLAINT-TEMPLATE-v1.docx";
+        break;
       case "CEEBTMPLAT":
         template = "templates/complaint/CDOGS-CEEB-COMPLAINT-TEMPLATE-v1.docx";
+        break;
+      default:
+        this.logger.error(`exception: unable to find template: ${template}`);
+        break;
     }
 
     const path = join(process.cwd(), template);

@@ -93,7 +93,7 @@ export class ComplaintService {
 
   constructor(
     @Inject(REQUEST)
-    private request: Request,
+    private readonly request: Request,
     @InjectMapper() mapper,
     private readonly _codeTableService: CodeTableService,
     private readonly _compliantUpdatesService: ComplaintUpdatesService,
@@ -1679,10 +1679,10 @@ export class ComplaintService {
       if (data.privacyRequested) {
         data = { ...data, privacy: [{ value: data.privacyRequested }] };
       }
-      if (data.outcome.decision && data.outcome.decision.leadAgencyLongDescription) {
+      if (data.outcome.decision?.leadAgencyLongDescription) {
         data = { ...data, agency: [{ value: data.outcome.decision.leadAgencyLongDescription }] };
       }
-      if (data.outcome.decision && data.outcome.decision.inspectionNumber) {
+      if (data.outcome.decision?.inspectionNumber) {
         data = { ...data, inspection: [{ value: data.outcome.decision.inspectionNumber }] };
       }
 

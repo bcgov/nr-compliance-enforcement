@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger, Scope } from "@nestjs/common";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { get, post } from "../../external_api/case_management";
+import { caseFileQueryFields, get, post } from "../../external_api/case_management";
 import { CaseFileDto } from "src/types/models/case-files/case-file";
 import { REQUEST } from "@nestjs/core";
 import { AxiosResponse, AxiosError } from "axios";
@@ -26,7 +26,6 @@ import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { CodeTableService } from "../code-table/code-table.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { CreateLinkedComplaintXrefDto } from "../linked_complaint_xref/dto/create-linked_complaint_xref.dto";
-import { caseFileQueryFields } from "../../external_api/case_management";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
