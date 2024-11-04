@@ -46,7 +46,7 @@ export const ModalComponent: FC = () => {
       onHide={handleCloseModal}
       centered
     >
-      {modalType && (
+      {modalType && isOpen && (
         <Content
           {...modalData}
           close={handleCloseModal}

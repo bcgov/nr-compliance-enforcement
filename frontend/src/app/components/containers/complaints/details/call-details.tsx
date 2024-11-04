@@ -1,14 +1,14 @@
 import { FC } from "react";
 import { Badge, Card } from "react-bootstrap";
 import { useAppSelector } from "../../../../hooks/hooks";
-import { formatDate, formatTime, renderCoordinates } from "../../../../common/methods";
-import { Coordinates } from "../../../../types/app/coordinate-type";
+import { formatDate, formatTime } from "../../../../common/methods";
 import { ComplaintDetailsAttractant } from "../../../../types/complaints/details/complaint-attactant";
 import { selectComplaintDetails } from "../../../../store/reducers/complaints";
 import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
 import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
 import { FeatureFlag } from "../../../common/feature-flag";
+import { CompLocationInfo } from "../../../common/comp-location-info";
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -113,13 +113,11 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
               <dt>Location Description</dt>
               <dd id="comp-details-location-description">{locationDescription}</dd>
             </div>
-            <div>
-              <dt>Latitude/Longitude</dt>
-              <dd className="comp-lat-long">
-                <span id="call-details-y-coordinate">{renderCoordinates(coordinates, Coordinates.Latitude)}</span>
-                <span id="call-details-x-coordinate">{renderCoordinates(coordinates, Coordinates.Longitude)}</span>
-              </dd>
-            </div>
+            <CompLocationInfo
+              xCoordinate={coordinates?.[0] === 0 ? "" : coordinates?.[0].toString() ?? ""}
+              yCoordinate={coordinates?.[1] === 0 ? "" : coordinates?.[1].toString() ?? ""}
+            />
+            <br />
           </dl>
 
           {/* Other Location Details */}

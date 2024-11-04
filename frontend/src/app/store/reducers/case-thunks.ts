@@ -32,7 +32,7 @@ import { DeleteSupplementalNoteInput } from "../../types/app/case-files/suppleme
 import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
 import { CreateEquipmentInput } from "../../types/app/case-files/equipment-inputs/create-equipment-input";
 import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
-import { getComplaintStatusById } from "./complaints";
+import { getComplaintStatusById, clearComplaint } from "./complaints";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
 import { AnimalOutcomeV2 } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { CreateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/create-animal-outcome-input";
@@ -118,6 +118,7 @@ const addAssessment =
         caseCode: "HWCR",
         assessmentDetails: {
           actionNotRequired: assessment.action_required === "No",
+          actionCloseComplaint: assessment.close_complaint,
           actions: assessment.assessment_type.map((item) => {
             return {
               date: assessment.date,
@@ -127,6 +128,7 @@ const addAssessment =
             };
           }),
           actionJustificationCode: assessment.justification?.value,
+          actionLinkedComplaintIdentifier: assessment.linked_complaint?.value,
         },
       },
     } as CreateAssessmentInput;
@@ -159,6 +161,7 @@ const addAssessment =
       if (res) {
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
         if (!caseId) dispatch(setCaseId(res.caseIdentifier));
+        await dispatch(clearComplaint());
         ToggleSuccess(`Assessment has been saved`);
       } else {
         await dispatch(clearAssessment());
@@ -244,7 +247,7 @@ const parseAssessmentResponse = async (
     let officerFullName = null;
 
     let officerNames = officers
-      .filter((person) => person.person_guid.person_guid === actor)
+      .filter((person) => person.auth_user_guid === actor)
       .map((officer) => {
         return `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`;
       });
@@ -444,7 +447,7 @@ const parsePreventionResponse = async (
 
     let officerFullName = null;
     let officerNames = officers
-      .filter((person) => person.person_guid.person_guid === actor)
+      .filter((person) => person.auth_user_guid === actor)
       .map((officer) => {
         return `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`;
       });
@@ -535,7 +538,7 @@ export const upsertNote =
 
     let result;
     if (!currentNote?.action) {
-      result = await dispatch(_createNote(id, note, officer ? officer.officer_guid : "", idir));
+      result = await dispatch(_createNote(id, note, officer ? officer.auth_user_guid : "", idir));
 
       if (result !== null) {
         dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
@@ -548,7 +551,7 @@ export const upsertNote =
       const {
         action: { actionId },
       } = currentNote;
-      result = await dispatch(_updateNote(id as UUID, note, officer ? officer.officer_guid : "", idir, actionId));
+      result = await dispatch(_updateNote(id as UUID, note, officer ? officer.auth_user_guid : "", idir, actionId));
 
       if (result !== null) {
         dispatch(setCaseId(result.caseIdentifier));

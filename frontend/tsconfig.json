@@ -15,7 +15,20 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["cypress"]
+    "types": ["cypress", "node"],
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"],
+      "@assets/*": ["assets/*"],
+      "@common/*": ["app/common/*"],
+      "@components/*": ["app/components/*"],
+      "@constants/*": ["app/constants/*"],
+      "@hooks/*": ["app/hooks/*"],
+      "@providers/*": ["app/providers/*"],
+      "@service/*": ["app/service/*"],
+      "@store/*": ["app/store/*"],
+      "@apptypes/*": ["app/types/*"],
+    }
   },
   "include": ["src"]
 }

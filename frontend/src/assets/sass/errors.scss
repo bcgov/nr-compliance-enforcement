@@ -1,18 +1,42 @@
 .error-container {
-  margin-top: auto;
-  position: relative;
+  display: flex;
+  align-items: center; /* Center items */
+  justify-content: center; /* Center horizontally */
+  height: 100vh; /* Full height of the viewport */
 
   .message {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column; /* Stack all children vertically */
+    align-items: center; /* Center items */
+    text-align: center; /* Center text on small screens */
 
     svg {
-      height: 175px;
+      height: 175px; /* Set size of icon */
       width: 175px;
-      float: left;
-      padding-right: 25px;
+      margin-bottom: 25px; /* Space between SVG and text on mobile */
+    }
+  }
+}
+
+/* Media query for larger screens */
+@media (min-width: 768px) {
+  .error-container {
+    flex-direction: row; /* Align horizontally on larger screens */
+
+    .message {
+      flex-direction: row; /* Align horizontally on larger screens*/
+      align-items: center; /* Align SVG and text vertically */
+      text-align: left; /* Align text to the left on larger screens */
+
+      svg {
+        margin-bottom: 0; /* Remove bottom margin */
+        margin-right: 25px; /* Space between SVG and text */
+      }
+
+      /* We want the title and subsequent paragraphs to stack beside the icon */
+      .message-details {
+        flex-direction: column; /* Align all messages vertically */
+      }
     }
   }
 }
