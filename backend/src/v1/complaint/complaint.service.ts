@@ -1696,8 +1696,13 @@ export class ComplaintService {
       data.reportedOn = _applyTimezone(data.reportedOn, tz, "datetime");
       data.updatedOn = _applyTimezone(data.updatedOn, tz, "datetime");
 
-      data.outcome.note.action.date = _applyTimezone(data.outcome.note.action.date, tz, "date");
-      data.outcome.decision.actionTakenDate = _applyTimezone(data.outcome.decision.actionTakenDate, tz, "date");
+      if (data.outcome.note) {
+        data.outcome.note.action.date = _applyTimezone(data.outcome.note.action.date, tz, "date");
+      }
+
+      if (data.outcome.decision) {
+        data.outcome.decision.actionTakenDate = _applyTimezone(data.outcome.decision.actionTakenDate, tz, "date");
+      }
 
       //-- incidentDateTime may not be set, if there's no date
       //-- don't try and apply the incident date
