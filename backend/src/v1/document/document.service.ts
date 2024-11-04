@@ -23,8 +23,6 @@ export class DocumentService {
       //-- than the base complaint. no maps, no attachments, no outcome data
       const data = await this.ceds.getReportData(id, type, tz, token);
 
-      console.log(data);
-
       //--
       return await this.cdogs.generate(name, data, type);
     } catch (error) {

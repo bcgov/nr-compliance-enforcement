@@ -113,14 +113,20 @@ export const caseFileQueryFields: string = `
   decision { 
     id
     schedule
+    scheduleLongDescription
     sector
+    sectorLongDescription
     discharge
+    dischargeLongDescription
     nonCompliance
+    nonComplianceLongDescription
     rationale
     inspectionNumber
     leadAgency
+    leadAgencyLongDescription
     assignedTo
     actionTaken
+    actionTakenLongDescription
     actionTakenDate
   }
   authorization { 
