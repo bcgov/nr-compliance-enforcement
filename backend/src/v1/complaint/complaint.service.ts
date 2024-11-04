@@ -128,12 +128,15 @@ export class ComplaintService {
       .where("officer.user_id = :idir", { idir });
 
     const result = await builder.getOne();
-
     //-- pull the user's agency from the query results and return the agency code
-    const {
-      office_guid: { agency_code },
-    } = result;
-    return agency_code;
+    if (result.office_guid && result.office_guid.agency_code) {
+      const {
+        office_guid: { agency_code },
+      } = result;
+      return agency_code;
+    } else {
+      return null;
+    }
   };
 
   private _getSortTable = (column: string): string => {
@@ -986,9 +989,10 @@ export class ComplaintService {
     try {
       let results: MapSearchResults = { complaints: [], unmappedComplaints: 0 };
 
-      //-- get the users assigned agency
-      const agency = await this._getAgencyByUser();
-
+      //-- assign the users agency
+      // _getAgencyByUser traces agency through assigned office of the officer, which CEEB users do not have
+      // so the hasCEEBRole is used to assign agency for them.
+      const agency = hasCEEBRole ? "EPO" : (await this._getAgencyByUser()).agency_code;
       //-- search for complaints
       let complaintBuilder = this._generateQueryBuilder(complaintType);
 
@@ -1005,7 +1009,7 @@ export class ComplaintService {
       //-- only return complaints for the agency the user is associated with
       if (agency) {
         complaintBuilder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", {
-          agency: agency.agency_code,
+          agency: agency,
         });
       }
 
@@ -1035,7 +1039,7 @@ export class ComplaintService {
       //-- only return complaints for the agency the user is associated with
       if (agency) {
         unMappedBuilder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", {
-          agency: agency.agency_code,
+          agency: agency,
         });
       }
 
