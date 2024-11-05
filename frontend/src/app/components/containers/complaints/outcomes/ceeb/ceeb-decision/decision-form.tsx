@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
 import {
   selectDischargeDropdown,
@@ -97,6 +97,19 @@ export const DecisionForm: FC<props> = ({
   });
 
   const [sectorList, setSectorList] = useState<Array<Option>>();
+
+  useEffect(() => {
+    if (sector && schedule) {
+      let options = scheduleSectorType
+        .filter((item) => item.schedule === schedule)
+        .map((item) => {
+          const record: Option = { label: item.longDescription, value: item.sector };
+          return record;
+        });
+      setSectorList(options);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sector, schedule]);
 
   //-- update the decision state by property
   const updateModel = (property: string, value: string | Date | undefined) => {
@@ -276,22 +289,6 @@ export const DecisionForm: FC<props> = ({
       return _isValid;
     };
 
-    const _isActionTakenAndDateValid = (data: Decision, _isValid: boolean): boolean => {
-      if (!data.actionTaken || !data.actionTakenDate) {
-        if (!data.actionTakenDate) {
-          setDateActionTakenErrorMessage("Date required when action taken selected");
-          _isValid = false;
-        }
-
-        if (!data.actionTaken) {
-          setActionTakenErrorMessage("Action taken required when assigned to is selected");
-          _isValid = false;
-        }
-      }
-
-      return _isValid;
-    };
-
     _isValid = _isDecisionValid(data, _isValid);
 
     if (data.actionTaken === CASE_ACTION_CODE.FWDLEADAGN && !data.leadAgency) {
@@ -309,7 +306,6 @@ export const DecisionForm: FC<props> = ({
     }
 
     _isValid = _isActionValid(data, _isValid);
-    _isValid = _isActionTakenAndDateValid(data, _isValid);
 
     return _isValid;
   };
