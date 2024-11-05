@@ -108,8 +108,7 @@ export const DecisionForm: FC<props> = ({
         });
       setSectorList(options);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sector, schedule]);
+  }, [sector, schedule, scheduleSectorType]);
 
   //-- update the decision state by property
   const updateModel = (property: string, value: string | Date | undefined) => {
