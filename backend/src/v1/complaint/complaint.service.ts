@@ -4,7 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { get } from "../../external_api/case_management";
+import { caseFileQueryFields, get } from "../../external_api/case_management";
 
 import {
   applyAllegationComplaintMap,
@@ -66,6 +66,7 @@ import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
+import { OfficerService } from "../officer/officer.service";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -91,13 +92,15 @@ export class ComplaintService {
   private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
 
   constructor(
-    @Inject(REQUEST) private request: Request,
+    @Inject(REQUEST)
+    private readonly request: Request,
     @InjectMapper() mapper,
     private readonly _codeTableService: CodeTableService,
     private readonly _compliantUpdatesService: ComplaintUpdatesService,
     private readonly _personService: PersonComplaintXrefService,
     private readonly _attractantService: AttractantHwcrXrefService,
     private readonly _compMthdRecvCdAgcyCdXrefService: CompMthdRecvCdAgcyCdXrefService,
+    private readonly _officerService: OfficerService,
     private dataSource: DataSource,
   ) {
     this.mapper = mapper;
@@ -1512,7 +1515,7 @@ export class ComplaintService {
     return results;
   };
 
-  getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string) => {
+  getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string, token: string) => {
     let data;
     mapWildlifeReport(this.mapper, tz);
     mapAllegationReport(this.mapper, tz);
@@ -1575,6 +1578,42 @@ export class ComplaintService {
       }
     };
 
+    const _getCaseData = async (id: string, token: string) => {
+      //-- Get the Outcome Data, this is done via a GQL call to prevent
+      //-- a circular dependency between the complaint and case_file modules
+      const { data, errors } = await get(token, {
+        query: `{getCaseFileByLeadId (leadIdentifier: "${id}")
+        ${caseFileQueryFields}
+      }`,
+      });
+      if (errors) {
+        this.logger.error("GraphQL errors:", errors);
+        throw new Error("GraphQL errors occurred");
+      }
+
+      //-- Clean up the data to make it easier for formatting
+      let outcomeData = data;
+      //-- Add UA to unpermitted sites
+      if (
+        outcomeData.getCaseFileByLeadId.authorization &&
+        outcomeData.getCaseFileByLeadId.authorization.type !== "permit"
+      ) {
+        outcomeData.getCaseFileByLeadId.authorization.value =
+          "UA" + outcomeData.getCaseFileByLeadId.authorization.value;
+      }
+
+      //-- Convert Officer Guids to Names
+      if (outcomeData.getCaseFileByLeadId.note) {
+        const { first_name, last_name } = (
+          await this._officerService.findByAuthUserGuid(outcomeData.getCaseFileByLeadId.note.action.actor)
+        ).person_guid;
+
+        outcomeData.getCaseFileByLeadId.note.action.actor = last_name + ", " + first_name;
+      }
+
+      return outcomeData.getCaseFileByLeadId;
+    };
+
     try {
       if (complaintType) {
         builder = this._generateQueryBuilder(complaintType);
@@ -1629,18 +1668,27 @@ export class ComplaintService {
             "AllegationComplaint",
             "AllegationReportData",
           );
-
-          //-- this is a bit of a hack to hide and show the privacy requested row
-          if (data.privacyRequested) {
-            data = { ...data, privacy: [{ value: data.privacyRequested }] };
-          }
-
           break;
         }
       }
 
+      //-- get case data
+      data.outcome = await _getCaseData(id, token);
+
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);
+
+      //-- this is a workaround to hide empty rows in the carbone templates
+      //-- It could possibly be removed if the CDOGS version of Carbone is updated
+      if (data.privacyRequested) {
+        data = { ...data, privacy: [{ value: data.privacyRequested }] };
+      }
+      if (data.outcome.decision?.leadAgencyLongDescription) {
+        data = { ...data, agency: [{ value: data.outcome.decision.leadAgencyLongDescription }] };
+      }
+      if (data.outcome.decision?.inspectionNumber) {
+        data = { ...data, inspection: [{ value: data.outcome.decision.inspectionNumber }] };
+      }
 
       //-- problems in the automapper mean dates need to be handled
       //-- seperatly
@@ -1651,6 +1699,14 @@ export class ComplaintService {
 
       data.reportedOn = _applyTimezone(data.reportedOn, tz, "datetime");
       data.updatedOn = _applyTimezone(data.updatedOn, tz, "datetime");
+
+      if (data.outcome.note) {
+        data.outcome.note.action.date = _applyTimezone(data.outcome.note.action.date, tz, "date");
+      }
+
+      if (data.outcome.decision) {
+        data.outcome.decision.actionTakenDate = _applyTimezone(data.outcome.decision.actionTakenDate, tz, "date");
+      }
 
       //-- incidentDateTime may not be set, if there's no date
       //-- don't try and apply the incident date

@@ -64,6 +64,13 @@ import { TeamCode } from "../team_code/entities/team_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { LinkedComplaintXref } from "../linked_complaint_xref/entities/linked_complaint_xref.entity";
+import { OfficerService } from "../officer/officer.service";
+import { PersonService } from "../person/person.service";
+import { OfficeService } from "../office/office.service";
+import { CssService } from "../../external_api/css/css.service";
+import { ConfigurationService } from "../configuration/configuration.service";
+import { Configuration } from "../configuration/entities/configuration.entity";
+import { Person } from "../person/entities/person.entity";
 
 describe("Testing: Case File Service", () => {
   let service: CaseFileService;
@@ -192,10 +199,23 @@ describe("Testing: Case File Service", () => {
           provide: getRepositoryToken(LinkedComplaintXref),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(Configuration),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(Person),
+          useValue: {},
+        },
         ComplaintUpdatesService,
         CaseFileService,
         ComplaintService,
         CodeTableService,
+        OfficerService,
+        OfficeService,
+        CssService,
+        ConfigurationService,
+        PersonService,
         PersonComplaintXrefService,
         AttractantHwcrXrefService,
         CompMthdRecvCdAgcyCdXrefService,

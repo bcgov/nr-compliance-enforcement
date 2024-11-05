@@ -70,6 +70,13 @@ import { StagingComplaint } from "../staging_complaint/entities/staging_complain
 import { TeamCode } from "../team_code/entities/team_code.entity";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
+import { OfficerService } from "../officer/officer.service";
+import { PersonService } from "../person/person.service";
+import { OfficeService } from "../office/office.service";
+import { CssService } from "../../external_api/css/css.service";
+import { ConfigurationService } from "../configuration/configuration.service";
+import { Person } from "../person/entities/person.entity";
+import { Configuration } from "../configuration/entities/configuration.entity";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -93,9 +100,22 @@ describe("Testing: Complaint Service", () => {
           provide: getRepositoryToken(ActionTaken),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(Configuration),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(Person),
+          useValue: {},
+        },
         ComplaintUpdatesService,
         ComplaintService,
         PersonComplaintXrefService,
+        OfficerService,
+        OfficeService,
+        CssService,
+        ConfigurationService,
+        PersonService,
         AttractantHwcrXrefService,
         CodeTableService,
         CompMthdRecvCdAgcyCdXrefService,
@@ -360,9 +380,22 @@ describe("Testing: Complaint Service", () => {
           provide: getRepositoryToken(ActionTaken),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(Configuration),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(Person),
+          useValue: {},
+        },
         ComplaintUpdatesService,
         ComplaintService,
         PersonComplaintXrefService,
+        OfficerService,
+        OfficeService,
+        CssService,
+        ConfigurationService,
+        PersonService,
         AttractantHwcrXrefService,
         CodeTableService,
         CompMthdRecvCdAgcyCdXrefService,

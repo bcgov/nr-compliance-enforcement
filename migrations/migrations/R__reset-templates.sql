@@ -11,4 +11,4 @@ UPDATE "configuration"
 SET
   configuration_value = ''
 WHERE
-  configuration_code IN ('ERSTMPLATE', 'HWCTMPLATE');
+  configuration_code IN ('ERSTMPLATE', 'HWCTMPLATE', 'CEEBTMPLATE');
