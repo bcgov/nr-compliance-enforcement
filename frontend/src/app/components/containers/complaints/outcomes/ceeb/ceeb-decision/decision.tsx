@@ -48,6 +48,7 @@ export const CeebDecision: FC = () => {
         {!editable && (
           <div className="comp-details-section-header-actions">
             <Button
+              id="decision-edit-button"
               variant="outline-primary"
               size="sm"
               onClick={() => {
