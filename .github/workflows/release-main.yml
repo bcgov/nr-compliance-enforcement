@@ -20,6 +20,11 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
+      - name: Verify Is Main Branch
+        if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main'
+        run: |
+          echo "This workflow should not be triggered with workflow_dispatch on a branch other than main"
+          exit 1
       - uses: actions/checkout@v4
       - name: Get Latest PR Number in release branch
         id: latest-pr
