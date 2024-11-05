@@ -1,18 +1,10 @@
-name: Merge
+name: Release To Production
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - "*.md"
-      - ".github/**"
-      - ".github/graphics/**"
-      - "!.github/workflows/**"
   workflow_dispatch:
     inputs:
-      pr_no:
-        description: "PR-numbered container set to deploy"
-        type: number
+      release_branch:
+        description: "Specify the release branch to get the latest PR number from, like `release/myrelease`"
         required: true
 
 concurrency:
@@ -32,6 +24,8 @@ jobs:
       - name: Get Latest PR Number in release branch
         id: latest-pr
         uses: ./.github/actions/get-latest-pr-number
+        with:
+          release_branch: ${{ github.event.inputs.release_branch }}
       - name: Set PR Output
         run: echo "pr=${{ steps.latest-pr.outputs.pr }}" >> $GITHUB_OUTPUT
 
