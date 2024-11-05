@@ -76,7 +76,6 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   // Vars
   const alreadyAssessed = assessmentData?.date !== undefined;
   const isClosed = complaintData?.status === "CLOSED";
-
   return (
     <>
       {title && (
@@ -108,6 +107,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
               submit();
               refreshComplaintsOnClose && dispatch(refreshComplaints(complaint_type));
             }}
+            handleClose={close}
             quickClose={true}
           />
         </div>
@@ -118,7 +118,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
             variant="outline-primary"
             onClick={close}
           >
-            Close
+            Cancel
           </Button>
         </Modal.Footer>
       )}

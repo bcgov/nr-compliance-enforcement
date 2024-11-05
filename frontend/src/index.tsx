@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { store, persistor } from "./app/store/store";
@@ -17,18 +16,16 @@ const root = createRoot(container);
 
 const onAuthenticatedCallback = () =>
   root.render(
-    <StrictMode>
-      <ErrorBoundaryContext>
-        <Provider store={store}>
-          <PersistGate
-            loading={null}
-            persistor={persistor}
-          >
-            <App />
-          </PersistGate>
-        </Provider>
-      </ErrorBoundaryContext>
-    </StrictMode>,
+    <ErrorBoundaryContext>
+      <Provider store={store}>
+        <PersistGate
+          loading={null}
+          persistor={persistor}
+        >
+          <App />
+        </PersistGate>
+      </Provider>
+    </ErrorBoundaryContext>,
   );
 
 UserService.initKeycloak(onAuthenticatedCallback);

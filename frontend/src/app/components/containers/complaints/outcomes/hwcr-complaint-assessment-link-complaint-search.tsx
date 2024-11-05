@@ -114,6 +114,7 @@ export const HWCRComplaintAssessmentLinkComplaintSearch: FC<Props> = ({
   return (
     <div>
       <AsyncTypeahead
+        clearButton
         id={id}
         labelKey="id"
         minLength={2}

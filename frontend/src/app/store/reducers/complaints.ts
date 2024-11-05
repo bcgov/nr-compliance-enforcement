@@ -1,4 +1,4 @@
-import { Action, Dispatch, PayloadAction, ThunkAction, createSlice, current } from "@reduxjs/toolkit";
+import { Action, Dispatch, PayloadAction, ThunkAction, createSlice, createSelector, current } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import { ComplaintCollection, ComplaintState } from "../../types/state/complaint-state";
@@ -603,8 +603,6 @@ export const getComplaintById =
   (id: string, complaintType: string): AppThunk =>
   async (dispatch) => {
     try {
-      dispatch(setComplaint(null));
-
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
       );
@@ -1150,11 +1148,7 @@ export const selectComplaintSuspectWitnessDetails = (state: RootState): Complain
   return results;
 };
 
-export const selectComplaintAssignedBy = (state: RootState): string | null => {
-  const {
-    complaints: { complaint },
-  } = state;
-
+export const selectComplaintAssignedBy = createSelector([selectComplaint], (complaint): string | null => {
   if (complaint?.delegates) {
     const { delegates } = complaint;
     if (from(delegates).any()) {
@@ -1170,7 +1164,7 @@ export const selectComplaintAssignedBy = (state: RootState): string | null => {
   }
 
   return null;
-};
+});
 
 export const selectLinkedComplaints = (state: RootState): LinkedComplaint[] => {
   const {

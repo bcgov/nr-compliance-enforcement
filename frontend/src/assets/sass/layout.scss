@@ -882,3 +882,12 @@ td.actions-col {
   box-shadow: none !important;
   border-left: none !important;
 }
+
+.rbt {
+  display: flex;
+}
+
+.rbt-aux {
+  right: 0;
+  position: absolute;
+}

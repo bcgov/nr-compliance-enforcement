@@ -90,7 +90,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         modalSize: "lg",
         modalType: QUICK_CLOSE,
         data: {
-          title: `Quick close: ${id}`,
+          title: `Quick close: Complaint #${id}`,
           description: "",
           complaint_identifier: id,
           complaint_type: complaintType,
@@ -168,7 +168,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                           as="button"
                           onClick={openQuickCloseModal}
                         >
-                          <i className="bi bi-journal-check"></i>
+                          <i className="bi bi-journal-x"></i>
                           <span>Quick close</span>
                         </Dropdown.Item>
                       )}
@@ -204,7 +204,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       variant="outline-light"
                       onClick={openQuickCloseModal}
                     >
-                      <i className="bi bi-journal-check"></i>
+                      <i className="bi bi-journal-x"></i>
                       <span>Quick close</span>
                     </Button>
                   )}

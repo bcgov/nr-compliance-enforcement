@@ -33,12 +33,20 @@ import { getAssessment, upsertAssessment } from "@store/reducers/case-thunks";
 import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
 
-type Props = { id: string; complaintType: string; handleSave?: () => void; showHeader?: boolean; quickClose?: boolean };
+type Props = {
+  id: string;
+  complaintType: string;
+  handleSave?: () => void;
+  handleClose?: () => void;
+  showHeader?: boolean;
+  quickClose?: boolean;
+};
 
 export const HWCRComplaintAssessment: FC<Props> = ({
   id,
   complaintType,
   handleSave = () => {},
+  handleClose = () => {},
   showHeader = true,
   quickClose = false,
 }) => {
@@ -78,7 +86,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     if (!hasAssessment && editable) {
       dispatch(setIsInEdit({ assessment: false }));
     } else dispatch(setIsInEdit({ assessment: editable }));
-  }, [editable, hasAssessment]);
+  }, [dispatch, editable, hasAssessment]);
 
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
@@ -124,27 +132,22 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const assigned = useAppSelector(selectComplaintAssignedBy);
 
   useEffect(() => {
-    if (id && (!complaintData || complaintData.id !== id)) {
+    if (id && (!complaintData || complaintData?.id !== id)) {
+      dispatch(clearAssessment());
       dispatch(getComplaintById(id, complaintType));
     }
   }, [id, complaintType, complaintData, dispatch]);
 
   useEffect(() => {
-    if (complaintData) {
+    if (id === complaintData?.id) {
+      console.log("officers", complaintData?.id, personGuid, complaintData);
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
-      dispatch(clearAssessment());
       dispatch(getAssessment(complaintData.id));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [complaintData]);
+  }, [dispatch, id, complaintData, personGuid, assignableOfficers]);
 
-  useEffect(() => {
-    populateAssessmentUI();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [assessmentState]);
-
-  const populateAssessmentUI = () => {
+  const populateAssessmentUI = useCallback(() => {
     const selectedOfficer = (
       assessmentState.officer
         ? {
@@ -212,7 +215,13 @@ export const HWCRComplaintAssessment: FC<Props> = ({
         setSelectedOfficer(officerAssigned[0]);
       }
     }
-  };
+    // officersInAgencyList should be in this list, but it is not a correctly implimented selector
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assessmentState, assigned, quickClose]);
+
+  useEffect(() => {
+    populateAssessmentUI();
+  }, [assessmentState, populateAssessmentUI]);
 
   const justificationLabelClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
   const justificationEditClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
@@ -472,7 +481,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   className="comp-details-form-row"
                   id="linked-complaint-div"
                 >
-                  <label htmlFor="linkedComplaint">Linking current complaint to:</label>
+                  <label htmlFor="linkedComplaint">Link current complaint to:</label>
                   <div className="comp-details-input full-width">
                     <HWCRComplaintAssessmentLinkComplaintSearch
                       id="linkedComplaint"
@@ -539,7 +548,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   variant="outline-primary"
                   id="outcome-cancel-button"
                   title="Cancel Outcome"
-                  onClick={cancelButtonClick}
+                  onClick={quickClose ? handleClose : cancelButtonClick}
                 >
                   Cancel
                 </Button>
