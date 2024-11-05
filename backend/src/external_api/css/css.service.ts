@@ -26,7 +26,7 @@ export class CssService implements ExternalApiService {
     this.clientSecret = process.env.CSS_CLIENT_SECRET;
     this.grantType = "client_credentials";
     this.env = process.env.ENVIRONMENT;
-    this.maxPages = 5;
+    this.maxPages = 10;
   }
 
   authenticate = async (): Promise<string> => {
