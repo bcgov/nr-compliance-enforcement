@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
 import {
   selectDischargeDropdown,
@@ -19,21 +19,11 @@ import { CompInput } from "../../../../../common/comp-input";
 import { openModal } from "../../../../../../store/reducers/app";
 import { CANCEL_CONFIRM } from "../../../../../../types/modal/modal-types";
 import { getCaseFile, upsertDecisionOutcome } from "../../../../../../store/reducers/case-thunks";
-import {
-  assignComplaintToOfficer,
-  selectOfficersByAgency,
-  selectOfficerListByAgency,
-} from "../../../../../../store/reducers/officer";
 import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
 import { UUID } from "crypto";
-import { getComplaintById, selectComplaintCallerInformation } from "../../../../../../store/reducers/complaints";
-import { ToggleError } from "../../../../../../common/toast";
-
-import COMPLAINT_TYPES from "../../../../../../types/app/complaint-types";
 import { ValidationTextArea } from "../../../../../../common/validation-textarea";
 
 type props = {
-  officerAssigned: string | null;
   leadIdentifier: string;
   toggleEdit: Function;
   //-- properties
@@ -51,7 +41,6 @@ type props = {
 };
 
 export const DecisionForm: FC<props> = ({
-  officerAssigned,
   leadIdentifier,
   toggleEdit,
   //--
@@ -71,6 +60,7 @@ export const DecisionForm: FC<props> = ({
 
   //-- select data from redux
   const caseId = useAppSelector(selectCaseId) as UUID;
+  const current_user = useAppSelector((state) => state.app.profile.idir);
 
   //-- drop-downs
   const dischargesOptions = useAppSelector(selectDischargeDropdown);
@@ -79,9 +69,6 @@ export const DecisionForm: FC<props> = ({
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const leadAgencyOptions = useAppSelector(selectLeadAgencyDropdown);
-  const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
-  const officerOptions = useAppSelector(selectOfficerListByAgency);
-  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const scheduleSectorType = useAppSelector(selectScheduleSectorXref);
 
   //-- error messgaes
@@ -92,7 +79,6 @@ export const DecisionForm: FC<props> = ({
   const [dateActionTakenErrorMessage, setDateActionTakenErrorMessage] = useState("");
   const [leadAgencyErrorMessage, setLeadAgencyErrorMessage] = useState("");
   const [inspectionNumberErrorMessage, setInspectionNumberErrorMessage] = useState("");
-  const [assignedToErrorMessage, setAssignedToErrorMessage] = useState("");
   const [actionTakenErrorMessage, setActionTakenErrorMessage] = useState("");
 
   //-- component data
@@ -105,35 +91,17 @@ export const DecisionForm: FC<props> = ({
     rationale,
     inspectionNumber,
     leadAgency,
-    assignedTo: officerAssigned ?? "",
+    assignedTo,
     actionTaken,
     actionTakenDate,
   });
 
   const [sectorList, setSectorList] = useState<Array<Option>>();
 
-  useEffect(() => {
-    if (officerAssigned) {
-      setData({ ...data, assignedTo: officerAssigned });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [officerAssigned]);
-
-  useEffect(() => {
-    if (sector && schedule) {
-      let options = scheduleSectorType
-        .filter((item) => item.schedule === schedule)
-        .map((item) => {
-          const record: Option = { label: item.longDescription, value: item.sector };
-          return record;
-        });
-      setSectorList(options);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [officerAssigned]);
   //-- update the decision state by property
   const updateModel = (property: string, value: string | Date | undefined) => {
     const model = { ...data, [property]: value };
+
     setData(model);
   };
 
@@ -176,22 +144,9 @@ export const DecisionForm: FC<props> = ({
         result = decisionTypeOptions.find((item) => item.value === actionTaken);
         break;
       }
-
-      case "assignedTo": {
-        const { assignedTo } = data;
-        result = officerOptions.find((item) => item.value === assignedTo);
-        break;
-      }
     }
 
     return !result ? null : result;
-  };
-
-  //-- when setting the assignment this should also update the assignment
-  //-- of the complaint to the officer being selected in the decision
-  const updateAssignment = (value?: string) => {
-    //-- need to get the officer_guid instead of the person
-    updateModel("assignedTo", value);
   };
 
   const handleRationaleChange = (value: string) => {
@@ -217,7 +172,13 @@ export const DecisionForm: FC<props> = ({
   const handleActionTakenChange = (value: string) => {
     //-- if the action taken changes make sure to clear the
     //-- lead agency and inspection number
-    const update = { ...data, actionTaken: value, leadAgency: undefined, inspectionNumber: undefined };
+    const update = {
+      ...data,
+      actionTaken: value,
+      assignedTo: current_user,
+      leadAgency: undefined,
+      inspectionNumber: undefined,
+    };
     setData(update);
   };
 
@@ -260,7 +221,6 @@ export const DecisionForm: FC<props> = ({
     setSectorErrorMessage("");
     setDischargeErrorMessage("");
     setActionTakenErrorMessage("");
-    setAssignedToErrorMessage("");
     setDateActionTakenErrorMessage("");
     setLeadAgencyErrorMessage("");
     setInspectionNumberErrorMessage("");
@@ -273,25 +233,6 @@ export const DecisionForm: FC<props> = ({
     if (isValid()) {
       dispatch(upsertDecisionOutcome(identifier, data)).then(async (response) => {
         if (response === "success") {
-          //-- update the assignment of the complaint to the selected officer
-          const { assignedTo } = data;
-          if (assignedTo && officersInAgencyList) {
-            const officerAssignedObj = officersInAgencyList.find((officer) => officer.auth_user_guid === assignedTo);
-
-            if (officerAssignedObj?.person_guid) {
-              const result = await dispatch(
-                assignComplaintToOfficer(leadIdentifier, officerAssignedObj.person_guid.person_guid),
-              );
-
-              if (result) {
-                //-- update the complaint
-                dispatch(getComplaintById(leadIdentifier, COMPLAINT_TYPES.ERS));
-              } else {
-                ToggleError("Error, unable to to assign officer to complaint");
-              }
-            }
-          }
-
           dispatch(getCaseFile(leadIdentifier));
 
           if (id !== undefined) {
@@ -325,7 +266,7 @@ export const DecisionForm: FC<props> = ({
     };
 
     const _isActionValid = (data: Decision, _isValid: boolean): boolean => {
-      if (data.actionTaken && (!data.actionTakenDate)) {
+      if (data.actionTaken && !data.actionTakenDate) {
         if (!data.actionTakenDate) {
           setDateActionTakenErrorMessage("Date required when action taken selected");
           _isValid = false;
@@ -335,7 +276,7 @@ export const DecisionForm: FC<props> = ({
       return _isValid;
     };
 
-    const _isAssignedToAndDateValid = (data: Decision, _isValid: boolean): boolean => {
+    const _isActionTakenAndDateValid = (data: Decision, _isValid: boolean): boolean => {
       if (!data.actionTaken || !data.actionTakenDate) {
         if (!data.actionTakenDate) {
           setDateActionTakenErrorMessage("Date required when action taken selected");
@@ -368,7 +309,7 @@ export const DecisionForm: FC<props> = ({
     }
 
     _isValid = _isActionValid(data, _isValid);
-    _isValid = _isAssignedToAndDateValid(data, _isValid);
+    _isValid = _isActionTakenAndDateValid(data, _isValid);
 
     return _isValid;
   };

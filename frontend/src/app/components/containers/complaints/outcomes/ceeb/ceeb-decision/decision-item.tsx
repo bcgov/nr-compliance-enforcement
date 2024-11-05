@@ -9,7 +9,6 @@ import {
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
 } from "../../../../../../store/reducers/code-table-selectors";
-import { selectOfficerListByAgency } from "../../../../../../store/reducers/officer";
 import Option from "../../../../../../types/app/option";
 import { CASE_ACTION_CODE } from "../../../../../../constants/case_actions";
 
@@ -28,7 +27,6 @@ type props = {
 };
 
 export const DecisionItem: FC<props> = ({
-  id,
   schedule,
   sector,
   discharge,
@@ -36,7 +34,6 @@ export const DecisionItem: FC<props> = ({
   rationale,
   leadAgency,
   inspectionNumber,
-  assignedTo,
   actionTaken,
   actionTakenDate,
 }) => {
@@ -48,7 +45,6 @@ export const DecisionItem: FC<props> = ({
   const scheduleSectorsOptions = useAppSelector(selectSectorDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectLeadAgencyDropdown);
-  const officerOptions = useAppSelector(selectOfficerListByAgency);
 
   const getValue = (property: string): Option | undefined | null => {
     let result: Option | undefined;
@@ -88,11 +84,6 @@ export const DecisionItem: FC<props> = ({
 
       case "actionTaken": {
         result = decisionTypeOptions.find((item) => item.value === actionTaken);
-        break;
-      }
-
-      case "assignedTo": {
-        result = officerOptions.find((item) => item.value === assignedTo);
         break;
       }
     }
