@@ -24,7 +24,7 @@ trap 'echo "Error occurred at line $LINENO while executing function $FUNCNAME"' 
 help_str() {
     echo "Usage: SKIP_AUTH=true OC_NAMESPACE=<namespace> ./cleanup_scan.sh"
     echo ""
-    echo "Ensure you have curl, oc, and jq installed and available on your path."
+    echo "Ensure you have curl, oc, and jq installed and available on your path, and have performed a oc login."
     echo ""
     echo "The ALLOW_EXPR regex is passed to grep -E for resource filtering. To read more run: man grep"
     echo ""
