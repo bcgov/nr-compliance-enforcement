@@ -129,7 +129,7 @@ export class ComplaintService {
 
     const result = await builder.getOne();
     //-- pull the user's agency from the query results and return the agency code
-    if (result.office_guid && result.office_guid.agency_code) {
+    if (result.office_guid?.agency_code) {
       const {
         office_guid: { agency_code },
       } = result;
