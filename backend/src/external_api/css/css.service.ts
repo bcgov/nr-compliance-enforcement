@@ -14,6 +14,7 @@ export class CssService implements ExternalApiService {
   readonly clientSecret: string;
   readonly grantType: string;
   readonly env: string;
+  readonly maxPages: number;
 
   @Inject(ConfigurationService)
   readonly configService: ConfigurationService;
@@ -25,6 +26,7 @@ export class CssService implements ExternalApiService {
     this.clientSecret = process.env.CSS_CLIENT_SECRET;
     this.grantType = "client_credentials";
     this.env = process.env.ENVIRONMENT;
+    this.maxPages = 5;
   }
 
   authenticate = async (): Promise<string> => {
@@ -116,7 +118,7 @@ export class CssService implements ExternalApiService {
     }
   };
 
-getUserRoleMapping = async (): Promise<AxiosResponse> => {
+  getUserRoleMapping = async (): Promise<AxiosResponse> => {
     try {
       const apiToken = await this.authenticate();
       //Get all roles from NatCom CSS integation
@@ -135,26 +137,33 @@ getUserRoleMapping = async (): Promise<AxiosResponse> => {
 
         //Get all users for each role
         let usersUrl: string = "";
+        const pages = Array.from(Array(this.maxPages), (_, i) => i + 1);
         const usersRoles = await Promise.all(
           roleList.map(async (role) => {
-            usersUrl = `${this.baseUri}/api/v1/integrations/4794/${this.env}/roles/${role.name}/users`;
-            const userRes = await get(apiToken, encodeURI(usersUrl), config);
-            if (userRes?.data.data.length > 0) {
-              const {
-                data: { data: users },
-              } = userRes;
-              let usersRolesTemp = await Promise.all(
-                users.map((user) => {
-                  return {
-                    userId: user.username
-                      .replace(/@idir$/i, "")
-                      .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5"),
-                    role: role.name,
-                  };
-                }),
-              );
-              return usersRolesTemp;
+            let usersRolesTemp = [];
+            for (const page of pages) {
+              usersUrl = `${this.baseUri}/api/v1/integrations/4794/${this.env}/roles/${role.name}/users?page=${page}`;
+              const userRes = await get(apiToken, encodeURI(usersUrl), config);
+              if (userRes?.data.data.length > 0) {
+                const {
+                  data: { data: users },
+                } = userRes;
+                let usersRolesSinglePage = await Promise.all(
+                  users.map((user) => {
+                    return {
+                      userId: user.username
+                        .replace(/@idir$/i, "")
+                        .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5"),
+                      role: role.name,
+                    };
+                  }),
+                );
+                usersRolesTemp.push(...usersRolesSinglePage);
+              } else {
+                break;
+              }
             }
+            return usersRolesTemp;
           }),
         );
 
