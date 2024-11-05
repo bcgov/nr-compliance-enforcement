@@ -143,6 +143,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       console.log("officers", complaintData?.id, personGuid, complaintData);
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
+      dispatch(clearAssessment());
       dispatch(getAssessment(complaintData.id));
     }
   }, [dispatch, id, complaintData, personGuid, assignableOfficers]);

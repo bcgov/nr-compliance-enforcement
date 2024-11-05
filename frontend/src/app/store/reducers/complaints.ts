@@ -1173,6 +1173,13 @@ export const selectLinkedComplaints = (state: RootState): LinkedComplaint[] => {
   return linkedComplaints;
 };
 
+export const selectLinkedComplaints = (state: RootState): LinkedComplaint[] => {
+  const {
+    complaints: { linkedComplaints },
+  } = state;
+  return linkedComplaints;
+};
+
 //Get officer's auth_user_id that is assigned in a complaint
 export const assignedOfficerAuthId = (state: RootState): string | null => {
   const {
