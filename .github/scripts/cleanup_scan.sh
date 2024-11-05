@@ -6,6 +6,9 @@
 # For CI/CD safety, only the counts are output, and users are encouraged to run this locally 
 # in order to see the names and perform the delete themselves.
 #
+# Dependencies: curl, oc, jq
+# Note: the windows variant of jq has differing newline behaviour
+#
 set -e # failfast
 trap 'echo "Error occurred at line $LINENO while executing function $FUNCNAME"' ERR
 
@@ -18,6 +21,22 @@ trap 'echo "Error occurred at line $LINENO while executing function $FUNCNAME"' 
 
 # THIRTY_DAYS_IN_SECONDS=2592000 - variables in the jq dont play nice so we will just hardcode it
 
+help_str() {
+    echo "Usage: SKIP_AUTH=true OC_NAMESPACE=<namespace> ./cleanup_scan.sh"
+    echo ""
+    echo "Ensure you have curl, oc, and jq installed and available on your path."
+    echo ""
+    echo "The ALLOW_EXPR regex is passed to grep -E for resource filtering. To read more run: man grep"
+    echo ""
+    echo "After running the script, if any results are found you can cat any of the following files:"
+    echo "cat /tmp/old_workloads_to_delete.txt;"
+    echo "cat /tmp/secrets_to_delete.txt;"
+    echo "cat /tmp/pvcs_to_delete.txt;"
+    echo "cat /tmp/configmaps_to_delete.txt;"
+    echo ""
+    echo "Note that these respective files only exist if results are found."
+}
+
 # Configure globals
 if [ -z "$ALLOW_EXPR" ]; then
     ALLOW_EXPR="default|pipeline|artifact|vault|deployer|logging|builder|keycloak|openshift|bundle|kube|cypress|object-store"
@@ -27,15 +46,18 @@ echo "ALLOW_EXPR: $ALLOW_EXPR"
 OC_TEMP_TOKEN=""
 if [ -z "$OC_NAMESPACE" ]; then
     echo "OC_NAMESPACE is not set. Exiting..."
+    help_str
     exit 1
 fi
 if [ "$SKIP_AUTH" != "true" ]; then
     if [ -z "$OC_SERVER" ]; then
         echo "OC_SERVER is not set. Exiting..."
+        help_str
         exit 1
     fi
     if [ -z "$OC_TOKEN" ]; then
         echo "OC_TOKEN is not set. Exiting..."
+        help_str
         exit 1
     fi
     # Auth flow
@@ -174,8 +196,8 @@ if [ $OK -eq 1 ]; then
     echo "To delete these found workloads, locally run the following to see them:"
     echo "Note: skip flag uses your existing oc authentication"
     echo ""
-    echo "ALLOW_EXPR=\"$ALLOW_EXPR\" SKIP_AUTH=true ./.github/scripts/cleanup_scan.sh"
-    echo "cat /tmp/old_workloads_to_delete.txt && cat /tmp/secrets_to_delete.txt && cat /tmp/pvcs_to_delete.txt && cat /tmp/configmaps_to_delete.txt"
+    echo "ALLOW_EXPR=\"$ALLOW_EXPR\" SKIP_AUTH=true ./.github/scripts/cleanup_scan.sh;"
+    echo "cat /tmp/old_workloads_to_delete.txt; cat /tmp/secrets_to_delete.txt; cat /tmp/pvcs_to_delete.txt; cat /tmp/configmaps_to_delete.txt"
 
 fi
 
