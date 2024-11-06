@@ -1,4 +1,4 @@
-export interface PermitSiteInput {
+export interface PermitSiteDto {
   id?: string;
   type: "permit" | "site";
   value: string;
