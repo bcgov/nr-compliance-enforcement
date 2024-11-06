@@ -279,10 +279,13 @@ export const DecisionForm: FC<props> = ({
 
     const _isActionValid = (data: Decision, _isValid: boolean): boolean => {
       if (data.actionTaken && !data.actionTakenDate) {
-        if (!data.actionTakenDate) {
-          setDateActionTakenErrorMessage("Date required when action taken selected");
-          _isValid = false;
-        }
+        setDateActionTakenErrorMessage("Date required when action taken selected");
+        _isValid = false;
+      }
+
+      if (data.actionTakenDate && !data.actionTaken) {
+        setActionTakenErrorMessage("Action taken required when date is selected");
+        _isValid = false;
       }
 
       return _isValid;
