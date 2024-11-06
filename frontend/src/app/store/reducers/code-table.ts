@@ -43,6 +43,7 @@ import {
   fetchScheduleSectorTypes,
 } from "./code-table-thunks";
 import { TeamType } from "../../types/app/code-tables/team";
+import { CaseLocationType } from "@/app/types/app/code-tables/case-location";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -81,6 +82,8 @@ const initialState: CodeTableState = {
   team: [],
   "complaint-method-received-codes": [],
   "lead-agency": [],
+  "assessment-cat1-type": [],
+  "case-location-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -142,6 +145,8 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       team,
       "complaint-method-received-codes": complaintMethodReceived,
       "lead-agency": leadAgency,
+      "assessment-cat1-type": assessmentCat1Type,
+      "case-location-type": caseLocationType,
     },
   } = state;
 
@@ -262,6 +267,12 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(leadAgency).any()) {
       dispatch(fetchLeadAgencies());
     }
+    if (!from(caseLocationType).any()) {
+      dispatch(fetchCaseLocationTypes());
+    }
+    if (!from(assessmentCat1Type).any()) {
+      dispatch(fetchAssessmentCat1Types());
+    }
   } catch (error) {}
 };
 
@@ -307,6 +318,8 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchCEEBDecisionTypes());
     dispatch(fetchScheduleSectorTypes());
     dispatch(fetchLeadAgencies());
+    dispatch(fetchAssessmentCat1Types());
+    dispatch(fetchCaseLocationTypes());
   } catch (error) {
     console.error(error);
   }
@@ -641,6 +654,30 @@ export const fetchLeadAgencies = (): AppThunk => async (dispatch) => {
   const response = await get<Array<Agency>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.LEAD_AGENCY, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchAssessmentCat1Types = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.ASSESSMENT_CAT1_TYPE}`,
+  );
+
+  const response = await get<Array<AssessmentType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.ASSESSMENT_CAT1_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchCaseLocationTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.CASE_LOCATION_TYPE}`,
+  );
+
+  const response = await get<Array<CaseLocationType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.CASE_LOCATION_TYPE, data: response };
     dispatch(setCodeTable(payload));
   }
 };
@@ -1358,6 +1395,32 @@ export const selectEquipmentDropdown = (state: RootState): Array<Option> => {
   } = state;
 
   const data = items.map(({ equipment: value, shortDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
+export const selectLocationDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "case-location-type": items },
+  } = state;
+
+  const data = items.map(({ caseLocation: value, shortDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
+export const selectAssessmentCat1Dropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "assessment-cat1-type": items },
+  } = state;
+
+  const data = items.map(({ assessmentType: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });

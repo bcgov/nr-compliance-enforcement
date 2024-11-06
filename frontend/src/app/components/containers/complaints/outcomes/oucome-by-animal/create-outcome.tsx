@@ -1,12 +1,11 @@
 import { FC, useRef, useState } from "react";
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
 import { CompSelect } from "../../../../common/comp-select";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import {
   selectAgeDropdown,
-  selectConflictHistoryDropdown,
   selectSexDropdown,
   selectSpeciesCodeDropdown,
   selectThreatLevelDropdown,
@@ -64,7 +63,6 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const sexes = useAppSelector(selectSexDropdown);
   const ages = useAppSelector(selectAgeDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
-  const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficerListByAgency);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
@@ -113,11 +111,6 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
       case "threatLevel": {
         const { threatLevel } = data;
         return threatLevels.find((item) => item.value === threatLevel);
-      }
-
-      case "conflictHistory": {
-        const { conflictHistory } = data;
-        return conflictHistories.find((item) => item.value === conflictHistory);
       }
 
       case "officer":
@@ -473,138 +466,6 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                 }}
               />
             </div>
-            <div className="comp-details-form-row">
-              <label htmlFor="select-conflict-history">Conflict history</label>
-              <CompSelect
-                id="select-conflict-history"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={conflictHistories}
-                enableValidation={false}
-                placeholder={"Select"}
-                onChange={(evt) => {
-                  updateModel("conflictHistory", evt?.value);
-                }}
-              />
-            </div>
-
-            <Row
-              className="mb-3"
-              hidden
-            >
-              <Col
-                xs={12}
-                md={4}
-              >
-                <label
-                  className="mb-2"
-                  htmlFor="select-species"
-                >
-                  Species
-                </label>
-                <CompSelect
-                  id="select-species"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={speciesList}
-                  enableValidation={true}
-                  placeholder="Select"
-                  onChange={handleSpeciesChange}
-                  defaultOption={getValue("species")}
-                  errorMessage={speciesError}
-                />
-              </Col>
-              <Col
-                xs={12}
-                md={4}
-              >
-                <label
-                  className="mb-2"
-                  htmlFor="select-sex"
-                >
-                  Sex
-                </label>
-                <CompSelect
-                  id="select-sex"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={sexes}
-                  enableValidation={false}
-                  placeholder={"Select"}
-                  onChange={(evt) => {
-                    updateModel("sex", evt?.value);
-                  }}
-                />
-              </Col>
-              <Col
-                xs={12}
-                md={4}
-              >
-                <label
-                  className="mb-2"
-                  htmlFor="select-age"
-                >
-                  Age
-                </label>
-                <CompSelect
-                  id="select-age"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={ages}
-                  enableValidation={false}
-                  placeholder={"Select"}
-                  onChange={(evt) => {
-                    updateModel("age", evt?.value);
-                  }}
-                />
-              </Col>
-            </Row>
-            <Row hidden>
-              <Col
-                xs={12}
-                md={4}
-              >
-                <label
-                  className="mb-2"
-                  htmlFor="select-category-level"
-                >
-                  Category level
-                </label>
-                <CompSelect
-                  id="select-category-level"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={threatLevels}
-                  enableValidation={false}
-                  placeholder={"Select"}
-                  onChange={(evt) => {
-                    updateModel("threatLevel", evt?.value);
-                  }}
-                />
-              </Col>
-              <Col
-                xs={12}
-                md={4}
-              >
-                <label
-                  className="mb-2"
-                  htmlFor="select-conflict-history"
-                >
-                  Conflict history
-                </label>
-                <CompSelect
-                  id="select-conflict-history"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={conflictHistories}
-                  enableValidation={false}
-                  placeholder={"Select"}
-                  onChange={(evt) => {
-                    updateModel("conflictHistory", evt?.value);
-                  }}
-                />
-              </Col>
-            </Row>
           </fieldset>
 
           <fieldset>

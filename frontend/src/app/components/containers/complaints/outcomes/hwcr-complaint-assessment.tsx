@@ -11,8 +11,12 @@ import {
   selectComplaintAssignedBy,
 } from "@store/reducers/complaints";
 import {
+  selectAssessmentCat1Dropdown,
   selectAssessmentTypeCodeDropdown,
+  selectConflictHistoryDropdown,
   selectJustificationCodeDropdown,
+  selectLocationDropdown,
+  selectThreatLevelDropdown,
   selectYesNoCodeDropdown,
 } from "@store/reducers/code-table";
 import { formatDate, getSelectedOfficer } from "@common/methods";
@@ -32,6 +36,8 @@ import { selectAssessment } from "@store/reducers/case-selectors";
 import { getAssessment, upsertAssessment } from "@store/reducers/case-thunks";
 import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
+import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
+import { WildlifeComplaint } from "@/app/types/app/complaints/wildlife-complaint";
 
 type Props = { id: string; complaintType: string; handleSave?: () => void; showHeader?: boolean; quickClose?: boolean };
 
@@ -52,6 +58,12 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
   const [editable, setEditable] = useState<boolean>(true);
   const [validateOnChange, setValidateOnChange] = useState<boolean>(false);
+  const [selectedContacted, setSelectedContacted] = useState<string>("N");
+  const [selectedAttended, setSelectedAttended] = useState<string>("N");
+  const [selectedAssessmentCat1Types, setSelectedAssessmentCat1Types] = useState<Option[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<string>("");
+  const [selectedConflictHistory, setSelectedConflictHistory] = useState<string>("");
+  const [selectedThreatLevel, setSelectedThreatLevel] = useState<string>("");
 
   const handleAssessmentTypesChange = (selectedItems: Option[]) => {
     setSelectedAssessmentTypes(selectedItems);
@@ -64,15 +76,24 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [linkedComplaintErrorMessage, setLinkedComplaintErrorMessage] = useState<string>("");
   const [assessmentRequiredErrorMessage, setAssessmentRequiredErrorMessage] = useState<string>("");
 
-  const complaintData = useAppSelector(selectComplaint);
+  const complaintData = useAppSelector(selectComplaint) as WildlifeComplaint;
   const assessmentState = useAppSelector(selectAssessment);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const cases = useAppSelector((state) => state.cases);
   const assignableOfficers = useAppSelector(selectOfficerListByAgency);
+  const conflictHistoryOptions = useAppSelector(selectConflictHistoryDropdown);
+  const threatLevelOptions = useAppSelector(selectThreatLevelDropdown);
+  const locationOptions = useAppSelector(selectLocationDropdown);
+  const assessmentCat1Options = useAppSelector(selectAssessmentCat1Dropdown);
 
   const hasAssessment = Object.keys(cases.assessment).length > 0;
   const showSectionErrors = (!hasAssessment || editable) && cases.isInEdit.showSectionErrors;
+
+  const noYesOptions: Option[] = [
+    { label: "No", value: "N" },
+    { label: "Yes", value: "Y" },
+  ];
 
   useEffect(() => {
     if (!hasAssessment && editable) {
@@ -483,20 +504,154 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 </div>
               )}
 
+              {/* Contacted complainant */}
+              <div
+                className={assessmentDivClass}
+                id="assessment-contacted-complainant-div"
+              >
+                <label htmlFor="assessment-contacted-complainant-div">Contacted complainant</label>
+                <div className="comp-details-input full-width">
+                  <CompRadioGroup
+                    id="assessment-contacted-complainant-radiogroup"
+                    options={noYesOptions}
+                    enableValidation={true}
+                    itemClassName="comp-radio-btn"
+                    groupClassName="comp-equipment-form-radio-group"
+                    value={selectedContacted}
+                    onChange={(option: any) => setSelectedContacted(option.target.value)}
+                    isDisabled={false}
+                    radioGroupName="assessment-contacted-complainant-radiogroup"
+                  />
+                </div>
+              </div>
+
+              {/* Attended radio buttons */}
+              <div
+                className={assessmentDivClass}
+                id="assessment-attended-div"
+              >
+                <label htmlFor="assessment-attended-div">Attended</label>
+                <div className="comp-details-input full-width">
+                  <CompRadioGroup
+                    id="assessment-attended-radiogroup"
+                    options={noYesOptions}
+                    enableValidation={true}
+                    itemClassName="comp-radio-btn"
+                    groupClassName="comp-equipment-form-radio-group"
+                    value={selectedAttended}
+                    onChange={(option: any) => setSelectedAttended(option.target.value)}
+                    isDisabled={false}
+                    radioGroupName="assessment-attended-radiogroup"
+                  />
+                </div>
+              </div>
+
+              {/* Animal actions */}
               <div
                 className={assessmentDivClass}
                 id="assessment-checkbox-div"
               >
-                <label htmlFor="checkbox-div">Assessment</label>
+                <label htmlFor="checkbox-div">
+                  <>
+                    <div>Animal actions</div>
+                    <div>(Select all applicable boxes)</div>
+                  </>
+                </label>
                 <div className="comp-details-input full-width">
                   <ValidationCheckboxGroup
-                    errMsg={assessmentRequiredErrorMessage}
+                    errMsg={complaintData && complaintData.isLargeCarnivore ? "" : assessmentRequiredErrorMessage}
                     options={assessmentTypeList}
                     onCheckboxChange={handleAssessmentTypesChange}
                     checkedValues={selectedAssessmentTypes}
                   ></ValidationCheckboxGroup>
+                  {complaintData && complaintData.isLargeCarnivore && (
+                    <ValidationCheckboxGroup
+                      errMsg={assessmentRequiredErrorMessage}
+                      options={assessmentCat1Options}
+                      onCheckboxChange={(option: Option[]) => setSelectedAssessmentCat1Types(option)}
+                      checkedValues={selectedAssessmentTypes}
+                    ></ValidationCheckboxGroup>
+                  )}
                 </div>
               </div>
+
+              {complaintData && complaintData.isLargeCarnivore && (
+                <>
+                  {/* Location type */}
+                  <div
+                    className={assessmentDivClass}
+                    id="assessment-location-type-div"
+                  >
+                    <label
+                      className="mb-2"
+                      htmlFor="select-location-type"
+                    >
+                      Location type
+                    </label>
+                    <CompSelect
+                      id="select-location-type"
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={locationOptions}
+                      enableValidation={false}
+                      placeholder={"Select"}
+                      onChange={(e: any) => {
+                        setSelectedLocation(e.value);
+                      }}
+                    />
+                  </div>
+
+                  {/* Conflict history */}
+                  <div
+                    className={assessmentDivClass}
+                    id="assessment-conflict-history-div"
+                  >
+                    <label
+                      className="mb-2"
+                      htmlFor="select-conflict-history"
+                    >
+                      Conflict history
+                    </label>
+                    <CompSelect
+                      id="select-conflict-history"
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={conflictHistoryOptions}
+                      enableValidation={false}
+                      placeholder={"Select"}
+                      onChange={(e: any) => {
+                        setSelectedConflictHistory(e.value);
+                      }}
+                    />
+                  </div>
+
+                  {/* Category level */}
+                  <div
+                    className={assessmentDivClass}
+                    id="assessment-category-level-div"
+                  >
+                    <label
+                      className="mb-2"
+                      htmlFor="select-category-level"
+                    >
+                      Category level
+                    </label>
+                    <CompSelect
+                      id="select-category-level"
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={threatLevelOptions}
+                      enableValidation={false}
+                      placeholder={"Select"}
+                      onChange={(e: any) => {
+                        setSelectedThreatLevel(e.value);
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* Officer */}
               <div
                 className="comp-details-form-row"
                 id="outcome-officer-div"

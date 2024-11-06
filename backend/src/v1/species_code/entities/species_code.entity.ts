@@ -39,6 +39,13 @@ export class SpeciesCode {
   legacy_code: string;
 
   @ApiProperty({
+    example: "True",
+    description: "A boolean indicator to determine if the species code is a large carnivore.",
+  })
+  @Column()
+  large_carnivore_ind: boolean;
+
+  @ApiProperty({
     example: "IDIRmburns",
     description: "The id of the user that created the species code.",
   })

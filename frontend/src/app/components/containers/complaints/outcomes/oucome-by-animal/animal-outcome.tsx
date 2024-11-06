@@ -178,15 +178,6 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
               <dd>{animalThreatLevel}</dd>
             </Col>
           )}
-          {data?.conflictHistory && (
-            <Col
-              xs={12}
-              md={6}
-            >
-              <dt>Conflict history</dt>
-              <dd>{animalHistory}</dd>
-            </Col>
-          )}
 
           {data?.tags && from(data?.tags).any() && (
             <Col xs={12}>

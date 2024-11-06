@@ -6,7 +6,6 @@ import {
   selectSexDropdown,
   selectAgeDropdown,
   selectThreatLevelDropdown,
-  selectConflictHistoryDropdown,
   selectWildlifeComplaintOutcome,
 } from "../../../../../store/reducers/code-table";
 import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
@@ -49,7 +48,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const sexes = useAppSelector(selectSexDropdown);
   const ages = useAppSelector(selectAgeDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
-  const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficerListByAgency);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
@@ -90,11 +88,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
       case "threatLevel": {
         const { threatLevel } = data;
         return threatLevels.find((item) => item.value === threatLevel);
-      }
-
-      case "conflictHistory": {
-        const { conflictHistory } = data;
-        return conflictHistories.find((item) => item.value === conflictHistory);
       }
 
       case "officer":
@@ -463,21 +456,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     updateModel("threatLevel", evt?.value);
                   }}
                   defaultOption={getValue("threatLevel")}
-                />
-              </div>
-              <div className="comp-details-form-row">
-                <label htmlFor="select-conflict-history">Conflict history</label>
-                <CompSelect
-                  id="select-conflict-history"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input full-width"
-                  options={conflictHistories}
-                  enableValidation={false}
-                  placeholder={"Select"}
-                  onChange={(evt) => {
-                    updateModel("conflictHistory", evt?.value);
-                  }}
-                  defaultOption={getValue("conflictHistory")}
                 />
               </div>
             </fieldset>
