@@ -1,4 +1,4 @@
-import { DrugUsedInput } from "./drug-used-input";
+import { DrugUsedInputV2 } from "./drug-used-input";
 import { EarTagInput } from "./ear-tag-input";
 import { WildlifeActionInput } from "./wildlife-action-input";
 
@@ -11,6 +11,6 @@ export interface WildlifeInput {
   conflictHistory?: string;
   outcome?: string;
   tags?: Array<EarTagInput>;
-  drugs?: Array<DrugUsedInput>;
+  drugs?: Array<DrugUsedInputV2>;
   actions?: Array<WildlifeActionInput>;
 }
