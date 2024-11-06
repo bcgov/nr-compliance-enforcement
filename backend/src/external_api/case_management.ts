@@ -7,6 +7,136 @@ axios.interceptors.response.use(undefined, (error: AxiosError) => {
   return Promise.reject(error);
 });
 
+export const caseFileQueryFields: string = `
+{
+  caseIdentifier
+  leadIdentifier
+  assessmentDetails {
+    actionNotRequired
+    actionJustificationCode
+    actionJustificationShortDescription
+    actionJustificationLongDescription
+    actionJustificationActiveIndicator
+    actions {
+      actionId
+      actor
+      date
+      actionCode
+      shortDescription
+      longDescription
+      activeIndicator
+    }
+  }
+  isReviewRequired
+  reviewComplete {
+    actor
+    date
+    actionCode
+    actionId
+    activeIndicator
+  }
+  preventionDetails {
+    actions {
+      actionId
+      actor
+      date
+      actionCode
+      shortDescription
+      longDescription
+      activeIndicator
+    }
+  }
+  note {
+    note 
+    action { 
+      actor
+      actionCode
+      date,
+      actionId,
+      activeIndicator
+    }
+  }
+  equipment {
+    id
+    typeCode
+    activeIndicator
+    address
+    xCoordinate
+    yCoordinate
+    createDate
+    actions { 
+      actionId
+      actor
+      actionCode
+      date
+    }
+    wasAnimalCaptured
+  },
+  subject { 
+    id
+    species
+    sex
+    age
+    categoryLevel
+    conflictHistory
+    outcome
+    tags { 
+      id
+      ear
+      identifier
+
+      order
+    }
+    drugs { 
+      id
+
+      vial
+      drug
+      amountUsed
+      injectionMethod
+      reactions
+    
+      remainingUse
+      amountDiscarded
+      discardMethod
+
+      order
+    }
+    actions { 
+      actionId
+      actor
+      actionCode
+      date
+    }
+    order
+  }
+  decision { 
+    id
+    schedule
+    scheduleLongDescription
+    sector
+    sectorLongDescription
+    discharge
+    dischargeLongDescription
+    nonCompliance
+    nonComplianceLongDescription
+    rationale
+    inspectionNumber
+    leadAgency
+    leadAgencyLongDescription
+    assignedTo
+    actionTaken
+    actionTakenLongDescription
+    actionTakenDate
+  }
+  authorization { 
+    id
+    type
+    value
+  }
+}
+`;
+
 export const get = (token, params?: {}) => {
   let config: AxiosRequestConfig = {
     headers: {

@@ -9,6 +9,7 @@ export interface ComplaintReportData {
   generatedOn: string;
   updatedOn: Date | string;
   createdBy: string;
+  ownedBy: string;
   officerAssigned: string;
   status: string;
   incidentDateTime: Date | string;
