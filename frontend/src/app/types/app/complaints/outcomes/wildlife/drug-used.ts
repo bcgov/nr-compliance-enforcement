@@ -35,3 +35,17 @@ export interface DrugUsedV2 {
 
   order: number;
 }
+
+export interface DrugUsedV3 {
+  id: string;
+
+  vial: string;
+  drug: string;
+  amountUsed: string;
+  injectionMethod: string;
+
+  remainingUse: string | null;
+  additionalComments: string;
+
+  order: number;
+}
