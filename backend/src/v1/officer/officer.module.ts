@@ -18,5 +18,6 @@ import { CssModule } from "src/external_api/css/css.module";
   ],
   controllers: [OfficerController],
   providers: [OfficerService, PersonService, OfficeService],
+  exports: [OfficerService],
 })
 export class OfficerModule {}

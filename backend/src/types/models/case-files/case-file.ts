@@ -4,6 +4,8 @@ import { EquipmentDetailsDto } from "./equipment/equipment-details";
 import { Note } from "./supplemental-notes/note";
 import { PreventionDetailsDto } from "./prevention-details";
 import { FileReviewActionDto } from "./file-review-action";
+import { PermitSiteDto } from "./ceeb/site/permit-site-input";
+import { DecisionDto } from "./ceeb/decision/decision-input";
 
 export interface CaseFileDto {
   caseIdentifier: UUID;
@@ -18,4 +20,6 @@ export interface CaseFileDto {
   isReviewRequired: boolean;
   reviewComplete: FileReviewActionDto;
   note?: Note;
+  authorization?: PermitSiteDto;
+  decision?: DecisionDto;
 }

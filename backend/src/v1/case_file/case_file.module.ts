@@ -18,5 +18,6 @@ import { LinkedComplaintXref } from "../linked_complaint_xref/entities/linked_co
   ],
   controllers: [CaseFileController],
   providers: [CaseFileService],
+  exports: [CaseFileService],
 })
 export class CaseFileModule {}

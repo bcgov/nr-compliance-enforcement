@@ -1,4 +1,4 @@
-export interface DecisionInput {
+export interface DecisionDto {
   id?: string;
   schedule: string;
   sector: string;

@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger, Scope } from "@nestjs/common";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { get, post } from "../../external_api/case_management";
+import { caseFileQueryFields, get, post } from "../../external_api/case_management";
 import { CaseFileDto } from "src/types/models/case-files/case-file";
 import { REQUEST } from "@nestjs/core";
 import { AxiosResponse, AxiosError } from "axios";
@@ -32,130 +32,6 @@ export class CaseFileService {
   private readonly logger = new Logger(CaseFileService.name);
   private mapper: Mapper;
 
-  private caseFileQueryFields: string = `
-  {
-    caseIdentifier
-    leadIdentifier
-    assessmentDetails {
-      actionNotRequired
-      actionJustificationCode
-      actionJustificationShortDescription
-      actionJustificationLongDescription
-      actionJustificationActiveIndicator
-      actions {
-        actionId
-        actor
-        date
-        actionCode
-        shortDescription
-        longDescription
-        activeIndicator
-      }
-    }
-    isReviewRequired
-    reviewComplete {
-      actor
-      date
-      actionCode
-      actionId
-      activeIndicator
-    }
-    preventionDetails {
-      actions {
-        actionId
-        actor
-        date
-        actionCode
-        shortDescription
-        longDescription
-        activeIndicator
-      }
-    }
-    note {
-      note 
-      action { 
-        actor
-        actionCode
-        date,
-        actionId,
-        activeIndicator
-      }
-    }
-    equipment {
-      id
-      typeCode
-      activeIndicator
-      address
-      xCoordinate
-      yCoordinate
-      createDate
-      actions { 
-        actionId
-        actor
-        actionCode
-        date
-      }
-      wasAnimalCaptured
-    },
-    subject { 
-      id
-      species
-      sex
-      age
-      categoryLevel
-      conflictHistory
-      outcome
-      tags { 
-        id
-        ear
-        identifier
-
-        order
-      }
-      drugs { 
-        id
-
-        vial
-        drug
-        amountUsed
-        injectionMethod
-        reactions
-      
-        remainingUse
-        amountDiscarded
-        discardMethod
-
-        order
-      }
-      actions { 
-        actionId
-        actor
-        actionCode
-        date
-      }
-      order
-    }
-    decision { 
-      id
-      schedule
-      sector
-      discharge
-      nonCompliance
-      rationale
-      inspectionNumber
-      leadAgency
-      assignedTo
-      actionTaken
-      actionTakenDate
-    }
-    authorization { 
-      id
-      type
-      value
-    }
-  }
-  `;
-
   constructor(
     @Inject(REQUEST) private request: Request,
     @InjectMapper() mapper,
@@ -169,7 +45,7 @@ export class CaseFileService {
   find = async (complaint_id: string, token: string): Promise<CaseFileDto> => {
     const { data, errors } = await get(token, {
       query: `{getCaseFileByLeadId (leadIdentifier: "${complaint_id}")
-        ${this.caseFileQueryFields}
+        ${caseFileQueryFields}
       }`,
     });
 
@@ -291,7 +167,7 @@ export class CaseFileService {
         const result = await post(token, {
           query: `mutation CreateAssessment($createAssessmentInput: CreateAssessmentInput!) {
             createAssessment(createAssessmentInput: $createAssessmentInput)
-            ${this.caseFileQueryFields}
+            ${caseFileQueryFields}
           }`,
           variables: model,
         });
@@ -310,7 +186,7 @@ export class CaseFileService {
       const result = await post(token, {
         query: `mutation CreateAssessment($createAssessmentInput: CreateAssessmentInput!) {
           createAssessment(createAssessmentInput: $createAssessmentInput)
-          ${this.caseFileQueryFields}
+          ${caseFileQueryFields}
         }`,
         variables: model,
       });
@@ -324,7 +200,7 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation UpdateAssessment($updateAssessmentInput: UpdateAssessmentInput!) {
         updateAssessment(updateAssessmentInput: $updateAssessmentInput) 
-        ${this.caseFileQueryFields}
+        ${caseFileQueryFields}
       }`,
       variables: model,
     });
@@ -336,7 +212,7 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation CreateReview($reviewInput: ReviewInput!) {
         createReview(reviewInput: $reviewInput) 
-        ${this.caseFileQueryFields}
+        ${caseFileQueryFields}
       }`,
       variables: model,
     });
@@ -359,7 +235,7 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation UpdateReview($reviewInput: ReviewInput!) {
         updateReview(reviewInput: $reviewInput) 
-        ${this.caseFileQueryFields}
+        ${caseFileQueryFields}
       }`,
       variables: model,
     });
@@ -388,7 +264,7 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation CreatePrevention($createPreventionInput: CreatePreventionInput!) {
         createPrevention(createPreventionInput: $createPreventionInput) 
-        ${this.caseFileQueryFields}
+        ${caseFileQueryFields}
       }`,
       variables: model,
     });
@@ -400,7 +276,7 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation UpdatePrevention($updatePreventionInput: UpdatePreventionInput!) {
         updatePrevention(updatePreventionInput: $updatePreventionInput) 
-        ${this.caseFileQueryFields}
+        ${caseFileQueryFields}
       }`,
       variables: model,
     });
@@ -427,7 +303,7 @@ export class CaseFileService {
     const mutationQuery = {
       query: `mutation CreateEquipment($createEquipmentInput: CreateEquipmentInput!) {
         createEquipment(createEquipmentInput: $createEquipmentInput)
-          ${this.caseFileQueryFields}
+          ${caseFileQueryFields}
       }`,
       variables: model,
     };
@@ -444,7 +320,7 @@ export class CaseFileService {
     const result = await post(token, {
       query: `mutation UpdateEquipment($updateEquipmentInput: UpdateEquipmentInput!) {
         updateEquipment(updateEquipmentInput: $updateEquipmentInput) 
-        ${this.caseFileQueryFields}
+        ${caseFileQueryFields}
       }`,
       variables: model,
     });
