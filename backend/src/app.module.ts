@@ -140,6 +140,13 @@ export class AppModule {
     consumer.apply(HTTPLoggerMiddleware).exclude({ path: "", method: RequestMethod.ALL }).forRoutes("*");
     consumer
       .apply(RequestTokenMiddleware)
-      .forRoutes("v1/code-table", "v1/case", "v1/configuration", "v1/complaint/search", "v1/complaint/map/search");
+      .forRoutes(
+        "v1/code-table",
+        "v1/case",
+        "v1/configuration",
+        "v1/complaint/search",
+        "v1/complaint/map/search",
+        "v1/document/export-complaint",
+      );
   }
 }

@@ -1190,6 +1190,10 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
       mapFrom((source) => source.create_user_id),
     ),
     forMember(
+      (destination) => destination.ownedBy,
+      mapFrom((source) => source.complaint_identifier.owned_by_agency_code.agency_code),
+    ),
+    forMember(
       (destination) => destination.reportedOn,
       mapFrom((source) => {
         const {
@@ -1486,6 +1490,10 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     forMember(
       (destination) => destination.createdBy,
       mapFrom((source) => source.create_user_id),
+    ),
+    forMember(
+      (destination) => destination.ownedBy,
+      mapFrom((source) => source.complaint_identifier.owned_by_agency_code.agency_code),
     ),
     forMember(
       (destination) => destination.reportedOn,
