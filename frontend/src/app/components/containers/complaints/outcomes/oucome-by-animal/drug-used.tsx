@@ -7,6 +7,7 @@ import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "../..
 import Option from "../../../../../types/app/option";
 import { isPositiveNum } from "../../../../../common/methods";
 import { REQUIRED } from "../../../../../constants/general";
+import { ValidationTextArea } from "../../../../../common/validation-textarea";
 
 type refProps = {
   isValid: Function;
@@ -18,13 +19,10 @@ type props = {
   vial: string;
   drug: string;
   amountUsed: string;
-  amountDiscarded: string;
 
-  reactions: string;
   remainingUse: string | null;
-
   injectionMethod: string;
-  discardMethod: string;
+  additionalComments: string;
 
   order: number;
 
@@ -37,30 +35,15 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
   const drugUseMethods = useAppSelector(selectDrugUseMethods);
   const remainingDrugUse = useAppSelector(selectRemainingDrugUse);
 
-  const {
-    id,
-    vial,
-    drug,
-    amountUsed,
-    amountDiscarded,
-    reactions,
-    remainingUse,
-    injectionMethod,
-    discardMethod,
-    order,
-    remove,
-    update,
-  } = props;
-
-  const [showDiscarded, setShowDiscarded] = useState(remainingUse === "DISC");
+  const { id, vial, drug, amountUsed, remainingUse, injectionMethod, additionalComments, order, remove, update } =
+    props;
 
   //-- error messages //
   const [vialError, setVialError] = useState("");
   const [drugError, setDrugError] = useState("");
-  const [amountDiscardedError, setAmountDiscardedError] = useState("");
   const [amountUsedError, setAmountUsedError] = useState("");
   const [injectionMethodError, setInjectionMethodError] = useState("");
-  const [discardMethodError, setDiscardMethodError] = useState("");
+  const [drugAdditionalCommentsErrorMsg, setDrugAdditionalCommentsErrorMsg] = useState("");
 
   //-- this allows the developers to consume functions within the
   //-- drug-used component in a parent component
@@ -86,14 +69,6 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
       result = false;
     }
 
-    if (amountDiscarded && !isPositiveNum(amountDiscarded)) {
-      setAmountDiscardedError("Must be a positive number");
-      result = false;
-    } else if (amountDiscarded && Number.parseFloat(amountDiscarded) === 0) {
-      setAmountDiscardedError("Must be a positive number");
-      result = false;
-    }
-
     if (!vial) {
       setVialError(REQUIRED);
       result = false;
@@ -107,21 +82,6 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
     if (!injectionMethod) {
       setInjectionMethodError(REQUIRED);
       result = false;
-    }
-
-    //-- edge case
-    //-- if the user selects DISC from remainingUse then check to
-    //-- make sure that the user also provides a discard amount and method
-    if (remainingUse === "DISC") {
-      if (!amountDiscarded) {
-        setAmountDiscardedError(REQUIRED);
-        result = false;
-      }
-
-      if (!discardMethod) {
-        setDiscardMethodError(REQUIRED);
-        result = false;
-      }
     }
 
     return result;
@@ -149,19 +109,12 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
       vial,
       drug,
       amountUsed,
-      amountDiscarded,
-      reactions,
       remainingUse,
       injectionMethod,
-      discardMethod,
+      additionalComments,
       order,
     };
     let updatedDrug = { ...source, [property]: value };
-
-    //-- if the user selects DISC clear the method and amount discarded
-    if (property === "remainingUse" && (value === "STOR" || value === "RDIS")) {
-      updatedDrug = { ...updatedDrug, discardMethod: "", amountDiscarded: "" };
-    }
 
     update(updatedDrug, property);
   };
@@ -200,18 +153,12 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
   };
 
   const handleRemainingUsed = (input: string) => {
-    setShowDiscarded(input === "DISC");
     updateModel("remainingUse", input);
   };
 
-  const handleAmountDiscardedChange = (input: string) => {
-    updateModel("amountDiscarded", input);
-    setAmountDiscardedError("");
-  };
-
-  const handleDiscardMethodChange = (input: string) => {
-    updateModel("discardMethod", input);
-    setDiscardMethodError("");
+  const handleDrugAdditionalCommentsChange = (input: string) => {
+    updateModel("additionalComments", input);
+    setDrugAdditionalCommentsErrorMsg("");
   };
 
   return (
@@ -328,67 +275,26 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
           </div>
         </div>
 
-        {showDiscarded && (
-          <>
-            <div className="comp-details-form-row">
-              <label htmlFor={`amount-discarded-${id}`}>Amount discarded (mL)</label>
-              <div className="comp-details-input">
-                <CompInput
-                  id={`amount-discarded-${id}`}
-                  divid={`amount-discarded-${id}-div`}
-                  type="number"
-                  min={0}
-                  inputClass="comp-form-control"
-                  value={amountDiscarded}
-                  error={amountDiscardedError}
-                  onChange={(evt: any) => {
-                    const {
-                      target: { value },
-                    } = evt;
-                    handleAmountDiscardedChange(value ?? "");
-                  }}
-                />
-              </div>
-            </div>
-            <div className="comp-details-form-row">
-              <label htmlFor={`discard-method-${id}`}>Discard method</label>
-              <div className="comp-details-input full-width">
-                <CompInput
-                  id={`discard-method-${id}`}
-                  divid={`discard-method-${id}-div`}
-                  type="input"
-                  placeholder=""
-                  inputClass="comp-form-control"
-                  value={discardMethod}
-                  error={discardMethodError}
-                  onChange={(evt: any) => {
-                    const {
-                      target: { value },
-                    } = evt;
-                    handleDiscardMethodChange(value ?? "");
-                  }}
-                />
-              </div>
-            </div>
-          </>
-        )}
-
-        <div className="comp-details-form-row">
-          <label htmlFor={`adverse-reactions-${id}`}>Adverse reactions</label>
-          <div className="comp-details-input full-width">
-            <CompInput
-              id={`adverse-reactions-${id}`}
-              divid={`adverse-reactions-${id}-div`}
-              type="input"
-              placeholder=""
-              inputClass="comp-form-control"
-              value={reactions}
-              onChange={(evt: any) => {
-                const {
-                  target: { value },
-                } = evt;
-                updateModel("reactions", value);
-              }}
+        <div
+          className="comp-details-form-row"
+          id="drug-additional-comments-pair-id"
+        >
+          <label
+            id="drug-additional-comments-edit-label-id"
+            className="col-auto"
+            htmlFor="drug-additional-comments-textarea-id"
+          >
+            Additional comments
+          </label>
+          <div className="comp-details-edit-input">
+            <ValidationTextArea
+              className="comp-form-control"
+              id="drug-additional-comments-textarea-id"
+              placeholderText="Include comments on immobilization outcomes, any adverse reactions, and drug storage or
+            discarding."
+              rows={4}
+              errMsg={drugAdditionalCommentsErrorMsg}
+              onChange={handleDrugAdditionalCommentsChange}
             />
           </div>
         </div>
