@@ -333,7 +333,7 @@ export const selectOfficerListByAgency = createSelector(
   [selectOfficers, selectComplaint],
   (officers, complaint): Array<Option> => {
     if (complaint?.ownedBy) {
-      const officerList = filterOfficerByAgency(complaint.ownedBy, officers);
+      const officerList = filterOfficerByAgency(complaint.ownedBy, officers || []);
       const officerDropdown = officerList.map((officer: Officer) => ({
         value: officer.auth_user_guid,
         label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,

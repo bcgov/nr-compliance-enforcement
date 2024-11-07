@@ -15,6 +15,7 @@ type Props = {
   id?: string;
   onChange?: (selected: Option | null, status: string | null) => void;
   errorMessage?: string;
+  value?: Option | null;
 };
 
 type HintProps = {
@@ -65,6 +66,7 @@ export const HWCRComplaintAssessmentLinkComplaintSearch: FC<Props> = ({
   id = "linkedComplaint",
   onChange = () => {},
   errorMessage = "",
+  value = null,
 }) => {
   const dispatch = useAppDispatch();
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
@@ -122,6 +124,7 @@ export const HWCRComplaintAssessmentLinkComplaintSearch: FC<Props> = ({
         onChange={handleChange}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
+        selected={value ? [{ id: value.value }] : undefined}
         filterBy={() => true}
         isLoading={false}
         options={complaintData}

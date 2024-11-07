@@ -1,5 +1,6 @@
 import { FC, useEffect, useState, useCallback } from "react";
 import { Button, Card, Alert } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
@@ -9,6 +10,7 @@ import {
   selectComplaintCallerInformation,
   selectComplaintHeader,
   selectComplaintAssignedBy,
+  selectLinkedComplaints,
 } from "@store/reducers/complaints";
 import {
   selectAssessmentTypeCodeDropdown,
@@ -73,6 +75,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [assessmentRequiredErrorMessage, setAssessmentRequiredErrorMessage] = useState<string>("");
 
   const complaintData = useAppSelector(selectComplaint);
+  const linkedComplaintData = useAppSelector(selectLinkedComplaints);
   const assessmentState = useAppSelector(selectAssessment);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
@@ -175,9 +178,10 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       } as Option;
     }
 
-    const selectedLinkedComplaint = assessmentState.linked_complaint
-      ? ({ label: assessmentState.linked_complaint.key, value: assessmentState.linked_complaint.value } as Option)
-      : null;
+    const selectedLinkedComplaint =
+      linkedComplaintData && linkedComplaintData.length > 0 && linkedComplaintData[0].id
+        ? ({ label: linkedComplaintData[0].id, value: linkedComplaintData[0].id } as Option)
+        : null;
 
     const selectedAssessmentTypes = assessmentState.assessment_type?.map((item) => {
       return {
@@ -217,7 +221,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     }
     // officersInAgencyList should be in this list, but it is not a correctly implimented selector
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [assessmentState, assigned, quickClose]);
+  }, [assessmentState, linkedComplaintData, assigned, quickClose]);
 
   useEffect(() => {
     populateAssessmentUI();
@@ -487,6 +491,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       id="linkedComplaint"
                       onChange={(e, s) => handleLinkedComplaintChange(e, s)}
                       errorMessage={linkedComplaintErrorMessage}
+                      value={selectedLinkedComplaint}
                     />
                   </div>
                 </div>
@@ -577,6 +582,22 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   <span>{selectedJustification?.label || ""}</span>
                 </dd>
               </div>
+              {selectedJustification?.value === "DUPLICATE" && (
+                <div
+                  id="linked-complaint-div"
+                  className={justificationLabelClass}
+                >
+                  <dt>Linked Complaint</dt>
+                  <dd>
+                    <Link
+                      to={`/complaint/HWCR/${selectedLinkedComplaint?.value}`}
+                      id={selectedLinkedComplaint?.value}
+                    >
+                      {selectedLinkedComplaint?.label || ""}
+                    </Link>
+                  </dd>
+                </div>
+              )}
               <div
                 id="assessment-checkbox-div"
                 className={assessmentDivClass}
