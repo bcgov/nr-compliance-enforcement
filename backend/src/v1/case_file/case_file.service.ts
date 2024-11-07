@@ -320,7 +320,7 @@ export class CaseFileService {
     return returnValue?.createAssessment;
   }
 
-  updateAssessment = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
+  async updateAssessment(token: string, model: CaseFileDto): Promise<CaseFileDto> {
     let returnValue;
     let modelAsAny: any = { ...model };
 
@@ -440,7 +440,7 @@ export class CaseFileService {
       returnValue = await this.handleAPIResponse(result);
     }
     return returnValue?.updateAssessment;
-  };
+  }
 
   createReview = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
     const result = await post(token, {
