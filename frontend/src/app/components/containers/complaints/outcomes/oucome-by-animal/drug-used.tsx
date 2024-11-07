@@ -7,7 +7,6 @@ import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "../..
 import Option from "../../../../../types/app/option";
 import { isPositiveNum } from "../../../../../common/methods";
 import { REQUIRED } from "../../../../../constants/general";
-import { ValidationTextArea } from "../../../../../common/validation-textarea";
 
 type refProps = {
   isValid: Function;
@@ -43,7 +42,6 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
   const [drugError, setDrugError] = useState("");
   const [amountUsedError, setAmountUsedError] = useState("");
   const [injectionMethodError, setInjectionMethodError] = useState("");
-  const [drugAdditionalCommentsErrorMsg, setDrugAdditionalCommentsErrorMsg] = useState("");
 
   //-- this allows the developers to consume functions within the
   //-- drug-used component in a parent component
@@ -158,7 +156,6 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
 
   const handleDrugAdditionalCommentsChange = (input: string) => {
     updateModel("additionalComments", input);
-    setDrugAdditionalCommentsErrorMsg("");
   };
 
   return (
@@ -282,19 +279,26 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
           <label
             id="drug-additional-comments-edit-label-id"
             className="col-auto"
-            htmlFor="drug-additional-comments-textarea-id"
+            htmlFor={`additional-comments-textarea-${id}`}
           >
             Additional comments
           </label>
           <div className="comp-details-edit-input">
-            <ValidationTextArea
-              className="comp-form-control"
-              id="drug-additional-comments-textarea-id"
-              placeholderText="Include comments on immobilization outcomes, any adverse reactions, and drug storage or
+            <CompInput
+              id={`additional-comments-textarea-${id}`}
+              divid={`additional-comments-textarea-${id}-div`}
+              type="text"
+              placeholder="Include comments on immobilization outcomes, any adverse reactions, and drug storage or
             discarding."
               rows={4}
-              errMsg={drugAdditionalCommentsErrorMsg}
-              onChange={handleDrugAdditionalCommentsChange}
+              onChange={(evt: any) => {
+                const {
+                  target: { value },
+                } = evt;
+                handleDrugAdditionalCommentsChange(value);
+              }}
+              inputClass="comp-form-control"
+              value={additionalComments}
             />
           </div>
         </div>
