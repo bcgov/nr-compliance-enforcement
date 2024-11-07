@@ -291,7 +291,7 @@ export class CaseFileService {
         const result = await post(token, {
           query: `mutation UpdateAssessment($updateAssessmentInput: UpdateAssessmentInput!) {
           updateAssessment(updateAssessmentInput: $updateAssessmentInput) 
-          ${this.caseFileQueryFields}
+          ${caseFileQueryFields}
           }`,
           variables: model,
         });
