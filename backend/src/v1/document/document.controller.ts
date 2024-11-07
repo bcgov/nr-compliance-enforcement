@@ -29,7 +29,7 @@ export class DocumentController {
   ): Promise<void> {
     try {
       const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-      const response = await this.service.exportComplaint(id, type, fileName, tz);
+      const response = await this.service.exportComplaint(id, type, fileName, tz, token);
 
       if (!response || !response.data) {
         throw Error(`exception: unable to export document for complaint: ${id}`);
