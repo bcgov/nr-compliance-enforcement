@@ -161,10 +161,10 @@ const addAssessment =
       if (res) {
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
         if (!caseId) dispatch(setCaseId(res.caseIdentifier));
-        await dispatch(clearComplaint());
+        dispatch(clearComplaint());
         ToggleSuccess(`Assessment has been saved`);
       } else {
-        await dispatch(clearAssessment());
+        dispatch(clearAssessment());
         ToggleError(`Unable to create assessment`);
       }
     });
@@ -188,7 +188,9 @@ const updateAssessment =
         caseCode: "HWCR",
         assessmentDetails: {
           actionNotRequired: assessment.action_required === "No",
+          actionCloseComplaint: assessment.close_complaint,
           actionJustificationCode: assessment.justification?.value,
+          actionLinkedComplaintIdentifier: assessment.linked_complaint?.value,
           actions: assessment.assessment_type.map((item) => {
             return {
               actor: assessment.officer?.value,
@@ -227,9 +229,9 @@ const updateAssessment =
       const updatedAssessmentData = await parseAssessmentResponse(res, officers);
       if (res) {
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
+        dispatch(clearComplaint());
         ToggleSuccess(`Assessment has been updated`);
       } else {
-        await dispatch(getAssessment(complaintIdentifier));
         ToggleError(`Unable to update assessment`);
       }
     });

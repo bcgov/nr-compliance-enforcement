@@ -321,14 +321,124 @@ export class CaseFileService {
   }
 
   updateAssessment = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
-    const result = await post(token, {
-      query: `mutation UpdateAssessment($updateAssessmentInput: UpdateAssessmentInput!) {
+    let returnValue;
+    let modelAsAny: any = { ...model };
+
+    if (
+      modelAsAny.updateAssessmentInput.assessmentDetails.actionLinkedComplaintIdentifier ||
+      modelAsAny.updateAssessmentInput.assessmentDetails.actionCloseComplaint
+    ) {
+      const dateLinkCreated = new Date();
+      const complaintBeingLinkedId = modelAsAny.updateAssessmentInput.leadIdentifier;
+      const linkingToComplaintId = modelAsAny.updateAssessmentInput.assessmentDetails.actionLinkedComplaintIdentifier;
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        const idir = getIdirFromRequest(this.request);
+        // If actionLinkedComplaintIdentifier is present the link must be created in the database
+        if (modelAsAny.updateAssessmentInput.assessmentDetails.actionLinkedComplaintIdentifier) {
+          // When linking complaint "A" to complant "B", if "A" is already linked to "B" then the link is not created.
+          const existingLink = await this._linkedComplaintXrefRepository.findOne({
+            relations: { linked_complaint_identifier: true, complaint_identifier: true },
+            where: {
+              linked_complaint_identifier: { complaint_identifier: complaintBeingLinkedId },
+              active_ind: true,
+            },
+          });
+
+          // If a link already exists and it has a different complaint identifier, mark it as inactive otherwise do nothing
+          if (existingLink && existingLink.complaint_identifier.complaint_identifier !== linkingToComplaintId) {
+            existingLink.active_ind = false;
+            await this._linkedComplaintXrefRepository.save(existingLink);
+          }
+
+          if (existingLink?.complaint_identifier?.complaint_identifier !== linkingToComplaintId) {
+            // When linking complaint "A" to complaint "B", if "A" already has other complaints linked to it those links
+            // are marked as inactive, and new links are created with them pointing to "B".
+            const trailingComplaints = await this._linkedComplaintXrefRepository
+              .createQueryBuilder()
+              .update(LinkedComplaintXref)
+              .set({ active_ind: false })
+              .where({
+                complaint_identifier: complaintBeingLinkedId,
+              })
+              .andWhere({
+                active_ind: true,
+              })
+              .returning("*")
+              .execute();
+
+            if (trailingComplaints.affected > 0) {
+              trailingComplaints.raw.forEach(async (row) => {
+                const linkString = await this._linkedComplaintXrefRepository.create(<CreateLinkedComplaintXrefDto>{
+                  // ...row,
+                  complaint_identifier: { complaint_identifier: linkingToComplaintId },
+                  linked_complaint_identifier: row.linked_complaint_identifier,
+                  active_ind: true,
+                  create_user_id: idir,
+                  create_utc_timestamp: dateLinkCreated,
+                });
+                await queryRunner.manager.save(linkString);
+              });
+            }
+            // Create the new link between the complaints
+            let newLink = new CreateLinkedComplaintXrefDto();
+            newLink = {
+              ...newLink,
+              complaint_identifier: <Complaint>{
+                complaint_identifier: linkingToComplaintId,
+              },
+              linked_complaint_identifier: <Complaint>{ complaint_identifier: complaintBeingLinkedId },
+              active_ind: true,
+              create_user_id: idir,
+              create_utc_timestamp: dateLinkCreated,
+            };
+
+            const complaintLinkString = await this._linkedComplaintXrefRepository.create(newLink);
+            await queryRunner.manager.save(complaintLinkString);
+          }
+        }
+
+        // Update the status of the complaint to "closed" if actionCloseComplaint is set to true
+        if (modelAsAny.updateAssessmentInput.assessmentDetails.actionCloseComplaint) {
+          const statusCode = await this._codeTableService.getComplaintStatusCodeByStatus("CLOSED");
+          await this._complaintsRepository
+            .createQueryBuilder("complaint")
+            .update()
+            .set({ complaint_status_code: statusCode, update_user_id: idir })
+            .where({ complaint_identifier: complaintBeingLinkedId })
+            .execute();
+        }
+
+        // Update the assessment in the Case Management database
+        const result = await post(token, {
+          query: `mutation UpdateAssessment($updateAssessmentInput: UpdateAssessmentInput!) {
+          updateAssessment(updateAssessmentInput: $updateAssessmentInput) 
+          ${this.caseFileQueryFields}
+          }`,
+          variables: model,
+        });
+        returnValue = await this.handleAPIResponse(result);
+        // If the mutation succeeded, commit the pending transaction
+        await queryRunner.commitTransaction();
+      } catch (err) {
+        this.logger.error(err);
+        await queryRunner.rollbackTransaction();
+        Promise.reject(new Error("An error occurred while linking the complaints. " + err));
+      } finally {
+        await queryRunner.release();
+      }
+    } else {
+      const result = await post(token, {
+        query: `mutation UpdateAssessment($updateAssessmentInput: UpdateAssessmentInput!) {
         updateAssessment(updateAssessmentInput: $updateAssessmentInput) 
         ${this.caseFileQueryFields}
       }`,
-      variables: model,
-    });
-    const returnValue = await this.handleAPIResponse(result);
+        variables: model,
+      });
+      returnValue = await this.handleAPIResponse(result);
+    }
     return returnValue?.updateAssessment;
   };
 

@@ -140,7 +140,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
 
   useEffect(() => {
     if (id === complaintData?.id) {
-      console.log("officers", complaintData?.id, personGuid, complaintData);
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
       dispatch(clearAssessment());
