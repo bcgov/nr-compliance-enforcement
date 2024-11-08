@@ -306,75 +306,101 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   };
 
   // Validates the assessment
-  const hasErrors = useCallback((): boolean => {
-    let hasErrors: boolean = false;
-    resetValidationErrors();
-
+  const validateOfficer = useCallback((): boolean => {
     if (!selectedOfficer) {
       setOfficerErrorMessage("Required");
-      hasErrors = true;
+      return true;
     }
+    return false;
+  }, [selectedOfficer]);
 
+  const validateDate = useCallback((): boolean => {
     if (!selectedDate) {
-      hasErrors = true;
       setAssessmentDateErrorMessage("Required");
+      return true;
     }
+    return false;
+  }, [selectedDate]);
 
+  const validateActionRequired = useCallback((): boolean => {
     if (!selectedActionRequired) {
       setActionRequiredErrorMessage("Required");
-      hasErrors = true;
+      return true;
     }
+    return false;
+  }, [selectedActionRequired]);
 
+  const validateAssessmentTypes = useCallback((): boolean => {
     if (
       selectedActionRequired?.value === OptionLabels.OPTION_YES &&
       (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0)
     ) {
       setAssessmentRequiredErrorMessage("One or more assessment is required");
-      hasErrors = true;
+      return true;
     }
+    return false;
+  }, [selectedActionRequired, selectedAssessmentTypes]);
 
+  const validateJustification = useCallback((): boolean => {
     if (selectedActionRequired?.value === "No" && !selectedJustification) {
       setJustificationRequiredErrorMessage("Required when Action Required is No");
-      hasErrors = true;
+      return true;
     }
+    return false;
+  }, [selectedActionRequired, selectedJustification]);
 
+  const validateLinkedComplaint = useCallback((): boolean => {
     if (selectedJustification?.value === "DUPLICATE") {
       if (!selectedLinkedComplaint) {
         setLinkedComplaintErrorMessage("Required when Justification is Duplicate");
-        hasErrors = true;
+        return true;
       } else if (selectedLinkedComplaint.value === id) {
         setLinkedComplaintErrorMessage("Linked complaint cannot be the same as the current complaint");
-        hasErrors = true;
+        return true;
       } else if (selectedLinkedComplaintStatus !== "OPEN") {
         setLinkedComplaintErrorMessage("Linked complaint must be open");
-        hasErrors = true;
+        return true;
       }
 
       if (!validationResults.canCloseComplaint) {
         setJustificationRequiredErrorMessage(
           "Please address the errors in the other sections before closing the complaint as duplicate.",
         );
-        hasErrors = true;
         if (!cases.isInEdit.showSectionErrors) {
           dispatch(setIsInEdit({ showSectionErrors: true, hideAssessmentErrors: true }));
         }
         validationResults.scrollToErrors();
+        return true;
       }
     }
-
-    return hasErrors;
+    return false;
   }, [
-    selectedOfficer,
-    selectedDate,
-    selectedActionRequired,
-    selectedAssessmentTypes,
+    dispatch,
+    id,
     selectedJustification,
     selectedLinkedComplaint,
-    id,
     selectedLinkedComplaintStatus,
     validationResults,
     cases.isInEdit.showSectionErrors,
-    dispatch,
+  ]);
+
+  const hasErrors = useCallback((): boolean => {
+    resetValidationErrors();
+    return (
+      validateOfficer() ||
+      validateDate() ||
+      validateActionRequired() ||
+      validateAssessmentTypes() ||
+      validateJustification() ||
+      validateLinkedComplaint()
+    );
+  }, [
+    validateOfficer,
+    validateDate,
+    validateActionRequired,
+    validateAssessmentTypes,
+    validateJustification,
+    validateLinkedComplaint,
   ]);
 
   // Validate on selected value change
