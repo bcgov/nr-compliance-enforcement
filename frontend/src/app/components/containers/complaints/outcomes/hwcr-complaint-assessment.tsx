@@ -362,7 +362,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
         return true;
       }
 
-      if (!validationResults.canCloseComplaint) {
+      if (!validationResults.canQuickCloseComplaint) {
         setJustificationRequiredErrorMessage(
           "Please address the errors in the other sections before closing the complaint as duplicate.",
         );
