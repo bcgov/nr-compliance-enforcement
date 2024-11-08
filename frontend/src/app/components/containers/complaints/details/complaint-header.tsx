@@ -87,7 +87,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
   const validationResults = useValidateComplaint();
   const openQuickCloseModal = () => {
-    if (!validationResults.canCloseComplaint) {
+    if (!validationResults.canQuickCloseComplaint) {
       validationResults.scrollToErrors();
       dispatch(setIsInEdit({ showSectionErrors: true, hideAssessmentErrors: true }));
     } else {

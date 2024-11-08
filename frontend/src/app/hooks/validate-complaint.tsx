@@ -13,6 +13,7 @@ import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details"
 
 type validationResults = {
   canCloseComplaint: boolean;
+  canQuickCloseComplaint: boolean;
   scrollToErrors: () => void;
   validationDetails: {
     noEditSections: boolean;
@@ -38,6 +39,7 @@ const useValidateComplaint = () => {
   // State
   const [validationResults, setValidationResults] = useState<validationResults>({
     canCloseComplaint: false,
+    canQuickCloseComplaint: false,
     scrollToErrors: () => {},
     validationDetails: {
       noEditSections: false,
@@ -129,6 +131,7 @@ const useValidateComplaint = () => {
       setValidationResults({
         canCloseComplaint:
           noEditSections && assessmentCriteria && equipmentCriteria && animalCriteria && fileReviewCriteria,
+        canQuickCloseComplaint: noEditSections && equipmentCriteria && animalCriteria && fileReviewCriteria,
         scrollToErrors,
         validationDetails: {
           noEditSections: noEditSections,

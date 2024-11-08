@@ -35,6 +35,7 @@ import { getAssessment, upsertAssessment } from "@store/reducers/case-thunks";
 import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
 import useValidateComplaint from "@hooks/validate-complaint";
+import { has } from "lodash";
 
 type Props = {
   id: string;
@@ -305,7 +306,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     setAssessmentRequiredErrorMessage("");
   };
 
-  // Validates the assessment
   const validateOfficer = useCallback((): boolean => {
     if (!selectedOfficer) {
       setOfficerErrorMessage("Required");
@@ -384,16 +384,19 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     cases.isInEdit.showSectionErrors,
   ]);
 
+  // Validates the assessment
   const hasErrors = useCallback((): boolean => {
     resetValidationErrors();
-    return (
-      validateOfficer() ||
-      validateDate() ||
-      validateActionRequired() ||
-      validateAssessmentTypes() ||
-      validateJustification() ||
-      validateLinkedComplaint()
-    );
+
+    let hasErrors = false;
+    hasErrors = validateOfficer() || hasErrors;
+    hasErrors = validateDate() || hasErrors;
+    hasErrors = validateActionRequired() || hasErrors;
+    hasErrors = validateAssessmentTypes() || hasErrors;
+    hasErrors = validateJustification() || hasErrors;
+    hasErrors = validateLinkedComplaint() || hasErrors;
+
+    return hasErrors;
   }, [
     validateOfficer,
     validateDate,
