@@ -9,7 +9,6 @@ import { RootState } from "../store";
 import { CASE_ACTION_CODE } from "../../constants/case_actions";
 import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
 import { PermitSite } from "../../types/app/case-files/ceeb/authorization-outcome/permit-site";
-import { stat } from "fs";
 
 //-- Case file selectors
 export const selectCaseId = (state: RootState): string => {
