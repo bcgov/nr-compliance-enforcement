@@ -355,23 +355,26 @@ export const HWCRComplaintAssessment: FC<Props> = ({
           "Please address the errors in the other sections before closing the complaint as duplicate.",
         );
         hasErrors = true;
-        dispatch(setIsInEdit({ showSectionErrors: true, hideAssessmentErrors: true }));
+        if (!cases.isInEdit.showSectionErrors) {
+          dispatch(setIsInEdit({ showSectionErrors: true, hideAssessmentErrors: true }));
+        }
         validationResults.scrollToErrors();
       }
     }
 
     return hasErrors;
   }, [
-    dispatch,
-    id,
     selectedOfficer,
     selectedDate,
     selectedActionRequired,
+    selectedAssessmentTypes,
     selectedJustification,
     selectedLinkedComplaint,
+    id,
     selectedLinkedComplaintStatus,
-    selectedAssessmentTypes,
     validationResults,
+    cases.isInEdit.showSectionErrors,
+    dispatch,
   ]);
 
   // Validate on selected value change

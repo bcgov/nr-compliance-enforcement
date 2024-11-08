@@ -35,31 +35,6 @@ const useValidateComplaint = () => {
   const isReviewRequired = useAppSelector(selectIsReviewRequired);
   const reviewComplete = useAppSelector(selectReviewComplete);
 
-  const scrollToErrorSection = (
-    assessmentCriteria: boolean,
-    preventionCriteria: boolean,
-    equipmentCriteria: boolean,
-    animalCriteria: boolean,
-    fileReviewCriteria: boolean,
-  ) => {
-    const { assessment, prevention, equipment, animal, note, attachments, fileReview } = isInEdit;
-    if (!assessmentCriteria || assessment) {
-      document.getElementById("outcome-assessment")?.scrollIntoView({ block: "end" });
-    } else if (!preventionCriteria || prevention) {
-      document.getElementById("outcome-prevention-education")?.scrollIntoView({ block: "end" });
-    } else if (!equipmentCriteria || equipment) {
-      document.getElementById("outcome-equipment")?.scrollIntoView({ block: "end" });
-    } else if (!animalCriteria || animal) {
-      document.getElementById("outcome-animal")?.scrollIntoView({ block: "end" });
-    } else if (note) {
-      document.getElementById("outcome-note")?.scrollIntoView({ block: "end" });
-    } else if (attachments) {
-      document.getElementById("outcome-attachments")?.scrollIntoView({ block: "end" });
-    } else if (!fileReviewCriteria || fileReview) {
-      document.getElementById("outcome-file-review")?.scrollIntoView({ block: "end" });
-    }
-  };
-
   // State
   const [validationResults, setValidationResults] = useState<validationResults>({
     canCloseComplaint: false,
@@ -115,6 +90,31 @@ const useValidateComplaint = () => {
         subject?.find((item: AnimalOutcomeSubject) => !item.outcome) === undefined;
       //check if file review is required, review must be completed
       const fileReviewCriteria = (isReviewRequired && reviewComplete !== null) || !isReviewRequired;
+
+      const scrollToErrorSection = (
+        assessmentCriteria: boolean,
+        preventionCriteria: boolean,
+        equipmentCriteria: boolean,
+        animalCriteria: boolean,
+        fileReviewCriteria: boolean,
+      ) => {
+        const { assessment, prevention, equipment, animal, note, attachments, fileReview } = isInEdit;
+        if (!assessmentCriteria || assessment) {
+          document.getElementById("outcome-assessment")?.scrollIntoView({ block: "end" });
+        } else if (!preventionCriteria || prevention) {
+          document.getElementById("outcome-prevention-education")?.scrollIntoView({ block: "end" });
+        } else if (!equipmentCriteria || equipment) {
+          document.getElementById("outcome-equipment")?.scrollIntoView({ block: "end" });
+        } else if (!animalCriteria || animal) {
+          document.getElementById("outcome-animal")?.scrollIntoView({ block: "end" });
+        } else if (note) {
+          document.getElementById("outcome-note")?.scrollIntoView({ block: "end" });
+        } else if (attachments) {
+          document.getElementById("outcome-attachments")?.scrollIntoView({ block: "end" });
+        } else if (!fileReviewCriteria || fileReview) {
+          document.getElementById("outcome-file-review")?.scrollIntoView({ block: "end" });
+        }
+      };
 
       const scrollToErrors = () => {
         scrollToErrorSection(

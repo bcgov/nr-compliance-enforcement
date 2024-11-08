@@ -6,6 +6,7 @@ import { selectModalData, isLoading } from "@store/reducers/app";
 import { selectComplaint, refreshComplaints } from "@store/reducers/complaints";
 import { selectAssessment } from "@store/reducers/case-selectors";
 import { HWCRComplaintAssessment } from "@components/containers/complaints/outcomes/hwcr-complaint-assessment";
+import useValidateComplaint from "@/app/hooks/validate-complaint";
 
 const ModalLoading: FC = memo(() => (
   <div className="modal-loader">
@@ -22,12 +23,13 @@ const ModalLoading: FC = memo(() => (
 type AssessedOrClosedAlertProps = {
   alreadyAssessed: boolean;
   isClosed: boolean;
+  canCloseComplaint: boolean;
   complaint_identifier: string;
   close: () => void;
 };
 const AssessedOrClosedAlert: FC<AssessedOrClosedAlertProps> = memo(
-  ({ isClosed, alreadyAssessed, complaint_identifier, close }) =>
-    alreadyAssessed || isClosed ? (
+  ({ isClosed, alreadyAssessed, canCloseComplaint, complaint_identifier, close }) =>
+    alreadyAssessed || isClosed || !canCloseComplaint ? (
       <Alert
         variant="warning"
         className="comp-complaint-details-alert"
@@ -36,7 +38,9 @@ const AssessedOrClosedAlert: FC<AssessedOrClosedAlertProps> = memo(
         <div>
           <i className="bi bi-info-circle-fill"></i>
           <span>
-            {isClosed ? " This complaint is already closed. " : " This complaint has already been assessed. "}
+            {isClosed && " This complaint is already closed. "}
+            {alreadyAssessed && " This complaint has already been assessed. "}
+            {!canCloseComplaint && " This complaint does not meet the requirements to be closed. "}
           </span>
           <Link
             to={`/complaint/HWCR/${complaint_identifier}`}
@@ -66,6 +70,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
 }) => {
   // Hooks
   const dispatch = useAppDispatch();
+  const validationResults = useValidateComplaint();
 
   // Selectors
   const complaintData = useAppSelector(selectComplaint);
@@ -77,6 +82,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   // Vars
   const alreadyAssessed = assessmentData?.date !== undefined;
   const isClosed = complaintData?.status === "CLOSED";
+  const displayAssessment = !alreadyAssessed && !isClosed && validationResults.canCloseComplaint;
 
   return (
     <>
@@ -91,6 +97,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
           <AssessedOrClosedAlert
             isClosed={isClosed}
             alreadyAssessed={alreadyAssessed}
+            canCloseComplaint={validationResults.canCloseComplaint}
             complaint_identifier={complaint_identifier}
             close={close}
           />
@@ -98,7 +105,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
         <div
           style={{
             visibility: loading ? "hidden" : "inherit",
-            display: alreadyAssessed || isClosed ? "none" : "inherit",
+            display: displayAssessment ? "inherit" : "none",
           }}
         >
           <HWCRComplaintAssessment
