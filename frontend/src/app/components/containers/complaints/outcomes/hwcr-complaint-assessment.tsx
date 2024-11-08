@@ -35,7 +35,6 @@ import { getAssessment, upsertAssessment } from "@store/reducers/case-thunks";
 import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
 import useValidateComplaint from "@hooks/validate-complaint";
-import { has } from "lodash";
 
 type Props = {
   id: string;
