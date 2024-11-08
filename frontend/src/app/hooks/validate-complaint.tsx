@@ -99,9 +99,7 @@ const useValidateComplaint = () => {
         fileReviewCriteria: boolean,
       ) => {
         const { assessment, prevention, equipment, animal, note, attachments, fileReview } = isInEdit;
-        if (!assessmentCriteria || assessment) {
-          document.getElementById("outcome-assessment")?.scrollIntoView({ block: "end" });
-        } else if (!preventionCriteria || prevention) {
+        if (!preventionCriteria || prevention) {
           document.getElementById("outcome-prevention-education")?.scrollIntoView({ block: "end" });
         } else if (!equipmentCriteria || equipment) {
           document.getElementById("outcome-equipment")?.scrollIntoView({ block: "end" });
@@ -113,6 +111,8 @@ const useValidateComplaint = () => {
           document.getElementById("outcome-attachments")?.scrollIntoView({ block: "end" });
         } else if (!fileReviewCriteria || fileReview) {
           document.getElementById("outcome-file-review")?.scrollIntoView({ block: "end" });
+        } else if (!assessmentCriteria || assessment) {
+          document.getElementById("outcome-assessment")?.scrollIntoView({ block: "end" });
         }
       };
 

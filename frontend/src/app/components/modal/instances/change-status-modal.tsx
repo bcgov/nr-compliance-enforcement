@@ -26,7 +26,6 @@ type ChangeStatusModalProps = {
  */
 export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type, complaint_status }) => {
   const modalData = useAppSelector(selectModalData);
-  const cases = useAppSelector((state) => state.cases);
   const isReviewRequired = useAppSelector((state) => state.cases.isReviewRequired);
   const reviewCompleteAction = useAppSelector((state) => state.cases.reviewComplete);
   const [statusChangeDisabledInd, setStatusChangeDisabledInd] = useState<boolean>(false);
