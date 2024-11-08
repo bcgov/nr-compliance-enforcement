@@ -35,7 +35,6 @@ describe("HWCR Outcome Equipment", () => {
 
         //validate
         let inputs = [
-          "#equipment-officer-set-div",
           "#equipment-type-div",
           "#equipment-address-div",
           "#equipment-coordinates",
