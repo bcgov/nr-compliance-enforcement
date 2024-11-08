@@ -39,6 +39,7 @@ describe("HWCR Outcome Equipment", () => {
           "#equipment-address-div",
           "#equipment-coordinates",
           "#equipment-coordinates",
+          "#equipment-officer-set-div",
         ];
         cy.hasErrorMessage(inputs, "Errors creating equipment");
       } else {
