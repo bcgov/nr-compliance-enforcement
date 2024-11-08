@@ -31,7 +31,7 @@ import { BsExclamationCircleFill } from "react-icons/bs";
 
 import "@assets/sass/hwcr-assessment.scss";
 import { selectAssessment } from "@store/reducers/case-selectors";
-import { getAssessment, upsertAssessment } from "@store/reducers/case-thunks";
+import { getAssessment, upsertAssessment, getCaseFile } from "@store/reducers/case-thunks";
 import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
 import useValidateComplaint from "@hooks/validate-complaint";
@@ -150,6 +150,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       setSelectedOfficer(officer);
       dispatch(clearAssessment());
       dispatch(getAssessment(complaintData.id));
+      dispatch(getCaseFile(id));
     }
   }, [dispatch, id, complaintData, personGuid, assignableOfficers]);
 
