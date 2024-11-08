@@ -34,7 +34,7 @@ import { CreateEquipmentInput } from "../../types/app/case-files/equipment-input
 import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
 import { getComplaintStatusById, clearComplaint } from "./complaints";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
-import { AnimalOutcomeV3 } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
+import { AnimalOutcome } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { CreateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/create-animal-outcome-input";
 import { CASE_ACTION_CODE } from "../../constants/case_actions";
 import { from } from "linq-to-typescript";
@@ -789,7 +789,7 @@ export const upsertEquipment =
 export const createAnimalOutcome =
   (
     id: string,
-    animalOutcome: AnimalOutcomeV3,
+    animalOutcome: AnimalOutcome,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
@@ -869,7 +869,7 @@ export const createAnimalOutcome =
 export const updateAnimalOutcome =
   (
     id: UUID,
-    animalOutcome: AnimalOutcomeV3,
+    animalOutcome: AnimalOutcome,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {

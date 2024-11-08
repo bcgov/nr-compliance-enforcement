@@ -12,9 +12,9 @@ import {
   selectThreatLevelDropdown,
   selectWildlifeComplaintOutcome,
 } from "../../../../../store/reducers/code-table";
-import { AnimalOutcomeV3 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
+import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { AnimalTagV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
-import { DrugUsedV3 } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
+import { DrugUsed } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
 import Option from "../../../../../types/app/option";
 import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
 import { from } from "linq-to-typescript";
@@ -38,7 +38,7 @@ type props = {
 
 //-- this object is used to create an empty outcome
 //-- do not export this object
-const defaultOutcome: AnimalOutcomeV3 = {
+const defaultOutcome: AnimalOutcome = {
   id: "",
   species: "",
   sex: "",
@@ -77,7 +77,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
 
   //-- new input data
   // eslint-disable-line no-console, max-len
-  const [data, applyData] = useState<AnimalOutcomeV3>({ ...defaultOutcome, species });
+  const [data, applyData] = useState<AnimalOutcome>({ ...defaultOutcome, species });
 
   //-- refs
   // eslint-disable-next-line @typescript-eslint/no-array-constructor
@@ -88,7 +88,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   //-- input handlers
   const updateModel = (
     property: string,
-    value: string | Date | Array<AnimalTagV2 | DrugUsedV3> | DrugAuthorization | null | undefined,
+    value: string | Date | Array<AnimalTagV2 | DrugUsed> | DrugAuthorization | null | undefined,
   ) => {
     const model = { ...data, [property]: value };
     applyData(model);
@@ -253,7 +253,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
 
   const addDrugUsed = () => {
     const { drugs } = data;
-    const nextOrder = getNextOrderNumber<DrugUsedV3>(drugs);
+    const nextOrder = getNextOrderNumber<DrugUsed>(drugs);
 
     let id = uuidv4().toString();
 
@@ -301,7 +301,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
     drugRefs.current = update.length === 0 ? [] : drugRefs.current.filter((item) => item.id !== null && item.id === id);
   };
 
-  const updateDrugUsed = (drug: DrugUsedV3) => {
+  const updateDrugUsed = (drug: DrugUsed) => {
     const { drugs: source } = data;
 
     const items = source.filter(({ id }) => id !== drug.id);

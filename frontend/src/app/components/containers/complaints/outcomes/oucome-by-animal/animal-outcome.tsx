@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { AnimalOutcomeV3 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
+import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { useAppSelector } from "../../../../../hooks/hooks";
 import {
   selectAgeDropdown,
@@ -19,7 +19,7 @@ import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
 
 type props = {
   index: number;
-  data: AnimalOutcomeV3;
+  data: AnimalOutcome;
   agency: string;
   edit: Function;
   remove: Function;
