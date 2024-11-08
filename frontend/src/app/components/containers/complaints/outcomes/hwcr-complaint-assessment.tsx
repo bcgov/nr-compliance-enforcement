@@ -34,6 +34,7 @@ import { selectAssessment } from "@store/reducers/case-selectors";
 import { getAssessment, upsertAssessment } from "@store/reducers/case-thunks";
 import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
+import useValidateComplaint from "@hooks/validate-complaint";
 
 type Props = {
   id: string;
@@ -81,6 +82,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const cases = useAppSelector((state) => state.cases);
   const assignableOfficers = useAppSelector(selectOfficerListByAgency);
+  const validationResults = useValidateComplaint();
 
   const hasAssessment = Object.keys(cases.assessment).length > 0;
   const showSectionErrors = (!hasAssessment || editable) && cases.isInEdit.showSectionErrors;
@@ -302,6 +304,13 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     setAssessmentRequiredErrorMessage("");
   };
 
+  const canCloseComplaint =
+    validationResults.noEditSections &&
+    validationResults.assessmentCriteria &&
+    validationResults.equipmentCriteria &&
+    validationResults.animalCriteria &&
+    validationResults.fileReviewCriteria;
+
   // Validates the assessment
   const hasErrors = useCallback((): boolean => {
     let hasErrors: boolean = false;
@@ -346,6 +355,13 @@ export const HWCRComplaintAssessment: FC<Props> = ({
         setLinkedComplaintErrorMessage("Linked complaint must be open");
         hasErrors = true;
       }
+
+      if (!canCloseComplaint) {
+        setJustificationRequiredErrorMessage(
+          "All other sections of the complaint must be completed before assessing a complaint as duplicate. Please check the other sections of the complaint to see if there are unsaved details.",
+        );
+        hasErrors = true;
+      }
     }
 
     return hasErrors;
@@ -358,6 +374,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     selectedLinkedComplaint,
     selectedLinkedComplaintStatus,
     selectedAssessmentTypes,
+    canCloseComplaint,
   ]);
 
   // Validate on selected value change

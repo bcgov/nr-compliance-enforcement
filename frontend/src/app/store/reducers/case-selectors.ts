@@ -4,11 +4,12 @@ import { AnimalOutcomeV2 } from "../../types/app/complaints/outcomes/wildlife/an
 import { Assessment } from "../../types/outcomes/assessment";
 import { Prevention } from "../../types/outcomes/prevention";
 import { SupplementalNote } from "../../types/outcomes/supplemental-note";
-import { AnimalOutcomeSubject } from "../../types/state/cases-state";
+import { AnimalOutcomeSubject, Subject } from "../../types/state/cases-state";
 import { RootState } from "../store";
 import { CASE_ACTION_CODE } from "../../constants/case_actions";
 import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
 import { PermitSite } from "../../types/app/case-files/ceeb/authorization-outcome/permit-site";
+import { stat } from "fs";
 
 //-- Case file selectors
 export const selectCaseId = (state: RootState): string => {
@@ -27,6 +28,19 @@ export const selectPrevention = (state: RootState): Prevention => {
   const { cases } = state;
   return cases.prevention;
 };
+
+export const selectEquipment = (state: RootState): EquipmentDetailsDto[] => {
+  const { cases } = state;
+  return cases.equipment;
+};
+
+export const selectSubject = (state: RootState): Subject[] => state.cases.subject;
+
+export const selectIsInEdit = (state: RootState): any => state.cases.isInEdit;
+
+export const selectIsReviewRequired = (state: RootState): boolean => state.cases.isReviewRequired;
+
+export const selectReviewComplete = (state: RootState): any => state.cases.reviewComplete;
 
 export const selectSupplementalNote = (state: RootState): SupplementalNote => {
   const {
@@ -67,11 +81,6 @@ export const selectNotesOfficer = (state: RootState) => {
   }
 
   return currentOfficer;
-};
-
-export const selectEquipment = (state: RootState): EquipmentDetailsDto[] => {
-  const { cases } = state;
-  return cases.equipment;
 };
 
 export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> => {

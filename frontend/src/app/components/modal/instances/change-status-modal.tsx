@@ -14,6 +14,7 @@ import Option from "../../../types/app/option";
 import { setIsInEdit } from "../../../store/reducers/cases";
 import { EquipmentDetailsDto } from "../../../types/app/case-files/equipment-details";
 import { AnimalOutcomeSubject } from "../../../types/state/cases-state";
+import useValidateComplaint from "@hooks/validate-complaint";
 
 type ChangeStatusModalProps = {
   close: () => void;
@@ -81,38 +82,20 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
     selectedStatus = selectedValue;
   };
 
+  const {
+    noEditSections,
+    assessmentCriteria,
+    preventionCriteria,
+    equipmentCriteria,
+    animalCriteria,
+    fileReviewCriteria,
+  } = useValidateComplaint();
+
+  const canCloseComplaint =
+    noEditSections && assessmentCriteria && equipmentCriteria && animalCriteria && fileReviewCriteria;
+
   const validateCloseStatus = () => {
-    const { assessment, prevention, equipment, animal, note, attachments, fileReview } = cases.isInEdit;
-    const noEditSections = !assessment && !prevention && !equipment && !animal && !note && !attachments && !fileReview;
-
-    //check Assessment section must be filled out
-    const assessmentCriteria = Object.keys(cases.assessment).length !== 0;
-    //check Prevention must be filled out if action required is Yes
-    const preventionCriteria =
-      cases.assessment.action_required === "Yes" ? Object.keys(cases.prevention).length !== 0 : true;
-    //check Equipment must have removed date, except for Signage and Trail
-    const equipmentCriteria =
-      cases.equipment?.find(
-        (item: EquipmentDetailsDto) =>
-          item.wasAnimalCaptured === "U" && item.typeCode !== "SIGNG" && item.typeCode !== "TRCAM",
-      ) === undefined;
-    //check Animal has outcome, officer and date
-    const animalCriteria =
-      //@ts-ignore
-      cases.subject?.find((item: AnimalOutcomeSubject) => !item.outcome) === undefined;
-    //check if file review is required, review must be completed
-    const fileReviewCriteria = (cases.isReviewRequired && cases.reviewComplete !== null) || !cases.isReviewRequired;
-
-    if (
-      noEditSections &&
-      assessmentCriteria &&
-      //The code line below commented becasue according to CE-835
-      //users can close a complaint when Action required is Yes and the Prevention and education section is not completed.
-      //preventionCriteria &&
-      equipmentCriteria &&
-      animalCriteria &&
-      fileReviewCriteria
-    ) {
+    if (canCloseComplaint) {
       setStatus(selectedStatus);
       dispatch(setIsInEdit({ showSectionErrors: false }));
     } else {
