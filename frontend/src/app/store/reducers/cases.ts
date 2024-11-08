@@ -32,6 +32,7 @@ const initialState: CasesState = {
     attachments: false,
     fileReview: false,
     showSectionErrors: false,
+    hideAssessmentErrors: false,
     //-- ceeb
     decision: false,
     authorization: false,
@@ -87,7 +88,10 @@ export const casesSlice = createSlice({
     },
     setIsInEdit: (state, action) => {
       const { payload } = action;
-      return { ...state, isInEdit: { ...state.isInEdit, ...payload } };
+      return {
+        ...state,
+        isInEdit: { ...state.isInEdit, ...payload, hideAssessmentErrors: payload.hideAssessmentErrors || false },
+      };
     },
   },
 

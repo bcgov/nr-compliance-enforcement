@@ -12,12 +12,17 @@ import {
 import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
 
 type validationResults = {
-  noEditSections: boolean;
-  assessmentCriteria: boolean;
-  preventionCriteria: boolean;
-  equipmentCriteria: boolean;
-  animalCriteria: boolean;
-  fileReviewCriteria: boolean;
+  canCloseComplaint: boolean;
+  scrollToErrors: () => void;
+  validationDetails: {
+    noEditSections: boolean;
+    onlyAssessmentInEdit: boolean;
+    assessmentCriteria: boolean;
+    preventionCriteria: boolean;
+    equipmentCriteria: boolean;
+    animalCriteria: boolean;
+    fileReviewCriteria: boolean;
+  };
 };
 
 const useValidateComplaint = () => {
@@ -30,14 +35,44 @@ const useValidateComplaint = () => {
   const isReviewRequired = useAppSelector(selectIsReviewRequired);
   const reviewComplete = useAppSelector(selectReviewComplete);
 
+  const scrollToErrorSection = (
+    assessmentCriteria: boolean,
+    preventionCriteria: boolean,
+    equipmentCriteria: boolean,
+    animalCriteria: boolean,
+    fileReviewCriteria: boolean,
+  ) => {
+    const { assessment, prevention, equipment, animal, note, attachments, fileReview } = isInEdit;
+    if (!assessmentCriteria || assessment) {
+      document.getElementById("outcome-assessment")?.scrollIntoView({ block: "end" });
+    } else if (!preventionCriteria || prevention) {
+      document.getElementById("outcome-prevention-education")?.scrollIntoView({ block: "end" });
+    } else if (!equipmentCriteria || equipment) {
+      document.getElementById("outcome-equipment")?.scrollIntoView({ block: "end" });
+    } else if (!animalCriteria || animal) {
+      document.getElementById("outcome-animal")?.scrollIntoView({ block: "end" });
+    } else if (note) {
+      document.getElementById("outcome-note")?.scrollIntoView({ block: "end" });
+    } else if (attachments) {
+      document.getElementById("outcome-attachments")?.scrollIntoView({ block: "end" });
+    } else if (!fileReviewCriteria || fileReview) {
+      document.getElementById("outcome-file-review")?.scrollIntoView({ block: "end" });
+    }
+  };
+
   // State
   const [validationResults, setValidationResults] = useState<validationResults>({
-    noEditSections: false,
-    assessmentCriteria: false,
-    preventionCriteria: false,
-    equipmentCriteria: false,
-    animalCriteria: false,
-    fileReviewCriteria: false,
+    canCloseComplaint: false,
+    scrollToErrors: () => {},
+    validationDetails: {
+      noEditSections: false,
+      onlyAssessmentInEdit: false,
+      assessmentCriteria: false,
+      preventionCriteria: false,
+      equipmentCriteria: false,
+      animalCriteria: false,
+      fileReviewCriteria: false,
+    },
   });
 
   // Effects
@@ -45,6 +80,15 @@ const useValidateComplaint = () => {
     const validateComplaint = () => {
       const noEditSections =
         !isInEdit.assessment &&
+        !isInEdit.prevention &&
+        !isInEdit.equipment &&
+        !isInEdit.animal &&
+        !isInEdit.note &&
+        !isInEdit.attachments &&
+        !isInEdit.fileReview;
+
+      const onlyAssessmentInEdit =
+        isInEdit.assessment &&
         !isInEdit.prevention &&
         !isInEdit.equipment &&
         !isInEdit.animal &&
@@ -72,13 +116,29 @@ const useValidateComplaint = () => {
       //check if file review is required, review must be completed
       const fileReviewCriteria = (isReviewRequired && reviewComplete !== null) || !isReviewRequired;
 
+      const scrollToErrors = () => {
+        scrollToErrorSection(
+          assessmentCriteria,
+          preventionCriteria,
+          equipmentCriteria,
+          animalCriteria,
+          fileReviewCriteria,
+        );
+      };
+
       setValidationResults({
-        noEditSections: noEditSections,
-        assessmentCriteria: assessmentCriteria,
-        preventionCriteria: preventionCriteria,
-        equipmentCriteria: equipmentCriteria,
-        animalCriteria: animalCriteria,
-        fileReviewCriteria: fileReviewCriteria,
+        canCloseComplaint:
+          noEditSections && assessmentCriteria && equipmentCriteria && animalCriteria && fileReviewCriteria,
+        scrollToErrors,
+        validationDetails: {
+          noEditSections: noEditSections,
+          onlyAssessmentInEdit: onlyAssessmentInEdit,
+          assessmentCriteria: assessmentCriteria,
+          preventionCriteria: preventionCriteria,
+          equipmentCriteria: equipmentCriteria,
+          animalCriteria: animalCriteria,
+          fileReviewCriteria: fileReviewCriteria,
+        },
       });
     };
 

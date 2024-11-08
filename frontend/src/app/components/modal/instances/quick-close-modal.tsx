@@ -64,6 +64,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   complaint_type,
   refreshComplaintsOnClose = false,
 }) => {
+  // Hooks
   const dispatch = useAppDispatch();
 
   // Selectors
@@ -76,6 +77,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   // Vars
   const alreadyAssessed = assessmentData?.date !== undefined;
   const isClosed = complaintData?.status === "CLOSED";
+
   return (
     <>
       {title && (

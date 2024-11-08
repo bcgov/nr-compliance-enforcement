@@ -1,16 +1,18 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
-import COMPLAINT_TYPES, { complaintTypeToName } from "../../../../types/app/complaint-types";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectComplaintHeader } from "../../../../store/reducers/complaints";
-import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "../../../../common/methods";
+import COMPLAINT_TYPES, { complaintTypeToName } from "@apptypes/app/complaint-types";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { selectComplaintHeader } from "@store/reducers/complaints";
+import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
 
 import { Badge, Button, Dropdown } from "react-bootstrap";
 
-import { isFeatureActive, openModal } from "../../../../store/reducers/app";
-import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "../../../../types/modal/modal-types";
-import { exportComplaint } from "../../../../store/reducers/documents-thunks";
-import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
+import { isFeatureActive, openModal } from "@store/reducers/app";
+import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "@apptypes/modal/modal-types";
+import { exportComplaint } from "@store/reducers/documents-thunks";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { setIsInEdit } from "@store/reducers/cases";
+import useValidateComplaint from "@hooks/validate-complaint";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -83,21 +85,27 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     );
   };
 
+  const validationResults = useValidateComplaint();
   const openQuickCloseModal = () => {
-    document.body.click();
-    dispatch(
-      openModal({
-        modalSize: "lg",
-        modalType: QUICK_CLOSE,
-        data: {
-          title: `Quick close: Complaint #${id}`,
-          description: "",
-          complaint_identifier: id,
-          complaint_type: complaintType,
-          complaint_status: status,
-        },
-      }),
-    );
+    if (!validationResults.canCloseComplaint) {
+      validationResults.scrollToErrors();
+      dispatch(setIsInEdit({ showSectionErrors: true }));
+    } else {
+      document.body.click();
+      dispatch(
+        openModal({
+          modalSize: "lg",
+          modalType: QUICK_CLOSE,
+          data: {
+            title: `Quick close: Complaint #${id}`,
+            description: "",
+            complaint_identifier: id,
+            complaint_type: complaintType,
+            complaint_status: status,
+          },
+        }),
+      );
+    }
   };
 
   const exportComplaintToPdf = () => {

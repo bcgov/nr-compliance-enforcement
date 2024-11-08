@@ -1,33 +1,22 @@
 import { FC, useEffect, useState } from "react";
 import { Modal, Row, Col, Button } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { selectModalData } from "../../../store/reducers/app";
-import ComplaintStatusSelect from "../../codes/complaint-status-select";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { selectModalData } from "@store/reducers/app";
+import ComplaintStatusSelect from "@components/codes/complaint-status-select";
 import {
   getComplaintById,
   updateAllegationComplaintStatus,
   updateWildlifeComplaintStatus,
   updateGeneralIncidentComplaintStatus,
-} from "../../../store/reducers/complaints";
-import COMPLAINT_TYPES from "../../../types/app/complaint-types";
-import Option from "../../../types/app/option";
-import { setIsInEdit } from "../../../store/reducers/cases";
-import { EquipmentDetailsDto } from "../../../types/app/case-files/equipment-details";
-import { AnimalOutcomeSubject } from "../../../types/state/cases-state";
+} from "@store/reducers/complaints";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { setIsInEdit } from "@store/reducers/cases";
 import useValidateComplaint from "@hooks/validate-complaint";
 
 type ChangeStatusModalProps = {
   close: () => void;
   submit: () => void;
-  sortColumn: string;
-  sortOrder: string;
-  complaint_identifier: string;
   complaint_type: string;
-  natureOfComplaintFilter: Option | null;
-  speciesCodeFilter: Option | null;
-  startDateFilter: Date | undefined;
-  endDateFilter: Date | undefined;
-  complaintStatusFilter: Option | null;
   complaint_status: string;
 };
 
@@ -62,14 +51,14 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   const updateThunksSequentially = async () => {
     try {
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
-        await dispatch(updateWildlifeComplaintStatus(complaint_identifier, status));
+        dispatch(updateWildlifeComplaintStatus(complaint_identifier, status));
       } else if (COMPLAINT_TYPES.ERS === complaint_type) {
-        await dispatch(updateAllegationComplaintStatus(complaint_identifier, status));
+        dispatch(updateAllegationComplaintStatus(complaint_identifier, status));
       } else if (COMPLAINT_TYPES.GIR === complaint_type) {
-        await dispatch(updateGeneralIncidentComplaintStatus(complaint_identifier, status));
+        dispatch(updateGeneralIncidentComplaintStatus(complaint_identifier, status));
       }
 
-      await dispatch(getComplaintById(complaint_identifier, complaint_type));
+      dispatch(getComplaintById(complaint_identifier, complaint_type));
     } catch (error) {
       // Handle any errors that occurred during the dispatch
       console.error("Error dispatching thunks:", error);
@@ -82,57 +71,16 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
     selectedStatus = selectedValue;
   };
 
-  const {
-    noEditSections,
-    assessmentCriteria,
-    preventionCriteria,
-    equipmentCriteria,
-    animalCriteria,
-    fileReviewCriteria,
-  } = useValidateComplaint();
-
-  const canCloseComplaint =
-    noEditSections && assessmentCriteria && equipmentCriteria && animalCriteria && fileReviewCriteria;
+  const validationResults = useValidateComplaint();
 
   const validateCloseStatus = () => {
-    if (canCloseComplaint) {
+    if (validationResults.canCloseComplaint) {
       setStatus(selectedStatus);
       dispatch(setIsInEdit({ showSectionErrors: false }));
     } else {
-      scrollToErrorSection(
-        assessmentCriteria,
-        preventionCriteria,
-        equipmentCriteria,
-        animalCriteria,
-        fileReviewCriteria,
-      );
+      validationResults.scrollToErrors();
       dispatch(setIsInEdit({ showSectionErrors: true }));
       close();
-    }
-  };
-
-  const scrollToErrorSection = (
-    assessmentCriteria: boolean,
-    preventionCriteria: boolean,
-    equipmentCriteria: boolean,
-    animalCriteria: boolean,
-    fileReviewCriteria: boolean,
-  ) => {
-    const { assessment, prevention, equipment, animal, note, attachments, fileReview } = cases.isInEdit;
-    if (!assessmentCriteria || assessment) {
-      document.getElementById("outcome-assessment")?.scrollIntoView({ block: "end" });
-    } else if (!preventionCriteria || prevention) {
-      document.getElementById("outcome-prevention-education")?.scrollIntoView({ block: "end" });
-    } else if (!equipmentCriteria || equipment) {
-      document.getElementById("outcome-equipment")?.scrollIntoView({ block: "end" });
-    } else if (!animalCriteria || animal) {
-      document.getElementById("outcome-animal")?.scrollIntoView({ block: "end" });
-    } else if (note) {
-      document.getElementById("outcome-note")?.scrollIntoView({ block: "end" });
-    } else if (attachments) {
-      document.getElementById("outcome-attachments")?.scrollIntoView({ block: "end" });
-    } else if (!fileReviewCriteria || fileReview) {
-      document.getElementById("outcome-file-review")?.scrollIntoView({ block: "end" });
     }
   };
 

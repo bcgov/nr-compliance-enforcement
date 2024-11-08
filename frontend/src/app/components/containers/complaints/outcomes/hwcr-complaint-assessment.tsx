@@ -85,7 +85,8 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const validationResults = useValidateComplaint();
 
   const hasAssessment = Object.keys(cases.assessment).length > 0;
-  const showSectionErrors = (!hasAssessment || editable) && cases.isInEdit.showSectionErrors;
+  const showSectionErrors =
+    (!hasAssessment || editable) && cases.isInEdit.showSectionErrors && !cases.isInEdit.hideAssessmentErrors;
 
   useEffect(() => {
     if (!hasAssessment && editable) {
@@ -281,7 +282,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
               }),
       };
 
-      await dispatch(upsertAssessment(id, updatedAssessmentData));
+      dispatch(upsertAssessment(id, updatedAssessmentData));
       setEditable(false);
       handleSave();
     } else {
@@ -303,13 +304,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     setLinkedComplaintErrorMessage("");
     setAssessmentRequiredErrorMessage("");
   };
-
-  const canCloseComplaint =
-    validationResults.noEditSections &&
-    validationResults.assessmentCriteria &&
-    validationResults.equipmentCriteria &&
-    validationResults.animalCriteria &&
-    validationResults.fileReviewCriteria;
 
   // Validates the assessment
   const hasErrors = useCallback((): boolean => {
@@ -356,16 +350,19 @@ export const HWCRComplaintAssessment: FC<Props> = ({
         hasErrors = true;
       }
 
-      if (!canCloseComplaint) {
+      if (!validationResults.canCloseComplaint) {
         setJustificationRequiredErrorMessage(
-          "All other sections of the complaint must be completed before assessing a complaint as duplicate. Please check the other sections of the complaint to see if there are unsaved details.",
+          "Please address the errors in the other sections before closing the complaint as duplicate.",
         );
         hasErrors = true;
+        dispatch(setIsInEdit({ showSectionErrors: true, hideAssessmentErrors: true }));
+        validationResults.scrollToErrors();
       }
     }
 
     return hasErrors;
   }, [
+    dispatch,
     id,
     selectedOfficer,
     selectedDate,
@@ -374,7 +371,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     selectedLinkedComplaint,
     selectedLinkedComplaintStatus,
     selectedAssessmentTypes,
-    canCloseComplaint,
+    validationResults,
   ]);
 
   // Validate on selected value change

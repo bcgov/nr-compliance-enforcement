@@ -31,6 +31,7 @@ export interface IsInEdit {
   attachments: boolean;
   fileReview: boolean;
   showSectionErrors: boolean;
+  hideAssessmentErrors: boolean;
   decision: false;
   authorization: false;
 }
