@@ -92,6 +92,9 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     if (!hasAssessment && editable) {
       dispatch(setIsInEdit({ assessment: false }));
     } else dispatch(setIsInEdit({ assessment: editable }));
+    return () => {
+      dispatch(setIsInEdit({ assessment: false }));
+    };
   }, [dispatch, editable, hasAssessment]);
 
   const handleDateChange = (date: Date | null) => {

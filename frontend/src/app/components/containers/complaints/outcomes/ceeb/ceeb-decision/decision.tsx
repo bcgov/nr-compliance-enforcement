@@ -27,8 +27,10 @@ export const CeebDecision: FC = () => {
     if (!hasDecision && editable) {
       dispatch(setIsInEdit({ decision: false }));
     } else dispatch(setIsInEdit({ decision: editable }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editable, hasDecision]);
+    return () => {
+      dispatch(setIsInEdit({ decision: false }));
+    };
+  }, [dispatch, editable, hasDecision]);
 
   useEffect(() => {
     setEditable(!data.id);

@@ -74,7 +74,10 @@ export const HWCRComplaintPrevention: FC = () => {
 
   useEffect(() => {
     dispatch(setIsInEdit({ prevention: showContent && editable }));
-  }, [editable, showContent]);
+    return () => {
+      dispatch(setIsInEdit({ prevention: false }));
+    };
+  }, [dispatch, editable, showContent]);
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {
