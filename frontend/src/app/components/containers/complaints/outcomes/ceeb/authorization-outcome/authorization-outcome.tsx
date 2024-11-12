@@ -30,8 +30,10 @@ export const AuthoizationOutcome: FC = () => {
     if (!hasAuthorization && editable) {
       dispatch(setIsInEdit({ site: false }));
     } else dispatch(setIsInEdit({ site: editable }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editable, hasAuthorization]);
+    return () => {
+      dispatch(setIsInEdit({ site: false }));
+    };
+  }, [dispatch, editable, hasAuthorization]);
 
   useEffect(() => {
     setEditable(!data.id);

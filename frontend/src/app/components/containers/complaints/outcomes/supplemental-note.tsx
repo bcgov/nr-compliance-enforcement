@@ -22,7 +22,10 @@ export const SupplementalNote: FC = () => {
 
   useEffect(() => {
     dispatch(setIsInEdit({ note: showInput }));
-  }, [showInput]);
+    return () => {
+      dispatch(setIsInEdit({ note: false }));
+    };
+  }, [dispatch, showInput]);
 
   const openDeleteSupplementalNoteModal = () => {
     document.body.click();

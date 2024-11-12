@@ -19,7 +19,10 @@ export const HWCREquipment: FC = memo(() => {
 
   useEffect(() => {
     dispatch(setIsInEdit({ equipment: showEquipmentForm || editingGuid.length > 0 }));
-  }, [showEquipmentForm, editingGuid]);
+    return () => {
+      dispatch(setIsInEdit({ equipment: false }));
+    };
+  }, [dispatch, showEquipmentForm, editingGuid]);
 
   const handleEdit = (guid: string) => {
     setEditingGuid(guid);

@@ -158,7 +158,10 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
 
   useEffect(() => {
     dispatch(setIsInEdit({ animal: showForm || editId.length > 0 }));
-  }, [showForm, editId]);
+    return () => {
+      dispatch(setIsInEdit({ animal: false }));
+    };
+  }, [dispatch, showForm, editId]);
 
   //-- render a list of outcomes
   const renderOutcomeList = () => {
