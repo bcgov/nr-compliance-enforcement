@@ -839,6 +839,15 @@ export const selectComplaint = (
   return complaint;
 };
 
+export const selectComplaintLargeCarnivoreInd = (state: RootState): boolean => {
+  const {
+    complaints: { complaint },
+  } = state;
+  const complaintData = complaint as WildlifeComplaintDto;
+  if (complaintData) return complaintData.isLargeCarnivore;
+  return false;
+};
+
 export const selectComplaintDetails =
   (complaintType: string) =>
   (state: RootState): ComplaintDetails => {

@@ -25,6 +25,9 @@ import { REQUIRED } from "../../../../../constants/general";
 import { v4 as uuidv4 } from "uuid";
 import { ToggleError } from "../../../../../common/toast";
 import { getNextOrderNumber } from "../hwcr-outcome-by-animal-v2";
+import { ValidationTextArea } from "@/app/common/validation-textarea";
+import { selectComplaint, selectComplaintLargeCarnivoreInd } from "@/app/store/reducers/complaints";
+import { WildlifeComplaint } from "@/app/types/app/complaints/wildlife-complaint";
 
 type props = {
   index: number;
@@ -43,7 +46,7 @@ const defaultOutcome: AnimalOutcomeV2 = {
   sex: "",
   age: "",
   threatLevel: "",
-  conflictHistory: "",
+  identifyingFeatures: "",
   tags: [],
   drugs: [],
   outcome: "",
@@ -65,6 +68,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficerListByAgency);
+  const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
@@ -452,20 +456,39 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                 />
               </div>
             </div>
-            <div className="comp-details-form-row">
-              <label htmlFor="select-category-level">Category level</label>
-              <CompSelect
-                id="select-category-level"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={threatLevels}
-                enableValidation={false}
-                placeholder={"Select"}
-                onChange={(evt) => {
-                  updateModel("threatLevel", evt?.value);
-                }}
-              />
+            <div
+              className="comp-details-form-row"
+              id="identifying-features"
+            >
+              <label htmlFor="outcome-decision-rationale">Identifying features</label>
+              <div className="comp-details-input full-width">
+                <ValidationTextArea
+                  className="comp-form-control"
+                  id="outcome-identifying-features"
+                  defaultValue={data.identifyingFeatures}
+                  rows={2}
+                  errMsg={""}
+                  maxLength={4000}
+                  onChange={(e: any) => updateModel("identifyingFeatures", e.trim())}
+                />
+              </div>
             </div>
+            {isLargeCarnivore && (
+              <div className="comp-details-form-row">
+                <label htmlFor="select-category-level">Category level</label>
+                <CompSelect
+                  id="select-category-level"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={threatLevels}
+                  enableValidation={false}
+                  placeholder={"Select"}
+                  onChange={(evt) => {
+                    updateModel("threatLevel", evt?.value);
+                  }}
+                />
+              </div>
+            )}
           </fieldset>
 
           <fieldset>

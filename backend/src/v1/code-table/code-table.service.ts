@@ -237,7 +237,15 @@ export class CodeTableService {
       case "species": {
         const data = await this._speciesRepository.find({ order: { display_order: "ASC" } });
         let results = data.map(
-          ({ species_code, short_description, long_description, display_order, active_ind, legacy_code }) => {
+          ({
+            species_code,
+            short_description,
+            long_description,
+            display_order,
+            active_ind,
+            legacy_code,
+            large_carnivore_ind,
+          }) => {
             let table: Species = {
               species: species_code,
               legacy: legacy_code,
@@ -245,6 +253,7 @@ export class CodeTableService {
               longDescription: long_description,
               displayOrder: display_order,
               isActive: active_ind,
+              isLargeCarnivore: large_carnivore_ind,
             };
             return table;
           },

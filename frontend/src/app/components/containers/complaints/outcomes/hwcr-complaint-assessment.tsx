@@ -9,6 +9,7 @@ import {
   selectComplaintCallerInformation,
   selectComplaintHeader,
   selectComplaintAssignedBy,
+  selectComplaintLargeCarnivoreInd,
 } from "@store/reducers/complaints";
 import {
   selectAssessmentCat1Dropdown,
@@ -60,10 +61,10 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [validateOnChange, setValidateOnChange] = useState<boolean>(false);
   const [selectedContacted, setSelectedContacted] = useState<string>("N");
   const [selectedAttended, setSelectedAttended] = useState<string>("N");
+  const [selectedLocation, setSelectedLocation] = useState<Option | null>(null);
+  const [selectedConflictHistory, setSelectedConflictHistory] = useState<Option | null>(null);
+  const [selectedCategoryLevel, setSelectedCategoryLevel] = useState<Option | null>(null);
   const [selectedAssessmentCat1Types, setSelectedAssessmentCat1Types] = useState<Option[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<string>("");
-  const [selectedConflictHistory, setSelectedConflictHistory] = useState<string>("");
-  const [selectedThreatLevel, setSelectedThreatLevel] = useState<string>("");
 
   const handleAssessmentTypesChange = (selectedItems: Option[]) => {
     setSelectedAssessmentTypes(selectedItems);
@@ -75,6 +76,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [justificationRequiredErrorMessage, setJustificationRequiredErrorMessage] = useState<string>("");
   const [linkedComplaintErrorMessage, setLinkedComplaintErrorMessage] = useState<string>("");
   const [assessmentRequiredErrorMessage, setAssessmentRequiredErrorMessage] = useState<string>("");
+  const [locationErrorMessage, setLocationErrorMessage] = useState<string>("");
 
   const complaintData = useAppSelector(selectComplaint) as WildlifeComplaint;
   const assessmentState = useAppSelector(selectAssessment);
@@ -86,6 +88,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const threatLevelOptions = useAppSelector(selectThreatLevelDropdown);
   const locationOptions = useAppSelector(selectLocationDropdown);
   const assessmentCat1Options = useAppSelector(selectAssessmentCat1Dropdown);
+  const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
 
   const hasAssessment = Object.keys(cases.assessment).length > 0;
   const showSectionErrors = (!hasAssessment || editable) && cases.isInEdit.showSectionErrors;
@@ -110,6 +113,12 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   };
 
   const handleActionRequiredChange = (selected: Option | null) => {
+    //Reset other fields to default when action required changed
+    setSelectedContacted("N");
+    setSelectedAttended("N");
+    setSelectedLocation(null);
+    setSelectedCategoryLevel(null);
+    setSelectedConflictHistory(null);
     if (selected) {
       setSelectedActionRequired(selected);
       setSelectedJustification(null as unknown as Option);
@@ -204,6 +213,18 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       };
     }) as Option[];
 
+    const selectedLocation = assessmentState.location_type
+      ? ({ label: assessmentState.location_type.key, value: assessmentState.location_type.value } as Option)
+      : null;
+
+    const selectedConflictHistory = assessmentState.conflict_history
+      ? ({ label: assessmentState.conflict_history.key, value: assessmentState.conflict_history.value } as Option)
+      : null;
+
+    const selectedCategoryLevel = assessmentState.category_level
+      ? ({ label: assessmentState.category_level.key, value: assessmentState.category_level.value } as Option)
+      : null;
+
     const assesmentDate = assessmentState?.date ? new Date(assessmentState.date) : new Date();
 
     setSelectedDate(assesmentDate);
@@ -212,6 +233,12 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     setSelectedJustification(selectedJustification);
     setSelectedLinkedComplaint(selectedLinkedComplaint);
     setSelectedAssessmentTypes(selectedAssessmentTypes);
+    setSelectedContacted(assessmentState.contacted_complainant ? "Y" : "N");
+    setSelectedAttended(assessmentState.attended ? "Y" : "N");
+    setSelectedLocation(selectedLocation);
+    setSelectedConflictHistory(selectedConflictHistory);
+    setSelectedCategoryLevel(selectedCategoryLevel);
+
     resetValidationErrors();
     setEditable(!assessmentState.date);
 
@@ -285,6 +312,35 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   value: item.value,
                 };
               }),
+        contacted_complainant: selectedContacted === "Y",
+        attended: selectedAttended === "Y",
+        location_type: selectedLocation
+          ? {
+              key: selectedLocation?.label,
+              value: selectedLocation?.value,
+            }
+          : undefined,
+        conflict_history: selectedConflictHistory
+          ? {
+              key: selectedConflictHistory?.label,
+              value: selectedConflictHistory?.value,
+            }
+          : undefined,
+        category_level: selectedCategoryLevel
+          ? {
+              key: selectedCategoryLevel?.label,
+              value: selectedCategoryLevel?.value,
+            }
+          : undefined,
+        assessment_cat1_type:
+          selectedActionRequired?.label === OptionLabels.OPTION_NO
+            ? []
+            : selectedAssessmentCat1Types?.map((item) => {
+                return {
+                  key: item.label,
+                  value: item.value,
+                };
+              }),
       };
 
       await dispatch(upsertAssessment(id, updatedAssessmentData));
@@ -308,6 +364,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     setJustificationRequiredErrorMessage("");
     setLinkedComplaintErrorMessage("");
     setAssessmentRequiredErrorMessage("");
+    setLocationErrorMessage("");
   };
 
   // Validates the assessment
@@ -327,6 +384,11 @@ export const HWCRComplaintAssessment: FC<Props> = ({
 
     if (!selectedActionRequired) {
       setActionRequiredErrorMessage("Required");
+      hasErrors = true;
+    }
+
+    if (!selectedLocation && selectedActionRequired?.value === OptionLabels.OPTION_YES) {
+      setLocationErrorMessage("Required");
       hasErrors = true;
     }
 
@@ -366,6 +428,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     selectedLinkedComplaint,
     selectedLinkedComplaintStatus,
     selectedAssessmentTypes,
+    selectedLocation,
   ]);
 
   // Validate on selected value change
@@ -390,6 +453,15 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   };
 
   const assessmentDivClass = `comp-details-form-row ${selectedActionRequired?.value === "Yes" ? "inherit" : "hidden"}`;
+
+  // console.log(selectedAssessmentTypes);
+  // console.log(selectedActionRequired);
+  // console.log(selectedJustification);
+  // console.log("new");
+  // console.log(selectedLocation);
+  // console.log(selectedConflictHistory);
+  // console.log(selectedCategoryLevel);
+  // console.log(selectedAssessmentCat1Types);
 
   return (
     <section className="comp-details-section comp-outcome-report-complaint-assessment">
@@ -552,30 +624,30 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 id="assessment-checkbox-div"
               >
                 <label htmlFor="checkbox-div">
-                  <>
+                  <div>
                     <div>Animal actions</div>
                     <div>(Select all applicable boxes)</div>
-                  </>
+                  </div>
                 </label>
                 <div className="comp-details-input full-width">
                   <ValidationCheckboxGroup
-                    errMsg={complaintData && complaintData.isLargeCarnivore ? "" : assessmentRequiredErrorMessage}
+                    errMsg={isLargeCarnivore ? "" : assessmentRequiredErrorMessage}
                     options={assessmentTypeList}
                     onCheckboxChange={handleAssessmentTypesChange}
                     checkedValues={selectedAssessmentTypes}
                   ></ValidationCheckboxGroup>
-                  {complaintData && complaintData.isLargeCarnivore && (
+                  {isLargeCarnivore && (
                     <ValidationCheckboxGroup
                       errMsg={assessmentRequiredErrorMessage}
                       options={assessmentCat1Options}
                       onCheckboxChange={(option: Option[]) => setSelectedAssessmentCat1Types(option)}
-                      checkedValues={selectedAssessmentTypes}
+                      checkedValues={selectedAssessmentCat1Types}
                     ></ValidationCheckboxGroup>
                   )}
                 </div>
               </div>
 
-              {complaintData && complaintData.isLargeCarnivore && (
+              {isLargeCarnivore && (
                 <>
                   {/* Location type */}
                   <div
@@ -593,10 +665,12 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       classNamePrefix="comp-select"
                       className="comp-details-input"
                       options={locationOptions}
-                      enableValidation={false}
+                      value={selectedLocation}
+                      enableValidation={true}
+                      errorMessage={locationErrorMessage}
                       placeholder={"Select"}
                       onChange={(e: any) => {
-                        setSelectedLocation(e.value);
+                        setSelectedLocation(e);
                       }}
                     />
                   </div>
@@ -617,10 +691,11 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       classNamePrefix="comp-select"
                       className="comp-details-input"
                       options={conflictHistoryOptions}
+                      value={selectedConflictHistory}
                       enableValidation={false}
                       placeholder={"Select"}
                       onChange={(e: any) => {
-                        setSelectedConflictHistory(e.value);
+                        setSelectedConflictHistory(e);
                       }}
                     />
                   </div>
@@ -641,10 +716,11 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       classNamePrefix="comp-select"
                       className="comp-details-input"
                       options={threatLevelOptions}
+                      value={selectedCategoryLevel}
                       enableValidation={false}
                       placeholder={"Select"}
                       onChange={(e: any) => {
-                        setSelectedThreatLevel(e.value);
+                        setSelectedCategoryLevel(e);
                       }}
                     />
                   </div>
@@ -723,11 +799,37 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   <span>{selectedJustification?.label || ""}</span>
                 </dd>
               </div>
+
+              {/* Contacted complainant - view state */}
+              <div
+                id="contacted-complainant-div"
+                className={assessmentDivClass}
+              >
+                <dt>Contacted complainant</dt>
+                <dd>
+                  <span>{selectedContacted === "N" ? "No" : "Yes"}</span>
+                </dd>
+              </div>
+
+              {/* Attended - view state */}
+              <div
+                id="attended-div"
+                className={assessmentDivClass}
+                style={{ marginTop: "0px" }}
+              >
+                <dt>Attended</dt>
+                <dd>
+                  <span>{selectedAttended === "N" ? "No" : "Yes"}</span>
+                </dd>
+              </div>
+
+              {/* Animal actions - view state */}
               <div
                 id="assessment-checkbox-div"
                 className={assessmentDivClass}
+                style={{ marginTop: "0px" }}
               >
-                <dt>Actions</dt>
+                <dt>Animal actions</dt>
                 <dd>
                   <ul>
                     {selectedAssessmentTypes?.map((assesmentValue) => (
@@ -741,6 +843,47 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   </ul>
                 </dd>
               </div>
+
+              {/* Location type - view state */}
+              <div
+                id="location-type-div"
+                className={assessmentDivClass}
+                style={{ marginTop: "0px" }}
+              >
+                <dt>Location type</dt>
+                <dd>
+                  <span>{selectedLocation?.label}</span>
+                </dd>
+              </div>
+
+              {/* Conflict history - view state */}
+              {selectedConflictHistory && (
+                <div
+                  id="conflict history-div"
+                  className={assessmentDivClass}
+                  style={{ marginTop: "0px" }}
+                >
+                  <dt>Conflict history</dt>
+                  <dd>
+                    <span>{selectedConflictHistory.label}</span>
+                  </dd>
+                </div>
+              )}
+
+              {/* Category level - view state */}
+              {selectedCategoryLevel && (
+                <div
+                  id="conflict history-div"
+                  className={assessmentDivClass}
+                  style={{ marginTop: "0px" }}
+                >
+                  <dt>Category Level</dt>
+                  <dd>
+                    <span>{selectedCategoryLevel.label}</span>
+                  </dd>
+                </div>
+              )}
+
               <div>
                 <dt>Officer</dt>
                 <dd>

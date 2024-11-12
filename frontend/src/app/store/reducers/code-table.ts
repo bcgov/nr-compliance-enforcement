@@ -1407,7 +1407,7 @@ export const selectLocationDropdown = (state: RootState): Array<Option> => {
     codeTables: { "case-location-type": items },
   } = state;
 
-  const data = items.map(({ caseLocation: value, shortDescription: label }) => {
+  const data = items.map(({ caseLocationType: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });

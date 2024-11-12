@@ -57,4 +57,5 @@ export interface AnimalOutcomeSubject {
   drugs?: Array<DrugUsedV2>;
   actions?: Array<CaseAction>;
   order: number;
+  identifyingFeatures?: string;
 }

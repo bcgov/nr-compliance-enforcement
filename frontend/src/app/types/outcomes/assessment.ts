@@ -12,4 +12,10 @@ export interface Assessment {
   createdAt?: Date;
   updatedBy?: string;
   updatedAt?: Date;
+  contacted_complainant?: boolean;
+  attended?: boolean;
+  location_type?: KeyValuePair;
+  conflict_history?: KeyValuePair;
+  category_level?: KeyValuePair;
+  assessment_cat1_type: KeyValuePair[];
 }

@@ -31,7 +31,7 @@ export interface AnimalOutcomeV2 {
   sex?: string;
   age?: string;
   threatLevel?: string;
-  conflictHistory?: string;
+  identifyingFeatures?: string;
 
   tags: Array<AnimalTagV2>;
   drugs: Array<DrugUsedV2>;

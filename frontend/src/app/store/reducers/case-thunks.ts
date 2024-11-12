@@ -66,6 +66,7 @@ export const getCaseFile =
   async (dispatch) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     const response = await get<CaseFileDto>(dispatch, parameters);
+    console.log(response);
 
     dispatch(setCaseFile(response));
   };
@@ -129,6 +130,19 @@ const addAssessment =
           }),
           actionJustificationCode: assessment.justification?.value,
           actionLinkedComplaintIdentifier: assessment.linked_complaint?.value,
+          contactedComplainant: assessment.contacted_complainant,
+          attended: assessment.attended,
+          locationType: assessment.location_type,
+          conflictHistory: assessment.conflict_history,
+          categoryLevel: assessment.category_level,
+          cat1Actions: assessment.assessment_cat1_type.map((item) => {
+            return {
+              date: assessment.date,
+              actor: assessment.officer?.value,
+              activeIndicator: true,
+              actionCode: item.value,
+            };
+          }),
         },
       },
     } as CreateAssessmentInput;
@@ -156,7 +170,9 @@ const addAssessment =
     }
 
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createAssessment`, createAssessmentInput);
+    console.log(createAssessmentInput);
     await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+      console.log(res);
       const updatedAssessmentData = await parseAssessmentResponse(res, officers);
       if (res) {
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
@@ -195,6 +211,19 @@ const updateAssessment =
               date: assessment.date,
               actionCode: item.value,
               activeIndicator: true,
+            };
+          }),
+          contactedComplainant: assessment.contacted_complainant,
+          attended: assessment.attended,
+          locationType: assessment.location_type,
+          conflictHistory: assessment.conflict_history,
+          categoryLevel: assessment.category_level,
+          cat1Actions: assessment.assessment_cat1_type.map((item) => {
+            return {
+              date: assessment.date,
+              actor: assessment.officer?.value,
+              activeIndicator: true,
+              actionCode: item.value,
             };
           }),
         },
@@ -273,7 +302,13 @@ const parseAssessmentResponse = async (
         .map((action) => {
           return { key: action.longDescription, value: action.actionCode };
         }),
-    } as Assessment;
+      contacted_complainant: res.assessmentDetails.contactedComplainant,
+      attended: res.assessmentDetails.attended,
+      location_type: res.assessmentDetails.locationType,
+      conflict_history: res.assessmentDetails.conflictHistory,
+      category_level: res.assessmentDetails.categoryLevel,
+      assessment_cat1_type: res.assessmentDetails.cat1Actions,
+    } as unknown as Assessment;
     return updatedAssessmentData;
   } else {
     return null;
@@ -796,8 +831,20 @@ export const createAnimalOutcome =
       },
     } = getState();
 
-    const { species, sex, age, conflictHistory, outcome, threatLevel, officer, date, tags, drugs, drugAuthorization } =
-      animalOutcome;
+    const {
+      species,
+      sex,
+      age,
+      identifyingFeatures,
+      outcome,
+      threatLevel,
+      officer,
+      date,
+      tags,
+      drugs,
+      drugAuthorization,
+    } = animalOutcome;
+    console.log(animalOutcome);
     let actions: Array<AnimalOutcomeActionInput> = [];
 
     //-- add an action if there is an outcome with officer
@@ -843,7 +890,7 @@ export const createAnimalOutcome =
         sex,
         age,
         categoryLevel: threatLevel,
-        conflictHistory,
+        identifyingFeatures,
         outcome,
         tags: earTags,
         drugs: drugsUsed,
@@ -883,7 +930,7 @@ export const updateAnimalOutcome =
       species,
       sex,
       age,
-      conflictHistory,
+      identifyingFeatures,
       outcome,
       threatLevel,
       officer,
@@ -942,7 +989,7 @@ export const updateAnimalOutcome =
         sex,
         age,
         categoryLevel: threatLevel,
-        conflictHistory,
+        identifyingFeatures,
         outcome,
         tags,
         drugs: drugsUsed,

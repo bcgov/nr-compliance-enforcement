@@ -17,4 +17,5 @@ export interface AnimalOutcomeInput {
   //-- an outcome selected then add an
   //-- action to the collection
   actions?: Array<AnimalOutcomeActionInput>;
+  identifyingFeatures?: string;
 }

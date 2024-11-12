@@ -26,6 +26,29 @@ export const caseFileQueryFields: string = `
       longDescription
       activeIndicator
     }
+    contactedComplainant
+    attended
+    locationType {
+      key
+      value
+    }
+    conflictHistory {
+      key
+      value
+    }
+    categoryLevel {
+      key
+      value
+    }
+    cat1Actions {
+      actionId
+      actor
+      date
+      actionCode
+      shortDescription
+      longDescription
+      activeIndicator
+    }
   }
   isReviewRequired
   reviewComplete {
@@ -78,7 +101,7 @@ export const caseFileQueryFields: string = `
     sex
     age
     categoryLevel
-    conflictHistory
+    identifyingFeatures
     outcome
     tags { 
       id
@@ -156,6 +179,8 @@ export const get = (token, params?: {}) => {
     })
     .catch((error: AxiosError) => {
       if (error.response) {
+        console.log(error);
+        console.log(error.response.data);
         throw new Error(`Case Management Request Failed: ${error.response.data}`);
       } else if (error.request) {
         throw new Error(`No response received from the Case Management server: ${caseManagementlURL}`);
