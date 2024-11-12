@@ -48,7 +48,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   const dispatch = useAppDispatch();
-  const assignText = officerAssigned === "Not assigned" ? "Assign" : "Reassign";
+  const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
 
   const openStatusChangeModal = () => {
     document.body.click();
