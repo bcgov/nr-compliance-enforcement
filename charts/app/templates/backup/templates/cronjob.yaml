@@ -67,6 +67,23 @@ spec:
                     secretKeyRef:
                       name: {{.Release.Name}}-backend
                       key: "POSTGRESQL_PASSWORD"
+                - name: S3_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{.Release.Name}}-backend
+                      key: "OBJECTSTORE_BUCKET"
+                - name: S3_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{.Release.Name}}-backend
+                      key: "OBJECTSTORE_SECRET_KEY"
+                - name: S3_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{.Release.Name}}-backend
+                      key: "OBJECTSTORE_URL"
+                - name: S3_BUCKET
+                  value: "backups"
           volumes:
             - name: backup
               persistentVolumeClaim:
