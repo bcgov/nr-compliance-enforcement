@@ -12,7 +12,6 @@ import { ToggleError } from "@common/toast";
 import { bcUtmZoneNumbers, getSelectedItem, formatLatLongCoordinate } from "@common/methods";
 
 import Option from "@apptypes/app/option";
-import { Officer } from "@apptypes/person/person";
 
 import "react-toastify/dist/ReactToastify.css";
 import { ValidationDatePicker } from "@common/validation-date-picker";
