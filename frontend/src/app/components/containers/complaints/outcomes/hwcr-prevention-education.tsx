@@ -1,33 +1,33 @@
 import { FC, useEffect, useState } from "react";
-import Option from "../../../../types/app/option";
+import Option from "@apptypes/app/option";
 import { Button, Card } from "react-bootstrap";
-import { Officer } from "../../../../types/person/person";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectOfficerListByAgency, selectOfficersByAgency } from "../../../../store/reducers/officer";
+import { Officer } from "@apptypes/person/person";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
 import {
   getComplaintById,
   selectComplaint,
   selectComplaintCallerInformation,
   selectComplaintHeader,
   selectComplaintAssignedBy,
-} from "../../../../store/reducers/complaints";
-import { selectPreventionTypeCodeDropdown } from "../../../../store/reducers/code-table";
+} from "@store/reducers/complaints";
+import { selectPreventionTypeCodeDropdown } from "@store/reducers/code-table";
 import { useParams } from "react-router-dom";
-import { formatDate, getSelectedOfficer } from "../../../../common/methods";
-import { CompSelect } from "../../../common/comp-select";
-import { ValidationCheckboxGroup } from "../../../../common/validation-checkbox-group";
-import { resetPrevention, setIsInEdit } from "../../../../store/reducers/cases";
-import { openModal } from "../../../../store/reducers/app";
-import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
-import { ToggleError } from "../../../../common/toast";
+import { formatDate, getSelectedOfficer } from "@common/methods";
+import { CompSelect } from "@components/common/comp-select";
+import { ValidationCheckboxGroup } from "@common/validation-checkbox-group";
+import { resetPrevention, setIsInEdit } from "@store/reducers/cases";
+import { openModal } from "@store/reducers/app";
+import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { ToggleError } from "@common/toast";
 import "react-toastify/dist/ReactToastify.css";
-import { ValidationDatePicker } from "../../../../common/validation-date-picker";
+import { ValidationDatePicker } from "@common/validation-date-picker";
 import { BsExclamationCircleFill } from "react-icons/bs";
 
-import "../../../../../assets/sass/hwcr-assessment.scss";
-import { Prevention } from "../../../../types/outcomes/prevention";
-import { selectPrevention } from "../../../../store/reducers/case-selectors";
-import { getPrevention, upsertPrevention } from "../../../../store/reducers/case-thunks";
+import "@assets/sass/hwcr-assessment.scss";
+import { Prevention } from "@apptypes/outcomes/prevention";
+import { selectPrevention } from "@store/reducers/case-selectors";
+import { getPrevention, upsertPrevention } from "@store/reducers/case-thunks";
 
 export const HWCRComplaintPrevention: FC = () => {
   const dispatch = useAppDispatch();

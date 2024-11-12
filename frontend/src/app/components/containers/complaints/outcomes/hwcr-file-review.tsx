@@ -1,16 +1,16 @@
 import { FC, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
-import { CompSelect } from "../../../common/comp-select";
+import { CompSelect } from "@components/common/comp-select";
 import DatePicker from "react-datepicker";
-import { useAppSelector, useAppDispatch } from "../../../../hooks/hooks";
-import { openModal, profileDisplayName } from "../../../../store/reducers/app";
-import { formatDate } from "../../../../common/methods";
+import { useAppSelector, useAppDispatch } from "@hooks/hooks";
+import { openModal, profileDisplayName } from "@store/reducers/app";
+import { formatDate } from "@common/methods";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { getComplaintStatusById, selectComplaint } from "../../../../store/reducers/complaints";
-import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
-import { createReview, updateReview } from "../../../../store/reducers/case-thunks";
-import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
-import { setIsInEdit } from "../../../../store/reducers/cases";
+import { getComplaintStatusById, selectComplaint } from "@store/reducers/complaints";
+import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { createReview, updateReview } from "@store/reducers/case-thunks";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { setIsInEdit } from "@store/reducers/cases";
 
 export const HWCRFileReview: FC = () => {
   const REQUEST_REVIEW_STATE = 0;

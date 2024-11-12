@@ -1,19 +1,19 @@
 import { FC, useEffect, useState } from "react";
 import { Modal, Row, Col, Button } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { selectModalData } from "../../../store/reducers/app";
-import ComplaintStatusSelect from "../../codes/complaint-status-select";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { selectModalData } from "@store/reducers/app";
+import ComplaintStatusSelect from "@components/codes/complaint-status-select";
 import {
   getComplaintById,
   updateAllegationComplaintStatus,
   updateWildlifeComplaintStatus,
   updateGeneralIncidentComplaintStatus,
-} from "../../../store/reducers/complaints";
-import COMPLAINT_TYPES from "../../../types/app/complaint-types";
-import Option from "../../../types/app/option";
-import { setIsInEdit } from "../../../store/reducers/cases";
-import { EquipmentDetailsDto } from "../../../types/app/case-files/equipment-details";
-import { AnimalOutcomeSubject } from "../../../types/state/cases-state";
+} from "@store/reducers/complaints";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import Option from "@apptypes/app/option";
+import { setIsInEdit } from "@store/reducers/cases";
+import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
+import { AnimalOutcomeSubject } from "@apptypes/state/cases-state";
 
 type ChangeStatusModalProps = {
   close: () => void;

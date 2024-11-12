@@ -1,4 +1,4 @@
-import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 
 describe("COMPENF-37 Display ECR Details", () => {
   const callDetails = {

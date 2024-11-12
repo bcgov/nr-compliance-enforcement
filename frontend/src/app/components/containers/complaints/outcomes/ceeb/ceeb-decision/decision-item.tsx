@@ -1,17 +1,17 @@
 import { FC } from "react";
-import { formatDate } from "../../../../../../common/methods";
-import { useAppSelector } from "../../../../../../hooks/hooks";
-import { selectLeadAgencyDropdown } from "../../../../../../store/reducers/code-table";
+import { formatDate } from "@common/methods";
+import { useAppSelector } from "@hooks/hooks";
+import { selectLeadAgencyDropdown } from "@store/reducers/code-table";
 import {
   selectDischargeDropdown,
   selectNonComplianceDropdown,
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
-} from "../../../../../../store/reducers/code-table-selectors";
-import { selectOfficerListByAgency } from "../../../../../../store/reducers/officer";
-import Option from "../../../../../../types/app/option";
-import { CASE_ACTION_CODE } from "../../../../../../constants/case_actions";
+} from "@store/reducers/code-table-selectors";
+import { selectOfficerListByAgency } from "@store/reducers/officer";
+import Option from "@apptypes/app/option";
+import { CASE_ACTION_CODE } from "@constants/case_actions";
 
 type props = {
   id?: string;

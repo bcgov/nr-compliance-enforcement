@@ -1,4 +1,4 @@
-import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 
 describe("COMPENF-35 Display HWCR Details", () => {
   const callDetails = {

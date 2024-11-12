@@ -1,27 +1,27 @@
 import { Action, createSlice, ThunkAction } from "@reduxjs/toolkit";
-import { RootState, AppThunk } from "../store";
-import config from "../../../config";
-import { OfficerState } from "../../types/complaints/officers-state";
-import { Officer } from "../../types/person/person";
+import { RootState, AppThunk } from "@store/store";
+import config from "@/config";
+import { OfficerState } from "@apptypes/complaints/officers-state";
+import { Officer } from "@apptypes/person/person";
 import { UUID } from "crypto";
-import { PersonComplaintXref } from "../../types/complaints/person-complaint-xref";
-import COMPLAINT_TYPES from "../../types/app/complaint-types";
+import { PersonComplaintXref } from "@apptypes/complaints/person-complaint-xref";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import {
   updateWildlifeComplaintByRow,
   updateAllegationComplaintByRow,
   updateGeneralComplaintByRow,
   getComplaintById,
 } from "./complaints";
-import { generateApiParameters, get, patch, post } from "../../common/api";
+import { generateApiParameters, get, patch, post } from "@common/api";
 import { from } from "linq-to-typescript";
-import { NewPersonComplaintXref } from "../../types/api-params/new-person-complaint-xref";
-import Option from "../../types/app/option";
+import { NewPersonComplaintXref } from "@apptypes/api-params/new-person-complaint-xref";
+import Option from "@apptypes/app/option";
 import { toggleNotification } from "./app";
-import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/complaints/wildlife-complaint";
-import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
-import { OfficerDto } from "../../types/app/people/officer";
-import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../../types/app/complaints/general-complaint";
-import Roles from "../../types/app/roles";
+import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
+import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
+import { OfficerDto } from "@apptypes/app/people/officer";
+import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
+import Roles from "@apptypes/app/roles";
 
 const initialState: OfficerState = {
   officers: [],

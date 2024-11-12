@@ -1,9 +1,9 @@
 import { FC, useRef, useState } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
-import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
-import { CompSelect } from "../../../../common/comp-select";
+import { ValidationDatePicker } from "@common/validation-date-picker";
+import { CompSelect } from "@components/common/comp-select";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { useAppSelector } from "../../../../../hooks/hooks";
+import { useAppSelector } from "@hooks/hooks";
 import {
   selectAgeDropdown,
   selectConflictHistoryDropdown,
@@ -11,21 +11,21 @@ import {
   selectSpeciesCodeDropdown,
   selectThreatLevelDropdown,
   selectWildlifeComplaintOutcome,
-} from "../../../../../store/reducers/code-table";
-import { AnimalOutcomeV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { AnimalTagV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
-import { DrugUsedV2 } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
-import Option from "../../../../../types/app/option";
-import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
+} from "@store/reducers/code-table";
+import { AnimalOutcomeV2 } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
+import { AnimalTagV2 } from "@apptypes/app/complaints/outcomes/wildlife/animal-tag";
+import { DrugUsedV2 } from "@apptypes/app/complaints/outcomes/wildlife/drug-used";
+import Option from "@apptypes/app/option";
+import { selectOfficerListByAgency } from "@store/reducers/officer";
 import { from } from "linq-to-typescript";
 import { EarTag } from "./ear-tag";
 import { DrugUsed } from "./drug-used";
-import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
+import { DrugAuthorization } from "@apptypes/app/complaints/outcomes/wildlife/drug-authorization";
 import { DrugAuthorizedBy } from "./drug-authorized-by";
-import { REQUIRED } from "../../../../../constants/general";
+import { REQUIRED } from "@constants/general";
 import { v4 as uuidv4 } from "uuid";
-import { ToggleError } from "../../../../../common/toast";
-import { getNextOrderNumber } from "../hwcr-outcome-by-animal-v2";
+import { ToggleError } from "@common/toast";
+import { getNextOrderNumber } from "@components/containers/complaints/outcomes/hwcr-outcome-by-animal-v2";
 
 type props = {
   index: number;

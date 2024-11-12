@@ -1,14 +1,14 @@
 import { from } from "linq-to-typescript";
-import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
-import { AnimalOutcomeV2 } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { Assessment } from "../../types/outcomes/assessment";
-import { Prevention } from "../../types/outcomes/prevention";
-import { SupplementalNote } from "../../types/outcomes/supplemental-note";
-import { AnimalOutcomeSubject } from "../../types/state/cases-state";
-import { RootState } from "../store";
-import { CASE_ACTION_CODE } from "../../constants/case_actions";
-import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
-import { PermitSite } from "../../types/app/case-files/ceeb/authorization-outcome/permit-site";
+import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
+import { AnimalOutcomeV2 } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
+import { Assessment } from "@apptypes/outcomes/assessment";
+import { Prevention } from "@apptypes/outcomes/prevention";
+import { SupplementalNote } from "@apptypes/outcomes/supplemental-note";
+import { AnimalOutcomeSubject } from "@apptypes/state/cases-state";
+import { RootState } from "@store/store";
+import { CASE_ACTION_CODE } from "@constants/case_actions";
+import { Decision } from "@apptypes/app/case-files/ceeb/decision/decision";
+import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
 
 //-- Case file selectors
 export const selectCaseId = (state: RootState): string => {

@@ -1,4 +1,4 @@
-import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 
 describe("HWCR Outcome Equipment", () => {
   beforeEach(function () {

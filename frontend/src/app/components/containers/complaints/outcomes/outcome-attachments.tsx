@@ -1,21 +1,17 @@
 import { FC, useEffect, useState } from "react";
-import { AttachmentsCarousel } from "../../../common/attachments-carousel";
-import { COMSObject } from "../../../../types/coms/object";
-import {
-  handleAddAttachments,
-  handleDeleteAttachments,
-  handlePersistAttachments,
-} from "../../../../common/attachment-utils";
-import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { ToggleError } from "../../../../common/toast";
-import { openModal } from "../../../../store/reducers/app";
+import { AttachmentsCarousel } from "@components/common/attachments-carousel";
+import { COMSObject } from "@apptypes/coms/object";
+import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
+import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { ToggleError } from "@common/toast";
+import { openModal } from "@store/reducers/app";
 import { useParams } from "react-router-dom";
 import { Button, Card } from "react-bootstrap";
-import AttachmentEnum from "../../../../constants/attachment-enum";
-import { clearAttachments, getAttachments, selectAttachments } from "../../../../store/reducers/attachments";
+import AttachmentEnum from "@constants/attachment-enum";
+import { clearAttachments, getAttachments, selectAttachments } from "@store/reducers/attachments";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { setIsInEdit } from "../../../../store/reducers/cases";
+import { setIsInEdit } from "@store/reducers/cases";
 
 type props = {
   showAddButton?: boolean;

@@ -1,4 +1,4 @@
-import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 
 /*
 Test to verify that the user is able to click the edit button

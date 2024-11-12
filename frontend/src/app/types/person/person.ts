@@ -1,5 +1,5 @@
-import { AgencyCode } from "../code-tables/agency-code";
-import { ReportedByCode } from "../code-tables/reported-by-code";
+import { AgencyCode } from "@apptypes/code-tables/agency-code";
+import { ReportedByCode } from "@apptypes/code-tables/reported-by-code";
 
 export interface Person {
   person_guid: string;

@@ -1,15 +1,15 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import { Button } from "react-bootstrap";
 import { SupplementalNotesInput } from "./supplemental-notes/supplemental-notes-input";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectCurrentOfficer } from "../../../../store/reducers/officer";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { selectCurrentOfficer } from "@store/reducers/officer";
 import { SupplementalNotesItem } from "./supplemental-notes/supplemental-notes-item";
 import { useParams } from "react-router-dom";
-import { selectSupplementalNote } from "../../../../store/reducers/case-selectors";
-import { openModal } from "../../../../store/reducers/app";
-import { DELETE_NOTE } from "../../../../types/modal/modal-types";
-import { setIsInEdit } from "../../../../store/reducers/cases";
-import { ComplaintParams } from "../details/complaint-details-edit";
+import { selectSupplementalNote } from "@store/reducers/case-selectors";
+import { openModal } from "@store/reducers/app";
+import { DELETE_NOTE } from "@apptypes/modal/modal-types";
+import { setIsInEdit } from "@store/reducers/cases";
+import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
 
 export const SupplementalNote: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();

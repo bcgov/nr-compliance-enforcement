@@ -1,6 +1,6 @@
 import { FC, useRef, useState } from "react";
-import { AnimalOutcomeV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { useAppSelector } from "../../../../../hooks/hooks";
+import { AnimalOutcomeV2 } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
+import { useAppSelector } from "@hooks/hooks";
 import {
   selectSpeciesCodeDropdown,
   selectSexDropdown,
@@ -8,25 +8,25 @@ import {
   selectThreatLevelDropdown,
   selectConflictHistoryDropdown,
   selectWildlifeComplaintOutcome,
-} from "../../../../../store/reducers/code-table";
-import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
+} from "@store/reducers/code-table";
+import { selectOfficerListByAgency } from "@store/reducers/officer";
 import { Button, Card, ListGroup } from "react-bootstrap";
-import { CompSelect } from "../../../../common/comp-select";
+import { CompSelect } from "@components/common/comp-select";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
-import Option from "../../../../../types/app/option";
-import { AnimalTagV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
-import { DrugUsedV2 } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
-import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
+import { ValidationDatePicker } from "@common/validation-date-picker";
+import Option from "@apptypes/app/option";
+import { AnimalTagV2 } from "@apptypes/app/complaints/outcomes/wildlife/animal-tag";
+import { DrugUsedV2 } from "@apptypes/app/complaints/outcomes/wildlife/drug-used";
+import { DrugAuthorization } from "@apptypes/app/complaints/outcomes/wildlife/drug-authorization";
 import { EarTag } from "./ear-tag";
 import { from } from "linq-to-typescript";
 import { v4 as uuidv4 } from "uuid";
 import { DrugUsed } from "./drug-used";
 import { DrugAuthorizedBy } from "./drug-authorized-by";
-import { REQUIRED } from "../../../../../constants/general";
-import { getNextOrderNumber } from "../hwcr-outcome-by-animal-v2";
-import { StandaloneConfirmCancelModal } from "../../../../modal/instances/standalone-cancel-confirm-modal";
-import { ToggleError } from "../../../../../common/toast";
+import { REQUIRED } from "@constants/general";
+import { getNextOrderNumber } from "@components/containers/complaints/outcomes/hwcr-outcome-by-animal-v2";
+import { StandaloneConfirmCancelModal } from "@components/modal/instances/standalone-cancel-confirm-modal";
+import { ToggleError } from "@common/toast";
 
 type props = {
   index: number;

@@ -1,17 +1,17 @@
 import { FC, useState, useContext, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import COMPLAINT_TYPES from "../../../types/app/complaint-types";
-import { SORT_TYPES } from "../../../constants/sort-direction";
-import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
-import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
-import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
-import LeafletMapWithMultiplePoints from "../../mapping/leaflet-map-with-multiple-points";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { SORT_TYPES } from "@constants/sort-direction";
+import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
+import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complaint-filters";
+import { ComplaintRequestPayload } from "@apptypes/complaints/complaint-filters/complaint-reauest-payload";
+import LeafletMapWithMultiplePoints from "@components/mapping/leaflet-map-with-multiple-points";
 import {
   getMappedComplaints,
   selectMappedComplaints,
   selectTotalUnmappedComplaints,
   setMappedComplaints,
-} from "../../../store/reducers/complaints";
+} from "@store/reducers/complaints";
 
 type Props = {
   type: string;

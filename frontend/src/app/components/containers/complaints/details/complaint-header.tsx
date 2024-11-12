@@ -1,16 +1,16 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
-import COMPLAINT_TYPES, { complaintTypeToName } from "../../../../types/app/complaint-types";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectComplaintHeader } from "../../../../store/reducers/complaints";
-import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "../../../../common/methods";
+import COMPLAINT_TYPES, { complaintTypeToName } from "@apptypes/app/complaint-types";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { selectComplaintHeader } from "@store/reducers/complaints";
+import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
 
 import { Badge, Button, Dropdown } from "react-bootstrap";
 
-import { isFeatureActive, openModal } from "../../../../store/reducers/app";
-import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "../../../../types/modal/modal-types";
-import { exportComplaint } from "../../../../store/reducers/documents-thunks";
-import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
+import { isFeatureActive, openModal } from "@store/reducers/app";
+import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "@apptypes/modal/modal-types";
+import { exportComplaint } from "@store/reducers/documents-thunks";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
 interface ComplaintHeaderProps {
   id: string;

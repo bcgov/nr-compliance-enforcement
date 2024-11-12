@@ -1,30 +1,30 @@
-import { AppState } from "../../types/app/app-state";
-import { AppThunk, RootState, store } from "../store";
-import { SsoToken } from "../../types/app/sso-token";
+import { AppState } from "@apptypes/app/app-state";
+import { AppThunk, RootState, store } from "@store/store";
+import { SsoToken } from "@apptypes/app/sso-token";
 import jwtDecode from "jwt-decode";
-import Profile from "../../types/app/profile";
+import Profile from "@apptypes/app/profile";
 import { UUID } from "crypto";
-import { Officer } from "../../types/person/person";
-import config from "../../../config";
-import { generateApiParameters, get, patch } from "../../common/api";
-import { AUTH_TOKEN, getUserAgency } from "../../service/user-service";
+import { Officer } from "@apptypes/person/person";
+import config from "@/config";
+import { generateApiParameters, get, patch } from "@common/api";
+import { AUTH_TOKEN, getUserAgency } from "@service/user-service";
 
-import { DropdownOption } from "../../types/app/drop-down-option";
+import { DropdownOption } from "@apptypes/app/drop-down-option";
 
-import { Configurations } from "../../constants/configurations";
-import { ConfigurationType } from "../../types/configurations/configuration";
+import { Configurations } from "@constants/configurations";
+import { ConfigurationType } from "@apptypes/configurations/configuration";
 import { from } from "linq-to-typescript";
-import { ConfigurationState } from "../../types/state/configuration-state";
-import { NotificationState } from "../../types/state/notification-state";
-import { ToggleError } from "../../common/toast";
-import { CodeTableVersionState } from "../../types/state/code-table-version-state";
+import { ConfigurationState } from "@apptypes/state/configuration-state";
+import { NotificationState } from "@apptypes/state/notification-state";
+import { ToggleError } from "@common/toast";
+import { CodeTableVersionState } from "@apptypes/state/code-table-version-state";
 import { fetchCaseCodeTables, fetchComplaintCodeTables } from "./code-table";
 import { Action, ThunkAction } from "@reduxjs/toolkit";
-import { ComsInviteResponse } from "../../types/app/coms-invite-response";
+import { ComsInviteResponse } from "@apptypes/app/coms-invite-response";
 import { AxiosError } from "axios";
-import { FEATURE_TYPES } from "../../constants/feature-flag-types";
-import { ActiveFilters } from "../../types/app/active-filters";
-import { FeatureFlagState } from "../../types/state/feature-flag-state";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { ActiveFilters } from "@apptypes/app/active-filters";
+import { FeatureFlagState } from "@apptypes/state/feature-flag-state";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",

@@ -1,11 +1,11 @@
 import { FC, useState } from "react";
-import { applyStatusClass, formatDateTime, truncateString } from "../../../../common/methods";
+import { applyStatusClass, formatDateTime, truncateString } from "@common/methods";
 import { Link } from "react-router-dom";
 import { ComplaintActionItems } from "./complaint-action-items";
-import { WildlifeComplaint } from "../../../../types/app/complaints/wildlife-complaint";
-import { useAppSelector } from "../../../../hooks/hooks";
-import { CODE_TABLE_TYPES } from "../../../../constants/code-table-types";
-import { selectCodeTable } from "../../../../store/reducers/code-table";
+import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
+import { useAppSelector } from "@hooks/hooks";
+import { CODE_TABLE_TYPES } from "@constants/code-table-types";
+import { selectCodeTable } from "@store/reducers/code-table";
 import { Badge } from "react-bootstrap";
 
 type Props = {

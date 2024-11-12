@@ -7,7 +7,7 @@ import ReactDOMServer from "react-dom/server";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 
 import Leaflet from "leaflet";
-import NonDismissibleAlert from "../common/non-dismissible-alert";
+import NonDismissibleAlert from "@components/common/non-dismissible-alert";
 import { MapGestureHandler } from "./map-gesture-handler";
 import { Card } from "react-bootstrap";
 

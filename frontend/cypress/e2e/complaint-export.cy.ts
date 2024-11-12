@@ -2,7 +2,7 @@
 //-- complaint export tests, verify that user can export complaint
 //-- to a pdf document
 
-import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 const fns = require("date-fns");
 //--
 describe("Export Complaint Functionality", () => {

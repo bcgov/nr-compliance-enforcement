@@ -1,13 +1,13 @@
 import { FC } from "react";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { isSidebarOpen, toggleSidebar } from "../../../store/reducers/app";
-import MenuItem from "../../../types/app/menu-item";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { isSidebarOpen, toggleSidebar } from "@store/reducers/app";
+import MenuItem from "@apptypes/app/menu-item";
 import { Link } from "react-router-dom";
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import { AgencyBanner } from "./agency-banner";
-import UserService from "../../../service/user-service";
-import Roles from "../../../types/app/roles";
+import UserService from "@service/user-service";
+import Roles from "@apptypes/app/roles";
 
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();

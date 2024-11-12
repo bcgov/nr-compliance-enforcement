@@ -1,4 +1,4 @@
-import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 
 describe("HWCR Outcome Notes", () => {
   //A function to try and reduce code duplication warnings

@@ -1,14 +1,14 @@
 import { FC, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import {
   getGeocodedComplaintCoordinates,
   selectComplaintDetails,
   selectGeocodedComplaintCoordinates,
-} from "../../../../store/reducers/complaints";
-import LeafletMapWithPoint from "../../../mapping/leaflet-map-with-point";
-import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
-import { isWithinBC } from "../../../../common/methods";
-import { Coordinates } from "../../../../types/app/coordinate-type";
+} from "@store/reducers/complaints";
+import LeafletMapWithPoint from "@components/mapping/leaflet-map-with-point";
+import { ComplaintDetails } from "@apptypes/complaints/details/complaint-details";
+import { isWithinBC } from "@common/methods";
+import { Coordinates } from "@apptypes/app/coordinate-type";
 
 type Props = {
   parentCoordinates?: { lat: number; lng: number };

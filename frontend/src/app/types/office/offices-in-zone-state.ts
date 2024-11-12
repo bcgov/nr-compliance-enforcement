@@ -1,4 +1,4 @@
-import { OfficeAssignment } from "../app/office/office-assignment";
+import { OfficeAssignment } from "@apptypes/app/office/office-assignment";
 import { Office } from "./office";
 
 export interface OfficeState {
