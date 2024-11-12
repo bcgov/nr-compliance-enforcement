@@ -1,0 +1,80 @@
+{{- if .Values.backup.enabled }}
+---
+kind: CronJob
+apiVersion: "batch/v1"
+metadata:
+  name: {{ include "backup.fullname" . }}
+  labels:
+    {{- include "backup.labels" . | nindent 4 }}
+spec:
+  schedule: {{.Values.backup.schedule | quote}}
+  concurrencyPolicy: "Replace"
+  successfulJobsHistoryLimit: {{.Values.backup.successHistoryLimit }}
+  failedJobsHistoryLimit: {{.Values.backup.failedHistoryLimit }}
+  jobTemplate:
+    metadata:
+      labels:
+        {{- include "backup.labels" . | nindent 8 }}
+    spec:
+      backoffLimit: {{.Values.backup.backoffLimit}}
+      template:
+        metadata:
+          labels:
+            {{- include "backup.labels" . | nindent 12 }}
+        spec:
+          containers:
+            - name: {{ include "backup.fullname" . }}
+              image: {{ .Values.backup.image.repository }}:{{ .Values.backup.image.tag }}
+              command:
+                - "/bin/bash"
+                - "-c"
+                - "/backup.sh -1"
+              volumeMounts:
+                - mountPath: {{ .Values.backup.persistence.mountPath }}
+                  name: "backup"
+              env:
+                - name: BACKUP_DIR
+                  value: {{ .Values.backup.persistence.mountPath | quote }}
+                - name: BACKUP_STRATEGY
+                  value: {{ .Values.backup.strategy | quote }}
+                - name: NUM_BACKUPS
+                  value: {{ .Values.backup.numBackups | quote }}
+                - name: DAILY_BACKUPS
+                  value: {{ .Values.backup.dailyBackups | quote }}
+                - name: WEEKLY_BACKUPS
+                  value: {{ .Values.backup.weeklyBackups | quote }}
+                - name: MONTHLY_BACKUPS
+                  value: {{ .Values.backup.monthlyBackups | quote }}
+                - name: DATABASE_SERVICE_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{.Release.Name}}-backend
+                      key: POSTGRESQL_HOST
+                - name: DEFAULT_PORT
+                  value: "5432"
+                - name: POSTGRESQL_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{.Release.Name}}-backend
+                      key: "POSTGRESQL_DATABASE"
+                - name: DATABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{.Release.Name}}-backend
+                      key: "POSTGRESQL_USER"
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{.Release.Name}}-backend
+                      key: "POSTGRESQL_PASSWORD"
+          volumes:
+            - name: backup
+              persistentVolumeClaim:
+                claimName: {{ include "backup.fullname" . }}
+          restartPolicy: "Never"
+          terminationGracePeriodSeconds: 30
+          activeDeadlineSeconds: 1600
+          dnsPolicy: "ClusterFirst"
+          serviceAccountName: {{ .Values.backup.serviceAccount }}
+
+{{- end }}
