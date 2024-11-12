@@ -43,7 +43,7 @@ import {
   fetchScheduleSectorTypes,
 } from "./code-table-thunks";
 import { TeamType } from "../../types/app/code-tables/team";
-import { CaseLocationType } from "@/app/types/app/code-tables/case-location";
+import { CaseLocationType } from "../../types/app/code-tables/case-location";
 
 const initialState: CodeTableState = {
   agency: [],

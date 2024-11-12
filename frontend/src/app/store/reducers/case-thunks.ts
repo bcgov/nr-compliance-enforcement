@@ -106,7 +106,7 @@ const addAssessment =
   (complaintIdentifier: string, assessment: Assessment): AppThunk =>
   async (dispatch, getState) => {
     const {
-      codeTables: { "assessment-type": assessmentType },
+      codeTables: { "assessment-type": assessmentType, "assessment-cat1-type": assessmentCat1Type },
       officers: { officers },
       app: { profile },
       cases: { caseId },
@@ -120,14 +120,16 @@ const addAssessment =
         assessmentDetails: {
           actionNotRequired: assessment.action_required === "No",
           actionCloseComplaint: assessment.close_complaint,
-          actions: assessment.assessment_type.map((item) => {
-            return {
-              date: assessment.date,
-              actor: assessment.officer?.value,
-              activeIndicator: true,
-              actionCode: item.value,
-            };
-          }),
+          actions: assessment.assessment_type
+            ? assessment.assessment_type.map((item) => {
+                return {
+                  date: assessment.date,
+                  actor: assessment.officer?.value,
+                  activeIndicator: true,
+                  actionCode: item.value,
+                };
+              })
+            : [],
           actionJustificationCode: assessment.justification?.value,
           actionLinkedComplaintIdentifier: assessment.linked_complaint?.value,
           contactedComplainant: assessment.contacted_complainant,
@@ -135,21 +137,23 @@ const addAssessment =
           locationType: assessment.location_type,
           conflictHistory: assessment.conflict_history,
           categoryLevel: assessment.category_level,
-          cat1Actions: assessment.assessment_cat1_type.map((item) => {
-            return {
-              date: assessment.date,
-              actor: assessment.officer?.value,
-              activeIndicator: true,
-              actionCode: item.value,
-            };
-          }),
+          cat1Actions: assessment.assessment_cat1_type
+            ? assessment.assessment_cat1_type.map((item) => {
+                return {
+                  date: assessment.date,
+                  actor: assessment.officer?.value,
+                  activeIndicator: true,
+                  actionCode: item.value,
+                };
+              })
+            : [],
         },
       },
     } as CreateAssessmentInput;
 
     let {
       createAssessmentInput: {
-        assessmentDetails: { actions },
+        assessmentDetails: { actions, cat1Actions },
       },
     } = createAssessmentInput;
     for (let item of assessmentType.filter((record) => record.isActive)) {
@@ -161,6 +165,22 @@ const addAssessment =
           .includes(item.assessmentType)
       ) {
         actions.push({
+          date: assessment.date,
+          actor: assessment.officer?.value,
+          activeIndicator: false,
+          actionCode: item.assessmentType,
+        } as AssessmentActionDto);
+      }
+    }
+    for (let item of assessmentCat1Type.filter((record) => record.isActive)) {
+      if (
+        !cat1Actions
+          .map((action) => {
+            return action.actionCode;
+          })
+          .includes(item.assessmentType)
+      ) {
+        cat1Actions.push({
           date: assessment.date,
           actor: assessment.officer?.value,
           activeIndicator: false,
@@ -190,7 +210,7 @@ const updateAssessment =
   (complaintIdentifier: string, caseIdentifier: string, assessment: Assessment): AppThunk =>
   async (dispatch, getState) => {
     const {
-      codeTables: { "assessment-type": assessmentType },
+      codeTables: { "assessment-type": assessmentType, "assessment-cat1-type": assessmentCat1Type },
       officers: { officers },
       app: { profile },
     } = getState();
@@ -205,33 +225,37 @@ const updateAssessment =
         assessmentDetails: {
           actionNotRequired: assessment.action_required === "No",
           actionJustificationCode: assessment.justification?.value,
-          actions: assessment.assessment_type.map((item) => {
-            return {
-              actor: assessment.officer?.value,
-              date: assessment.date,
-              actionCode: item.value,
-              activeIndicator: true,
-            };
-          }),
+          actions: assessment.assessment_type
+            ? assessment.assessment_type.map((item) => {
+                return {
+                  actor: assessment.officer?.value,
+                  date: assessment.date,
+                  actionCode: item.value,
+                  activeIndicator: true,
+                };
+              })
+            : [],
           contactedComplainant: assessment.contacted_complainant,
           attended: assessment.attended,
           locationType: assessment.location_type,
           conflictHistory: assessment.conflict_history,
           categoryLevel: assessment.category_level,
-          cat1Actions: assessment.assessment_cat1_type.map((item) => {
-            return {
-              date: assessment.date,
-              actor: assessment.officer?.value,
-              activeIndicator: true,
-              actionCode: item.value,
-            };
-          }),
+          cat1Actions: assessment.assessment_cat1_type
+            ? assessment.assessment_cat1_type.map((item) => {
+                return {
+                  actor: assessment.officer?.value,
+                  date: assessment.date,
+                  actionCode: item.value,
+                  activeIndicator: true,
+                };
+              })
+            : [],
         },
       },
     } as UpdateAssessmentInput;
     let {
       updateAssessmentInput: {
-        assessmentDetails: { actions },
+        assessmentDetails: { actions, cat1Actions },
       },
     } = updateAssessmentInput;
 
@@ -244,6 +268,23 @@ const updateAssessment =
           .includes(item.assessmentType)
       ) {
         actions.push({
+          actor: assessment.officer?.value,
+          date: assessment.date,
+          actionCode: item.assessmentType,
+          activeIndicator: false,
+        } as AssessmentActionDto);
+      }
+    }
+
+    for (let item of assessmentCat1Type.filter((record) => record.isActive)) {
+      if (
+        !cat1Actions
+          .map((action) => {
+            return action.actionCode;
+          })
+          .includes(item.assessmentType)
+      ) {
+        cat1Actions.push({
           actor: assessment.officer?.value,
           date: assessment.date,
           actionCode: item.assessmentType,
@@ -307,7 +348,13 @@ const parseAssessmentResponse = async (
       location_type: res.assessmentDetails.locationType,
       conflict_history: res.assessmentDetails.conflictHistory,
       category_level: res.assessmentDetails.categoryLevel,
-      assessment_cat1_type: res.assessmentDetails.cat1Actions,
+      assessment_cat1_type: res.assessmentDetails.cat1Actions
+        .filter((action) => {
+          return action.activeIndicator;
+        })
+        .map((action) => {
+          return { key: action.longDescription, value: action.actionCode };
+        }),
     } as unknown as Assessment;
     return updatedAssessmentData;
   } else {

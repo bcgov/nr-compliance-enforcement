@@ -217,15 +217,24 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       ? ({ label: assessmentState.location_type.key, value: assessmentState.location_type.value } as Option)
       : null;
 
-    const selectedConflictHistory = assessmentState.conflict_history
-      ? ({ label: assessmentState.conflict_history.key, value: assessmentState.conflict_history.value } as Option)
-      : null;
+    const selectedConflictHistory =
+      assessmentState.conflict_history && assessmentState.conflict_history.key !== ""
+        ? ({ label: assessmentState.conflict_history.key, value: assessmentState.conflict_history.value } as Option)
+        : null;
 
-    const selectedCategoryLevel = assessmentState.category_level
-      ? ({ label: assessmentState.category_level.key, value: assessmentState.category_level.value } as Option)
-      : null;
+    const selectedCategoryLevel =
+      assessmentState.category_level && assessmentState.category_level.key !== ""
+        ? ({ label: assessmentState.category_level.key, value: assessmentState.category_level.value } as Option)
+        : null;
 
     const assesmentDate = assessmentState?.date ? new Date(assessmentState.date) : new Date();
+
+    const selectedAssessmentCat1Types = assessmentState.assessment_cat1_type?.map((item) => {
+      return {
+        label: item.key,
+        value: item.value,
+      };
+    }) as Option[];
 
     setSelectedDate(assesmentDate);
     setSelectedOfficer(selectedOfficer);
@@ -238,6 +247,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     setSelectedLocation(selectedLocation);
     setSelectedConflictHistory(selectedConflictHistory);
     setSelectedCategoryLevel(selectedCategoryLevel);
+    setSelectedAssessmentCat1Types(selectedAssessmentCat1Types);
 
     resetValidationErrors();
     setEditable(!assessmentState.date);
@@ -333,7 +343,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
             }
           : undefined,
         assessment_cat1_type:
-          selectedActionRequired?.label === OptionLabels.OPTION_NO
+          selectedActionRequired?.label === OptionLabels.OPTION_NO || !isLargeCarnivore
             ? []
             : selectedAssessmentCat1Types?.map((item) => {
                 return {
@@ -387,14 +397,15 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       hasErrors = true;
     }
 
-    if (!selectedLocation && selectedActionRequired?.value === OptionLabels.OPTION_YES) {
+    if (!selectedLocation && selectedActionRequired?.value === OptionLabels.OPTION_YES && isLargeCarnivore) {
       setLocationErrorMessage("Required");
       hasErrors = true;
     }
 
     if (
       selectedActionRequired?.value === OptionLabels.OPTION_YES &&
-      (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0)
+      (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0) &&
+      (!selectedAssessmentCat1Types || selectedAssessmentCat1Types?.length <= 0)
     ) {
       setAssessmentRequiredErrorMessage("One or more assessment is required");
       hasErrors = true;
@@ -429,6 +440,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     selectedLinkedComplaintStatus,
     selectedAssessmentTypes,
     selectedLocation,
+    selectedAssessmentCat1Types,
   ]);
 
   // Validate on selected value change
@@ -840,24 +852,34 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                         {assesmentValue.label}
                       </li>
                     ))}
+                    {selectedAssessmentCat1Types?.map((assesmentValue) => (
+                      <li
+                        className="checkbox-label-padding"
+                        key={assesmentValue.label}
+                      >
+                        {assesmentValue.label}
+                      </li>
+                    ))}
                   </ul>
                 </dd>
               </div>
 
               {/* Location type - view state */}
-              <div
-                id="location-type-div"
-                className={assessmentDivClass}
-                style={{ marginTop: "0px" }}
-              >
-                <dt>Location type</dt>
-                <dd>
-                  <span>{selectedLocation?.label}</span>
-                </dd>
-              </div>
+              {isLargeCarnivore && selectedLocation && (
+                <div
+                  id="location-type-div"
+                  className={assessmentDivClass}
+                  style={{ marginTop: "0px" }}
+                >
+                  <dt>Location type</dt>
+                  <dd>
+                    <span>{selectedLocation?.label}</span>
+                  </dd>
+                </div>
+              )}
 
               {/* Conflict history - view state */}
-              {selectedConflictHistory && (
+              {isLargeCarnivore && selectedConflictHistory && (
                 <div
                   id="conflict history-div"
                   className={assessmentDivClass}
@@ -871,7 +893,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
               )}
 
               {/* Category level - view state */}
-              {selectedCategoryLevel && (
+              {isLargeCarnivore && selectedCategoryLevel && (
                 <div
                   id="conflict history-div"
                   className={assessmentDivClass}

@@ -191,8 +191,6 @@ export class CaseFileService {
         }`,
         variables: model,
       });
-      console.log(model);
-      console.log(result);
       returnValue = await this.handleAPIResponse(result);
     }
 
