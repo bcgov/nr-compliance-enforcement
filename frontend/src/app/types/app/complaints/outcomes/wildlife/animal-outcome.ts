@@ -2,7 +2,7 @@ import { AnimalTag, AnimalTagV2 } from "./animal-tag";
 import { DrugAuthorization } from "./drug-authorization";
 import { DrugUsed, DrugUsedV2 } from "./drug-used";
 
-import Option from "../../../../../types/app/option";
+import Option from "@apptypes/app/option";
 
 export interface AnimalOutcome {
   id: string | undefined;

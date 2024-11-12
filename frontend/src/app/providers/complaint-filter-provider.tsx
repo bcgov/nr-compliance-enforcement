@@ -1,6 +1,6 @@
 import React, { FC, createContext, useReducer } from "react";
-import complaintFilterReducer from "../store/reducers/complaint-filters";
-import { ComplaintFilters } from "../types/complaints/complaint-filters/complaint-filters";
+import complaintFilterReducer from "@store/reducers/complaint-filters";
+import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complaint-filters";
 
 interface ComplaintFilterContextType {
   state: ComplaintFilters;

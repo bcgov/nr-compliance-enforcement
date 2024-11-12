@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
-import { AnimalOutcomeV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { useAppSelector } from "../../../../../hooks/hooks";
+import { AnimalOutcomeV2 } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
+import { useAppSelector } from "@hooks/hooks";
 import {
   selectAgeDropdown,
   selectConflictHistoryDropdown,
@@ -9,11 +9,11 @@ import {
   selectSpeciesCodeDropdown,
   selectThreatLevelDropdown,
   selectWildlifeComplaintOutcome,
-} from "../../../../../store/reducers/code-table";
+} from "@store/reducers/code-table";
 import { from } from "linq-to-typescript";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { formatDate, pad } from "../../../../../common/methods";
-import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
+import { formatDate, pad } from "@common/methods";
+import { selectOfficerListByAgency } from "@store/reducers/officer";
 import { DrugItem } from "./drug-item";
 import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
 

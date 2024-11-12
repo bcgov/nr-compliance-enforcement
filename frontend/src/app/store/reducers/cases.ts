@@ -1,5 +1,5 @@
 import { createAction, createSlice } from "@reduxjs/toolkit";
-import { CasesState } from "../../types/state/cases-state";
+import { CasesState } from "@apptypes/state/cases-state";
 
 const initialState: CasesState = {
   caseId: undefined,

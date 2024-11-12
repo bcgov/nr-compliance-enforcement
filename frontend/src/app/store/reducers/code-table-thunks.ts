@@ -1,15 +1,15 @@
 import { from } from "linq-to-typescript";
-import config from "../../../config";
-import { generateApiParameters, get } from "../../common/api";
-import { CODE_TABLE_TYPES } from "../../constants/code-table-types";
-import { Discharge } from "../../types/app/code-tables/discharge";
-import { NonCompliance } from "../../types/app/code-tables/non-compliance";
-import { Schedule } from "../../types/app/code-tables/schedule";
-import { Sector } from "../../types/app/code-tables/sector";
-import { AppThunk } from "../store";
+import config from "@/config";
+import { generateApiParameters, get } from "@common/api";
+import { CODE_TABLE_TYPES } from "@constants/code-table-types";
+import { Discharge } from "@apptypes/app/code-tables/discharge";
+import { NonCompliance } from "@apptypes/app/code-tables/non-compliance";
+import { Schedule } from "@apptypes/app/code-tables/schedule";
+import { Sector } from "@apptypes/app/code-tables/sector";
+import { AppThunk } from "@store/store";
 import { setCodeTable } from "./code-table";
-import { DecisionType } from "../../types/app/code-tables/decision-type";
-import { ScheduleSectorXref } from "../../types/app/code-tables/schedule-sector-xref";
+import { DecisionType } from "@apptypes/app/code-tables/decision-type";
+import { ScheduleSectorXref } from "@apptypes/app/code-tables/schedule-sector-xref";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);

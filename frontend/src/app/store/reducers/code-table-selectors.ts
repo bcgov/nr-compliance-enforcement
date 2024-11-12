@@ -1,6 +1,6 @@
-import { RootState } from "../store";
-import Option from "../../types/app/option";
-import { ScheduleSectorXref } from "../../types/app/code-tables/schedule-sector-xref";
+import { RootState } from "@store/store";
+import Option from "@apptypes/app/option";
+import { ScheduleSectorXref } from "@apptypes/app/code-tables/schedule-sector-xref";
 
 export const selectDischargeDropdown = (state: RootState): Array<Option> => {
   const {

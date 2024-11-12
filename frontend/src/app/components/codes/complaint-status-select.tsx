@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Select from "react-select";
-import { useAppSelector } from "../../hooks/hooks";
-import { selectComplaintStatusCodeDropdown } from "../../store/reducers/code-table";
+import { useAppSelector } from "@hooks/hooks";
+import { selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
 
 interface Option {
   value: string | undefined;

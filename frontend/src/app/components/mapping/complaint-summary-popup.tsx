@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { selectComplaintDetails, selectComplaintHeader } from "../../store/reducers/complaints";
-import { useAppSelector } from "../../hooks/hooks";
-import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
-import { applyStatusClass, formatDate } from "../../common/methods";
+import { selectComplaintDetails, selectComplaintHeader } from "@store/reducers/complaints";
+import { useAppSelector } from "@hooks/hooks";
+import { ComplaintDetails } from "@apptypes/complaints/details/complaint-details";
+import { applyStatusClass, formatDate } from "@common/methods";
 import { Badge, Button } from "react-bootstrap";
 import { Popup } from "react-leaflet";
 
@@ -39,7 +39,6 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             </Badge>
           </div>
           <div className="comp-map-popup-header-meta">
-
             {complaintType === "HWCR" && (
               <div>
                 <span className="comp-box-species-type">{species}</span> • <span>{natureOfComplaint}</span>
