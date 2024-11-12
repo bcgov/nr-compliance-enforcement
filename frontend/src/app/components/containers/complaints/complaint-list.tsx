@@ -11,7 +11,7 @@ import { Table } from "react-bootstrap";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
 import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complaint-filters";
-import { ComplaintRequestPayload } from "@apptypes/complaints/complaint-filters/complaint-reauest-payload";
+import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filters/complaint-request-payload";
 import { WildlifeComplaintListHeader } from "./headers/wildlife-complaint-list-header";
 import { GeneralComplaintListHeader } from "./headers/general-complaint-list-header";
 import { AllegationComplaintListHeader } from "./headers/allegation-complaint-list-header";

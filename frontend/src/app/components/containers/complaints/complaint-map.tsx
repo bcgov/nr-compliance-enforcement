@@ -4,7 +4,7 @@ import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
 import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complaint-filters";
-import { ComplaintRequestPayload } from "@apptypes/complaints/complaint-filters/complaint-reauest-payload";
+import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filters/complaint-request-payload";
 import LeafletMapWithMultiplePoints from "@components/mapping/leaflet-map-with-multiple-points";
 import {
   getMappedComplaints,
