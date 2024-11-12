@@ -14,7 +14,7 @@ import {
 } from "../../../../../store/reducers/code-table";
 import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { AnimalTagV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
-import { DrugUsed } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
+import type { DrugUsed as DrugUsedData } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
 import Option from "../../../../../types/app/option";
 import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
 import { from } from "linq-to-typescript";
@@ -88,7 +88,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   //-- input handlers
   const updateModel = (
     property: string,
-    value: string | Date | Array<AnimalTagV2 | DrugUsed> | DrugAuthorization | null | undefined,
+    value: string | Date | Array<AnimalTagV2 | DrugUsedData> | DrugAuthorization | null | undefined,
   ) => {
     const model = { ...data, [property]: value };
     applyData(model);
@@ -253,7 +253,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
 
   const addDrugUsed = () => {
     const { drugs } = data;
-    const nextOrder = getNextOrderNumber<DrugUsed>(drugs);
+    const nextOrder = getNextOrderNumber<DrugUsedData>(drugs);
 
     let id = uuidv4().toString();
 
@@ -301,7 +301,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
     drugRefs.current = update.length === 0 ? [] : drugRefs.current.filter((item) => item.id !== null && item.id === id);
   };
 
-  const updateDrugUsed = (drug: DrugUsed) => {
+  const updateDrugUsed = (drug: DrugUsedData) => {
     const { drugs: source } = data;
 
     const items = source.filter(({ id }) => id !== drug.id);

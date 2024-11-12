@@ -16,12 +16,12 @@ import { BsExclamationCircleFill } from "react-icons/bs";
 import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
 import Option from "../../../../../types/app/option";
 import { AnimalTagV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
-import { DrugUsed } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
 import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
 import { EarTag } from "./ear-tag";
 import { from } from "linq-to-typescript";
 import { v4 as uuidv4 } from "uuid";
 import { DrugUsed } from "./drug-used";
+import type { DrugUsed as DrugUsedData } from "@/app/types/app/complaints/outcomes/wildlife/drug-used";
 import { DrugAuthorizedBy } from "./drug-authorized-by";
 import { REQUIRED } from "../../../../../constants/general";
 import { getNextOrderNumber } from "../hwcr-outcome-by-animal-v2";
@@ -113,7 +113,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   //-- input handlers
   const updateModel = (
     property: string,
-    value: string | Date | Array<AnimalTagV2 | DrugUsed> | DrugAuthorization | null | undefined,
+    value: string | Date | Array<AnimalTagV2 | DrugUsedData> | DrugAuthorization | null | undefined,
   ) => {
     const model = { ...data, [property]: value };
     applyData(model);
@@ -224,7 +224,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
   const addDrugUsed = () => {
     const { drugs } = data;
-    const nextOrder = getNextOrderNumber<DrugUsed>(drugs);
+    const nextOrder = getNextOrderNumber<DrugUsedData>(drugs);
 
     let id = uuidv4().toString();
 
@@ -272,7 +272,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
     drugRefs.current = update.length === 0 ? [] : drugRefs.current.filter((item) => item.id !== null && item.id === id);
   };
 
-  const updateDrugUsed = (drug: DrugUsed) => {
+  const updateDrugUsed = (drug: DrugUsedData) => {
     const { drugs: source } = data;
 
     const items = source.filter(({ id }) => id !== drug.id);
