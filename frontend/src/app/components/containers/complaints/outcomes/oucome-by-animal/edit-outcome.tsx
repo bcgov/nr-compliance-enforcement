@@ -27,6 +27,7 @@ import { REQUIRED } from "../../../../../constants/general";
 import { getNextOrderNumber } from "../hwcr-outcome-by-animal-v2";
 import { StandaloneConfirmCancelModal } from "../../../../modal/instances/standalone-cancel-confirm-modal";
 import { ToggleError } from "../../../../../common/toast";
+import { getValue } from "./outcome-common";
 
 type props = {
   index: number;
@@ -55,6 +56,8 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
+  const optionDictionaries = { speciesList, sexes, ages, threatLevels, conflictHistories, outcomes, officers };
+
   const [showModal, setShowModal] = useState(false);
 
   //-- new input data
@@ -70,45 +73,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const [speciesError, setSpeciesError] = useState("");
   const [officerError, setOfficerError] = useState("");
   const [outcomeDateError, setOutcomeDateError] = useState("");
-
-  const getValue = (property: string): Option | undefined => {
-    switch (property) {
-      case "species": {
-        const { species } = data;
-        return speciesList.find((item) => item.value === species);
-      }
-      case "sex": {
-        const { sex } = data;
-        return sexes.find((item) => item.value === sex);
-      }
-
-      case "age": {
-        const { age } = data;
-        return ages.find((item) => item.value === age);
-      }
-
-      case "threatLevel": {
-        const { threatLevel } = data;
-        return threatLevels.find((item) => item.value === threatLevel);
-      }
-
-      case "conflictHistory": {
-        const { conflictHistory } = data;
-        return conflictHistories.find((item) => item.value === conflictHistory);
-      }
-
-      case "officer":
-      case "assigned": {
-        const { officer } = data;
-        return officers.find((item) => item.value === officer);
-      }
-
-      case "outcome": {
-        const { outcome } = data;
-        return outcomes.find((item) => item.value === outcome);
-      }
-    }
-  };
 
   //-- input handlers
   const updateModel = (
@@ -414,7 +378,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   enableValidation={true}
                   placeholder="Select"
                   onChange={handleSpeciesChange}
-                  defaultOption={getValue("species")}
+                  defaultOption={getValue("species", data, optionDictionaries)}
                   errorMessage={speciesError}
                 />
               </div>
@@ -430,7 +394,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   onChange={(evt) => {
                     updateModel("sex", evt?.value);
                   }}
-                  defaultOption={getValue("sex")}
+                  defaultOption={getValue("sex", data, optionDictionaries)}
                 />
               </div>
               <div className="comp-details-form-row">
@@ -445,7 +409,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   onChange={(evt) => {
                     updateModel("age", evt?.value);
                   }}
-                  defaultOption={getValue("age")}
+                  defaultOption={getValue("age", data, optionDictionaries)}
                 />
               </div>
               <div className="comp-details-form-row">
@@ -460,7 +424,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   onChange={(evt) => {
                     updateModel("threatLevel", evt?.value);
                   }}
-                  defaultOption={getValue("threatLevel")}
+                  defaultOption={getValue("threatLevel", data, optionDictionaries)}
                 />
               </div>
               <div className="comp-details-form-row">
@@ -475,7 +439,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   onChange={(evt) => {
                     updateModel("conflictHistory", evt?.value);
                   }}
-                  defaultOption={getValue("conflictHistory")}
+                  defaultOption={getValue("conflictHistory", data, optionDictionaries)}
                 />
               </div>
             </fieldset>
@@ -527,7 +491,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     onChange={(evt) => {
                       updateModel("outcome", evt?.value);
                     }}
-                    defaultOption={getValue("outcome")}
+                    defaultOption={getValue("outcome", data, optionDictionaries)}
                   />
                 </div>
               </div>
@@ -551,7 +515,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   onChange={(evt) => {
                     handleOfficerChange(evt);
                   }}
-                  defaultOption={getValue("officer")}
+                  defaultOption={getValue("officer", data, optionDictionaries)}
                   errorMessage={officerError}
                 />
               </div>

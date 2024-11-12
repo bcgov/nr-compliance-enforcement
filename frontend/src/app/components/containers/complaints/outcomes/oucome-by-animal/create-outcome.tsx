@@ -26,6 +26,7 @@ import { REQUIRED } from "../../../../../constants/general";
 import { v4 as uuidv4 } from "uuid";
 import { ToggleError } from "../../../../../common/toast";
 import { getNextOrderNumber } from "../hwcr-outcome-by-animal-v2";
+import { getValue } from "./outcome-common";
 
 type props = {
   index: number;
@@ -70,6 +71,8 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
+  const optionDictionaries = { speciesList, sexes, ages, threatLevels, conflictHistories, outcomes, officers };
+
   //-- error handling
   const [speciesError, setSpeciesError] = useState("");
   const [officerError, setOfficerError] = useState("");
@@ -92,45 +95,6 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   ) => {
     const model = { ...data, [property]: value };
     applyData(model);
-  };
-
-  const getValue = (property: string): Option | undefined => {
-    switch (property) {
-      case "species": {
-        const { species } = data;
-        return speciesList.find((item) => item.value === species);
-      }
-      case "sex": {
-        const { sex } = data;
-        return sexes.find((item) => item.value === sex);
-      }
-
-      case "age": {
-        const { age } = data;
-        return ages.find((item) => item.value === age);
-      }
-
-      case "threatLevel": {
-        const { threatLevel } = data;
-        return threatLevels.find((item) => item.value === threatLevel);
-      }
-
-      case "conflictHistory": {
-        const { conflictHistory } = data;
-        return conflictHistories.find((item) => item.value === conflictHistory);
-      }
-
-      case "officer":
-      case "assigned": {
-        const { officer } = data;
-        return officers.find((item) => item.value === officer);
-      }
-
-      case "outcome": {
-        const { outcome } = data;
-        return outcomes.find((item) => item.value === outcome);
-      }
-    }
   };
 
   const handleSpeciesChange = (input: Option | null) => {
@@ -421,7 +385,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                   enableValidation={true}
                   placeholder="Select"
                   onChange={handleSpeciesChange}
-                  defaultOption={getValue("species")}
+                  defaultOption={getValue("species", data, optionDictionaries)}
                   errorMessage={speciesError}
                 />
               </div>
@@ -508,7 +472,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                   enableValidation={true}
                   placeholder="Select"
                   onChange={handleSpeciesChange}
-                  defaultOption={getValue("species")}
+                  defaultOption={getValue("species", data, optionDictionaries)}
                   errorMessage={speciesError}
                 />
               </Col>
@@ -682,7 +646,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                     onChange={(evt) => {
                       handleOfficerChange(evt);
                     }}
-                    value={getValue("officer")}
+                    value={getValue("officer", data, optionDictionaries)}
                     errorMessage={officerError}
                   />
                 </div>
