@@ -86,6 +86,7 @@ jobs:
         --set nats.config.cluster.enabled=true
         --set bitnami-pg.backup.cronjob.storage.size=512Mi
         --set bitnami-pg.primary.persistence.size=512Mi
+        --set backup.enabled=true
 
   promote:
     name: Promote Images
