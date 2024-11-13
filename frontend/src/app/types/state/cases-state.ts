@@ -4,7 +4,7 @@ import { Prevention } from "@apptypes/outcomes/prevention";
 import { SupplementalNote } from "@apptypes/outcomes/supplemental-note";
 import { CaseAction } from "@apptypes/outcomes/case-action";
 import { AnimalTagV2 } from "@apptypes/app/complaints/outcomes/wildlife/animal-tag";
-import { DrugUsedV2 } from "@apptypes/app/complaints/outcomes/wildlife/drug-used";
+import { DrugUsed } from "@apptypes/app/complaints/outcomes/wildlife/drug-used";
 import { Decision } from "@apptypes/app/case-files/ceeb/decision/decision";
 import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
 
@@ -55,7 +55,7 @@ export interface AnimalOutcomeSubject {
   conflictHistory?: string;
   outcome?: string;
   tags?: Array<AnimalTagV2>;
-  drugs?: Array<DrugUsedV2>;
+  drugs?: Array<DrugUsed>;
   actions?: Array<CaseAction>;
   order: number;
 }

@@ -34,12 +34,12 @@ import { CreateEquipmentInput } from "@apptypes/app/case-files/equipment-inputs/
 import { UpdateEquipmentInput } from "@apptypes/app/case-files/equipment-inputs/update-equipment-input";
 import { getComplaintStatusById, clearComplaint } from "./complaints";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
-import { AnimalOutcomeV2 } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
+import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
 import { CreateAnimalOutcomeInput } from "@apptypes/app/case-files/animal-outcome/create-animal-outcome-input";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
 import { from } from "linq-to-typescript";
 import { EarTagInput } from "@apptypes/app/case-files/animal-outcome/ear-tag-input";
-import { DrugUsedInputV2 } from "@apptypes/app/case-files/animal-outcome/drug-used-input";
+import { DrugUsedInputV3 } from "@apptypes/app/case-files/animal-outcome/drug-used-input";
 import { AnimalOutcomeActionInput } from "@apptypes/app/case-files/animal-outcome/animal-outcome-action-input";
 import { DeleteAnimalOutcomeInput } from "@apptypes/app/case-files/animal-outcome/delete-animal-outcome-input";
 import { UpdateAnimalOutcomeInput } from "@apptypes/app/case-files/animal-outcome/update-animal-outcome-input";
@@ -789,7 +789,7 @@ export const upsertEquipment =
 export const createAnimalOutcome =
   (
     id: string,
-    animalOutcome: AnimalOutcomeV2,
+    animalOutcome: AnimalOutcome,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
@@ -820,16 +820,14 @@ export const createAnimalOutcome =
     });
 
     const drugsUsed = drugs.map((item) => {
-      const { vial, drug, amountUsed, amountDiscarded, injectionMethod, discardMethod, reactions, remainingUse } = item;
-      const record: DrugUsedInputV2 = {
+      const { vial, drug, amountUsed, injectionMethod, remainingUse, additionalComments } = item;
+      const record: DrugUsedInputV3 = {
         vial,
         drug,
         amountUsed,
-        amountDiscarded,
         injectionMethod,
-        discardMethod,
-        reactions,
         remainingUse,
+        additionalComments,
       };
 
       return record;
@@ -871,7 +869,7 @@ export const createAnimalOutcome =
 export const updateAnimalOutcome =
   (
     id: UUID,
-    animalOutcome: AnimalOutcomeV2,
+    animalOutcome: AnimalOutcome,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
@@ -909,27 +907,15 @@ export const updateAnimalOutcome =
 
     //-- convert eartags and drugs to input types
     const drugsUsed = drugs.map((item) => {
-      const {
+      const { id: drugId, vial, drug, amountUsed, injectionMethod, additionalComments, remainingUse } = item;
+      const record: DrugUsedInputV3 = {
         id: drugId,
         vial,
         drug,
         amountUsed,
-        amountDiscarded,
         injectionMethod,
-        discardMethod,
-        reactions,
         remainingUse,
-      } = item;
-      const record: DrugUsedInputV2 = {
-        id: drugId,
-        vial,
-        drug,
-        amountUsed,
-        amountDiscarded,
-        injectionMethod,
-        discardMethod,
-        reactions,
-        remainingUse,
+        additionalComments,
       };
 
       return record;

@@ -1,6 +1,6 @@
 import { from } from "linq-to-typescript";
 import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
-import { AnimalOutcomeV2 } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
+import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
 import { Assessment } from "@apptypes/outcomes/assessment";
 import { Prevention } from "@apptypes/outcomes/prevention";
 import { SupplementalNote } from "@apptypes/outcomes/supplemental-note";
@@ -82,7 +82,7 @@ export const selectNotesOfficer = (state: RootState) => {
   return currentOfficer;
 };
 
-export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> => {
+export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcome> => {
   const {
     cases: { subject: subjects },
   } = state;
@@ -111,7 +111,7 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
       const _tags = tags ?? [];
       const _drugs = drugs ?? [];
 
-      let record: AnimalOutcomeV2 = {
+      let record: AnimalOutcome = {
         id,
         species,
         sex,

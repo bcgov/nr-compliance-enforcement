@@ -11,12 +11,10 @@ type props = {
   vial: string;
   drug: string;
   amountUsed: string;
-  amountDiscarded: string;
 
   injectionMethod: string;
-  discardMethod: string;
+  additionalComments: string;
 
-  reactions: string;
   remainingUse: string | null;
 
   officer?: string;
@@ -27,10 +25,8 @@ export const DrugItem: FC<props> = ({
   vial,
   drug,
   amountUsed,
-  amountDiscarded,
   injectionMethod,
-  discardMethod,
-  reactions,
+  additionalComments,
   remainingUse,
   officer,
   date,
@@ -110,33 +106,14 @@ export const DrugItem: FC<props> = ({
           <dd>{remaining}</dd>
         </Col>
 
-        {remainingUse === "DISC" && (
-          <>
-            <Col
-              xs={12}
-              md={6}
-            >
-              <dt>Amount discarded</dt>
-              <dd>
-                {amountDiscarded} {amountDiscarded ? "ml" : ""}
-              </dd>
-            </Col>
-            <Col
-              xs={12}
-              md={6}
-            >
-              <dt>Discard method</dt>
-              <dd>{discardMethod}</dd>
-            </Col>
-          </>
-        )}
         <Col
           xs={12}
           md={6}
         >
-          <dt>Adverse Reactions</dt>
-          <dd>{reactions ? <>{reactions}</> : "None"}</dd>
+          <dt>Additional comments</dt>
+          <dd>{additionalComments ? <>{additionalComments}</> : "None"}</dd>
         </Col>
+
         <Col
           xs={12}
           md={6}
