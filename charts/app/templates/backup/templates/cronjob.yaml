@@ -71,7 +71,7 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: {{.Release.Name}}-backend
-                      key: "OBJECTSTORE_BUCKET"
+                      key: "OBJECTSTORE_ACCESS_KEY"
                 - name: S3_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -83,7 +83,10 @@ spec:
                       name: {{.Release.Name}}-backend
                       key: "OBJECTSTORE_HTTPS_URL"
                 - name: S3_BUCKET
-                  value: "backups"
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{.Release.Name}}-backend
+                      key: "OBJECTSTORE_BUCKET"
           volumes:
             - name: backup
               persistentVolumeClaim:
