@@ -310,9 +310,9 @@ backup:
   schedule: "0 0 * * *" # cron job schedule
   strategy: "rolling" # daily or rolling
   numBackups: 5 # The number of backup files to be retained.  Used for the `daily` backup strategy.  Ignored when using the `rolling` backup strategy.
-  dailyBackups: 7 # The number of daily backup files to be retained.  Used for the `rolling` backup strategy.
-  weeklyBackups: 4 # The number of weekly backup files to be retained.  Used for the `rolling` backup strategy.
-  monthlyBackups: 1 # The number of monthly backup files to be retained.  Used for the `rolling` backup strategy.
+  dailyBackups: 14 # The number of daily backup files to be retained.  Used for the `rolling` backup strategy.
+  weeklyBackups: 8 # The number of weekly backup files to be retained.  Used for the `rolling` backup strategy.
+  monthlyBackups: 3 # The number of monthly backup files to be retained.  Used for the `rolling` backup strategy.
   serviceAccount: default # "Name of the Service Account To Execute the Job As."
   successHistoryLimit: 5 # "The number of successful jobs that will be retained"
   failedHistoryLimit: 2 # "The number of failed jobs that will be retained"
