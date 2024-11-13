@@ -86,7 +86,7 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: {{.Release.Name}}-backend
-                      key: "OBJECTSTORE_BUCKET"
+                      key: "OBJECTSTORE_BACKUP_DIRECTORY"
           volumes:
             - name: backup
               persistentVolumeClaim:
