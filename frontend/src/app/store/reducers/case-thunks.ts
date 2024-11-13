@@ -34,12 +34,12 @@ import { CreateEquipmentInput } from "../../types/app/case-files/equipment-input
 import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
 import { getComplaintStatusById, clearComplaint } from "./complaints";
 import COMPLAINT_TYPES from "../../types/app/complaint-types";
-import { AnimalOutcomeV2 } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
+import { AnimalOutcome } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { CreateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/create-animal-outcome-input";
 import { CASE_ACTION_CODE } from "../../constants/case_actions";
 import { from } from "linq-to-typescript";
 import { EarTagInput } from "../../types/app/case-files/animal-outcome/ear-tag-input";
-import { DrugUsedInputV2 } from "../../types/app/case-files/animal-outcome/drug-used-input";
+import { DrugUsedInputV3 } from "../../types/app/case-files/animal-outcome/drug-used-input";
 import { AnimalOutcomeActionInput } from "../../types/app/case-files/animal-outcome/animal-outcome-action-input";
 import { DeleteAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/delete-animal-outcome-input";
 import { UpdateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/update-animal-outcome-input";
@@ -789,7 +789,7 @@ export const upsertEquipment =
 export const createAnimalOutcome =
   (
     id: string,
-    animalOutcome: AnimalOutcomeV2,
+    animalOutcome: AnimalOutcome,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
@@ -820,16 +820,14 @@ export const createAnimalOutcome =
     });
 
     const drugsUsed = drugs.map((item) => {
-      const { vial, drug, amountUsed, amountDiscarded, injectionMethod, discardMethod, reactions, remainingUse } = item;
-      const record: DrugUsedInputV2 = {
+      const { vial, drug, amountUsed, injectionMethod, remainingUse, additionalComments } = item;
+      const record: DrugUsedInputV3 = {
         vial,
         drug,
         amountUsed,
-        amountDiscarded,
         injectionMethod,
-        discardMethod,
-        reactions,
         remainingUse,
+        additionalComments,
       };
 
       return record;
@@ -871,7 +869,7 @@ export const createAnimalOutcome =
 export const updateAnimalOutcome =
   (
     id: UUID,
-    animalOutcome: AnimalOutcomeV2,
+    animalOutcome: AnimalOutcome,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
@@ -914,22 +912,18 @@ export const updateAnimalOutcome =
         vial,
         drug,
         amountUsed,
-        amountDiscarded,
         injectionMethod,
-        discardMethod,
-        reactions,
+        additionalComments,
         remainingUse,
       } = item;
-      const record: DrugUsedInputV2 = {
+      const record: DrugUsedInputV3 = {
         id: drugId,
         vial,
         drug,
         amountUsed,
-        amountDiscarded,
         injectionMethod,
-        discardMethod,
-        reactions,
         remainingUse,
+        additionalComments,
       };
 
       return record;

@@ -16,6 +16,7 @@ import { AddComplaintMethodReceivedCodes } from "./migrations/migration-16";
 import { AddLeadAgencyCode } from "./migrations/migration-17";
 import { AddScheduleSectorTypes } from "./migrations/migration-18";
 import { AddComplaintSearchParameters } from "./migrations/migration-19";
+import { DrugAdministeredChanges } from "./migrations/migration-20";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -46,6 +47,7 @@ migration = {
   ...AddLeadAgencyCode,
   ...AddScheduleSectorTypes,
   ...AddComplaintSearchParameters,
+  ...DrugAdministeredChanges,
 };
 
 export default migration;
