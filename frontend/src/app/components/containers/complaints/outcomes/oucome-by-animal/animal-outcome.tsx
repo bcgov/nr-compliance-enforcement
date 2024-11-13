@@ -169,7 +169,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
         >
           {data?.identifyingFeatures && (
             <Col xs={12}>
-              <dt>Identifying Features</dt>
+              <dt>Identifying features</dt>
               <dd>{animalIdentifyingFeatures}</dd>
             </Col>
           )}

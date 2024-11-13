@@ -25,6 +25,7 @@ export const caseFileQueryFields: string = `
       shortDescription
       longDescription
       activeIndicator
+      isLegacy
     }
     contactedComplainant
     attended

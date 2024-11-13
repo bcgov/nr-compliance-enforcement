@@ -66,7 +66,6 @@ export const getCaseFile =
   async (dispatch) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     const response = await get<CaseFileDto>(dispatch, parameters);
-    console.log(response);
 
     dispatch(setCaseFile(response));
   };
@@ -190,9 +189,7 @@ const addAssessment =
     }
 
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createAssessment`, createAssessmentInput);
-    console.log(createAssessmentInput);
     await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      console.log(res);
       const updatedAssessmentData = await parseAssessmentResponse(res, officers);
       if (res) {
         dispatch(setAssessment({ assessment: updatedAssessmentData }));
@@ -336,13 +333,8 @@ const parseAssessmentResponse = async (
         value: res.assessmentDetails.actionJustificationCode,
         key: res.assessmentDetails.actionJustificationLongDescription,
       },
-      assessment_type: res.assessmentDetails.actions
-        .filter((action) => {
-          return action.activeIndicator;
-        })
-        .map((action) => {
-          return { key: action.longDescription, value: action.actionCode };
-        }),
+      assessment_type: [],
+      assessment_type_legacy: [],
       contacted_complainant: res.assessmentDetails.contactedComplainant,
       attended: res.assessmentDetails.attended,
       location_type: res.assessmentDetails.locationType,
@@ -356,6 +348,16 @@ const parseAssessmentResponse = async (
           return { key: action.longDescription, value: action.actionCode };
         }),
     } as unknown as Assessment;
+    for (let action of res.assessmentDetails.actions) {
+      if (action.activeIndicator) {
+        if (action.isLegacy && updatedAssessmentData.assessment_type_legacy) {
+          updatedAssessmentData.assessment_type_legacy.push({ key: action.longDescription, value: action.actionCode });
+        } else {
+          updatedAssessmentData.assessment_type.push({ key: action.longDescription, value: action.actionCode });
+        }
+      }
+    }
+
     return updatedAssessmentData;
   } else {
     return null;
@@ -891,7 +893,7 @@ export const createAnimalOutcome =
       drugs,
       drugAuthorization,
     } = animalOutcome;
-    console.log(animalOutcome);
+
     let actions: Array<AnimalOutcomeActionInput> = [];
 
     //-- add an action if there is an outcome with officer

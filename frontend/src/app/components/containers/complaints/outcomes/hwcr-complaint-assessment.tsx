@@ -59,12 +59,13 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
   const [editable, setEditable] = useState<boolean>(true);
   const [validateOnChange, setValidateOnChange] = useState<boolean>(false);
-  const [selectedContacted, setSelectedContacted] = useState<string>("N");
-  const [selectedAttended, setSelectedAttended] = useState<string>("N");
+  const [selectedContacted, setSelectedContacted] = useState<string | null>("N");
+  const [selectedAttended, setSelectedAttended] = useState<string | null>("N");
   const [selectedLocation, setSelectedLocation] = useState<Option | null>(null);
   const [selectedConflictHistory, setSelectedConflictHistory] = useState<Option | null>(null);
   const [selectedCategoryLevel, setSelectedCategoryLevel] = useState<Option | null>(null);
   const [selectedAssessmentCat1Types, setSelectedAssessmentCat1Types] = useState<Option[]>([]);
+  const [legacyAssessmentTypes, setLegacyAssessmentTypes] = useState<Option[] | undefined>([]);
 
   const handleAssessmentTypesChange = (selectedItems: Option[]) => {
     setSelectedAssessmentTypes(selectedItems);
@@ -110,6 +111,9 @@ export const HWCRComplaintAssessment: FC<Props> = ({
 
   const toggleEdit = () => {
     setEditable(true);
+    //Set Contacted complainant and Attended default to No, only in edit state
+    if (selectedContacted === null) setSelectedContacted("N");
+    if (selectedAttended === null) setSelectedAttended("N");
   };
 
   const handleActionRequiredChange = (selected: Option | null) => {
@@ -213,9 +217,10 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       };
     }) as Option[];
 
-    const selectedLocation = assessmentState.location_type
-      ? ({ label: assessmentState.location_type.key, value: assessmentState.location_type.value } as Option)
-      : null;
+    const selectedLocation =
+      assessmentState.location_type && assessmentState.location_type.key !== ""
+        ? ({ label: assessmentState.location_type.key, value: assessmentState.location_type.value } as Option)
+        : null;
 
     const selectedConflictHistory =
       assessmentState.conflict_history && assessmentState.conflict_history.key !== ""
@@ -229,6 +234,10 @@ export const HWCRComplaintAssessment: FC<Props> = ({
 
     const assesmentDate = assessmentState?.date ? new Date(assessmentState.date) : new Date();
 
+    const selectedContacted =
+      assessmentState.contacted_complainant === null ? null : assessmentState.contacted_complainant ? "Y" : "N";
+    const selectedAttended = assessmentState.attended === null ? null : assessmentState.attended ? "Y" : "N";
+
     const selectedAssessmentCat1Types = assessmentState.assessment_cat1_type?.map((item) => {
       return {
         label: item.key,
@@ -236,18 +245,28 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       };
     }) as Option[];
 
+    const legacyAssessmentTypes =
+      assessmentState.assessment_type_legacy &&
+      (assessmentState.assessment_type_legacy?.map((item) => {
+        return {
+          label: item.key,
+          value: item.value,
+        };
+      }) as Option[]);
+
     setSelectedDate(assesmentDate);
     setSelectedOfficer(selectedOfficer);
     setSelectedActionRequired(selectedActionRequired);
     setSelectedJustification(selectedJustification);
     setSelectedLinkedComplaint(selectedLinkedComplaint);
     setSelectedAssessmentTypes(selectedAssessmentTypes);
-    setSelectedContacted(assessmentState.contacted_complainant ? "Y" : "N");
-    setSelectedAttended(assessmentState.attended ? "Y" : "N");
+    setSelectedContacted(selectedContacted);
+    setSelectedAttended(selectedAttended);
     setSelectedLocation(selectedLocation);
     setSelectedConflictHistory(selectedConflictHistory);
     setSelectedCategoryLevel(selectedCategoryLevel);
     setSelectedAssessmentCat1Types(selectedAssessmentCat1Types);
+    setLegacyAssessmentTypes(legacyAssessmentTypes);
 
     resetValidationErrors();
     setEditable(!assessmentState.date);
@@ -324,24 +343,27 @@ export const HWCRComplaintAssessment: FC<Props> = ({
               }),
         contacted_complainant: selectedContacted === "Y",
         attended: selectedAttended === "Y",
-        location_type: selectedLocation
-          ? {
-              key: selectedLocation?.label,
-              value: selectedLocation?.value,
-            }
-          : undefined,
-        conflict_history: selectedConflictHistory
-          ? {
-              key: selectedConflictHistory?.label,
-              value: selectedConflictHistory?.value,
-            }
-          : undefined,
-        category_level: selectedCategoryLevel
-          ? {
-              key: selectedCategoryLevel?.label,
-              value: selectedCategoryLevel?.value,
-            }
-          : undefined,
+        location_type:
+          selectedLocation && isLargeCarnivore
+            ? {
+                key: selectedLocation?.label,
+                value: selectedLocation?.value,
+              }
+            : undefined,
+        conflict_history:
+          selectedConflictHistory && isLargeCarnivore
+            ? {
+                key: selectedConflictHistory?.label,
+                value: selectedConflictHistory?.value,
+              }
+            : undefined,
+        category_level:
+          selectedCategoryLevel && isLargeCarnivore
+            ? {
+                key: selectedCategoryLevel?.label,
+                value: selectedCategoryLevel?.value,
+              }
+            : undefined,
         assessment_cat1_type:
           selectedActionRequired?.label === OptionLabels.OPTION_NO || !isLargeCarnivore
             ? []
@@ -466,15 +488,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
 
   const assessmentDivClass = `comp-details-form-row ${selectedActionRequired?.value === "Yes" ? "inherit" : "hidden"}`;
 
-  // console.log(selectedAssessmentTypes);
-  // console.log(selectedActionRequired);
-  // console.log(selectedJustification);
-  // console.log("new");
-  // console.log(selectedLocation);
-  // console.log(selectedConflictHistory);
-  // console.log(selectedCategoryLevel);
-  // console.log(selectedAssessmentCat1Types);
-
   return (
     <section className="comp-details-section comp-outcome-report-complaint-assessment">
       {showHeader && (
@@ -588,7 +601,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 </div>
               )}
 
-              {/* Contacted complainant */}
+              {/* Contacted complainant - edit state */}
               <div
                 className={assessmentDivClass}
                 id="assessment-contacted-complainant-div"
@@ -609,7 +622,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 </div>
               </div>
 
-              {/* Attended radio buttons */}
+              {/* Attended radio buttons - edit state */}
               <div
                 className={assessmentDivClass}
                 id="assessment-attended-div"
@@ -661,7 +674,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
 
               {isLargeCarnivore && (
                 <>
-                  {/* Location type */}
+                  {/* Location type - edit state */}
                   <div
                     className={assessmentDivClass}
                     id="assessment-location-type-div"
@@ -687,7 +700,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     />
                   </div>
 
-                  {/* Conflict history */}
+                  {/* Conflict history - edit state */}
                   <div
                     className={assessmentDivClass}
                     id="assessment-conflict-history-div"
@@ -712,7 +725,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     />
                   </div>
 
-                  {/* Category level */}
+                  {/* Category level - edit state */}
                   <div
                     className={assessmentDivClass}
                     id="assessment-category-level-div"
@@ -799,7 +812,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
           ) : (
             <dl>
               <div id="action-required-div">
-                <dt>Action Required</dt>
+                <dt>Action required</dt>
                 <dd>{selectedActionRequired?.value}</dd>
               </div>
               <div
@@ -813,59 +826,88 @@ export const HWCRComplaintAssessment: FC<Props> = ({
               </div>
 
               {/* Contacted complainant - view state */}
-              <div
-                id="contacted-complainant-div"
-                className={assessmentDivClass}
-              >
-                <dt>Contacted complainant</dt>
-                <dd>
-                  <span>{selectedContacted === "N" ? "No" : "Yes"}</span>
-                </dd>
-              </div>
+              {selectedContacted !== null && (
+                <div
+                  id="contacted-complainant-div"
+                  className={assessmentDivClass}
+                >
+                  <dt>Contacted complainant</dt>
+                  <dd>
+                    <span>{selectedContacted === "N" ? "No" : "Yes"}</span>
+                  </dd>
+                </div>
+              )}
 
               {/* Attended - view state */}
-              <div
-                id="attended-div"
-                className={assessmentDivClass}
-                style={{ marginTop: "0px" }}
-              >
-                <dt>Attended</dt>
-                <dd>
-                  <span>{selectedAttended === "N" ? "No" : "Yes"}</span>
-                </dd>
-              </div>
+              {selectedAttended !== null && (
+                <div
+                  id="attended-div"
+                  className={assessmentDivClass}
+                  style={{ marginTop: "0px" }}
+                >
+                  <dt>Attended</dt>
+                  <dd>
+                    <span>{selectedAttended === "N" ? "No" : "Yes"}</span>
+                  </dd>
+                </div>
+              )}
+
+              {/* Legacy actions - view state */}
+              {legacyAssessmentTypes && legacyAssessmentTypes.length > 0 && (
+                <div
+                  id="assessment-legacy-checkbox-div"
+                  className={assessmentDivClass}
+                  style={{ marginTop: "0px" }}
+                >
+                  <dt>Actions (legacy)</dt>
+                  <dd>
+                    <ul>
+                      {legacyAssessmentTypes?.map((assesmentValue) => (
+                        <li
+                          className="checkbox-label-padding"
+                          key={assesmentValue.label}
+                        >
+                          {assesmentValue.label}
+                        </li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
+              )}
 
               {/* Animal actions - view state */}
-              <div
-                id="assessment-checkbox-div"
-                className={assessmentDivClass}
-                style={{ marginTop: "0px" }}
-              >
-                <dt>Animal actions</dt>
-                <dd>
-                  <ul>
-                    {selectedAssessmentTypes?.map((assesmentValue) => (
-                      <li
-                        className="checkbox-label-padding"
-                        key={assesmentValue.label}
-                      >
-                        {assesmentValue.label}
-                      </li>
-                    ))}
-                    {selectedAssessmentCat1Types?.map((assesmentValue) => (
-                      <li
-                        className="checkbox-label-padding"
-                        key={assesmentValue.label}
-                      >
-                        {assesmentValue.label}
-                      </li>
-                    ))}
-                  </ul>
-                </dd>
-              </div>
+              {selectedAssessmentTypes.length > 0 && (
+                <div
+                  id="assessment-checkbox-div"
+                  className={assessmentDivClass}
+                  style={{ marginTop: "0px" }}
+                >
+                  <dt>Animal actions</dt>
+                  <dd>
+                    <ul>
+                      {selectedAssessmentTypes?.map((assesmentValue) => (
+                        <li
+                          className="checkbox-label-padding"
+                          key={assesmentValue.label}
+                        >
+                          {assesmentValue.label}
+                        </li>
+                      ))}
+                      {selectedAssessmentCat1Types?.map((assesmentValue) => (
+                        <li
+                          className="checkbox-label-padding"
+                          key={assesmentValue.label}
+                        >
+                          {assesmentValue.label}
+                        </li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
+              )}
 
               {/* Location type - view state */}
-              {isLargeCarnivore && selectedLocation && (
+              {isLargeCarnivore && selectedActionRequired?.value === OptionLabels.OPTION_YES && selectedLocation && (
                 <div
                   id="location-type-div"
                   className={assessmentDivClass}
@@ -879,32 +921,36 @@ export const HWCRComplaintAssessment: FC<Props> = ({
               )}
 
               {/* Conflict history - view state */}
-              {isLargeCarnivore && selectedConflictHistory && (
-                <div
-                  id="conflict history-div"
-                  className={assessmentDivClass}
-                  style={{ marginTop: "0px" }}
-                >
-                  <dt>Conflict history</dt>
-                  <dd>
-                    <span>{selectedConflictHistory.label}</span>
-                  </dd>
-                </div>
-              )}
+              {(isLargeCarnivore || (legacyAssessmentTypes && legacyAssessmentTypes?.length > 0)) &&
+                selectedActionRequired?.value === OptionLabels.OPTION_YES &&
+                selectedConflictHistory && (
+                  <div
+                    id="conflict history-div"
+                    className={assessmentDivClass}
+                    style={{ marginTop: "0px" }}
+                  >
+                    <dt>Conflict history</dt>
+                    <dd>
+                      <span>{selectedConflictHistory.label}</span>
+                    </dd>
+                  </div>
+                )}
 
               {/* Category level - view state */}
-              {isLargeCarnivore && selectedCategoryLevel && (
-                <div
-                  id="conflict history-div"
-                  className={assessmentDivClass}
-                  style={{ marginTop: "0px" }}
-                >
-                  <dt>Category Level</dt>
-                  <dd>
-                    <span>{selectedCategoryLevel.label}</span>
-                  </dd>
-                </div>
-              )}
+              {isLargeCarnivore &&
+                selectedActionRequired?.value === OptionLabels.OPTION_YES &&
+                selectedCategoryLevel && (
+                  <div
+                    id="conflict history-div"
+                    className={assessmentDivClass}
+                    style={{ marginTop: "0px" }}
+                  >
+                    <dt>Category Level</dt>
+                    <dd>
+                      <span>{selectedCategoryLevel.label}</span>
+                    </dd>
+                  </div>
+                )}
 
               <div>
                 <dt>Officer</dt>

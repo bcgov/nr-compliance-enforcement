@@ -18,4 +18,5 @@ export interface Assessment {
   conflict_history?: KeyValuePair;
   category_level?: KeyValuePair;
   assessment_cat1_type: KeyValuePair[];
+  assessment_type_legacy?: KeyValuePair[];
 }

@@ -53,7 +53,6 @@ export class CaseFileService {
       this.logger.error("GraphQL errors:", errors);
       throw new Error("GraphQL errors occurred");
     }
-    console.log(data);
 
     if (data?.getCaseFileByLeadId?.caseIdentifier) {
       const caseFileDto = data.getCaseFileByLeadId as CaseFileDto;
