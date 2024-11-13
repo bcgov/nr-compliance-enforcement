@@ -81,7 +81,7 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: {{.Release.Name}}-backend
-                      key: "OBJECTSTORE_URL"
+                      key: "OBJECTSTORE_HTTPS_URL"
                 - name: S3_BUCKET
                   value: "backups"
           volumes:
