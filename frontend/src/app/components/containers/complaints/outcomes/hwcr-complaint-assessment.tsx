@@ -959,7 +959,8 @@ export const HWCRComplaintAssessment: FC<Props> = ({
               )}
 
               {/* Animal actions - view state */}
-              {selectedAssessmentTypes && selectedAssessmentTypes.length > 0 && (
+              {((selectedAssessmentTypes && selectedAssessmentTypes.length > 0) ||
+                (selectedAssessmentCat1Types && selectedAssessmentCat1Types.length > 0)) && (
                 <div
                   id="assessment-checkbox-div"
                   className={assessmentDivClass}
