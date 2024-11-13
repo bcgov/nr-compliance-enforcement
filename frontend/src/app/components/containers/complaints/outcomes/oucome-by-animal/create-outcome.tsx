@@ -11,9 +11,9 @@ import {
   selectThreatLevelDropdown,
   selectWildlifeComplaintOutcome,
 } from "../../../../../store/reducers/code-table";
-import { AnimalOutcomeV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
+import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { AnimalTagV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
-import { DrugUsedV2 } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
+import type { DrugUsed as DrugUsedData } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
 import Option from "../../../../../types/app/option";
 import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
 import { from } from "linq-to-typescript";
@@ -26,8 +26,8 @@ import { v4 as uuidv4 } from "uuid";
 import { ToggleError } from "../../../../../common/toast";
 import { getNextOrderNumber } from "../hwcr-outcome-by-animal-v2";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
-import { selectComplaint, selectComplaintLargeCarnivoreInd } from "@/app/store/reducers/complaints";
-import { WildlifeComplaint } from "@/app/types/app/complaints/wildlife-complaint";
+import { selectComplaintLargeCarnivoreInd } from "@/app/store/reducers/complaints";
+import { getValue } from "./outcome-common";
 
 type props = {
   index: number;
@@ -40,7 +40,7 @@ type props = {
 
 //-- this object is used to create an empty outcome
 //-- do not export this object
-const defaultOutcome: AnimalOutcomeV2 = {
+const defaultOutcome: AnimalOutcome = {
   id: "",
   species: "",
   sex: "",
@@ -72,6 +72,8 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
+  const optionDictionaries = { speciesList, sexes, ages, threatLevels, outcomes, officers };
+
   //-- error handling
   const [speciesError, setSpeciesError] = useState("");
   const [officerError, setOfficerError] = useState("");
@@ -79,7 +81,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
 
   //-- new input data
   // eslint-disable-line no-console, max-len
-  const [data, applyData] = useState<AnimalOutcomeV2>({ ...defaultOutcome, species });
+  const [data, applyData] = useState<AnimalOutcome>({ ...defaultOutcome, species });
 
   //-- refs
   // eslint-disable-next-line @typescript-eslint/no-array-constructor
@@ -90,44 +92,10 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   //-- input handlers
   const updateModel = (
     property: string,
-    value: string | Date | Array<AnimalTagV2 | DrugUsedV2> | DrugAuthorization | null | undefined,
+    value: string | Date | Array<AnimalTagV2 | DrugUsedData> | DrugAuthorization | null | undefined,
   ) => {
     const model = { ...data, [property]: value };
     applyData(model);
-  };
-
-  const getValue = (property: string): Option | undefined => {
-    switch (property) {
-      case "species": {
-        const { species } = data;
-        return speciesList.find((item) => item.value === species);
-      }
-      case "sex": {
-        const { sex } = data;
-        return sexes.find((item) => item.value === sex);
-      }
-
-      case "age": {
-        const { age } = data;
-        return ages.find((item) => item.value === age);
-      }
-
-      case "threatLevel": {
-        const { threatLevel } = data;
-        return threatLevels.find((item) => item.value === threatLevel);
-      }
-
-      case "officer":
-      case "assigned": {
-        const { officer } = data;
-        return officers.find((item) => item.value === officer);
-      }
-
-      case "outcome": {
-        const { outcome } = data;
-        return outcomes.find((item) => item.value === outcome);
-      }
-    }
   };
 
   const handleSpeciesChange = (input: Option | null) => {
@@ -250,7 +218,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
 
   const addDrugUsed = () => {
     const { drugs } = data;
-    const nextOrder = getNextOrderNumber<DrugUsedV2>(drugs);
+    const nextOrder = getNextOrderNumber<DrugUsedData>(drugs);
 
     let id = uuidv4().toString();
 
@@ -261,11 +229,9 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
         vial: "",
         drug: "",
         amountUsed: "",
-        amountDiscarded: "",
-        reactions: "",
         remainingUse: null,
         injectionMethod: "",
-        discardMethod: "",
+        additionalComments: "",
         officer: officer ?? "",
         order: nextOrder,
       },
@@ -300,7 +266,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
     drugRefs.current = update.length === 0 ? [] : drugRefs.current.filter((item) => item.id !== null && item.id === id);
   };
 
-  const updateDrugUsed = (drug: DrugUsedV2) => {
+  const updateDrugUsed = (drug: DrugUsedData) => {
     const { drugs: source } = data;
 
     const items = source.filter(({ id }) => id !== drug.id);
@@ -420,7 +386,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                   enableValidation={true}
                   placeholder="Select"
                   onChange={handleSpeciesChange}
-                  defaultOption={getValue("species")}
+                  defaultOption={getValue("species", data, optionDictionaries)}
                   errorMessage={speciesError}
                 />
               </div>
@@ -568,7 +534,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                     onChange={(evt) => {
                       handleOfficerChange(evt);
                     }}
-                    value={getValue("officer")}
+                    value={getValue("officer", data, optionDictionaries)}
                     errorMessage={officerError}
                   />
                 </div>

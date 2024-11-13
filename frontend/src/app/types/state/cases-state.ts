@@ -4,7 +4,7 @@ import { Prevention } from "../outcomes/prevention";
 import { SupplementalNote } from "../outcomes/supplemental-note";
 import { CaseAction } from "../outcomes/case-action";
 import { AnimalTagV2 } from "../app/complaints/outcomes/wildlife/animal-tag";
-import { DrugUsedV2 } from "../app/complaints/outcomes/wildlife/drug-used";
+import { DrugUsed } from "../app/complaints/outcomes/wildlife/drug-used";
 import { Decision } from "../app/case-files/ceeb/decision/decision";
 import { PermitSite } from "../app/case-files/ceeb/authorization-outcome/permit-site";
 
@@ -31,6 +31,7 @@ export interface IsInEdit {
   attachments: boolean;
   fileReview: boolean;
   showSectionErrors: boolean;
+  hideAssessmentErrors: boolean;
   decision: false;
   authorization: false;
 }
@@ -54,7 +55,7 @@ export interface AnimalOutcomeSubject {
   conflictHistory?: string;
   outcome?: string;
   tags?: Array<AnimalTagV2>;
-  drugs?: Array<DrugUsedV2>;
+  drugs?: Array<DrugUsed>;
   actions?: Array<CaseAction>;
   order: number;
   identifyingFeatures?: string;

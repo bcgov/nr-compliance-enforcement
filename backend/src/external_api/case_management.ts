@@ -118,11 +118,9 @@ export const caseFileQueryFields: string = `
       drug
       amountUsed
       injectionMethod
-      reactions
     
       remainingUse
-      amountDiscarded
-      discardMethod
+      additionalComments
 
       order
     }

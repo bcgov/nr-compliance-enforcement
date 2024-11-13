@@ -1,5 +1,6 @@
 import { FC, useEffect, useState, useCallback } from "react";
 import { Button, Card, Alert } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
@@ -10,6 +11,7 @@ import {
   selectComplaintHeader,
   selectComplaintAssignedBy,
   selectComplaintLargeCarnivoreInd,
+  selectLinkedComplaints,
 } from "@store/reducers/complaints";
 import {
   selectAssessmentCat1Dropdown,
@@ -34,18 +36,26 @@ import { BsExclamationCircleFill } from "react-icons/bs";
 
 import "@assets/sass/hwcr-assessment.scss";
 import { selectAssessment } from "@store/reducers/case-selectors";
-import { getAssessment, upsertAssessment } from "@store/reducers/case-thunks";
+import { getAssessment, upsertAssessment, getCaseFile } from "@store/reducers/case-thunks";
 import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
-import { WildlifeComplaint } from "@/app/types/app/complaints/wildlife-complaint";
+import useValidateComplaint from "@hooks/validate-complaint";
 
-type Props = { id: string; complaintType: string; handleSave?: () => void; showHeader?: boolean; quickClose?: boolean };
+type Props = {
+  id: string;
+  complaintType: string;
+  handleSave?: () => void;
+  handleClose?: () => void;
+  showHeader?: boolean;
+  quickClose?: boolean;
+};
 
 export const HWCRComplaintAssessment: FC<Props> = ({
   id,
   complaintType,
   handleSave = () => {},
+  handleClose = () => {},
   showHeader = true,
   quickClose = false,
 }) => {
@@ -79,7 +89,8 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [assessmentRequiredErrorMessage, setAssessmentRequiredErrorMessage] = useState<string>("");
   const [locationErrorMessage, setLocationErrorMessage] = useState<string>("");
 
-  const complaintData = useAppSelector(selectComplaint) as WildlifeComplaint;
+  const complaintData = useAppSelector(selectComplaint);
+  const linkedComplaintData = useAppSelector(selectLinkedComplaints);
   const assessmentState = useAppSelector(selectAssessment);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
@@ -90,9 +101,11 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const locationOptions = useAppSelector(selectLocationDropdown);
   const assessmentCat1Options = useAppSelector(selectAssessmentCat1Dropdown);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
+  const validationResults = useValidateComplaint();
 
   const hasAssessment = Object.keys(cases.assessment).length > 0;
-  const showSectionErrors = (!hasAssessment || editable) && cases.isInEdit.showSectionErrors;
+  const showSectionErrors =
+    (!hasAssessment || editable) && cases.isInEdit.showSectionErrors && !cases.isInEdit.hideAssessmentErrors;
 
   const noYesOptions: Option[] = [
     { label: "No", value: "N" },
@@ -103,7 +116,10 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     if (!hasAssessment && editable) {
       dispatch(setIsInEdit({ assessment: false }));
     } else dispatch(setIsInEdit({ assessment: editable }));
-  }, [editable, hasAssessment]);
+    return () => {
+      dispatch(setIsInEdit({ assessment: false }));
+    };
+  }, [dispatch, editable, hasAssessment]);
 
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
@@ -158,27 +174,23 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const assigned = useAppSelector(selectComplaintAssignedBy);
 
   useEffect(() => {
-    if (id && (!complaintData || complaintData.id !== id)) {
+    if (id && (!complaintData || complaintData?.id !== id)) {
+      dispatch(clearAssessment());
       dispatch(getComplaintById(id, complaintType));
     }
   }, [id, complaintType, complaintData, dispatch]);
 
   useEffect(() => {
-    if (complaintData) {
+    if (id === complaintData?.id) {
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
       dispatch(clearAssessment());
       dispatch(getAssessment(complaintData.id));
+      dispatch(getCaseFile(id));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [complaintData]);
+  }, [dispatch, id, complaintData, personGuid, assignableOfficers]);
 
-  useEffect(() => {
-    populateAssessmentUI();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [assessmentState]);
-
-  const populateAssessmentUI = () => {
+  const populateAssessmentUI = useCallback(() => {
     const selectedOfficer = (
       assessmentState.officer
         ? {
@@ -206,9 +218,10 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       } as Option;
     }
 
-    const selectedLinkedComplaint = assessmentState.linked_complaint
-      ? ({ label: assessmentState.linked_complaint.key, value: assessmentState.linked_complaint.value } as Option)
-      : null;
+    const selectedLinkedComplaint =
+      linkedComplaintData && linkedComplaintData.length > 0 && linkedComplaintData[0].id
+        ? ({ label: linkedComplaintData[0].id, value: linkedComplaintData[0].id } as Option)
+        : null;
 
     const selectedAssessmentTypes = assessmentState.assessment_type?.map((item) => {
       return {
@@ -289,7 +302,13 @@ export const HWCRComplaintAssessment: FC<Props> = ({
         setSelectedOfficer(officerAssigned[0]);
       }
     }
-  };
+    // officersInAgencyList should be in this list, but it is not a correctly implimented selector
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assessmentState, linkedComplaintData, assigned, quickClose]);
+
+  useEffect(() => {
+    populateAssessmentUI();
+  }, [assessmentState, populateAssessmentUI]);
 
   const justificationLabelClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
   const justificationEditClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
@@ -375,7 +394,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
               }),
       };
 
-      await dispatch(upsertAssessment(id, updatedAssessmentData));
+      dispatch(upsertAssessment(id, updatedAssessmentData));
       setEditable(false);
       handleSave();
     } else {
@@ -399,70 +418,117 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     setLocationErrorMessage("");
   };
 
-  // Validates the assessment
-  const hasErrors = useCallback((): boolean => {
-    let hasErrors: boolean = false;
-    resetValidationErrors();
-
+  const validateOfficer = useCallback((): boolean => {
     if (!selectedOfficer) {
       setOfficerErrorMessage("Required");
-      hasErrors = true;
+      return true;
     }
+    return false;
+  }, [selectedOfficer]);
 
+  const validateDate = useCallback((): boolean => {
     if (!selectedDate) {
-      hasErrors = true;
       setAssessmentDateErrorMessage("Required");
+      return true;
     }
+    return false;
+  }, [selectedDate]);
 
+  const validateActionRequired = useCallback((): boolean => {
     if (!selectedActionRequired) {
       setActionRequiredErrorMessage("Required");
-      hasErrors = true;
+      return true;
     }
+    return false;
+  }, [selectedActionRequired]);
 
-    if (!selectedLocation && selectedActionRequired?.value === OptionLabels.OPTION_YES && isLargeCarnivore) {
-      setLocationErrorMessage("Required");
-      hasErrors = true;
-    }
-
+  const validateAssessmentTypes = useCallback((): boolean => {
     if (
       selectedActionRequired?.value === OptionLabels.OPTION_YES &&
       (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0) &&
       (!selectedAssessmentCat1Types || selectedAssessmentCat1Types?.length <= 0)
     ) {
       setAssessmentRequiredErrorMessage("One or more assessment is required");
-      hasErrors = true;
+      return true;
     }
+    return false;
+  }, [selectedActionRequired, selectedAssessmentTypes, selectedAssessmentCat1Types]);
 
+  const validateLocationType = useCallback((): boolean => {
+    if (!selectedLocation && selectedActionRequired?.value === OptionLabels.OPTION_YES && isLargeCarnivore) {
+      setLocationErrorMessage("Required");
+    }
     if (selectedActionRequired?.value === "No" && !selectedJustification) {
       setJustificationRequiredErrorMessage("Required when Action Required is No");
-      hasErrors = true;
+      return true;
     }
+    return false;
+  }, [selectedActionRequired, selectedJustification]);
 
+  const validateJustification = useCallback((): boolean => {
+    if (selectedActionRequired?.value === "No" && !selectedJustification) {
+      setJustificationRequiredErrorMessage("Required when Action Required is No");
+      return true;
+    }
+    return false;
+  }, [selectedActionRequired, selectedJustification]);
+
+  const validateLinkedComplaint = useCallback((): boolean => {
     if (selectedJustification?.value === "DUPLICATE") {
       if (!selectedLinkedComplaint) {
         setLinkedComplaintErrorMessage("Required when Justification is Duplicate");
-        hasErrors = true;
+        return true;
       } else if (selectedLinkedComplaint.value === id) {
         setLinkedComplaintErrorMessage("Linked complaint cannot be the same as the current complaint");
-        hasErrors = true;
+        return true;
       } else if (selectedLinkedComplaintStatus !== "OPEN") {
         setLinkedComplaintErrorMessage("Linked complaint must be open");
-        hasErrors = true;
+        return true;
+      }
+
+      if (!validationResults.canQuickCloseComplaint) {
+        setJustificationRequiredErrorMessage(
+          "Please address the errors in the other sections before closing the complaint as duplicate.",
+        );
+        if (!cases.isInEdit.showSectionErrors) {
+          dispatch(setIsInEdit({ showSectionErrors: true, hideAssessmentErrors: true }));
+        }
+        validationResults.scrollToErrors();
+        return true;
       }
     }
-
-    return hasErrors;
+    return false;
   }, [
+    dispatch,
     id,
-    selectedOfficer,
-    selectedDate,
-    selectedActionRequired,
     selectedJustification,
     selectedLinkedComplaint,
     selectedLinkedComplaintStatus,
-    selectedAssessmentTypes,
-    selectedLocation,
-    selectedAssessmentCat1Types,
+    validationResults,
+    cases.isInEdit.showSectionErrors,
+  ]);
+
+  // Validates the assessment
+  const hasErrors = useCallback((): boolean => {
+    resetValidationErrors();
+
+    let hasErrors = false;
+    hasErrors = validateOfficer() || hasErrors;
+    hasErrors = validateDate() || hasErrors;
+    hasErrors = validateActionRequired() || hasErrors;
+    hasErrors = validateAssessmentTypes() || hasErrors;
+    hasErrors = validateJustification() || hasErrors;
+    hasErrors = validateLinkedComplaint() || hasErrors;
+    hasErrors = validateLocationType() || hasErrors;
+
+    return hasErrors;
+  }, [
+    validateOfficer,
+    validateDate,
+    validateActionRequired,
+    validateAssessmentTypes,
+    validateJustification,
+    validateLinkedComplaint,
   ]);
 
   // Validate on selected value change
@@ -590,12 +656,13 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   className="comp-details-form-row"
                   id="linked-complaint-div"
                 >
-                  <label htmlFor="linkedComplaint">Linking current complaint to:</label>
+                  <label htmlFor="linkedComplaint">Link current complaint to:</label>
                   <div className="comp-details-input full-width">
                     <HWCRComplaintAssessmentLinkComplaintSearch
                       id="linkedComplaint"
                       onChange={(e, s) => handleLinkedComplaintChange(e, s)}
                       errorMessage={linkedComplaintErrorMessage}
+                      value={selectedLinkedComplaint}
                     />
                   </div>
                 </div>
@@ -795,7 +862,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   variant="outline-primary"
                   id="outcome-cancel-button"
                   title="Cancel Outcome"
-                  onClick={cancelButtonClick}
+                  onClick={quickClose ? handleClose : cancelButtonClick}
                 >
                   Cancel
                 </Button>
@@ -824,6 +891,22 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   <span>{selectedJustification?.label || ""}</span>
                 </dd>
               </div>
+              {selectedJustification?.value === "DUPLICATE" && (
+                <div
+                  id="linked-complaint-div"
+                  className={justificationLabelClass}
+                >
+                  <dt>Linked Complaint</dt>
+                  <dd>
+                    <Link
+                      to={`/complaint/HWCR/${selectedLinkedComplaint?.value}`}
+                      id={selectedLinkedComplaint?.value}
+                    >
+                      {selectedLinkedComplaint?.label || ""}
+                    </Link>
+                  </dd>
+                </div>
+              )}
 
               {/* Contacted complainant - view state */}
               {selectedContacted !== null && (
@@ -876,7 +959,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
               )}
 
               {/* Animal actions - view state */}
-              {selectedAssessmentTypes.length > 0 && (
+              {selectedAssessmentTypes && selectedAssessmentTypes.length > 0 && (
                 <div
                   id="assessment-checkbox-div"
                   className={assessmentDivClass}

@@ -8,6 +8,9 @@ inputs:
   token:
     description: Specify token (GH or PAT), instead of inheriting one from the calling workflow
     default: ${{ github.token }}
+  release_branch:
+    description: Specify the release branch to get the latest PR number from, like `release/myrelease`. Outside of PRs you need to manually provide this otherwise it will be an empty string.
+    default: ${{ github.pull_request.head.ref }}
 
 outputs:
   pr:
@@ -22,8 +25,13 @@ runs:
       run: |
         git fetch origin
 
-        release_branch="${{ github.event.pull_request.head.ref }}"
-        echo "Detected release branch: $release_branch"
+        release_branch="${{ inputs.release_branch }}"
+        echo "Configured release branch as: $release_branch"
+
+        if ! git show-ref --verify --quiet refs/remotes/origin/$release_branch; then
+          echo "Release branch $release_branch does not exist in the repository."
+          exit 1
+        fi
 
         latest_pr=$(git log origin/$release_branch --pretty=format:'%s' | grep -oP '(?<=#)\d+' | head -n 1)
 

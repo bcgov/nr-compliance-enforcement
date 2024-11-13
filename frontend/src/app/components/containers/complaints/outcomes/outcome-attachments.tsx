@@ -65,7 +65,10 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
     } else if (outcomeAttachmentCount === 0 && carouselData.length === 0) {
       dispatch(setIsInEdit({ attachments: false }));
     } else dispatch(setIsInEdit({ attachments: true }));
-  }, [componentState, carouselData, outcomeAttachmentCount]);
+    return () => {
+      dispatch(setIsInEdit({ attachments: false }));
+    };
+  }, [dispatch, componentState, carouselData, outcomeAttachmentCount]);
 
   useEffect(() => {
     if (carouselData.length > 0) {

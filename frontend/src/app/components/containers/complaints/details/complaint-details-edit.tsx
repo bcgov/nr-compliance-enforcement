@@ -16,7 +16,6 @@ import {
   selectLinkedComplaints,
   setLinkedComplaints,
 } from "../../../../store/reducers/complaints";
-import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
 import {
@@ -109,9 +108,8 @@ export const ComplaintDetailsEdit: FC = () => {
     violationInProgress,
     violationObserved,
     girType,
-  } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
-
-  const { complaintMethodReceivedCode } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
+    complaintMethodReceivedCode,
+  } = useAppSelector(selectComplaintDetails(complaintType));
 
   const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
     selectComplaintHeader(complaintType),
@@ -227,7 +225,7 @@ export const ComplaintDetailsEdit: FC = () => {
     if (complaintType === "HWCR") {
       dispatch(getLinkedComplaints(id));
     }
-  }, [id, complaintType, details]);
+  }, [dispatch, id, complaintType, details]);
 
   //-- events
   const editButtonClick = () => {

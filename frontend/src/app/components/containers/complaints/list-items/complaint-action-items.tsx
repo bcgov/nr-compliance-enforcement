@@ -67,7 +67,7 @@ export const ComplaintActionItems: FC<Props> = ({
         modalSize: "lg",
         modalType: QUICK_CLOSE,
         data: {
-          title: `Quick close: ${complaint_identifier}`,
+          title: `Quick close: Complaint #${complaint_identifier}`,
           description: "",
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
@@ -118,7 +118,7 @@ export const ComplaintActionItems: FC<Props> = ({
         {complaint_type === "HWCR" && (
           <Dropdown.Item onClick={openQuickCloseModal}>
             <i
-              className="bi bi-journal-check"
+              className="bi bi-journal-x"
               id="link-conplaint-icon"
             />{" "}
             Quick close

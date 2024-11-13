@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
 import { selectComplaint } from "../../../../store/reducers/complaints";
 import { Button } from "react-bootstrap";
-import { AnimalOutcomeV2 } from "../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
+import type { AnimalOutcome as AnimalOutcomeData } from "../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
 import { from } from "linq-to-typescript";
 import { WildlifeComplaint } from "../../../../types/app/complaints/wildlife-complaint";
 import { CreateAnimalOutcome } from "./oucome-by-animal/create-outcome";
@@ -61,7 +61,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
 
   //-- outcomes is a collection of all of the animal outcomes
   //-- for the selected complaint
-  const [outcomes, setOutcomes] = useState<Array<AnimalOutcomeV2>>([]);
+  const [outcomes, setOutcomes] = useState<Array<AnimalOutcomeData>>([]);
 
   //-- modals
   //-- delete animal outcome modal
@@ -87,7 +87,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   //-- save an item from the create-complaint component
   //-- when saving make sure that the outcome is successfully
   //-- saved before adding the outcome to the list of outcomes
-  const handleSave = (item: AnimalOutcomeV2) => {
+  const handleSave = (item: AnimalOutcomeData) => {
     dispatch(createAnimalOutcome(id, item)).then((result) => {
       if (result === "success") {
         dispatch(getCaseFile(id));
@@ -99,7 +99,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   //-- save an item from the create-complaint component
   //-- when saving make sure that the outcome is successfully
   //-- saved before adding the outcome to the list of outcomes
-  const handleUpdate = (item: AnimalOutcomeV2) => {
+  const handleUpdate = (item: AnimalOutcomeData) => {
     dispatch(updateAnimalOutcome(caseId, item)).then((result) => {
       if (result === "success") {
         dispatch(getCaseFile(id));
@@ -158,7 +158,10 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
 
   useEffect(() => {
     dispatch(setIsInEdit({ animal: showForm || editId.length > 0 }));
-  }, [showForm, editId]);
+    return () => {
+      dispatch(setIsInEdit({ animal: false }));
+    };
+  }, [dispatch, showForm, editId]);
 
   //-- render a list of outcomes
   const renderOutcomeList = () => {
@@ -217,7 +220,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
 
         {showForm && (
           <CreateAnimalOutcome
-            index={getNextOrderNumber<AnimalOutcomeV2>(outcomes)}
+            index={getNextOrderNumber<AnimalOutcomeData>(outcomes)}
             assignedOfficer={assignedOfficer}
             agency={agency}
             species={species}

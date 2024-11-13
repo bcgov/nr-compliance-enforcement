@@ -1709,7 +1709,7 @@ export class ComplaintService {
         data.outcome.note.action.date = _applyTimezone(data.outcome.note.action.date, tz, "date");
       }
 
-      if (data.outcome.decision) {
+      if (data.outcome.decision?.actionTakenDate) {
         data.outcome.decision.actionTakenDate = _applyTimezone(data.outcome.decision.actionTakenDate, tz, "date");
       }
 

@@ -38,7 +38,10 @@ export const HWCRFileReview: FC = () => {
     if (componentState === EDIT_STATE || (componentState === REQUEST_REVIEW_STATE && reviewRequired)) {
       dispatch(setIsInEdit({ fileReview: true }));
     } else dispatch(setIsInEdit({ fileReview: false }));
-  }, [componentState, reviewRequired]);
+    return () => {
+      dispatch(setIsInEdit({ fileReview: false }));
+    };
+  }, [dispatch, componentState, reviewRequired]);
 
   useEffect(() => {
     setReviewRequired(isReviewRequired);

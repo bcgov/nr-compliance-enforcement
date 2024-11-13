@@ -1,4 +1,4 @@
-import { Action, createSlice, ThunkAction } from "@reduxjs/toolkit";
+import { Action, createSlice, createSelector, ThunkAction } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../store";
 import config from "../../../config";
 import { OfficerState } from "../../types/complaints/officers-state";
@@ -11,6 +11,7 @@ import {
   updateAllegationComplaintByRow,
   updateGeneralComplaintByRow,
   getComplaintById,
+  selectComplaint,
 } from "./complaints";
 import { generateApiParameters, get, patch, post } from "../../common/api";
 import { from } from "linq-to-typescript";
@@ -328,22 +329,20 @@ export const selectOfficersByAgency =
     return result;
   };
 
-export const selectOfficerListByAgency = (state: RootState): Array<Option> => {
-  const {
-    officers: officerRoot,
-    complaints: { complaint },
-  } = state;
-  if (complaint?.ownedBy) {
-    const { officers } = officerRoot;
-    const officerList = filterOfficerByAgency(complaint.ownedBy, officers);
-    const officerDropdown = officerList.map((officer: Officer) => ({
-      value: officer.auth_user_guid,
-      label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-    }));
-    return officerDropdown;
-  }
-  return [];
-};
+export const selectOfficerListByAgency = createSelector(
+  [selectOfficers, selectComplaint],
+  (officers, complaint): Array<Option> => {
+    if (complaint?.ownedBy) {
+      const officerList = filterOfficerByAgency(complaint.ownedBy, officers || []);
+      const officerDropdown = officerList.map((officer: Officer) => ({
+        value: officer.auth_user_guid,
+        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+      }));
+      return officerDropdown;
+    }
+    return [];
+  },
+);
 
 export const selectOfficersByAgencyDropdownUsingPersonGuid =
   (agency: string) =>
