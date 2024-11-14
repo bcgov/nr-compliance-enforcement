@@ -247,9 +247,19 @@ export const HWCRComplaintAssessment: FC<Props> = ({
 
     const assesmentDate = assessmentState?.date ? new Date(assessmentState.date) : new Date();
 
-    const selectedContacted =
-      assessmentState.contacted_complainant === null ? null : assessmentState.contacted_complainant ? "Y" : "N";
-    const selectedAttended = assessmentState.attended === null ? null : assessmentState.attended ? "Y" : "N";
+    let selectedContacted;
+    if (assessmentState.contacted_complainant === null) {
+      selectedContacted = null;
+    } else {
+      selectedContacted = assessmentState.contacted_complainant ? "Y" : "N";
+    }
+
+    let selectedAttended;
+    if (assessmentState.attended === null) {
+      selectedAttended = null;
+    } else {
+      selectedAttended = assessmentState.attended ? "Y" : "N";
+    }
 
     const selectedAssessmentCat1Types = assessmentState.assessment_cat1_type?.map((item) => {
       return {
@@ -715,7 +725,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 className={assessmentDivClass}
                 id="assessment-checkbox-div"
               >
-                <label htmlFor="checkbox-div">
+                <label htmlFor="assessment-checkbox-div">
                   <div>
                     <div>Animal actions</div>
                     <div>(Select all applicable boxes)</div>

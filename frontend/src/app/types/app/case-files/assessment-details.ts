@@ -1,4 +1,3 @@
-import { Option } from "react-bootstrap-typeahead/types/types";
 import { AssessmentActionDto } from "./assessment-action";
 import KeyValuePair from "../key-value-pair";
 export interface AssessmentDetailsDto {
