@@ -35,6 +35,7 @@ import { DecisionType } from "../app/code-tables/decision-type";
 import { TeamType } from "../app/code-tables/team";
 import { ComplaintMethodReceivedType } from "../app/code-tables/complaint-method-received-type";
 import { ScheduleSectorXref } from "../app/code-tables/schedule-sector-xref";
+import { CaseLocationType } from "../app/code-tables/case-location";
 
 export interface CodeTableState {
   [key: string]:
@@ -74,7 +75,8 @@ export interface CodeTableState {
     | Array<ScheduleSectorXref>
     | Array<ComplaintMethodReceivedType>
     | Array<DecisionType>
-    | Array<TeamType>;
+    | Array<TeamType>
+    | Array<CaseLocationType>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -111,4 +113,6 @@ export interface CodeTableState {
   team: Array<TeamType>;
   "complaint-method-received-codes": Array<ComplaintMethodReceivedType>;
   "lead-agency": Array<Agency>;
+  "assessment-cat1-type": Array<AssessmentType>;
+  "case-location-type": Array<CaseLocationType>;
 }

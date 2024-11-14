@@ -35,6 +35,8 @@ export const CODE_TABLE_TYPES = {
   LEAD_AGENCY: "lead-agency",
   SCHEDULE_SECTOR: "schedule-sector",
   SCHEDULE_SECTOR_TYPE: "schedule-sector-type",
+  ASSESSMENT_CAT1_TYPE: "assessment-cat1-type",
+  CASE_LOCATION_TYPE: "case-location-type",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",

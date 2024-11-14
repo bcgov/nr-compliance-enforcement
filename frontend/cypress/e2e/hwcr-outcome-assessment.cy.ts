@@ -45,7 +45,7 @@ describe("HWCR Outcome Assessments", () => {
 
         let sectionParams = {
           section: "ASSESSMENT",
-          checkboxes: ["#ASSESSRISK"],
+          checkboxes: ["#SGHTNGS"],
           officer: "TestAcct, ENV",
           date: "01",
           actionRequired: "Yes",
@@ -53,7 +53,7 @@ describe("HWCR Outcome Assessments", () => {
         };
 
         cy.fillInHWCSection(sectionParams).then(() => {
-          sectionParams.checkboxes = ["Assessed public safety risk"];
+          sectionParams.checkboxes = ["Sighting"];
 
           cy.validateHWCSection(sectionParams);
         });
@@ -77,7 +77,7 @@ describe("HWCR Outcome Assessments", () => {
           .invoke("text")
           .then((actionRequired) => {
             if (actionRequired === "Yes") {
-              const newCheckboxForEdit = "#ASSESSHLTH";
+              const newCheckboxForEdit = "#FOODCOND";
               cy.get(newCheckboxForEdit).should("exist");
               cy.get(newCheckboxForEdit).check();
 
@@ -86,11 +86,11 @@ describe("HWCR Outcome Assessments", () => {
               cy.get(".modal-footer > .btn-primary").click();
 
               cy.get("#assessment-checkbox-div").should(($div) => {
-                expect($div).to.contain.text("Assessed public safety risk");
+                expect($div).to.contain.text("Sighting");
               });
 
               cy.get("#assessment-checkbox-div").should(($div) => {
-                expect($div).to.not.contain.text("Assessed health as per animal welfare guidelines");
+                expect($div).to.not.contain.text("Food conditioned");
               });
             }
           });
@@ -112,7 +112,7 @@ describe("HWCR Outcome Assessments", () => {
 
         let sectionParams = {
           section: "ASSESSMENT",
-          checkboxes: ["#ASSESSHIST"],
+          checkboxes: ["#DAMGPROP"],
           officer: "TestAcct, ENV",
           date: "01",
           actionRequired: "No",

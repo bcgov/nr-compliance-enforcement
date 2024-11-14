@@ -10,6 +10,12 @@ const initialState: CasesState = {
     linked_complaint: undefined,
     officer: undefined,
     assessment_type: [],
+    contacted_complainant: undefined,
+    attended: undefined,
+    location_type: undefined,
+    conflict_history: undefined,
+    category_level: undefined,
+    assessment_cat1_type: [],
   },
   prevention: {
     date: undefined,

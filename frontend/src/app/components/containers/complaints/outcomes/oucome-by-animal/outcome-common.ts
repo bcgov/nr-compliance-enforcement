@@ -6,13 +6,16 @@ interface OptionDictionaries {
   sexes: Option[];
   ages: Option[];
   threatLevels: Option[];
-  conflictHistories: Option[];
   outcomes: Option[];
   officers: Option[];
 }
 
-export const getValue = (property: string, data: AnimalOutcome, optionLists: OptionDictionaries): Option | undefined => {
-  const { speciesList, sexes, ages, threatLevels, conflictHistories, outcomes, officers } = optionLists;
+export const getValue = (
+  property: string,
+  data: AnimalOutcome,
+  optionLists: OptionDictionaries,
+): Option | undefined => {
+  const { speciesList, sexes, ages, threatLevels, outcomes, officers } = optionLists;
 
   switch (property) {
     case "species": {
@@ -34,11 +37,6 @@ export const getValue = (property: string, data: AnimalOutcome, optionLists: Opt
       return threatLevels.find((item) => item.value === threatLevel);
     }
 
-    case "conflictHistory": {
-      const { conflictHistory } = data;
-      return conflictHistories.find((item) => item.value === conflictHistory);
-    }
-
     case "officer":
     case "assigned": {
       const { officer } = data;
@@ -51,4 +49,3 @@ export const getValue = (property: string, data: AnimalOutcome, optionLists: Opt
     }
   }
 };
-

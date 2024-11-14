@@ -204,7 +204,12 @@ export class ComplaintService {
           )
           .leftJoinAndSelect("wildlife.complaint_identifier", "complaint")
           .leftJoin("wildlife.species_code", "species_code")
-          .addSelect(["species_code.species_code", "species_code.short_description", "species_code.long_description"])
+          .addSelect([
+            "species_code.species_code",
+            "species_code.short_description",
+            "species_code.long_description",
+            "species_code.large_carnivore_ind",
+          ])
 
           .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
           .addSelect([
