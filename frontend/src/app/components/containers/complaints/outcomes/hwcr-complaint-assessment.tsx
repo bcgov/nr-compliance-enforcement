@@ -721,12 +721,12 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 className={assessmentDivClass}
                 id="assessment-checkbox-div"
               >
-                <label htmlFor="assessment-checkbox-div">
+                <div className="muliline-label">
                   <div>
                     <div>Animal actions</div>
                     <div>(Select all applicable boxes)</div>
                   </div>
-                </label>
+                </div>
                 <div className="comp-details-input full-width">
                   <ValidationCheckboxGroup
                     errMsg={isLargeCarnivore ? "" : assessmentRequiredErrorMessage}
