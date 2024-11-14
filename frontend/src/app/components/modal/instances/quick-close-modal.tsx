@@ -5,7 +5,15 @@ import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
 import { selectComplaint, refreshComplaints } from "@store/reducers/complaints";
 import { setIsInEdit } from "@store/reducers/cases";
-import { selectAssessment } from "@store/reducers/case-selectors";
+import {
+  selectAssessment,
+  selectPrevention,
+  selectEquipment,
+  selectSubject,
+  selectSupplementalNote,
+  selectIsReviewRequired,
+  selectReviewComplete,
+} from "@store/reducers/case-selectors";
 import { HWCRComplaintAssessment } from "@components/containers/complaints/outcomes/hwcr-complaint-assessment";
 import useValidateComplaint from "@/app/hooks/validate-complaint";
 
@@ -22,15 +30,15 @@ const ModalLoading: FC = memo(() => (
 ));
 
 type AssessedOrClosedAlertProps = {
-  alreadyAssessed: boolean;
+  hasOutcomeData: boolean;
   isClosed: boolean;
   canQuickCloseComplaint: boolean;
   complaint_identifier: string;
   close: () => void;
 };
 const AssessedOrClosedAlert: FC<AssessedOrClosedAlertProps> = memo(
-  ({ isClosed, alreadyAssessed, canQuickCloseComplaint, complaint_identifier, close }) =>
-    alreadyAssessed || isClosed || !canQuickCloseComplaint ? (
+  ({ isClosed, hasOutcomeData, canQuickCloseComplaint, complaint_identifier, close }) =>
+    hasOutcomeData || isClosed || !canQuickCloseComplaint ? (
       <Alert
         variant="warning"
         className="comp-complaint-details-alert"
@@ -40,7 +48,7 @@ const AssessedOrClosedAlert: FC<AssessedOrClosedAlertProps> = memo(
           <i className="bi bi-info-circle-fill"></i>
           <span>
             {isClosed && " This complaint is already closed. "}
-            {alreadyAssessed && " This complaint has already been assessed. "}
+            {hasOutcomeData && " This complaint already has outcome information. "}
             {!canQuickCloseComplaint && " This complaint does not meet the requirements to be closed. "}
           </span>
           <Link
@@ -74,16 +82,29 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   const validationResults = useValidateComplaint();
 
   // Selectors
-  const complaintData = useAppSelector(selectComplaint);
-  const assessmentData = useAppSelector(selectAssessment);
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
-  const { title, complaint_identifier } = modalData;
+  const complaintData = useAppSelector(selectComplaint);
+  const assessmentData = useAppSelector(selectAssessment);
+  const equipmentData = useAppSelector(selectEquipment);
+  const preventionData = useAppSelector(selectPrevention);
+  const subjectData = useAppSelector(selectSubject);
+  const noteData = useAppSelector(selectSupplementalNote);
+  const isReviewRequired = useAppSelector(selectIsReviewRequired);
+  const reviewComplete = useAppSelector(selectReviewComplete);
 
   // Vars
-  const alreadyAssessed = assessmentData?.date !== undefined;
+  const { title, complaint_identifier } = modalData;
+  const hasOutcomeData =
+    assessmentData?.date !== undefined ||
+    equipmentData.length > 0 ||
+    preventionData?.date !== undefined ||
+    subjectData.length > 0 ||
+    noteData?.note !== undefined ||
+    isReviewRequired ||
+    reviewComplete;
   const isClosed = complaintData?.status === "CLOSED";
-  const displayAssessment = !alreadyAssessed && !isClosed && validationResults.canQuickCloseComplaint;
+  const displayAssessment = !hasOutcomeData && !isClosed && validationResults.canQuickCloseComplaint;
 
   // Effects
   useEffect(() => {
@@ -102,7 +123,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
         {!loading && (
           <AssessedOrClosedAlert
             isClosed={isClosed}
-            alreadyAssessed={alreadyAssessed}
+            hasOutcomeData={hasOutcomeData}
             canQuickCloseComplaint={validationResults.canQuickCloseComplaint}
             complaint_identifier={complaint_identifier}
             close={close}
@@ -127,7 +148,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
           />
         </div>
       </Modal.Body>
-      {(alreadyAssessed || isClosed) && (
+      {(hasOutcomeData || isClosed) && (
         <Modal.Footer>
           <Button
             variant="outline-primary"
