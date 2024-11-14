@@ -6,7 +6,6 @@ import {
   selectSexDropdown,
   selectAgeDropdown,
   selectThreatLevelDropdown,
-  selectConflictHistoryDropdown,
   selectWildlifeComplaintOutcome,
 } from "../../../../../store/reducers/code-table";
 import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
@@ -27,6 +26,8 @@ import { REQUIRED } from "../../../../../constants/general";
 import { getNextOrderNumber } from "../hwcr-outcome-by-animal-v2";
 import { StandaloneConfirmCancelModal } from "../../../../modal/instances/standalone-cancel-confirm-modal";
 import { ToggleError } from "../../../../../common/toast";
+import { ValidationTextArea } from "@/app/common/validation-textarea";
+import { selectComplaintLargeCarnivoreInd } from "../../../../../store/reducers/complaints";
 import { getValue } from "./outcome-common";
 
 type props = {
@@ -50,13 +51,13 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const sexes = useAppSelector(selectSexDropdown);
   const ages = useAppSelector(selectAgeDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
-  const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficerListByAgency);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const showSectionErrors = isInEdit.showSectionErrors;
 
-  const optionDictionaries = { speciesList, sexes, ages, threatLevels, conflictHistories, outcomes, officers };
+  const optionDictionaries = { speciesList, sexes, ages, threatLevels, outcomes, officers };
 
   const [showModal, setShowModal] = useState(false);
 
@@ -412,36 +413,40 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   defaultOption={getValue("age", data, optionDictionaries)}
                 />
               </div>
-              <div className="comp-details-form-row">
-                <label htmlFor="select-category-level">Category level</label>
-                <CompSelect
-                  id="select-category-level"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input full-width"
-                  options={threatLevels}
-                  enableValidation={false}
-                  placeholder={"Select"}
-                  onChange={(evt) => {
-                    updateModel("threatLevel", evt?.value);
-                  }}
-                  defaultOption={getValue("threatLevel", data, optionDictionaries)}
-                />
+              <div
+                className="comp-details-form-row"
+                id="identifying-features"
+              >
+                <label htmlFor="outcome-decision-rationale">Identifying features</label>
+                <div className="comp-details-input full-width">
+                  <ValidationTextArea
+                    className="comp-form-control"
+                    id="outcome-identifying-features"
+                    defaultValue={data.identifyingFeatures}
+                    rows={2}
+                    errMsg={""}
+                    maxLength={4000}
+                    onChange={(e: any) => updateModel("identifyingFeatures", e.trim())}
+                  />
+                </div>
               </div>
-              <div className="comp-details-form-row">
-                <label htmlFor="select-conflict-history">Conflict history</label>
-                <CompSelect
-                  id="select-conflict-history"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input full-width"
-                  options={conflictHistories}
-                  enableValidation={false}
-                  placeholder={"Select"}
-                  onChange={(evt) => {
-                    updateModel("conflictHistory", evt?.value);
-                  }}
-                  defaultOption={getValue("conflictHistory", data, optionDictionaries)}
-                />
-              </div>
+              {isLargeCarnivore && (
+                <div className="comp-details-form-row">
+                  <label htmlFor="select-category-level">Category level</label>
+                  <CompSelect
+                    id="select-category-level"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input full-width"
+                    options={threatLevels}
+                    enableValidation={false}
+                    placeholder={"Select"}
+                    onChange={(evt) => {
+                      updateModel("threatLevel", evt?.value);
+                    }}
+                    defaultOption={getValue("threatLevel", data, optionDictionaries)}
+                  />
+                </div>
+              )}
             </fieldset>
 
             {/* Ear Tags */}
