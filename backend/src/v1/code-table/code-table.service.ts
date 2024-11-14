@@ -713,7 +713,6 @@ export class CodeTableService {
           query:
             "{HWCRAssessmentCat1Actions{actionTypeCode actionCode displayOrder activeIndicator shortDescription longDescription}}",
         });
-        console.log(data);
         const assessmentCat1TypeCodes = data.HWCRAssessmentCat1Actions.map(
           ({ actionCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
             const table: AssessmentType = {
@@ -732,7 +731,6 @@ export class CodeTableService {
         const { data } = await get(token, {
           query: "{caseLocationCodes{caseLocationCode shortDescription longDescription displayOrder activeIndicator}}",
         });
-        console.log(data);
         const results = data.caseLocationCodes.map(
           ({ caseLocationCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
             const table: CaseLocationCode = {

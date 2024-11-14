@@ -19,7 +19,7 @@ describe("Complaint Change Status spec - Details View", () => {
       officer: "TestAcct, ENV",
       date: "01",
       actionRequired: "Yes",
-      toastText: "Assessment has been updated",
+      toastText: "Assessment has been saved",
     };
     cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
       if ($assessment.find("#outcome-save-button").length) {

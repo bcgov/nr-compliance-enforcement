@@ -69,8 +69,8 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
   const [editable, setEditable] = useState<boolean>(true);
   const [validateOnChange, setValidateOnChange] = useState<boolean>(false);
-  const [selectedContacted, setSelectedContacted] = useState<string | null>("N");
-  const [selectedAttended, setSelectedAttended] = useState<string | null>("N");
+  const [selectedContacted, setSelectedContacted] = useState<string | null>("No");
+  const [selectedAttended, setSelectedAttended] = useState<string | null>("No");
   const [selectedLocation, setSelectedLocation] = useState<Option | null>(null);
   const [selectedConflictHistory, setSelectedConflictHistory] = useState<Option | null>(null);
   const [selectedCategoryLevel, setSelectedCategoryLevel] = useState<Option | null>(null);
@@ -107,11 +107,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const showSectionErrors =
     (!hasAssessment || editable) && cases.isInEdit.showSectionErrors && !cases.isInEdit.hideAssessmentErrors;
 
-  const noYesOptions: Option[] = [
-    { label: "No", value: "N" },
-    { label: "Yes", value: "Y" },
-  ];
-
   useEffect(() => {
     if (!hasAssessment && editable) {
       dispatch(setIsInEdit({ assessment: false }));
@@ -128,14 +123,14 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const toggleEdit = () => {
     setEditable(true);
     //Set Contacted complainant and Attended default to No, only in edit state
-    if (selectedContacted === null) setSelectedContacted("N");
-    if (selectedAttended === null) setSelectedAttended("N");
+    if (selectedContacted === null) setSelectedContacted("No");
+    if (selectedAttended === null) setSelectedAttended("No");
   };
 
   const handleActionRequiredChange = (selected: Option | null) => {
     //Reset other fields to default when action required changed
-    setSelectedContacted("N");
-    setSelectedAttended("N");
+    setSelectedContacted("No");
+    setSelectedAttended("No");
     setSelectedLocation(null);
     setSelectedCategoryLevel(null);
     setSelectedConflictHistory(null);
@@ -172,6 +167,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const assessmentTypeList = useAppSelector(selectAssessmentTypeCodeDropdown);
   const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
   const assigned = useAppSelector(selectComplaintAssignedBy);
+  const noYesOptions = [...actionRequiredList].reverse();
 
   useEffect(() => {
     if (id && (!complaintData || complaintData?.id !== id)) {
@@ -251,14 +247,14 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     if (assessmentState.contacted_complainant === null) {
       selectedContacted = null;
     } else {
-      selectedContacted = assessmentState.contacted_complainant ? "Y" : "N";
+      selectedContacted = assessmentState.contacted_complainant ? "Yes" : "No";
     }
 
     let selectedAttended;
     if (assessmentState.attended === null) {
       selectedAttended = null;
     } else {
-      selectedAttended = assessmentState.attended ? "Y" : "N";
+      selectedAttended = assessmentState.attended ? "Yes" : "No";
     }
 
     const selectedAssessmentCat1Types = assessmentState.assessment_cat1_type?.map((item) => {
@@ -370,8 +366,8 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   value: item.value,
                 };
               }),
-        contacted_complainant: selectedContacted === "Y",
-        attended: selectedAttended === "Y",
+        contacted_complainant: selectedContacted === "Yes",
+        attended: selectedAttended === "Yes",
         location_type:
           selectedLocation && isLargeCarnivore
             ? {
@@ -926,7 +922,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 >
                   <dt>Contacted complainant</dt>
                   <dd>
-                    <span>{selectedContacted === "N" ? "No" : "Yes"}</span>
+                    <span>{selectedContacted}</span>
                   </dd>
                 </div>
               )}
@@ -940,7 +936,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 >
                   <dt>Attended</dt>
                   <dd>
-                    <span>{selectedAttended === "N" ? "No" : "Yes"}</span>
+                    <span>{selectedAttended}</span>
                   </dd>
                 </div>
               )}
