@@ -490,7 +490,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     return false;
   }, [selectedActionRequired, selectedJustification, linkedComplaintData]);
 
-
   const validateLinkedComplaint = useCallback((): boolean => {
     if (selectedJustification?.value === "DUPLICATE") {
       if (!selectedLinkedComplaint) {
