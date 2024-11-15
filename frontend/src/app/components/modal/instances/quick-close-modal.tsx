@@ -97,9 +97,9 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   const { title, complaint_identifier } = modalData;
   const hasOutcomeData =
     assessmentData?.date !== undefined ||
-    equipmentData.length > 0 ||
+    equipmentData?.length > 0 ||
     preventionData?.date !== undefined ||
-    subjectData.length > 0 ||
+    subjectData?.length > 0 ||
     noteData?.note !== undefined ||
     isReviewRequired ||
     reviewComplete;
