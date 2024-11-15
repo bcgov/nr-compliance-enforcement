@@ -319,6 +319,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
 
   const justificationLabelClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
   const justificationEditClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
+  const showDuplicateOptions = selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
 
   const cancelConfirmed = () => {
     populateAssessmentUI();
@@ -640,7 +641,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   />
                 </div>
               </div>
-              {selectedJustification?.value === "DUPLICATE" && !quickClose && (
+              {showDuplicateOptions && !quickClose && (
                 <div className="comp-details-form-row">
                   <label
                     htmlFor="duplicate-warning"
@@ -658,7 +659,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   </div>
                 </div>
               )}
-              {selectedJustification?.value === "DUPLICATE" && (
+              {showDuplicateOptions && (
                 <div
                   className="comp-details-form-row"
                   id="linked-complaint-div"
@@ -898,7 +899,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   <span>{selectedJustification?.label || ""}</span>
                 </dd>
               </div>
-              {selectedJustification?.value === "DUPLICATE" && (
+              {showDuplicateOptions && (
                 <div
                   id="linked-complaint-div"
                   className={justificationLabelClass}
