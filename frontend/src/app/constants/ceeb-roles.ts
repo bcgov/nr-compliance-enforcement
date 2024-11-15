@@ -1,4 +1,4 @@
-import Option from "../types/app/option";
+import Option from "@apptypes/app/option";
 
 export const CEEB_ROLE_OPTIONS: Array<Option> = [
   { value: "CEEB", label: "CEEB User" },

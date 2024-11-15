@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { CosGeoOrgUnit } from "../../person/person";
+import { CosGeoOrgUnit } from "@apptypes/person/person";
 import { Person } from "./person";
 
 export interface OfficerDto {

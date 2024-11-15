@@ -1,31 +1,31 @@
 import { Action, Dispatch, PayloadAction, ThunkAction, createSlice, createSelector, current } from "@reduxjs/toolkit";
-import { RootState, AppThunk } from "../store";
-import config from "../../../config";
-import { ComplaintCollection, ComplaintState } from "../../types/state/complaint-state";
-import { ComplaintHeader } from "../../types/complaints/details/complaint-header";
-import COMPLAINT_TYPES from "../../types/app/complaint-types";
-import { ComplaintDetails } from "../../types/complaints/details/complaint-details";
-import { ComplaintDetailsAttractant } from "../../types/complaints/details/complaint-attactant";
-import { ComplaintCallerInformation } from "../../types/complaints/details/complaint-caller-information";
-import { ComplaintSuspectWitness } from "../../types/complaints/details/complaint-suspect-witness-details";
-import ComplaintType from "../../constants/complaint-types";
-import { ZoneAtAGlanceStats } from "../../types/complaints/zone-at-a-glance-stats";
-import { ComplaintFilters } from "../../types/complaints/complaint-filters";
-import { generateApiParameters, get, patch, post } from "../../common/api";
-import { ComplaintQueryParams } from "../../types/api-params/complaint-query-params";
-import { Feature } from "../../types/maps/bcGeocoderType";
-import { ToggleSuccess, ToggleError } from "../../common/toast";
-import { ComplaintSearchResults } from "../../types/api-params/complaint-results";
-import { Coordinates } from "../../types/app/coordinate-type";
+import { RootState, AppThunk } from "@store/store";
+import config from "@/config";
+import { ComplaintCollection, ComplaintState } from "@apptypes/state/complaint-state";
+import { ComplaintHeader } from "@apptypes/complaints/details/complaint-header";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { ComplaintDetails } from "@apptypes/complaints/details/complaint-details";
+import { ComplaintDetailsAttractant } from "@apptypes/complaints/details/complaint-attactant";
+import { ComplaintCallerInformation } from "@apptypes/complaints/details/complaint-caller-information";
+import { ComplaintSuspectWitness } from "@apptypes/complaints/details/complaint-suspect-witness-details";
+import ComplaintType from "@constants/complaint-types";
+import { ZoneAtAGlanceStats } from "@apptypes/complaints/zone-at-a-glance-stats";
+import { ComplaintFilters } from "@apptypes/complaints/complaint-filters";
+import { generateApiParameters, get, patch, post } from "@common/api";
+import { ComplaintQueryParams } from "@apptypes/api-params/complaint-query-params";
+import { Feature } from "@apptypes/maps/bcGeocoderType";
+import { ToggleSuccess, ToggleError } from "@common/toast";
+import { ComplaintSearchResults } from "@apptypes/api-params/complaint-results";
+import { Coordinates } from "@apptypes/app/coordinate-type";
 
-import { MapSearchResults } from "../../types/complaints/map-return";
-import { ComplaintMapItem } from "../../types/app/complaints/complaint-map-item";
+import { MapSearchResults } from "@apptypes/complaints/map-return";
+import { ComplaintMapItem } from "@apptypes/app/complaints/complaint-map-item";
 
-import { WildlifeComplaint as WildlifeComplaintDto } from "../../types/app/complaints/wildlife-complaint";
-import { AllegationComplaint as AllegationComplaintDto } from "../../types/app/complaints/allegation-complaint";
-import { Complaint as ComplaintDto } from "../../types/app/complaints/complaint";
-import { AttractantXref as AttractantXrefDto } from "../../types/app/complaints/attractant-xref";
-import { Attractant as AttractantDto } from "../../types/app/code-tables/attactant";
+import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
+import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
+import { Complaint as ComplaintDto } from "@apptypes/app/complaints/complaint";
+import { AttractantXref as AttractantXrefDto } from "@apptypes/app/complaints/attractant-xref";
+import { Attractant as AttractantDto } from "@apptypes/app/code-tables/attactant";
 
 import { from } from "linq-to-typescript";
 import {
@@ -34,15 +34,15 @@ import {
   getStatusByStatusCode,
   getViolationByViolationCode,
   getGirTypeByGirTypeCode,
-} from "../../common/methods";
-import { Agency } from "../../types/app/code-tables/agency";
-import { ReportedBy } from "../../types/app/code-tables/reported-by";
-import { WebEOCComplaintUpdateDTO } from "../../types/app/complaints/webeoc-complaint-update";
-import { RelatedData } from "../../types/app/complaints/related-data";
-import { ActionTaken } from "../../types/app/complaints/action-taken";
+} from "@common/methods";
+import { Agency } from "@apptypes/app/code-tables/agency";
+import { ReportedBy } from "@apptypes/app/code-tables/reported-by";
+import { WebEOCComplaintUpdateDTO } from "@apptypes/app/complaints/webeoc-complaint-update";
+import { RelatedData } from "@apptypes/app/complaints/related-data";
+import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 
-import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "../../types/app/complaints/general-complaint";
-import { ComplaintMethodReceivedType } from "../../types/app/code-tables/complaint-method-received-type";
+import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
+import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint-method-received-type";
 import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
@@ -835,6 +835,15 @@ export const selectComplaint = (
     complaints: { complaint },
   } = state;
   return complaint;
+};
+
+export const selectComplaintLargeCarnivoreInd = (state: RootState): boolean => {
+  const {
+    complaints: { complaint },
+  } = state;
+  const complaintData = complaint as WildlifeComplaintDto;
+  if (complaintData) return complaintData.isLargeCarnivore;
+  return false;
 };
 
 export const selectComplaintDetails =

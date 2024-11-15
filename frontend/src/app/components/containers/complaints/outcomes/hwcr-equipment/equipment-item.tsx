@@ -1,19 +1,19 @@
 import { FC, useState } from "react";
 import { Card, Button, Badge } from "react-bootstrap";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { formatDate } from "../../../../../common/methods";
+import { formatDate } from "@common/methods";
 
-import { DeleteConfirmModal } from "../../../../modal/instances/delete-confirm-modal";
-import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
-import { selectOfficerByAuthUserGuid } from "../../../../../store/reducers/officer";
-import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
+import { DeleteConfirmModal } from "@components/modal/instances/delete-confirm-modal";
+import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
+import { selectOfficerByAuthUserGuid } from "@store/reducers/officer";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 
-import Option from "../../../../../types/app/option";
+import Option from "@apptypes/app/option";
 
-import { selectEquipmentDropdown } from "../../../../../store/reducers/code-table";
-import { CASE_ACTION_CODE } from "../../../../../constants/case_actions";
-import { deleteEquipment } from "../../../../../store/reducers/case-thunks";
-import { CompLocationInfo } from "../../../../common/comp-location-info";
+import { selectEquipmentDropdown } from "@store/reducers/code-table";
+import { CASE_ACTION_CODE } from "@constants/case_actions";
+import { deleteEquipment } from "@store/reducers/case-thunks";
+import { CompLocationInfo } from "@components/common/comp-location-info";
 
 interface EquipmentItemProps {
   equipment: EquipmentDetailsDto;

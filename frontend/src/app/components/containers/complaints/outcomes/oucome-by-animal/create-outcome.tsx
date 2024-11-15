@@ -1,31 +1,32 @@
 import { FC, useRef, useState } from "react";
-import { Button, Card, Col, Row } from "react-bootstrap";
-import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
-import { CompSelect } from "../../../../common/comp-select";
+import { Button, Card } from "react-bootstrap";
+import { ValidationDatePicker } from "@common/validation-date-picker";
+import { CompSelect } from "@components/common/comp-select";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { useAppSelector } from "../../../../../hooks/hooks";
+import { useAppSelector } from "@hooks/hooks";
 import {
   selectAgeDropdown,
-  selectConflictHistoryDropdown,
   selectSexDropdown,
   selectSpeciesCodeDropdown,
   selectThreatLevelDropdown,
   selectWildlifeComplaintOutcome,
-} from "../../../../../store/reducers/code-table";
-import { AnimalOutcome } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { AnimalTagV2 } from "../../../../../types/app/complaints/outcomes/wildlife/animal-tag";
-import type { DrugUsed as DrugUsedData } from "../../../../../types/app/complaints/outcomes/wildlife/drug-used";
-import Option from "../../../../../types/app/option";
-import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
+} from "@store/reducers/code-table";
+import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
+import { AnimalTagV2 } from "@apptypes/app/complaints/outcomes/wildlife/animal-tag";
+import type { DrugUsed as DrugUsedData } from "@apptypes/app/complaints/outcomes/wildlife/drug-used";
+import Option from "@apptypes/app/option";
+import { selectOfficerListByAgency } from "@store/reducers/officer";
 import { from } from "linq-to-typescript";
 import { EarTag } from "./ear-tag";
 import { DrugUsed } from "./drug-used";
-import { DrugAuthorization } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
+import { DrugAuthorization } from "@apptypes/app/complaints/outcomes/wildlife/drug-authorization";
 import { DrugAuthorizedBy } from "./drug-authorized-by";
-import { REQUIRED } from "../../../../../constants/general";
+import { REQUIRED } from "@constants/general";
 import { v4 as uuidv4 } from "uuid";
-import { ToggleError } from "../../../../../common/toast";
-import { getNextOrderNumber } from "../hwcr-outcome-by-animal-v2";
+import { ToggleError } from "@common/toast";
+import { getNextOrderNumber } from "@components/containers/complaints/outcomes/hwcr-outcome-by-animal-v2";
+import { ValidationTextArea } from "@common/validation-textarea";
+import { selectComplaintLargeCarnivoreInd } from "@store/reducers/complaints";
 import { getValue } from "./outcome-common";
 
 type props = {
@@ -45,7 +46,7 @@ const defaultOutcome: AnimalOutcome = {
   sex: "",
   age: "",
   threatLevel: "",
-  conflictHistory: "",
+  identifyingFeatures: "",
   tags: [],
   drugs: [],
   outcome: "",
@@ -65,13 +66,13 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const sexes = useAppSelector(selectSexDropdown);
   const ages = useAppSelector(selectAgeDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
-  const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficerListByAgency);
+  const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
-  const optionDictionaries = { speciesList, sexes, ages, threatLevels, conflictHistories, outcomes, officers };
+  const optionDictionaries = { speciesList, sexes, ages, threatLevels, outcomes, officers };
 
   //-- error handling
   const [speciesError, setSpeciesError] = useState("");
@@ -421,117 +422,26 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                 />
               </div>
             </div>
-            <div className="comp-details-form-row">
-              <label htmlFor="select-category-level">Category level</label>
-              <CompSelect
-                id="select-category-level"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={threatLevels}
-                enableValidation={false}
-                placeholder={"Select"}
-                onChange={(evt) => {
-                  updateModel("threatLevel", evt?.value);
-                }}
-              />
-            </div>
-            <div className="comp-details-form-row">
-              <label htmlFor="select-conflict-history">Conflict history</label>
-              <CompSelect
-                id="select-conflict-history"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={conflictHistories}
-                enableValidation={false}
-                placeholder={"Select"}
-                onChange={(evt) => {
-                  updateModel("conflictHistory", evt?.value);
-                }}
-              />
-            </div>
-
-            <Row
-              className="mb-3"
-              hidden
+            <div
+              className="comp-details-form-row"
+              id="identifying-features"
             >
-              <Col
-                xs={12}
-                md={4}
-              >
-                <label
-                  className="mb-2"
-                  htmlFor="select-species"
-                >
-                  Species
-                </label>
-                <CompSelect
-                  id="select-species"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={speciesList}
-                  enableValidation={true}
-                  placeholder="Select"
-                  onChange={handleSpeciesChange}
-                  defaultOption={getValue("species", data, optionDictionaries)}
-                  errorMessage={speciesError}
+              <label htmlFor="outcome-decision-rationale">Identifying features</label>
+              <div className="comp-details-input full-width">
+                <ValidationTextArea
+                  className="comp-form-control"
+                  id="outcome-identifying-features"
+                  defaultValue={data.identifyingFeatures}
+                  rows={2}
+                  errMsg={""}
+                  maxLength={4000}
+                  onChange={(e: any) => updateModel("identifyingFeatures", e.trim())}
                 />
-              </Col>
-              <Col
-                xs={12}
-                md={4}
-              >
-                <label
-                  className="mb-2"
-                  htmlFor="select-sex"
-                >
-                  Sex
-                </label>
-                <CompSelect
-                  id="select-sex"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={sexes}
-                  enableValidation={false}
-                  placeholder={"Select"}
-                  onChange={(evt) => {
-                    updateModel("sex", evt?.value);
-                  }}
-                />
-              </Col>
-              <Col
-                xs={12}
-                md={4}
-              >
-                <label
-                  className="mb-2"
-                  htmlFor="select-age"
-                >
-                  Age
-                </label>
-                <CompSelect
-                  id="select-age"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={ages}
-                  enableValidation={false}
-                  placeholder={"Select"}
-                  onChange={(evt) => {
-                    updateModel("age", evt?.value);
-                  }}
-                />
-              </Col>
-            </Row>
-            <Row hidden>
-              <Col
-                xs={12}
-                md={4}
-              >
-                <label
-                  className="mb-2"
-                  htmlFor="select-category-level"
-                >
-                  Category level
-                </label>
+              </div>
+            </div>
+            {isLargeCarnivore && (
+              <div className="comp-details-form-row">
+                <label htmlFor="select-category-level">Category level</label>
                 <CompSelect
                   id="select-category-level"
                   classNamePrefix="comp-select"
@@ -543,30 +453,8 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                     updateModel("threatLevel", evt?.value);
                   }}
                 />
-              </Col>
-              <Col
-                xs={12}
-                md={4}
-              >
-                <label
-                  className="mb-2"
-                  htmlFor="select-conflict-history"
-                >
-                  Conflict history
-                </label>
-                <CompSelect
-                  id="select-conflict-history"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={conflictHistories}
-                  enableValidation={false}
-                  placeholder={"Select"}
-                  onChange={(evt) => {
-                    updateModel("conflictHistory", evt?.value);
-                  }}
-                />
-              </Col>
-            </Row>
+              </div>
+            )}
           </fieldset>
 
           <fieldset>

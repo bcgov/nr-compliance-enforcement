@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
-import type { AnimalOutcome as AnimalOutcomeData } from "../../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { useAppSelector } from "../../../../../hooks/hooks";
+import type { AnimalOutcome as AnimalOutcomeData } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
+import { useAppSelector } from "@hooks/hooks";
 import {
   selectAgeDropdown,
   selectConflictHistoryDropdown,
@@ -9,13 +9,14 @@ import {
   selectSpeciesCodeDropdown,
   selectThreatLevelDropdown,
   selectWildlifeComplaintOutcome,
-} from "../../../../../store/reducers/code-table";
+} from "@store/reducers/code-table";
 import { from } from "linq-to-typescript";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { formatDate, pad } from "../../../../../common/methods";
-import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
+import { formatDate, pad } from "@common/methods";
+import { selectOfficerListByAgency } from "@store/reducers/officer";
 import { DrugItem } from "./drug-item";
 import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
+import { selectComplaintLargeCarnivoreInd } from "@/app/store/reducers/complaints";
 
 type props = {
   index: number;
@@ -32,9 +33,9 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
   const sexes = useAppSelector(selectSexDropdown);
   const ages = useAppSelector(selectAgeDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
-  const conflictHistories = useAppSelector(selectConflictHistoryDropdown);
   const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficerListByAgency);
+  const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = !data.outcome && !data.officer && !data.date && isInEdit.showSectionErrors;
 
@@ -42,7 +43,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
   const [animalSex, setAnimalSex] = useState("");
   const [animalAge, setAnimalAge] = useState("");
   const [animalThreatLevel, setAnimalThreatLevel] = useState("");
-  const [animalHistory, setAnimalHistory] = useState("");
+  const [animalIdentifyingFeatures, setAnimalIdentifyingFeatures] = useState("");
   const [animalOutcome, setAnimalOutcome] = useState("");
   const [outcomeOfficer, setOutcomeOfficer] = useState("");
 
@@ -59,7 +60,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
 
   //-- get all of the values for the animal outcome and apply them
   useEffect(() => {
-    const { species, sex, age, threatLevel, conflictHistory, outcome, officer } = data;
+    const { species, sex, age, threatLevel, identifyingFeatures, outcome, officer } = data;
 
     if (species) {
       const selected = from(speciesList).firstOrDefault((item) => item.value === species);
@@ -89,11 +90,8 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
       }
     }
 
-    if (conflictHistory) {
-      const selected = from(conflictHistories).firstOrDefault((item) => item.value === conflictHistory);
-      if (selected?.label) {
-        setAnimalHistory(selected.label);
-      }
+    if (identifyingFeatures) {
+      setAnimalIdentifyingFeatures(identifyingFeatures);
     }
 
     if (outcome) {
@@ -110,7 +108,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ages, conflictHistories, data, outcomes, sexes, speciesList, threatLevels]);
+  }, [ages, data, outcomes, sexes, speciesList, threatLevels]);
 
   //-- events
   const handleDeleteItem = () => {
@@ -169,7 +167,13 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
           as="dl"
           className="mb-3"
         >
-          {data?.threatLevel && (
+          {data?.identifyingFeatures && (
+            <Col xs={12}>
+              <dt>Identifying features</dt>
+              <dd>{animalIdentifyingFeatures}</dd>
+            </Col>
+          )}
+          {data?.threatLevel && isLargeCarnivore && (
             <Col
               xs={12}
               md={6}
@@ -178,16 +182,6 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
               <dd>{animalThreatLevel}</dd>
             </Col>
           )}
-          {data?.conflictHistory && (
-            <Col
-              xs={12}
-              md={6}
-            >
-              <dt>Conflict history</dt>
-              <dd>{animalHistory}</dd>
-            </Col>
-          )}
-
           {data?.tags && from(data?.tags).any() && (
             <Col xs={12}>
               <dt>Ear Tag{data?.tags.length > 1 && "s"}</dt>

@@ -6,4 +6,5 @@ export interface AssessmentActionDto {
   shortDescription: string;
   longDescription: string;
   activeIndicator: boolean;
+  isLegacy?: boolean;
 }

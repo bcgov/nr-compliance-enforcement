@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Row, Col } from "react-bootstrap";
-import logo from "../../../assets/images/BCID_H_rgb_rev.png";
+import logo from "@assets/images/BCID_H_rgb_rev.png";
 
 interface ReferenceHeaderProps {
   title: string;

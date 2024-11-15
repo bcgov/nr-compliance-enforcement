@@ -1,12 +1,12 @@
-import { Office } from "../../types/office/office";
-import { OfficeState } from "../../types/office/offices-in-zone-state";
-import { AppThunk, RootState } from "../store";
+import { Office } from "@apptypes/office/office";
+import { OfficeState } from "@apptypes/office/offices-in-zone-state";
+import { AppThunk, RootState } from "@store/store";
 import { createSlice } from "@reduxjs/toolkit";
-import config from "../../../config";
-import { generateApiParameters, get } from "../../common/api";
+import config from "@/config";
+import { generateApiParameters, get } from "@common/api";
 import { from } from "linq-to-typescript";
-import { OfficeAssignment } from "../../types/app/office/office-assignment";
-import { DropdownOption } from "../../types/app/drop-down-option";
+import { OfficeAssignment } from "@apptypes/app/office/office-assignment";
+import { DropdownOption } from "@apptypes/app/drop-down-option";
 
 const initialState: OfficeState = {
   officesInZone: [],

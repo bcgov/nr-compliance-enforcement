@@ -1,4 +1,4 @@
-import { Delegate } from "../people/delegate";
+import { Delegate } from "@apptypes/app/people/delegate";
 import { BaseComplaint } from "nrs-ce-common-types";
 
 export interface Complaint extends BaseComplaint {

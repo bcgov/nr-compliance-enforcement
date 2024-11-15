@@ -1,12 +1,12 @@
 import { FC } from "react";
 import { Nav } from "react-bootstrap";
-import COMPLAINT_TYPES from "../../../types/app/complaint-types";
-import { NavigationTab } from "../../../types/app/complaints/navigation-tabs";
-import { COMPLAINT_VIEW_TYPES } from "../../../constants/complaint-view-type";
-import { useAppSelector } from "../../../hooks/hooks";
-import { selectTotalComplaintsByType, selectTotalMappedComplaints } from "../../../store/reducers/complaints";
-import UserService from "../../../service/user-service";
-import Roles from "../../../types/app/roles";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { NavigationTab } from "@apptypes/app/complaints/navigation-tabs";
+import { COMPLAINT_VIEW_TYPES } from "@constants/complaint-view-type";
+import { useAppSelector } from "@hooks/hooks";
+import { selectTotalComplaintsByType, selectTotalMappedComplaints } from "@store/reducers/complaints";
+import UserService from "@service/user-service";
+import Roles from "@apptypes/app/roles";
 
 type props = {
   complaintType: string;

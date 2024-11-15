@@ -1,4 +1,4 @@
-import KeyValuePair from "../app/key-value-pair";
+import KeyValuePair from "@apptypes/app/key-value-pair";
 
 export interface Assessment {
   assessment_type: KeyValuePair[];
@@ -12,4 +12,11 @@ export interface Assessment {
   createdAt?: Date;
   updatedBy?: string;
   updatedAt?: Date;
+  contacted_complainant?: boolean;
+  attended?: boolean;
+  location_type?: KeyValuePair;
+  conflict_history?: KeyValuePair;
+  category_level?: KeyValuePair;
+  assessment_cat1_type: KeyValuePair[];
+  assessment_type_legacy?: KeyValuePair[];
 }

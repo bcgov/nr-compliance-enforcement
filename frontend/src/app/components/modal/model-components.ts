@@ -7,7 +7,7 @@ import {
   DELETE_ANIMAL_OUTCOME,
   DELETE_CONFIRM,
   QUICK_CLOSE,
-} from "../../types/modal/modal-types";
+} from "@apptypes/modal/modal-types";
 
 import {
   SampleModal,

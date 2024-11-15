@@ -1,15 +1,15 @@
 import { FC, useState } from "react";
-import { AllegationComplaint } from "../../../../types/app/complaints/allegation-complaint";
-import { applyStatusClass, formatDateTime, truncateString } from "../../../../common/methods";
+import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
+import { applyStatusClass, formatDateTime, truncateString } from "@common/methods";
 import { Link } from "react-router-dom";
 import { ComplaintActionItems } from "./complaint-action-items";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import { useAppSelector } from "../../../../hooks/hooks";
-import { selectCodeTable } from "../../../../store/reducers/code-table";
-import { CODE_TABLE_TYPES } from "../../../../constants/code-table-types";
-import UserService from "../../../../service/user-service";
-import Roles from "../../../../types/app/roles";
+import { useAppSelector } from "@hooks/hooks";
+import { selectCodeTable } from "@store/reducers/code-table";
+import { CODE_TABLE_TYPES } from "@constants/code-table-types";
+import UserService from "@service/user-service";
+import Roles from "@apptypes/app/roles";
 
 type Props = {
   type: string;

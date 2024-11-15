@@ -1,10 +1,10 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Footer, Header } from "../layout";
+import { Footer, Header } from "@components/containers/layout";
 import { TbFaceId, TbFaceIdError, TbLockAccess } from "react-icons/tb";
 import { validate as uuidValidate } from "uuid";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { validateComsAccess } from "../../../store/reducers/app";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { validateComsAccess } from "@store/reducers/app";
 import { ErrorMessage } from "./error-message";
 
 type Props = {};
