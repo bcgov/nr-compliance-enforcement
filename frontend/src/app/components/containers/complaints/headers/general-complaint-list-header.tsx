@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { SortableHeader } from "../../../common/sortable-header";
+import { SortableHeader } from "@components/common/sortable-header";
 
 type Props = {
   handleSort: Function;

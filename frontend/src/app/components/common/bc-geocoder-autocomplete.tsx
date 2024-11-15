@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import CreatableSelect from "react-select/creatable";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { getComplaintLocationByAddress, selectGeocodedComplaintCoordinates } from "../../store/reducers/complaints";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { getComplaintLocationByAddress, selectGeocodedComplaintCoordinates } from "@store/reducers/complaints";
 
 interface Props {
   value?: string;

@@ -1,10 +1,10 @@
 import { FC, useEffect, useState } from "react";
-import { useAppDispatch } from "../../../hooks/hooks";
+import { useAppDispatch } from "@hooks/hooks";
 import { ToastContainer } from "react-toastify";
-import { ToggleError, ToggleSuccess } from "../../../common/toast";
+import { ToggleError, ToggleSuccess } from "@common/toast";
 import { Table } from "react-bootstrap";
-import { generateApiParameters, get, patch } from "../../../common/api";
-import config from "../../../../config";
+import { generateApiParameters, get, patch } from "@common/api";
+import config from "@/config";
 
 export const FeatureManagement: FC = () => {
   const dispatch = useAppDispatch();

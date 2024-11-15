@@ -1,5 +1,5 @@
-import Option from "../../types/app/option";
-import { ComplaintFilters } from "../../types/complaints/complaint-filters/complaint-filters";
+import Option from "@apptypes/app/option";
+import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complaint-filters";
 
 export type ComplaintFilterPayload = {
   filter: string;
