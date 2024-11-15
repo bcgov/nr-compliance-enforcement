@@ -1,10 +1,10 @@
 import { Action, ThunkAction } from "@reduxjs/toolkit";
-import { RootState } from "../store";
-import config from "../../../config";
+import { RootState } from "@store/store";
+import config from "@/config";
 import { format } from "date-fns";
 import axios, { AxiosRequestConfig } from "axios";
-import { AUTH_TOKEN, getUserAgency } from "../../service/user-service";
-import { AgencyType } from "../../types/app/agency-types";
+import { AUTH_TOKEN, getUserAgency } from "@service/user-service";
+import { AgencyType } from "@apptypes/app/agency-types";
 
 //--
 //-- exports a complaint as a pdf document

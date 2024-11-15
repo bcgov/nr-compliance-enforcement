@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { applyStatusClass } from "../../../../common/methods";
+import { applyStatusClass } from "@common/methods";
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
