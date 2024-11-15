@@ -1,24 +1,20 @@
 import { FC, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { assignOfficerToOffice, selectOfficersDropdown } from "../../../store/reducers/officer";
-import { CompSelect } from "../../common/comp-select";
-import Option from "../../../types/app/option";
-import {
-  fetchOfficeAssignments,
-  selectOfficesForAssignmentDropdown,
-  selectOffices,
-} from "../../../store/reducers/office";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { assignOfficerToOffice, selectOfficersDropdown } from "@store/reducers/officer";
+import { CompSelect } from "@components/common/comp-select";
+import Option from "@apptypes/app/option";
+import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown, selectOffices } from "@store/reducers/office";
 import { ToastContainer } from "react-toastify";
-import { ToggleError, ToggleSuccess } from "../../../common/toast";
-import { clearNotification, selectNotification } from "../../../store/reducers/app";
-import { selectAgencyDropdown, selectTeamDropdown } from "../../../store/reducers/code-table";
-import { CEEB_ROLE_OPTIONS } from "../../../constants/ceeb-roles";
-import { generateApiParameters, get, patch } from "../../../common/api";
-import config from "../../../../config";
-import { Officer } from "../../../types/person/person";
+import { ToggleError, ToggleSuccess } from "@common/toast";
+import { clearNotification, selectNotification } from "@store/reducers/app";
+import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
+import { CEEB_ROLE_OPTIONS } from "@constants/ceeb-roles";
+import { generateApiParameters, get, patch } from "@common/api";
+import config from "@/config";
+import { Officer } from "@apptypes/person/person";
 import { UUID } from "crypto";
-import { ValidationMultiSelect } from "../../../common/validation-multiselect";
+import { ValidationMultiSelect } from "@common/validation-multiselect";
 
 export const UserManagement: FC = () => {
   const dispatch = useAppDispatch();

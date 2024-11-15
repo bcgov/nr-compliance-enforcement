@@ -1,10 +1,10 @@
 import { FC } from "react";
-import { useAppSelector } from "../../../../hooks/hooks";
-import { selectComplaintCallerInformation } from "../../../../store/reducers/complaints";
+import { useAppSelector } from "@hooks/hooks";
+import { selectComplaintCallerInformation } from "@store/reducers/complaints";
 import { formatPhoneNumber } from "react-phone-number-input/input";
 import { Card } from "react-bootstrap";
-import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
-import { isFeatureActive } from "../../../../store/reducers/app";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { isFeatureActive } from "@store/reducers/app";
 
 export const CallerInformation: FC = () => {
   const { name, primaryPhone, secondaryPhone, alternatePhone, address, email, reportedByCode, isPrivacyRequested } =

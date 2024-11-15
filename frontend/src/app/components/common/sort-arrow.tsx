@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { SORT_TYPES } from "../../constants/sort-direction";
+import { SORT_TYPES } from "@constants/sort-direction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSort, faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
 

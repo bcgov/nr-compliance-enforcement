@@ -3,32 +3,27 @@ import { useParams } from "react-router-dom";
 import { Button, Card } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 
-import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
-import { selectOfficerListByAgency, selectOfficersByAgency } from "../../../../../store/reducers/officer";
-import { selectEquipmentDropdown, selectTrapEquipment } from "../../../../../store/reducers/code-table";
-import {
-  getComplaintById,
-  selectComplaint,
-  selectComplaintCallerInformation,
-} from "../../../../../store/reducers/complaints";
-import { CompSelect } from "../../../../common/comp-select";
-import { ToggleError } from "../../../../../common/toast";
-import { bcUtmZoneNumbers, getSelectedItem, formatLatLongCoordinate } from "../../../../../common/methods";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
+import { selectEquipmentDropdown, selectTrapEquipment } from "@store/reducers/code-table";
+import { getComplaintById, selectComplaint, selectComplaintCallerInformation } from "@store/reducers/complaints";
+import { CompSelect } from "@components/common/comp-select";
+import { ToggleError } from "@common/toast";
+import { bcUtmZoneNumbers, getSelectedItem, formatLatLongCoordinate } from "@common/methods";
 
-import Option from "../../../../../types/app/option";
-import { Officer } from "../../../../../types/person/person";
+import Option from "@apptypes/app/option";
 
 import "react-toastify/dist/ReactToastify.css";
-import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
-import { openModal } from "../../../../../store/reducers/app";
-import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
-import { EquipmentDetailsDto } from "../../../../../types/app/case-files/equipment-details";
-import { CaseActionDto } from "../../../../../types/app/case-files/case-action";
-import { CASE_ACTION_CODE } from "../../../../../constants/case_actions";
-import { upsertEquipment } from "../../../../../store/reducers/case-thunks";
-import { CompRadioGroup } from "../../../../common/comp-radiogroup";
+import { ValidationDatePicker } from "@common/validation-date-picker";
+import { openModal } from "@store/reducers/app";
+import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
+import { CaseActionDto } from "@apptypes/app/case-files/case-action";
+import { CASE_ACTION_CODE } from "@constants/case_actions";
+import { upsertEquipment } from "@store/reducers/case-thunks";
+import { CompRadioGroup } from "@components/common/comp-radiogroup";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { CompCoordinateInput } from "../../../../common/comp-coordinate-input";
+import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 
 export interface EquipmentFormProps {
   equipment?: EquipmentDetailsDto;

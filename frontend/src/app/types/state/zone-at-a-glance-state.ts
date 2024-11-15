@@ -1,4 +1,4 @@
-import { ZoneAtAGlanceStats } from "../complaints/zone-at-a-glance-stats";
+import { ZoneAtAGlanceStats } from "@apptypes/complaints/zone-at-a-glance-stats";
 
 export interface ZoneAtAGlanceState {
   hwcr: ZoneAtAGlanceStats;

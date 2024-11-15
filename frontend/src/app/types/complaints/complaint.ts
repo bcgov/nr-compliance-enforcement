@@ -1,6 +1,6 @@
-import { AgencyCode } from "../code-tables/agency-code";
-import { GeoOrganizationUnitCode } from "../code-tables/geo-organization-unit-code";
-import { ReportedByCode } from "../code-tables/reported-by-code";
+import { AgencyCode } from "@apptypes/code-tables/agency-code";
+import { GeoOrganizationUnitCode } from "@apptypes/code-tables/geo-organization-unit-code";
+import { ReportedByCode } from "@apptypes/code-tables/reported-by-code";
 import { PersonComplaintXref } from "./person-complaint-xref";
 
 export interface Complaint {

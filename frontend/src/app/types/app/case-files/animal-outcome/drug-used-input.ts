@@ -25,3 +25,15 @@ export interface DrugUsedInputV2 {
   amountDiscarded: string;
   discardMethod: string;
 }
+
+export interface DrugUsedInputV3 {
+  id?: string;
+
+  vial: string;
+  drug: string;
+  amountUsed: string;
+  injectionMethod: string;
+
+  remainingUse: string | null;
+  additionalComments: string;
+}

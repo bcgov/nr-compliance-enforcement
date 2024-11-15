@@ -1,11 +1,11 @@
 import { FC } from "react";
 import { Slide } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
-import { useAppDispatch } from "../../hooks/hooks";
-import { generateApiParameters, get } from "../../common/api";
-import { formatDateTime } from "../../common/methods";
-import { COMSObject } from "../../types/coms/object";
-import config from "../../../config";
+import { useAppDispatch } from "@hooks/hooks";
+import { generateApiParameters, get } from "@common/api";
+import { formatDateTime } from "@common/methods";
+import { COMSObject } from "@apptypes/coms/object";
+import config from "@/config";
 import AttachmentIcon from "./attachment-icon";
 import { Button } from "react-bootstrap";
 

@@ -1,5 +1,5 @@
-import { AgencyCode } from "../code-tables/agency-code";
-import { CosGeoOrgUnit, Officer } from "../person/person";
+import { AgencyCode } from "@apptypes/code-tables/agency-code";
+import { CosGeoOrgUnit, Officer } from "@apptypes/person/person";
 
 export interface Office {
   office_guid: string;

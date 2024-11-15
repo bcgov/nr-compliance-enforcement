@@ -1,4 +1,4 @@
-import { Officer } from "../person/person";
+import { Officer } from "@apptypes/person/person";
 
 export interface OfficerState {
   officers: Officer[];

@@ -1,14 +1,14 @@
 import { from } from "linq-to-typescript";
-import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
-import { AnimalOutcomeV2 } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { Assessment } from "../../types/outcomes/assessment";
-import { Prevention } from "../../types/outcomes/prevention";
-import { SupplementalNote } from "../../types/outcomes/supplemental-note";
-import { AnimalOutcomeSubject, Subject } from "../../types/state/cases-state";
-import { RootState } from "../store";
-import { CASE_ACTION_CODE } from "../../constants/case_actions";
-import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
-import { PermitSite } from "../../types/app/case-files/ceeb/authorization-outcome/permit-site";
+import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
+import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
+import { Assessment } from "@apptypes/outcomes/assessment";
+import { Prevention } from "@apptypes/outcomes/prevention";
+import { SupplementalNote } from "@apptypes/outcomes/supplemental-note";
+import { AnimalOutcomeSubject, Subject } from "@apptypes/state/cases-state";
+import { RootState } from "@store/store";
+import { CASE_ACTION_CODE } from "@constants/case_actions";
+import { Decision } from "@apptypes/app/case-files/ceeb/decision/decision";
+import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
 
 //-- Case file selectors
 export const selectCaseId = (state: RootState): string => {
@@ -82,7 +82,7 @@ export const selectNotesOfficer = (state: RootState) => {
   return currentOfficer;
 };
 
-export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> => {
+export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcome> => {
   const {
     cases: { subject: subjects },
   } = state;
@@ -99,7 +99,7 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
         sex,
         age,
         categoryLevel: threatLevel,
-        conflictHistory,
+        identifyingFeatures,
         outcome,
         tags,
         drugs,
@@ -111,13 +111,13 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
       const _tags = tags ?? [];
       const _drugs = drugs ?? [];
 
-      let record: AnimalOutcomeV2 = {
+      let record: AnimalOutcome = {
         id,
         species,
         sex,
         age,
         threatLevel,
-        conflictHistory,
+        identifyingFeatures,
         outcome,
         tags: _tags,
         drugs: _drugs,

@@ -1,22 +1,20 @@
 import { FC, useEffect, useState } from "react";
 import { Row, Col, ListGroup } from "react-bootstrap";
-import { useAppSelector } from "../../../../../hooks/hooks";
-import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
-import { formatDate } from "../../../../../common/methods";
-import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
+import { useAppSelector } from "@hooks/hooks";
+import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "@store/reducers/code-table";
+import { formatDate } from "@common/methods";
+import { selectOfficerListByAgency } from "@store/reducers/officer";
 import { from } from "linq-to-typescript";
-import { selectComplaint } from "../../../../../store/reducers/complaints";
+import { selectComplaint } from "@store/reducers/complaints";
 
 type props = {
   vial: string;
   drug: string;
   amountUsed: string;
-  amountDiscarded: string;
 
   injectionMethod: string;
-  discardMethod: string;
+  additionalComments: string;
 
-  reactions: string;
   remainingUse: string | null;
 
   officer?: string;
@@ -27,10 +25,8 @@ export const DrugItem: FC<props> = ({
   vial,
   drug,
   amountUsed,
-  amountDiscarded,
   injectionMethod,
-  discardMethod,
-  reactions,
+  additionalComments,
   remainingUse,
   officer,
   date,
@@ -110,33 +106,14 @@ export const DrugItem: FC<props> = ({
           <dd>{remaining}</dd>
         </Col>
 
-        {remainingUse === "DISC" && (
-          <>
-            <Col
-              xs={12}
-              md={6}
-            >
-              <dt>Amount discarded</dt>
-              <dd>
-                {amountDiscarded} {amountDiscarded ? "ml" : ""}
-              </dd>
-            </Col>
-            <Col
-              xs={12}
-              md={6}
-            >
-              <dt>Discard method</dt>
-              <dd>{discardMethod}</dd>
-            </Col>
-          </>
-        )}
         <Col
           xs={12}
           md={6}
         >
-          <dt>Adverse Reactions</dt>
-          <dd>{reactions ? <>{reactions}</> : "None"}</dd>
+          <dt>Additional comments</dt>
+          <dd>{additionalComments ? <>{additionalComments}</> : "None"}</dd>
         </Col>
+
         <Col
           xs={12}
           md={6}

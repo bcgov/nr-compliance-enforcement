@@ -678,6 +678,10 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       }),
     ),
     forMember(
+      (destination) => destination.isLargeCarnivore,
+      mapFrom((src) => src.species_code.large_carnivore_ind),
+    ),
+    forMember(
       (destination) => destination.natureOfComplaint,
       mapFrom((src) => {
         const item = mapper.map<HwcrComplaintNatureCode, NatureOfComplaint>(

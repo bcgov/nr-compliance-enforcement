@@ -1,6 +1,6 @@
 import { FC } from "react";
 import Select, { StylesConfig } from "react-select";
-import Option from "../../types/app/option";
+import Option from "@apptypes/app/option";
 
 type Props = {
   id: string;

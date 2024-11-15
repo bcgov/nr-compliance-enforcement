@@ -1,22 +1,22 @@
 import { FC, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { selectComplaint } from "../../../../store/reducers/complaints";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { selectComplaint } from "@store/reducers/complaints";
 import { Button } from "react-bootstrap";
-import { AnimalOutcomeV2 } from "../../../../types/app/complaints/outcomes/wildlife/animal-outcome";
+import type { AnimalOutcome as AnimalOutcomeData } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
 import { from } from "linq-to-typescript";
-import { WildlifeComplaint } from "../../../../types/app/complaints/wildlife-complaint";
+import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { CreateAnimalOutcome } from "./oucome-by-animal/create-outcome";
 import { AnimalOutcome } from "./oucome-by-animal/animal-outcome";
 import { useParams } from "react-router-dom";
-import { ComplaintParams } from "../details/complaint-details-edit";
-import { createAnimalOutcome, getCaseFile, updateAnimalOutcome } from "../../../../store/reducers/case-thunks";
-import { selectAnimalOutcomes, selectCaseId } from "../../../../store/reducers/case-selectors";
-import { selectOfficersByAgency } from "../../../../store/reducers/officer";
-import { openModal } from "../../../../store/reducers/app";
-import { CANCEL_CONFIRM, DELETE_ANIMAL_OUTCOME } from "../../../../types/modal/modal-types";
+import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
+import { createAnimalOutcome, getCaseFile, updateAnimalOutcome } from "@store/reducers/case-thunks";
+import { selectAnimalOutcomes, selectCaseId } from "@store/reducers/case-selectors";
+import { selectOfficersByAgency } from "@store/reducers/officer";
+import { openModal } from "@store/reducers/app";
+import { CANCEL_CONFIRM, DELETE_ANIMAL_OUTCOME } from "@apptypes/modal/modal-types";
 import { EditOutcome } from "./oucome-by-animal/edit-outcome";
 import { UUID } from "crypto";
-import { setIsInEdit } from "../../../../store/reducers/cases";
+import { setIsInEdit } from "@store/reducers/cases";
 
 type props = {};
 
@@ -61,7 +61,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
 
   //-- outcomes is a collection of all of the animal outcomes
   //-- for the selected complaint
-  const [outcomes, setOutcomes] = useState<Array<AnimalOutcomeV2>>([]);
+  const [outcomes, setOutcomes] = useState<Array<AnimalOutcomeData>>([]);
 
   //-- modals
   //-- delete animal outcome modal
@@ -87,7 +87,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   //-- save an item from the create-complaint component
   //-- when saving make sure that the outcome is successfully
   //-- saved before adding the outcome to the list of outcomes
-  const handleSave = (item: AnimalOutcomeV2) => {
+  const handleSave = (item: AnimalOutcomeData) => {
     dispatch(createAnimalOutcome(id, item)).then((result) => {
       if (result === "success") {
         dispatch(getCaseFile(id));
@@ -99,7 +99,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   //-- save an item from the create-complaint component
   //-- when saving make sure that the outcome is successfully
   //-- saved before adding the outcome to the list of outcomes
-  const handleUpdate = (item: AnimalOutcomeV2) => {
+  const handleUpdate = (item: AnimalOutcomeData) => {
     dispatch(updateAnimalOutcome(caseId, item)).then((result) => {
       if (result === "success") {
         dispatch(getCaseFile(id));
@@ -220,7 +220,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
 
         {showForm && (
           <CreateAnimalOutcome
-            index={getNextOrderNumber<AnimalOutcomeV2>(outcomes)}
+            index={getNextOrderNumber<AnimalOutcomeData>(outcomes)}
             assignedOfficer={assignedOfficer}
             agency={agency}
             species={species}
