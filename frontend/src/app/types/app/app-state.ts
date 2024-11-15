@@ -30,4 +30,5 @@ export interface AppState {
 
   featureFlags: Array<FeatureFlagState>;
   activeTab: string;
+  activeComplaintsViewType: "list" | "map";
 }

@@ -11,7 +11,13 @@ import { ComplaintFilterBar } from "./complaint-filter-bar";
 import { ComplaintFilterContext, ComplaintFilterProvider } from "@providers/complaint-filter-provider";
 import { resetFilters, ComplaintFilterPayload } from "@store/reducers/complaint-filters";
 
-import { selectDefaultZone, setActiveTab } from "@store/reducers/app";
+import {
+  selectDefaultZone,
+  setActiveTab,
+  selectActiveTab,
+  selectActiveComplaintsViewType,
+  setActiveComplaintsViewType,
+} from "../../../store/reducers/app";
 
 import { ComplaintMap } from "./complaint-map";
 import { useNavigate } from "react-router-dom";
@@ -28,11 +34,22 @@ type Props = {
 
 export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const { dispatch: filterDispatch } = useContext(ComplaintFilterContext); //-- make sure to keep this dispatch renamed
-  const [complaintType, setComplaintType] = useState(defaultComplaintType);
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const [viewType, setViewType] = useState<"map" | "list">("list");
+  //-- Check global state for active tab and set it to default if it was not set there.
+  const storedComplaintType = useAppSelector(selectActiveTab);
+  useEffect(() => {
+    if (!storedComplaintType) dispatch(setActiveTab(defaultComplaintType));
+  }, [storedComplaintType, dispatch, defaultComplaintType]);
+  const [complaintType, setComplaintType] = useState(storedComplaintType ?? defaultComplaintType);
+
+  const storedComplaintViewType = useAppSelector(selectActiveComplaintsViewType);
+  useEffect(() => {
+    if (!storedComplaintViewType) dispatch(setActiveComplaintsViewType("list"));
+  }, [storedComplaintViewType, dispatch]);
+  const [viewType, setViewType] = useState<"map" | "list">(storedComplaintViewType ?? "list");
 
   const currentOfficer = useAppSelector(selectCurrentOfficer(), shallowEqual);
 
@@ -40,10 +57,6 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   //-- this is used to apply the search to the pager component
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    dispatch(setActiveTab(defaultComplaintType));
-  }, [dispatch, defaultComplaintType]);
 
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
@@ -68,6 +81,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   };
 
   const toggleViewType = (view: "list" | "map") => {
+    dispatch(setActiveComplaintsViewType(view));
     setViewType(view);
   };
 
