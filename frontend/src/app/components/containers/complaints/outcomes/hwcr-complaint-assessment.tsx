@@ -182,10 +182,10 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       setSelectedOfficer(officer);
       dispatch(clearAssessment());
       dispatch(getAssessment(complaintData.id));
-      dispatch(getPrevention(complaintData.id));
+      quickClose && dispatch(getPrevention(complaintData.id));
       dispatch(getCaseFile(id));
     }
-  }, [dispatch, id, complaintData, personGuid, assignableOfficers]);
+  }, [dispatch, id, complaintData, personGuid, assignableOfficers, quickClose]);
 
   const populateAssessmentUI = useCallback(() => {
     const selectedOfficer = (
