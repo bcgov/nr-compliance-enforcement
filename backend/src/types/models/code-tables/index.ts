@@ -59,6 +59,8 @@ export const AvailableCodeTables = [
   "team",
   "complaint-method-received-codes",
   "lead-agency",
+  "assessment-cat1-type",
+  "case-location-type",
 ];
 
 export const AvailableAgencies = ["cos"];

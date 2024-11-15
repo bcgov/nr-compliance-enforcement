@@ -15,16 +15,16 @@ describe("Complaint Change Status spec - Details View", () => {
   function fillInAssessmentSection() {
     let sectionParams = {
       section: "ASSESSMENT",
-      checkboxes: ["#ASSESSRISK"],
+      checkboxes: ["#SGHTNGS"],
       officer: "TestAcct, ENV",
       date: "01",
       actionRequired: "Yes",
-      toastText: "Assessment has been updated",
+      toastText: "Assessment has been saved",
     };
     cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
       if ($assessment.find("#outcome-save-button").length) {
         cy.fillInHWCSection(sectionParams).then(() => {
-          sectionParams.checkboxes = ["Assessed public safety risk"];
+          sectionParams.checkboxes = ["Sighting"];
           cy.validateHWCSection(sectionParams);
         });
       }

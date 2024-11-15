@@ -1,6 +1,6 @@
 // Refresh drug methods
 export const DrugAdministeredChanges = {
-  19: (state: any) => {
+  20: (state: any) => {
     return {
       ...state,
       codeTables: {
