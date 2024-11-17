@@ -13,14 +13,28 @@ import cases from "./reducers/cases";
 const appPersistConfig = {
   key: "app",
   storage: storage,
-  whitelist: ["profile", "alerts", "notifications", "configurations", "codeTableVersion"],
+  whitelist: [
+    "profile",
+    "alerts",
+    "notifications",
+    "configurations",
+    "codeTableVersion",
+    "activeTab",
+    "activeComplaintsViewType",
+  ],
+};
+
+const complaintsPersistConfig = {
+  key: "complaints",
+  storage: storage,
+  whitelist: ["complaintSearchParameters"],
 };
 
 export const rootReducer = combineReducers({
   app: persistReducer(appPersistConfig, app),
   officers,
   offices,
-  complaints,
+  complaints: persistReducer(complaintsPersistConfig, complaints),
   codeTables,
   attachments,
   cases,
