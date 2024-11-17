@@ -6,6 +6,7 @@ import {
   selectComplaintsByType,
   setComplaints,
   selectTotalComplaintsByType,
+  selectComplaintSearchParameters,
 } from "@store/reducers/complaints";
 import { Table } from "react-bootstrap";
 import { SORT_TYPES } from "@constants/sort-direction";
@@ -101,16 +102,17 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
 
   const totalComplaints = useAppSelector(selectTotalComplaintsByType(type));
   const defaultPageSize = useAppSelector(selectDefaultPageSize);
+  const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
+  const { sortColumn, sortOrder } = storedSearchParams;
 
   //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear
   const { state: filters } = useContext(ComplaintFilterContext);
+  const [sortKey, setSortKey] = useState(sortColumn ?? "incident_reported_utc_timestmp");
+  const [sortDirection, setSortDirection] = useState(sortOrder ?? SORT_TYPES.DESC);
 
-  const [sortKey, setSortKey] = useState("incident_reported_utc_timestmp");
-  const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
-
-  const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(defaultPageSize); // Default to 10 results per page
+  const [page, setPage] = useState<number>(storedSearchParams.page ?? 1);
+  const [pageSize, setPageSize] = useState<number>(storedSearchParams.pageSize ?? defaultPageSize); // Default to 10 results per page
 
   useEffect(() => {
     let payload = generateComplaintRequestPayload(type, filters, page, pageSize, sortKey, sortDirection);
