@@ -666,17 +666,6 @@
   .btn {
     font-size: 0.875rem;
   }
-
-  #ceeb-authorization-header {
-    h3 {
-      margin-bottom: 3px;
-    }
-    .legend {
-      color: $gray-500;
-      margin-bottom: 16px;
-      font-size: 14px;
-    }
-  }
 }
 
 .comp-details-section-header-actions {
@@ -738,6 +727,12 @@
     &.full-width {
       flex: 1 1 auto;
     }
+  }
+
+  .section-legend {
+    color: $gray-500;
+    margin-bottom: 16px;
+    font-size: 14px;
   }
 }
 
