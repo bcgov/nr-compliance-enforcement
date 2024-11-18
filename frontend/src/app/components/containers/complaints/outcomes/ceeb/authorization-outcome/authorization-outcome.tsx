@@ -70,9 +70,7 @@ export const AuthoizationOutcome: FC = () => {
       id="ceeb-authorization"
     >
       <div className="comp-details-section-header">
-        <h3>
-          Authorization<span className="required-ind">*</span>
-        </h3>
+        <h3>Authorization{editable && <span className="required-ind">*</span>}</h3>
         {!editable && (
           <div className="comp-details-section-header-actions">
             <Button
