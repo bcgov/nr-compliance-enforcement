@@ -369,7 +369,9 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                 Animal Information
               </legend>
               <div className="comp-details-form-row">
-                <label htmlFor="select-species">Species</label>
+                <label htmlFor="select-species">
+                  Species<span className="required-ind">*</span>
+                </label>
 
                 <CompSelect
                   id="select-species"

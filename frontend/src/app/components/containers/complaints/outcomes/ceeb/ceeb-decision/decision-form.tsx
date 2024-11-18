@@ -319,7 +319,9 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-schedule-sector-type"
         >
-          <label htmlFor="outcome-decision-schedule-secto">WDR schedule/IPM sector type</label>
+          <label htmlFor="outcome-decision-schedule-secto">
+            WDR schedule/IPM sector type<span className="required-ind">*</span>
+          </label>
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-schedule-sector"
@@ -342,7 +344,9 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-sector-category"
         >
-          <label htmlFor="outcome-decision-sector-category">Sector/Category</label>
+          <label htmlFor="outcome-decision-sector-category">
+            Sector/Category<span className="required-ind">*</span>
+          </label>
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-sector-category"
@@ -363,7 +367,9 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-discharge-type"
         >
-          <label htmlFor="outcome-decision-discharge">Discharge type</label>
+          <label htmlFor="outcome-decision-discharge">
+            Discharge type<span className="required-ind">*</span>
+          </label>
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-discharge"
