@@ -1705,10 +1705,35 @@ export class ComplaintService {
       data.reportedOn = _applyTimezone(data.reportedOn, tz, "datetime");
       data.updatedOn = _applyTimezone(data.updatedOn, tz, "datetime");
 
+      //Assessment Date - will only be either 0 or 1 actions in the array
+      if (data.outcome.assessmentDetails?.actions[0]?.date) {
+        data.outcome.assessmentDetails.actions[0].date = _applyTimezone(
+          data.outcome.assessmentDetails.actions[0].date,
+          tz,
+          "date",
+        );
+      }
+
+      //Prevention and Education Date - will only be either 0 or 1 actions in the array
+      if (data.outcome.preventionDetails?.actions[0]?.date) {
+        data.outcome.preventionDetails.actions[0].date = _applyTimezone(
+          data.outcome.preventionDetails.actions[0].date,
+          tz,
+          "date",
+        );
+      }
+
+      //Notes - No Action Array
       if (data.outcome.note) {
         data.outcome.note.action.date = _applyTimezone(data.outcome.note.action.date, tz, "date");
       }
 
+      //File Review Date - No Action Array
+      if (data.outcome.reviewComplete?.date) {
+        data.outcome.reviewComplete.date = _applyTimezone(data.outcome.reviewComplete.date, tz, "date");
+      }
+
+      //CEEB Decision - No Action Array
       if (data.outcome.decision?.actionTakenDate) {
         data.outcome.decision.actionTakenDate = _applyTimezone(data.outcome.decision.actionTakenDate, tz, "date");
       }
