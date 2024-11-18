@@ -886,6 +886,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the species code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="true" remarks="The id of the user that updated the species code." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the species code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="10" name="large_carnivore_ind" nullable="true" remarks="A boolean indicator to determine if the species is in Catergory 1 - large carnivore." size="1" type="bool" typeCode="-7"/>
          <primaryKey column="species_code" sequenceNumberInPK="1"/>
          <index name="PK_speciescd" unique="true">
             <column ascending="true" name="species_code"/>
