@@ -1,4 +1,4 @@
-import AttachmentEnum from "../../constants/attachment-enum";
+import AttachmentEnum from "@constants/attachment-enum";
 
 export interface COMSObject {
   id?: string;

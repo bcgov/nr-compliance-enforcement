@@ -25,6 +25,30 @@ export const caseFileQueryFields: string = `
       shortDescription
       longDescription
       activeIndicator
+      isLegacy
+    }
+    contactedComplainant
+    attended
+    locationType {
+      key
+      value
+    }
+    conflictHistory {
+      key
+      value
+    }
+    categoryLevel {
+      key
+      value
+    }
+    cat1Actions {
+      actionId
+      actor
+      date
+      actionCode
+      shortDescription
+      longDescription
+      activeIndicator
     }
   }
   isReviewRequired
@@ -78,7 +102,7 @@ export const caseFileQueryFields: string = `
     sex
     age
     categoryLevel
-    conflictHistory
+    identifyingFeatures
     outcome
     tags { 
       id
@@ -94,11 +118,9 @@ export const caseFileQueryFields: string = `
       drug
       amountUsed
       injectionMethod
-      reactions
     
       remainingUse
-      amountDiscarded
-      discardMethod
+      additionalComments
 
       order
     }

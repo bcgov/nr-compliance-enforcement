@@ -4,6 +4,11 @@ on:
   pull_request:
     branches:
       - release/**
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
 
 concurrency:
   # Cancel in progress for PR open and close
@@ -41,7 +46,7 @@ jobs:
 
   tests:
     name: Tests
-    if: needs.deploys.outputs.triggered == 'true'
+    if: needs.deploys.outputs.triggered == 'true' && ${{ !github.event.pull_request.draft }}
     needs: [deploys]
     uses: ./.github/workflows/.tests.yml
 

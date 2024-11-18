@@ -57,6 +57,7 @@ import { TeamType } from "src/types/models/code-tables/team-type";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { ComplaintMethodReceivedType } from "src/types/models/code-tables/complaint-method-received-type";
 import { ScheduleSectorXref } from "src/types/models/code-tables/schedule-sector-xref";
+import { CaseLocationCode } from "src/types/models/code-tables/case-location-code";
 
 @Injectable()
 export class CodeTableService {
@@ -236,7 +237,15 @@ export class CodeTableService {
       case "species": {
         const data = await this._speciesRepository.find({ order: { display_order: "ASC" } });
         let results = data.map(
-          ({ species_code, short_description, long_description, display_order, active_ind, legacy_code }) => {
+          ({
+            species_code,
+            short_description,
+            long_description,
+            display_order,
+            active_ind,
+            legacy_code,
+            large_carnivore_ind,
+          }) => {
             let table: Species = {
               species: species_code,
               legacy: legacy_code,
@@ -244,6 +253,7 @@ export class CodeTableService {
               longDescription: long_description,
               displayOrder: display_order,
               isActive: active_ind,
+              isLargeCarnivore: large_carnivore_ind,
             };
             return table;
           },
@@ -688,6 +698,43 @@ export class CodeTableService {
           ({ agencyCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
             const table: Agency = {
               agency: agencyCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "assessment-cat1-type": {
+        const { data } = await get(token, {
+          query:
+            "{HWCRAssessmentCat1Actions{actionTypeCode actionCode displayOrder activeIndicator shortDescription longDescription}}",
+        });
+        const assessmentCat1TypeCodes = data.HWCRAssessmentCat1Actions.map(
+          ({ actionCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: AssessmentType = {
+              assessmentType: actionCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return assessmentCat1TypeCodes;
+      }
+      case "case-location-type": {
+        const { data } = await get(token, {
+          query: "{caseLocationCodes{caseLocationCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.caseLocationCodes.map(
+          ({ caseLocationCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: CaseLocationCode = {
+              caseLocationType: caseLocationCode,
               shortDescription: shortDescription,
               longDescription: longDescription,
               displayOrder: displayOrder,

@@ -1,20 +1,15 @@
 import { FC, useEffect, useState, useRef } from "react";
 import { CarouselProvider, Slider } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import {
-  getAttachments,
-  selectAttachments,
-  setAttachments,
-  setOutcomeAttachments,
-} from "../../store/reducers/attachments";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { getAttachments, selectAttachments, setAttachments, setOutcomeAttachments } from "@store/reducers/attachments";
 import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
-import { COMSObject } from "../../types/coms/object";
-import { selectMaxFileSize } from "../../store/reducers/app";
+import { COMSObject } from "@apptypes/coms/object";
+import { selectMaxFileSize } from "@store/reducers/app";
 import { v4 as uuidv4 } from "uuid";
-import { getThumbnailDataURL, isImage } from "../../common/methods";
-import AttachmentEnum from "../../constants/attachment-enum";
+import { getThumbnailDataURL, isImage } from "@common/methods";
+import AttachmentEnum from "@constants/attachment-enum";
 
 type Props = {
   attachmentType: AttachmentEnum;

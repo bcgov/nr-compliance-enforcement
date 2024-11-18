@@ -1,9 +1,9 @@
 import { FC } from "react";
-import { useAppSelector } from "../../../../../hooks/hooks";
-import { formatDate } from "../../../../../common/methods";
+import { useAppSelector } from "@hooks/hooks";
+import { formatDate } from "@common/methods";
 
-import { CaseAction } from "../../../../../types/outcomes/case-action";
-import { selectNotesOfficer } from "../../../../../store/reducers/case-selectors";
+import { CaseAction } from "@apptypes/outcomes/case-action";
+import { selectNotesOfficer } from "@store/reducers/case-selectors";
 import { Button, Card } from "react-bootstrap";
 
 type props = {

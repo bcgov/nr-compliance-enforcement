@@ -1,10 +1,10 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { Button } from "react-bootstrap";
-import { CompInput } from "../../../../common/comp-input";
-import { CompSelect } from "../../../../common/comp-select";
-import { useAppSelector } from "../../../../../hooks/hooks";
-import { selectEarDropdown } from "../../../../../store/reducers/code-table";
-import { REQUIRED } from "../../../../../constants/general";
+import { CompInput } from "@components/common/comp-input";
+import { CompSelect } from "@components/common/comp-select";
+import { useAppSelector } from "@hooks/hooks";
+import { selectEarDropdown } from "@store/reducers/code-table";
+import { REQUIRED } from "@constants/general";
 
 type props = {
   id: string;

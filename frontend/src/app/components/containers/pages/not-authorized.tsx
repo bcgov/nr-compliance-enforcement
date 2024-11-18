@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Footer, Header } from "../../containers/layout";
+import { Footer, Header } from "@components/containers/layout";
 import { BsPersonFillSlash } from "react-icons/bs";
 import { Link } from "react-router-dom";
 

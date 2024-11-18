@@ -1,7 +1,7 @@
 import { FC, ReactNode } from "react";
-import { useErrorBoundary } from "../../hooks/error-boundary";
-import logoLg from "../../../assets/images/branding/BCgov-lg.png";
-import { Footer } from "../containers/layout";
+import { useErrorBoundary } from "@hooks/error-boundary";
+import logoLg from "@assets/images/branding/BCgov-lg.png";
+import { Footer } from "@components/containers/layout";
 import { TbFaceIdError } from "react-icons/tb";
 
 type props = {

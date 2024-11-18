@@ -1,13 +1,13 @@
 import { FC } from "react";
 import { OfficeUserContainer } from "./office-user-container";
 import { Row, Col } from "react-bootstrap";
-import { OfficeStats } from "../../../types/complaints/zone-at-a-glance-stats";
+import { OfficeStats } from "@apptypes/complaints/zone-at-a-glance-stats";
 import { useCollapse } from "react-collapsed";
-import chevronDown from "../../../../assets/images/chevron-down.png";
-import chevronUp from "../../../../assets/images/chevron-up.png";
-import { useAppSelector } from "../../../hooks/hooks";
-import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
-import { isFeatureActive } from "../../../store/reducers/app";
+import chevronDown from "@assets/images/chevron-down.png";
+import chevronUp from "@assets/images/chevron-up.png";
+import { useAppSelector } from "@hooks/hooks";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { isFeatureActive } from "@store/reducers/app";
 
 type Props = {
   hwcrOpenComplaintsOfficeStat: OfficeStats;

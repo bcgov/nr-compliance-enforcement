@@ -1,9 +1,9 @@
 import { OverlayTrigger, Popover } from "react-bootstrap";
-import { useAppDispatch } from "../../../hooks/hooks";
-import { openModal } from "../../../store/reducers/app";
-import { ASSIGN_OFFICER, CHANGE_STATUS } from "../../../types/modal/modal-types";
+import { useAppDispatch } from "@hooks/hooks";
+import { openModal } from "@store/reducers/app";
+import { ASSIGN_OFFICER, CHANGE_STATUS } from "@apptypes/modal/modal-types";
 import { FC, useContext } from "react";
-import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
+import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
 
 type Props = {
   complaint_identifier: string;
