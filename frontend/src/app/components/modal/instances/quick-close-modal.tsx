@@ -100,7 +100,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
     equipmentData?.length > 0 ||
     preventionData?.date !== undefined ||
     subjectData?.length > 0 ||
-    noteData?.note !== undefined ||
+    noteData?.note ||
     isReviewRequired ||
     reviewComplete;
   const isClosed = complaintData?.status === "CLOSED";
