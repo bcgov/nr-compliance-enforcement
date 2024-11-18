@@ -42,7 +42,6 @@ jobs:
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
       triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/')
-      params: --set backup.enabled=true # will be removed after pr approval
 
   tests:
     name: Tests
