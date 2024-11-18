@@ -454,7 +454,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0) &&
       (!selectedAssessmentCat1Types || selectedAssessmentCat1Types?.length <= 0)
     ) {
-      setAssessmentRequiredErrorMessage("One or more assessment is required");
+      setAssessmentRequiredErrorMessage("One or more animal actions is required");
       return true;
     }
     return false;
