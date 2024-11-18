@@ -7,16 +7,16 @@ metadata:
   labels:
     {{- include "backup.labels" . | nindent 4 }}
 spec:
-  schedule: {{.Values.backup.schedule | quote}}
+  schedule: {{ .Values.backup.schedule | quote }}
   concurrencyPolicy: "Replace"
-  successfulJobsHistoryLimit: {{.Values.backup.successHistoryLimit }}
-  failedJobsHistoryLimit: {{.Values.backup.failedHistoryLimit }}
+  successfulJobsHistoryLimit: {{ .Values.backup.successHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.backup.failedHistoryLimit }}
   jobTemplate:
     metadata:
       labels:
         {{- include "backup.labels" . | nindent 8 }}
     spec:
-      backoffLimit: {{.Values.backup.backoffLimit}}
+      backoffLimit: {{ .Values.backup.backoffLimit }}
       template:
         metadata:
           labels:
@@ -48,44 +48,44 @@ spec:
                 - name: DATABASE_SERVICE_NAME
                   valueFrom:
                     secretKeyRef:
-                      name: {{.Release.Name}}-backend
+                      name: {{ .Release.Name }}-backend
                       key: POSTGRESQL_HOST
                 - name: DEFAULT_PORT
                   value: "5432"
                 - name: POSTGRESQL_DATABASE
                   valueFrom:
                     secretKeyRef:
-                      name: {{.Release.Name}}-backend
+                      name: {{ .Release.Name }}-backend
                       key: "POSTGRESQL_DATABASE"
                 - name: DATABASE_USER
                   valueFrom:
                     secretKeyRef:
-                      name: {{.Release.Name}}-backend
+                      name: {{ .Release.Name }}-backend
                       key: "POSTGRESQL_USER"
                 - name: DATABASE_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: {{.Release.Name}}-backend
+                      name: {{ .Release.Name }}-backend
                       key: "POSTGRESQL_PASSWORD"
                 - name: S3_USER
                   valueFrom:
                     secretKeyRef:
-                      name: {{.Release.Name}}-backend
+                      name: {{ .Release.Name }}-backend
                       key: "OBJECTSTORE_ACCESS_KEY"
                 - name: S3_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: {{.Release.Name}}-backend
+                      name: {{ .Release.Name }}-backend
                       key: "OBJECTSTORE_SECRET_KEY"
                 - name: S3_ENDPOINT
                   valueFrom:
                     secretKeyRef:
-                      name: {{.Release.Name}}-backend
+                      name: {{ .Release.Name }}-backend
                       key: "OBJECTSTORE_HTTPS_URL"
                 - name: S3_BUCKET
                   valueFrom:
                     secretKeyRef:
-                      name: {{.Release.Name}}-backend
+                      name: {{ .Release.Name }}-backend
                       key: "OBJECTSTORE_BACKUP_DIRECTORY"
           volumes:
             - name: backup
