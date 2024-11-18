@@ -1608,6 +1608,30 @@ export class ComplaintService {
       }
 
       //-- Convert Officer Guids to Names
+
+      //Assessment Officer - will only be either 0 or 1 actions in the array
+      if (outcomeData.getCaseFileByLeadId.assessmentDetails?.actions[0].actor) {
+        const { first_name, last_name } = (
+          await this._officerService.findByAuthUserGuid(
+            outcomeData.getCaseFileByLeadId.assessmentDetails.actions[0].actor,
+          )
+        ).person_guid;
+
+        outcomeData.getCaseFileByLeadId.assessmentDetails.actions[0].actor = last_name + ", " + first_name;
+      }
+
+      //Prevention and Education Officer - will only be either 0 or 1 actions in the array
+      if (outcomeData.getCaseFileByLeadId.preventionDetails?.actions[0].actor) {
+        const { first_name, last_name } = (
+          await this._officerService.findByAuthUserGuid(
+            outcomeData.getCaseFileByLeadId.preventionDetails.actions[0].actor,
+          )
+        ).person_guid;
+
+        outcomeData.getCaseFileByLeadId.preventionDetails.actions[0].actor = last_name + ", " + first_name;
+      }
+
+      //Notes officer - no actions array
       if (outcomeData.getCaseFileByLeadId.note) {
         const { first_name, last_name } = (
           await this._officerService.findByAuthUserGuid(outcomeData.getCaseFileByLeadId.note.action.actor)
@@ -1615,6 +1639,59 @@ export class ComplaintService {
 
         outcomeData.getCaseFileByLeadId.note.action.actor = last_name + ", " + first_name;
       }
+
+      //File review officer - no actions array
+      if (outcomeData.getCaseFileByLeadId.reviewComplete) {
+        const { first_name, last_name } = (
+          await this._officerService.findByAuthUserGuid(outcomeData.getCaseFileByLeadId.reviewComplete.actor)
+        ).person_guid;
+
+        outcomeData.getCaseFileByLeadId.reviewComplete.actor = last_name + ", " + first_name;
+      }
+
+      //-- Convert booleans to Yes/No
+
+      if (outcomeData.getCaseFileByLeadId.assessmentDetails) {
+        //Note this one is backwards since the variable is action NOT required but the report is action required
+        outcomeData.getCaseFileByLeadId.assessmentDetails.actionNotRequired = outcomeData.getCaseFileByLeadId
+          .assessmentDetails.actionNotRequired
+          ? "No"
+          : "Yes";
+
+        outcomeData.getCaseFileByLeadId.assessmentDetails.contactedComplainant = outcomeData.getCaseFileByLeadId
+          .assessmentDetails.contactedComplainant
+          ? "Yes"
+          : "No";
+
+        outcomeData.getCaseFileByLeadId.assessmentDetails.attended = outcomeData.getCaseFileByLeadId.assessmentDetails
+          .attended
+          ? "Yes"
+          : "No";
+      }
+
+      outcomeData.getCaseFileByLeadId.equipment.forEach((equipment) => {
+        switch (equipment.wasAnimalCaptured) {
+          case "Y":
+            equipment.wasAnimalCaptured = "Yes";
+            break;
+          case "N":
+            equipment.wasAnimalCaptured = "No";
+            break;
+          default:
+            equipment.wasAnimalCaptured = "Unknown";
+        }
+      });
+
+      if (outcomeData.getCaseFileByLeadId.reviewComplete) {
+        outcomeData.getCaseFileByLeadId.reviewComplete.activeIndicator = outcomeData.getCaseFileByLeadId.reviewComplete
+          .activeIndicator
+          ? "Yes"
+          : "No";
+      }
+
+      outcomeData.getCaseFileByLeadId.isReviewRequired = outcomeData.getCaseFileByLeadId.isReviewRequired
+        ? "Yes"
+        : "No";
 
       return outcomeData.getCaseFileByLeadId;
     };
