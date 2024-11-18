@@ -137,6 +137,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     if (selected) {
       setSelectedActionRequired(selected);
       setSelectedJustification(null as unknown as Option);
+      setSelectedLinkedComplaint(null);
     } else {
       setSelectedActionRequired(null);
     }
