@@ -147,4 +147,49 @@ describe("Complaint Search Functionality", () => {
         expect(length).to.eq(5);
       });
   });
+
+  it("Can retains search parameters when navigating back to the search page", () => {
+    cy.visit("/");
+    cy.waitForSpinner();
+
+    //-- load the ERS conflicts
+    cy.navigateToTab(complaintTypes[1], false);
+
+    //-- open the filter tab
+    cy.get("#comp-filter-btn").click({ force: true });
+
+    //-- select east kootenay zone
+    cy.selectItemById("zone-select-id", "East Kootenay");
+    cy.get("#comp-zone-filter").should("exist");
+
+    cy.get("#comp-filter-btn").click({ force: true });
+
+    cy.get("#complaint-search").click({ force: true });
+    cy.get("#complaint-search").clear().type("fire{enter}"); //-- {enter} will perform an enter keypress
+
+    cy.get("#map_toggle_id").click({ force: true });
+    cy.verifyMapMarkerExists(true);
+
+    cy.get("#multi-point-map")
+      .find("div.leaflet-marker-icon")
+      .should(({ length }) => {
+        expect(length).to.eq(5);
+      });
+
+    // Navigate to a different page, and return to then complaints page
+    cy.get("#create-complaints-link").click({ force: true });
+    cy.get("#details-screen-cancel-edit-button-top").should("exist");
+    cy.get("#complaints-link").click({ force: true });
+
+    // Verify that the search parameters set before leaving the page were retained
+    cy.get("#complaint-search").should("have.value", "fire");
+    cy.verifyMapMarkerExists(true);
+    cy.get("#comp-zone-filter").contains("East Kootenay");
+
+    cy.get("#multi-point-map")
+      .find("div.leaflet-marker-icon")
+      .should(({ length }) => {
+        expect(length).to.eq(5);
+      });
+  });
 });
