@@ -1583,7 +1583,7 @@ export class ComplaintService {
       }
     };
 
-    const _getCaseData = async (id: string, token: string) => {
+    const _getCaseData = async (id: string, token: string, tz: string) => {
       //-- Get the Outcome Data, this is done via a GQL call to prevent
       //-- a circular dependency between the complaint and case_file modules
       const { data, errors } = await get(token, {
@@ -1598,6 +1598,7 @@ export class ComplaintService {
 
       //-- Clean up the data to make it easier for formatting
       let outcomeData = data;
+
       //-- Add UA to unpermitted sites
       if (
         outcomeData.getCaseFileByLeadId.authorization &&
@@ -1607,39 +1608,118 @@ export class ComplaintService {
           "UA" + outcomeData.getCaseFileByLeadId.authorization.value;
       }
 
-      //-- Convert booleans to Yes/No
+      // Take advantage of value by reference to make the rest of the code a bit more readable
+      const assessmentDetails = outcomeData.getCaseFileByLeadId.assessmentDetails;
+      const assessmentActions = assessmentDetails?.actions;
+      const preventionDetails = outcomeData.getCaseFileByLeadId.preventionDetails;
+      const preventionActions = preventionDetails?.actions;
+      const equipment = outcomeData.getCaseFileByLeadId.equipment;
+      const wildlife = outcomeData.getCaseFileByLeadId.subject;
 
-      if (outcomeData.getCaseFileByLeadId.assessmentDetails) {
+      if (assessmentDetails) {
+        //-- Convert booleans to Yes/No
+
         //Note this one is backwards since the variable is action NOT required but the report is action required
-        outcomeData.getCaseFileByLeadId.assessmentDetails.actionNotRequired = outcomeData.getCaseFileByLeadId
-          .assessmentDetails.actionNotRequired
-          ? "No"
-          : "Yes";
+        assessmentDetails.actionNotRequired = assessmentDetails.actionNotRequired ? "No" : "Yes";
 
-        outcomeData.getCaseFileByLeadId.assessmentDetails.contactedComplainant = outcomeData.getCaseFileByLeadId
-          .assessmentDetails.contactedComplainant
-          ? "Yes"
-          : "No";
+        assessmentDetails.contactedComplainant = assessmentDetails.contactedComplainant ? "Yes" : "No";
 
-        outcomeData.getCaseFileByLeadId.assessmentDetails.attended = outcomeData.getCaseFileByLeadId.assessmentDetails
-          .attended
-          ? "Yes"
-          : "No";
+        assessmentDetails.attended = assessmentDetails.attended ? "Yes" : "No";
+
+        //-- Remove all inactive assessment and prevention actions
+        let filteredActions = assessmentActions.filter((item) => item.activeIndicator === true);
+        assessmentDetails.actions = filteredActions;
+
+        //-- Convert Officer Guids to Names
+        if (assessmentActions?.[0]?.actor) {
+          assessmentDetails.assessmentActor = assessmentActions[0].actor;
+          assessmentDetails.assessmentDate = assessmentActions[0].date;
+
+          //-- Convert Officer Guid to Name
+          const { first_name, last_name } = (
+            await this._officerService.findByAuthUserGuid(assessmentDetails.assessmentActor)
+          ).person_guid;
+
+          assessmentDetails.assessmentActor = last_name + ", " + first_name;
+
+          assessmentDetails.assessmentDate = _applyTimezone(assessmentDetails.assessmentDate, tz, "date");
+        }
       }
 
-      if (outcomeData.getCaseFileByLeadId.equipment) {
-        outcomeData.getCaseFileByLeadId.equipment.forEach((equipment) => {
-          switch (equipment.wasAnimalCaptured) {
-            case "Y":
-              equipment.wasAnimalCaptured = "Yes";
-              break;
-            case "N":
-              equipment.wasAnimalCaptured = "No";
-              break;
-            default:
-              equipment.wasAnimalCaptured = "Unknown";
-          }
-        });
+      if (preventionDetails) {
+        //-- Remove all inactive assessment and prevention actions
+        let filteredActions = preventionActions.filter((item) => item.activeIndicator === true);
+        preventionDetails.actions = filteredActions;
+
+        //-- Convert Officer Guids to Names
+        if (preventionDetails?.actions[0]?.actor) {
+          preventionDetails.preventionActor = preventionActions[0].actor;
+          preventionDetails.preventionDate = preventionActions[0].date;
+
+          const { first_name, last_name } = (
+            await this._officerService.findByAuthUserGuid(preventionDetails.preventionActor)
+          ).person_guid;
+
+          preventionDetails.preventionActor = last_name + ", " + first_name;
+
+          //Apply timezone and format date
+          preventionDetails.preventionDate = _applyTimezone(preventionDetails.preventionDate, tz, "date");
+        }
+      }
+
+      let equipmentCount = 1;
+      for (const equip of equipment) {
+        const equipmentActions = equip.actions;
+
+        //-- Convert booleans to Yes/No
+        const indicatorEnum = { Y: "Yes", N: "No" };
+        equip.wasAnimalCaptured = indicatorEnum[equip.wasAnimalCaptured] || "Unknown";
+
+        //-- Pull out the SetBy and Removed By Users / Dates
+        const setByAction = equipmentActions.find((item) => item.actionCode === "SETEQUIPMT");
+        const removedByAction = equipmentActions.find((item) => item.actionCode === "REMEQUIPMT");
+
+        equip.setByActor = setByAction?.actor;
+        equip.setByDate = setByAction?.date;
+
+        equip.removedByActor = removedByAction?.actor;
+        equip.removedByDate = removedByAction?.date;
+
+        //-- Convert Officer Guids to Names in parallel
+        const officerPromises = [];
+
+        if (equip.setByActor) {
+          officerPromises.push(
+            this._officerService.findByAuthUserGuid(equip.setByActor).then((result) => {
+              const { first_name, last_name } = result.person_guid;
+              equip.setByActor = `${last_name}, ${first_name}`;
+            }),
+          );
+        }
+
+        if (equip.removedByActor) {
+          officerPromises.push(
+            this._officerService.findByAuthUserGuid(equip.removedByActor).then((result) => {
+              const { first_name, last_name } = result.person_guid;
+              equip.removedByActor = `${last_name}, ${first_name}`;
+            }),
+          );
+        }
+
+        // Wait for both officer name resolutions
+        await Promise.all(officerPromises);
+
+        //Apply timezone and format dates
+        equip.setByDate = _applyTimezone(equip.setByDate, tz, "date");
+
+        //Removed By Date might not be present
+        if (equip.removedByDate) {
+          equip.removedByDate = _applyTimezone(equip.removedByDate, tz, "date");
+        }
+
+        //give it a nice friendly number
+        equip.order = equipmentCount;
+        equipmentCount++;
       }
 
       if (outcomeData.getCaseFileByLeadId.reviewComplete) {
@@ -1653,41 +1733,10 @@ export class ComplaintService {
         ? "Yes"
         : "No";
 
-      //-- Remove all inactive assessment and prevention actions
+      //-- For data structures that only have the actor/date display once (e.g. Assessment Actions, Prevention and Education and Drugs)
+      //-- we want to pull this information up a level or the templates don't work properly
 
-      if (outcomeData.getCaseFileByLeadId.assessmentDetails) {
-        outcomeData.getCaseFileByLeadId.assessmentDetails.actions =
-          outcomeData.getCaseFileByLeadId.assessmentDetails.actions.filter((item) => item.activeIndicator === true);
-      }
-
-      if (outcomeData.getCaseFileByLeadId.preventionDetails) {
-        outcomeData.getCaseFileByLeadId.preventionDetails.actions =
-          outcomeData.getCaseFileByLeadId.preventionDetails.actions.filter((item) => item.activeIndicator === true);
-      }
-
-      //-- Convert Officer Guids to Names
-
-      //Assessment Officer - only need to modify the first record as that is what is displayed
-      if (outcomeData.getCaseFileByLeadId.assessmentDetails?.actions[0]?.actor) {
-        const { first_name, last_name } = (
-          await this._officerService.findByAuthUserGuid(
-            outcomeData.getCaseFileByLeadId.assessmentDetails.actions[0].actor,
-          )
-        ).person_guid;
-
-        outcomeData.getCaseFileByLeadId.assessmentDetails.actions[0].actor = last_name + ", " + first_name;
-      }
-
-      //Prevention and Education Officer - only need to modify the first record as that is what is displayed
-      if (outcomeData.getCaseFileByLeadId.preventionDetails?.actions[0]?.actor) {
-        const { first_name, last_name } = (
-          await this._officerService.findByAuthUserGuid(
-            outcomeData.getCaseFileByLeadId.preventionDetails.actions[0].actor,
-          )
-        ).person_guid;
-
-        outcomeData.getCaseFileByLeadId.preventionDetails.actions[0].actor = last_name + ", " + first_name;
-      }
+      //-- Convert Remaining Officer Guids to Names
 
       //Notes officer - no actions array
       if (outcomeData.getCaseFileByLeadId.note) {
@@ -1707,7 +1756,8 @@ export class ComplaintService {
         outcomeData.getCaseFileByLeadId.reviewComplete.actor = last_name + ", " + first_name;
       }
 
-      console.log(outcomeData.getCaseFileByLeadId);
+      console.log(outcomeData.getCaseFileByLeadId.equipment);
+      console.log(equipment[0].actions);
 
       return outcomeData.getCaseFileByLeadId;
     };
@@ -1771,7 +1821,7 @@ export class ComplaintService {
       }
 
       //-- get case data
-      data.outcome = await _getCaseData(id, token);
+      data.outcome = await _getCaseData(id, token, tz);
 
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);
@@ -1797,24 +1847,6 @@ export class ComplaintService {
 
       data.reportedOn = _applyTimezone(data.reportedOn, tz, "datetime");
       data.updatedOn = _applyTimezone(data.updatedOn, tz, "datetime");
-
-      //Assessment Date - only need to modify the first record as that is what is displayed
-      if (data.outcome.assessmentDetails?.actions[0]?.date) {
-        data.outcome.assessmentDetails.actions[0].date = _applyTimezone(
-          data.outcome.assessmentDetails.actions[0].date,
-          tz,
-          "date",
-        );
-      }
-
-      //Prevention and Education Date - only need to modify the first record as that is what is displayed
-      if (data.outcome.preventionDetails?.actions[0]?.date) {
-        data.outcome.preventionDetails.actions[0].date = _applyTimezone(
-          data.outcome.preventionDetails.actions[0].date,
-          tz,
-          "date",
-        );
-      }
 
       //Notes - No Action Array
       if (data.outcome.note) {
