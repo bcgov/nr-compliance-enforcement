@@ -67,6 +67,7 @@ import { AllegationReportData } from "src/types/models/reports/complaints/allega
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { OfficerService } from "../officer/officer.service";
+import { CreatePersonComplaintXrefCodeDto } from "../person_complaint_xref_code/dto/create-person_complaint_xref_code.dto";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -1709,10 +1710,11 @@ export class ComplaintService {
         // Wait for both officer name resolutions
         await Promise.all(officerPromises);
 
-        //Apply timezone and format dates
-        equip.setByDate = _applyTimezone(equip.setByDate, tz, "date");
+        //-- Apply timezone and format dates
+        if (equip.setByDate) {
+          equip.setByDate = _applyTimezone(equip.setByDate, tz, "date");
+        }
 
-        //Removed By Date might not be present
         if (equip.removedByDate) {
           equip.removedByDate = _applyTimezone(equip.removedByDate, tz, "date");
         }
@@ -1720,6 +1722,57 @@ export class ComplaintService {
         //give it a nice friendly number
         equip.order = equipmentCount;
         equipmentCount++;
+      }
+
+      for (const animal of wildlife) {
+        const wildlifeActions = animal.actions;
+
+        const drugAction = wildlifeActions?.find((item) => item.actionCode === "ADMNSTRDRG");
+        const outcomeAction = wildlifeActions?.find((item) => item.actionCode === "RECOUTCOME");
+        let drugActor = drugAction?.actor;
+        let drugDate = drugAction?.date;
+
+        //-- Convert Officer Guids to Names in parallel
+        //add the officer/date to outcome
+        animal.officer = outcomeAction?.actor;
+        animal.date = outcomeAction?.date;
+
+        const officerPromises = [];
+
+        if (animal.officer) {
+          officerPromises.push(
+            this._officerService.findByAuthUserGuid(animal.officer).then((result) => {
+              const { first_name, last_name } = result.person_guid;
+              animal.officer = `${last_name}, ${first_name}`;
+            }),
+          );
+        }
+
+        if (drugActor) {
+          officerPromises.push(
+            this._officerService.findByAuthUserGuid(drugActor).then((result) => {
+              const { first_name, last_name } = result.person_guid;
+              drugActor = `${last_name}, ${first_name}`;
+            }),
+          );
+        }
+
+        // Wait for both officer name resolutions
+        await Promise.all(officerPromises);
+
+        //-- Apply timezone and format dates
+        if (animal.date) {
+          animal.date = _applyTimezone(animal.date, tz, "date");
+        }
+        if (drugDate) {
+          drugDate = _applyTimezone(drugDate, tz, "date");
+        }
+
+        //add the officer/drug onto each drug row
+        animal.drugs?.forEach((drug) => {
+          drug.officer = drugActor;
+          drug.date = drugDate;
+        });
       }
 
       if (outcomeData.getCaseFileByLeadId.reviewComplete) {
@@ -1755,9 +1808,6 @@ export class ComplaintService {
 
         outcomeData.getCaseFileByLeadId.reviewComplete.actor = last_name + ", " + first_name;
       }
-
-      console.log(outcomeData.getCaseFileByLeadId.equipment);
-      console.log(equipment[0].actions);
 
       return outcomeData.getCaseFileByLeadId;
     };
