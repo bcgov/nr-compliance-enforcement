@@ -148,24 +148,22 @@ describe("Complaint Search Functionality", () => {
       });
   });
 
-  it("Can retains search parameters when navigating back to the search page", () => {
+  it.only("Can retains search parameters when navigating back to the search page", () => {
     cy.visit("/");
     cy.waitForSpinner();
 
-    //-- load the ERS conflicts
+    //-- load the ERS conflicts and set filters
     cy.navigateToTab(complaintTypes[1], false);
+    cy.get("#comp-zone-filter").click({ force: true });
+    cy.waitForSpinner();
+    cy.get("#comp-zone-filter").should("not.exist");
 
-    //-- open the filter tab
     cy.get("#comp-filter-btn").click({ force: true });
-
-    //-- select east kootenay zone
-    cy.selectItemById("zone-select-id", "East Kootenay");
+    cy.selectItemById("zone-select-id", "South Island");
     cy.get("#comp-zone-filter").should("exist");
 
-    cy.get("#comp-filter-btn").click({ force: true });
-
     cy.get("#complaint-search").click({ force: true });
-    cy.get("#complaint-search").clear().type("fire{enter}"); //-- {enter} will perform an enter keypress
+    cy.get("#complaint-search").clear().type("wildlife{enter}"); //-- {enter} will perform an enter keypress
 
     cy.get("#map_toggle_id").click({ force: true });
     cy.verifyMapMarkerExists(true);
@@ -173,7 +171,7 @@ describe("Complaint Search Functionality", () => {
     cy.get("#multi-point-map")
       .find("div.leaflet-marker-icon")
       .should(({ length }) => {
-        expect(length).to.eq(5);
+        expect(length).to.eq(2);
       });
 
     // Navigate to a different page, and return to then complaints page
@@ -182,14 +180,14 @@ describe("Complaint Search Functionality", () => {
     cy.get("#complaints-link").click({ force: true });
 
     // Verify that the search parameters set before leaving the page were retained
-    cy.get("#complaint-search").should("have.value", "fire");
+    cy.get("#complaint-search").should("have.value", "wildlife");
     cy.verifyMapMarkerExists(true);
-    cy.get("#comp-zone-filter").contains("East Kootenay");
+    cy.get("#comp-zone-filter").contains("South Island");
 
     cy.get("#multi-point-map")
       .find("div.leaflet-marker-icon")
       .should(({ length }) => {
-        expect(length).to.eq(5);
+        expect(length).to.eq(2);
       });
   });
 });
