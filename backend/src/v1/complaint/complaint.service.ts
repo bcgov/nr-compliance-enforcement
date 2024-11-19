@@ -1607,10 +1607,68 @@ export class ComplaintService {
           "UA" + outcomeData.getCaseFileByLeadId.authorization.value;
       }
 
+      //-- Convert booleans to Yes/No
+
+      if (outcomeData.getCaseFileByLeadId.assessmentDetails) {
+        //Note this one is backwards since the variable is action NOT required but the report is action required
+        outcomeData.getCaseFileByLeadId.assessmentDetails.actionNotRequired = outcomeData.getCaseFileByLeadId
+          .assessmentDetails.actionNotRequired
+          ? "No"
+          : "Yes";
+
+        outcomeData.getCaseFileByLeadId.assessmentDetails.contactedComplainant = outcomeData.getCaseFileByLeadId
+          .assessmentDetails.contactedComplainant
+          ? "Yes"
+          : "No";
+
+        outcomeData.getCaseFileByLeadId.assessmentDetails.attended = outcomeData.getCaseFileByLeadId.assessmentDetails
+          .attended
+          ? "Yes"
+          : "No";
+      }
+
+      if (outcomeData.getCaseFileByLeadId.equipment) {
+        outcomeData.getCaseFileByLeadId.equipment.forEach((equipment) => {
+          switch (equipment.wasAnimalCaptured) {
+            case "Y":
+              equipment.wasAnimalCaptured = "Yes";
+              break;
+            case "N":
+              equipment.wasAnimalCaptured = "No";
+              break;
+            default:
+              equipment.wasAnimalCaptured = "Unknown";
+          }
+        });
+      }
+
+      if (outcomeData.getCaseFileByLeadId.reviewComplete) {
+        outcomeData.getCaseFileByLeadId.reviewComplete.activeIndicator = outcomeData.getCaseFileByLeadId.reviewComplete
+          .activeIndicator
+          ? "Yes"
+          : "No";
+      }
+
+      outcomeData.getCaseFileByLeadId.isReviewRequired = outcomeData.getCaseFileByLeadId.isReviewRequired
+        ? "Yes"
+        : "No";
+
+      //-- Remove all inactive assessment and prevention actions
+
+      if (outcomeData.getCaseFileByLeadId.assessmentDetails) {
+        outcomeData.getCaseFileByLeadId.assessmentDetails.actions =
+          outcomeData.getCaseFileByLeadId.assessmentDetails.actions.filter((item) => item.activeIndicator === true);
+      }
+
+      if (outcomeData.getCaseFileByLeadId.preventionDetails) {
+        outcomeData.getCaseFileByLeadId.preventionDetails.actions =
+          outcomeData.getCaseFileByLeadId.preventionDetails.actions.filter((item) => item.activeIndicator === true);
+      }
+
       //-- Convert Officer Guids to Names
 
-      //Assessment Officer - will only be either 0 or 1 actions in the array
-      if (outcomeData.getCaseFileByLeadId.assessmentDetails?.actions[0].actor) {
+      //Assessment Officer - only need to modify the first record as that is what is displayed
+      if (outcomeData.getCaseFileByLeadId.assessmentDetails?.actions[0]?.actor) {
         const { first_name, last_name } = (
           await this._officerService.findByAuthUserGuid(
             outcomeData.getCaseFileByLeadId.assessmentDetails.actions[0].actor,
@@ -1620,8 +1678,8 @@ export class ComplaintService {
         outcomeData.getCaseFileByLeadId.assessmentDetails.actions[0].actor = last_name + ", " + first_name;
       }
 
-      //Prevention and Education Officer - will only be either 0 or 1 actions in the array
-      if (outcomeData.getCaseFileByLeadId.preventionDetails?.actions[0].actor) {
+      //Prevention and Education Officer - only need to modify the first record as that is what is displayed
+      if (outcomeData.getCaseFileByLeadId.preventionDetails?.actions[0]?.actor) {
         const { first_name, last_name } = (
           await this._officerService.findByAuthUserGuid(
             outcomeData.getCaseFileByLeadId.preventionDetails.actions[0].actor,
@@ -1649,49 +1707,7 @@ export class ComplaintService {
         outcomeData.getCaseFileByLeadId.reviewComplete.actor = last_name + ", " + first_name;
       }
 
-      //-- Convert booleans to Yes/No
-
-      if (outcomeData.getCaseFileByLeadId.assessmentDetails) {
-        //Note this one is backwards since the variable is action NOT required but the report is action required
-        outcomeData.getCaseFileByLeadId.assessmentDetails.actionNotRequired = outcomeData.getCaseFileByLeadId
-          .assessmentDetails.actionNotRequired
-          ? "No"
-          : "Yes";
-
-        outcomeData.getCaseFileByLeadId.assessmentDetails.contactedComplainant = outcomeData.getCaseFileByLeadId
-          .assessmentDetails.contactedComplainant
-          ? "Yes"
-          : "No";
-
-        outcomeData.getCaseFileByLeadId.assessmentDetails.attended = outcomeData.getCaseFileByLeadId.assessmentDetails
-          .attended
-          ? "Yes"
-          : "No";
-      }
-
-      outcomeData.getCaseFileByLeadId.equipment.forEach((equipment) => {
-        switch (equipment.wasAnimalCaptured) {
-          case "Y":
-            equipment.wasAnimalCaptured = "Yes";
-            break;
-          case "N":
-            equipment.wasAnimalCaptured = "No";
-            break;
-          default:
-            equipment.wasAnimalCaptured = "Unknown";
-        }
-      });
-
-      if (outcomeData.getCaseFileByLeadId.reviewComplete) {
-        outcomeData.getCaseFileByLeadId.reviewComplete.activeIndicator = outcomeData.getCaseFileByLeadId.reviewComplete
-          .activeIndicator
-          ? "Yes"
-          : "No";
-      }
-
-      outcomeData.getCaseFileByLeadId.isReviewRequired = outcomeData.getCaseFileByLeadId.isReviewRequired
-        ? "Yes"
-        : "No";
+      console.log(outcomeData.getCaseFileByLeadId);
 
       return outcomeData.getCaseFileByLeadId;
     };
@@ -1782,7 +1798,7 @@ export class ComplaintService {
       data.reportedOn = _applyTimezone(data.reportedOn, tz, "datetime");
       data.updatedOn = _applyTimezone(data.updatedOn, tz, "datetime");
 
-      //Assessment Date - will only be either 0 or 1 actions in the array
+      //Assessment Date - only need to modify the first record as that is what is displayed
       if (data.outcome.assessmentDetails?.actions[0]?.date) {
         data.outcome.assessmentDetails.actions[0].date = _applyTimezone(
           data.outcome.assessmentDetails.actions[0].date,
@@ -1791,7 +1807,7 @@ export class ComplaintService {
         );
       }
 
-      //Prevention and Education Date - will only be either 0 or 1 actions in the array
+      //Prevention and Education Date - only need to modify the first record as that is what is displayed
       if (data.outcome.preventionDetails?.actions[0]?.date) {
         data.outcome.preventionDetails.actions[0].date = _applyTimezone(
           data.outcome.preventionDetails.actions[0].date,
