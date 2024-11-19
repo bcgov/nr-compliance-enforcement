@@ -87,7 +87,7 @@ jobs:
         --set bitnami-pg.backup.cronjob.storage.size=512Mi
         --set bitnami-pg.primary.persistence.size=512Mi
         --set backup.enabled=true
-        --set backup.persistence.size=256Mi
+        --set backup.persistence.size=512Mi
 
   promote:
     name: Promote Images
