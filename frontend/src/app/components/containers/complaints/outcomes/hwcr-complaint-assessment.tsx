@@ -483,6 +483,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       setJustificationRequiredErrorMessage(
         "Other complaints are linked to this complaint. This complaint cannot be closed as a duplicate.",
       );
+      return true;
     }
     console.log(linkedComplaintData);
     return false;
