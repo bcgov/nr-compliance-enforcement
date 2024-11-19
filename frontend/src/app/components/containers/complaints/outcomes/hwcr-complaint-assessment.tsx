@@ -280,6 +280,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     setSelectedActionRequired(selectedActionRequired);
     setSelectedJustification(selectedJustification);
     setSelectedLinkedComplaint(selectedLinkedComplaint);
+    setSelectedLinkedComplaintStatus("OPEN");
     setSelectedAssessmentTypes(selectedAssessmentTypes);
     setSelectedContacted(selectedContacted);
     setSelectedAttended(selectedAttended);
@@ -478,9 +479,14 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     if (selectedActionRequired?.value === "No" && !selectedJustification) {
       setJustificationRequiredErrorMessage("Required when Action Required is No");
       return true;
+    } else if (linkedComplaintData?.length > 0 && !linkedComplaintData[0].parent) {
+      setJustificationRequiredErrorMessage(
+        "Other complaints are linked to this complaint. This complaint cannot be closed as a duplicate.",
+      );
     }
+    console.log(linkedComplaintData);
     return false;
-  }, [selectedActionRequired, selectedJustification]);
+  }, [selectedActionRequired, selectedJustification, linkedComplaintData]);
 
   const validateLinkedComplaint = useCallback((): boolean => {
     if (selectedJustification?.value === "DUPLICATE") {
@@ -488,7 +494,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
         setLinkedComplaintErrorMessage("Required when Justification is Duplicate");
         return true;
       } else if (selectedLinkedComplaint.value === id) {
-        setLinkedComplaintErrorMessage("Linked complaint cannot be the same as the current complaint");
+        setLinkedComplaintErrorMessage("Linked complaint cannot be the same as the current complaint.");
         return true;
       } else if (selectedLinkedComplaintStatus !== "OPEN") {
         setLinkedComplaintErrorMessage("Linked complaint must be open");
@@ -538,6 +544,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     validateAssessmentTypes,
     validateJustification,
     validateLinkedComplaint,
+    validateLocationType,
   ]);
 
   // Validate on selected value change
