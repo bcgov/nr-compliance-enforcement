@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import {
   selectDischargeDropdown,
   selectNonComplianceDropdown,
@@ -7,21 +7,21 @@ import {
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
   selectScheduleSectorXref,
-} from "../../../../../../store/reducers/code-table-selectors";
-import { selectLeadAgencyDropdown } from "../../../../../../store/reducers/code-table";
-import { Decision } from "../../../../../../types/app/case-files/ceeb/decision/decision";
+} from "@store/reducers/code-table-selectors";
+import { selectLeadAgencyDropdown } from "@store/reducers/code-table";
+import { Decision } from "@apptypes/app/case-files/ceeb/decision/decision";
 import { Button } from "react-bootstrap";
-import { ValidationDatePicker } from "../../../../../../common/validation-date-picker";
-import { CompSelect } from "../../../../../common/comp-select";
-import Option from "../../../../../../types/app/option";
-import { CASE_ACTION_CODE } from "../../../../../../constants/case_actions";
-import { CompInput } from "../../../../../common/comp-input";
-import { openModal } from "../../../../../../store/reducers/app";
-import { CANCEL_CONFIRM } from "../../../../../../types/modal/modal-types";
-import { getCaseFile, upsertDecisionOutcome } from "../../../../../../store/reducers/case-thunks";
-import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
+import { ValidationDatePicker } from "@common/validation-date-picker";
+import { CompSelect } from "@components/common/comp-select";
+import Option from "@apptypes/app/option";
+import { CASE_ACTION_CODE } from "@constants/case_actions";
+import { CompInput } from "@components/common/comp-input";
+import { openModal } from "@store/reducers/app";
+import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { getCaseFile, upsertDecisionOutcome } from "@store/reducers/case-thunks";
+import { selectCaseId } from "@store/reducers/case-selectors";
 import { UUID } from "crypto";
-import { ValidationTextArea } from "../../../../../../common/validation-textarea";
+import { ValidationTextArea } from "@common/validation-textarea";
 
 type props = {
   leadIdentifier: string;

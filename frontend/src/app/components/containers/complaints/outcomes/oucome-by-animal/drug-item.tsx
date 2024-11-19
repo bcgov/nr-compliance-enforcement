@@ -1,11 +1,11 @@
 import { FC, useEffect, useState } from "react";
 import { Row, Col, ListGroup } from "react-bootstrap";
-import { useAppSelector } from "../../../../../hooks/hooks";
-import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
-import { formatDate } from "../../../../../common/methods";
-import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
+import { useAppSelector } from "@hooks/hooks";
+import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "@store/reducers/code-table";
+import { formatDate } from "@common/methods";
+import { selectOfficerListByAgency } from "@store/reducers/officer";
 import { from } from "linq-to-typescript";
-import { selectComplaint } from "../../../../../store/reducers/complaints";
+import { selectComplaint } from "@store/reducers/complaints";
 
 type props = {
   vial: string;

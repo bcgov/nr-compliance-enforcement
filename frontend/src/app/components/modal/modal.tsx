@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Modal } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 
 import {
   closeModal,
@@ -10,7 +10,7 @@ import {
   selectModalOpenState,
   selectModalSize,
   selectModalType,
-} from "../../store/reducers/app";
+} from "@store/reducers/app";
 import { MODAL_COMPONENTS } from "./model-components";
 
 export const ModalComponent: FC = () => {

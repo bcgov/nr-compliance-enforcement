@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import Select from "react-select";
 import Pagination from "react-bootstrap/Pagination";
-import Option from "../../types/app/option";
-import { useAppSelector } from "../../hooks/hooks";
-import { isFeatureActive } from "../../store/reducers/app";
-import { FEATURE_TYPES } from "../../constants/feature-flag-types";
+import Option from "@apptypes/app/option";
+import { useAppSelector } from "@hooks/hooks";
+import { isFeatureActive } from "@store/reducers/app";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
 interface ComplaintPaginationProps {
   currentPage: number;

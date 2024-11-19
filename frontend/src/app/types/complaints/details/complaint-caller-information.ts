@@ -1,5 +1,5 @@
-import { Agency } from "../../app/code-tables/agency";
-import { ReportedBy } from "../../app/code-tables/reported-by";
+import { Agency } from "@apptypes/app/code-tables/agency";
+import { ReportedBy } from "@apptypes/app/code-tables/reported-by";
 
 export interface ComplaintCallerInformation {
   name?: string;

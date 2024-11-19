@@ -47,7 +47,7 @@ jobs:
           command: npx cypress run --browser electron --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }} --env auth_base_url=${{ vars.KEYCLOAK_URL_DEV }},auth_realm=${{ vars.KEYCLOAK_REALM }},auth_client_id=${{ vars.KEYCLOAK_CLIENT_ID }},keycloak_user=${{ vars.KEYCLOAK_USER }},keycloak_user_02=${{ vars.KEYCLOAK_USER_02 }},keycloak_password=${{ secrets.KEYCLOAK_PASSWORD }}
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cypress-artifacts

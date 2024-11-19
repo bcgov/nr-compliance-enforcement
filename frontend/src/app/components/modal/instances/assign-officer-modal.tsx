@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, useState } from "react";
 import { Modal, Button, CloseButton, ListGroup, ListGroupItem, Card } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import {
   profileDisplayName,
   profileIdir,
@@ -8,17 +8,17 @@ import {
   selectModalData,
   userId,
   isFeatureActive,
-} from "../../../store/reducers/app";
+} from "@store/reducers/app";
 import {
   assignCurrentUserToComplaint,
   searchOfficers,
   selectOfficersByZoneAgencyAndRole,
   updateComplaintAssignee,
-} from "../../../store/reducers/officer";
+} from "@store/reducers/officer";
 import { UUID } from "crypto";
 import { BsPerson } from "react-icons/bs";
 import { from } from "linq-to-typescript";
-import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
 type AssignOfficerModalProps = {
   close: () => void;

@@ -1,19 +1,19 @@
 import { FC, useEffect, useMemo, useState } from "react";
-import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
-import { CompSelect } from "../../../common/comp-select";
-import { bcUtmZoneNumbers, formatLatLongCoordinate } from "../../../../common/methods";
-import { ValidationTextArea } from "../../../../common/validation-textarea";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { CompSelect } from "@components/common/comp-select";
+import { bcUtmZoneNumbers, formatLatLongCoordinate } from "@common/methods";
+import { ValidationTextArea } from "@common/validation-textarea";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
-import { ValidationMultiSelect } from "../../../../common/validation-multiselect";
-import { CompInput } from "../../../common/comp-input";
-import { ValidationPhoneInput } from "../../../../common/validation-phone-input";
-import Option from "../../../../types/app/option";
-import { Coordinates } from "../../../../types/app/coordinate-type";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { openModal, selectActiveTab, userId, isFeatureActive } from "../../../../store/reducers/app";
-import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
-import { CompCoordinateInput } from "../../../common/comp-coordinate-input";
+import { ValidationMultiSelect } from "@common/validation-multiselect";
+import { CompInput } from "@components/common/comp-input";
+import { ValidationPhoneInput } from "@common/validation-phone-input";
+import Option from "@apptypes/app/option";
+import { Coordinates } from "@apptypes/app/coordinate-type";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { openModal, selectActiveTab, userId, isFeatureActive } from "@store/reducers/app";
+import notificationInvalid from "@assets/images/notification-invalid.png";
+import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 
 import {
   selectAttractantCodeDropdown,
@@ -25,43 +25,34 @@ import {
   selectReportedByDropdown,
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
-} from "../../../../store/reducers/code-table";
-import { Officer } from "../../../../types/person/person";
-import { selectOfficersByAgency } from "../../../../store/reducers/officer";
+} from "@store/reducers/code-table";
+import { Officer } from "@apptypes/person/person";
+import { selectOfficersByAgency } from "@store/reducers/officer";
 import { CreateComplaintHeader } from "./create-complaint-header";
-import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
-import {
-  createComplaint,
-  getComplaintById,
-  selectComplaintDetails,
-  setComplaint,
-} from "../../../../store/reducers/complaints";
+import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { createComplaint, getComplaintById, selectComplaintDetails, setComplaint } from "@store/reducers/complaints";
 import { from } from "linq-to-typescript";
-import { ToggleError } from "../../../../common/toast";
+import { ToggleError } from "@common/toast";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-import { AttachmentsCarousel } from "../../../common/attachments-carousel";
-import { COMSObject } from "../../../../types/coms/object";
-import {
-  handleAddAttachments,
-  handleDeleteAttachments,
-  handlePersistAttachments,
-} from "../../../../common/attachment-utils";
+import { AttachmentsCarousel } from "@components/common/attachments-carousel";
+import { COMSObject } from "@apptypes/coms/object";
+import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
 
-import { WildlifeComplaint as WildlifeComplaintDto } from "../../../../types/app/complaints/wildlife-complaint";
-import { AllegationComplaint as AllegationComplaintDto } from "../../../../types/app/complaints/allegation-complaint";
-import { Complaint as ComplaintDto } from "../../../../types/app/complaints/complaint";
-import { Delegate } from "../../../../types/app/people/delegate";
+import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
+import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
+import { Complaint as ComplaintDto } from "@apptypes/app/complaints/complaint";
+import { Delegate } from "@apptypes/app/people/delegate";
 import { UUID } from "crypto";
-import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
-import { ComplaintAlias } from "../../../../types/app/aliases";
-import AttachmentEnum from "../../../../constants/attachment-enum";
-import { getUserAgency } from "../../../../service/user-service";
+import { AttractantXref } from "@apptypes/app/complaints/attractant-xref";
+import { ComplaintAlias } from "@apptypes/app/aliases";
+import AttachmentEnum from "@constants/attachment-enum";
+import { getUserAgency } from "@service/user-service";
 import { useSelector } from "react-redux";
-import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
-import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
-import { FeatureFlag } from "../../../common/feature-flag";
+import { ComplaintDetails } from "@apptypes/complaints/details/complaint-details";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { FeatureFlag } from "@components/common/feature-flag";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -87,9 +78,9 @@ export const CreateComplaint: FC = () => {
 
   let assignableOfficers: Option[] = officerList
     ? officerList.map((officer: Officer) => ({
-      value: officer.person_guid.person_guid,
-      label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-    }))
+        value: officer.person_guid.person_guid,
+        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+      }))
     : [];
 
   const yesNoOptions: Option[] = [
@@ -175,7 +166,7 @@ export const CreateComplaint: FC = () => {
         createdBy: userid,
         updatedBy: userid,
         complaintMethodReceivedCode: "",
-        isPrivacyRequested: "U"
+        isPrivacyRequested: "U",
       };
 
       applyComplaintData(model);
