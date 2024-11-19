@@ -712,6 +712,25 @@ export const createComplaint =
   };
 
 //-- selectors
+export const selectComplaintSearchParameters = (state: RootState) => {
+  const {
+    complaints: { complaintSearchParameters },
+  } = state;
+
+  let activeFilters: Partial<ComplaintFilters> = {};
+  Object.keys(complaintSearchParameters).forEach((key) => {
+    const value = complaintSearchParameters[key as keyof ComplaintFilters];
+    if (value !== undefined && value !== null) {
+      activeFilters = {
+        ...activeFilters,
+        [key]: value,
+      };
+    }
+  });
+
+  return complaintSearchParameters;
+};
+
 export const selectGeocodedComplaintCoordinates = (state: RootState): Feature | null | undefined => {
   const {
     complaints: { complaintLocation },

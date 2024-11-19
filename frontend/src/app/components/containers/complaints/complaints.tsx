@@ -27,6 +27,7 @@ import { selectCurrentOfficer } from "@store/reducers/officer";
 import UserService from "@service/user-service";
 import Roles from "@apptypes/app/roles";
 import Option from "@apptypes/app/option";
+import { selectComplaintSearchParameters } from "@/app/store/reducers/complaints";
 
 type Props = {
   defaultComplaintType: string;
@@ -56,7 +57,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const defaultZone = useAppSelector(selectDefaultZone);
 
   //-- this is used to apply the search to the pager component
-  const [search, setSearch] = useState("");
+  const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
+  const [search, setSearch] = useState(storedSearchParams.query ?? "");
 
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
@@ -177,12 +179,14 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
   const defaultZone = useAppSelector(selectDefaultZone, shallowEqual);
   const currentOfficer = useAppSelector(selectCurrentOfficer(), shallowEqual);
-  const filters = getFilters(currentOfficer, defaultZone);
+  const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
+  const defaultFilters = getFilters(currentOfficer, defaultZone);
+  const complaintFilters = storedSearchParams ?? defaultFilters;
 
   return (
     <>
       {currentOfficer && (
-        <ComplaintFilterProvider {...filters}>
+        <ComplaintFilterProvider complaintFilters={complaintFilters}>
           <Complaints defaultComplaintType={defaultComplaintType} />
         </ComplaintFilterProvider>
       )}

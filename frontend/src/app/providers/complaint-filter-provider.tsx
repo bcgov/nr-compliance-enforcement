@@ -9,8 +9,7 @@ interface ComplaintFilterContextType {
 
 type ProviderProps = {
   children: React.ReactNode;
-  zone: any;
-  officer: any;
+  complaintFilters?: Partial<ComplaintFilters>;
 };
 
 let initialState: ComplaintFilters = {
@@ -20,7 +19,7 @@ let initialState: ComplaintFilters = {
   officer: null,
   startDate: undefined,
   endDate: undefined,
-  status: { value: "OPEN", label: "Open" },
+  status: null,
   species: null,
   natureOfComplaint: null,
   violationType: null,
@@ -30,20 +29,71 @@ let initialState: ComplaintFilters = {
   outcomeAnimal: null,
 };
 
+const mapFilters = (complaintFilters: Partial<ComplaintFilters>) => {
+  /**
+   * This funtion takes a partial set of filters in the shape of the ComplaintSearchParameters from
+   * the store, and maps them into the initial state for this provider. This enables the search page
+   * to preserve the filters when navigating away from then back to the complaints search page.
+   */
+  const {
+    regionCodeFilter,
+    zoneCodeFilter,
+    areaCodeFilter,
+    officerFilter,
+    startDateFilter,
+    endDateFilter,
+    complaintStatusFilter,
+    girTypeFilter,
+    violationFilter,
+    complaintMethodFilter,
+    actionTakenFilter,
+    speciesCodeFilter,
+    natureOfComplaintFilter,
+  } = complaintFilters;
+  const allFilters: Partial<ComplaintFilters> = {
+    region: regionCodeFilter,
+    zone: zoneCodeFilter,
+    community: areaCodeFilter,
+    officer: officerFilter,
+    startDate: startDateFilter,
+    endDate: endDateFilter,
+    status: complaintStatusFilter,
+    species: girTypeFilter,
+    natureOfComplaint: violationFilter,
+    violationType: complaintMethodFilter,
+    girType: actionTakenFilter,
+    complaintMethod: speciesCodeFilter,
+    actionTaken: natureOfComplaintFilter,
+  };
+
+  // Only return filters that have a value set
+  let activeFilters: Partial<ComplaintFilters> = {};
+  Object.keys(allFilters).forEach((key) => {
+    const value = allFilters[key as keyof ComplaintFilters];
+    if (value !== undefined && value !== null) {
+      activeFilters = {
+        ...activeFilters,
+        [key]: value,
+      };
+    }
+  });
+  return activeFilters;
+};
+
 const ComplaintFilterContext = createContext<ComplaintFilterContextType>({
   state: initialState,
   dispatch: () => {},
 });
 
-const ComplaintFilterProvider: FC<ProviderProps> = ({ children, zone, officer }) => {
-  if (zone) {
-    initialState = { ...initialState, zone };
-  }
-  if (officer) {
-    initialState = { ...initialState, officer };
+const ComplaintFilterProvider: FC<ProviderProps> = ({ children, complaintFilters }) => {
+  let startingState = { ...initialState };
+
+  if (complaintFilters) {
+    const activeFilters = mapFilters(complaintFilters);
+    startingState = { ...startingState, ...activeFilters };
   }
 
-  const [state, dispatch] = useReducer(complaintFilterReducer, initialState);
+  const [state, dispatch] = useReducer(complaintFilterReducer, startingState);
 
   const value = React.useMemo(
     () => ({
