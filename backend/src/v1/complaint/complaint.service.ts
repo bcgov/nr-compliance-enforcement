@@ -248,11 +248,8 @@ export class ComplaintService {
       //   "update.complaint_identifier = complaint.complaint_identifier",
       // )
 
-      .leftJoin(
-        "complaint.complaint_identifier",
-        "complaint_update",
-        // "update.complaintIdentifier = complaint.complaint_identifier",
-      )
+      .leftJoin("complaint.complaint_update", "complaint_update")
+      .addSelect(["complaint_update.upd_detail_text", "complaint_update.complaint_identifier"])
 
       //.addSelect(["update.upd_detail_text", "update.upd_location_summary_text", "update.upd_location_detail_text"])
 
@@ -498,6 +495,9 @@ export class ComplaintService {
           query: `%${query}%`,
         });
         qb.orWhere("person.last_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint_update.upd_detail_text ILIKE :query", {
           query: `%${query}%`,
         });
       }),
