@@ -67,7 +67,6 @@ import { AllegationReportData } from "src/types/models/reports/complaints/allega
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { OfficerService } from "../officer/officer.service";
-import { CreatePersonComplaintXrefCodeDto } from "../person_complaint_xref_code/dto/create-person_complaint_xref_code.dto";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -1584,6 +1583,212 @@ export class ComplaintService {
       }
     };
 
+    const _applyAssessmentData = async (assessmentDetails, assessmentActions) => {
+      //-- Convert booleans to Yes/No
+
+      //Note this one is backwards since the variable is action NOT required but the report is action required
+      assessmentDetails.actionNotRequired = assessmentDetails.actionNotRequired ? "No" : "Yes";
+
+      assessmentDetails.contactedComplainant = assessmentDetails.contactedComplainant ? "Yes" : "No";
+
+      assessmentDetails.attended = assessmentDetails.attended ? "Yes" : "No";
+
+      //-- Remove all inactive assessment and prevention actions
+      let filteredActions = assessmentActions.filter((item) => item.activeIndicator === true);
+
+      //Split between legecy and regular actions
+      const { legacyActions, actions } = filteredActions.reduce(
+        (acc, obj) => {
+          if (obj.isLegacy) {
+            acc.legacyActions.push(obj); // Add to legacy array if isLegacy is true
+          } else {
+            acc.actions.push(obj); // Add to nonLegacy array if isLegacy is false
+          }
+          return acc; // Return the accumulator
+        },
+        { legacyActions: [], actions: [] },
+      ); // Initial value with two empty arrays
+
+      assessmentDetails.actions = actions;
+      assessmentDetails.legacyActions = legacyActions;
+
+      //-- Convert Officer Guids to Names
+      if (assessmentActions?.[0]?.actor) {
+        assessmentDetails.assessmentActor = assessmentActions[0].actor;
+        assessmentDetails.assessmentDate = assessmentActions[0].date;
+
+        const { first_name, last_name } = (
+          await this._officerService.findByAuthUserGuid(assessmentDetails.assessmentActor)
+        ).person_guid;
+        assessmentDetails.assessmentActor = `${last_name}, ${first_name}`;
+
+        //Apply timezone and format date
+        assessmentDetails.assessmentDate = _applyTimezone(assessmentDetails.assessmentDate, tz, "date");
+      }
+    };
+
+    const _applyPreventionData = async (preventionDetails, preventionActions) => {
+      //-- Remove all inactive assessment and prevention actions
+      let filteredActions = preventionActions.filter((item) => item.activeIndicator === true);
+      preventionDetails.actions = filteredActions;
+
+      //-- Convert Officer Guid to Names
+      if (preventionDetails?.actions[0]?.actor) {
+        preventionDetails.preventionActor = preventionActions[0].actor;
+        preventionDetails.preventionDate = preventionActions[0].date;
+
+        const { first_name, last_name } = (
+          await this._officerService.findByAuthUserGuid(preventionDetails.preventionActor)
+        ).person_guid;
+
+        preventionDetails.preventionActor = `${last_name}, ${first_name}`;
+
+        //Apply timezone and format date
+        preventionDetails.preventionDate = _applyTimezone(preventionDetails.preventionDate, tz, "date");
+      }
+    };
+
+    const _applyEquipmentData = async (equipment) => {
+      let equipmentCount = 1;
+      for (const equip of equipment) {
+        const equipmentActions = equip.actions;
+
+        //-- Convert booleans to Yes/No
+        const indicatorEnum = { Y: "Yes", N: "No" };
+        equip.wasAnimalCaptured = indicatorEnum[equip.wasAnimalCaptured] || "Unknown";
+
+        //-- Pull out the SetBy and Removed By Users / Dates
+        const setByAction = equipmentActions.find((item) => item.actionCode === "SETEQUIPMT");
+        const removedByAction = equipmentActions.find((item) => item.actionCode === "REMEQUIPMT");
+
+        //-- Convert Officer Guids to Names in parallel
+        const officerPromises = [];
+
+        if (setByAction?.actor) {
+          officerPromises.push(
+            this._officerService.findByAuthUserGuid(setByAction.actor).then((result) => {
+              const { first_name, last_name } = result.person_guid;
+              equip.setByActor = `${last_name}, ${first_name}`;
+              equip.setByDate = setByAction.date;
+            }),
+          );
+        }
+
+        if (removedByAction?.actor) {
+          officerPromises.push(
+            this._officerService.findByAuthUserGuid(removedByAction?.actor).then((result) => {
+              const { first_name, last_name } = result.person_guid;
+              removedByAction.actor = `${last_name}, ${first_name}`;
+            }),
+          );
+        }
+
+        // Wait for both officer name resolutions
+        await Promise.all(officerPromises);
+
+        //-- Apply timezone and format dates
+        if (equip.setByDate) {
+          equip.setByDate = _applyTimezone(equip.setByDate, tz, "date");
+        }
+
+        if (removedByAction?.date) {
+          removedByAction.date = _applyTimezone(removedByAction.date, tz, "date");
+        }
+
+        //-- Removed By should only display if it exists... so it needs to go into an array until carbone is updated :(
+        equip.removedBy = [...(equip.removedBy || []), ...(removedByAction ? [removedByAction] : [])];
+
+        //-- Same for the Was Animal Captured... as this is mandatory, just ignore it if the value is "Unknown"
+        if (equip.wasAnimalCaptured !== "Unknown") {
+          equip.animalCaptured = equip.animalCaptured || []; // Ensure animalCaptured is an array
+          equip.animalCaptured.push({ value: equip.wasAnimalCaptured }); // Add the object with the 'value' property
+        }
+
+        //give it a nice friendly number as nothing comes back from the GQL
+        equip.order = equipmentCount;
+        equipmentCount++;
+      }
+      return equipment;
+    };
+
+    const _applyWildlifeData = async (wildlife) => {
+      for (const animal of wildlife) {
+        const wildlifeActions = animal.actions;
+
+        const drugAction = wildlifeActions?.find((item) => item.actionCode === "ADMNSTRDRG");
+        const outcomeAction = wildlifeActions?.find((item) => item.actionCode === "RECOUTCOME");
+        let drugActor = drugAction?.actor;
+        let drugDate = drugAction?.date;
+
+        //-- Convert Officer Guids to Names in parallel
+        animal.officer = outcomeAction?.actor;
+        animal.date = outcomeAction?.date;
+
+        const officerPromises = [];
+
+        if (animal.officer) {
+          officerPromises.push(
+            this._officerService.findByAuthUserGuid(animal.officer).then((result) => {
+              const { first_name, last_name } = result.person_guid;
+              animal.officer = `${last_name}, ${first_name}`;
+            }),
+          );
+        }
+
+        if (drugActor) {
+          officerPromises.push(
+            this._officerService.findByAuthUserGuid(drugActor).then((result) => {
+              const { first_name, last_name } = result.person_guid;
+              drugActor = `${last_name}, ${first_name}`;
+            }),
+          );
+        }
+
+        // Wait for both officer name resolutions
+        await Promise.all(officerPromises);
+
+        //-- Apply timezone and format dates
+        if (animal.date) {
+          animal.date = _applyTimezone(animal.date, tz, "date");
+        }
+        if (drugDate) {
+          drugDate = _applyTimezone(drugDate, tz, "date");
+        }
+
+        //add the officer/drug onto each drug row
+        animal.drugs?.forEach((drug) => {
+          drug.officer = drugActor;
+          drug.date = drugDate;
+        });
+      }
+      return wildlife;
+    };
+
+    const _applyNoteData = async (caseFile) => {
+      //-- Convert Officer Guid to Name
+      if (caseFile.note) {
+        const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(caseFile.note.action.actor))
+          .person_guid;
+
+        caseFile.note.action.actor = last_name + ", " + first_name;
+      }
+    };
+
+    const _applyReviewData = async (caseFile) => {
+      //-- Convert booleans to Yes/No
+
+      caseFile.isReviewRequired = caseFile.isReviewRequired ? "Yes" : "No";
+
+      if (caseFile.reviewComplete) {
+        caseFile.reviewComplete.activeIndicator = caseFile.reviewComplete.activeIndicator ? "Yes" : "No";
+
+        //-- Convert Officer Guid to Name
+        const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(caseFile.reviewComplete.actor))
+          .person_guid;
+        caseFile.reviewComplete.actor = last_name + ", " + first_name;
+      }
+    };
+
     const _getCaseData = async (id: string, token: string, tz: string) => {
       //-- Get the Outcome Data, this is done via a GQL call to prevent
       //-- a circular dependency between the complaint and case_file modules
@@ -1611,225 +1816,34 @@ export class ComplaintService {
 
       // Take advantage of value by reference to make the rest of the code a bit more readable
       const assessmentDetails = outcomeData.getCaseFileByLeadId.assessmentDetails;
-      const assessmentActions = [...assessmentDetails?.actions, ...assessmentDetails?.cat1Actions];
+      const assessmentActions = [
+        ...(assessmentDetails?.actions ?? []), // Default to an empty array if undefined or null
+        ...(assessmentDetails?.cat1Actions ?? []), // Default to an empty array if undefined or null
+      ];
       const preventionDetails = outcomeData.getCaseFileByLeadId.preventionDetails;
       const preventionActions = preventionDetails?.actions;
       const equipment = outcomeData.getCaseFileByLeadId.equipment;
       const wildlife = outcomeData.getCaseFileByLeadId.subject;
 
       if (assessmentDetails) {
-        //-- Convert booleans to Yes/No
-
-        //Note this one is backwards since the variable is action NOT required but the report is action required
-        assessmentDetails.actionNotRequired = assessmentDetails.actionNotRequired ? "No" : "Yes";
-
-        assessmentDetails.contactedComplainant = assessmentDetails.contactedComplainant ? "Yes" : "No";
-
-        assessmentDetails.attended = assessmentDetails.attended ? "Yes" : "No";
-
-        //-- Remove all inactive assessment and prevention actions
-        let filteredActions = assessmentActions.filter((item) => item.activeIndicator === true);
-
-        //Split between legecy and regular actions
-        const { legacyActions, actions } = filteredActions.reduce(
-          (acc, obj) => {
-            if (obj.isLegacy) {
-              acc.legacyActions.push(obj); // Add to legacy array if isLegacy is true
-            } else {
-              acc.actions.push(obj); // Add to nonLegacy array if isLegacy is false
-            }
-            return acc; // Return the accumulator
-          },
-          { legacyActions: [], actions: [] },
-        ); // Initial value with two empty arrays
-
-        assessmentDetails.actions = actions;
-        assessmentDetails.legacyActions = legacyActions;
-
-        //-- Convert Officer Guids to Names
-        if (assessmentActions?.[0]?.actor) {
-          assessmentDetails.assessmentActor = assessmentActions[0].actor;
-          assessmentDetails.assessmentDate = assessmentActions[0].date;
-
-          //-- Convert Officer Guid to Name
-          const { first_name, last_name } = (
-            await this._officerService.findByAuthUserGuid(assessmentDetails.assessmentActor)
-          ).person_guid;
-
-          assessmentDetails.assessmentActor = `${last_name}, ${first_name}`;
-
-          assessmentDetails.assessmentDate = _applyTimezone(assessmentDetails.assessmentDate, tz, "date");
-        }
+        await _applyAssessmentData(assessmentDetails, assessmentActions);
       }
 
       if (preventionDetails) {
-        //-- Remove all inactive assessment and prevention actions
-        let filteredActions = preventionActions.filter((item) => item.activeIndicator === true);
-        preventionDetails.actions = filteredActions;
-
-        //-- Convert Officer Guids to Names
-        if (preventionDetails?.actions[0]?.actor) {
-          preventionDetails.preventionActor = preventionActions[0].actor;
-          preventionDetails.preventionDate = preventionActions[0].date;
-
-          const { first_name, last_name } = (
-            await this._officerService.findByAuthUserGuid(preventionDetails.preventionActor)
-          ).person_guid;
-
-          preventionDetails.preventionActor = `${last_name}, ${first_name}`;
-
-          //Apply timezone and format date
-          preventionDetails.preventionDate = _applyTimezone(preventionDetails.preventionDate, tz, "date");
-        }
+        await _applyPreventionData(preventionDetails, preventionActions);
       }
 
       if (equipment) {
-        let equipmentCount = 1;
-        for (const equip of equipment) {
-          const equipmentActions = equip.actions;
-
-          //-- Convert booleans to Yes/No
-          const indicatorEnum = { Y: "Yes", N: "No" };
-          equip.wasAnimalCaptured = indicatorEnum[equip.wasAnimalCaptured] || "Unknown";
-
-          //-- Pull out the SetBy and Removed By Users / Dates
-          const setByAction = equipmentActions.find((item) => item.actionCode === "SETEQUIPMT");
-          const removedByAction = equipmentActions.find((item) => item.actionCode === "REMEQUIPMT");
-
-          //-- Convert Officer Guids to Names in parallel
-          const officerPromises = [];
-
-          if (setByAction?.actor) {
-            officerPromises.push(
-              this._officerService.findByAuthUserGuid(setByAction.actor).then((result) => {
-                const { first_name, last_name } = result.person_guid;
-                equip.setByActor = `${last_name}, ${first_name}`;
-                equip.setByDate = setByAction.date;
-              }),
-            );
-          }
-
-          if (removedByAction?.actor) {
-            officerPromises.push(
-              this._officerService.findByAuthUserGuid(removedByAction?.actor).then((result) => {
-                const { first_name, last_name } = result.person_guid;
-                removedByAction.actor = `${last_name}, ${first_name}`;
-              }),
-            );
-          }
-
-          // Wait for both officer name resolutions
-          await Promise.all(officerPromises);
-
-          //-- Apply timezone and format dates
-          if (equip.setByDate) {
-            equip.setByDate = _applyTimezone(equip.setByDate, tz, "date");
-          }
-
-          if (removedByAction?.date) {
-            removedByAction.date = _applyTimezone(removedByAction.date, tz, "date");
-          }
-
-          //-- Removed By should only display if it exists... so it needs to go into an array until carbone is updated :(
-          equip.removedBy = [...(equip.removedBy || []), ...(removedByAction ? [removedByAction] : [])];
-
-          //-- Same for the Was Animal Captured... as this is mandatory, just ignore it if the value is "Unknown"
-          if (equip.wasAnimalCaptured !== "Unknown") {
-            equip.animalCaptured = equip.animalCaptured || []; // Ensure animalCaptured is an array
-            equip.animalCaptured.push({ value: equip.wasAnimalCaptured }); // Add the object with the 'value' property
-          }
-
-          //give it a nice friendly number
-          equip.order = equipmentCount;
-          equipmentCount++;
-        }
+        await _applyEquipmentData(equipment);
       }
 
       if (wildlife) {
-        for (const animal of wildlife) {
-          const wildlifeActions = animal.actions;
-
-          const drugAction = wildlifeActions?.find((item) => item.actionCode === "ADMNSTRDRG");
-          const outcomeAction = wildlifeActions?.find((item) => item.actionCode === "RECOUTCOME");
-          let drugActor = drugAction?.actor;
-          let drugDate = drugAction?.date;
-
-          //-- Convert Officer Guids to Names in parallel
-          //add the officer/date to outcome
-          animal.officer = outcomeAction?.actor;
-          animal.date = outcomeAction?.date;
-
-          const officerPromises = [];
-
-          if (animal.officer) {
-            officerPromises.push(
-              this._officerService.findByAuthUserGuid(animal.officer).then((result) => {
-                const { first_name, last_name } = result.person_guid;
-                animal.officer = `${last_name}, ${first_name}`;
-              }),
-            );
-          }
-
-          if (drugActor) {
-            officerPromises.push(
-              this._officerService.findByAuthUserGuid(drugActor).then((result) => {
-                const { first_name, last_name } = result.person_guid;
-                drugActor = `${last_name}, ${first_name}`;
-              }),
-            );
-          }
-
-          // Wait for both officer name resolutions
-          await Promise.all(officerPromises);
-
-          //-- Apply timezone and format dates
-          if (animal.date) {
-            animal.date = _applyTimezone(animal.date, tz, "date");
-          }
-          if (drugDate) {
-            drugDate = _applyTimezone(drugDate, tz, "date");
-          }
-
-          //add the officer/drug onto each drug row
-          animal.drugs?.forEach((drug) => {
-            drug.officer = drugActor;
-            drug.date = drugDate;
-          });
-        }
+        await _applyWildlifeData(wildlife);
       }
 
-      if (outcomeData.getCaseFileByLeadId.reviewComplete) {
-        outcomeData.getCaseFileByLeadId.reviewComplete.activeIndicator = outcomeData.getCaseFileByLeadId.reviewComplete
-          .activeIndicator
-          ? "Yes"
-          : "No";
-      }
-
-      outcomeData.getCaseFileByLeadId.isReviewRequired = outcomeData.getCaseFileByLeadId.isReviewRequired
-        ? "Yes"
-        : "No";
-
-      //-- For data structures that only have the actor/date display once (e.g. Assessment Actions, Prevention and Education and Drugs)
-      //-- we want to pull this information up a level or the templates don't work properly
-
-      //-- Convert Remaining Officer Guids to Names
-
-      //Notes officer - no actions array
-      if (outcomeData.getCaseFileByLeadId.note) {
-        const { first_name, last_name } = (
-          await this._officerService.findByAuthUserGuid(outcomeData.getCaseFileByLeadId.note.action.actor)
-        ).person_guid;
-
-        outcomeData.getCaseFileByLeadId.note.action.actor = last_name + ", " + first_name;
-      }
-
-      //File review officer - no actions array
-      if (outcomeData.getCaseFileByLeadId.reviewComplete) {
-        const { first_name, last_name } = (
-          await this._officerService.findByAuthUserGuid(outcomeData.getCaseFileByLeadId.reviewComplete.actor)
-        ).person_guid;
-
-        outcomeData.getCaseFileByLeadId.reviewComplete.actor = last_name + ", " + first_name;
+      if (outcomeData.getCaseFileByLeadId) {
+        await _applyNoteData(outcomeData.getCaseFileByLeadId);
+        await _applyReviewData(outcomeData.getCaseFileByLeadId);
       }
 
       return outcomeData.getCaseFileByLeadId;
