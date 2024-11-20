@@ -44,7 +44,9 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   useEffect(() => {
     if (!storedComplaintType) dispatch(setActiveTab(defaultComplaintType));
   }, [storedComplaintType, dispatch, defaultComplaintType]);
-  const [complaintType, setComplaintType] = useState(storedComplaintType ?? defaultComplaintType);
+  const [complaintType, setComplaintType] = useState(
+    UserService.hasRole([Roles.CEEB]) ? CEEB_TYPES.ERS : storedComplaintType ?? defaultComplaintType,
+  );
 
   const storedComplaintViewType = useAppSelector(selectActiveComplaintsViewType);
   useEffect(() => {
