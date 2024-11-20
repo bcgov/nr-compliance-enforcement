@@ -8,7 +8,7 @@ import { PersonComplaintXref } from "../../person_complaint_xref/entities/person
 import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ReportedByCode } from "../../reported_by_code/entities/reported_by_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
-import { ComplaintUpdate } from "src/v1/complaint_updates/entities/complaint_updates.entity";
+import { ComplaintUpdate } from "../../complaint_updates/entities/complaint_updates.entity";
 import { ActionTaken } from "./action_taken.entity";
 
 @Entity()
