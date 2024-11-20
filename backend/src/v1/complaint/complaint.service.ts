@@ -1611,7 +1611,7 @@ export class ComplaintService {
 
       // Take advantage of value by reference to make the rest of the code a bit more readable
       const assessmentDetails = outcomeData.getCaseFileByLeadId.assessmentDetails;
-      const assessmentActions = assessmentDetails?.actions;
+      const assessmentActions = [...assessmentDetails?.actions, ...assessmentDetails?.cat1Actions];
       const preventionDetails = outcomeData.getCaseFileByLeadId.preventionDetails;
       const preventionActions = preventionDetails?.actions;
       const equipment = outcomeData.getCaseFileByLeadId.equipment;
@@ -1629,7 +1629,22 @@ export class ComplaintService {
 
         //-- Remove all inactive assessment and prevention actions
         let filteredActions = assessmentActions.filter((item) => item.activeIndicator === true);
-        assessmentDetails.actions = filteredActions;
+
+        //Split between legecy and regular actions
+        const { legacyActions, actions } = filteredActions.reduce(
+          (acc, obj) => {
+            if (obj.isLegacy) {
+              acc.legacyActions.push(obj); // Add to legacy array if isLegacy is true
+            } else {
+              acc.actions.push(obj); // Add to nonLegacy array if isLegacy is false
+            }
+            return acc; // Return the accumulator
+          },
+          { legacyActions: [], actions: [] },
+        ); // Initial value with two empty arrays
+
+        assessmentDetails.actions = actions;
+        assessmentDetails.legacyActions = legacyActions;
 
         //-- Convert Officer Guids to Names
         if (assessmentActions?.[0]?.actor) {
@@ -1641,7 +1656,7 @@ export class ComplaintService {
             await this._officerService.findByAuthUserGuid(assessmentDetails.assessmentActor)
           ).person_guid;
 
-          assessmentDetails.assessmentActor = last_name + ", " + first_name;
+          assessmentDetails.assessmentActor = `${last_name}, ${first_name}`;
 
           assessmentDetails.assessmentDate = _applyTimezone(assessmentDetails.assessmentDate, tz, "date");
         }
@@ -1661,118 +1676,122 @@ export class ComplaintService {
             await this._officerService.findByAuthUserGuid(preventionDetails.preventionActor)
           ).person_guid;
 
-          preventionDetails.preventionActor = last_name + ", " + first_name;
+          preventionDetails.preventionActor = `${last_name}, ${first_name}`;
 
           //Apply timezone and format date
           preventionDetails.preventionDate = _applyTimezone(preventionDetails.preventionDate, tz, "date");
         }
       }
 
-      let equipmentCount = 1;
-      for (const equip of equipment) {
-        const equipmentActions = equip.actions;
+      if (equipment) {
+        let equipmentCount = 1;
+        for (const equip of equipment) {
+          const equipmentActions = equip.actions;
 
-        //-- Convert booleans to Yes/No
-        const indicatorEnum = { Y: "Yes", N: "No" };
-        equip.wasAnimalCaptured = indicatorEnum[equip.wasAnimalCaptured] || "Unknown";
+          //-- Convert booleans to Yes/No
+          const indicatorEnum = { Y: "Yes", N: "No" };
+          equip.wasAnimalCaptured = indicatorEnum[equip.wasAnimalCaptured] || "Unknown";
 
-        //-- Pull out the SetBy and Removed By Users / Dates
-        const setByAction = equipmentActions.find((item) => item.actionCode === "SETEQUIPMT");
-        const removedByAction = equipmentActions.find((item) => item.actionCode === "REMEQUIPMT");
+          //-- Pull out the SetBy and Removed By Users / Dates
+          const setByAction = equipmentActions.find((item) => item.actionCode === "SETEQUIPMT");
+          const removedByAction = equipmentActions.find((item) => item.actionCode === "REMEQUIPMT");
 
-        equip.setByActor = setByAction?.actor;
-        equip.setByDate = setByAction?.date;
+          equip.setByActor = setByAction?.actor;
+          equip.setByDate = setByAction?.date;
 
-        equip.removedByActor = removedByAction?.actor;
-        equip.removedByDate = removedByAction?.date;
+          equip.removedByActor = removedByAction?.actor;
+          equip.removedByDate = removedByAction?.date;
 
-        //-- Convert Officer Guids to Names in parallel
-        const officerPromises = [];
+          //-- Convert Officer Guids to Names in parallel
+          const officerPromises = [];
 
-        if (equip.setByActor) {
-          officerPromises.push(
-            this._officerService.findByAuthUserGuid(equip.setByActor).then((result) => {
-              const { first_name, last_name } = result.person_guid;
-              equip.setByActor = `${last_name}, ${first_name}`;
-            }),
-          );
+          if (equip.setByActor) {
+            officerPromises.push(
+              this._officerService.findByAuthUserGuid(equip.setByActor).then((result) => {
+                const { first_name, last_name } = result.person_guid;
+                equip.setByActor = `${last_name}, ${first_name}`;
+              }),
+            );
+          }
+
+          if (equip.removedByActor) {
+            officerPromises.push(
+              this._officerService.findByAuthUserGuid(equip.removedByActor).then((result) => {
+                const { first_name, last_name } = result.person_guid;
+                equip.removedByActor = `${last_name}, ${first_name}`;
+              }),
+            );
+          }
+
+          // Wait for both officer name resolutions
+          await Promise.all(officerPromises);
+
+          //-- Apply timezone and format dates
+          if (equip.setByDate) {
+            equip.setByDate = _applyTimezone(equip.setByDate, tz, "date");
+          }
+
+          if (equip.removedByDate) {
+            equip.removedByDate = _applyTimezone(equip.removedByDate, tz, "date");
+          }
+
+          //give it a nice friendly number
+          equip.order = equipmentCount;
+          equipmentCount++;
         }
-
-        if (equip.removedByActor) {
-          officerPromises.push(
-            this._officerService.findByAuthUserGuid(equip.removedByActor).then((result) => {
-              const { first_name, last_name } = result.person_guid;
-              equip.removedByActor = `${last_name}, ${first_name}`;
-            }),
-          );
-        }
-
-        // Wait for both officer name resolutions
-        await Promise.all(officerPromises);
-
-        //-- Apply timezone and format dates
-        if (equip.setByDate) {
-          equip.setByDate = _applyTimezone(equip.setByDate, tz, "date");
-        }
-
-        if (equip.removedByDate) {
-          equip.removedByDate = _applyTimezone(equip.removedByDate, tz, "date");
-        }
-
-        //give it a nice friendly number
-        equip.order = equipmentCount;
-        equipmentCount++;
       }
 
-      for (const animal of wildlife) {
-        const wildlifeActions = animal.actions;
+      if (wildlife) {
+        for (const animal of wildlife) {
+          const wildlifeActions = animal.actions;
 
-        const drugAction = wildlifeActions?.find((item) => item.actionCode === "ADMNSTRDRG");
-        const outcomeAction = wildlifeActions?.find((item) => item.actionCode === "RECOUTCOME");
-        let drugActor = drugAction?.actor;
-        let drugDate = drugAction?.date;
+          const drugAction = wildlifeActions?.find((item) => item.actionCode === "ADMNSTRDRG");
+          const outcomeAction = wildlifeActions?.find((item) => item.actionCode === "RECOUTCOME");
+          let drugActor = drugAction?.actor;
+          let drugDate = drugAction?.date;
 
-        //-- Convert Officer Guids to Names in parallel
-        //add the officer/date to outcome
-        animal.officer = outcomeAction?.actor;
-        animal.date = outcomeAction?.date;
+          //-- Convert Officer Guids to Names in parallel
+          //add the officer/date to outcome
+          animal.officer = outcomeAction?.actor;
+          animal.date = outcomeAction?.date;
 
-        const officerPromises = [];
+          const officerPromises = [];
 
-        if (animal.officer) {
-          officerPromises.push(
-            this._officerService.findByAuthUserGuid(animal.officer).then((result) => {
-              const { first_name, last_name } = result.person_guid;
-              animal.officer = `${last_name}, ${first_name}`;
-            }),
-          );
+          if (animal.officer) {
+            officerPromises.push(
+              this._officerService.findByAuthUserGuid(animal.officer).then((result) => {
+                const { first_name, last_name } = result.person_guid;
+                animal.officer = `${last_name}, ${first_name}`;
+              }),
+            );
+          }
+
+          if (drugActor) {
+            officerPromises.push(
+              this._officerService.findByAuthUserGuid(drugActor).then((result) => {
+                const { first_name, last_name } = result.person_guid;
+                drugActor = `${last_name}, ${first_name}`;
+              }),
+            );
+          }
+
+          // Wait for both officer name resolutions
+          await Promise.all(officerPromises);
+
+          //-- Apply timezone and format dates
+          if (animal.date) {
+            animal.date = _applyTimezone(animal.date, tz, "date");
+          }
+          if (drugDate) {
+            drugDate = _applyTimezone(drugDate, tz, "date");
+          }
+
+          //add the officer/drug onto each drug row
+          animal.drugs?.forEach((drug) => {
+            drug.officer = drugActor;
+            drug.date = drugDate;
+          });
         }
-
-        if (drugActor) {
-          officerPromises.push(
-            this._officerService.findByAuthUserGuid(drugActor).then((result) => {
-              const { first_name, last_name } = result.person_guid;
-              drugActor = `${last_name}, ${first_name}`;
-            }),
-          );
-        }
-
-        // Wait for both officer name resolutions
-        await Promise.all(officerPromises);
-
-        //-- Apply timezone and format dates
-        if (animal.date) {
-          animal.date = _applyTimezone(animal.date, tz, "date");
-        }
-        if (drugDate) {
-          drugDate = _applyTimezone(drugDate, tz, "date");
-        }
-
-        //add the officer/drug onto each drug row
-        animal.drugs?.forEach((drug) => {
-          drug.officer = drugActor;
-          drug.date = drugDate;
-        });
       }
 
       if (outcomeData.getCaseFileByLeadId.reviewComplete) {
@@ -1887,6 +1906,18 @@ export class ComplaintService {
       if (data.outcome.decision?.inspectionNumber) {
         data = { ...data, inspection: [{ value: data.outcome.decision.inspectionNumber }] };
       }
+      if (data.outcome.assessmentDetails?.locationType?.key) {
+        data = { ...data, assessmentLocation: [{ value: data.outcome.assessmentDetails.locationType.key }] };
+      }
+      if (data.outcome.assessmentDetails?.conflictHistory?.key) {
+        data = { ...data, conflict: [{ value: data.outcome.assessmentDetails.conflictHistory.key }] };
+      }
+      if (data.outcome.assessmentDetails?.categoryLevel?.key) {
+        data = { ...data, category: [{ value: data.outcome.assessmentDetails.categoryLevel.key }] };
+      }
+      if (data.outcome.assessmentDetails?.legacyActions) {
+        data = { ...data, legacy: [{ actions: data.outcome.assessmentDetails.legacyActions }] };
+      }
 
       //-- problems in the automapper mean dates need to be handled
       //-- seperatly
@@ -1918,6 +1949,8 @@ export class ComplaintService {
       if (data.incidentDateTime) {
         data.incidentDateTime = _applyTimezone(data.incidentDateTime, tz, "datetime");
       }
+
+      console.log(data);
 
       return data;
     } catch (error) {
