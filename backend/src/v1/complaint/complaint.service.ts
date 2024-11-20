@@ -1771,6 +1771,7 @@ export class ComplaintService {
           .person_guid;
 
         caseFile.note.action.actor = last_name + ", " + first_name;
+        caseFile.note.action.date = _applyTimezone(caseFile.note.action.date, tz, "date");
       }
     };
 
@@ -1786,6 +1787,8 @@ export class ComplaintService {
         const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(caseFile.reviewComplete.actor))
           .person_guid;
         caseFile.reviewComplete.actor = last_name + ", " + first_name;
+        //File Review Date - No Action Array
+        caseFile.reviewComplete.date = _applyTimezone(caseFile.reviewComplete.date, tz, "date");
       }
     };
 
@@ -1817,34 +1820,46 @@ export class ComplaintService {
       // Take advantage of value by reference to make the rest of the code a bit more readable
       const assessmentDetails = outcomeData.getCaseFileByLeadId.assessmentDetails;
       const assessmentActions = [
-        ...(assessmentDetails?.actions ?? []), // Default to an empty array if undefined or null
-        ...(assessmentDetails?.cat1Actions ?? []), // Default to an empty array if undefined or null
+        ...(Array.isArray(assessmentDetails?.actions) ? assessmentDetails.actions : []),
+        ...(Array.isArray(assessmentDetails?.cat1Actions) ? assessmentDetails.cat1Actions : []),
       ];
       const preventionDetails = outcomeData.getCaseFileByLeadId.preventionDetails;
       const preventionActions = preventionDetails?.actions;
       const equipment = outcomeData.getCaseFileByLeadId.equipment;
       const wildlife = outcomeData.getCaseFileByLeadId.subject;
+      let hasOutcome = false;
 
-      if (assessmentDetails) {
+      if (assessmentDetails?.actionNotRequired !== null && assessmentDetails?.actionNotRequired !== undefined) {
+        hasOutcome = true;
         await _applyAssessmentData(assessmentDetails, assessmentActions);
       }
 
       if (preventionDetails) {
+        hasOutcome = true;
         await _applyPreventionData(preventionDetails, preventionActions);
       }
 
       if (equipment) {
+        hasOutcome = true;
         await _applyEquipmentData(equipment);
       }
 
       if (wildlife) {
+        hasOutcome = true;
         await _applyWildlifeData(wildlife);
       }
 
-      if (outcomeData.getCaseFileByLeadId) {
+      if (outcomeData.getCaseFileByLeadId.note) {
+        hasOutcome = true;
         await _applyNoteData(outcomeData.getCaseFileByLeadId);
+      }
+
+      if (outcomeData.getCaseFileByLeadId.isReviewRequired) {
+        hasOutcome = true;
         await _applyReviewData(outcomeData.getCaseFileByLeadId);
       }
+
+      outcomeData.getCaseFileByLeadId.hasOutcome = hasOutcome;
 
       return outcomeData.getCaseFileByLeadId;
     };
@@ -1947,16 +1962,6 @@ export class ComplaintService {
       data.reportedOn = _applyTimezone(data.reportedOn, tz, "datetime");
       data.updatedOn = _applyTimezone(data.updatedOn, tz, "datetime");
 
-      //Notes - No Action Array
-      if (data.outcome.note) {
-        data.outcome.note.action.date = _applyTimezone(data.outcome.note.action.date, tz, "date");
-      }
-
-      //File Review Date - No Action Array
-      if (data.outcome.reviewComplete?.date) {
-        data.outcome.reviewComplete.date = _applyTimezone(data.outcome.reviewComplete.date, tz, "date");
-      }
-
       //CEEB Decision - No Action Array
       if (data.outcome.decision?.actionTakenDate) {
         data.outcome.decision.actionTakenDate = _applyTimezone(data.outcome.decision.actionTakenDate, tz, "date");
@@ -1967,10 +1972,6 @@ export class ComplaintService {
       if (data.incidentDateTime) {
         data.incidentDateTime = _applyTimezone(data.incidentDateTime, tz, "datetime");
       }
-
-      console.log(data.outcome.equipment);
-      console.log(data.outcome.equipment[0].removedBy);
-      console.log(data.outcome.equipment[1].removedBy);
 
       return data;
     } catch (error) {
