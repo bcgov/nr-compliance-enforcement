@@ -8,6 +8,7 @@ import { PersonComplaintXref } from "../../person_complaint_xref/entities/person
 import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ReportedByCode } from "../../reported_by_code/entities/reported_by_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
+import { ComplaintUpdate } from "src/v1/complaint_updates/entities/complaint_updates.entity";
 
 @Entity()
 export class Complaint {
@@ -217,6 +218,13 @@ export class Complaint {
   @Column()
   is_privacy_requested: string;
 
+  @ApiProperty({
+    example: "DCC",
+    description: "The complaint updates",
+  })
+  @OneToMany(() => ComplaintUpdate, (complaint_update) => complaint_update.complaintIdentifier)
+  complaint_update: ComplaintUpdate[];
+
   constructor(
     detail_text?: string,
     caller_name?: string,
@@ -246,6 +254,7 @@ export class Complaint {
     reference_number?: string,
     comp_mthd_recv_cd_agcy_cd_xref?: CompMthdRecvCdAgcyCdXref,
     is_privacy_requested?: string,
+    complaint_update?: ComplaintUpdate[],
   ) {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -275,5 +284,6 @@ export class Complaint {
     this.reference_number = reference_number;
     this.comp_mthd_recv_cd_agcy_cd_xref = comp_mthd_recv_cd_agcy_cd_xref;
     this.is_privacy_requested = is_privacy_requested;
+    this.complaint_update = complaint_update;
   }
 }

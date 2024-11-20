@@ -67,6 +67,7 @@ import { AllegationReportData } from "src/types/models/reports/complaints/allega
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { OfficerService } from "../officer/officer.service";
+import { ActionTaken } from "./entities/action_taken.entity";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -90,6 +91,8 @@ export class ComplaintService {
   private _officeRepository: Repository<Office>;
   @InjectRepository(CosGeoOrgUnit)
   private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
+  @InjectRepository(ActionTaken)
+  private _actionTakenRepository: Repository<ActionTaken>;
 
   constructor(
     @Inject(REQUEST)
@@ -239,6 +242,20 @@ export class ComplaintService {
       ])
       .leftJoin("complaint.reported_by_code", "reported_by")
       .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
+      // .leftJoin(
+      //   "complaint.complaint_identifier",
+      //   "update",
+      //   "update.complaint_identifier = complaint.complaint_identifier",
+      // )
+
+      .leftJoin(
+        "complaint.complaint_identifier",
+        "complaint_update",
+        // "update.complaintIdentifier = complaint.complaint_identifier",
+      )
+
+      //.addSelect(["update.upd_detail_text", "update.upd_location_summary_text", "update.upd_location_detail_text"])
+
       .leftJoin("complaint.owned_by_agency_code", "owned_by")
       .addSelect(["owned_by.agency_code", "owned_by.short_description", "owned_by.long_description"])
       .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
