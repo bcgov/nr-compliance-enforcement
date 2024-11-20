@@ -1696,29 +1696,24 @@ export class ComplaintService {
           const setByAction = equipmentActions.find((item) => item.actionCode === "SETEQUIPMT");
           const removedByAction = equipmentActions.find((item) => item.actionCode === "REMEQUIPMT");
 
-          equip.setByActor = setByAction?.actor;
-          equip.setByDate = setByAction?.date;
-
-          equip.removedByActor = removedByAction?.actor;
-          equip.removedByDate = removedByAction?.date;
-
           //-- Convert Officer Guids to Names in parallel
           const officerPromises = [];
 
-          if (equip.setByActor) {
+          if (setByAction?.actor) {
             officerPromises.push(
-              this._officerService.findByAuthUserGuid(equip.setByActor).then((result) => {
+              this._officerService.findByAuthUserGuid(setByAction.actor).then((result) => {
                 const { first_name, last_name } = result.person_guid;
                 equip.setByActor = `${last_name}, ${first_name}`;
+                equip.setByDate = setByAction.date;
               }),
             );
           }
 
-          if (equip.removedByActor) {
+          if (removedByAction?.actor) {
             officerPromises.push(
-              this._officerService.findByAuthUserGuid(equip.removedByActor).then((result) => {
+              this._officerService.findByAuthUserGuid(removedByAction?.actor).then((result) => {
                 const { first_name, last_name } = result.person_guid;
-                equip.removedByActor = `${last_name}, ${first_name}`;
+                removedByAction.actor = `${last_name}, ${first_name}`;
               }),
             );
           }
@@ -1731,8 +1726,17 @@ export class ComplaintService {
             equip.setByDate = _applyTimezone(equip.setByDate, tz, "date");
           }
 
-          if (equip.removedByDate) {
-            equip.removedByDate = _applyTimezone(equip.removedByDate, tz, "date");
+          if (removedByAction?.date) {
+            removedByAction.date = _applyTimezone(removedByAction.date, tz, "date");
+          }
+
+          //-- Removed By should only display if it exists... so it needs to go into an array until carbone is updated :(
+          equip.removedBy = [...(equip.removedBy || []), ...(removedByAction ? [removedByAction] : [])];
+
+          //-- Same for the Was Animal Captured... as this is mandatory, just ignore it if the value is "Unknown"
+          if (equip.wasAnimalCaptured !== "Unknown") {
+            equip.animalCaptured = equip.animalCaptured || []; // Ensure animalCaptured is an array
+            equip.animalCaptured.push({ value: equip.wasAnimalCaptured }); // Add the object with the 'value' property
           }
 
           //give it a nice friendly number
@@ -1950,7 +1954,9 @@ export class ComplaintService {
         data.incidentDateTime = _applyTimezone(data.incidentDateTime, tz, "datetime");
       }
 
-      console.log(data);
+      console.log(data.outcome.equipment);
+      console.log(data.outcome.equipment[0].removedBy);
+      console.log(data.outcome.equipment[1].removedBy);
 
       return data;
     } catch (error) {
