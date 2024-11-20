@@ -91,8 +91,6 @@ export class ComplaintService {
   private _officeRepository: Repository<Office>;
   @InjectRepository(CosGeoOrgUnit)
   private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
-  @InjectRepository(ActionTaken)
-  private _actionTakenRepository: Repository<ActionTaken>;
 
   constructor(
     @Inject(REQUEST)
