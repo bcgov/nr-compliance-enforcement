@@ -238,7 +238,8 @@ export class CaseFileService {
     // was previously a link to another complaint. If there is, remove it.
     if (
       modelAsAny.updateAssessmentInput.assessmentDetails.actionNotRequired ||
-      modelAsAny.updateAssessmentInput.assessmentDetails.actionJustificationCode !== "DUPLICATE"
+      (modelAsAny.updateAssessmentInput.assessmentDetails.actionJustificationCode &&
+        modelAsAny.updateAssessmentInput.assessmentDetails.actionJustificationCode !== "DUPLICATE")
     ) {
       const existingLink = await this._linkedComplaintXrefRepository.findOne({
         relations: { linked_complaint_identifier: true, complaint_identifier: true },
