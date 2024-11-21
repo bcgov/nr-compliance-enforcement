@@ -1,5 +1,5 @@
-import _kc from "../keycloak";
-import { AgencyType } from "../types/app/agency-types";
+import _kc from "@/app/keycloak";
+import { AgencyType } from "@apptypes/app/agency-types";
 
 export const AUTH_TOKEN = "__auth_token";
 

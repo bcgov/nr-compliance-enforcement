@@ -1,4 +1,4 @@
-import { ViolationCode } from "../code-tables/violation-code";
+import { ViolationCode } from "@apptypes/code-tables/violation-code";
 import { Complaint } from "./complaint";
 
 export interface AllegationComplaint {

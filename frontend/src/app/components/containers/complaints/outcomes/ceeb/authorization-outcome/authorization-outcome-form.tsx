@@ -1,12 +1,12 @@
 import { FC, useEffect, useState } from "react";
-import { CompInput } from "../../../../../common/comp-input";
+import { CompInput } from "@components/common/comp-input";
 import { Button } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
-import { getCaseFile, upsertAuthorizationOutcome } from "../../../../../../store/reducers/case-thunks";
-import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
-import { PermitSite } from "../../../../../../types/app/case-files/ceeb/authorization-outcome/permit-site";
-import { openModal } from "../../../../../../store/reducers/app";
-import { CANCEL_CONFIRM } from "../../../../../../types/modal/modal-types";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { getCaseFile, upsertAuthorizationOutcome } from "@store/reducers/case-thunks";
+import { selectCaseId } from "@store/reducers/case-selectors";
+import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
+import { openModal } from "@store/reducers/app";
+import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 
 type props = {
   leadIdentifier: string;

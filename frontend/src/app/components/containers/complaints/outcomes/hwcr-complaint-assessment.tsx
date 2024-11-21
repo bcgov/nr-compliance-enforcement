@@ -36,7 +36,7 @@ import { BsExclamationCircleFill } from "react-icons/bs";
 
 import "@assets/sass/hwcr-assessment.scss";
 import { selectAssessment } from "@store/reducers/case-selectors";
-import { getAssessment, upsertAssessment, getCaseFile } from "@store/reducers/case-thunks";
+import { getAssessment, upsertAssessment, getCaseFile, getPrevention } from "@store/reducers/case-thunks";
 import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
@@ -137,6 +137,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     if (selected) {
       setSelectedActionRequired(selected);
       setSelectedJustification(null as unknown as Option);
+      setSelectedLinkedComplaint(null);
     } else {
       setSelectedActionRequired(null);
     }
@@ -182,9 +183,10 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       setSelectedOfficer(officer);
       dispatch(clearAssessment());
       dispatch(getAssessment(complaintData.id));
+      quickClose && dispatch(getPrevention(complaintData.id));
       dispatch(getCaseFile(id));
     }
-  }, [dispatch, id, complaintData, personGuid, assignableOfficers]);
+  }, [dispatch, id, complaintData, personGuid, assignableOfficers, quickClose]);
 
   const populateAssessmentUI = useCallback(() => {
     const selectedOfficer = (
@@ -318,6 +320,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
 
   const justificationLabelClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
   const justificationEditClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
+  const showDuplicateOptions = selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
 
   const cancelConfirmed = () => {
     populateAssessmentUI();
@@ -639,7 +642,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   />
                 </div>
               </div>
-              {selectedJustification?.value === "DUPLICATE" && !quickClose && (
+              {showDuplicateOptions && !quickClose && (
                 <div className="comp-details-form-row">
                   <label
                     htmlFor="duplicate-warning"
@@ -657,7 +660,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   </div>
                 </div>
               )}
-              {selectedJustification?.value === "DUPLICATE" && (
+              {showDuplicateOptions && (
                 <div
                   className="comp-details-form-row"
                   id="linked-complaint-div"
@@ -897,7 +900,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   <span>{selectedJustification?.label || ""}</span>
                 </dd>
               </div>
-              {selectedJustification?.value === "DUPLICATE" && (
+              {showDuplicateOptions && (
                 <div
                   id="linked-complaint-div"
                   className={justificationLabelClass}

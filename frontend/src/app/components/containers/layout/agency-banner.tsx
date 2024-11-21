@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { useAppSelector } from "../../../hooks/hooks";
-import agencyIcons from "../../../../assets/images/icons";
-import { selectCodeTable } from "../../../store/reducers/code-table";
-import UserService from "../../../service/user-service";
+import { useAppSelector } from "@hooks/hooks";
+import agencyIcons from "@assets/images/icons";
+import { selectCodeTable } from "@store/reducers/code-table";
+import UserService from "@service/user-service";
 
 export const AgencyBanner: FC = () => {
   const defaultAgencyCode = "COS";

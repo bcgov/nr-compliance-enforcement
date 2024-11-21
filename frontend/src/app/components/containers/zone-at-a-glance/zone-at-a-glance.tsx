@@ -1,16 +1,16 @@
 import { OfficesContainer } from "./offices-container";
 import { FC, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { profileZone } from "../../../store/reducers/app";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { profileZone } from "@store/reducers/app";
 import { OpenComplaints } from "./open-complaints";
-import COMPLAINT_TYPES from "../../../types/app/complaint-types";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { Row, Col } from "react-bootstrap";
 import {
   getZoneAtAGlanceStats,
   selectAllegationZagOpenComplaints,
   selectWildlifeZagOpenComplaints,
-} from "../../../store/reducers/complaints";
-import ComplaintType from "../../../constants/complaint-types";
+} from "@store/reducers/complaints";
+import ComplaintType from "@constants/complaint-types";
 
 export const ZoneAtAGlance: FC = () => {
   const dispatch = useAppDispatch();

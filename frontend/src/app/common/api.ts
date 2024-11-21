@@ -1,10 +1,10 @@
 import { Dispatch } from "redux";
 import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
-import config from "../../config";
-import { AUTH_TOKEN } from "../service/user-service";
-import { ApiRequestParameters } from "../types/app/api-request-parameters";
-import { toggleLoading, toggleNotification } from "../store/reducers/app";
-import { store } from "../../app/store/store";
+import config from "@/config";
+import { AUTH_TOKEN } from "@service/user-service";
+import { ApiRequestParameters } from "@apptypes/app/api-request-parameters";
+import { toggleLoading, toggleNotification } from "@store/reducers/app";
+import { store } from "@store/store";
 import { ToggleError } from "./toast";
 
 interface NatComRequestConfig extends AxiosRequestConfig {

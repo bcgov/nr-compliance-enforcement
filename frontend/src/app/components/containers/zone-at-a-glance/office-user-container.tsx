@@ -1,10 +1,10 @@
 import { FC } from "react";
-import { OfficerStats } from "../../../types/complaints/zone-at-a-glance-stats";
+import { OfficerStats } from "@apptypes/complaints/zone-at-a-glance-stats";
 import { Row, Col } from "react-bootstrap";
-import config from "../../../../config";
-import { isFeatureActive } from "../../../store/reducers/app";
-import { useAppSelector } from "../../../hooks/hooks";
-import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
+import config from "@/config";
+import { isFeatureActive } from "@store/reducers/app";
+import { useAppSelector } from "@hooks/hooks";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
 type Props = {
   hwcrOfficers: OfficerStats[];

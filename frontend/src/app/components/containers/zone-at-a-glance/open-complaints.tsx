@@ -1,11 +1,11 @@
 import { FC } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import { complaintTypeToName } from "../../../types/app/complaint-types";
+import { complaintTypeToName } from "@apptypes/app/complaint-types";
 import { Row, Col } from "react-bootstrap";
-import { useAppSelector } from "../../../hooks/hooks";
-import { FEATURE_TYPES } from "../../../constants/feature-flag-types";
-import { isFeatureActive } from "../../../store/reducers/app";
+import { useAppSelector } from "@hooks/hooks";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { isFeatureActive } from "@store/reducers/app";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

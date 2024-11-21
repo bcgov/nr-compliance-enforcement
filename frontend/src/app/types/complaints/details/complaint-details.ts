@@ -1,4 +1,4 @@
-import { ComplaintMethodReceivedType } from "../../app/code-tables/complaint-method-received-type";
+import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint-method-received-type";
 import { ComplaintDetailsAttractant } from "./complaint-attactant";
 
 export interface ComplaintDetails {

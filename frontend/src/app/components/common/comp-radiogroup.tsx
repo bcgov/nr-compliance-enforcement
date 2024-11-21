@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Form } from "react-bootstrap";
-import Option from "../../types/app/option";
+import Option from "@apptypes/app/option";
 
 type Props = {
   id: string;

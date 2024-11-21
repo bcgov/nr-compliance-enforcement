@@ -1,4 +1,4 @@
-import KeyValuePair from "../app/key-value-pair";
+import KeyValuePair from "@apptypes/app/key-value-pair";
 
 export interface Prevention {
   prevention_type: KeyValuePair[];
