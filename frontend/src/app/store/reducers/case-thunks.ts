@@ -1,9 +1,9 @@
 import { Action, ThunkAction } from "@reduxjs/toolkit";
-import config from "../../../config";
-import { deleteMethod, generateApiParameters, get, patch, post } from "../../common/api";
-import { AppThunk, RootState } from "../store";
-import { ToggleError, ToggleSuccess } from "../../common/toast";
-import { CaseFileDto } from "../../types/app/case-files/case-file";
+import config from "@/config";
+import { deleteMethod, generateApiParameters, get, patch, post } from "@common/api";
+import { AppThunk, RootState } from "@store/store";
+import { ToggleError, ToggleSuccess } from "@common/toast";
+import { CaseFileDto } from "@apptypes/app/case-files/case-file";
 import {
   clearAssessment,
   clearPrevention,
@@ -14,43 +14,43 @@ import {
   setPrevention,
   setReviewComplete,
 } from "./cases";
-import { Assessment } from "../../types/outcomes/assessment";
-import { Officer } from "../../types/person/person";
-import { AssessmentActionDto } from "../../types/app/case-files/assessment-action";
-import { UpdateAssessmentInput } from "../../types/app/case-files/update-assessment-input";
-import { CreateAssessmentInput } from "../../types/app/case-files/create-assessment-input";
-import { Prevention } from "../../types/outcomes/prevention";
-import { PreventionActionDto } from "../../types/app/case-files/prevention/prevention-action";
-import { UpdatePreventionInput } from "../../types/app/case-files/prevention/update-prevention-input";
-import { CreatePreventionInput } from "../../types/app/case-files/prevention/create-prevention-input";
-import { CreateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/create-supplemental-notes-input";
+import { Assessment } from "@apptypes/outcomes/assessment";
+import { Officer } from "@apptypes/person/person";
+import { AssessmentActionDto } from "@apptypes/app/case-files/assessment-action";
+import { UpdateAssessmentInput } from "@apptypes/app/case-files/update-assessment-input";
+import { CreateAssessmentInput } from "@apptypes/app/case-files/create-assessment-input";
+import { Prevention } from "@apptypes/outcomes/prevention";
+import { PreventionActionDto } from "@apptypes/app/case-files/prevention/prevention-action";
+import { UpdatePreventionInput } from "@apptypes/app/case-files/prevention/update-prevention-input";
+import { CreatePreventionInput } from "@apptypes/app/case-files/prevention/create-prevention-input";
+import { CreateSupplementalNotesInput } from "@apptypes/app/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UUID } from "crypto";
-import { UpdateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/update-supplemental-notes-input";
-import { ReviewInput } from "../../types/app/case-files/review-input";
-import { ReviewCompleteAction } from "../../types/app/case-files/review-complete-action";
-import { DeleteSupplementalNoteInput } from "../../types/app/case-files/supplemental-notes/delete-supplemental-notes-input";
-import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
-import { CreateEquipmentInput } from "../../types/app/case-files/equipment-inputs/create-equipment-input";
-import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
+import { UpdateSupplementalNotesInput } from "@apptypes/app/case-files/supplemental-notes/update-supplemental-notes-input";
+import { ReviewInput } from "@apptypes/app/case-files/review-input";
+import { ReviewCompleteAction } from "@apptypes/app/case-files/review-complete-action";
+import { DeleteSupplementalNoteInput } from "@apptypes/app/case-files/supplemental-notes/delete-supplemental-notes-input";
+import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
+import { CreateEquipmentInput } from "@apptypes/app/case-files/equipment-inputs/create-equipment-input";
+import { UpdateEquipmentInput } from "@apptypes/app/case-files/equipment-inputs/update-equipment-input";
 import { getComplaintStatusById, clearComplaint } from "./complaints";
-import COMPLAINT_TYPES from "../../types/app/complaint-types";
-import { AnimalOutcome } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { CreateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/create-animal-outcome-input";
-import { CASE_ACTION_CODE } from "../../constants/case_actions";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
+import { CreateAnimalOutcomeInput } from "@apptypes/app/case-files/animal-outcome/create-animal-outcome-input";
+import { CASE_ACTION_CODE } from "@constants/case_actions";
 import { from } from "linq-to-typescript";
-import { EarTagInput } from "../../types/app/case-files/animal-outcome/ear-tag-input";
-import { DrugUsedInputV3 } from "../../types/app/case-files/animal-outcome/drug-used-input";
-import { AnimalOutcomeActionInput } from "../../types/app/case-files/animal-outcome/animal-outcome-action-input";
-import { DeleteAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/delete-animal-outcome-input";
-import { UpdateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/update-animal-outcome-input";
-import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
-import { CreateDecisionInput } from "../../types/app/case-files/ceeb/decision/create-decision-input";
-import { UpdateDecisionInput } from "../../types/app/case-files/ceeb/decision/update-decsion-input";
-import { PermitSite } from "../../types/app/case-files/ceeb/authorization-outcome/permit-site";
-import { CreateAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/create-authorization-outcome-input";
-import { UpdateAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/update-authorization-outcome-input";
-import { getUserAgency } from "../../service/user-service";
-import { DeleteAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/delete-authorization-outcome-input";
+import { EarTagInput } from "@apptypes/app/case-files/animal-outcome/ear-tag-input";
+import { DrugUsedInputV3 } from "@apptypes/app/case-files/animal-outcome/drug-used-input";
+import { AnimalOutcomeActionInput } from "@apptypes/app/case-files/animal-outcome/animal-outcome-action-input";
+import { DeleteAnimalOutcomeInput } from "@apptypes/app/case-files/animal-outcome/delete-animal-outcome-input";
+import { UpdateAnimalOutcomeInput } from "@apptypes/app/case-files/animal-outcome/update-animal-outcome-input";
+import { Decision } from "@apptypes/app/case-files/ceeb/decision/decision";
+import { CreateDecisionInput } from "@apptypes/app/case-files/ceeb/decision/create-decision-input";
+import { UpdateDecisionInput } from "@apptypes/app/case-files/ceeb/decision/update-decsion-input";
+import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
+import { CreateAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/create-authorization-outcome-input";
+import { UpdateAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/update-authorization-outcome-input";
+import { getUserAgency } from "@service/user-service";
+import { DeleteAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/delete-authorization-outcome-input";
 
 //-- general thunks
 export const findCase =

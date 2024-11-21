@@ -10,7 +10,7 @@ import {
   faFile,
   faMap,
 } from "@fortawesome/free-solid-svg-icons";
-import { getFileExtension } from "../../common/methods";
+import { getFileExtension } from "@common/methods";
 type Props = {
   filename: string;
   imageIconString?: string;

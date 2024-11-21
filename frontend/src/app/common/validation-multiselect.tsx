@@ -1,5 +1,5 @@
 import { FC } from "react";
-import Option from "../types/app/option";
+import Option from "@apptypes/app/option";
 import Select from "react-select";
 
 interface ValidationMultiSelectProps {

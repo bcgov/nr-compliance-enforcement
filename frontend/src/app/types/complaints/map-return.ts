@@ -1,5 +1,5 @@
-import { WildlifeComplaint } from "../app/complaints/wildlife-complaint";
-import { AllegationComplaint as AllegationComplaintModel } from "../app/complaints/allegation-complaint";
+import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
+import { AllegationComplaint as AllegationComplaintModel } from "@apptypes/app/complaints/allegation-complaint";
 import { AllegationComplaint } from "./allegation-complaint";
 import { HwcrComplaint } from "./hwcr-complaint";
 

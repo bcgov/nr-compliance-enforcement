@@ -1,12 +1,12 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
-import { useAppSelector } from "../../../../../hooks/hooks";
+import { useAppSelector } from "@hooks/hooks";
 import { Button, Card } from "react-bootstrap";
-import { CompInput } from "../../../../common/comp-input";
-import { CompSelect } from "../../../../common/comp-select";
-import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "../../../../../store/reducers/code-table";
-import Option from "../../../../../types/app/option";
-import { isPositiveNum } from "../../../../../common/methods";
-import { REQUIRED } from "../../../../../constants/general";
+import { CompInput } from "@components/common/comp-input";
+import { CompSelect } from "@components/common/comp-select";
+import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "@store/reducers/code-table";
+import Option from "@apptypes/app/option";
+import { isPositiveNum } from "@common/methods";
+import { REQUIRED } from "@constants/general";
 
 type refProps = {
   isValid: Function;
