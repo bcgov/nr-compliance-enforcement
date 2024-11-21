@@ -12,6 +12,7 @@ import {
   selectComplaintAssignedBy,
   selectComplaintLargeCarnivoreInd,
   selectLinkedComplaints,
+  getLinkedComplaints,
 } from "@store/reducers/complaints";
 import {
   selectAssessmentCat1Dropdown,
@@ -184,6 +185,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       dispatch(clearAssessment());
       dispatch(getAssessment(complaintData.id));
       quickClose && dispatch(getPrevention(complaintData.id));
+      quickClose && dispatch(getLinkedComplaints(complaintData.id));
       dispatch(getCaseFile(id));
     }
   }, [dispatch, id, complaintData, personGuid, assignableOfficers, quickClose]);
@@ -485,7 +487,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       );
       return true;
     }
-    console.log(linkedComplaintData);
     return false;
   }, [selectedActionRequired, selectedJustification, linkedComplaintData]);
 
