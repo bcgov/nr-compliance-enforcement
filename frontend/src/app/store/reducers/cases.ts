@@ -1,5 +1,5 @@
 import { createAction, createSlice } from "@reduxjs/toolkit";
-import { CasesState } from "../../types/state/cases-state";
+import { CasesState } from "@apptypes/state/cases-state";
 
 const initialState: CasesState = {
   caseId: undefined,
@@ -10,6 +10,12 @@ const initialState: CasesState = {
     linked_complaint: undefined,
     officer: undefined,
     assessment_type: [],
+    contacted_complainant: undefined,
+    attended: undefined,
+    location_type: undefined,
+    conflict_history: undefined,
+    category_level: undefined,
+    assessment_cat1_type: [],
   },
   prevention: {
     date: undefined,
@@ -32,6 +38,7 @@ const initialState: CasesState = {
     attachments: false,
     fileReview: false,
     showSectionErrors: false,
+    hideAssessmentErrors: false,
     //-- ceeb
     decision: false,
     authorization: false,
@@ -87,7 +94,10 @@ export const casesSlice = createSlice({
     },
     setIsInEdit: (state, action) => {
       const { payload } = action;
-      return { ...state, isInEdit: { ...state.isInEdit, ...payload } };
+      return {
+        ...state,
+        isInEdit: { ...state.isInEdit, ...payload, hideAssessmentErrors: payload.hideAssessmentErrors || false },
+      };
     },
   },
 

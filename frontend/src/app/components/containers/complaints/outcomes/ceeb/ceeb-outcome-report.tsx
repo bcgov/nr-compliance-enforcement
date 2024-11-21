@@ -1,12 +1,12 @@
 import { FC, useEffect } from "react";
 import { CeebDecision } from "./ceeb-decision/decision";
 import { useParams } from "react-router-dom";
-import { useAppDispatch } from "../../../../../hooks/hooks";
-import { getCaseFile } from "../../../../../store/reducers/case-thunks";
-import { ComplaintParams } from "../../details/complaint-details-edit";
-import { OutcomeAttachments } from "../outcome-attachments";
+import { useAppDispatch } from "@hooks/hooks";
+import { getCaseFile } from "@store/reducers/case-thunks";
+import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
+import { OutcomeAttachments } from "@components/containers/complaints/outcomes/outcome-attachments";
 import { AuthoizationOutcome } from "./authorization-outcome/authorization-outcome";
-import { SupplementalNote } from "../supplemental-note";
+import { SupplementalNote } from "@components/containers/complaints/outcomes/supplemental-note";
 
 export const CeebOutcomeReport: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();

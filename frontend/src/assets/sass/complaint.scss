@@ -735,7 +735,8 @@
   flex-direction: column;
   gap: 4px;
 
-  > label {
+  > label,
+  .muliline-label {
     width: 12rem;
     color: $gray-500;
   }
@@ -761,6 +762,7 @@
     gap: 16px;
 
     > label,
+    .muliline-label,
     > legend {
       flex: 0 0 auto;
       margin-top: 6px;
@@ -772,6 +774,7 @@
 @include media-breakpoint-up(xl) {
   .comp-details-form-row {
     > label,
+    .muliline-label,
     > legend {
       width: 18rem;
     }
@@ -1929,6 +1932,12 @@ p {
 
 .comp-action-dropdown {
   margin-top: 0.2rem;
+  margin-bottom: 2px;
+
+  .dropdown-toggle::before {
+    vertical-align: middle;
+    margin-bottom: 2px;
+  }
 }
 
 .coordinate-zone-select .comp-select__control {

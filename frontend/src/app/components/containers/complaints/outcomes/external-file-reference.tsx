@@ -1,11 +1,11 @@
 import { FC, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
-import { useAppSelector, useAppDispatch } from "../../../../hooks/hooks";
-import { CompInput } from "../../../common/comp-input";
-import { openModal } from "../../../../store/reducers/app";
-import { CANCEL_CONFIRM, DELETE_CONFIRM } from "../../../../types/modal/modal-types";
-import { getComplaintById, selectComplaint, updateComplaintById } from "../../../../store/reducers/complaints";
-import { getComplaintType } from "../../../../common/methods";
+import { useAppSelector, useAppDispatch } from "@hooks/hooks";
+import { CompInput } from "@components/common/comp-input";
+import { openModal } from "@store/reducers/app";
+import { CANCEL_CONFIRM, DELETE_CONFIRM } from "@apptypes/modal/modal-types";
+import { getComplaintById, selectComplaint, updateComplaintById } from "@store/reducers/complaints";
+import { getComplaintType } from "@common/methods";
 
 export const ExternalFileReference: FC = () => {
   const dispatch = useAppDispatch();

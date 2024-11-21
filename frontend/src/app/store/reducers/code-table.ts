@@ -1,39 +1,39 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { AppThunk, RootState, store } from "../store";
+import { AppThunk, RootState, store } from "@store/store";
 import { from } from "linq-to-typescript";
-import config from "../../../config";
-import { CodeTableState } from "../../types/state/code-table-state";
-import { ComplaintStatusCode } from "../../types/code-tables/complaint-status-code";
-import Option from "../../types/app/option";
-import { generateApiParameters, get } from "../../common/api";
-import { DropdownOption } from "../../types/app/drop-down-option";
-import { Agency } from "../../types/app/code-tables/agency";
-import { Attractant } from "../../types/app/code-tables/attactant";
-import { CODE_TABLE_TYPES } from "../../constants/code-table-types";
-import { NatureOfComplaint } from "../../types/app/code-tables/nature-of-complaint";
-import { Species } from "../../types/app/code-tables/species";
-import { Violation } from "../../types/app/code-tables/violation";
-import { ComplaintType } from "../../types/app/code-tables/complaint-type";
-import { Region } from "../../types/app/code-tables/region";
-import { Zone } from "../../types/app/code-tables/zone";
-import { Community } from "../../types/app/code-tables/community";
-import { OrganizationCodeTable } from "../../types/app/code-tables/organization-code-table";
-import { ReportedBy } from "../../types/app/code-tables/reported-by";
-import { Justification } from "../../types/app/code-tables/justification";
-import { AssessmentType } from "../../types/app/code-tables/assessment-type";
-import { Sex } from "../../types/app/code-tables/sex";
-import { Age } from "../../types/app/code-tables/age";
-import { ThreatLevel } from "../../types/app/code-tables/threat-level";
-import { ConflictHistory } from "../../types/app/code-tables/conflict-history";
-import { EarTag } from "../../types/app/code-tables/ear-tag";
-import { WildlifeComplaintOutcome } from "../../types/app/code-tables/wildlife-complaint-outcome";
-import { Drug } from "../../types/app/code-tables/drug";
-import { DrugMethod } from "../../types/app/code-tables/drug-method";
-import { DrugRemainingOutcome } from "../../types/app/code-tables/drug-remaining-outcome";
-import { Equipment } from "../../types/app/code-tables/equipment";
-import { PreventionType } from "../../types/app/code-tables/prevention-type";
-import { GirType } from "../../types/app/code-tables/gir-type";
-import { getUserAgency } from "../../service/user-service";
+import config from "@/config";
+import { CodeTableState } from "@apptypes/state/code-table-state";
+import { ComplaintStatusCode } from "@apptypes/code-tables/complaint-status-code";
+import Option from "@apptypes/app/option";
+import { generateApiParameters, get } from "@common/api";
+import { DropdownOption } from "@apptypes/app/drop-down-option";
+import { Agency } from "@apptypes/app/code-tables/agency";
+import { Attractant } from "@apptypes/app/code-tables/attactant";
+import { CODE_TABLE_TYPES } from "@constants/code-table-types";
+import { NatureOfComplaint } from "@apptypes/app/code-tables/nature-of-complaint";
+import { Species } from "@apptypes/app/code-tables/species";
+import { Violation } from "@apptypes/app/code-tables/violation";
+import { ComplaintType } from "@apptypes/app/code-tables/complaint-type";
+import { Region } from "@apptypes/app/code-tables/region";
+import { Zone } from "@apptypes/app/code-tables/zone";
+import { Community } from "@apptypes/app/code-tables/community";
+import { OrganizationCodeTable } from "@apptypes/app/code-tables/organization-code-table";
+import { ReportedBy } from "@apptypes/app/code-tables/reported-by";
+import { Justification } from "@apptypes/app/code-tables/justification";
+import { AssessmentType } from "@apptypes/app/code-tables/assessment-type";
+import { Sex } from "@apptypes/app/code-tables/sex";
+import { Age } from "@apptypes/app/code-tables/age";
+import { ThreatLevel } from "@apptypes/app/code-tables/threat-level";
+import { ConflictHistory } from "@apptypes/app/code-tables/conflict-history";
+import { EarTag } from "@apptypes/app/code-tables/ear-tag";
+import { WildlifeComplaintOutcome } from "@apptypes/app/code-tables/wildlife-complaint-outcome";
+import { Drug } from "@apptypes/app/code-tables/drug";
+import { DrugMethod } from "@apptypes/app/code-tables/drug-method";
+import { DrugRemainingOutcome } from "@apptypes/app/code-tables/drug-remaining-outcome";
+import { Equipment } from "@apptypes/app/code-tables/equipment";
+import { PreventionType } from "@apptypes/app/code-tables/prevention-type";
+import { GirType } from "@apptypes/app/code-tables/gir-type";
+import { getUserAgency } from "@service/user-service";
 import {
   fetchDischargeTypes,
   fetchNonComplianceTypes,
@@ -42,7 +42,8 @@ import {
   fetchCEEBDecisionTypes,
   fetchScheduleSectorTypes,
 } from "./code-table-thunks";
-import { TeamType } from "../../types/app/code-tables/team";
+import { TeamType } from "@apptypes/app/code-tables/team";
+import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -81,6 +82,8 @@ const initialState: CodeTableState = {
   team: [],
   "complaint-method-received-codes": [],
   "lead-agency": [],
+  "assessment-cat1-type": [],
+  "case-location-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -142,6 +145,8 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       team,
       "complaint-method-received-codes": complaintMethodReceived,
       "lead-agency": leadAgency,
+      "assessment-cat1-type": assessmentCat1Type,
+      "case-location-type": caseLocationType,
     },
   } = state;
 
@@ -262,6 +267,12 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(leadAgency).any()) {
       dispatch(fetchLeadAgencies());
     }
+    if (!from(caseLocationType).any()) {
+      dispatch(fetchCaseLocationTypes());
+    }
+    if (!from(assessmentCat1Type).any()) {
+      dispatch(fetchAssessmentCat1Types());
+    }
   } catch (error) {}
 };
 
@@ -307,6 +318,8 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchCEEBDecisionTypes());
     dispatch(fetchScheduleSectorTypes());
     dispatch(fetchLeadAgencies());
+    dispatch(fetchAssessmentCat1Types());
+    dispatch(fetchCaseLocationTypes());
   } catch (error) {
     console.error(error);
   }
@@ -641,6 +654,30 @@ export const fetchLeadAgencies = (): AppThunk => async (dispatch) => {
   const response = await get<Array<Agency>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.LEAD_AGENCY, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchAssessmentCat1Types = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.ASSESSMENT_CAT1_TYPE}`,
+  );
+
+  const response = await get<Array<AssessmentType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.ASSESSMENT_CAT1_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchCaseLocationTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.CASE_LOCATION_TYPE}`,
+  );
+
+  const response = await get<Array<CaseLocationType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.CASE_LOCATION_TYPE, data: response };
     dispatch(setCodeTable(payload));
   }
 };
@@ -1358,6 +1395,32 @@ export const selectEquipmentDropdown = (state: RootState): Array<Option> => {
   } = state;
 
   const data = items.map(({ equipment: value, shortDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
+export const selectLocationDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "case-location-type": items },
+  } = state;
+
+  const data = items.map(({ caseLocationType: value, shortDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
+export const selectAssessmentCat1Dropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "assessment-cat1-type": items },
+  } = state;
+
+  const data = items.map(({ assessmentType: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });

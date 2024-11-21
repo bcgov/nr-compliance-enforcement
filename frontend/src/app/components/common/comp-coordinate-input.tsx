@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
-import Option from "../../types/app/option";
+import Option from "@apptypes/app/option";
 import { CompRadioGroup } from "./comp-radiogroup";
-import { bcBoundaries, bcUtmBoundaries, formatLatLongCoordinate } from "../../common/methods";
+import { bcBoundaries, bcUtmBoundaries, formatLatLongCoordinate } from "@common/methods";
 import { CompSelect } from "./comp-select";
 import { Button } from "react-bootstrap";
 let utmObj = require("utm-latlng");

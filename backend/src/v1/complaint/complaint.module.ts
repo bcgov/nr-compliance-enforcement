@@ -33,6 +33,7 @@ import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/enti
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { CompMthdRecvCdAgcyCdXrefModule } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.module";
 import { LinkedComplaintXrefModule } from "../linked_complaint_xref/linked_complaint_xref.module";
+import { OfficerModule } from "../officer/officer.module";
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { LinkedComplaintXrefModule } from "../linked_complaint_xref/linked_compl
     StagingComplaintModule,
     CompMthdRecvCdAgcyCdXrefModule,
     LinkedComplaintXrefModule,
+    OfficerModule,
   ],
   controllers: [ComplaintController],
   providers: [ComplaintService, CompMthdRecvCdAgcyCdXrefService],

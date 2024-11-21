@@ -1,14 +1,14 @@
 import { FC } from "react";
 import { Badge, Card } from "react-bootstrap";
-import { useAppSelector } from "../../../../hooks/hooks";
-import { formatDate, formatTime } from "../../../../common/methods";
-import { ComplaintDetailsAttractant } from "../../../../types/complaints/details/complaint-attactant";
-import { selectComplaintDetails } from "../../../../store/reducers/complaints";
-import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
-import { ComplaintDetails } from "../../../../types/complaints/details/complaint-details";
-import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
-import { FeatureFlag } from "../../../common/feature-flag";
-import { CompLocationInfo } from "../../../common/comp-location-info";
+import { useAppSelector } from "@hooks/hooks";
+import { formatDate, formatTime } from "@common/methods";
+import { ComplaintDetailsAttractant } from "@apptypes/complaints/details/complaint-attactant";
+import { selectComplaintDetails } from "@store/reducers/complaints";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { ComplaintDetails } from "@apptypes/complaints/details/complaint-details";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { FeatureFlag } from "@components/common/feature-flag";
+import { CompLocationInfo } from "@components/common/comp-location-info";
 
 interface ComplaintHeaderProps {
   complaintType: string;

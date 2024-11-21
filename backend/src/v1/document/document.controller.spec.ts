@@ -67,6 +67,11 @@ import { StagingComplaint } from "../staging_complaint/entities/staging_complain
 import { TeamCode } from "../team_code/entities/team_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
+import { OfficerService } from "../officer/officer.service";
+import { PersonService } from "../person/person.service";
+import { OfficeService } from "../office/office.service";
+import { CssService } from "../../external_api/css/css.service";
+import { Person } from "../person/entities/person.entity";
 
 describe("DocumentController", () => {
   let controller: DocumentController;
@@ -191,10 +196,18 @@ describe("DocumentController", () => {
           provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
           useFactory: MockCompMthdRecvCdAgcyCdXrefRepository,
         },
+        {
+          provide: getRepositoryToken(Person),
+          useValue: {},
+        },
         ComplaintUpdatesService,
         ComplaintService,
         CodeTableService,
         PersonComplaintXrefService,
+        OfficerService,
+        OfficeService,
+        CssService,
+        PersonService,
         AttractantHwcrXrefService,
         CompMthdRecvCdAgcyCdXrefService,
         {

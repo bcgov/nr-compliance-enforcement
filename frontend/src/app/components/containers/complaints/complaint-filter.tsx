@@ -1,7 +1,7 @@
 import { FC, useCallback, useContext } from "react";
 import "../../../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import "../../../../../node_modules/react-datepicker/dist/react-datepicker-cssmodules.css";
-import { useAppSelector } from "../../../hooks/hooks";
+import { useAppSelector } from "@hooks/hooks";
 import {
   selectHwcrNatureOfComplaintCodeDropdown,
   selectSpeciesCodeDropdown,
@@ -12,18 +12,18 @@ import {
   selectComplaintStatusWithPendingCodeDropdown,
   selectGirTypeCodeDropdown,
   selectComplaintReceivedMethodDropdown,
-} from "../../../store/reducers/code-table";
-import { selectOfficersByAgencyDropdownUsingPersonGuid } from "../../../store/reducers/officer";
-import { selectDecisionTypeDropdown } from "../../../store/reducers/code-table-selectors";
-import COMPLAINT_TYPES from "../../../types/app/complaint-types";
+} from "@store/reducers/code-table";
+import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
+import { selectDecisionTypeDropdown } from "@store/reducers/code-table-selectors";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import DatePicker from "react-datepicker";
-import { CompSelect } from "../../common/comp-select";
-import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
-import { ComplaintFilterPayload, updateFilter } from "../../../store/reducers/complaint-filters";
-import Option from "../../../types/app/option";
-import { listActiveFilters } from "../../../store/reducers/app";
-import UserService from "../../../service/user-service";
-import Roles from "../../../types/app/roles";
+import { CompSelect } from "@components/common/comp-select";
+import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
+import { ComplaintFilterPayload, updateFilter } from "@store/reducers/complaint-filters";
+import Option from "@apptypes/app/option";
+import { listActiveFilters } from "@store/reducers/app";
+import UserService from "@service/user-service";
+import Roles from "@apptypes/app/roles";
 
 type Props = {
   type: string;

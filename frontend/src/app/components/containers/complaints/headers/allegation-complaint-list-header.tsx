@@ -1,7 +1,7 @@
 import { FC } from "react";
-import { SortableHeader } from "../../../common/sortable-header";
-import UserService from "../../../../service/user-service";
-import Roles from "../../../../types/app/roles";
+import { SortableHeader } from "@components/common/sortable-header";
+import UserService from "@service/user-service";
+import Roles from "@apptypes/app/roles";
 
 type Props = {
   handleSort: Function;

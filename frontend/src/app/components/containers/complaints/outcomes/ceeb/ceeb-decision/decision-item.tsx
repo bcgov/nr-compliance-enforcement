@@ -1,17 +1,16 @@
 import { FC } from "react";
-import { formatDate } from "../../../../../../common/methods";
-import { useAppSelector } from "../../../../../../hooks/hooks";
-import { selectLeadAgencyDropdown } from "../../../../../../store/reducers/code-table";
+import { formatDate } from "@common/methods";
+import { useAppSelector } from "@hooks/hooks";
+import { selectLeadAgencyDropdown } from "@store/reducers/code-table";
 import {
   selectDischargeDropdown,
   selectNonComplianceDropdown,
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
-} from "../../../../../../store/reducers/code-table-selectors";
-import { selectOfficerListByAgency } from "../../../../../../store/reducers/officer";
-import Option from "../../../../../../types/app/option";
-import { CASE_ACTION_CODE } from "../../../../../../constants/case_actions";
+} from "@store/reducers/code-table-selectors";
+import Option from "@apptypes/app/option";
+import { CASE_ACTION_CODE } from "@constants/case_actions";
 
 type props = {
   id?: string;
@@ -28,7 +27,6 @@ type props = {
 };
 
 export const DecisionItem: FC<props> = ({
-  id,
   schedule,
   sector,
   discharge,
@@ -36,7 +34,6 @@ export const DecisionItem: FC<props> = ({
   rationale,
   leadAgency,
   inspectionNumber,
-  assignedTo,
   actionTaken,
   actionTakenDate,
 }) => {
@@ -48,7 +45,6 @@ export const DecisionItem: FC<props> = ({
   const scheduleSectorsOptions = useAppSelector(selectSectorDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectLeadAgencyDropdown);
-  const officerOptions = useAppSelector(selectOfficerListByAgency);
 
   const getValue = (property: string): Option | undefined | null => {
     let result: Option | undefined;
@@ -88,11 +84,6 @@ export const DecisionItem: FC<props> = ({
 
       case "actionTaken": {
         result = decisionTypeOptions.find((item) => item.value === actionTaken);
-        break;
-      }
-
-      case "assignedTo": {
-        result = officerOptions.find((item) => item.value === assignedTo);
         break;
       }
     }
@@ -139,11 +130,6 @@ export const DecisionItem: FC<props> = ({
         <dt>Rationale</dt>
         <dd>{rationale}</dd>
       </div>
-      <div>
-        <dt>Assigned to</dt>
-        <dd>{getValue("assignedTo")?.label}</dd>
-      </div>
-
       <div>
         <dt>Date action taken</dt>
         <dd>{actionTakenDate !== null && formatDate(new Date(actionTakenDate).toString())}</dd>

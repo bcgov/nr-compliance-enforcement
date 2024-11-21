@@ -1,14 +1,14 @@
 import { from } from "linq-to-typescript";
-import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
-import { AnimalOutcomeV2 } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { Assessment } from "../../types/outcomes/assessment";
-import { Prevention } from "../../types/outcomes/prevention";
-import { SupplementalNote } from "../../types/outcomes/supplemental-note";
-import { AnimalOutcomeSubject } from "../../types/state/cases-state";
-import { RootState } from "../store";
-import { CASE_ACTION_CODE } from "../../constants/case_actions";
-import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
-import { PermitSite } from "../../types/app/case-files/ceeb/authorization-outcome/permit-site";
+import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
+import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
+import { Assessment } from "@apptypes/outcomes/assessment";
+import { Prevention } from "@apptypes/outcomes/prevention";
+import { SupplementalNote } from "@apptypes/outcomes/supplemental-note";
+import { AnimalOutcomeSubject, Subject } from "@apptypes/state/cases-state";
+import { RootState } from "@store/store";
+import { CASE_ACTION_CODE } from "@constants/case_actions";
+import { Decision } from "@apptypes/app/case-files/ceeb/decision/decision";
+import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
 
 //-- Case file selectors
 export const selectCaseId = (state: RootState): string => {
@@ -27,6 +27,19 @@ export const selectPrevention = (state: RootState): Prevention => {
   const { cases } = state;
   return cases.prevention;
 };
+
+export const selectEquipment = (state: RootState): EquipmentDetailsDto[] => {
+  const { cases } = state;
+  return cases.equipment;
+};
+
+export const selectSubject = (state: RootState): Subject[] => state.cases.subject;
+
+export const selectIsInEdit = (state: RootState): any => state.cases.isInEdit;
+
+export const selectIsReviewRequired = (state: RootState): boolean => state.cases.isReviewRequired;
+
+export const selectReviewComplete = (state: RootState): any => state.cases.reviewComplete;
 
 export const selectSupplementalNote = (state: RootState): SupplementalNote => {
   const {
@@ -69,12 +82,7 @@ export const selectNotesOfficer = (state: RootState) => {
   return currentOfficer;
 };
 
-export const selectEquipment = (state: RootState): EquipmentDetailsDto[] => {
-  const { cases } = state;
-  return cases.equipment;
-};
-
-export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> => {
+export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcome> => {
   const {
     cases: { subject: subjects },
   } = state;
@@ -91,7 +99,7 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
         sex,
         age,
         categoryLevel: threatLevel,
-        conflictHistory,
+        identifyingFeatures,
         outcome,
         tags,
         drugs,
@@ -103,13 +111,13 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
       const _tags = tags ?? [];
       const _drugs = drugs ?? [];
 
-      let record: AnimalOutcomeV2 = {
+      let record: AnimalOutcome = {
         id,
         species,
         sex,
         age,
         threatLevel,
-        conflictHistory,
+        identifyingFeatures,
         outcome,
         tags: _tags,
         drugs: _drugs,
@@ -152,26 +160,7 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcomeV2> =
 };
 
 export const selectCaseDecision = (state: RootState): Decision => {
-  const {
-    complaints: { complaint },
-    cases,
-  } = state;
-
-  let assignedTo = "";
-  //-- if the compalint is assigned to an officer pre-select the assigned to officer
-  if (complaint?.delegates) {
-    const { delegates } = complaint;
-    if (from(delegates).any()) {
-      const assigned = delegates.find((item) => item.type === "ASSIGNEE");
-      if (assigned && assigned?.person !== null) {
-        const {
-          person: { id },
-        } = assigned;
-
-        assignedTo = id;
-      }
-    }
-  }
+  const { cases } = state;
 
   const defaultDecision: Decision = {
     schedule: "",
@@ -179,7 +168,7 @@ export const selectCaseDecision = (state: RootState): Decision => {
     discharge: "",
     nonCompliance: "",
     rationale: "",
-    assignedTo,
+    assignedTo: "",
     actionTaken: "",
     actionTakenDate: null,
   };

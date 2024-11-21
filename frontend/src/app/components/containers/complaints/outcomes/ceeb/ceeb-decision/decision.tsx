@@ -1,14 +1,13 @@
 import { FC, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { Button, Card } from "react-bootstrap";
-import { selectCaseDecision } from "../../../../../../store/reducers/case-selectors";
+import { selectCaseDecision } from "@store/reducers/case-selectors";
 import { useParams } from "react-router-dom";
-import { ComplaintParams } from "../../../details/complaint-details-edit";
-import { setIsInEdit } from "../../../../../../store/reducers/cases";
+import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
+import { setIsInEdit } from "@store/reducers/cases";
 import { DecisionForm } from "./decision-form";
 import { DecisionItem } from "./decision-item";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { assignedOfficerAuthId } from "../../../../../../store/reducers/complaints";
 
 export const CeebDecision: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
@@ -16,9 +15,6 @@ export const CeebDecision: FC = () => {
 
   //-- select the decision
   const data = useAppSelector(selectCaseDecision);
-
-  //-- get the officer assigned to the complaint
-  const officerAssigned = useAppSelector(assignedOfficerAuthId);
 
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const [editable, setEditable] = useState(true);
@@ -31,8 +27,10 @@ export const CeebDecision: FC = () => {
     if (!hasDecision && editable) {
       dispatch(setIsInEdit({ decision: false }));
     } else dispatch(setIsInEdit({ decision: editable }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editable, hasDecision]);
+    return () => {
+      dispatch(setIsInEdit({ decision: false }));
+    };
+  }, [dispatch, editable, hasDecision]);
 
   useEffect(() => {
     setEditable(!data.id);
@@ -52,6 +50,7 @@ export const CeebDecision: FC = () => {
         {!editable && (
           <div className="comp-details-section-header-actions">
             <Button
+              id="decision-edit-button"
               variant="outline-primary"
               size="sm"
               onClick={() => {
@@ -84,7 +83,6 @@ export const CeebDecision: FC = () => {
           {editable ? (
             <DecisionForm
               {...data}
-              officerAssigned={officerAssigned}
               leadIdentifier={id}
               toggleEdit={setEditable}
             />
