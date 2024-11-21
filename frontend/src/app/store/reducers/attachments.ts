@@ -1,19 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { RootState, AppThunk } from "../store";
-import { deleteMethod, generateApiParameters, get, putFile } from "../../common/api";
+import { RootState, AppThunk } from "@store/store";
+import { deleteMethod, generateApiParameters, get, putFile } from "@common/api";
 import { from } from "linq-to-typescript";
-import { COMSObject } from "../../types/coms/object";
-import { AttachmentsState } from "../../types/state/attachments-state";
-import config from "../../../config";
+import { COMSObject } from "@apptypes/coms/object";
+import { AttachmentsState } from "@apptypes/state/attachments-state";
+import config from "@/config";
 import {
   getThumbnailFile,
   injectComplaintIdentifierToFilename,
   injectComplaintIdentifierToThumbFilename,
   isImage,
-} from "../../common/methods";
-import { ToggleError, ToggleSuccess } from "../../common/toast";
+} from "@common/methods";
+import { ToggleError, ToggleSuccess } from "@common/toast";
 import axios from "axios";
-import AttachmentEnum from "../../constants/attachment-enum";
+import AttachmentEnum from "@constants/attachment-enum";
 
 const initialState: AttachmentsState = {
   complaintsAttachments: [],

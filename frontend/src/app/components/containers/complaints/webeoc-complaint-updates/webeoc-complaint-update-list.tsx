@@ -1,14 +1,14 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import {
   getWebEOCChangeCount,
   selectWebEOCChangeCount,
   selectRelatedData,
   getRelatedData,
-} from "../../../../store/reducers/complaints";
-import { WebEOCComplaintUpdateDTO } from "../../../../types/app/complaints/webeoc-complaint-update";
-import { formatDate, formatTime } from "../../../../common/methods";
-import { ActionTaken } from "../../../../types/app/complaints/action-taken";
+} from "@store/reducers/complaints";
+import { WebEOCComplaintUpdateDTO } from "@apptypes/app/complaints/webeoc-complaint-update";
+import { formatDate, formatTime } from "@common/methods";
+import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 
 type Props = {
   complaintIdentifier: string;

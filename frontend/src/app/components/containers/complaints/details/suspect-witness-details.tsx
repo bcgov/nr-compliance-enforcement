@@ -1,7 +1,7 @@
 import { FC } from "react";
-import { useAppSelector } from "../../../../hooks/hooks";
-import { selectComplaintSuspectWitnessDetails } from "../../../../store/reducers/complaints";
-import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
+import { useAppSelector } from "@hooks/hooks";
+import { selectComplaintSuspectWitnessDetails } from "@store/reducers/complaints";
+import { ComplaintSuspectWitness } from "@apptypes/complaints/details/complaint-suspect-witness-details";
 
 export const SuspectWitnessDetails: FC = () => {
   const { details } = useAppSelector(selectComplaintSuspectWitnessDetails) as ComplaintSuspectWitness;

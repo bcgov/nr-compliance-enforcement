@@ -10,6 +10,7 @@ import {
   selectReviewComplete,
 } from "@store/reducers/case-selectors";
 import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
+import { AnimalOutcomeSubject } from "@apptypes/state/cases-state";
 
 type validationResults = {
   canCloseComplaint: boolean;
@@ -131,7 +132,8 @@ const useValidateComplaint = () => {
       setValidationResults({
         canCloseComplaint:
           noEditSections && assessmentCriteria && equipmentCriteria && animalCriteria && fileReviewCriteria,
-        canQuickCloseComplaint: noEditSections && equipmentCriteria && animalCriteria && fileReviewCriteria,
+        canQuickCloseComplaint:
+          (noEditSections || onlyAssessmentInEdit) && equipmentCriteria && animalCriteria && fileReviewCriteria,
         scrollToErrors,
         validationDetails: {
           noEditSections: noEditSections,

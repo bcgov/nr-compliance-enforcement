@@ -1,11 +1,11 @@
 import { FC, useState } from "react";
-import { GeneralIncidentComplaint } from "../../../../types/app/complaints/general-complaint";
-import { applyStatusClass, formatDateTime, truncateString } from "../../../../common/methods";
+import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
+import { applyStatusClass, formatDateTime, truncateString } from "@common/methods";
 import { Link } from "react-router-dom";
 import { ComplaintActionItems } from "./complaint-action-items";
-import { useAppSelector } from "../../../../hooks/hooks";
-import { selectCodeTable } from "../../../../store/reducers/code-table";
-import { CODE_TABLE_TYPES } from "../../../../constants/code-table-types";
+import { useAppSelector } from "@hooks/hooks";
+import { selectCodeTable } from "@store/reducers/code-table";
+import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 
 type Props = {
   type: string;

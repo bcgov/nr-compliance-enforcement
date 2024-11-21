@@ -1,6 +1,6 @@
-import { AttractantCode } from "../code-tables/attractant-code";
-import { HwcrComplaintNatureCode } from "../code-tables/hwcr-complaint-nature-code";
-import { SpeciesCode } from "../code-tables/species-code";
+import { AttractantCode } from "@apptypes/code-tables/attractant-code";
+import { HwcrComplaintNatureCode } from "@apptypes/code-tables/hwcr-complaint-nature-code";
+import { SpeciesCode } from "@apptypes/code-tables/species-code";
 import { Complaint } from "./complaint";
 
 export interface HwcrComplaint {

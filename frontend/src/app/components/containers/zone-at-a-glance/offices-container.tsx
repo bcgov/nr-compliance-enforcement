@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { OfficeStats } from "../../../types/complaints/zone-at-a-glance-stats";
+import { OfficeStats } from "@apptypes/complaints/zone-at-a-glance-stats";
 import { OfficeContainer } from "./office-container";
 
 type Props = {

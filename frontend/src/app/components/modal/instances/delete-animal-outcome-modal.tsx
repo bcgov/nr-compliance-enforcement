@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { selectModalData } from "../../../store/reducers/app";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { selectModalData } from "@store/reducers/app";
 import { Button, Modal } from "react-bootstrap";
-import { deleteAnimalOutcome, getCaseFile } from "../../../store/reducers/case-thunks";
+import { deleteAnimalOutcome, getCaseFile } from "@store/reducers/case-thunks";
 
 type props = {
   close: () => void;

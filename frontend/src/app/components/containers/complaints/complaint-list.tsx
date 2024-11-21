@@ -1,30 +1,30 @@
 import { FC, useRef, useState, useContext, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import COMPLAINT_TYPES from "../../../types/app/complaint-types";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import {
   getComplaints,
   selectComplaintsByType,
   setComplaints,
   selectTotalComplaintsByType,
-} from "../../../store/reducers/complaints";
+} from "@store/reducers/complaints";
 import { Table } from "react-bootstrap";
-import { SORT_TYPES } from "../../../constants/sort-direction";
-import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
-import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
-import { ComplaintRequestPayload } from "../../../types/complaints/complaint-filters/complaint-reauest-payload";
+import { SORT_TYPES } from "@constants/sort-direction";
+import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
+import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complaint-filters";
+import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filters/complaint-request-payload";
 import { WildlifeComplaintListHeader } from "./headers/wildlife-complaint-list-header";
 import { GeneralComplaintListHeader } from "./headers/general-complaint-list-header";
 import { AllegationComplaintListHeader } from "./headers/allegation-complaint-list-header";
-import { selectDefaultPageSize, selectDefaultZone } from "../../../store/reducers/app";
+import { selectDefaultPageSize, selectDefaultZone } from "@store/reducers/app";
 import { WildlifeComplaintListItem } from "./list-items/wildlife-complaint-list-item";
 import { AllegationComplaintListItem } from "./list-items/allegation-complaint-list-item";
-import ComplaintPagination from "../../common/complaint-pagination";
+import ComplaintPagination from "@components/common/complaint-pagination";
 
 //-- new models
-import { AllegationComplaint } from "../../../types/app/complaints/allegation-complaint";
-import { WildlifeComplaint } from "../../../types/app/complaints/wildlife-complaint";
+import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
+import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { GeneralInformationComplaintListItem } from "./list-items/general-complaint-list-item";
-import { GeneralIncidentComplaint } from "../../../types/app/complaints/general-complaint";
+import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 
 type Props = {
   type: string;
