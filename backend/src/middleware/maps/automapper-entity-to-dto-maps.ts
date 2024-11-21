@@ -1457,6 +1457,15 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
       mapFrom((source) => source.complaint_identifier.reference_number),
     ),
     forMember(
+      (destination) => destination.linkedComplaintIdentifier,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { linked_complaint_xref: linkedComplaints },
+        } = source;
+        return linkedComplaints[0].complaint_id;
+      }),
+    ),
+    forMember(
       (destination) => destination.complaintMethodReceivedCode,
       mapFrom((source) => {
         const { complaint_identifier } = source;

@@ -37,4 +37,6 @@ export interface ComplaintReportData {
   reportedBy: string;
 
   updates: Array<ComplaintUpdateDto>;
+
+  linkedComplaintIdentifier: string;
 }
