@@ -57,7 +57,7 @@ jobs:
         --set nats.config.cluster.replicas=3
         --set nats.config.cluster.enabled=true
         --set backup.enabled=true
-        --set backup.persistence.size=512Mi
+        --set backup.persistence.size=256Mi
 
   promote:
     name: Promote Images
