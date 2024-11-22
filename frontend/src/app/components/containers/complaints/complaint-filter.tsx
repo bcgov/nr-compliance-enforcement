@@ -12,6 +12,7 @@ import {
   selectComplaintStatusWithPendingCodeDropdown,
   selectGirTypeCodeDropdown,
   selectComplaintReceivedMethodDropdown,
+  selectWildlifeComplaintOutcome,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
 import { selectDecisionTypeDropdown } from "@store/reducers/code-table-selectors";
@@ -45,6 +46,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       girType,
       complaintMethod,
       actionTaken,
+      outcomeAnimal,
     },
     dispatch,
   } = useContext(ComplaintFilterContext);
@@ -59,6 +61,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const statusTypes = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
   const violationTypes = useAppSelector(selectViolationCodeDropdown(agency));
   const girTypes = useAppSelector(selectGirTypeCodeDropdown);
+  const outcomeAnimalTypes = useAppSelector(selectWildlifeComplaintOutcome);
 
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
@@ -68,6 +71,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
 
   const activeFilters = useAppSelector(listActiveFilters());
+  console.log(activeFilters);
 
   const setFilter = useCallback(
     (name: string, value?: Option | Date | null) => {
@@ -326,6 +330,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             </div>
           </div>
         )}
+
         {UserService.hasRole(Roles.CEEB) && (
           <div id="comp-filter-action-taken-id">
             <label htmlFor="action-taken-select-id">Action Taken</label>
@@ -343,6 +348,29 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 placeholder="Select"
                 enableValidation={false}
                 value={actionTaken}
+                isClearable={true}
+              />
+            </div>
+          </div>
+        )}
+
+        {COMPLAINT_TYPES.HWCR === type && activeFilters.showOutcomeAnimalFilter && (
+          <div id="comp-filter-status-id">
+            <label htmlFor="status-select-id">Outcome by Animal</label>
+            <div className="filter-select-padding">
+              <CompSelect
+                id="status-select-id"
+                classNamePrefix="comp-select"
+                onChange={(option) => {
+                  setFilter("outcomeAnimal", option);
+                }}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={outcomeAnimalTypes}
+                placeholder="Select"
+                enableValidation={false}
+                value={outcomeAnimal}
                 isClearable={true}
               />
             </div>

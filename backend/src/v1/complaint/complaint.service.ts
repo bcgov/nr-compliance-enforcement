@@ -771,6 +771,18 @@ export class ComplaintService {
     return complaintIdentifiers;
   };
 
+  private _getComplaintsByOutcomeAnimal = async (token: string, outcomeAnimalCode: string): Promise<string[]> => {
+    const { data, errors } = await get(token, {
+      query: `{getLeadsByOutcomeAnimal (outcomeAnimalCode: "${outcomeAnimalCode}")}`,
+    });
+    if (errors) {
+      this.logger.error("GraphQL errors:", errors);
+      throw new Error("GraphQL errors occurred");
+    }
+    const complaintIdentifiers = data.getLeadsByOutcomeAnimal.length > 0 ? data.getLeadsByOutcomeAnimal : ["-1"];
+    return complaintIdentifiers;
+  };
+
   findAllByType = async (
     complaintType: COMPLAINT_TYPE,
   ): Promise<Array<WildlifeComplaintDto> | Array<AllegationComplaintDto>> => {
@@ -883,6 +895,7 @@ export class ComplaintService {
       let results: SearchResults = { totalCount: 0, complaints: [] };
 
       const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
+      console.log(filters);
 
       const skip = page && pageSize ? (page - 1) * pageSize : 0;
       const sortTable = this._getSortTable(sortBy);
@@ -910,6 +923,16 @@ export class ComplaintService {
       if (hasCEEBRole && filters.actionTaken) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
 
+        builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+      console.log(agency);
+      // -- filter by complaint identifiers returned by case management if outcome animal filter is present
+      if (agency === "COS" && filters.outcomeAnimal) {
+        console.log("alo");
+        const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(token, filters.outcomeAnimal);
+        console.log(complaintIdentifiers);
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
         });
@@ -1064,6 +1087,17 @@ export class ComplaintService {
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (hasCEEBRole && filters.actionTaken) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
+        complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+        unMappedBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
+      // -- filter by complaint identifiers returned by case management if outcome animal filter is present
+      if (agency === "COS" && filters.outcomeAnimal) {
+        const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(token, filters.outcomeAnimal);
         complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
         });
