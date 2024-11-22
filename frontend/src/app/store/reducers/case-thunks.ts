@@ -1139,11 +1139,25 @@ export const upsertDecisionOutcome =
         return await patch<CaseFileDto>(dispatch, parameters);
       };
 
+    const _fetchCaseFile =
+      (complaintId: string): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      async (dispatch) => {
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintId}`);
+        const response = await get<CaseFileDto>(dispatch, parameters);
+        return response;
+      };
     //-- if there's no decsionId then create a new decsion
     //-- otherwise update an exisitng decision
     let result;
 
     if (!current?.id) {
+      const existingCaseFile: CaseFileDto = await dispatch(_fetchCaseFile(id));
+      if (existingCaseFile?.decision?.actionTaken) {
+        ToggleError(
+          `Error. This section has been updated while open for editing. Refresh the page to see the most recent changes.`,
+        );
+        return "error";
+      }
       result = await dispatch(_createDecision(id, decision));
     } else {
       const update = { ...decision, id: current.id };
