@@ -43,6 +43,7 @@ jobs:
     with:
       # triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/')
       params: --set nats.persistence.labels.app=nr-compliance-enforcement-${{ github.event.number }}
+        --set nats.config.jetstream.fileStore.pvc.labels.app=nr-compliance-enforcement-${{ github.event.number }}
 
   tests:
     name: Tests
