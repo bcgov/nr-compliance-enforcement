@@ -65,7 +65,7 @@ export class ActionTaken {
   })
   updateUtcTimestamp: Date | null;
 
-  @ManyToOne(() => Complaint, (complaint) => complaint.complaint_identifier)
+  @ManyToOne(() => Complaint, (complaint) => complaint.action_taken)
   @JoinColumn([
     {
       name: "complaint_identifier",
