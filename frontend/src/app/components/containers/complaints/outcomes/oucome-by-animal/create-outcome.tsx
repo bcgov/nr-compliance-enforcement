@@ -376,7 +376,9 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
             </legend>
 
             <div className="comp-details-form-row">
-              <label htmlFor="select-species">Species</label>
+              <label htmlFor="select-species">
+                Species<span className="required-ind">*</span>
+              </label>
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="select-species"
