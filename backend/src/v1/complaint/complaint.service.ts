@@ -73,26 +73,26 @@ type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
   private readonly logger = new Logger(ComplaintService.name);
-  private mapper: Mapper;
+  private readonly mapper: Mapper;
 
   @InjectRepository(Complaint)
-  private complaintsRepository: Repository<Complaint>;
+  private readonly complaintsRepository: Repository<Complaint>;
   @InjectRepository(HwcrComplaint)
-  private _wildlifeComplaintRepository: Repository<HwcrComplaint>;
+  private readonly _wildlifeComplaintRepository: Repository<HwcrComplaint>;
   @InjectRepository(AllegationComplaint)
-  private _allegationComplaintRepository: Repository<AllegationComplaint>;
+  private readonly _allegationComplaintRepository: Repository<AllegationComplaint>;
   @InjectRepository(GirComplaint)
-  private _girComplaintRepository: Repository<GirComplaint>;
+  private readonly _girComplaintRepository: Repository<GirComplaint>;
   @InjectRepository(ComplaintUpdate)
-  private _complaintUpdateRepository: Repository<ComplaintUpdate>;
+  private readonly _complaintUpdateRepository: Repository<ComplaintUpdate>;
   @InjectRepository(Officer)
-  private _officertRepository: Repository<Officer>;
+  private readonly _officertRepository: Repository<Officer>;
   @InjectRepository(Office)
-  private _officeRepository: Repository<Office>;
+  private readonly _officeRepository: Repository<Office>;
   @InjectRepository(SpeciesCode)
-  private _speciesRepository: Repository<SpeciesCode>;
+  private readonly _speciesRepository: Repository<SpeciesCode>;
   @InjectRepository(CosGeoOrgUnit)
-  private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
+  private readonly _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
 
   constructor(
     @Inject(REQUEST)
