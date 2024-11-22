@@ -234,6 +234,27 @@ export class CaseFileService {
     ${caseFileQueryFields}
     }`;
 
+    // If the assessment being updated has no action required or the justification is not duplicate, then check if there
+    // was previously a link to another complaint. If there is, remove it.
+    if (
+      modelAsAny.updateAssessmentInput.assessmentDetails.actionNotRequired ||
+      (modelAsAny.updateAssessmentInput.assessmentDetails.actionJustificationCode &&
+        modelAsAny.updateAssessmentInput.assessmentDetails.actionJustificationCode !== "DUPLICATE")
+    ) {
+      const existingLink = await this._linkedComplaintXrefRepository.findOne({
+        relations: { linked_complaint_identifier: true, complaint_identifier: true },
+        where: {
+          linked_complaint_identifier: { complaint_identifier: modelAsAny.updateAssessmentInput.leadIdentifier },
+          active_ind: true,
+        },
+      });
+
+      if (existingLink) {
+        existingLink.active_ind = false;
+        await this._linkedComplaintXrefRepository.save(existingLink);
+      }
+    }
+    
     // If changes need to be made in both databases (i.e. we need to create a link or change the status of a complaint)
     // then the transactional approach is taken.
     if (

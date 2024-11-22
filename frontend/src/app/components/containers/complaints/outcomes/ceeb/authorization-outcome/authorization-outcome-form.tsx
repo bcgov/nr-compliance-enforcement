@@ -130,6 +130,9 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
   return (
     <>
       <div className="comp-details-form">
+        <div className="section-legend">
+          <span className="required-ind">*</span> at least one of these fields is required
+        </div>
         <div
           className="comp-details-form-row"
           id="authroization-authroized-site-id"
