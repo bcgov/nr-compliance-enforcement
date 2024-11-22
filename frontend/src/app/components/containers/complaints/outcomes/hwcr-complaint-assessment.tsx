@@ -457,7 +457,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0) &&
       (!selectedAssessmentCat1Types || selectedAssessmentCat1Types?.length <= 0)
     ) {
-      setAssessmentRequiredErrorMessage("One or more animal actions is required");
+      setAssessmentRequiredErrorMessage("At least one animal action is required to save this section");
       return true;
     }
     return false;
