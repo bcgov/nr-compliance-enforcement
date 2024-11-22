@@ -1462,7 +1462,7 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
         const {
           complaint_identifier: { linked_complaint_xref: linkedComplaints },
         } = source;
-        return linkedComplaints[0].complaint_id;
+        return linkedComplaints[0]?.complaint_id;
       }),
     ),
     forMember(
