@@ -67,6 +67,7 @@ import { AllegationReportData } from "src/types/models/reports/complaints/allega
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { OfficerService } from "../officer/officer.service";
+import { SpeciesCode } from "../species_code/entities/species_code.entity";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -88,6 +89,8 @@ export class ComplaintService {
   private _officertRepository: Repository<Officer>;
   @InjectRepository(Office)
   private _officeRepository: Repository<Office>;
+  @InjectRepository(SpeciesCode)
+  private _speciesRepository: Repository<SpeciesCode>;
   @InjectRepository(CosGeoOrgUnit)
   private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
 
@@ -1720,6 +1723,12 @@ export class ComplaintService {
         const outcomeAction = wildlifeActions?.find((item) => item.actionCode === "RECOUTCOME");
         let drugActor = drugAction?.actor;
         let drugDate = drugAction?.date;
+
+        //-- Case Management doesn't keep the species codes as we are source of truth
+
+        const builder = this._speciesRepository.createQueryBuilder("species").where({ species_code: animal.species });
+        const result = await builder.getOne();
+        animal.species = result.short_description;
 
         //-- Convert Officer Guids to Names in parallel
         animal.officer = outcomeAction?.actor;
