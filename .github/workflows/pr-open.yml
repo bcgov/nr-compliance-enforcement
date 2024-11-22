@@ -42,6 +42,7 @@ jobs:
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
       triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/')
+      params: --set nats.labels.app=nr-compliance-enforcement-${{ github.event.number }}
 
   tests:
     name: Tests
