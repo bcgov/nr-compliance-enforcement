@@ -39,6 +39,6 @@ jobs:
       - run: ./.github/scripts/cleanup_nats_js.sh
         env:
           OC_NAMESPACE: ${{ secrets.OC_NAMESPACE }}
-          OC_SERVER: ${{ secrets.OC_SERVER }}
+          OC_SERVER: ${{ env.OC_SERVER }}
           OC_TOKEN: ${{ secrets.OC_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
