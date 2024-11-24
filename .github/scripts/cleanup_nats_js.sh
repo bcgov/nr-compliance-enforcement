@@ -70,7 +70,7 @@ main() {
     fi
     echo "Performing deletion of pvc $pvc_name..."
     echo "..."
-    # oc delete $pvc_name -n $OC_NAMESPACE
+    oc delete $pvc_name -n $OC_NAMESPACE
     echo "Completed"
 }
 main
