@@ -28,3 +28,17 @@ jobs:
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
       cleanup: label
+  
+  cleanup-nats-js:
+    name: Cleanup NATS JetStream PVC
+    runs-on: ubuntu-22.04
+    timeout-minutes: 2
+    if: ${{ ! github.event.pull_request.draft }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./.github/scripts/cleanup_nats_js.sh
+        env:
+          OC_NAMESPACE: ${{ secrets.OC_NAMESPACE }}
+          OC_SERVER: ${{ secrets.OC_SERVER }}
+          OC_TOKEN: ${{ secrets.OC_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
