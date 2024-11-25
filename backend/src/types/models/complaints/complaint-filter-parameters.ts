@@ -12,4 +12,5 @@ export interface ComplaintFilterParameters {
   girTypeCode?: string;
   complaintMethod?: string;
   actionTaken?: string;
+  outcomeAnimal?: string;
 }
