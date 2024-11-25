@@ -237,7 +237,7 @@ export class CaseFileService {
     // If the assessment being updated has no action required or the justification is not duplicate, then check if there
     // was previously a link to another complaint. If there is, remove it.
     if (
-      modelAsAny.updateAssessmentInput.assessmentDetails.actionNotRequired ||
+      !modelAsAny.updateAssessmentInput.assessmentDetails.actionNotRequired ||
       (modelAsAny.updateAssessmentInput.assessmentDetails.actionJustificationCode &&
         modelAsAny.updateAssessmentInput.assessmentDetails.actionJustificationCode !== "DUPLICATE")
     ) {
@@ -254,7 +254,6 @@ export class CaseFileService {
         await this._linkedComplaintXrefRepository.save(existingLink);
       }
     }
-    
     // If changes need to be made in both databases (i.e. we need to create a link or change the status of a complaint)
     // then the transactional approach is taken.
     if (
