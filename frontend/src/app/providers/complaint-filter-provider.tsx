@@ -27,6 +27,7 @@ let initialState: ComplaintFilters = {
   filters: [],
   complaintMethod: null,
   actionTaken: null,
+  outcomeAnimal: null,
 };
 
 const ComplaintFilterContext = createContext<ComplaintFilterContextType>({

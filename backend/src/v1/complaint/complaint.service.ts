@@ -239,6 +239,13 @@ export class ComplaintService {
       ])
       .leftJoin("complaint.reported_by_code", "reported_by")
       .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
+
+      .leftJoin("complaint.complaint_update", "complaint_update")
+      .addSelect(["complaint_update.upd_detail_text", "complaint_update.complaint_identifier"])
+
+      .leftJoin("complaint.action_taken", "action_taken")
+      .addSelect(["action_taken.action_details_txt", "action_taken.complaint_identifier"])
+
       .leftJoin("complaint.owned_by_agency_code", "owned_by")
       .addSelect(["owned_by.agency_code", "owned_by.short_description", "owned_by.long_description"])
       .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
@@ -359,13 +366,14 @@ export class ComplaintService {
     return builder;
   }
 
-  private _applySearch(
+  private async _applySearch(
     builder: SelectQueryBuilder<complaintAlias>,
     complaintType: COMPLAINT_TYPE,
     query: string,
-  ): SelectQueryBuilder<complaintAlias> {
+    token: string,
+  ): Promise<SelectQueryBuilder<complaintAlias>> {
     builder.andWhere(
-      new Brackets((qb) => {
+      new Brackets(async (qb) => {
         qb.orWhere("complaint.complaint_identifier ILIKE :query", {
           query: `%${query}%`,
         });
@@ -432,6 +440,29 @@ export class ComplaintService {
 
         switch (complaintType) {
           case "ERS": {
+            // Search CM for any case files that may match based on authorization id
+            const { data, errors } = await get(token, {
+              query: `{getCasesFilesBySearchString (searchString: "${query}")
+              {
+                leadIdentifier,
+                caseIdentifier
+              }
+            }`,
+            });
+
+            if (errors) {
+              this.logger.error("GraphQL errors:", errors);
+              throw new Error("GraphQL errors occurred");
+            }
+
+            const caseSearchData = data.getCasesFilesBySearchString;
+
+            if (caseSearchData.length > 0) {
+              qb.orWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+                complaint_identifiers: caseSearchData.map((caseData) => caseData.leadIdentifier),
+              });
+            }
+
             qb.orWhere("allegation.suspect_witnesss_dtl_text ILIKE :query", {
               query: `%${query}%`,
             });
@@ -481,6 +512,12 @@ export class ComplaintService {
           query: `%${query}%`,
         });
         qb.orWhere("person.last_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint_update.upd_detail_text ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("action_taken.action_details_txt ILIKE :query", {
           query: `%${query}%`,
         });
       }),
@@ -771,6 +808,21 @@ export class ComplaintService {
     return complaintIdentifiers;
   };
 
+  private readonly _getComplaintsByOutcomeAnimal = async (
+    token: string,
+    outcomeAnimalCode: string,
+  ): Promise<string[]> => {
+    const { data, errors } = await get(token, {
+      query: `{getLeadsByOutcomeAnimal (outcomeAnimalCode: "${outcomeAnimalCode}")}`,
+    });
+    if (errors) {
+      this.logger.error("GraphQL errors:", errors);
+      throw new Error("GraphQL errors occurred");
+    }
+    const complaintIdentifiers = data.getLeadsByOutcomeAnimal.length > 0 ? data.getLeadsByOutcomeAnimal : ["-1"];
+    return complaintIdentifiers;
+  };
+
   findAllByType = async (
     complaintType: COMPLAINT_TYPE,
   ): Promise<Array<WildlifeComplaintDto> | Array<AllegationComplaintDto>> => {
@@ -880,6 +932,7 @@ export class ComplaintService {
     token?: string,
   ): Promise<SearchResults> => {
     try {
+      this.logger.error("Searching for complaints");
       let results: SearchResults = { totalCount: 0, complaints: [] };
 
       const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
@@ -915,9 +968,18 @@ export class ComplaintService {
         });
       }
 
+      // -- filter by complaint identifiers returned by case management if outcome animal filter is present
+      if (agency === "COS" && filters.outcomeAnimal) {
+        const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(token, filters.outcomeAnimal);
+
+        builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
       //-- apply search
       if (query) {
-        builder = this._applySearch(builder, complaintType, query);
+        builder = await this._applySearch(builder, complaintType, query, token);
       }
 
       //-- apply sort if provided
@@ -931,9 +993,11 @@ export class ComplaintService {
       }
 
       //-- search and count
-      const [complaints, total] =
-        page && pageSize ? await builder.skip(skip).take(pageSize).getManyAndCount() : await builder.getManyAndCount();
+      // Workaround for the issue with getManyAndCount() returning the wrong count and results in complex queries
+      // introduced by adding an IN clause in a OrWhere statement: https://github.com/typeorm/typeorm/issues/320
+      const [, total] = await builder.take(0).getManyAndCount(); // returns 0 results but the total count is correct
       results.totalCount = total;
+      const complaints = page && pageSize ? await builder.skip(skip).take(pageSize).getMany() : await builder.getMany();
 
       switch (complaintType) {
         case "ERS": {
@@ -992,6 +1056,7 @@ export class ComplaintService {
     hasCEEBRole: boolean,
     token?: string,
   ): Promise<MapSearchResults> => {
+    this.logger.error("Mapping search results");
     const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
 
     try {
@@ -1006,7 +1071,7 @@ export class ComplaintService {
 
       //-- apply search
       if (query) {
-        complaintBuilder = this._applySearch(complaintBuilder, complaintType, query);
+        complaintBuilder = await this._applySearch(complaintBuilder, complaintType, query, token);
       }
 
       //-- apply filters
@@ -1036,7 +1101,7 @@ export class ComplaintService {
 
       //-- apply search
       if (query) {
-        unMappedBuilder = this._applySearch(unMappedBuilder, complaintType, query);
+        unMappedBuilder = await this._applySearch(unMappedBuilder, complaintType, query, token);
       }
 
       //-- apply filters
@@ -1064,6 +1129,17 @@ export class ComplaintService {
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (hasCEEBRole && filters.actionTaken) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
+        complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+        unMappedBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
+      // -- filter by complaint identifiers returned by case management if outcome animal filter is present
+      if (agency === "COS" && filters.outcomeAnimal) {
+        const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(token, filters.outcomeAnimal);
         complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
         });
