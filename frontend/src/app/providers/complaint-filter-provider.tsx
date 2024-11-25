@@ -50,6 +50,7 @@ const mapFilters = (complaintFilters: Partial<ComplaintFilters>) => {
     actionTakenFilter,
     speciesCodeFilter,
     natureOfComplaintFilter,
+    outcomeAnimalFilter,
   } = complaintFilters;
   const allFilters: Partial<ComplaintFilters> = {
     region: regionCodeFilter,
@@ -65,6 +66,7 @@ const mapFilters = (complaintFilters: Partial<ComplaintFilters>) => {
     violationType: violationFilter,
     girType: girTypeFilter,
     actionTaken: actionTakenFilter,
+    outcomeAnimal: outcomeAnimalFilter,
   };
 
   // Only return filters that have a value set
