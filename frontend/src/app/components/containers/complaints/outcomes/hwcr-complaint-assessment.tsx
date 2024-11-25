@@ -481,7 +481,11 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     if (selectedActionRequired?.value === "No" && !selectedJustification) {
       setJustificationRequiredErrorMessage("Required when Action Required is No");
       return true;
-    } else if (linkedComplaintData?.length > 0 && !linkedComplaintData[0].parent) {
+    } else if (
+      selectedActionRequired?.value === "No" &&
+      linkedComplaintData?.length > 0 &&
+      !linkedComplaintData[0].parent
+    ) {
       setJustificationRequiredErrorMessage(
         "Other complaints are linked to this complaint. This complaint cannot be closed as a duplicate.",
       );
@@ -489,7 +493,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     }
     return false;
   }, [selectedActionRequired, selectedJustification, linkedComplaintData]);
-
 
   const validateLinkedComplaint = useCallback((): boolean => {
     if (selectedJustification?.value === "DUPLICATE") {
