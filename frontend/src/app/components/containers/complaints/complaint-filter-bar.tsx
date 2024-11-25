@@ -42,6 +42,7 @@ export const ComplaintFilterBar: FC<Props> = ({
     girType,
     complaintMethod,
     actionTaken,
+    outcomeAnimal,
   } = state;
 
   const dateRangeLabel = (): string | undefined => {
@@ -227,6 +228,15 @@ export const ComplaintFilterBar: FC<Props> = ({
             id="comp-complaint-method-filter"
             label={actionTaken?.label}
             name="actionTaken"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("outcomeAnimal") && (
+          <FilterButton
+            id="comp-complaint-method-filter"
+            label={outcomeAnimal?.label}
+            name="outcomeAnimal"
             clear={removeFilter}
           />
         )}
