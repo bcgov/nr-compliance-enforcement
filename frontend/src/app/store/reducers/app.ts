@@ -318,6 +318,9 @@ export const listActiveFilters =
       showZoneFilter: features.some(
         (feature: any) => feature.featureCode === FEATURE_TYPES.ZONE_FILTER && feature.isActive === true,
       ),
+      showOutcomeAnimalFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.OUTCOME_ANIMAL_FILTER && feature.isActive === true,
+      ),
     };
     return filters;
   };
