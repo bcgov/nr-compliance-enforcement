@@ -483,6 +483,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       return true;
     } else if (
       selectedActionRequired?.value === "No" &&
+      selectedJustification?.value === "DUPLICATE" &&
       linkedComplaintData?.length > 0 &&
       !linkedComplaintData[0].parent
     ) {
