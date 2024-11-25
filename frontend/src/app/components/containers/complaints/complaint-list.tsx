@@ -104,7 +104,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   const defaultPageSize = useAppSelector(selectDefaultPageSize);
   const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
   const { sortColumn, sortOrder } = storedSearchParams;
-  const freshSearch = Object.keys(storedSearchParams).length === 2 ? true : false;
+  const freshSearch = Object.keys(storedSearchParams).length === 2;
 
   //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear
