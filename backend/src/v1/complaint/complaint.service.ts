@@ -808,7 +808,10 @@ export class ComplaintService {
     return complaintIdentifiers;
   };
 
-  private _getComplaintsByOutcomeAnimal = async (token: string, outcomeAnimalCode: string): Promise<string[]> => {
+  private readonly _getComplaintsByOutcomeAnimal = async (
+    token: string,
+    outcomeAnimalCode: string,
+  ): Promise<string[]> => {
     const { data, errors } = await get(token, {
       query: `{getLeadsByOutcomeAnimal (outcomeAnimalCode: "${outcomeAnimalCode}")}`,
     });
