@@ -311,7 +311,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
       }
     });
 
-    if (!authorizationRef.current.isValid()) {
+    if (authorizationRef.current && !authorizationRef.current.isValid()) {
       _isValid = false;
     }
 
