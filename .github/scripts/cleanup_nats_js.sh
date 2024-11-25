@@ -23,12 +23,6 @@ help_str() {
     echo "Note: this script will skip cleanup if the namespace is not a development environment."
 }
 
-# test / prod safeguard
-if [[ "$OC_NAMESPACE" != *"dev"* ]]; then
-    echo "Namespace is not configured to a development environment, skipping cleanup"
-    exit 0
-fi
-
 # Handle auth
 OC_TEMP_TOKEN=""
 if [ -z "$OC_NAMESPACE" ]; then
@@ -51,6 +45,12 @@ if [ "$SKIP_AUTH" != "true" ]; then
     OC_TEMP_TOKEN=$(curl -k -X POST $OC_SERVER/api/v1/namespaces/$OC_NAMESPACE/serviceaccounts/pipeline/token --header "Authorization: Bearer $OC_TOKEN" -d '{"spec": {"expirationSeconds": 600}}' -H 'Content-Type: application/json; charset=utf-8' | jq -r '.status.token' )
     oc login --token=$OC_TEMP_TOKEN --server=$OC_SERVER
     oc project $OC_NAMESPACE # Safeguard!
+fi
+
+# test / prod safeguard
+if [[ "$OC_NAMESPACE" != *"dev"* ]]; then
+    echo "Namespace is not configured to a development environment, skipping cleanup"
+    exit 0
 fi
 
 get_pvc_name() {
