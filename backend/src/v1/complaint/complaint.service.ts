@@ -895,7 +895,6 @@ export class ComplaintService {
       let results: SearchResults = { totalCount: 0, complaints: [] };
 
       const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
-      console.log(filters);
 
       const skip = page && pageSize ? (page - 1) * pageSize : 0;
       const sortTable = this._getSortTable(sortBy);
@@ -927,12 +926,11 @@ export class ComplaintService {
           complaint_identifiers: complaintIdentifiers,
         });
       }
-      console.log(agency);
+
       // -- filter by complaint identifiers returned by case management if outcome animal filter is present
       if (agency === "COS" && filters.outcomeAnimal) {
-        console.log("alo");
         const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(token, filters.outcomeAnimal);
-        console.log(complaintIdentifiers);
+
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
         });

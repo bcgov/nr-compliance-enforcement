@@ -71,7 +71,6 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
 
   const activeFilters = useAppSelector(listActiveFilters());
-  console.log(activeFilters);
 
   const setFilter = useCallback(
     (name: string, value?: Option | Date | null) => {
