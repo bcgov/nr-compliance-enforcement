@@ -76,6 +76,9 @@ export const complaintSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    resetComplaintSearchParameters: (state) => {
+      return { ...state, complaintSearchParameters: initialState.complaintSearchParameters };
+    },
     setComplaintSearchParameters: (state, action) => {
       return { ...state, complaintSearchParameters: action.payload };
     },
@@ -254,6 +257,7 @@ export const complaintSlice = createSlice({
 
 // export the actions/reducers
 export const {
+  resetComplaintSearchParameters,
   setComplaintSearchParameters,
   setComplaints,
   setTotalCount,

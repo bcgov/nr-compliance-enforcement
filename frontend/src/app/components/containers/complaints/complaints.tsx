@@ -27,7 +27,7 @@ import { selectCurrentOfficer } from "@store/reducers/officer";
 import UserService from "@service/user-service";
 import Roles from "@apptypes/app/roles";
 import Option from "@apptypes/app/option";
-import { selectComplaintSearchParameters } from "@/app/store/reducers/complaints";
+import { resetComplaintSearchParameters, selectComplaintSearchParameters } from "@/app/store/reducers/complaints";
 
 type Props = {
   defaultComplaintType: string;
@@ -64,7 +64,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
-
+    dispatch(resetComplaintSearchParameters());
     let filters = getFilters(currentOfficer, defaultZone);
 
     const payload: Array<ComplaintFilterPayload> = [
@@ -182,13 +182,19 @@ export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
   const defaultZone = useAppSelector(selectDefaultZone, shallowEqual);
   const currentOfficer = useAppSelector(selectCurrentOfficer(), shallowEqual);
   const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
+  // If the search is fresh, there are only 2 default parameters set. If more than 2 exist,
+  // this is not a fresh search as the search funtion itself sets more filters, even if blank.
+  const freshSearch = Object.keys(storedSearchParams).length === 2 ? true : false;
   const defaultFilters = getFilters(currentOfficer, defaultZone);
-  const complaintFilters = storedSearchParams ?? defaultFilters;
+  const complaintFilters = freshSearch ? defaultFilters : storedSearchParams;
 
   return (
     <>
       {currentOfficer && (
-        <ComplaintFilterProvider complaintFilters={complaintFilters}>
+        <ComplaintFilterProvider
+          freshSearch={freshSearch}
+          complaintFilters={complaintFilters}
+        >
           <Complaints defaultComplaintType={defaultComplaintType} />
         </ComplaintFilterProvider>
       )}

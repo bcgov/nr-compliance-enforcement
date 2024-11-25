@@ -16,7 +16,7 @@ import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filter
 import { WildlifeComplaintListHeader } from "./headers/wildlife-complaint-list-header";
 import { GeneralComplaintListHeader } from "./headers/general-complaint-list-header";
 import { AllegationComplaintListHeader } from "./headers/allegation-complaint-list-header";
-import { selectDefaultPageSize, selectDefaultZone } from "@store/reducers/app";
+import { selectActiveTab, selectDefaultPageSize } from "@store/reducers/app";
 import { WildlifeComplaintListItem } from "./list-items/wildlife-complaint-list-item";
 import { AllegationComplaintListItem } from "./list-items/allegation-complaint-list-item";
 import ComplaintPagination from "@components/common/complaint-pagination";
@@ -104,25 +104,37 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   const defaultPageSize = useAppSelector(selectDefaultPageSize);
   const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
   const { sortColumn, sortOrder } = storedSearchParams;
+  const freshSearch = Object.keys(storedSearchParams).length === 2 ? true : false;
 
   //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear
   const { state: filters } = useContext(ComplaintFilterContext);
-  const [sortKey, setSortKey] = useState(sortColumn ?? "incident_reported_utc_timestmp");
-  const [sortDirection, setSortDirection] = useState(sortOrder ?? SORT_TYPES.DESC);
+  const [sortKey, setSortKey] = useState(freshSearch ? "incident_reported_utc_timestmp" : sortColumn);
+  const [sortDirection, setSortDirection] = useState(freshSearch ? SORT_TYPES.DESC : sortOrder);
 
   const [page, setPage] = useState<number>(storedSearchParams.page ?? 1);
   const [pageSize, setPageSize] = useState<number>(storedSearchParams.pageSize ?? defaultPageSize); // Default to 10 results per page
 
+  const storedTab = useAppSelector(selectActiveTab);
+  const [activeTab, setActiveTab] = useState(storedTab);
+
+  // If the user changed tabs, reset sortKey and sortOrder
+  useEffect(() => {
+    if (storedTab !== activeTab) {
+      setActiveTab(storedTab);
+      setSortKey("incident_reported_utc_timestmp");
+      setSortDirection(SORT_TYPES.DESC);
+    }
+  }, [storedTab, activeTab]);
+
   useEffect(() => {
     let payload = generateComplaintRequestPayload(type, filters, page, pageSize, sortKey, sortDirection);
-
     if (searchQuery) {
       payload = { ...payload, query: searchQuery };
     }
     dispatch(getComplaints(type, payload));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, sortKey, sortDirection, page, pageSize]);
+  }, [type, filters, sortKey, sortDirection, page, pageSize]);
 
   useEffect(() => {
     //Refresh the list with the current filters when the search is cleared

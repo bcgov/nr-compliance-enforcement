@@ -9,7 +9,8 @@ interface ComplaintFilterContextType {
 
 type ProviderProps = {
   children: React.ReactNode;
-  complaintFilters?: Partial<ComplaintFilters>;
+  freshSearch: boolean;
+  complaintFilters: Partial<ComplaintFilters>;
 };
 
 let initialState: ComplaintFilters = {
@@ -58,12 +59,12 @@ const mapFilters = (complaintFilters: Partial<ComplaintFilters>) => {
     startDate: startDateFilter,
     endDate: endDateFilter,
     status: complaintStatusFilter,
-    species: girTypeFilter,
-    natureOfComplaint: violationFilter,
-    violationType: complaintMethodFilter,
-    girType: actionTakenFilter,
-    complaintMethod: speciesCodeFilter,
-    actionTaken: natureOfComplaintFilter,
+    species: speciesCodeFilter,
+    complaintMethod: complaintMethodFilter,
+    natureOfComplaint: natureOfComplaintFilter,
+    violationType: violationFilter,
+    girType: girTypeFilter,
+    actionTaken: actionTakenFilter,
   };
 
   // Only return filters that have a value set
@@ -85,10 +86,13 @@ const ComplaintFilterContext = createContext<ComplaintFilterContextType>({
   dispatch: () => {},
 });
 
-const ComplaintFilterProvider: FC<ProviderProps> = ({ children, complaintFilters }) => {
+const ComplaintFilterProvider: FC<ProviderProps> = ({ children, freshSearch, complaintFilters }) => {
   let startingState = { ...initialState };
-
-  if (complaintFilters) {
+  if (freshSearch) {
+    startingState = complaintFilters.zone
+      ? { ...startingState, status: { value: "OPEN", label: "Open" }, zone: complaintFilters.zone }
+      : { ...startingState, status: { value: "OPEN", label: "Open" } };
+  } else {
     const activeFilters = mapFilters(complaintFilters);
     startingState = { ...startingState, ...activeFilters };
   }
