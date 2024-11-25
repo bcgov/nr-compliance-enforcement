@@ -12,6 +12,7 @@ import {
   selectComplaintAssignedBy,
   selectComplaintLargeCarnivoreInd,
   selectLinkedComplaints,
+  getLinkedComplaints,
 } from "@store/reducers/complaints";
 import {
   selectAssessmentCat1Dropdown,
@@ -184,6 +185,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       dispatch(clearAssessment());
       dispatch(getAssessment(complaintData.id));
       quickClose && dispatch(getPrevention(complaintData.id));
+      quickClose && dispatch(getLinkedComplaints(complaintData.id));
       dispatch(getCaseFile(id));
     }
   }, [dispatch, id, complaintData, personGuid, assignableOfficers, quickClose]);
@@ -280,6 +282,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     setSelectedActionRequired(selectedActionRequired);
     setSelectedJustification(selectedJustification);
     setSelectedLinkedComplaint(selectedLinkedComplaint);
+    setSelectedLinkedComplaintStatus("OPEN");
     setSelectedAssessmentTypes(selectedAssessmentTypes);
     setSelectedContacted(selectedContacted);
     setSelectedAttended(selectedAttended);
@@ -457,7 +460,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0) &&
       (!selectedAssessmentCat1Types || selectedAssessmentCat1Types?.length <= 0)
     ) {
-      setAssessmentRequiredErrorMessage("One or more assessment is required");
+      setAssessmentRequiredErrorMessage("At least one animal action is required to save this section");
       return true;
     }
     return false;
@@ -478,9 +481,15 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     if (selectedActionRequired?.value === "No" && !selectedJustification) {
       setJustificationRequiredErrorMessage("Required when Action Required is No");
       return true;
+    } else if (linkedComplaintData?.length > 0 && !linkedComplaintData[0].parent) {
+      setJustificationRequiredErrorMessage(
+        "Other complaints are linked to this complaint. This complaint cannot be closed as a duplicate.",
+      );
+      return true;
     }
     return false;
-  }, [selectedActionRequired, selectedJustification]);
+  }, [selectedActionRequired, selectedJustification, linkedComplaintData]);
+
 
   const validateLinkedComplaint = useCallback((): boolean => {
     if (selectedJustification?.value === "DUPLICATE") {
@@ -488,7 +497,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
         setLinkedComplaintErrorMessage("Required when Justification is Duplicate");
         return true;
       } else if (selectedLinkedComplaint.value === id) {
-        setLinkedComplaintErrorMessage("Linked complaint cannot be the same as the current complaint");
+        setLinkedComplaintErrorMessage("Linked complaint cannot be the same as the current complaint.");
         return true;
       } else if (selectedLinkedComplaintStatus !== "OPEN") {
         setLinkedComplaintErrorMessage("Linked complaint must be open");
@@ -538,6 +547,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     validateAssessmentTypes,
     validateJustification,
     validateLinkedComplaint,
+    validateLocationType,
   ]);
 
   // Validate on selected value change

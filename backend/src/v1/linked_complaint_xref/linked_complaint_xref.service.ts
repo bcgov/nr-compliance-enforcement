@@ -54,6 +54,7 @@ export class LinkedComplaintXrefService {
           address: item.complaint.caller_address,
           phone: item.complaint.caller_phone_1,
           status: item.complaint.complaint_status_code.short_description,
+          parent: false,
         };
       });
       return result ?? [];
@@ -97,6 +98,7 @@ export class LinkedComplaintXrefService {
           address: item.complaint.caller_address,
           phone: item.complaint.caller_phone_1,
           status: item.complaint.complaint_status_code.short_description,
+          parent: true,
         };
       });
       return result ?? [];
