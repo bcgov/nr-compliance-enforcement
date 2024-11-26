@@ -159,8 +159,8 @@ describe("Complaint Search Functionality", () => {
     cy.get("#comp-zone-filter").should("not.exist");
 
     cy.get("#comp-filter-btn").click({ force: true });
-    cy.selectItemById("zone-select-id", "South Island");
-    cy.get("#comp-zone-filter").should("exist");
+    cy.selectItemById("region-select-filter-id", "Okanagan");
+    cy.get("#comp-region-filter").should("exist");
 
     cy.get("#complaint-search").click({ force: true });
     cy.get("#complaint-search").clear().type("wildlife{enter}"); //-- {enter} will perform an enter keypress
@@ -182,7 +182,7 @@ describe("Complaint Search Functionality", () => {
     // Verify that the search parameters set before leaving the page were retained
     cy.get("#complaint-search").should("have.value", "wildlife");
     cy.verifyMapMarkerExists(true);
-    cy.get("#comp-zone-filter").contains("South Island");
+    cy.get("#comp-region-filter").contains("Okanagan");
 
     cy.get("#multi-point-map")
       .find("div.leaflet-marker-icon")
