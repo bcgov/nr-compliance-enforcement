@@ -1,5 +1,5 @@
 -----------------------------------------------------
--- Monthly HWCR Export query to be run for COS statistics
+-- Monthly HWCR Complaint Export query to be run for COS statistics
 -- see https://github.com/bcgov/nr-compliance-enforcement/wiki/Data-Exports for more information
 -----------------------------------------------------
 select 
