@@ -68,7 +68,7 @@ jobs:
   deploy-prod:
     name: Deploy (prod)
     needs: [vars]
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.5.0
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.8.3
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
