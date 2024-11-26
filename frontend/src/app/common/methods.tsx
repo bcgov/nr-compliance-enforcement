@@ -476,3 +476,7 @@ export const displayBackendErrors = (message: string) => {
     default:
   }
 };
+
+export function getDropdownOption(matchValue: string | undefined | null, optionsList: Option[]): Option | undefined {
+  return optionsList.find((item) => item.value === matchValue);
+}
