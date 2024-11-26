@@ -26,7 +26,7 @@ import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { CodeTableService } from "../code-table/code-table.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { CreateLinkedComplaintXrefDto } from "../linked_complaint_xref/dto/create-linked_complaint_xref.dto";
-import { CaseManagementError } from "../../enum/case_managment_error.enum";
+import { CaseManagementError } from "../../enum/case_management_error.enum";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
