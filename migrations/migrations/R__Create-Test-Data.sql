@@ -4323,9 +4323,53 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'OUT_A_FLTR',
+  'Outcome Animal Filter',
+  'Outcome Animal Filter',
+  180,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
 -------------------------
 -- Insert Feature / Agency XREF
 -------------------------
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'OUT_A_FLTR',
+  'COS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
 INSERT INTO
   feature_agency_xref (
     feature_code,

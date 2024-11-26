@@ -16,6 +16,7 @@ export interface ComplaintFilters {
   complaintStatusFilter?: Option;
   complaintMethodFilter?: Option;
   actionTakenFilter?: Option;
+  outcomeAnimalFilter?: Option;
   page?: number;
   pageSize?: number;
   query?: string;
