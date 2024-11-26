@@ -18,7 +18,7 @@ const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySea
   const dispatch = useAppDispatch();
   const { state: filters } = useContext(ComplaintFilterContext);
 
-  const [input, setInput] = useState<string>("");
+  const [input, setInput] = useState<string>(searchQuery ?? "");
 
   useEffect(() => {
     if (!searchQuery) {
