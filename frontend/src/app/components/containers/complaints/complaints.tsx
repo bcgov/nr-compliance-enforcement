@@ -11,7 +11,13 @@ import { ComplaintFilterBar } from "./complaint-filter-bar";
 import { ComplaintFilterContext, ComplaintFilterProvider } from "@providers/complaint-filter-provider";
 import { resetFilters, ComplaintFilterPayload } from "@store/reducers/complaint-filters";
 
-import { selectDefaultZone, setActiveTab } from "@store/reducers/app";
+import {
+  selectDefaultZone,
+  setActiveTab,
+  selectActiveTab,
+  selectActiveComplaintsViewType,
+  setActiveComplaintsViewType,
+} from "../../../store/reducers/app";
 
 import { ComplaintMap } from "./complaint-map";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +27,7 @@ import { selectCurrentOfficer } from "@store/reducers/officer";
 import UserService from "@service/user-service";
 import Roles from "@apptypes/app/roles";
 import Option from "@apptypes/app/option";
+import { resetComplaintSearchParameters, selectComplaintSearchParameters } from "@/app/store/reducers/complaints";
 
 type Props = {
   defaultComplaintType: string;
@@ -28,26 +35,36 @@ type Props = {
 
 export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const { dispatch: filterDispatch } = useContext(ComplaintFilterContext); //-- make sure to keep this dispatch renamed
-  const [complaintType, setComplaintType] = useState(defaultComplaintType);
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const [viewType, setViewType] = useState<"map" | "list">("list");
+  //-- Check global state for active tab and set it to default if it was not set there.
+  const storedComplaintType = useAppSelector(selectActiveTab);
+  useEffect(() => {
+    if (!storedComplaintType) dispatch(setActiveTab(defaultComplaintType));
+  }, [storedComplaintType, dispatch, defaultComplaintType]);
+  const [complaintType, setComplaintType] = useState(
+    UserService.hasRole([Roles.CEEB]) ? CEEB_TYPES.ERS : storedComplaintType ?? defaultComplaintType,
+  );
+
+  const storedComplaintViewType = useAppSelector(selectActiveComplaintsViewType);
+  useEffect(() => {
+    if (!storedComplaintViewType) dispatch(setActiveComplaintsViewType("list"));
+  }, [storedComplaintViewType, dispatch]);
+  const [viewType, setViewType] = useState<"map" | "list">(storedComplaintViewType ?? "list");
 
   const currentOfficer = useAppSelector(selectCurrentOfficer(), shallowEqual);
 
   const defaultZone = useAppSelector(selectDefaultZone);
 
   //-- this is used to apply the search to the pager component
-  const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    dispatch(setActiveTab(defaultComplaintType));
-  }, [dispatch, defaultComplaintType]);
+  const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
+  const [search, setSearch] = useState(storedSearchParams.query ?? "");
 
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
-
+    dispatch(resetComplaintSearchParameters());
     let filters = getFilters(currentOfficer, defaultZone);
 
     const payload: Array<ComplaintFilterPayload> = [
@@ -68,6 +85,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   };
 
   const toggleViewType = (view: "list" | "map") => {
+    dispatch(setActiveComplaintsViewType(view));
     setViewType(view);
   };
 
@@ -163,12 +181,20 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
   const defaultZone = useAppSelector(selectDefaultZone, shallowEqual);
   const currentOfficer = useAppSelector(selectCurrentOfficer(), shallowEqual);
-  const filters = getFilters(currentOfficer, defaultZone);
+  const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
+  // If the search is fresh, there are only 2 default parameters set. If more than 2 exist,
+  // this is not a fresh search as the search funtion itself sets more filters, even if blank.
+  const freshSearch = Object.keys(storedSearchParams).length === 2;
+  const defaultFilters = getFilters(currentOfficer, defaultZone);
+  const complaintFilters = freshSearch ? defaultFilters : storedSearchParams;
 
   return (
     <>
       {currentOfficer && (
-        <ComplaintFilterProvider {...filters}>
+        <ComplaintFilterProvider
+          freshSearch={freshSearch}
+          complaintFilters={complaintFilters}
+        >
           <Complaints defaultComplaintType={defaultComplaintType} />
         </ComplaintFilterProvider>
       )}

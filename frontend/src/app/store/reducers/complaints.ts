@@ -76,6 +76,9 @@ export const complaintSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    resetComplaintSearchParameters: (state) => {
+      return { ...state, complaintSearchParameters: initialState.complaintSearchParameters };
+    },
     setComplaintSearchParameters: (state, action) => {
       return { ...state, complaintSearchParameters: action.payload };
     },
@@ -254,6 +257,7 @@ export const complaintSlice = createSlice({
 
 // export the actions/reducers
 export const {
+  resetComplaintSearchParameters,
   setComplaintSearchParameters,
   setComplaints,
   setTotalCount,
@@ -712,6 +716,25 @@ export const createComplaint =
   };
 
 //-- selectors
+export const selectComplaintSearchParameters = (state: RootState) => {
+  const {
+    complaints: { complaintSearchParameters },
+  } = state;
+
+  let activeFilters: Partial<ComplaintFilters> = {};
+  Object.keys(complaintSearchParameters).forEach((key) => {
+    const value = complaintSearchParameters[key as keyof ComplaintFilters];
+    if (value !== undefined && value !== null) {
+      activeFilters = {
+        ...activeFilters,
+        [key]: value,
+      };
+    }
+  });
+
+  return complaintSearchParameters;
+};
+
 export const selectGeocodedComplaintCoordinates = (state: RootState): Feature | null | undefined => {
   const {
     complaints: { complaintLocation },

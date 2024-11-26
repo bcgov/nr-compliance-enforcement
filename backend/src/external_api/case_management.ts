@@ -83,6 +83,7 @@ export const caseFileQueryFields: string = `
   equipment {
     id
     typeCode
+    typeDescription
     activeIndicator
     address
     xCoordinate
@@ -100,28 +101,32 @@ export const caseFileQueryFields: string = `
     id
     species
     sex
+    sexDescription
     age
+    ageDescription
     categoryLevel
+    categoryLevelDescription
     identifyingFeatures
     outcome
+    outcomeDescription
     tags { 
       id
       ear
+      earDescription
       identifier
-
       order
     }
     drugs { 
       id
-
       vial
       drug
+      drugDescription
       amountUsed
       injectionMethod
-    
+      injectionMethodDescription
       remainingUse
+      remainingUseDescription
       additionalComments
-
       order
     }
     actions { 

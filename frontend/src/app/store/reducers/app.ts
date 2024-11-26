@@ -40,6 +40,7 @@ enum ActionTypes {
   SET_CODE_TABLE_VERSION = "app/SET_CODE_TABLE_VERSION",
   SET_FEATURE_FLAG = "app/SET_FEATURE_FLAG",
   SET_ACTIVE_TAB = "app/SET_ACTIVE_TAB",
+  SET_ACTIVE_COMPLAINTS_VIEW_TYPE = "app/SET_ACTIVE_COMPLAINTS_VIEW_TYPE",
 }
 //-- action creators
 
@@ -130,6 +131,11 @@ export const setOfficerAgency = (agency: string) => ({
 export const setActiveTab = (activeTab: string) => ({
   type: ActionTypes.SET_ACTIVE_TAB,
   payload: activeTab,
+});
+
+export const setActiveComplaintsViewType = (viewType: "list" | "map") => ({
+  type: ActionTypes.SET_ACTIVE_COMPLAINTS_VIEW_TYPE,
+  payload: viewType,
 });
 
 //-- selectors
@@ -266,6 +272,14 @@ export const selectActiveTab = (state: RootState): string => {
   } = state;
 
   return activeTab;
+};
+
+export const selectActiveComplaintsViewType = (state: RootState): "list" | "map" => {
+  const {
+    app: { activeComplaintsViewType },
+  } = state;
+
+  return activeComplaintsViewType;
 };
 
 export const isFeatureActive =
@@ -548,6 +562,7 @@ const initialState: AppState = {
   },
   featureFlags: [],
   activeTab: "HWCR",
+  activeComplaintsViewType: "list",
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {
@@ -666,6 +681,10 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
     case ActionTypes.SET_ACTIVE_TAB: {
       const { payload } = action;
       return { ...state, activeTab: payload };
+    }
+    case ActionTypes.SET_ACTIVE_COMPLAINTS_VIEW_TYPE: {
+      const { payload } = action;
+      return { ...state, activeComplaintsViewType: payload };
     }
     default:
       return state;
