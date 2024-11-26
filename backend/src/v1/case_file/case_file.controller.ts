@@ -31,7 +31,7 @@ import { UpdateDecisionInput } from "../../types/models/case-files/ceeb/decision
 import { CreateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/create-authorization-outcome-input";
 import { UpdateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/update-authorization-outcome-input";
 import { DeleteAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/delete-authorization-outcome-input";
-import { CaseManagementError } from "src/enum/case_managment_error.enum";
+import { CaseManagementError } from "src/enum/case_management_error.enum";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
