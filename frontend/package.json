@@ -3,7 +3,7 @@
   "version": "0.28.1",
   "private": true,
   "dependencies": {
-    "@craco/craco": "^7.1.0",
+    "@craco/craco": "^5.9.0",
     "@craco/types": "^7.1.0",
     "@faker-js/faker": "^8.0.2",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
@@ -63,7 +63,7 @@
     "lodash": "^4.17.21",
     "make-fetch-happen": "11.0.3",
     "node": "^21.6.1",
-    "npm": "^9.8.1",
+    "npm": "^10.9.1",
     "nrs-ce-common-types": "^1.0.10",
     "omggif": "^1.0.10",
     "os-browserify": "^0.3.0",
