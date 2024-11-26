@@ -1145,6 +1145,9 @@ export const upsertDecisionOutcome =
 
     if (!current?.id) {
       result = await dispatch(_createDecision(id, decision));
+      if (!result) {
+        return "error";
+      }
     } else {
       const update = { ...decision, id: current.id };
       result = await dispatch(_updateDecison(id, update));
