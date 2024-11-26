@@ -1,4 +1,17 @@
-import { Controller, Get, Body, Patch, Param, UseGuards, Post, Delete, Query, Logger } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Body,
+  Patch,
+  Param,
+  UseGuards,
+  Post,
+  Delete,
+  Query,
+  Logger,
+  HttpException,
+  HttpStatus,
+} from "@nestjs/common";
 import { CaseFileService } from "./case_file.service";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -18,6 +31,7 @@ import { UpdateDecisionInput } from "../../types/models/case-files/ceeb/decision
 import { CreateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/create-authorization-outcome-input";
 import { UpdateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/update-authorization-outcome-input";
 import { DeleteAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/delete-authorization-outcome-input";
+import { CaseManagementError } from "src/enum/case_managment_error.enum";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -163,7 +177,11 @@ export class CaseFileController {
   @Roles(Role.CEEB)
   async createDecision(@Token() token, @Body() model: CreateDecisionInput): Promise<CaseFileDto> {
     const result = await this.service.createDecision(token, model);
-    return result;
+    if (result === CaseManagementError.DECISION_ACTION_EXIST) {
+      throw new HttpException("Decision Action Exist", HttpStatus.CONFLICT);
+    } else {
+      return result;
+    }
   }
 
   @Patch("/decision")

@@ -26,6 +26,7 @@ import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { CodeTableService } from "../code-table/code-table.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { CreateLinkedComplaintXrefDto } from "../linked_complaint_xref/dto/create-linked_complaint_xref.dto";
+import { CaseManagementError } from "src/enum/case_managment_error.enum";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -492,7 +493,14 @@ export class CaseFileService {
     return returnValue?.deleteWildlife;
   };
 
-  createDecision = async (token: any, model: CreateDecisionInput): Promise<CaseFileDto> => {
+  createDecision = async (token: any, model: CreateDecisionInput): Promise<CaseFileDto | CaseManagementError> => {
+    const { leadIdentifier: leadId } = model;
+    const caseFile = await this.find(leadId, token);
+
+    if (caseFile?.decision?.actionTaken) {
+      return CaseManagementError.DECISION_ACTION_EXIST;
+    }
+
     const result = await post(token, {
       query: `mutation createDecision($input: CreateDecisionInput!) {
         createDecision(input: $input) {
