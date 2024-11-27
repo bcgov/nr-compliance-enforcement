@@ -5,7 +5,7 @@ import { CompInput } from "@components/common/comp-input";
 import { CompSelect } from "@components/common/comp-select";
 import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "@store/reducers/code-table";
 import Option from "@apptypes/app/option";
-import { isPositiveNum } from "@common/methods";
+import { getDropdownOption, isPositiveNum } from "@common/methods";
 import { REQUIRED } from "@constants/general";
 
 type refProps = {
@@ -85,23 +85,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
     return result;
   };
 
-  const getValue = (property: string): Option | undefined => {
-    switch (property) {
-      case "drug": {
-        return drugs.find((item) => item.value === drug);
-      }
-
-      case "injection-method": {
-        return drugUseMethods.find((item) => item.value === injectionMethod);
-      }
-
-      case "remaining": {
-        return remainingDrugUse.find((item) => item.value === remainingUse);
-      }
-    }
-  };
-
-  const updateModel = (property: string, value: string | Date | number | null | undefined) => {
+   const updateModel = (property: string, value: string | Date | number | null | undefined) => {
     const source = {
       id,
       vial,
@@ -212,7 +196,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
               onChange={(evt) => {
                 handleDrugNameChange(evt);
               }}
-              value={getValue("drug")}
+              value={getDropdownOption(drug, drugs)}
             />
           </div>
         </div>
@@ -230,7 +214,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
               onChange={(evt) => {
                 handleInjectionMethodChange(evt);
               }}
-              value={getValue("injection-method")}
+              value={getDropdownOption(injectionMethod, drugUseMethods)}
             />
           </div>
         </div>
@@ -267,7 +251,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
               onChange={(evt) => {
                 handleRemainingUsed(evt?.value ?? "");
               }}
-              value={getValue("remaining")}
+              value={getDropdownOption(remainingUse, remainingDrugUse)}
             />
           </div>
         </div>
