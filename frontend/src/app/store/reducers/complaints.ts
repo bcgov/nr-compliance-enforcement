@@ -371,6 +371,7 @@ export const getMappedComplaints =
 
     try {
       dispatch(setComplaint(null));
+      dispatch(setComplaintSearchParameters(payload));
 
       let parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/map/search/${complaintType}`, {
         sortBy: sortColumn,
