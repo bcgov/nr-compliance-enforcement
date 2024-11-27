@@ -30,6 +30,11 @@ dependencies:
     version: 15.5.13
     repository: https://charts.bitnami.com/bitnami
     alias: bitnami-pg
+  - name: postgresql
+    condition: metabase-pg.enabled
+    version: 15.5.13
+    repository: https://charts.bitnami.com/bitnami
+    alias: metabase-pg
   - name: nats
     version: 1.1.12
     repository: "https://nats-io.github.io/k8s/helm/charts/"
