@@ -52,13 +52,18 @@ const mapFilters = (complaintFilters: Partial<ComplaintFilters>) => {
     natureOfComplaintFilter,
     outcomeAnimalFilter,
   } = complaintFilters;
+
+  // Parse the start and end date filters into Date objects if they exist.
+  const parsedStartDate = startDateFilter ? new Date(startDateFilter) : undefined;
+  const parsedEndDate = endDateFilter ? new Date(endDateFilter) : undefined;
+
   const allFilters: Partial<ComplaintFilters> = {
     region: regionCodeFilter,
     zone: zoneCodeFilter,
     community: areaCodeFilter,
     officer: officerFilter,
-    startDate: startDateFilter,
-    endDate: endDateFilter,
+    startDate: parsedStartDate,
+    endDate: parsedEndDate,
     status: complaintStatusFilter,
     species: speciesCodeFilter,
     complaintMethod: complaintMethodFilter,
