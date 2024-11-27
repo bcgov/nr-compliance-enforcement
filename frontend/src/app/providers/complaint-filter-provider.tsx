@@ -55,7 +55,8 @@ const mapFilters = (complaintFilters: Partial<ComplaintFilters>) => {
 
   // Parse the start and end date filters into Date objects if they exist.
   const parsedStartDate = startDateFilter ? new Date(startDateFilter) : undefined;
-  const parsedEndDate = endDateFilter ? new Date(endDateFilter) : undefined;
+  // If start date is set and end date is not, default to current date for end date.
+  const parsedEndDate = endDateFilter ? new Date(endDateFilter) : parsedStartDate ? new Date() : undefined;
 
   const allFilters: Partial<ComplaintFilters> = {
     region: regionCodeFilter,
