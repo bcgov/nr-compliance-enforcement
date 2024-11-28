@@ -83,7 +83,7 @@ spec:
             successThreshold: 2
             failureThreshold: 30
           livenessProbe:
-            successThreshold: 2
+            successThreshold: 1
             failureThreshold: 3
             httpGet:
               path: /api

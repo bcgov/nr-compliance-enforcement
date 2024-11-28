@@ -81,7 +81,7 @@ spec:
             failureThreshold: 30
           #-- the liveness probe for the container. it is optional and is an object. for default values check this link: https://github.com/bcgov/helm-service/blob/main/charts/component/templates/deployment.yaml#L324-L328
           livenessProbe:
-            successThreshold: 2
+            successThreshold: 1
             failureThreshold: 3
             httpGet:
               path: /health
