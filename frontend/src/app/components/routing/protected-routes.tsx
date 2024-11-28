@@ -1,9 +1,9 @@
 import { FC } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import jwt_decode from "jwt-decode";
-import Roles from "../../types/app/roles";
-import Layout from "../containers/layout";
-import { AUTH_TOKEN } from "../../service/user-service";
+import Roles from "@apptypes/app/roles";
+import Layout from "@components/containers/layout";
+import { AUTH_TOKEN } from "@service/user-service";
 
 type Props = {
   roles: Array<Roles>;

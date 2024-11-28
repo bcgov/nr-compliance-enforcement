@@ -1,11 +1,12 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
-import { DrugAuthorizationV2 } from "../../../../../types/app/complaints/outcomes/wildlife/drug-authorization";
-import { CompSelect } from "../../../../common/comp-select";
-import { useAppSelector } from "../../../../../hooks/hooks";
-import { selectOfficerListByAgency } from "../../../../../store/reducers/officer";
-import { ValidationDatePicker } from "../../../../../common/validation-date-picker";
-import Option from "../../../../../types/app/option";
-import { REQUIRED } from "../../../../../constants/general";
+import { DrugAuthorizationV2 } from "@apptypes/app/complaints/outcomes/wildlife/drug-authorization";
+import { CompSelect } from "@components/common/comp-select";
+import { useAppSelector } from "@hooks/hooks";
+import { selectOfficerListByAgency } from "@store/reducers/officer";
+import { ValidationDatePicker } from "@common/validation-date-picker";
+import Option from "@apptypes/app/option";
+import { REQUIRED } from "@constants/general";
+import { getDropdownOption } from "@/app/common/methods";
 
 type props = {
   agency: string;
@@ -53,12 +54,6 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
     }
 
     return result;
-  };
-
-  const getValue = (property: string): Option | undefined => {
-    if (property === "officer") {
-      return officers.find((item) => item.value === officer);
-    }
   };
 
   const updateModel = (property: string, value: string | Date | null | undefined) => {
@@ -110,7 +105,7 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
               options={officers}
               placeholder="Select"
               enableValidation={true}
-              value={getValue("officer")}
+              value={getDropdownOption(officer, officers)}
               errorMessage={officerError}
             />
           </div>

@@ -1,16 +1,16 @@
 import { FC } from "react";
-import { formatDate } from "../../../../../../common/methods";
-import { useAppSelector } from "../../../../../../hooks/hooks";
-import { selectLeadAgencyDropdown } from "../../../../../../store/reducers/code-table";
+import { formatDate, getDropdownOption } from "@common/methods";
+import { useAppSelector } from "@hooks/hooks";
+import { selectLeadAgencyDropdown } from "@store/reducers/code-table";
 import {
   selectDischargeDropdown,
   selectNonComplianceDropdown,
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
-} from "../../../../../../store/reducers/code-table-selectors";
-import Option from "../../../../../../types/app/option";
-import { CASE_ACTION_CODE } from "../../../../../../constants/case_actions";
+} from "@store/reducers/code-table-selectors";
+import Option from "@apptypes/app/option";
+import { CASE_ACTION_CODE } from "@constants/case_actions";
 
 type props = {
   id?: string;
@@ -46,74 +46,29 @@ export const DecisionItem: FC<props> = ({
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectLeadAgencyDropdown);
 
-  const getValue = (property: string): Option | undefined | null => {
-    let result: Option | undefined;
-
-    switch (property) {
-      case "schedule": {
-        result = schedulesOptions.find((item) => item.value === schedule);
-        break;
-      }
-
-      case "sector": {
-        result = sectorsOptions.find((item) => item.value === sector);
-        break;
-      }
-      case "schedule-sector": {
-        result = scheduleSectorsOptions.find((item) => item.value === sector);
-        break;
-      }
-      case "schedule-sector-type": {
-        result = scheduleSectorsOptions.find((item) => item.value === sector);
-        break;
-      }
-      case "discharge": {
-        result = dischargesOptions.find((item) => item.value === discharge);
-        break;
-      }
-
-      case "nonCompliance": {
-        result = nonComplianceOptions.find((item) => item.value === nonCompliance);
-        break;
-      }
-
-      case "leadAgency": {
-        result = agencyOptions.find((item) => item.value === leadAgency);
-        break;
-      }
-
-      case "actionTaken": {
-        result = decisionTypeOptions.find((item) => item.value === actionTaken);
-        break;
-      }
-    }
-
-    return !result ? null : result;
-  };
-
   return (
     <dl>
       <div>
         <dt>WDR schedule/IPM sector type</dt>
-        <dd>{getValue("schedule")?.label}</dd>
+        <dd>{getDropdownOption(schedule, schedulesOptions)?.label}</dd>
       </div>
       <div>
         <dt>Sector/Category</dt>
-        <dd>{getValue("sector")?.label}</dd>
+        <dd>{getDropdownOption(sector, sectorsOptions)?.label}</dd>
       </div>
       <div>
         <dt>Discharge type</dt>
-        <dd>{getValue("discharge")?.label}</dd>
+        <dd>{getDropdownOption(discharge, dischargesOptions)?.label}</dd>
       </div>
       <hr className="my-0"></hr>
       <div>
         <dt>Action taken</dt>
-        <dd>{getValue("actionTaken")?.label}</dd>
+        <dd>{getDropdownOption(actionTaken, decisionTypeOptions)?.label}</dd>
       </div>
       {actionTaken === CASE_ACTION_CODE.FWDLEADAGN && (
         <div>
           <dt>Lead agency</dt>
-          <dd>{getValue("leadAgency")?.label}</dd>
+          <dd>{getDropdownOption(leadAgency, agencyOptions)?.label}</dd>
         </div>
       )}
       {actionTaken === CASE_ACTION_CODE.RESPREC && (
@@ -124,7 +79,7 @@ export const DecisionItem: FC<props> = ({
       )}
       <div>
         <dt>Non-compliance decsion matrix</dt>
-        <dd>{getValue("nonCompliance")?.label}</dd>
+        <dd>{getDropdownOption(nonCompliance, nonComplianceOptions)?.label}</dd>
       </div>
       <div>
         <dt>Rationale</dt>

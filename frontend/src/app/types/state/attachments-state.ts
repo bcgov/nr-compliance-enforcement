@@ -1,4 +1,4 @@
-import { COMSObject } from "../coms/object";
+import { COMSObject } from "@apptypes/coms/object";
 
 export interface AttachmentsState {
   complaintsAttachments: COMSObject[];

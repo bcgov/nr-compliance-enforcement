@@ -678,6 +678,10 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       }),
     ),
     forMember(
+      (destination) => destination.isLargeCarnivore,
+      mapFrom((src) => src.species_code.large_carnivore_ind),
+    ),
+    forMember(
       (destination) => destination.natureOfComplaint,
       mapFrom((src) => {
         const item = mapper.map<HwcrComplaintNatureCode, NatureOfComplaint>(
@@ -1451,6 +1455,15 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
     forMember(
       (destination) => destination.referenceNumber,
       mapFrom((source) => source.complaint_identifier.reference_number),
+    ),
+    forMember(
+      (destination) => destination.linkedComplaintIdentifier,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { linked_complaint_xref: linkedComplaints },
+        } = source;
+        return linkedComplaints[0]?.complaint_id;
+      }),
     ),
     forMember(
       (destination) => destination.complaintMethodReceivedCode,

@@ -8,4 +8,5 @@ export interface WildlifeComplaint extends Complaint {
   natureOfComplaint: string;
   attractants: Array<AttractantXref>;
   otherAttractants: string;
+  isLargeCarnivore: boolean;
 }

@@ -1,11 +1,12 @@
 import { Dispatch } from "redux";
 import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
-import config from "../../config";
-import { AUTH_TOKEN } from "../service/user-service";
-import { ApiRequestParameters } from "../types/app/api-request-parameters";
-import { toggleLoading, toggleNotification } from "../store/reducers/app";
-import { store } from "../../app/store/store";
+import config from "@/config";
+import { AUTH_TOKEN } from "@service/user-service";
+import { ApiRequestParameters } from "@apptypes/app/api-request-parameters";
+import { toggleLoading, toggleNotification } from "@store/reducers/app";
+import { store } from "@store/store";
 import { ToggleError } from "./toast";
+import { displayBackendErrors } from "./methods";
 
 interface NatComRequestConfig extends AxiosRequestConfig {
   toggleLoading: boolean;
@@ -21,6 +22,7 @@ const STATUS_CODES = {
   InternalServerError: 500,
   BadGateway: 502,
   ServiceUnavailable: 503,
+  Conflict: 409,
 };
 
 let requestCounter = 0;
@@ -62,6 +64,13 @@ axios.interceptors.response.use(
 
     if (response && response.status === STATUS_CODES.Forbiden) {
       ToggleError("User is not authorized to perform this action");
+    }
+
+    if (response && response.status === STATUS_CODES.Conflict) {
+      const backendErrorText = (response.data as any)?.message;
+      if (backendErrorText) {
+        displayBackendErrors(backendErrorText);
+      }
     }
   },
 );

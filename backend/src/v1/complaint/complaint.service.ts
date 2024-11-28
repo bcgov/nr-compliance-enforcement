@@ -67,29 +67,32 @@ import { AllegationReportData } from "src/types/models/reports/complaints/allega
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { OfficerService } from "../officer/officer.service";
+import { SpeciesCode } from "../species_code/entities/species_code.entity";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
   private readonly logger = new Logger(ComplaintService.name);
-  private mapper: Mapper;
+  private readonly mapper: Mapper;
 
   @InjectRepository(Complaint)
-  private complaintsRepository: Repository<Complaint>;
+  private readonly complaintsRepository: Repository<Complaint>;
   @InjectRepository(HwcrComplaint)
-  private _wildlifeComplaintRepository: Repository<HwcrComplaint>;
+  private readonly _wildlifeComplaintRepository: Repository<HwcrComplaint>;
   @InjectRepository(AllegationComplaint)
-  private _allegationComplaintRepository: Repository<AllegationComplaint>;
+  private readonly _allegationComplaintRepository: Repository<AllegationComplaint>;
   @InjectRepository(GirComplaint)
-  private _girComplaintRepository: Repository<GirComplaint>;
+  private readonly _girComplaintRepository: Repository<GirComplaint>;
   @InjectRepository(ComplaintUpdate)
-  private _complaintUpdateRepository: Repository<ComplaintUpdate>;
+  private readonly _complaintUpdateRepository: Repository<ComplaintUpdate>;
   @InjectRepository(Officer)
-  private _officertRepository: Repository<Officer>;
+  private readonly _officertRepository: Repository<Officer>;
   @InjectRepository(Office)
-  private _officeRepository: Repository<Office>;
+  private readonly _officeRepository: Repository<Office>;
+  @InjectRepository(SpeciesCode)
+  private readonly _speciesRepository: Repository<SpeciesCode>;
   @InjectRepository(CosGeoOrgUnit)
-  private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
+  private readonly _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
 
   constructor(
     @Inject(REQUEST)
@@ -204,7 +207,12 @@ export class ComplaintService {
           )
           .leftJoinAndSelect("wildlife.complaint_identifier", "complaint")
           .leftJoin("wildlife.species_code", "species_code")
-          .addSelect(["species_code.species_code", "species_code.short_description", "species_code.long_description"])
+          .addSelect([
+            "species_code.species_code",
+            "species_code.short_description",
+            "species_code.long_description",
+            "species_code.large_carnivore_ind",
+          ])
 
           .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
           .addSelect([
@@ -234,8 +242,16 @@ export class ComplaintService {
       ])
       .leftJoin("complaint.reported_by_code", "reported_by")
       .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
+
+      .leftJoin("complaint.complaint_update", "complaint_update")
+      .addSelect(["complaint_update.upd_detail_text", "complaint_update.complaint_identifier"])
+
+      .leftJoin("complaint.action_taken", "action_taken")
+      .addSelect(["action_taken.action_details_txt", "action_taken.complaint_identifier"])
+
       .leftJoin("complaint.owned_by_agency_code", "owned_by")
       .addSelect(["owned_by.agency_code", "owned_by.short_description", "owned_by.long_description"])
+      .leftJoinAndSelect("complaint.linked_complaint_xref", "linked_complaint")
       .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
       .leftJoinAndSelect("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
       .leftJoinAndSelect("delegate.person_complaint_xref_code", "delegate_code")
@@ -354,13 +370,14 @@ export class ComplaintService {
     return builder;
   }
 
-  private _applySearch(
+  private async _applySearch(
     builder: SelectQueryBuilder<complaintAlias>,
     complaintType: COMPLAINT_TYPE,
     query: string,
-  ): SelectQueryBuilder<complaintAlias> {
+    token: string,
+  ): Promise<SelectQueryBuilder<complaintAlias>> {
     builder.andWhere(
-      new Brackets((qb) => {
+      new Brackets(async (qb) => {
         qb.orWhere("complaint.complaint_identifier ILIKE :query", {
           query: `%${query}%`,
         });
@@ -427,6 +444,29 @@ export class ComplaintService {
 
         switch (complaintType) {
           case "ERS": {
+            // Search CM for any case files that may match based on authorization id
+            const { data, errors } = await get(token, {
+              query: `{getCasesFilesBySearchString (searchString: "${query}")
+              {
+                leadIdentifier,
+                caseIdentifier
+              }
+            }`,
+            });
+
+            if (errors) {
+              this.logger.error("GraphQL errors:", errors);
+              throw new Error("GraphQL errors occurred");
+            }
+
+            const caseSearchData = data.getCasesFilesBySearchString;
+
+            if (caseSearchData.length > 0) {
+              qb.orWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+                complaint_identifiers: caseSearchData.map((caseData) => caseData.leadIdentifier),
+              });
+            }
+
             qb.orWhere("allegation.suspect_witnesss_dtl_text ILIKE :query", {
               query: `%${query}%`,
             });
@@ -476,6 +516,12 @@ export class ComplaintService {
           query: `%${query}%`,
         });
         qb.orWhere("person.last_name ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("complaint_update.upd_detail_text ILIKE :query", {
+          query: `%${query}%`,
+        });
+        qb.orWhere("action_taken.action_details_txt ILIKE :query", {
           query: `%${query}%`,
         });
       }),
@@ -766,6 +812,21 @@ export class ComplaintService {
     return complaintIdentifiers;
   };
 
+  private readonly _getComplaintsByOutcomeAnimal = async (
+    token: string,
+    outcomeAnimalCode: string,
+  ): Promise<string[]> => {
+    const { data, errors } = await get(token, {
+      query: `{getLeadsByOutcomeAnimal (outcomeAnimalCode: "${outcomeAnimalCode}")}`,
+    });
+    if (errors) {
+      this.logger.error("GraphQL errors:", errors);
+      throw new Error("GraphQL errors occurred");
+    }
+    const complaintIdentifiers = data.getLeadsByOutcomeAnimal.length > 0 ? data.getLeadsByOutcomeAnimal : ["-1"];
+    return complaintIdentifiers;
+  };
+
   findAllByType = async (
     complaintType: COMPLAINT_TYPE,
   ): Promise<Array<WildlifeComplaintDto> | Array<AllegationComplaintDto>> => {
@@ -875,6 +936,7 @@ export class ComplaintService {
     token?: string,
   ): Promise<SearchResults> => {
     try {
+      this.logger.error("Searching for complaints");
       let results: SearchResults = { totalCount: 0, complaints: [] };
 
       const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
@@ -910,9 +972,18 @@ export class ComplaintService {
         });
       }
 
+      // -- filter by complaint identifiers returned by case management if outcome animal filter is present
+      if (agency === "COS" && filters.outcomeAnimal) {
+        const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(token, filters.outcomeAnimal);
+
+        builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
       //-- apply search
       if (query) {
-        builder = this._applySearch(builder, complaintType, query);
+        builder = await this._applySearch(builder, complaintType, query, token);
       }
 
       //-- apply sort if provided
@@ -926,9 +997,11 @@ export class ComplaintService {
       }
 
       //-- search and count
-      const [complaints, total] =
-        page && pageSize ? await builder.skip(skip).take(pageSize).getManyAndCount() : await builder.getManyAndCount();
+      // Workaround for the issue with getManyAndCount() returning the wrong count and results in complex queries
+      // introduced by adding an IN clause in a OrWhere statement: https://github.com/typeorm/typeorm/issues/320
+      const [, total] = await builder.take(0).getManyAndCount(); // returns 0 results but the total count is correct
       results.totalCount = total;
+      const complaints = page && pageSize ? await builder.skip(skip).take(pageSize).getMany() : await builder.getMany();
 
       switch (complaintType) {
         case "ERS": {
@@ -987,6 +1060,7 @@ export class ComplaintService {
     hasCEEBRole: boolean,
     token?: string,
   ): Promise<MapSearchResults> => {
+    this.logger.error("Mapping search results");
     const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
 
     try {
@@ -1001,7 +1075,7 @@ export class ComplaintService {
 
       //-- apply search
       if (query) {
-        complaintBuilder = this._applySearch(complaintBuilder, complaintType, query);
+        complaintBuilder = await this._applySearch(complaintBuilder, complaintType, query, token);
       }
 
       //-- apply filters
@@ -1031,7 +1105,7 @@ export class ComplaintService {
 
       //-- apply search
       if (query) {
-        unMappedBuilder = this._applySearch(unMappedBuilder, complaintType, query);
+        unMappedBuilder = await this._applySearch(unMappedBuilder, complaintType, query, token);
       }
 
       //-- apply filters
@@ -1059,6 +1133,17 @@ export class ComplaintService {
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (hasCEEBRole && filters.actionTaken) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
+        complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+        unMappedBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
+      // -- filter by complaint identifiers returned by case management if outcome animal filter is present
+      if (agency === "COS" && filters.outcomeAnimal) {
+        const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(token, filters.outcomeAnimal);
         complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
         });
@@ -1578,7 +1663,222 @@ export class ComplaintService {
       }
     };
 
-    const _getCaseData = async (id: string, token: string) => {
+    const _applyAssessmentData = async (assessmentDetails, assessmentActions) => {
+      //-- Convert booleans to Yes/No
+
+      //Note this one is backwards since the variable is action NOT required but the report is action required
+      assessmentDetails.actionNotRequired = assessmentDetails.actionNotRequired ? "No" : "Yes";
+
+      assessmentDetails.contactedComplainant = assessmentDetails.contactedComplainant ? "Yes" : "No";
+
+      assessmentDetails.attended = assessmentDetails.attended ? "Yes" : "No";
+
+      //-- Remove all inactive assessment and prevention actions
+      let filteredActions = assessmentActions.filter((item) => item.activeIndicator === true);
+
+      //Split between legecy and regular actions
+      const { legacyActions, actions } = filteredActions.reduce(
+        (acc, obj) => {
+          if (obj.isLegacy) {
+            acc.legacyActions.push(obj); // Add to legacy array if isLegacy is true
+          } else {
+            acc.actions.push(obj); // Add to nonLegacy array if isLegacy is false
+          }
+          return acc; // Return the accumulator
+        },
+        { legacyActions: [], actions: [] },
+      ); // Initial value with two empty arrays
+
+      assessmentDetails.actions = actions;
+      assessmentDetails.legacyActions = legacyActions;
+
+      //-- Convert Officer Guids to Names
+      if (assessmentActions?.[0]?.actor) {
+        assessmentDetails.assessmentActor = assessmentActions[0].actor;
+        assessmentDetails.assessmentDate = assessmentActions[0].date;
+
+        const { first_name, last_name } = (
+          await this._officerService.findByAuthUserGuid(assessmentDetails.assessmentActor)
+        ).person_guid;
+        assessmentDetails.assessmentActor = `${last_name}, ${first_name}`;
+
+        //Apply timezone and format date
+        assessmentDetails.assessmentDate = _applyTimezone(assessmentDetails.assessmentDate, tz, "date");
+      }
+    };
+
+    const _applyPreventionData = async (preventionDetails, preventionActions) => {
+      //-- Remove all inactive assessment and prevention actions
+      let filteredActions = preventionActions.filter((item) => item.activeIndicator === true);
+      preventionDetails.actions = filteredActions;
+
+      //-- Convert Officer Guid to Names
+      if (preventionDetails?.actions[0]?.actor) {
+        preventionDetails.preventionActor = preventionActions[0].actor;
+        preventionDetails.preventionDate = preventionActions[0].date;
+
+        const { first_name, last_name } = (
+          await this._officerService.findByAuthUserGuid(preventionDetails.preventionActor)
+        ).person_guid;
+
+        preventionDetails.preventionActor = `${last_name}, ${first_name}`;
+
+        //Apply timezone and format date
+        preventionDetails.preventionDate = _applyTimezone(preventionDetails.preventionDate, tz, "date");
+      }
+    };
+
+    const _applyEquipmentData = async (equipment) => {
+      let equipmentCount = 1;
+      for (const equip of equipment) {
+        const equipmentActions = equip.actions;
+
+        //-- Convert booleans to Yes/No
+        const indicatorEnum = { Y: "Yes", N: "No" };
+        equip.wasAnimalCaptured = indicatorEnum[equip.wasAnimalCaptured] || "Unknown";
+
+        //-- Pull out the SetBy and Removed By Users / Dates
+        const setByAction = equipmentActions.find((item) => item.actionCode === "SETEQUIPMT");
+        const removedByAction = equipmentActions.find((item) => item.actionCode === "REMEQUIPMT");
+
+        //-- Convert Officer Guids to Names in parallel
+        const officerPromises = [];
+
+        if (setByAction?.actor) {
+          officerPromises.push(
+            this._officerService.findByAuthUserGuid(setByAction.actor).then((result) => {
+              const { first_name, last_name } = result.person_guid;
+              equip.setByActor = `${last_name}, ${first_name}`;
+              equip.setByDate = setByAction.date;
+            }),
+          );
+        }
+
+        if (removedByAction?.actor) {
+          officerPromises.push(
+            this._officerService.findByAuthUserGuid(removedByAction?.actor).then((result) => {
+              const { first_name, last_name } = result.person_guid;
+              removedByAction.actor = `${last_name}, ${first_name}`;
+            }),
+          );
+        }
+
+        // Wait for both officer name resolutions
+        await Promise.all(officerPromises);
+
+        //-- Apply timezone and format dates
+        if (equip.setByDate) {
+          equip.setByDate = _applyTimezone(equip.setByDate, tz, "date");
+        }
+
+        if (removedByAction?.date) {
+          removedByAction.date = _applyTimezone(removedByAction.date, tz, "date");
+        }
+
+        //-- Removed By should only display if it exists... so it needs to go into an array until carbone is updated :(
+        equip.removedBy = [...(equip.removedBy || []), ...(removedByAction ? [removedByAction] : [])];
+
+        //-- Same for the Was Animal Captured... as this is mandatory, just ignore it if the value is "Unknown"
+        if (equip.wasAnimalCaptured !== "Unknown") {
+          equip.animalCaptured = equip.animalCaptured || []; // Ensure animalCaptured is an array
+          equip.animalCaptured.push({ value: equip.wasAnimalCaptured }); // Add the object with the 'value' property
+        }
+
+        //give it a nice friendly number as nothing comes back from the GQL
+        equip.order = equipmentCount;
+        equipmentCount++;
+      }
+      return equipment;
+    };
+
+    const _applyWildlifeData = async (wildlife) => {
+      for (const animal of wildlife) {
+        const wildlifeActions = animal.actions;
+
+        const drugAction = wildlifeActions?.find((item) => item.actionCode === "ADMNSTRDRG");
+        const outcomeAction = wildlifeActions?.find((item) => item.actionCode === "RECOUTCOME");
+        let drugActor = drugAction?.actor;
+        let drugDate = drugAction?.date;
+
+        //-- Case Management doesn't keep the species codes as we are source of truth
+
+        const builder = this._speciesRepository.createQueryBuilder("species").where({ species_code: animal.species });
+        const result = await builder.getOne();
+        animal.species = result.short_description;
+
+        //-- Convert Officer Guids to Names in parallel
+        animal.officer = outcomeAction?.actor;
+        animal.date = outcomeAction?.date;
+
+        const officerPromises = [];
+
+        if (animal.officer) {
+          officerPromises.push(
+            this._officerService.findByAuthUserGuid(animal.officer).then((result) => {
+              const { first_name, last_name } = result.person_guid;
+              animal.officer = `${last_name}, ${first_name}`;
+            }),
+          );
+        }
+
+        if (drugActor) {
+          officerPromises.push(
+            this._officerService.findByAuthUserGuid(drugActor).then((result) => {
+              const { first_name, last_name } = result.person_guid;
+              drugActor = `${last_name}, ${first_name}`;
+            }),
+          );
+        }
+
+        // Wait for both officer name resolutions
+        await Promise.all(officerPromises);
+
+        //-- Apply timezone and format dates
+        if (animal.date) {
+          animal.date = _applyTimezone(animal.date, tz, "date");
+        }
+        if (drugDate) {
+          drugDate = _applyTimezone(drugDate, tz, "date");
+        }
+
+        //add the officer/drug onto each drug row
+        animal.drugs?.forEach((drug) => {
+          drug.officer = drugActor;
+          drug.date = drugDate;
+        });
+      }
+      return wildlife;
+    };
+
+    const _applyNoteData = async (caseFile) => {
+      //-- Convert Officer Guid to Name
+      if (caseFile.note) {
+        const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(caseFile.note.action.actor))
+          .person_guid;
+
+        caseFile.note.action.actor = last_name + ", " + first_name;
+        caseFile.note.action.date = _applyTimezone(caseFile.note.action.date, tz, "date");
+      }
+    };
+
+    const _applyReviewData = async (caseFile) => {
+      //-- Convert booleans to Yes/No
+
+      caseFile.isReviewRequired = caseFile.isReviewRequired ? "Yes" : "No";
+
+      if (caseFile.reviewComplete) {
+        caseFile.reviewComplete.activeIndicator = caseFile.reviewComplete.activeIndicator ? "Yes" : "No";
+
+        //-- Convert Officer Guid to Name
+        const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(caseFile.reviewComplete.actor))
+          .person_guid;
+        caseFile.reviewComplete.actor = last_name + ", " + first_name;
+        //File Review Date - No Action Array
+        caseFile.reviewComplete.date = _applyTimezone(caseFile.reviewComplete.date, tz, "date");
+      }
+    };
+
+    const _getCaseData = async (id: string, token: string, tz: string) => {
       //-- Get the Outcome Data, this is done via a GQL call to prevent
       //-- a circular dependency between the complaint and case_file modules
       const { data, errors } = await get(token, {
@@ -1593,6 +1893,7 @@ export class ComplaintService {
 
       //-- Clean up the data to make it easier for formatting
       let outcomeData = data;
+
       //-- Add UA to unpermitted sites
       if (
         outcomeData.getCaseFileByLeadId.authorization &&
@@ -1602,14 +1903,49 @@ export class ComplaintService {
           "UA" + outcomeData.getCaseFileByLeadId.authorization.value;
       }
 
-      //-- Convert Officer Guids to Names
-      if (outcomeData.getCaseFileByLeadId.note) {
-        const { first_name, last_name } = (
-          await this._officerService.findByAuthUserGuid(outcomeData.getCaseFileByLeadId.note.action.actor)
-        ).person_guid;
+      // Take advantage of value by reference to make the rest of the code a bit more readable
+      const assessmentDetails = outcomeData.getCaseFileByLeadId.assessmentDetails;
+      const assessmentActions = [
+        ...(Array.isArray(assessmentDetails?.actions) ? assessmentDetails.actions : []),
+        ...(Array.isArray(assessmentDetails?.cat1Actions) ? assessmentDetails.cat1Actions : []),
+      ];
+      const preventionDetails = outcomeData.getCaseFileByLeadId.preventionDetails;
+      const preventionActions = preventionDetails?.actions;
+      const equipment = outcomeData.getCaseFileByLeadId.equipment;
+      const wildlife = outcomeData.getCaseFileByLeadId.subject;
+      let hasOutcome = false;
 
-        outcomeData.getCaseFileByLeadId.note.action.actor = last_name + ", " + first_name;
+      if (assessmentDetails?.actionNotRequired !== null && assessmentDetails?.actionNotRequired !== undefined) {
+        hasOutcome = true;
+        await _applyAssessmentData(assessmentDetails, assessmentActions);
       }
+
+      if (preventionDetails) {
+        hasOutcome = true;
+        await _applyPreventionData(preventionDetails, preventionActions);
+      }
+
+      if (equipment) {
+        hasOutcome = true;
+        await _applyEquipmentData(equipment);
+      }
+
+      if (wildlife) {
+        hasOutcome = true;
+        await _applyWildlifeData(wildlife);
+      }
+
+      if (outcomeData.getCaseFileByLeadId.note) {
+        hasOutcome = true;
+        await _applyNoteData(outcomeData.getCaseFileByLeadId);
+      }
+
+      if (outcomeData.getCaseFileByLeadId.isReviewRequired) {
+        hasOutcome = true;
+        await _applyReviewData(outcomeData.getCaseFileByLeadId);
+      }
+
+      outcomeData.getCaseFileByLeadId.hasOutcome = hasOutcome;
 
       return outcomeData.getCaseFileByLeadId;
     };
@@ -1630,6 +1966,7 @@ export class ComplaintService {
           .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
           .leftJoin("complaint.owned_by_agency_code", "owned_by")
           .addSelect(["owned_by.agency_code", "owned_by.short_description", "owned_by.long_description"])
+          .leftJoinAndSelect("complaint.linked_complaint_xref", "linked_complaint")
           .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
           .leftJoinAndSelect("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
           .leftJoinAndSelect("delegate.person_complaint_xref_code", "delegate_code")
@@ -1673,7 +2010,7 @@ export class ComplaintService {
       }
 
       //-- get case data
-      data.outcome = await _getCaseData(id, token);
+      data.outcome = await _getCaseData(id, token, tz);
 
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);
@@ -1689,6 +2026,18 @@ export class ComplaintService {
       if (data.outcome.decision?.inspectionNumber) {
         data = { ...data, inspection: [{ value: data.outcome.decision.inspectionNumber }] };
       }
+      if (data.outcome.assessmentDetails?.locationType?.key) {
+        data = { ...data, assessmentLocation: [{ value: data.outcome.assessmentDetails.locationType.key }] };
+      }
+      if (data.outcome.assessmentDetails?.conflictHistory?.key) {
+        data = { ...data, conflict: [{ value: data.outcome.assessmentDetails.conflictHistory.key }] };
+      }
+      if (data.outcome.assessmentDetails?.categoryLevel?.key) {
+        data = { ...data, category: [{ value: data.outcome.assessmentDetails.categoryLevel.key }] };
+      }
+      if (data.outcome.assessmentDetails?.legacyActions) {
+        data = { ...data, legacy: [{ actions: data.outcome.assessmentDetails.legacyActions }] };
+      }
 
       //-- problems in the automapper mean dates need to be handled
       //-- seperatly
@@ -1700,10 +2049,7 @@ export class ComplaintService {
       data.reportedOn = _applyTimezone(data.reportedOn, tz, "datetime");
       data.updatedOn = _applyTimezone(data.updatedOn, tz, "datetime");
 
-      if (data.outcome.note) {
-        data.outcome.note.action.date = _applyTimezone(data.outcome.note.action.date, tz, "date");
-      }
-
+      //CEEB Decision - No Action Array
       if (data.outcome.decision?.actionTakenDate) {
         data.outcome.decision.actionTakenDate = _applyTimezone(data.outcome.decision.actionTakenDate, tz, "date");
       }

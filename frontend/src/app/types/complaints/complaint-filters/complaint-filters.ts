@@ -1,4 +1,4 @@
-import { DropdownOption } from "../../app/drop-down-option";
+import { DropdownOption } from "@apptypes/app/drop-down-option";
 export type ComplaintFilters = {
   [key: string]: any;
 
@@ -21,6 +21,7 @@ export type ComplaintFilters = {
   complaintMethod: DropdownOption | null;
 
   actionTaken?: DropdownOption | null;
+  outcomeAnimal?: DropdownOption | null;
 
   filters: Array<any>;
 };

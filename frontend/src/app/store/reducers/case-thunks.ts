@@ -1,9 +1,9 @@
 import { Action, ThunkAction } from "@reduxjs/toolkit";
-import config from "../../../config";
-import { deleteMethod, generateApiParameters, get, patch, post } from "../../common/api";
-import { AppThunk, RootState } from "../store";
-import { ToggleError, ToggleSuccess } from "../../common/toast";
-import { CaseFileDto } from "../../types/app/case-files/case-file";
+import config from "@/config";
+import { deleteMethod, generateApiParameters, get, patch, post } from "@common/api";
+import { AppThunk, RootState } from "@store/store";
+import { ToggleError, ToggleSuccess } from "@common/toast";
+import { CaseFileDto } from "@apptypes/app/case-files/case-file";
 import {
   clearAssessment,
   clearPrevention,
@@ -14,43 +14,43 @@ import {
   setPrevention,
   setReviewComplete,
 } from "./cases";
-import { Assessment } from "../../types/outcomes/assessment";
-import { Officer } from "../../types/person/person";
-import { AssessmentActionDto } from "../../types/app/case-files/assessment-action";
-import { UpdateAssessmentInput } from "../../types/app/case-files/update-assessment-input";
-import { CreateAssessmentInput } from "../../types/app/case-files/create-assessment-input";
-import { Prevention } from "../../types/outcomes/prevention";
-import { PreventionActionDto } from "../../types/app/case-files/prevention/prevention-action";
-import { UpdatePreventionInput } from "../../types/app/case-files/prevention/update-prevention-input";
-import { CreatePreventionInput } from "../../types/app/case-files/prevention/create-prevention-input";
-import { CreateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/create-supplemental-notes-input";
+import { Assessment } from "@apptypes/outcomes/assessment";
+import { Officer } from "@apptypes/person/person";
+import { AssessmentActionDto } from "@apptypes/app/case-files/assessment-action";
+import { UpdateAssessmentInput } from "@apptypes/app/case-files/update-assessment-input";
+import { CreateAssessmentInput } from "@apptypes/app/case-files/create-assessment-input";
+import { Prevention } from "@apptypes/outcomes/prevention";
+import { PreventionActionDto } from "@apptypes/app/case-files/prevention/prevention-action";
+import { UpdatePreventionInput } from "@apptypes/app/case-files/prevention/update-prevention-input";
+import { CreatePreventionInput } from "@apptypes/app/case-files/prevention/create-prevention-input";
+import { CreateSupplementalNotesInput } from "@apptypes/app/case-files/supplemental-notes/create-supplemental-notes-input";
 import { UUID } from "crypto";
-import { UpdateSupplementalNotesInput } from "../../types/app/case-files/supplemental-notes/update-supplemental-notes-input";
-import { ReviewInput } from "../../types/app/case-files/review-input";
-import { ReviewCompleteAction } from "../../types/app/case-files/review-complete-action";
-import { DeleteSupplementalNoteInput } from "../../types/app/case-files/supplemental-notes/delete-supplemental-notes-input";
-import { EquipmentDetailsDto } from "../../types/app/case-files/equipment-details";
-import { CreateEquipmentInput } from "../../types/app/case-files/equipment-inputs/create-equipment-input";
-import { UpdateEquipmentInput } from "../../types/app/case-files/equipment-inputs/update-equipment-input";
+import { UpdateSupplementalNotesInput } from "@apptypes/app/case-files/supplemental-notes/update-supplemental-notes-input";
+import { ReviewInput } from "@apptypes/app/case-files/review-input";
+import { ReviewCompleteAction } from "@apptypes/app/case-files/review-complete-action";
+import { DeleteSupplementalNoteInput } from "@apptypes/app/case-files/supplemental-notes/delete-supplemental-notes-input";
+import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
+import { CreateEquipmentInput } from "@apptypes/app/case-files/equipment-inputs/create-equipment-input";
+import { UpdateEquipmentInput } from "@apptypes/app/case-files/equipment-inputs/update-equipment-input";
 import { getComplaintStatusById, clearComplaint } from "./complaints";
-import COMPLAINT_TYPES from "../../types/app/complaint-types";
-import { AnimalOutcomeV2 } from "../../types/app/complaints/outcomes/wildlife/animal-outcome";
-import { CreateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/create-animal-outcome-input";
-import { CASE_ACTION_CODE } from "../../constants/case_actions";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
+import { CreateAnimalOutcomeInput } from "@apptypes/app/case-files/animal-outcome/create-animal-outcome-input";
+import { CASE_ACTION_CODE } from "@constants/case_actions";
 import { from } from "linq-to-typescript";
-import { EarTagInput } from "../../types/app/case-files/animal-outcome/ear-tag-input";
-import { DrugUsedInputV2 } from "../../types/app/case-files/animal-outcome/drug-used-input";
-import { AnimalOutcomeActionInput } from "../../types/app/case-files/animal-outcome/animal-outcome-action-input";
-import { DeleteAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/delete-animal-outcome-input";
-import { UpdateAnimalOutcomeInput } from "../../types/app/case-files/animal-outcome/update-animal-outcome-input";
-import { Decision } from "../../types/app/case-files/ceeb/decision/decision";
-import { CreateDecisionInput } from "../../types/app/case-files/ceeb/decision/create-decision-input";
-import { UpdateDecisionInput } from "../../types/app/case-files/ceeb/decision/update-decsion-input";
-import { PermitSite } from "../../types/app/case-files/ceeb/authorization-outcome/permit-site";
-import { CreateAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/create-authorization-outcome-input";
-import { UpdateAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/update-authorization-outcome-input";
-import { getUserAgency } from "../../service/user-service";
-import { DeleteAuthorizationOutcomeInput } from "../../types/app/case-files/ceeb/authorization-outcome/delete-authorization-outcome-input";
+import { EarTagInput } from "@apptypes/app/case-files/animal-outcome/ear-tag-input";
+import { DrugUsedInputV3 } from "@apptypes/app/case-files/animal-outcome/drug-used-input";
+import { AnimalOutcomeActionInput } from "@apptypes/app/case-files/animal-outcome/animal-outcome-action-input";
+import { DeleteAnimalOutcomeInput } from "@apptypes/app/case-files/animal-outcome/delete-animal-outcome-input";
+import { UpdateAnimalOutcomeInput } from "@apptypes/app/case-files/animal-outcome/update-animal-outcome-input";
+import { Decision } from "@apptypes/app/case-files/ceeb/decision/decision";
+import { CreateDecisionInput } from "@apptypes/app/case-files/ceeb/decision/create-decision-input";
+import { UpdateDecisionInput } from "@apptypes/app/case-files/ceeb/decision/update-decsion-input";
+import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
+import { CreateAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/create-authorization-outcome-input";
+import { UpdateAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/update-authorization-outcome-input";
+import { getUserAgency } from "@service/user-service";
+import { DeleteAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/delete-authorization-outcome-input";
 
 //-- general thunks
 export const findCase =
@@ -105,7 +105,7 @@ const addAssessment =
   (complaintIdentifier: string, assessment: Assessment): AppThunk =>
   async (dispatch, getState) => {
     const {
-      codeTables: { "assessment-type": assessmentType },
+      codeTables: { "assessment-type": assessmentType, "assessment-cat1-type": assessmentCat1Type },
       officers: { officers },
       app: { profile },
       cases: { caseId },
@@ -119,23 +119,40 @@ const addAssessment =
         assessmentDetails: {
           actionNotRequired: assessment.action_required === "No",
           actionCloseComplaint: assessment.close_complaint,
-          actions: assessment.assessment_type.map((item) => {
-            return {
-              date: assessment.date,
-              actor: assessment.officer?.value,
-              activeIndicator: true,
-              actionCode: item.value,
-            };
-          }),
+          actions: assessment.assessment_type
+            ? assessment.assessment_type.map((item) => {
+                return {
+                  date: assessment.date,
+                  actor: assessment.officer?.value,
+                  activeIndicator: true,
+                  actionCode: item.value,
+                };
+              })
+            : [],
           actionJustificationCode: assessment.justification?.value,
           actionLinkedComplaintIdentifier: assessment.linked_complaint?.value,
+          contactedComplainant: assessment.contacted_complainant,
+          attended: assessment.attended,
+          locationType: assessment.location_type,
+          conflictHistory: assessment.conflict_history,
+          categoryLevel: assessment.category_level,
+          cat1Actions: assessment.assessment_cat1_type
+            ? assessment.assessment_cat1_type.map((item) => {
+                return {
+                  date: assessment.date,
+                  actor: assessment.officer?.value,
+                  activeIndicator: true,
+                  actionCode: item.value,
+                };
+              })
+            : [],
         },
       },
     } as CreateAssessmentInput;
 
     let {
       createAssessmentInput: {
-        assessmentDetails: { actions },
+        assessmentDetails: { actions, cat1Actions },
       },
     } = createAssessmentInput;
     for (let item of assessmentType.filter((record) => record.isActive)) {
@@ -147,6 +164,22 @@ const addAssessment =
           .includes(item.assessmentType)
       ) {
         actions.push({
+          date: assessment.date,
+          actor: assessment.officer?.value,
+          activeIndicator: false,
+          actionCode: item.assessmentType,
+        } as AssessmentActionDto);
+      }
+    }
+    for (let item of assessmentCat1Type.filter((record) => record.isActive)) {
+      if (
+        !cat1Actions
+          .map((action) => {
+            return action.actionCode;
+          })
+          .includes(item.assessmentType)
+      ) {
+        cat1Actions.push({
           date: assessment.date,
           actor: assessment.officer?.value,
           activeIndicator: false,
@@ -174,7 +207,7 @@ const updateAssessment =
   (complaintIdentifier: string, caseIdentifier: string, assessment: Assessment): AppThunk =>
   async (dispatch, getState) => {
     const {
-      codeTables: { "assessment-type": assessmentType },
+      codeTables: { "assessment-type": assessmentType, "assessment-cat1-type": assessmentCat1Type },
       officers: { officers },
       app: { profile },
     } = getState();
@@ -191,20 +224,37 @@ const updateAssessment =
           actionCloseComplaint: assessment.close_complaint,
           actionJustificationCode: assessment.justification?.value,
           actionLinkedComplaintIdentifier: assessment.linked_complaint?.value,
-          actions: assessment.assessment_type.map((item) => {
-            return {
-              actor: assessment.officer?.value,
-              date: assessment.date,
-              actionCode: item.value,
-              activeIndicator: true,
-            };
-          }),
+          actions: assessment.assessment_type
+            ? assessment.assessment_type.map((item) => {
+                return {
+                  actor: assessment.officer?.value,
+                  date: assessment.date,
+                  actionCode: item.value,
+                  activeIndicator: true,
+                };
+              })
+            : [],
+          contactedComplainant: assessment.contacted_complainant,
+          attended: assessment.attended,
+          locationType: assessment.location_type,
+          conflictHistory: assessment.conflict_history,
+          categoryLevel: assessment.category_level,
+          cat1Actions: assessment.assessment_cat1_type
+            ? assessment.assessment_cat1_type.map((item) => {
+                return {
+                  actor: assessment.officer?.value,
+                  date: assessment.date,
+                  actionCode: item.value,
+                  activeIndicator: true,
+                };
+              })
+            : [],
         },
       },
     } as UpdateAssessmentInput;
     let {
       updateAssessmentInput: {
-        assessmentDetails: { actions },
+        assessmentDetails: { actions, cat1Actions },
       },
     } = updateAssessmentInput;
 
@@ -217,6 +267,23 @@ const updateAssessment =
           .includes(item.assessmentType)
       ) {
         actions.push({
+          actor: assessment.officer?.value,
+          date: assessment.date,
+          actionCode: item.assessmentType,
+          activeIndicator: false,
+        } as AssessmentActionDto);
+      }
+    }
+
+    for (let item of assessmentCat1Type.filter((record) => record.isActive)) {
+      if (
+        !cat1Actions
+          .map((action) => {
+            return action.actionCode;
+          })
+          .includes(item.assessmentType)
+      ) {
+        cat1Actions.push({
           actor: assessment.officer?.value,
           date: assessment.date,
           actionCode: item.assessmentType,
@@ -268,14 +335,31 @@ const parseAssessmentResponse = async (
         value: res.assessmentDetails.actionJustificationCode,
         key: res.assessmentDetails.actionJustificationLongDescription,
       },
-      assessment_type: res.assessmentDetails.actions
+      assessment_type: [],
+      assessment_type_legacy: [],
+      contacted_complainant: res.assessmentDetails.contactedComplainant,
+      attended: res.assessmentDetails.attended,
+      location_type: res.assessmentDetails.locationType,
+      conflict_history: res.assessmentDetails.conflictHistory,
+      category_level: res.assessmentDetails.categoryLevel,
+      assessment_cat1_type: res.assessmentDetails.cat1Actions
         .filter((action) => {
           return action.activeIndicator;
         })
         .map((action) => {
           return { key: action.longDescription, value: action.actionCode };
         }),
-    } as Assessment;
+    } as unknown as Assessment;
+    for (let action of res.assessmentDetails.actions) {
+      if (action.activeIndicator) {
+        if (action.isLegacy && updatedAssessmentData.assessment_type_legacy) {
+          updatedAssessmentData.assessment_type_legacy.push({ key: action.longDescription, value: action.actionCode });
+        } else {
+          updatedAssessmentData.assessment_type.push({ key: action.longDescription, value: action.actionCode });
+        }
+      }
+    }
+
     return updatedAssessmentData;
   } else {
     return null;
@@ -789,7 +873,7 @@ export const upsertEquipment =
 export const createAnimalOutcome =
   (
     id: string,
-    animalOutcome: AnimalOutcomeV2,
+    animalOutcome: AnimalOutcome,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
@@ -798,8 +882,20 @@ export const createAnimalOutcome =
       },
     } = getState();
 
-    const { species, sex, age, conflictHistory, outcome, threatLevel, officer, date, tags, drugs, drugAuthorization } =
-      animalOutcome;
+    const {
+      species,
+      sex,
+      age,
+      identifyingFeatures,
+      outcome,
+      threatLevel,
+      officer,
+      date,
+      tags,
+      drugs,
+      drugAuthorization,
+    } = animalOutcome;
+
     let actions: Array<AnimalOutcomeActionInput> = [];
 
     //-- add an action if there is an outcome with officer
@@ -820,16 +916,14 @@ export const createAnimalOutcome =
     });
 
     const drugsUsed = drugs.map((item) => {
-      const { vial, drug, amountUsed, amountDiscarded, injectionMethod, discardMethod, reactions, remainingUse } = item;
-      const record: DrugUsedInputV2 = {
+      const { vial, drug, amountUsed, injectionMethod, remainingUse, additionalComments } = item;
+      const record: DrugUsedInputV3 = {
         vial,
         drug,
         amountUsed,
-        amountDiscarded,
         injectionMethod,
-        discardMethod,
-        reactions,
         remainingUse,
+        additionalComments,
       };
 
       return record;
@@ -845,7 +939,7 @@ export const createAnimalOutcome =
         sex,
         age,
         categoryLevel: threatLevel,
-        conflictHistory,
+        identifyingFeatures,
         outcome,
         tags: earTags,
         drugs: drugsUsed,
@@ -871,7 +965,7 @@ export const createAnimalOutcome =
 export const updateAnimalOutcome =
   (
     id: UUID,
-    animalOutcome: AnimalOutcomeV2,
+    animalOutcome: AnimalOutcome,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
@@ -885,7 +979,7 @@ export const updateAnimalOutcome =
       species,
       sex,
       age,
-      conflictHistory,
+      identifyingFeatures,
       outcome,
       threatLevel,
       officer,
@@ -909,27 +1003,15 @@ export const updateAnimalOutcome =
 
     //-- convert eartags and drugs to input types
     const drugsUsed = drugs.map((item) => {
-      const {
+      const { id: drugId, vial, drug, amountUsed, injectionMethod, additionalComments, remainingUse } = item;
+      const record: DrugUsedInputV3 = {
         id: drugId,
         vial,
         drug,
         amountUsed,
-        amountDiscarded,
         injectionMethod,
-        discardMethod,
-        reactions,
         remainingUse,
-      } = item;
-      const record: DrugUsedInputV2 = {
-        id: drugId,
-        vial,
-        drug,
-        amountUsed,
-        amountDiscarded,
-        injectionMethod,
-        discardMethod,
-        reactions,
-        remainingUse,
+        additionalComments,
       };
 
       return record;
@@ -944,7 +1026,7 @@ export const updateAnimalOutcome =
         sex,
         age,
         categoryLevel: threatLevel,
-        conflictHistory,
+        identifyingFeatures,
         outcome,
         tags,
         drugs: drugsUsed,
@@ -1063,6 +1145,9 @@ export const upsertDecisionOutcome =
 
     if (!current?.id) {
       result = await dispatch(_createDecision(id, decision));
+      if (!result) {
+        return "error";
+      }
     } else {
       const update = { ...decision, id: current.id };
       result = await dispatch(_updateDecison(id, update));

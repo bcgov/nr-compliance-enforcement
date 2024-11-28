@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { latLngToUtm } from "../../common/methods";
+import { latLngToUtm } from "@common/methods";
 interface CompLocationInfoProps {
   yCoordinate: string;
   xCoordinate: string;

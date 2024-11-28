@@ -1,16 +1,16 @@
 import { FC, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
-import { ValidationTextArea } from "../../../../../common/validation-textarea";
-import { CompSelect } from "../../../../common/comp-select";
+import { ValidationTextArea } from "@common/validation-textarea";
+import { CompSelect } from "@components/common/comp-select";
 import DatePicker from "react-datepicker";
-import Option from "../../../../../types/app/option";
-import { OfficerDto } from "../../../../../types/app/people/officer";
-import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
-import { openModal } from "../../../../../store/reducers/app";
-import { CANCEL_CONFIRM } from "../../../../../types/modal/modal-types";
-import { upsertNote, getCaseFile } from "../../../../../store/reducers/case-thunks";
+import Option from "@apptypes/app/option";
+import { OfficerDto } from "@apptypes/app/people/officer";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { openModal } from "@store/reducers/app";
+import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { upsertNote, getCaseFile } from "@store/reducers/case-thunks";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { ToggleError } from "../../../../../common/toast";
+import { ToggleError } from "@common/toast";
 
 type props = {
   id: string;

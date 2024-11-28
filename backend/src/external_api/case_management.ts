@@ -25,6 +25,30 @@ export const caseFileQueryFields: string = `
       shortDescription
       longDescription
       activeIndicator
+      isLegacy
+    }
+    contactedComplainant
+    attended
+    locationType {
+      key
+      value
+    }
+    conflictHistory {
+      key
+      value
+    }
+    categoryLevel {
+      key
+      value
+    }
+    cat1Actions {
+      actionId
+      actor
+      date
+      actionCode
+      shortDescription
+      longDescription
+      activeIndicator
     }
   }
   isReviewRequired
@@ -59,6 +83,7 @@ export const caseFileQueryFields: string = `
   equipment {
     id
     typeCode
+    typeDescription
     activeIndicator
     address
     xCoordinate
@@ -76,30 +101,32 @@ export const caseFileQueryFields: string = `
     id
     species
     sex
+    sexDescription
     age
+    ageDescription
     categoryLevel
-    conflictHistory
+    categoryLevelDescription
+    identifyingFeatures
     outcome
+    outcomeDescription
     tags { 
       id
       ear
+      earDescription
       identifier
-
       order
     }
     drugs { 
       id
-
       vial
       drug
+      drugDescription
       amountUsed
       injectionMethod
-      reactions
-    
+      injectionMethodDescription
       remainingUse
-      amountDiscarded
-      discardMethod
-
+      remainingUseDescription
+      additionalComments
       order
     }
     actions { 

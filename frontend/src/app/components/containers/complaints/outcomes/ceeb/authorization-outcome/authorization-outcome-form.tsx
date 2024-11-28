@@ -1,12 +1,12 @@
 import { FC, useEffect, useState } from "react";
-import { CompInput } from "../../../../../common/comp-input";
+import { CompInput } from "@components/common/comp-input";
 import { Button } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../../../../../../hooks/hooks";
-import { getCaseFile, upsertAuthorizationOutcome } from "../../../../../../store/reducers/case-thunks";
-import { selectCaseId } from "../../../../../../store/reducers/case-selectors";
-import { PermitSite } from "../../../../../../types/app/case-files/ceeb/authorization-outcome/permit-site";
-import { openModal } from "../../../../../../store/reducers/app";
-import { CANCEL_CONFIRM } from "../../../../../../types/modal/modal-types";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { getCaseFile, upsertAuthorizationOutcome } from "@store/reducers/case-thunks";
+import { selectCaseId } from "@store/reducers/case-selectors";
+import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
+import { openModal } from "@store/reducers/app";
+import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 
 type props = {
   leadIdentifier: string;
@@ -130,6 +130,9 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
   return (
     <>
       <div className="comp-details-form">
+        <div className="section-legend">
+          <span className="required-ind">*</span> at least one of these fields is required
+        </div>
         <div
           className="comp-details-form-row"
           id="authroization-authroized-site-id"

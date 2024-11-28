@@ -2,11 +2,11 @@ import { FC, useState, memo, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { EquipmentForm } from "./equipment-form";
 import { EquipmentItem } from "./equipment-item";
-import { useAppDispatch, useAppSelector } from "../../../../../hooks/hooks";
-import { selectEquipment } from "../../../../../store/reducers/case-selectors";
-import { selectComplaintAssignedBy } from "../../../../../store/reducers/complaints";
-import "../../../../../../assets/sass/hwcr-equipment.scss";
-import { setIsInEdit } from "../../../../../store/reducers/cases";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { selectEquipment } from "@store/reducers/case-selectors";
+import { selectComplaintAssignedBy } from "@store/reducers/complaints";
+import "@assets/sass/hwcr-equipment.scss";
+import { setIsInEdit } from "@store/reducers/cases";
 
 export const HWCREquipment: FC = memo(() => {
   const dispatch = useAppDispatch();

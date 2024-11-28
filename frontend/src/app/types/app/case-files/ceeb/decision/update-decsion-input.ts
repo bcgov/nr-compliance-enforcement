@@ -1,4 +1,4 @@
-import { BaseCaseFileUpdateInput } from "../../base-case-file-input";
+import { BaseCaseFileUpdateInput } from "@apptypes/app/case-files/base-case-file-input";
 import { Decision } from "./decision";
 
 export interface UpdateDecisionInput extends BaseCaseFileUpdateInput {

@@ -1,4 +1,4 @@
-import { CaseFileDto } from "../case-file";
+import { CaseFileDto } from "@apptypes/app/case-files/case-file";
 export interface CreateEquipmentInput {
   createEquipmentInput: CaseFileDto;
 }

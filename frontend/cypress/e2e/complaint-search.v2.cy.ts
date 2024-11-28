@@ -147,4 +147,47 @@ describe("Complaint Search Functionality", () => {
         expect(length).to.eq(5);
       });
   });
+
+  it.only("Can retains search parameters when navigating back to the search page", () => {
+    cy.visit("/");
+    cy.waitForSpinner();
+
+    //-- load the ERS conflicts and set filters
+    cy.navigateToTab(complaintTypes[1], false);
+    cy.get("#comp-zone-filter").click({ force: true });
+    cy.waitForSpinner();
+    cy.get("#comp-zone-filter").should("not.exist");
+
+    cy.get("#comp-filter-btn").click({ force: true });
+    cy.selectItemById("region-select-filter-id", "Okanagan");
+    cy.get("#comp-region-filter").should("exist");
+
+    cy.get("#complaint-search").click({ force: true });
+    cy.get("#complaint-search").clear().type("wildlife{enter}"); //-- {enter} will perform an enter keypress
+
+    cy.get("#map_toggle_id").click({ force: true });
+    cy.verifyMapMarkerExists(true);
+
+    cy.get("#multi-point-map")
+      .find("div.leaflet-marker-icon")
+      .should(({ length }) => {
+        expect(length).to.eq(2);
+      });
+
+    // Navigate to a different page, and return to then complaints page
+    cy.get("#create-complaints-link").click({ force: true });
+    cy.get("#details-screen-cancel-edit-button-top").should("exist");
+    cy.get("#complaints-link").click({ force: true });
+
+    // Verify that the search parameters set before leaving the page were retained
+    cy.get("#complaint-search").should("have.value", "wildlife");
+    cy.verifyMapMarkerExists(true);
+    cy.get("#comp-region-filter").contains("Okanagan");
+
+    cy.get("#multi-point-map")
+      .find("div.leaflet-marker-icon")
+      .should(({ length }) => {
+        expect(length).to.eq(2);
+      });
+  });
 });

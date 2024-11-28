@@ -1,6 +1,6 @@
-import AttachmentEnum from "../constants/attachment-enum";
-import { deleteAttachments, getAttachments, saveAttachments } from "../store/reducers/attachments";
-import { COMSObject } from "../types/coms/object";
+import AttachmentEnum from "@constants/attachment-enum";
+import { deleteAttachments, getAttachments, saveAttachments } from "@store/reducers/attachments";
+import { COMSObject } from "@apptypes/coms/object";
 
 // used to update the state of attachments that are to be added to a complaint
 export const handleAddAttachments = (

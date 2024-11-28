@@ -1,40 +1,41 @@
-import { Agency } from "../app/code-tables/agency";
-import { Attractant } from "../app/code-tables/attactant";
-import { ComplaintStatus } from "../app/code-tables/complaint-status";
-import { NatureOfComplaint } from "../app/code-tables/nature-of-complaint";
-import { OrganizationUnitType } from "../app/code-tables/organization-unit-type";
-import { OrganizationUnit } from "../app/code-tables/organization-unit";
-import { PersonComplaintType } from "../app/code-tables/person-complaint-type";
-import { Species } from "../app/code-tables/species";
-import { Violation } from "../app/code-tables/violation";
-import { OrganizationCodeTable } from "../app/code-tables/organization-code-table";
-import { ComplaintType } from "../app/code-tables/complaint-type";
-import { Region } from "../app/code-tables/region";
-import { Zone } from "../app/code-tables/zone";
-import { Community } from "../app/code-tables/community";
-import { ReportedBy } from "../app/code-tables/reported-by";
-import { Justification } from "../app/code-tables/justification";
-import { AssessmentType } from "../app/code-tables/assessment-type";
-import { PreventionType } from "../app/code-tables/prevention-type";
-import { Sex } from "../app/code-tables/sex";
-import { Age } from "../app/code-tables/age";
-import { ThreatLevel } from "../app/code-tables/threat-level";
-import { ConflictHistory } from "../app/code-tables/conflict-history";
-import { EarTag } from "../app/code-tables/ear-tag";
-import { WildlifeComplaintOutcome } from "../app/code-tables/wildlife-complaint-outcome";
-import { Drug } from "../app/code-tables/drug";
-import { DrugMethod } from "../app/code-tables/drug-method";
-import { DrugRemainingOutcome } from "../app/code-tables/drug-remaining-outcome";
-import { Equipment } from "../app/code-tables/equipment";
-import { GirType } from "../app/code-tables/gir-type";
-import { Discharge } from "../app/code-tables/discharge";
-import { NonCompliance } from "../app/code-tables/non-compliance";
-import { Sector } from "../app/code-tables/sector";
-import { Schedule } from "../app/code-tables/schedule";
-import { DecisionType } from "../app/code-tables/decision-type";
-import { TeamType } from "../app/code-tables/team";
-import { ComplaintMethodReceivedType } from "../app/code-tables/complaint-method-received-type";
-import { ScheduleSectorXref } from "../app/code-tables/schedule-sector-xref";
+import { Agency } from "@apptypes/app/code-tables/agency";
+import { Attractant } from "@apptypes/app/code-tables/attactant";
+import { ComplaintStatus } from "@apptypes/app/code-tables/complaint-status";
+import { NatureOfComplaint } from "@apptypes/app/code-tables/nature-of-complaint";
+import { OrganizationUnitType } from "@apptypes/app/code-tables/organization-unit-type";
+import { OrganizationUnit } from "@apptypes/app/code-tables/organization-unit";
+import { PersonComplaintType } from "@apptypes/app/code-tables/person-complaint-type";
+import { Species } from "@apptypes/app/code-tables/species";
+import { Violation } from "@apptypes/app/code-tables/violation";
+import { OrganizationCodeTable } from "@apptypes/app/code-tables/organization-code-table";
+import { ComplaintType } from "@apptypes/app/code-tables/complaint-type";
+import { Region } from "@apptypes/app/code-tables/region";
+import { Zone } from "@apptypes/app/code-tables/zone";
+import { Community } from "@apptypes/app/code-tables/community";
+import { ReportedBy } from "@apptypes/app/code-tables/reported-by";
+import { Justification } from "@apptypes/app/code-tables/justification";
+import { AssessmentType } from "@apptypes/app/code-tables/assessment-type";
+import { PreventionType } from "@apptypes/app/code-tables/prevention-type";
+import { Sex } from "@apptypes/app/code-tables/sex";
+import { Age } from "@apptypes/app/code-tables/age";
+import { ThreatLevel } from "@apptypes/app/code-tables/threat-level";
+import { ConflictHistory } from "@apptypes/app/code-tables/conflict-history";
+import { EarTag } from "@apptypes/app/code-tables/ear-tag";
+import { WildlifeComplaintOutcome } from "@apptypes/app/code-tables/wildlife-complaint-outcome";
+import { Drug } from "@apptypes/app/code-tables/drug";
+import { DrugMethod } from "@apptypes/app/code-tables/drug-method";
+import { DrugRemainingOutcome } from "@apptypes/app/code-tables/drug-remaining-outcome";
+import { Equipment } from "@apptypes/app/code-tables/equipment";
+import { GirType } from "@apptypes/app/code-tables/gir-type";
+import { Discharge } from "@apptypes/app/code-tables/discharge";
+import { NonCompliance } from "@apptypes/app/code-tables/non-compliance";
+import { Sector } from "@apptypes/app/code-tables/sector";
+import { Schedule } from "@apptypes/app/code-tables/schedule";
+import { DecisionType } from "@apptypes/app/code-tables/decision-type";
+import { TeamType } from "@apptypes/app/code-tables/team";
+import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint-method-received-type";
+import { ScheduleSectorXref } from "@apptypes/app/code-tables/schedule-sector-xref";
+import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
 
 export interface CodeTableState {
   [key: string]:
@@ -74,7 +75,8 @@ export interface CodeTableState {
     | Array<ScheduleSectorXref>
     | Array<ComplaintMethodReceivedType>
     | Array<DecisionType>
-    | Array<TeamType>;
+    | Array<TeamType>
+    | Array<CaseLocationType>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -111,4 +113,6 @@ export interface CodeTableState {
   team: Array<TeamType>;
   "complaint-method-received-codes": Array<ComplaintMethodReceivedType>;
   "lead-agency": Array<Agency>;
+  "assessment-cat1-type": Array<AssessmentType>;
+  "case-location-type": Array<CaseLocationType>;
 }

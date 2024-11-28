@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/hooks";
-import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate } from "../../../../common/methods";
-import { Coordinates } from "../../../../types/app/coordinate-type";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate } from "@common/methods";
+import { Coordinates } from "@apptypes/app/coordinate-type";
 import {
   setComplaint,
   setGeocodedComplaintCoordinates,
@@ -15,7 +15,7 @@ import {
   getLinkedComplaints,
   selectLinkedComplaints,
   setLinkedComplaints,
-} from "../../../../store/reducers/complaints";
+} from "@store/reducers/complaints";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
 import {
@@ -28,56 +28,52 @@ import {
   selectReportedByDropdown,
   selectComplaintReceivedMethodDropdown,
   selectPrivacyDropdown,
-} from "../../../../store/reducers/code-table";
+} from "@store/reducers/code-table";
 import { useSelector } from "react-redux";
-import { Officer } from "../../../../types/person/person";
-import Option from "../../../../types/app/option";
-import COMPLAINT_TYPES from "../../../../types/app/complaint-types";
-import { ComplaintSuspectWitness } from "../../../../types/complaints/details/complaint-suspect-witness-details";
-import { selectOfficersByAgency } from "../../../../store/reducers/officer";
+import { Officer } from "@apptypes/person/person";
+import Option from "@apptypes/app/option";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { ComplaintSuspectWitness } from "@apptypes/complaints/details/complaint-suspect-witness-details";
+import { selectOfficersByAgency } from "@store/reducers/officer";
 import { ComplaintLocation } from "./complaint-location";
-import { ValidationTextArea } from "../../../../common/validation-textarea";
-import { ValidationMultiSelect } from "../../../../common/validation-multiselect";
-import { ValidationPhoneInput } from "../../../../common/validation-phone-input";
-import notificationInvalid from "../../../../../assets/images/notification-invalid.png";
-import { CompSelect } from "../../../common/comp-select";
-import { CompInput } from "../../../common/comp-input";
+import { ValidationTextArea } from "@common/validation-textarea";
+import { ValidationMultiSelect } from "@common/validation-multiselect";
+import { ValidationPhoneInput } from "@common/validation-phone-input";
+import notificationInvalid from "@assets/images/notification-invalid.png";
+import { CompSelect } from "@components/common/comp-select";
+import { CompInput } from "@components/common/comp-input";
 import { from } from "linq-to-typescript";
-import { openModal, isFeatureActive } from "../../../../store/reducers/app";
+import { openModal, isFeatureActive } from "@store/reducers/app";
 import { useParams } from "react-router-dom";
-import { CANCEL_CONFIRM } from "../../../../types/modal/modal-types";
-import { ToggleError } from "../../../../common/toast";
+import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
+import { ToggleError } from "@common/toast";
 import { ToastContainer } from "react-toastify";
 import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
-import { AttachmentsCarousel } from "../../../common/attachments-carousel";
-import { COMSObject } from "../../../../types/coms/object";
-import {
-  handleAddAttachments,
-  handleDeleteAttachments,
-  handlePersistAttachments,
-} from "../../../../common/attachment-utils";
-import { Complaint as ComplaintDto } from "../../../../types/app/complaints/complaint";
-import { WildlifeComplaint as WildlifeComplaintDto } from "../../../../types/app/complaints/wildlife-complaint";
-import { AllegationComplaint as AllegationComplaintDto } from "../../../../types/app/complaints/allegation-complaint";
-import { GeneralIncidentComplaint as GeneralInformationComplaintDto } from "../../../../types/app/complaints/general-complaint";
+import { AttachmentsCarousel } from "@components/common/attachments-carousel";
+import { COMSObject } from "@apptypes/coms/object";
+import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
+import { Complaint as ComplaintDto } from "@apptypes/app/complaints/complaint";
+import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
+import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
+import { GeneralIncidentComplaint as GeneralInformationComplaintDto } from "@apptypes/app/complaints/general-complaint";
 import { UUID } from "crypto";
-import { Delegate } from "../../../../types/app/people/delegate";
-import { AttractantXref } from "../../../../types/app/complaints/attractant-xref";
+import { Delegate } from "@apptypes/app/people/delegate";
+import { AttractantXref } from "@apptypes/app/complaints/attractant-xref";
 import { Button, Card } from "react-bootstrap";
-import { HWCROutcomeReport } from "../outcomes/hwcr-outcome-report";
-import AttachmentEnum from "../../../../constants/attachment-enum";
-import { WebEOCComplaintUpdateList } from "../webeoc-complaint-updates/webeoc-complaint-update-list";
-import { getUserAgency } from "../../../../service/user-service";
-import { AgencyType } from "../../../../types/app/agency-types";
-import { CeebOutcomeReport } from "../outcomes/ceeb/ceeb-outcome-report";
-import { FEATURE_TYPES } from "../../../../constants/feature-flag-types";
-import { FeatureFlag } from "../../../common/feature-flag";
+import { HWCROutcomeReport } from "@components/containers/complaints/outcomes/hwcr-outcome-report";
+import AttachmentEnum from "@constants/attachment-enum";
+import { WebEOCComplaintUpdateList } from "@components/containers/complaints/webeoc-complaint-updates/webeoc-complaint-update-list";
+import { getUserAgency } from "@service/user-service";
+import { AgencyType } from "@apptypes/app/agency-types";
+import { CeebOutcomeReport } from "@components/containers/complaints/outcomes/ceeb/ceeb-outcome-report";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { FeatureFlag } from "@components/common/feature-flag";
 import { LinkedComplaintList } from "./linked-complaint-list";
-import { CompCoordinateInput } from "../../../common/comp-coordinate-input";
-import { ExternalFileReference } from "../outcomes/external-file-reference";
+import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
+import { ExternalFileReference } from "@components/containers/complaints/outcomes/external-file-reference";
 
 export type ComplaintParams = {
   id: string;

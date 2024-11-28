@@ -1,40 +1,18 @@
-import { AnimalTag, AnimalTagV2 } from "./animal-tag";
+import { AnimalTagV2 } from "./animal-tag";
 import { DrugAuthorization } from "./drug-authorization";
-import { DrugUsed, DrugUsedV2 } from "./drug-used";
-
-import Option from "../../../../../types/app/option";
+import { DrugUsed } from "./drug-used";
 
 export interface AnimalOutcome {
-  id: string | undefined;
-
-  species: Option | undefined;
-  sex: Option | undefined;
-  age: Option | undefined;
-  threatLevel: Option | undefined;
-  conflictHistory: Option | undefined;
-
-  tags: Array<AnimalTag>;
-  drugs: Array<DrugUsed>;
-  drugAuthorization?: DrugAuthorization;
-
-  outcome: Option | undefined;
-  officer: Option | undefined;
-  date?: Date;
-
-  isInEditMode: boolean;
-}
-
-export interface AnimalOutcomeV2 {
   id: string;
 
   species: string;
   sex?: string;
   age?: string;
   threatLevel?: string;
-  conflictHistory?: string;
+  identifyingFeatures?: string;
 
   tags: Array<AnimalTagV2>;
-  drugs: Array<DrugUsedV2>;
+  drugs: Array<DrugUsed>;
   drugAuthorization?: DrugAuthorization;
 
   outcome?: string;

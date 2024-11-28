@@ -1,30 +1,30 @@
-import { AppState } from "../../types/app/app-state";
-import { AppThunk, RootState, store } from "../store";
-import { SsoToken } from "../../types/app/sso-token";
+import { AppState } from "@apptypes/app/app-state";
+import { AppThunk, RootState, store } from "@store/store";
+import { SsoToken } from "@apptypes/app/sso-token";
 import jwtDecode from "jwt-decode";
-import Profile from "../../types/app/profile";
+import Profile from "@apptypes/app/profile";
 import { UUID } from "crypto";
-import { Officer } from "../../types/person/person";
-import config from "../../../config";
-import { generateApiParameters, get, patch } from "../../common/api";
-import { AUTH_TOKEN, getUserAgency } from "../../service/user-service";
+import { Officer } from "@apptypes/person/person";
+import config from "@/config";
+import { generateApiParameters, get, patch } from "@common/api";
+import { AUTH_TOKEN, getUserAgency } from "@service/user-service";
 
-import { DropdownOption } from "../../types/app/drop-down-option";
+import { DropdownOption } from "@apptypes/app/drop-down-option";
 
-import { Configurations } from "../../constants/configurations";
-import { ConfigurationType } from "../../types/configurations/configuration";
+import { Configurations } from "@constants/configurations";
+import { ConfigurationType } from "@apptypes/configurations/configuration";
 import { from } from "linq-to-typescript";
-import { ConfigurationState } from "../../types/state/configuration-state";
-import { NotificationState } from "../../types/state/notification-state";
-import { ToggleError } from "../../common/toast";
-import { CodeTableVersionState } from "../../types/state/code-table-version-state";
+import { ConfigurationState } from "@apptypes/state/configuration-state";
+import { NotificationState } from "@apptypes/state/notification-state";
+import { ToggleError } from "@common/toast";
+import { CodeTableVersionState } from "@apptypes/state/code-table-version-state";
 import { fetchCaseCodeTables, fetchComplaintCodeTables } from "./code-table";
 import { Action, ThunkAction } from "@reduxjs/toolkit";
-import { ComsInviteResponse } from "../../types/app/coms-invite-response";
+import { ComsInviteResponse } from "@apptypes/app/coms-invite-response";
 import { AxiosError } from "axios";
-import { FEATURE_TYPES } from "../../constants/feature-flag-types";
-import { ActiveFilters } from "../../types/app/active-filters";
-import { FeatureFlagState } from "../../types/state/feature-flag-state";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { ActiveFilters } from "@apptypes/app/active-filters";
+import { FeatureFlagState } from "@apptypes/state/feature-flag-state";
 
 enum ActionTypes {
   SET_TOKEN_PROFILE = "app/SET_TOKEN_PROFILE",
@@ -40,6 +40,7 @@ enum ActionTypes {
   SET_CODE_TABLE_VERSION = "app/SET_CODE_TABLE_VERSION",
   SET_FEATURE_FLAG = "app/SET_FEATURE_FLAG",
   SET_ACTIVE_TAB = "app/SET_ACTIVE_TAB",
+  SET_ACTIVE_COMPLAINTS_VIEW_TYPE = "app/SET_ACTIVE_COMPLAINTS_VIEW_TYPE",
 }
 //-- action creators
 
@@ -130,6 +131,11 @@ export const setOfficerAgency = (agency: string) => ({
 export const setActiveTab = (activeTab: string) => ({
   type: ActionTypes.SET_ACTIVE_TAB,
   payload: activeTab,
+});
+
+export const setActiveComplaintsViewType = (viewType: "list" | "map") => ({
+  type: ActionTypes.SET_ACTIVE_COMPLAINTS_VIEW_TYPE,
+  payload: viewType,
 });
 
 //-- selectors
@@ -268,6 +274,14 @@ export const selectActiveTab = (state: RootState): string => {
   return activeTab;
 };
 
+export const selectActiveComplaintsViewType = (state: RootState): "list" | "map" => {
+  const {
+    app: { activeComplaintsViewType },
+  } = state;
+
+  return activeComplaintsViewType;
+};
+
 export const isFeatureActive =
   (featureCode: string) =>
   (state: RootState): boolean => {
@@ -317,6 +331,9 @@ export const listActiveFilters =
       ),
       showZoneFilter: features.some(
         (feature: any) => feature.featureCode === FEATURE_TYPES.ZONE_FILTER && feature.isActive === true,
+      ),
+      showOutcomeAnimalFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.OUTCOME_ANIMAL_FILTER && feature.isActive === true,
       ),
     };
     return filters;
@@ -545,6 +562,7 @@ const initialState: AppState = {
   },
   featureFlags: [],
   activeTab: "HWCR",
+  activeComplaintsViewType: "list",
 };
 
 const reducer = (state: AppState = initialState, action: any): AppState => {
@@ -663,6 +681,10 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
     case ActionTypes.SET_ACTIVE_TAB: {
       const { payload } = action;
       return { ...state, activeTab: payload };
+    }
+    case ActionTypes.SET_ACTIVE_COMPLAINTS_VIEW_TYPE: {
+      const { payload } = action;
+      return { ...state, activeComplaintsViewType: payload };
     }
     default:
       return state;

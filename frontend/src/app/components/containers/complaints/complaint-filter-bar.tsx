@@ -1,10 +1,10 @@
 import { FC, MouseEventHandler, useContext, useCallback } from "react";
-import { FilterButton } from "../../common/filter-button";
-import { ComplaintFilterContext } from "../../../providers/complaint-filter-provider";
-import { clearFilter } from "../../../store/reducers/complaint-filters";
-import { ComplaintFilters } from "../../../types/complaints/complaint-filters/complaint-filters";
-import MapListToggle from "../../common/map-list-toggle";
-import SearchInput from "../../common/search-input";
+import { FilterButton } from "@components/common/filter-button";
+import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
+import { clearFilter } from "@store/reducers/complaint-filters";
+import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complaint-filters";
+import MapListToggle from "@components/common/map-list-toggle";
+import SearchInput from "@components/common/search-input";
 import { Button } from "react-bootstrap";
 
 type Props = {
@@ -42,6 +42,7 @@ export const ComplaintFilterBar: FC<Props> = ({
     girType,
     complaintMethod,
     actionTaken,
+    outcomeAnimal,
   } = state;
 
   const dateRangeLabel = (): string | undefined => {
@@ -227,6 +228,15 @@ export const ComplaintFilterBar: FC<Props> = ({
             id="comp-complaint-method-filter"
             label={actionTaken?.label}
             name="actionTaken"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("outcomeAnimal") && (
+          <FilterButton
+            id="comp-complaint-method-filter"
+            label={outcomeAnimal?.label}
+            name="outcomeAnimal"
             clear={removeFilter}
           />
         )}
