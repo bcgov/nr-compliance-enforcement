@@ -438,8 +438,8 @@ metabase-pg:
     tag: 15.7.0
   auth:
     existingSecret: "{{ .Release.Name }}-metabase"
-    username: "nr-compliance-enforcement"
-    database: nr-compliance-enforcement
+    username: "metabase"
+    database: "metabase"
   shmVolume:
     enabled: false
   backup:
