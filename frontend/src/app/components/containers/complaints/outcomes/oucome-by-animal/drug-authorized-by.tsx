@@ -9,7 +9,6 @@ import { REQUIRED } from "@constants/general";
 import { getDropdownOption } from "@/app/common/methods";
 
 type props = {
-  agency: string;
   drugAuthorization: DrugAuthorizationV2;
   update: Function;
 };
