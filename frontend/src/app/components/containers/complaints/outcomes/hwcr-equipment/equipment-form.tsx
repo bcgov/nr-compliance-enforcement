@@ -47,7 +47,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const [dateSetErrorMsg, setDateSetErrorMsg] = useState<string>("");
   const [officerRemovedErrorMsg, setOfficerRemovedErrorMsg] = useState<string>("");
   const [dateRemovedErrorMsg, setDateRemovedErrorMsg] = useState<string>("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [xCoordinateErrorMsg, setXCoordinateErrorMsg] = useState<string>("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [yCoordinateErrorMsg, setYCoordinateErrorMsg] = useState<string>("");
   const [coordinateErrorsInd, setCoordinateErrorsInd] = useState<boolean>(false);
   const [actionSetGuid, setActionSetGuid] = useState<string>();
@@ -67,6 +69,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
+  // needed to turn equipment type codes into descriptions
+  const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown);
+
   useEffect(() => {
     if (assignedOfficer && officersInAgencyList) {
       const officerAssigned: any = officersInAgencyList
@@ -81,7 +86,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         setOfficerSet(officerAssigned[0]);
       }
     }
-  }, [assignedOfficer]);
+  }, [assignedOfficer, officersInAgencyList]);
 
   useEffect(() => {
     if (id && (!complaintData || complaintData.id !== id)) {
@@ -90,6 +95,11 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   }, [id, complaintType, complaintData, dispatch]);
 
   useEffect(() => {
+    // for turning codes into values
+    const getValue = (property: string): Option | undefined => {
+      return equipmentTypeCodes.find((item) => item.value === equipment?.typeCode);
+    };
+
     // set the equipment type code in the form
     setType(getValue("equipment"));
 
@@ -110,7 +120,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
       }
     });
     setWasAnimalCaptured(equipment?.wasAnimalCaptured ?? "U");
-  }, [equipment]);
+  }, [assignableOfficers, complaintData, equipment, equipmentTypeCodes]);
 
   // Reset error messages
   const resetValidationErrors = () => {
@@ -262,16 +272,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     setXCoordinateErrorMsg("");
     setYCoordinateErrorMsg("");
   };
-
-  // needed to turn equipment type codes into descriptions
-  const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown);
-
-  // for turning codes into values
-  const getValue = (property: string): Option | undefined => {
-    return equipmentTypeCodes.find((item) => item.value === equipment?.typeCode);
-  };
-
-  const hasCoordinates = complaintData?.location?.coordinates[0] !== 0 || complaintData?.location?.coordinates[1] !== 0;
 
   const wasAnimalCapturedOptions: Option[] = [
     { label: "Yes", value: "Y" },

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, useCallback } from "react";
 import { useAppDispatch } from "@hooks/hooks";
 import { ToastContainer } from "react-toastify";
 import { ToggleError, ToggleSuccess } from "@common/toast";
@@ -11,13 +11,13 @@ export const FeatureManagement: FC = () => {
 
   const [featureData, setFeatureData] = useState<any[]>([]);
 
-  const getAllFeatureFlags = async () => {
+  const getAllFeatureFlags = useCallback(async () => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-flag/all`);
     const response: any = await get(dispatch, parameters);
     if (response) {
       setFeatureData(response);
     }
-  };
+  }, [dispatch]);
 
   const updateFeatureFlag = async (id: string, active_ind: boolean) => {
     try {
@@ -37,7 +37,7 @@ export const FeatureManagement: FC = () => {
 
   useEffect(() => {
     getAllFeatureFlags();
-  }, []);
+  }, [getAllFeatureFlags]);
 
   const handleChange = (item: any, i: number) => {
     const updateFeatureData = [...featureData];

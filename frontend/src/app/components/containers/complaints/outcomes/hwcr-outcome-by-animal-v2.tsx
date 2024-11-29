@@ -149,7 +149,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
         }
       }
     }
-  }, [complaint]);
+  }, [complaint, officersInAgencyList]);
 
   useEffect(() => {
     const items = subjects || [];

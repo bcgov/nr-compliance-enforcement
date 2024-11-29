@@ -21,7 +21,7 @@ export const ValidationPhoneInput: FC<ValidationPhoneInputProps> = ({
   international,
 }) => {
   const errClass = errMsg === "" ? "" : "error-message";
-  const calulatedClass = errMsg === "" ? "comp-form-control" : "comp-form-control" + " error-border";
+  const calulatedClass = errMsg === "" ? "comp-form-control" : "comp-form-control error-border";
   return (
     <div>
       <div className={className}>

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, useCallback } from "react";
 import Option from "@apptypes/app/option";
 import { CompRadioGroup } from "./comp-radiogroup";
 import { bcBoundaries, bcUtmBoundaries, formatLatLongCoordinate } from "@common/methods";
@@ -46,141 +46,148 @@ export const CompCoordinateInput: FC<Props> = ({
   const [zoneCoordinate, setZoneCoordinate] = useState<Option | undefined | null>();
   const [zoneErrorMsg, setZoneErrorMsg] = useState<string | undefined>("");
 
-  const handleGeoPointChange = (latitude: string, longitude: string) => {
-    setYCoordinateErrorMsg("");
-    setXCoordinateErrorMsg("");
-    setYCoordinate(latitude);
-    setXCoordinate(longitude);
+  const handleGeoPointChange = useCallback(
+    (latitude: string, longitude: string) => {
+      setYCoordinateErrorMsg("");
+      setXCoordinateErrorMsg("");
+      setYCoordinate(latitude);
+      setXCoordinate(longitude);
 
-    // handling removal of coordinates here
-    if ([latitude?.trim(), longitude?.trim()].every((item) => item === "")) {
-      throwError(false);
-      syncCoordinates("", "");
-      return;
-    }
-    const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
-    let hasErrors = false;
-    if (!regex.exec(latitude)) {
-      setYCoordinateErrorMsg("Latitude value must be a number");
-      hasErrors = true;
-    }
-    if (!regex.exec(longitude)) {
-      setXCoordinateErrorMsg("Longitude value must be a number");
-      hasErrors = true;
-    }
-    if (latitude && !Number.isNaN(latitude)) {
-      const item = parseFloat(latitude);
-      if (item > bcBoundaries.maxLatitude || item < bcBoundaries.minLatitude) {
-        setYCoordinateErrorMsg(
-          `Latitude value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`,
-        );
+      // handling removal of coordinates here
+      if ([latitude?.trim(), longitude?.trim()].every((item) => item === "")) {
+        throwError(false);
+        syncCoordinates("", "");
+        return;
+      }
+      const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
+      let hasErrors = false;
+      if (!regex.exec(latitude)) {
+        setYCoordinateErrorMsg("Latitude value must be a number");
         hasErrors = true;
       }
-    }
-    if (longitude && !Number.isNaN(longitude) && longitude.trim() !== "-") {
-      const item = parseFloat(longitude);
-      if (item > bcBoundaries.maxLongitude || item < bcBoundaries.minLongitude) {
-        setXCoordinateErrorMsg(
-          `Longitude value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`,
-        );
+      if (!regex.exec(longitude)) {
+        setXCoordinateErrorMsg("Longitude value must be a number");
         hasErrors = true;
+      }
+      if (latitude && !Number.isNaN(latitude)) {
+        const item = parseFloat(latitude);
+        if (item > bcBoundaries.maxLatitude || item < bcBoundaries.minLatitude) {
+          setYCoordinateErrorMsg(
+            `Latitude value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`,
+          );
+          hasErrors = true;
+        }
+      }
+      if (longitude && !Number.isNaN(longitude) && longitude.trim() !== "-") {
+        const item = parseFloat(longitude);
+        if (item > bcBoundaries.maxLongitude || item < bcBoundaries.minLongitude) {
+          setXCoordinateErrorMsg(
+            `Longitude value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`,
+          );
+          hasErrors = true;
+        } else {
+          syncCoordinates(latitude, longitude);
+        }
+      }
+      throwError(hasErrors);
+    },
+    [syncCoordinates, throwError],
+  );
+
+  const handleUtmGeoPointChange = useCallback(
+    (easting: string, northing: string, zone: string) => {
+      setEastingCoordinateErrorMsg("");
+      setNorthingCoordinateErrorMsg("");
+      setZoneErrorMsg("");
+      setYCoordinateErrorMsg("");
+      setXCoordinateErrorMsg("");
+
+      setEastingCoordinate(easting);
+      setNorthingCoordinate(northing);
+      setZoneCoordinate(zone ? ({ label: zone, value: zone } as Option) : undefined);
+
+      if (
+        [easting.toString().trim(), northing.toString().trim()].every((item) => item === "") &&
+        [undefined, ""].includes(zone)
+      ) {
+        throwError(false);
+        syncCoordinates("", "");
+        return;
+      }
+
+      const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
+      let hasErrors = false;
+      let lat;
+      let lng;
+
+      const errorTextSuffixLat = `The corresponding latitude value must be between ${bcBoundaries.minLatitude} and ${bcBoundaries.maxLatitude} degrees`;
+      const errorTextSuffixLng = `The corresponding longitude value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`;
+      const eastingErrorText =
+        `Invalid Easting. Easting value must be between 290220.6 and 720184.9 metres. ` + errorTextSuffixLng;
+      const northingErrorText =
+        `Invalid Northing. Northing value must be between 5346051.7 and 6655120.8 metres. ` + errorTextSuffixLat;
+      const zoneErrorText = `Invalid Zone. Must be in 7-11 range`;
+
+      let utm = new utmObj();
+      if (!regex.exec(easting)) {
+        setEastingCoordinateErrorMsg("Easting value must be a number");
+        hasErrors = true;
+      }
+      if (!regex.exec(northing)) {
+        setNorthingCoordinateErrorMsg("Northing value must be a number");
+        hasErrors = true;
+      }
+
+      if (easting && !Number.isNaN(easting)) {
+        const item = parseInt(easting);
+        if (item > bcUtmBoundaries.maxEasting || item < bcUtmBoundaries.minEasting) {
+          setEastingCoordinateErrorMsg(eastingErrorText);
+          hasErrors = true;
+        }
+      }
+
+      if (northing && !Number.isNaN(northing)) {
+        const item = parseInt(northing);
+        if (item > bcUtmBoundaries.maxNorthing || item < bcUtmBoundaries.minNorthing) {
+          setNorthingCoordinateErrorMsg(northingErrorText);
+          hasErrors = true;
+        }
+      }
+
+      if (
+        zone &&
+        !Number.isNaN(zone) &&
+        utmZones
+          ?.map((item) => {
+            return item.value;
+          })
+          .includes(zone.toString())
+      ) {
+        /* empty */
       } else {
-        syncCoordinates(latitude, longitude);
-      }
-    }
-    throwError(hasErrors);
-  };
-
-  const handleUtmGeoPointChange = (easting: string, northing: string, zone: string) => {
-    setEastingCoordinateErrorMsg("");
-    setNorthingCoordinateErrorMsg("");
-    setZoneErrorMsg("");
-    setYCoordinateErrorMsg("");
-    setXCoordinateErrorMsg("");
-
-    setEastingCoordinate(easting);
-    setNorthingCoordinate(northing);
-    setZoneCoordinate(zone ? ({ label: zone, value: zone } as Option) : undefined);
-
-    if (
-      [easting.toString().trim(), northing.toString().trim()].every((item) => item === "") &&
-      [undefined, ""].includes(zone)
-    ) {
-      throwError(false);
-      syncCoordinates("", "");
-      return;
-    }
-
-    const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
-    let hasErrors = false;
-    let lat;
-    let lng;
-
-    const errorTextSuffixLat = `The corresponding latitude value must be between ${bcBoundaries.minLatitude} and ${bcBoundaries.maxLatitude} degrees`;
-    const errorTextSuffixLng = `The corresponding longitude value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`;
-    const eastingErrorText =
-      `Invalid Easting. Easting value must be between 290220.6 and 720184.9 metres. ` + errorTextSuffixLng;
-    const northingErrorText =
-      `Invalid Northing. Northing value must be between 5346051.7 and 6655120.8 metres. ` + errorTextSuffixLat;
-    const zoneErrorText = `Invalid Zone. Must be in 7-11 range`;
-
-    let utm = new utmObj();
-    if (!regex.exec(easting)) {
-      setEastingCoordinateErrorMsg("Easting value must be a number");
-      hasErrors = true;
-    }
-    if (!regex.exec(northing)) {
-      setNorthingCoordinateErrorMsg("Northing value must be a number");
-      hasErrors = true;
-    }
-
-    if (easting && !Number.isNaN(easting)) {
-      const item = parseInt(easting);
-      if (item > bcUtmBoundaries.maxEasting || item < bcUtmBoundaries.minEasting) {
-        setEastingCoordinateErrorMsg(eastingErrorText);
+        setZoneErrorMsg(zoneErrorText);
         hasErrors = true;
       }
-    }
 
-    if (northing && !Number.isNaN(northing)) {
-      const item = parseInt(northing);
-      if (item > bcUtmBoundaries.maxNorthing || item < bcUtmBoundaries.minNorthing) {
-        setNorthingCoordinateErrorMsg(northingErrorText);
-        hasErrors = true;
+      if (hasErrors === false && easting && !Number.isNaN(easting) && northing && !Number.isNaN(northing)) {
+        const latLongCoordinates = utm.convertUtmToLatLng(easting, northing, zone, "N");
+        lat = latLongCoordinates.lat.toFixed(7);
+        if (lat > bcBoundaries.maxLatitude || lat < bcBoundaries.minLatitude) {
+          setNorthingCoordinateErrorMsg(northingErrorText);
+          hasErrors = true;
+        }
+        lng = latLongCoordinates.lng.toFixed(7);
+        if (lng > bcBoundaries.maxLongitude || lng < bcBoundaries.minLongitude) {
+          setEastingCoordinateErrorMsg(eastingErrorText);
+          hasErrors = true;
+        } else {
+          syncCoordinates(lat, lng);
+        }
       }
-    }
-
-    if (
-      zone &&
-      !Number.isNaN(zone) &&
-      utmZones
-        ?.map((item) => {
-          return item.value;
-        })
-        .includes(zone.toString())
-    ) {
-    } else {
-      setZoneErrorMsg(zoneErrorText);
-      hasErrors = true;
-    }
-
-    if (hasErrors === false && easting && !Number.isNaN(easting) && northing && !Number.isNaN(northing)) {
-      const latLongCoordinates = utm.convertUtmToLatLng(easting, northing, zone, "N");
-      lat = latLongCoordinates.lat.toFixed(7);
-      if (lat > bcBoundaries.maxLatitude || lat < bcBoundaries.minLatitude) {
-        setNorthingCoordinateErrorMsg(northingErrorText);
-        hasErrors = true;
-      }
-      lng = latLongCoordinates.lng.toFixed(7);
-      if (lng > bcBoundaries.maxLongitude || lng < bcBoundaries.minLongitude) {
-        setEastingCoordinateErrorMsg(eastingErrorText);
-        hasErrors = true;
-      } else {
-        syncCoordinates(lat, lng);
-      }
-    }
-    throwError(hasErrors);
-  };
+      throwError(hasErrors);
+    },
+    [utmZones, syncCoordinates, throwError],
+  );
 
   const handleChangeCoordinateType = (coordinateType: string) => {
     if (coordinateType === COORDINATE_TYPES.UTM) {
@@ -245,7 +252,7 @@ export const CompCoordinateInput: FC<Props> = ({
         }
       }
     }
-  }, [initXCoordinate, initYCoordinate]);
+  }, [coordinateType, handleGeoPointChange, handleUtmGeoPointChange, initXCoordinate, initYCoordinate]);
 
   const formatUtmCoordinate = (input: string | undefined): string => {
     const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;

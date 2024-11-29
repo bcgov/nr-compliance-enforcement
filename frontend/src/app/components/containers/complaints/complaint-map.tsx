@@ -81,8 +81,8 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
   //-- this is self-contained, rename the state locally to make clear
   const { state: filters } = useContext(ComplaintFilterContext);
 
-  const [sortKey, setSortKey] = useState("incident_reported_utc_timestmp");
-  const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
+  const [sortKey] = useState("incident_reported_utc_timestmp");
+  const [sortDirection] = useState(SORT_TYPES.DESC);
 
   useEffect(() => {
     //Update map when filters change
@@ -93,7 +93,7 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
     }
 
     dispatch(getMappedComplaints(type, payload));
-  }, [filters]);
+  }, [dispatch, filters, searchQuery, sortDirection, sortKey, type]);
 
   useEffect(() => {
     //when the search Query is cleared refresh the map
@@ -103,14 +103,14 @@ export const ComplaintMap: FC<Props> = ({ type, searchQuery }) => {
 
       dispatch(getMappedComplaints(type, payload));
     }
-  }, [searchQuery]);
+  }, [dispatch, filters, searchQuery, sortDirection, sortKey, type]);
 
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
     return () => {
       dispatch(setMappedComplaints({ type: { type }, data: [] }));
     };
-  }, []);
+  }, [dispatch, type]);
 
   return (
     <LeafletMapWithMultiplePoints

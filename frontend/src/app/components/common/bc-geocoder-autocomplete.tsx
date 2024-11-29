@@ -58,7 +58,7 @@ export const BCGeocoderAutocomplete: FC<Props> = ({ value, id, maxResults, paren
     if (inputValue) {
       fetchAddresses(inputValue);
     }
-  }, [inputValue, maxResults]);
+  }, [complaintLocation, dispatch, inputValue, maxResults]);
 
   return (
     <CreatableSelect

@@ -11,7 +11,6 @@ import { ComplaintSummaryPopup } from "./complaint-summary-popup";
 import { useAppDispatch } from "@hooks/hooks";
 import { getComplaintById, setComplaint } from "@store/reducers/complaints";
 import { isEqual } from "lodash";
-import { BsInfoCircleFill } from "react-icons/bs";
 import { ComplaintMapItem } from "@apptypes/app/complaints/complaint-map-item";
 import { from } from "linq-to-typescript";
 import { MapGestureHandler } from "./map-gesture-handler";
