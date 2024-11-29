@@ -76,6 +76,9 @@ export const complaintSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    resetComplaintSearchParameters: (state) => {
+      return { ...state, complaintSearchParameters: initialState.complaintSearchParameters };
+    },
     setComplaintSearchParameters: (state, action) => {
       return { ...state, complaintSearchParameters: action.payload };
     },
@@ -254,6 +257,7 @@ export const complaintSlice = createSlice({
 
 // export the actions/reducers
 export const {
+  resetComplaintSearchParameters,
   setComplaintSearchParameters,
   setComplaints,
   setTotalCount,
@@ -300,6 +304,7 @@ export const getComplaints =
       complaintStatusFilter,
       complaintMethodFilter,
       actionTakenFilter,
+      outcomeAnimalFilter,
       page,
       pageSize,
       query,
@@ -325,6 +330,7 @@ export const getComplaints =
         status: complaintStatusFilter?.value,
         complaintMethod: complaintMethodFilter?.value,
         actionTaken: actionTakenFilter?.value,
+        outcomeAnimal: outcomeAnimalFilter?.value,
         page: page,
         pageSize: pageSize,
         query: query,
@@ -357,6 +363,7 @@ export const getMappedComplaints =
       complaintStatusFilter,
       complaintMethodFilter,
       actionTakenFilter,
+      outcomeAnimalFilter,
       page,
       pageSize,
       query,
@@ -364,6 +371,7 @@ export const getMappedComplaints =
 
     try {
       dispatch(setComplaint(null));
+      dispatch(setComplaintSearchParameters(payload));
 
       let parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/map/search/${complaintType}`, {
         sortBy: sortColumn,
@@ -380,6 +388,7 @@ export const getMappedComplaints =
         status: complaintStatusFilter?.value,
         complaintMethod: complaintMethodFilter?.value,
         actionTaken: actionTakenFilter?.value,
+        outcomeAnimal: outcomeAnimalFilter?.value,
         page: page,
         pageSize: pageSize,
         query: query,
@@ -708,6 +717,25 @@ export const createComplaint =
   };
 
 //-- selectors
+export const selectComplaintSearchParameters = (state: RootState) => {
+  const {
+    complaints: { complaintSearchParameters },
+  } = state;
+
+  let activeFilters: Partial<ComplaintFilters> = {};
+  Object.keys(complaintSearchParameters).forEach((key) => {
+    const value = complaintSearchParameters[key as keyof ComplaintFilters];
+    if (value !== undefined && value !== null) {
+      activeFilters = {
+        ...activeFilters,
+        [key]: value,
+      };
+    }
+  });
+
+  return complaintSearchParameters;
+};
+
 export const selectGeocodedComplaintCoordinates = (state: RootState): Feature | null | undefined => {
   const {
     complaints: { complaintLocation },

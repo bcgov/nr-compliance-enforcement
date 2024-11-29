@@ -16,6 +16,7 @@ import { GirType } from "@apptypes/app/code-tables/gir-type";
 import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
+import { ToggleError } from "./toast";
 let utmObj = require("utm-latlng");
 
 type Coordinate = number[] | string[] | undefined;
@@ -464,3 +465,18 @@ export const latLngToUtm = (lat: string, lng: string): { easting: string; northi
   }
   return { easting: "", northing: "", zone: "" };
 };
+
+export const displayBackendErrors = (message: string) => {
+  switch (message) {
+    case "Decision Action Exist":
+      ToggleError(
+        "Error. This section has been updated while open for editing. Refresh the page to see the most recent changes.",
+      );
+      break;
+    default:
+  }
+};
+
+export function getDropdownOption(matchValue: string | undefined | null, optionsList: Option[]): Option | undefined {
+  return optionsList.find((item) => item.value === matchValue);
+}

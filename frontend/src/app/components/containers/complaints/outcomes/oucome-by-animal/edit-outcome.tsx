@@ -28,7 +28,7 @@ import { StandaloneConfirmCancelModal } from "@components/modal/instances/standa
 import { ToggleError } from "@common/toast";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { selectComplaintLargeCarnivoreInd } from "@store/reducers/complaints";
-import { getValue } from "./outcome-common";
+import { getDropdownOption } from "@/app/common/methods";
 
 type props = {
   index: number;
@@ -56,8 +56,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const showSectionErrors = isInEdit.showSectionErrors;
-
-  const optionDictionaries = { speciesList, sexes, ages, threatLevels, outcomes, officers };
 
   const [showModal, setShowModal] = useState(false);
 
@@ -369,7 +367,9 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                 Animal Information
               </legend>
               <div className="comp-details-form-row">
-                <label htmlFor="select-species">Species</label>
+                <label htmlFor="select-species">
+                  Species<span className="required-ind">*</span>
+                </label>
 
                 <CompSelect
                   id="select-species"
@@ -379,7 +379,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   enableValidation={true}
                   placeholder="Select"
                   onChange={handleSpeciesChange}
-                  defaultOption={getValue("species", data, optionDictionaries)}
+                  defaultOption={getDropdownOption(data.species, speciesList)}
                   errorMessage={speciesError}
                 />
               </div>
@@ -395,7 +395,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   onChange={(evt) => {
                     updateModel("sex", evt?.value);
                   }}
-                  defaultOption={getValue("sex", data, optionDictionaries)}
+                  defaultOption={getDropdownOption(data.sex, sexes)}
                 />
               </div>
               <div className="comp-details-form-row">
@@ -410,7 +410,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   onChange={(evt) => {
                     updateModel("age", evt?.value);
                   }}
-                  defaultOption={getValue("age", data, optionDictionaries)}
+                  defaultOption={getDropdownOption(data.age, ages)}
                 />
               </div>
               <div
@@ -443,7 +443,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     onChange={(evt) => {
                       updateModel("threatLevel", evt?.value);
                     }}
-                    defaultOption={getValue("threatLevel", data, optionDictionaries)}
+                    defaultOption={getDropdownOption(data.threatLevel, threatLevels)}
                   />
                 </div>
               )}
@@ -496,7 +496,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     onChange={(evt) => {
                       updateModel("outcome", evt?.value);
                     }}
-                    defaultOption={getValue("outcome", data, optionDictionaries)}
+                    defaultOption={getDropdownOption(data.outcome, outcomes)}
                   />
                 </div>
               </div>
@@ -520,7 +520,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   onChange={(evt) => {
                     handleOfficerChange(evt);
                   }}
-                  defaultOption={getValue("officer", data, optionDictionaries)}
+                  defaultOption={getDropdownOption(data.officer, officers)}
                   errorMessage={officerError}
                 />
               </div>

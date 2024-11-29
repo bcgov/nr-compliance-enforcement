@@ -22,6 +22,7 @@ import { getCaseFile, upsertDecisionOutcome } from "@store/reducers/case-thunks"
 import { selectCaseId } from "@store/reducers/case-selectors";
 import { UUID } from "crypto";
 import { ValidationTextArea } from "@common/validation-textarea";
+import { getDropdownOption } from "@/app/common/methods";
 
 type props = {
   leadIdentifier: string;
@@ -115,50 +116,6 @@ export const DecisionForm: FC<props> = ({
     const model = { ...data, [property]: value };
 
     setData(model);
-  };
-
-  const getValue = (property: string): Option | undefined | null => {
-    let result: Option | undefined;
-
-    switch (property) {
-      case "schedule": {
-        const { schedule } = data;
-        result = schedulesOptions.find((item) => item.value === schedule);
-        break;
-      }
-
-      case "sector": {
-        const { sector } = data;
-        result = sectorsOptions.find((item) => item.value === sector);
-        break;
-      }
-
-      case "discharge": {
-        const { discharge } = data;
-        result = dischargesOptions.find((item) => item.value === discharge);
-        break;
-      }
-
-      case "nonCompliance": {
-        const { nonCompliance } = data;
-        result = nonComplianceOptions.find((item) => item.value === nonCompliance);
-        break;
-      }
-
-      case "leadAgency": {
-        const { leadAgency } = data;
-        result = leadAgencyOptions.find((item) => item.value === leadAgency);
-        break;
-      }
-
-      case "actionTaken": {
-        const { actionTaken } = data;
-        result = decisionTypeOptions.find((item) => item.value === actionTaken);
-        break;
-      }
-    }
-
-    return !result ? null : result;
   };
 
   const handleRationaleChange = (value: string) => {
@@ -319,7 +276,9 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-schedule-sector-type"
         >
-          <label htmlFor="outcome-decision-schedule-secto">WDR schedule/IPM sector type</label>
+          <label htmlFor="outcome-decision-schedule-secto">
+            WDR schedule/IPM sector type<span className="required-ind">*</span>
+          </label>
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-schedule-sector"
@@ -334,7 +293,7 @@ export const DecisionForm: FC<props> = ({
                   handleScheduleChange(evt.value);
                 }
               }}
-              value={getValue("schedule")}
+              value={getDropdownOption(schedule, schedulesOptions)}
             />
           </div>
         </div>
@@ -342,7 +301,9 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-sector-category"
         >
-          <label htmlFor="outcome-decision-sector-category">Sector/Category</label>
+          <label htmlFor="outcome-decision-sector-category">
+            Sector/Category<span className="required-ind">*</span>
+          </label>
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-sector-category"
@@ -355,7 +316,7 @@ export const DecisionForm: FC<props> = ({
               onChange={(evt) => {
                 updateModel("sector", evt?.value);
               }}
-              value={getValue("sector")}
+              value={getDropdownOption(sector, sectorsOptions)}
             />
           </div>
         </div>
@@ -363,7 +324,9 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-discharge-type"
         >
-          <label htmlFor="outcome-decision-discharge">Discharge type</label>
+          <label htmlFor="outcome-decision-discharge">
+            Discharge type<span className="required-ind">*</span>
+          </label>
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-discharge"
@@ -376,7 +339,7 @@ export const DecisionForm: FC<props> = ({
               onChange={(evt) => {
                 updateModel("discharge", evt?.value);
               }}
-              value={getValue("discharge")}
+              value={getDropdownOption(discharge, dischargesOptions)}
             />
           </div>
         </div>
@@ -399,7 +362,7 @@ export const DecisionForm: FC<props> = ({
                 const action = evt?.value ? evt?.value : "";
                 handleActionTakenChange(action);
               }}
-              value={getValue("actionTaken")}
+              value={getDropdownOption(actionTaken, decisionTypeOptions)}
             />
           </div>
         </div>
@@ -421,7 +384,7 @@ export const DecisionForm: FC<props> = ({
                 onChange={(evt) => {
                   updateModel("leadAgency", evt?.value);
                 }}
-                value={getValue("leadAgency")}
+                value={getDropdownOption(leadAgency, leadAgencyOptions)}
               />
             </div>
           </div>
@@ -469,7 +432,7 @@ export const DecisionForm: FC<props> = ({
               onChange={(evt) => {
                 updateModel("nonCompliance", evt?.value);
               }}
-              value={getValue("nonCompliance")}
+              value={getDropdownOption(nonCompliance, nonComplianceOptions)}
             />
           </div>
         </div>

@@ -8,6 +8,9 @@ import { PersonComplaintXref } from "../../person_complaint_xref/entities/person
 import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ReportedByCode } from "../../reported_by_code/entities/reported_by_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
+import { LinkedComplaintXref } from "../../linked_complaint_xref/entities/linked_complaint_xref.entity";
+import { ComplaintUpdate } from "../../complaint_updates/entities/complaint_updates.entity";
+import { ActionTaken } from "./action_taken.entity";
 
 @Entity()
 export class Complaint {
@@ -217,6 +220,23 @@ export class Complaint {
   @Column()
   is_privacy_requested: string;
 
+  @OneToMany(() => LinkedComplaintXref, (linked_complaint_xref) => linked_complaint_xref.linked_complaint_identifier)
+  linked_complaint_xref: LinkedComplaintXref[];
+
+  @ApiProperty({
+    example: "Details text was updated with new information.",
+    description: "The complaint updates",
+  })
+  @OneToMany(() => ComplaintUpdate, (complaint_update) => complaint_update.complaintIdentifier)
+  complaint_update: ComplaintUpdate[];
+
+  @ApiProperty({
+    example: "Officer XYZ assigned this to ABC",
+    description: "The actions taken on tihs complaint",
+  })
+  @OneToMany(() => ActionTaken, (action_taken) => action_taken.complaintIdentifier)
+  action_taken: ActionTaken[];
+
   constructor(
     detail_text?: string,
     caller_name?: string,
@@ -241,11 +261,14 @@ export class Complaint {
     complaint_status_code?: ComplaintStatusCode,
     geo_organization_unit_code?: GeoOrganizationUnitCode,
     cos_geo_org_unit?: CosGeoOrgUnit,
+    linked_complaint_xref?: LinkedComplaintXref[],
     person_complaint_xref?: PersonComplaintXref[],
     webeoc_identifier?: string,
     reference_number?: string,
     comp_mthd_recv_cd_agcy_cd_xref?: CompMthdRecvCdAgcyCdXref,
     is_privacy_requested?: string,
+    complaint_update?: ComplaintUpdate[],
+    action_taken?: ActionTaken[],
   ) {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -270,10 +293,13 @@ export class Complaint {
     this.complaint_status_code = complaint_status_code;
     this.geo_organization_unit_code = geo_organization_unit_code;
     this.cos_geo_org_unit = cos_geo_org_unit;
+    this.linked_complaint_xref = linked_complaint_xref;
     this.person_complaint_xref = person_complaint_xref;
     this.webeoc_identifier = webeoc_identifier;
     this.reference_number = reference_number;
     this.comp_mthd_recv_cd_agcy_cd_xref = comp_mthd_recv_cd_agcy_cd_xref;
     this.is_privacy_requested = is_privacy_requested;
+    this.complaint_update = complaint_update;
+    this.action_taken = action_taken;
   }
 }

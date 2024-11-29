@@ -26,6 +26,7 @@ import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { CodeTableService } from "../code-table/code-table.service";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { CreateLinkedComplaintXrefDto } from "../linked_complaint_xref/dto/create-linked_complaint_xref.dto";
+import { CaseManagementError } from "../../enum/case_management_error.enum";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -234,6 +235,26 @@ export class CaseFileService {
     ${caseFileQueryFields}
     }`;
 
+    // If the assessment being updated has no action required or the justification is not duplicate, then check if there
+    // was previously a link to another complaint. If there is, remove it.
+    if (
+      !modelAsAny.updateAssessmentInput.assessmentDetails.actionNotRequired ||
+      (modelAsAny.updateAssessmentInput.assessmentDetails.actionJustificationCode &&
+        modelAsAny.updateAssessmentInput.assessmentDetails.actionJustificationCode !== "DUPLICATE")
+    ) {
+      const existingLink = await this._linkedComplaintXrefRepository.findOne({
+        relations: { linked_complaint_identifier: true, complaint_identifier: true },
+        where: {
+          linked_complaint_identifier: { complaint_identifier: modelAsAny.updateAssessmentInput.leadIdentifier },
+          active_ind: true,
+        },
+      });
+
+      if (existingLink) {
+        existingLink.active_ind = false;
+        await this._linkedComplaintXrefRepository.save(existingLink);
+      }
+    }
     // If changes need to be made in both databases (i.e. we need to create a link or change the status of a complaint)
     // then the transactional approach is taken.
     if (
@@ -472,7 +493,14 @@ export class CaseFileService {
     return returnValue?.deleteWildlife;
   };
 
-  createDecision = async (token: any, model: CreateDecisionInput): Promise<CaseFileDto> => {
+  createDecision = async (token: any, model: CreateDecisionInput): Promise<CaseFileDto | CaseManagementError> => {
+    const { leadIdentifier: leadId } = model;
+    const caseFile = await this.find(leadId, token);
+
+    if (caseFile?.decision?.actionTaken) {
+      return CaseManagementError.DECISION_ACTION_EXIST;
+    }
+
     const result = await post(token, {
       query: `mutation createDecision($input: CreateDecisionInput!) {
         createDecision(input: $input) {

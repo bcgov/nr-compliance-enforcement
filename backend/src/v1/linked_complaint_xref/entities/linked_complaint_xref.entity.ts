@@ -29,11 +29,17 @@ export class LinkedComplaintXref {
   @Column("boolean", { name: "active_ind" })
   active_ind: boolean;
 
-  @ManyToOne(() => Complaint, (complaint) => complaint.complaint_identifier)
+  @Column("character varying", { name: "complaint_identifier" })
+  complaint_id: string;
+
+  @Column("character varying", { name: "linked_complaint_identifier" })
+  linked_complaint_id: string;
+
+  @ManyToOne(() => Complaint, (complaint) => complaint.linked_complaint_xref)
   @JoinColumn([{ name: "complaint_identifier", referencedColumnName: "complaint_identifier" }])
   complaint_identifier: Complaint;
 
-  @ManyToOne(() => Complaint, (complaint) => complaint.complaint_identifier)
+  @ManyToOne(() => Complaint, (complaint) => complaint.linked_complaint_xref)
   @JoinColumn([{ name: "linked_complaint_identifier", referencedColumnName: "complaint_identifier" }])
   linked_complaint_identifier: Complaint;
 }

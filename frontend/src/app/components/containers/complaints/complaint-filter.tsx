@@ -12,6 +12,7 @@ import {
   selectComplaintStatusWithPendingCodeDropdown,
   selectGirTypeCodeDropdown,
   selectComplaintReceivedMethodDropdown,
+  selectWildlifeComplaintOutcome,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
 import { selectDecisionTypeDropdown } from "@store/reducers/code-table-selectors";
@@ -45,6 +46,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       girType,
       complaintMethod,
       actionTaken,
+      outcomeAnimal,
     },
     dispatch,
   } = useContext(ComplaintFilterContext);
@@ -59,6 +61,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const statusTypes = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
   const violationTypes = useAppSelector(selectViolationCodeDropdown(agency));
   const girTypes = useAppSelector(selectGirTypeCodeDropdown);
+  const outcomeAnimalTypes = useAppSelector(selectWildlifeComplaintOutcome);
 
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
@@ -79,7 +82,6 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
 
   const handleDateRangeChange = (dates: [Date, Date]) => {
     const [start, end] = dates;
-    setFilter("startDate", start);
     //set the time to be end of day to ensure that we also search for records after the beginning of the selected day.
     if (start) {
       start.setHours(0, 0, 0);
@@ -90,6 +92,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       end.setMilliseconds(999);
     }
 
+    setFilter("startDate", start);
     setFilter("endDate", end);
   };
 
@@ -326,6 +329,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             </div>
           </div>
         )}
+
         {UserService.hasRole(Roles.CEEB) && (
           <div id="comp-filter-action-taken-id">
             <label htmlFor="action-taken-select-id">Action Taken</label>
@@ -343,6 +347,29 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 placeholder="Select"
                 enableValidation={false}
                 value={actionTaken}
+                isClearable={true}
+              />
+            </div>
+          </div>
+        )}
+
+        {COMPLAINT_TYPES.HWCR === type && activeFilters.showOutcomeAnimalFilter && (
+          <div id="comp-filter-status-id">
+            <label htmlFor="status-select-id">Outcome by Animal</label>
+            <div className="filter-select-padding">
+              <CompSelect
+                id="status-select-id"
+                classNamePrefix="comp-select"
+                onChange={(option) => {
+                  setFilter("outcomeAnimal", option);
+                }}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={outcomeAnimalTypes}
+                placeholder="Select"
+                enableValidation={false}
+                value={outcomeAnimal}
                 isClearable={true}
               />
             </div>

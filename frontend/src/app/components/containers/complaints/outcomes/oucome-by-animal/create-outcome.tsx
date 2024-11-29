@@ -27,7 +27,7 @@ import { ToggleError } from "@common/toast";
 import { getNextOrderNumber } from "@components/containers/complaints/outcomes/hwcr-outcome-by-animal-v2";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { selectComplaintLargeCarnivoreInd } from "@store/reducers/complaints";
-import { getValue } from "./outcome-common";
+import { getDropdownOption } from "@/app/common/methods";
 
 type props = {
   index: number;
@@ -71,8 +71,6 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
-
-  const optionDictionaries = { speciesList, sexes, ages, threatLevels, outcomes, officers };
 
   //-- error handling
   const [speciesError, setSpeciesError] = useState("");
@@ -313,7 +311,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
       }
     });
 
-    if (!authorizationRef.current.isValid()) {
+    if (authorizationRef.current && !authorizationRef.current.isValid()) {
       _isValid = false;
     }
 
@@ -376,7 +374,9 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
             </legend>
 
             <div className="comp-details-form-row">
-              <label htmlFor="select-species">Species</label>
+              <label htmlFor="select-species">
+                Species<span className="required-ind">*</span>
+              </label>
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="select-species"
@@ -386,7 +386,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                   enableValidation={true}
                   placeholder="Select"
                   onChange={handleSpeciesChange}
-                  defaultOption={getValue("species", data, optionDictionaries)}
+                  defaultOption={getDropdownOption(data.species, speciesList)}
                   errorMessage={speciesError}
                 />
               </div>
@@ -534,7 +534,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
                     onChange={(evt) => {
                       handleOfficerChange(evt);
                     }}
-                    value={getValue("officer", data, optionDictionaries)}
+                    value={getDropdownOption(data.officer, officers)}
                     errorMessage={officerError}
                   />
                 </div>

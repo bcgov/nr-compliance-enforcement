@@ -110,7 +110,7 @@ export class ComplaintUpdate {
   @Column({ length: 20 })
   webeoc_identifier: string;
 
-  @ManyToOne(() => Complaint, (complaint) => complaint.complaint_identifier)
+  @ManyToOne(() => Complaint, (complaint) => complaint.complaint_update)
   @JoinColumn([
     {
       name: "complaint_identifier",
