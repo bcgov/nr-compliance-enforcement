@@ -3,6 +3,7 @@
   "version": "0.28.1",
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@craco/craco": "^7.1.0",
     "@craco/types": "^7.1.0",
     "@faker-js/faker": "^8.0.2",
@@ -149,7 +150,6 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@tsconfig/node16": "^1.0.3",
     "@types/jest": "^29.5.1",
     "@types/react-test-renderer": "^18.0.0",
