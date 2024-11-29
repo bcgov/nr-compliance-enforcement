@@ -205,7 +205,6 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
 
           <DrugAuthorizedBy
             drugAuthorization={drugAuthorization ?? { ...defaultAuthorization, officer }}
-            agency={agency}
             update={updateModel}
             ref={authorizationRef}
           />

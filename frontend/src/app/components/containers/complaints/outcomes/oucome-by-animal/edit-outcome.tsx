@@ -176,7 +176,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
           <DrugAuthorizedBy
             drugAuthorization={drugAuthorization ?? { ...defaultAuthorization, officer }}
-            agency={agency}
             update={updateModel}
             ref={authorizationRef}
           />
