@@ -449,14 +449,14 @@ metabase-pg:
       podSecurityContext:
         enabled: false
       storage:
-        size: 128Mi
+        size: 256Mi
   primary:
     persistence:
       enabled: true
       storageClass: netapp-block-standard
       accessModes:
         - ReadWriteOnce
-      size: 128Mi
+      size: 256Mi
     containerSecurityContext:
       enabled: false
     podSecurityContext:
