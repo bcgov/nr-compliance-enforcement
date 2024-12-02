@@ -1,5 +1,5 @@
 #!/bin/bash
-# Cleanup NATS JetStream PVC (deletion)
+# Cleanup NATS JetStream PVC (deletion) and other team specific PVCs
 # Why: nats js pvc does not have label passthrough https://github.com/nats-io/k8s/blob/nats-1.2.6/helm/charts/nats/files/stateful-set/jetstream-pvc.yaml
 # So we manually find it and delete it on non-draft PR close and ONLY in *dev namespaces
 #
@@ -53,24 +53,34 @@ if [[ "$OC_NAMESPACE" != *"dev"* ]]; then
     exit 0
 fi
 
-get_pvc_name() {
+get_njs_pvc_name() {
     local pvc_name
     pvc_name=$(oc get pvc -n $OC_NAMESPACE -oname | grep "nats-js" | grep "$PR_NUMBER")
     echo "$pvc_name"
 }
 
-main() {
+get_metabase_pvc_name() {
     local pvc_name
-    pvc_name=$(get_pvc_name)
+    pvc_name=$(oc get pvc -n $OC_NAMESPACE -oname | grep "metabase" | grep "$PR_NUMBER")
+    echo "$pvc_name"
+}
+
+delete_pvc() {
+    local pvc_name=$1
     echo "Found pvc '$pvc_name' using PR Number $PR_NUMBER in namespace $OC_NAMESPACE"
     if [ -z "$pvc_name" ]; then
         echo "Error: no pvc found to delete"
-        echo "This failure could be expected if the helm build for the PR did not complete, or the PR was quickly opened and closed."
+        echo "This failure could be expected if the helm build for the PR did not complete, a draft PR was closed, or the PR was quickly opened and closed."
         exit 1
     fi
     echo "Performing deletion of pvc $pvc_name..."
     echo "..."
     oc delete $pvc_name -n $OC_NAMESPACE
+}
+
+main() {
+    delete_pvc "$(get_njs_pvc_name)"
+    delete_pvc "$(get_metabase_pvc_name)"
     echo "Completed"
 }
 main
