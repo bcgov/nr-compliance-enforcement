@@ -29,15 +29,14 @@ jobs:
     with:
       cleanup: label
   
-  cleanup-nats-js:
-    name: Cleanup NATS JetStream PVC
+  cleanup-pvcs:
+    name: Cleanup Project PVCs
     runs-on: ubuntu-22.04
     environment:
     timeout-minutes: 2
-    if: ${{ ! github.event.pull_request.draft }}
     steps:
       - uses: actions/checkout@v4
-      - run: ./.github/scripts/cleanup_nats_js.sh
+      - run: ./.github/scripts/cleanup_pvcs.sh
         env:
           OC_NAMESPACE: ${{ vars.OC_NAMESPACE }}
           OC_SERVER: ${{ vars.OC_SERVER }}
