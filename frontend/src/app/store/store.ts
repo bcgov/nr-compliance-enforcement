@@ -1,4 +1,4 @@
-import { configureStore, ThunkAction, Action, getDefaultMiddleware } from "@reduxjs/toolkit";
+import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
 import {
   createMigrate,
   persistReducer,
@@ -19,7 +19,7 @@ const persistConfig = {
   storage,
   blacklist: ["app"],
   whitelist: ["codeTables", "officers"],
-  version: 22, // This needs to be incremented every time a new migration is added
+  version: 23, // This needs to be incremented every time a new migration is added
   debug: true,
   migrate: createMigrate(migration, { debug: false }),
 };
