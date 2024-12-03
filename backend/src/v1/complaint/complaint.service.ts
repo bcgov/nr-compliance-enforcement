@@ -68,7 +68,6 @@ import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { OfficerService } from "../officer/officer.service";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
-import { LinkedComplaintXref } from "../linked_complaint_xref/entities/linked_complaint_xref.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
@@ -2019,7 +2018,7 @@ export class ComplaintService {
       data.updates = await _getUpdates(id);
 
       //-- find the linked complaints
-      data.linkedComplaints = !!data.linkedComplaintIdentifier
+      data.linkedComplaints = data.linkedComplaintIdentifier
         ? await this._linkedComplaintsXrefService.findParentComplaint(id) //if there is a linkedComplaintIdentifer it's parent
         : await this._linkedComplaintsXrefService.findChildComplaints(id); //otherwise there may or may not be children
 
