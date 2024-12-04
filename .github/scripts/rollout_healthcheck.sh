@@ -3,6 +3,9 @@
 # in addition to default helm health checks. Ideally, you should set the timeout to be slightly less
 # than the default helm install/upgrade timeout to allow for this script to run and collect information from
 # ephemeral workloads before helm cleans them up in the event of an atomic failure.
+#
+# Note that this script does not surface log details, but does provide commands to fetch them if found
+#
 # Dependencies: oc, jq
 
 # ENV:
@@ -14,12 +17,14 @@
 # LABEL_SELECTOR: label selector to filter resources to health check on
 # ERROR_EXPR: error expression to search for in logs
 
+# TODO: break out funcs into plugins
+
 # configure defaults
 if [ -z "$ERROR_EXPR" ]; then
-    ERROR_EXPR="error|fatal|exception|err|stacktrace"
+    ERROR_EXPR="error|fatal|exception|stacktrace"
 fi
 if [ -z "$TIMEOUT_SECONDS" ]; then
-    TIMEOUT_SECONDS=50 # 10m
+    TIMEOUT_SECONDS=480 # 8m
 fi
 if [ -z "$POLL_INTERVAL_SECONDS" ]; then
     POLL_INTERVAL_SECONDS=15
@@ -40,7 +45,7 @@ set -e # failfast
 trap 'echo "Error occurred at line $LINENO while executing function $FUNCNAME"' ERR
 
 help_str() {
-    echo "Usage: SKIP_AUTH=true LABEL_SELECTOR=\"app.kubernetes.io/instance=nr-compliance-enforcement-771\" OC_NAMESPACE=c1c7ed-dev .github/scripts/rollout_healthcheck.sh"
+    echo "Usage: SKIP_AUTH=true LABEL_SELECTOR=\"app.kubernetes.io/instance=nr-compliance-enforcement-YOURPR\" OC_NAMESPACE=c1c7ed-dev .github/scripts/rollout_healthcheck.sh"
 }
 
 # Handle auth
@@ -94,6 +99,7 @@ echo_cross() {
     echo "❌"
 }
 
+# checks if the deployment has replicas in the correct states
 _health_check_deployment() {
     local healthy="false"
     local no_unready_replicas="false"
@@ -133,6 +139,7 @@ _health_check_deployment() {
     echo "$healthy"
 }
 
+# checks if a pod is running
 _pod_running() {
     local pod_name=$1
     local ready="false"
@@ -144,6 +151,7 @@ _pod_running() {
     echo "$ready"
 }
 
+# polls deployments and pods for readiness before kicking off triage info collection
 poll_deployments() {
     local succeeded="true"
     local deployment_list=$1
@@ -166,6 +174,9 @@ poll_deployments() {
     echo "$succeeded"
 }
 
+# iterates through deployments and finds their corresponding replicaset list
+# verifies that the latest replicaset has ready replicas and that
+# kubernetes did not quietly rollback to a previous replicaset
 # Dependency: deployements and replicasets need the app.kubernetes.io/name label
 on_latest_replicasets() {
     local deployment_list=$1
@@ -186,6 +197,7 @@ on_latest_replicasets() {
 
 }
 
+# pods should be marked as ready and running to be considered healthy
 all_pods_ready() {
     local pod_list=$1
     local pod_status
@@ -199,6 +211,7 @@ all_pods_ready() {
     done
 }
 
+# checks that pods aren't restarting during the release
 no_pod_restarts() {
     local pod_list=$1
     local restarts
@@ -207,29 +220,33 @@ no_pod_restarts() {
         if [ "$restarts" -gt 0 ]; then
             echo_red "$(echo_cross) Pod $pod has $restarts restarts!"
             HEALTH_CHECK_PASSED=1
-            COMMANDS_TO_RUN+="\noc describe -n $OC_NAMESPACE $pod"
+            COMMANDS_TO_RUN+="\noc describe -n $OC_NAMESPACE $pod;"
         else
             echo_green "$(echo_checkmark) Pod $pod has no restarts"
         fi
     done
 }
 
+# simple heuristic check of pods under the label selector
+# checks last 100 lines for error expression matches
 no_error_logs() {
     local pod_list=$1
     local error_logs
     for pod in $pod_list; do
-        # oc logs -n $OC_NAMESPACE $pod --all-containers --tail=100 --since=60m | grep -Ei $ERROR_EXPR || true
-        error_logs=$(oc logs -n $OC_NAMESPACE $pod --all-containers --tail=100 --since=60m | grep -Ei $ERROR_EXPR || true)
+        error_logs=$(oc logs -n $OC_NAMESPACE $pod --all-containers --tail=100 --since=60m | grep -E "$ERROR_EXPR" || true)
         if [ -n "$error_logs" ]; then
             echo_red "$(echo_cross) Pod $pod has error logs"
             HEALTH_CHECK_PASSED=1
-            COMMANDS_TO_RUN+="\noc logs -n $OC_NAMESPACE $pod --all-containers --tail=100 --since=60m | grep -Ei $ERROR_EXPR || true"
+            COMMANDS_TO_RUN+="\noc logs -n $OC_NAMESPACE $pod --all-containers --tail=100 --since=60m | grep -E \"$ERROR_EXPR\" || true;"
         else
             echo_green "$(echo_checkmark) Pod $pod has no recent error logs"
         fi
     done
 }
 
+# fetches and filters all namespace events and attempts to find
+# any non informational events related to the workloads rolled out by helm
+# TODO: consider tweaking sensitivity of event filtering
 no_associated_events() {
     local events=""
     # eg: app.kubernetes.io/instance=nr-compliance-enforcement-771 -> nr-compliance-enforcement-771
@@ -268,12 +285,14 @@ no_associated_events() {
         echo_red "$(echo_cross) Found the following $event_count events associated with this helm release:"
         echo_red "$event_summary" | sed 's/^/\t/' # tab indent the events for readability
         HEALTH_CHECK_PASSED=1
-        COMMANDS_TO_RUN+="\noc get events -n $OC_NAMESPACE --sort-by=.metadata.creationTimestamp | grep -Ei $object_pattern"
+        COMMANDS_TO_RUN+="\noc get events -n $OC_NAMESPACE | grep -Ei $object_pattern;"
     else
         echo_green "$(echo_checkmark) No warning-type events associated with release $object_pattern"
     fi
 }
 
+# Creates a triage report for the rollout
+# summarizing details and providing commands to run for more info if applicable
 triage_rollout() {
     local deployment_list=$1
     local pod_list=$2
@@ -286,15 +305,22 @@ triage_rollout() {
     no_error_logs "$pod_list"
     no_associated_events
     if [ "$COMMANDS_TO_RUN" != "" ]; then
-        echo_yellow "Run these to get more information about pod logs:"
+        echo_yellow "Run these to get more information about pod logs or events:"
         echo -e "$COMMANDS_TO_RUN\n"
+        echo ""
+        echo_yellow "To remove log-related failures during your next rollout, delete any pods listed here."
+        echo ""
+    fi
+    if [ "$TIMED_OUT" -eq 1 ]; then
+        echo_red "Polling timed out, indicating the helm install was not successful or took too long to complete"
     fi
     echo_yellow "Triage complete."
+    echo ""
     echo_yellow "Overall Health Check Status:"
-    if [ "$HEALTH_CHECK_PASSED" -eq 1 ]; then
+    if [ "$HEALTH_CHECK_PASSED" -eq 1 ] || [ "$TIMED_OUT" -eq 1 ]; then
         echo_red "$(echo_cross) Health check failed"
     else
-        echo_green "$(echo_checkmark) Health check passed!"
+        echo_green "$(echo_checkmark) Health check passed"
     fi
 }
 
