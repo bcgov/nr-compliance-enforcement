@@ -7,10 +7,13 @@ import { CronJob } from "cron";
 import { ComplaintUpdate } from "src/types/complaint-update-type";
 import { toZonedTime, format } from "date-fns-tz";
 import { WEBEOC_FLAGS } from "src/common/webeoc-flags";
+import { OPERATIONS } from "src/common/constants";
 import { WEBEOC_API_PATHS } from "src/common/webeoc-api-paths";
 import { ActionTaken } from "src/types/actions-taken/action-taken";
 import { ActionsTakenPublisherService } from "src/publishers/actions-taken-publisher.service";
 import { randomUUID } from "crypto";
+import * as path from "path";
+import * as fs from "fs";
 
 @Injectable()
 export class WebEocScheduler {
@@ -27,12 +30,14 @@ export class WebEocScheduler {
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
       //-- don't remove these items, these control complaints and complaint updates
       await this.fetchAndPublishComplaints(
+        OPERATIONS.COMPLAINT,
         WEBEOC_API_PATHS.COMPLAINTS,
         WEBEOC_FLAGS.COMPLAINTS,
         this.publishComplaint.bind(this),
       );
 
       await this.fetchAndPublishComplaints(
+        OPERATIONS.COMPLAINT_UPDATE,
         WEBEOC_API_PATHS.COMPLAINT_UPDATES,
         WEBEOC_FLAGS.COMPLAINT_UPDATES,
         this.publishComplaintUpdate.bind(this),
@@ -61,20 +66,54 @@ export class WebEocScheduler {
     return envCronExpression;
   }
 
+  // Method to write data to a file
+  private async logPollingActivity(operationType: string, timeStamp: string, counter: number): Promise<void> {
+    // Set the fileName to be the current date (for easy pruning afterwards)
+    const fileName = `${operationType}_${timeStamp.substring(0, 10)}.log`;
+
+    // Get the file path
+    const filePathEnv = process.env.LOG_PATH || "/mnt/data"; // Default to '/mnt/data' if the env variable is not set
+    const filePath = path.join(filePathEnv, fileName);
+
+    // Set the message
+    const message = `${timeStamp}: Logged ${counter} ${operationType}`;
+
+    try {
+      await fs.promises.appendFile(filePath, message + "\n", "utf8");
+    } catch (err) {
+      this.logger.error(`Error writing to file ${filePath}: ${err.message}`);
+      throw new Error("Failed to write data to file");
+    }
+  }
+
   private async fetchAndPublishComplaints(
+    operationType: string,
     urlPath: string,
     flagName: string,
     publishMethod: (data: any) => Promise<void>,
   ) {
     try {
+      const timeStamp = this.formatDate(new Date());
+
       await this.authenticateWithWebEOC();
+
       const data = await this.fetchDataFromWebEOC(urlPath, flagName);
 
-      this.logger.debug(`Found ${data?.length} items from WebEOC`);
+      this.logger.debug(`Found ${data?.length} ${operationType} from WebEOC`);
 
+      let counter = 0;
       for (const item of data) {
+        counter++;
         await publishMethod(item);
       }
+
+      this.logger.debug(`Published ${counter} ${operationType} from WebEOC`);
+
+      if (data?.length != counter) {
+        this.logger.error("Error publishing some objects to NATS. Check logs for more detail.");
+      }
+
+      await this.logPollingActivity(operationType, timeStamp, counter);
     } catch (error) {
       this.logger.error(`Unable to fetch data from WebEOC`, error);
     }
