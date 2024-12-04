@@ -24,12 +24,6 @@ fi
 if [ -z "$POLL_INTERVAL_SECONDS" ]; then
     POLL_INTERVAL_SECONDS=15
 fi
-if [ -z "$EVENT_AGE" ]; then
-    EVENT_AGE=30m
-fi
-if [ -z "$EVENT_EXCLUDE_EXPR" ]; then
-    EVENT_EXCLUDE_EXPR="FailedGetScale"
-fi
 
 # will be set to 1 if a timeout occurs from an unfinished rollout
 # we use this to fetch triage info
@@ -227,7 +221,7 @@ no_error_logs() {
         # oc logs -n $OC_NAMESPACE $pod --all-containers --tail=100 --since=60m | grep -Ei $ERROR_EXPR || true
         error_logs=$(oc logs -n $OC_NAMESPACE $pod --all-containers --tail=100 --since=60m | grep -Ei $ERROR_EXPR || true)
         if [ -n "$error_logs" ]; then
-            echo_red "$(echo_cross) Pod $pod has error logs!"
+            echo_red "$(echo_cross) Pod $pod has error logs"
             HEALTH_CHECK_PASSED=1
             COMMANDS_TO_RUN+="\noc logs -n $OC_NAMESPACE $pod --all-containers --tail=100 --since=60m | grep -Ei $ERROR_EXPR || true"
         else
@@ -239,13 +233,42 @@ no_error_logs() {
 no_associated_events() {
     local events=""
     # eg: app.kubernetes.io/instance=nr-compliance-enforcement-771 -> nr-compliance-enforcement-771
-    local object_pattern=$(echo "$LABEL_SELECTOR" | cut -d'=' -f2)
-    events=$(oc get events -n $OC_NAMESPACE --field-selector type=Warning --no-headers | grep -E '[0-9]+[sm] ' | grep "$object_pattern" | grep -v $EVENT_EXCLUDE_EXPR || true)
-    if [ -n "$events" ]; then
-        echo_red "$(echo_cross) Found the following events associated with this helm release:"
-        echo -e "$events"
+    local object_pattern
+    object_pattern=$(echo "$LABEL_SELECTOR" | cut -d'=' -f2)
+    local time_window
+    time_window=$(date -u -d '30 minutes ago' +'%Y-%m-%dT%H:%M:%SZ')
+    local event_summary=""
+    local event_count=0
+    local event_ln_check=0
+    events=$(oc get events -n "$OC_NAMESPACE" -o json | jq '
+        [.items[] | 
+        select(
+            .type == "Warning" and 
+            (.lastTimestamp // .eventTime) >= "'$time_window'" and 
+            .count >= 2
+        ) | 
+        {
+            name: .involvedObject.name,
+            message: .message,
+            reason: .reason,
+            count: .count,
+            lastSeen: (.lastTimestamp // .eventTime)
+        }]
+    ')
+    event_ln_check=$(echo "$events" | jq -r 'length')
+    if [ "$event_ln_check" -gt 0 ]; then
+        event_summary=$(echo -e "$events" | jq -r '.[] | [.name, .message, .reason] | @tsv')
+        event_summary=$(echo -e "$event_summary" | grep "$object_pattern" || true)
+        # exit out, found no applicable events after filtering
+        if [ -z "$event_summary" ]; then
+            echo_green "$(echo_checkmark) No warning-type events associated with release $object_pattern"
+            return
+        fi
+        event_count=$(echo "$event_summary" | wc -l)
+        echo_red "$(echo_cross) Found the following $event_count events associated with this helm release:"
+        echo_red "$event_summary" | sed 's/^/\t/' # tab indent the events for readability
         HEALTH_CHECK_PASSED=1
-        COMMANDS_TO_RUN+="\noc get events -n $OC_NAMESPACE --field-selector type=Warning --no-headers --since=$EVENT_AGE | grep \"$object_pattern\" | grep -v $EVENT_EXCLUDE_EXPR"
+        COMMANDS_TO_RUN+="\noc get events -n $OC_NAMESPACE --sort-by=.metadata.creationTimestamp | grep -Ei $object_pattern"
     else
         echo_green "$(echo_checkmark) No warning-type events associated with release $object_pattern"
     fi
@@ -264,15 +287,15 @@ triage_rollout() {
     no_associated_events
     if [ "$COMMANDS_TO_RUN" != "" ]; then
         echo_yellow "Run these to get more information about pod logs:"
-        echo -e "$COMMANDS_TO_RUN"
-    fi
-    echo_yellow "Overall Health Check Status:"
-    if [ "$HEALTH_CHECK_PASSED" -eq 1 ]; then
-        echo_red "Health check failed. Exiting..."
-    else
-        echo_green "Health check passed!"
+        echo -e "$COMMANDS_TO_RUN\n"
     fi
     echo_yellow "Triage complete."
+    echo_yellow "Overall Health Check Status:"
+    if [ "$HEALTH_CHECK_PASSED" -eq 1 ]; then
+        echo_red "$(echo_cross) Health check failed"
+    else
+        echo_green "$(echo_checkmark) Health check passed!"
+    fi
 }
 
 main() {
