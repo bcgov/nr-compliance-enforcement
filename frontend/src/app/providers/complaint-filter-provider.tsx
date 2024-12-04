@@ -28,6 +28,8 @@ let initialState: ComplaintFilters = {
   complaintMethod: null,
   actionTaken: null,
   outcomeAnimal: null,
+  outcomeAnimalStartDate: undefined,
+  outcomeAnimalEndDate: undefined,
 };
 
 const mapFilters = (complaintFilters: Partial<ComplaintFilters>) => {
@@ -51,6 +53,9 @@ const mapFilters = (complaintFilters: Partial<ComplaintFilters>) => {
     speciesCodeFilter,
     natureOfComplaintFilter,
     outcomeAnimalFilter,
+    // outcomeAnimalDateFilter,
+    outcomeAnimalStartDateFilter,
+    outcomeAnimalEndDateFilter,
   } = complaintFilters;
 
   // Parse the start and end date filters into Date objects if they exist.
@@ -78,6 +83,8 @@ const mapFilters = (complaintFilters: Partial<ComplaintFilters>) => {
     girType: girTypeFilter,
     actionTaken: actionTakenFilter,
     outcomeAnimal: outcomeAnimalFilter,
+    outcomeAnimalStartDate: outcomeAnimalStartDateFilter ? new Date(outcomeAnimalStartDateFilter) : undefined,
+    outcomeAnimalEndDate: outcomeAnimalEndDateFilter ? new Date(outcomeAnimalEndDateFilter) : new Date(),
   };
 
   // Only return filters that have a value set

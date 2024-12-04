@@ -47,6 +47,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       complaintMethod,
       actionTaken,
       outcomeAnimal,
+      outcomeAnimalStartDate,
+      outcomeAnimalEndDate,
     },
     dispatch,
   } = useContext(ComplaintFilterContext);
@@ -111,6 +113,42 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         startDate.setDate(startDate.getDate() + 1);
         endDate.setDate(endDate.getDate() + 1);
         handleDateRangeChange([startDate, endDate]);
+      }
+    }
+    return [null, null];
+  };
+
+  const handleOutcomeDateChange = (dates: [Date, Date]) => {
+    const [start, end] = dates;
+    //set the time to be end of day to ensure that we also search for records after the beginning of the selected day.
+    if (start) {
+      start.setHours(0, 0, 0);
+      start.setMilliseconds(0);
+    }
+    if (end) {
+      end.setHours(23, 59, 59);
+      end.setMilliseconds(999);
+    }
+
+    setFilter("outcomeAnimalStartDate", start);
+    setFilter("outcomeAnimalEndDate", end);
+  };
+
+  // manual entry of date change listener.  Looks for a date range format of {yyyy-mm-dd} - {yyyy-mm-dd}
+  const handleManualOutcomeDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e?.target?.value?.includes(" - ")) {
+      const [startDateStr, endDateStr] = e.target.value.split(" - ");
+      const startDate = new Date(startDateStr);
+      const endDate = new Date(endDateStr);
+
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        // Invalid date format
+        return [null, null];
+      } else {
+        //  add 1 to date because days start at 0
+        startDate.setDate(startDate.getDate() + 1);
+        endDate.setDate(endDate.getDate() + 1);
+        handleOutcomeDateChange([startDate, endDate]);
       }
     }
     return [null, null];
@@ -371,6 +409,70 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 enableValidation={false}
                 value={outcomeAnimal}
                 isClearable={true}
+              />
+            </div>
+          </div>
+        )}
+
+        {COMPLAINT_TYPES.HWCR === type && activeFilters.showOutcomeAnimalDateFilter && (
+          <div id="comp-filter-date-id">
+            <label htmlFor="date-range-picker-id">Outcome Date</label>
+            <div className="filter-select-padding">
+              <DatePicker
+                id="date-range-picker-id"
+                showIcon={true}
+                renderCustomHeader={({ monthDate, customHeaderCount, decreaseMonth, increaseMonth }) => (
+                  <div>
+                    <button
+                      aria-label="Previous Month"
+                      className={`react-datepicker__navigation react-datepicker__navigation--previous ${
+                        customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
+                      }`}
+                      onClick={decreaseMonth}
+                    >
+                      <span
+                        className={
+                          "react-datepicker__navigation-icon react-datepicker__navigation-icon--previous datepicker-nav-icon"
+                        }
+                      >
+                        {"<"}
+                      </span>
+                    </button>
+                    <span className="react-datepicker__current-month">
+                      {monthDate.toLocaleString("en-US", {
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </span>
+                    <button
+                      aria-label="Next Month"
+                      className={`react-datepicker__navigation react-datepicker__navigation--next ${
+                        customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
+                      }`}
+                      onClick={increaseMonth}
+                    >
+                      <span
+                        className={
+                          "react-datepicker__navigation-icon react-datepicker__navigation-icon--next datepicker-nav-icon"
+                        }
+                      >
+                        {">"}
+                      </span>
+                    </button>
+                  </div>
+                )}
+                selected={outcomeAnimalStartDate}
+                onChange={handleOutcomeDateChange}
+                onChangeRaw={handleManualOutcomeDateChange}
+                startDate={outcomeAnimalStartDate}
+                endDate={outcomeAnimalEndDate}
+                dateFormat="yyyy-MM-dd"
+                monthsShown={2}
+                selectsRange={true}
+                isClearable={true}
+                wrapperClassName="comp-filter-calendar-input"
+                showPreviousMonths
+                maxDate={new Date()}
               />
             </div>
           </div>
