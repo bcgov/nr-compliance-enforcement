@@ -366,11 +366,15 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
       confirmText: "Yes",
       cancelText: "No",
       confirm: () => {
-        onConfirm && onConfirm();
+        if (onConfirm) {
+          onConfirm();
+        }
         setShowModal(false);
       },
       cancel: () => {
-        onCancel && onCancel();
+        if (onCancel) {
+          onCancel();
+        }
         setShowModal(false);
       },
     });
