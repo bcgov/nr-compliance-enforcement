@@ -222,7 +222,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
             className="bi bi-info-circle-fill"
             style={{ padding: "0.5rem 0.5rem" }}
           ></i>
-          <span style={{ padding: "0.5rem 0.5rem" }}>
+          <span className="no-complaints-text-span">
             No complaints found using your current filters. Remove or change your filters to see complaints.
           </span>
         </td>
