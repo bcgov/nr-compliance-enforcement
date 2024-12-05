@@ -185,15 +185,15 @@ export class OfficerService {
       const currentRoles = user.client_roles;
       const permissions = currentRoles.includes(Role.READ_ONLY) ? ["READ"] : ["READ", "CREATE", "UPDATE", "DELETE"];
       const comsPayload = {
-        accessKeyId: process.env.COMS_ACCESS_KEY_ID,
-        bucket: process.env.COMS_BUCKET,
-        bucketName: process.env.COMS_BUCKET_NAME,
-        key: process.env.COMS_KEY,
-        endpoint: process.env.COMS_ENDPOINT,
-        secretAccessKey: process.env.COMS_SECRET_KEY,
+        accessKeyId: process.env.OBJECTSTORE_ACCESS_KEY,
+        bucket: process.env.OBJECTSTORE_BUCKET,
+        bucketName: process.env.OBJECTSTORE_BUCKET_NAME,
+        key: process.env.OBJECTSTORE_KEY,
+        endpoint: process.env.OBJECTSTORE_HTTPS_URL,
+        secretAccessKey: process.env.OBJECTSTORE_SECRET_KEY,
         permCodes: permissions,
       };
-      const comsUrl = `${process.env.COMS_URL}/bucket`;
+      const comsUrl = `${process.env.OBJECTSTORE_API_URL}/bucket`;
       await put(token, comsUrl, comsPayload);
       const officerRes = await this.officerRepository
         .createQueryBuilder("officer")
