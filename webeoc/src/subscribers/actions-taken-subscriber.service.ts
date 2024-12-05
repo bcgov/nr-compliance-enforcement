@@ -91,7 +91,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
   //-- added to the staging table
   //--
   private stageActionTaken = async (message, action: ActionTaken) => {
-    this.logger.debug("Received action-taken:", action?.action_taken_guid);
+    this.logger.debug(`Received action-taken: ${action?.action_taken_guid}`);
     const success = await message.ackAck();
     if (success) {
       //-- reshape the action taken, only send the required data
@@ -114,7 +114,6 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
         dataid,
       };
 
-      this.logger.debug("post message to complaint api for staging");
       await this.service.stageActionTaken(record);
       //-- this shouldn't happen here, it should be happening in the backend
       await this.publisher.publishActionTaken(actionTakenId, webeocId, action);
@@ -122,7 +121,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
   };
 
   private stageActionTakenUpdate = async (message, action: ActionTaken) => {
-    this.logger.debug("Received action-taken-update:", action?.action_taken_guid);
+    this.logger.debug(`Received action-taken-update: ${action?.action_taken_guid}`);
     const success = await message.ackAck();
 
     if (success) {
@@ -146,7 +145,6 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
         dataid,
       };
 
-      this.logger.debug("post message to complaint api for staging");
       await this.service.stageActionTakenUpdate(record);
       //-- this shouldn't happen here, it should be happening in the backend
       await this.publisher.publishActionTakenUpdate(actionTakenId, webeocId, action);
@@ -158,7 +156,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
   //-- published to the action-taken table
   //--
   private publishActionTaken = async (message: JsMsg, payload: string) => {
-    this.logger.log("Process Staged action-taken:", payload);
+    this.logger.debug(`Process Staged action-taken: ${payload}`);
     this.service.publishActionTaken(JSON.parse(payload));
     message.ackAck();
   };
@@ -168,8 +166,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
   //-- published to the action-taken table
   //--
   private publishActionTakenUpdate = async (message: JsMsg, payload: string) => {
-    this.logger.log("Process Staged action-taken-update:", payload);
-    this.logger.warn(JSON.stringify(message.subject));
+    this.logger.debug(`Process Staged action-taken-update: ${payload}`);
     this.service.publishActionTakenUpdate(JSON.parse(payload));
     message.ackAck();
   };

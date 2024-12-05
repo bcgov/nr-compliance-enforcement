@@ -82,7 +82,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   }
 
   private async handleNewComplaint(message, complaintMessage: Complaint) {
-    this.logger.debug("Received complaint:", complaintMessage?.incident_number);
+    this.logger.debug(`Staging complaint: ${complaintMessage?.incident_number}`);
     const success = await message.ackAck();
     if (success) {
       await this.service.createNewComplaintInStaging(complaintMessage);
@@ -91,7 +91,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   }
 
   private async handleUpdatedComplaint(message, complaintMessage: ComplaintUpdate) {
-    this.logger.debug("Received complaint update:", complaintMessage?.parent_incident_number);
+    this.logger.debug(`Staging complaint update: ${complaintMessage?.parent_incident_number}`);
     const success = await message.ackAck();
     if (success) {
       await this.service.createUpdateComplaintInStaging(complaintMessage);
@@ -100,14 +100,14 @@ export class ComplaintsSubscriberService implements OnModuleInit {
   }
 
   private async handleStagedComplaint(message, stagingData: string) {
-    this.logger.debug("Received staged complaint:", stagingData);
+    this.logger.debug(`Processing Staging complaint: ${stagingData}`);
     await this.service.createComplaintFromStaging(stagingData);
     message.ackAck();
   }
 
   private async handleStagedComplaintUpdate(message, complaintUpdate: ComplaintUpdate) {
     const { parent_incident_number, update_number } = complaintUpdate;
-    this.logger.debug("Received staged complaint update:", parent_incident_number);
+    this.logger.debug(`Processing staged complaint update: ${parent_incident_number}`);
     await this.service.createComplaintUpdateFromStaging(parent_incident_number, update_number);
     message.ackAck();
   }

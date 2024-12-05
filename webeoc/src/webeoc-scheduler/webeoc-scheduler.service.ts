@@ -182,6 +182,7 @@ export class WebEocScheduler {
     publishMethod: (data: any) => Promise<void>,
   ) {
     try {
+      //This is the timestamp that will be written to the log.   Going to start without any padding but we might need to subtract some time from this value if we find that we are losing complaints.
       const timeStamp = this.formatDate(new Date());
 
       await this.authenticateWithWebEOC();
