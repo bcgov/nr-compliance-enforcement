@@ -29,12 +29,6 @@ global:
     cssClientId: ~
     cssClientSecret: ~
     environment: ~
-    comsUrl: ~
-    comsAccessKeyId: ~
-    comsBucket: ~
-    comsBucketName: ~
-    comsKey: ~
-    comsEndpoint: ~
     webeocUsername: ~
     webeocPassword: ~
     webeocPosition: ~
@@ -52,8 +46,10 @@ global:
     objectstoreAccessKey: ~
     objectstoreUrl: ~
     objectstoreBackupDirectory: ~
+    objectstoreKey: ~
     objectstoreBucket: ~
     objectstoreSecretKey: ~
+    objectstoreApiUrl: ~
     jwksUri: ~
     jwtIssuer: ~
     keycloakClientId: ~
