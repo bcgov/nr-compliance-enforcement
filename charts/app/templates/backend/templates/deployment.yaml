@@ -22,7 +22,6 @@ spec:
       labels:
         {{- include "backend.labels" . | nindent 8 }}
     spec:
-      minReadySeconds: 10
       automountServiceAccountToken: false
       {{- if .Values.backend.podSecurityContext }}
       securityContext:
