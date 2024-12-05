@@ -62,7 +62,6 @@ jobs:
           OC_NAMESPACE: ${{ vars.OC_NAMESPACE }}
           OC_SERVER: ${{ vars.OC_SERVER }}
           OC_TOKEN: ${{ secrets.OC_TOKEN }}
-          PR_NUMBER: ${{ github.event.number }}
 
   tests:
     name: Tests
