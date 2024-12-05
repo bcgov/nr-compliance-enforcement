@@ -367,6 +367,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       let zoneDescription = "";
       let agency = "";
       let personGuid = "";
+      let comsEnrolledInd = response.coms_enrolled_ind;
 
       if (response.office_guid !== null) {
         const {
@@ -382,6 +383,14 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         personGuid = person_guid;
       }
 
+      if (!comsEnrolledInd) {
+        const requestComsAccessParams = generateApiParameters(
+          `${config.API_BASE_URL}/v1/officer/request-coms-access/${response.officer_guid}`,
+        );
+        const res = await get<Officer>(dispatch, requestComsAccessParams);
+        comsEnrolledInd = res.coms_enrolled_ind;
+      }
+
       const profile: Profile = {
         givenName: given_name,
         surName: family_name,
@@ -394,6 +403,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         zoneDescription: zoneDescription,
         agency,
         personGuid,
+        comsEnrolledInd,
       };
 
       dispatch(setTokenProfile(profile));
@@ -528,6 +538,7 @@ const initialState: AppState = {
     zoneDescription: "",
     agency: "",
     personGuid: "",
+    comsEnrolledInd: null,
   },
   isSidebarOpen: true,
 
@@ -582,6 +593,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         zoneDescription: payload.zoneDescription,
         agency: payload.agency,
         personGuid: payload.personGuid,
+        comsEnrolledInd: payload.comsEnrolledInd,
       };
 
       return { ...state, profile };
