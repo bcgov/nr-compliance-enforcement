@@ -74,7 +74,7 @@ export class WebEocScheduler {
     const fileName = `${operationType}_${timeStamp.substring(0, 10)}.log`;
 
     // Get the file path
-    const filePathEnv = process.env.LOG_PATH || "/mnt/data"; // Default to '/mnt/data' if the env variable is not set
+    const filePathEnv = process.env.WEBEOC_LOG_PATH || "/mnt/data"; // Default to '/mnt/data' if the env variable is not set
     const filePath = path.join(filePathEnv, fileName);
 
     // Set the message
@@ -142,7 +142,7 @@ export class WebEocScheduler {
   }
 
   private getLastPolledDate(operationType: string): Date {
-    const filePathEnv = process.env.LOG_PATH || "/mnt/data"; // Default to '/mnt/data'
+    const filePathEnv = process.env.WEBEOC_LOG_PATH || "/mnt/data"; // Default to '/mnt/data'
 
     // Failsafe in case anything goes wrong (5 minutes ago)
     const defaultDate = new Date();

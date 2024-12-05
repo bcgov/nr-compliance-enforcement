@@ -22,6 +22,10 @@ spec:
       labels:
         {{- include "webeoc.labels" . | nindent 8 }}
     spec:
+      volumes:
+        - name: {{ include "webeoc.fullname" . }}
+          persistentVolumeClaim:
+            claimName: {{ include "webeoc.fullname" . }}
       automountServiceAccountToken: false
       {{- if .Values.webeoc.podSecurityContext }}
       securityContext:
@@ -47,6 +51,9 @@ spec:
               value: nats://{{.Release.Name}}-nats:4222
             - name: COMPLAINTS_MANAGEMENT_API_URL
               value: https://{{.Release.Name}}-frontend.apps.silver.devops.gov.bc.ca/api/v1
+          volumeMounts:
+            - name: {{ include "webeoc.fullname" . }}
+              mountPath: /app/mnt
           ports:
             - name: http
               containerPort: {{ .Values.webeoc.service.targetPort }}
