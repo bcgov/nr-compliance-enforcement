@@ -12,7 +12,7 @@ import { OfficeService } from "../office/office.service";
 import { UUID } from "crypto";
 import { CssService } from "../../external_api/css/css.service";
 import { Role } from "../../enum/role.enum";
-import { put } from "src/helpers/axios-api";
+import { put } from "../../helpers/axios-api";
 
 @Injectable()
 export class OfficerService {
