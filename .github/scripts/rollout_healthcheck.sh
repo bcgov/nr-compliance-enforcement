@@ -24,7 +24,7 @@ if [ -z "$ERROR_EXPR" ]; then
     ERROR_EXPR="error|fatal|exception|stacktrace"
 fi
 if [ -z "$TIMEOUT_SECONDS" ]; then
-    TIMEOUT_SECONDS=480 # 8m
+    TIMEOUT_SECONDS=420 # 7m
 fi
 if [ -z "$POLL_INTERVAL_SECONDS" ]; then
     POLL_INTERVAL_SECONDS=15
@@ -282,8 +282,8 @@ no_associated_events() {
             return
         fi
         event_count=$(echo "$event_summary" | wc -l)
-        echo_red "$(echo_cross) Found the following $event_count events associated with this helm release:"
-        echo_red "$event_summary" | sed 's/^/\t/' # tab indent the events for readability
+        echo_red "$(echo_cross) Found the following $event_count warning (error) events associated with this helm release:"
+        echo -e "$event_summary" | sed 's/^/\t/' # tab indent the events for readability
         HEALTH_CHECK_PASSED=1
         COMMANDS_TO_RUN+="\noc get events -n $OC_NAMESPACE | grep -Ei $object_pattern;"
     else
