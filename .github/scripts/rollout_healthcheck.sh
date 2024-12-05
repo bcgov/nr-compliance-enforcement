@@ -264,7 +264,7 @@ no_associated_events() {
         select(
             .type == "Warning" and 
             (.lastTimestamp // .eventTime) >= "'$time_window'" and 
-            .count >= 2
+            .count >= 3
         ) | 
         {
             name: .involvedObject.name,
