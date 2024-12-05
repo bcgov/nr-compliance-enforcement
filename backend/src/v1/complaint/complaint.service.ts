@@ -68,6 +68,7 @@ import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { OfficerService } from "../officer/officer.service";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
+import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -104,6 +105,7 @@ export class ComplaintService {
     private readonly _attractantService: AttractantHwcrXrefService,
     private readonly _compMthdRecvCdAgcyCdXrefService: CompMthdRecvCdAgcyCdXrefService,
     private readonly _officerService: OfficerService,
+    private readonly _linkedComplaintsXrefService: LinkedComplaintXrefService,
     private dataSource: DataSource,
   ) {
     this.mapper = mapper;
@@ -2026,6 +2028,14 @@ export class ComplaintService {
 
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);
+
+      //-- find the linked complaints
+      data.linkedComplaints = data.linkedComplaintIdentifier
+        ? await this._linkedComplaintsXrefService.findParentComplaint(id) //if there is a linkedComplaintIdentifer it's parent
+        : await this._linkedComplaintsXrefService.findChildComplaints(id); //otherwise there may or may not be children
+
+      //-- helper flag to easily hide/show linked complaint section
+      data.hasLinkedComplaints = data.linkedComplaints?.length > 0;
 
       //-- this is a workaround to hide empty rows in the carbone templates
       //-- It could possibly be removed if the CDOGS version of Carbone is updated
