@@ -53,7 +53,7 @@ spec:
               value: https://{{ .Release.Name }}-frontend.apps.silver.devops.gov.bc.ca/api/v1
           volumeMounts:
             - name: {{ include "webeoc.fullname" . }}
-              mountPath: /app/mnt
+              mountPath: /mnt/data
           ports:
             - name: http
               containerPort: {{ .Values.webeoc.service.targetPort }}
