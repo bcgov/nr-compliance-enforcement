@@ -184,8 +184,6 @@ export class OfficerService {
     try {
       const currentRoles = user.client_roles;
       const permissions = currentRoles.includes(Role.READ_ONLY) ? ["READ"] : ["READ", "CREATE", "UPDATE", "DELETE"];
-      if (currentRoles.includes(Role.READ_ONLY)) {
-      }
       const comsPayload = {
         accessKeyId: process.env.COMS_ACCESS_KEY_ID,
         bucket: process.env.COMS_BUCKET,
