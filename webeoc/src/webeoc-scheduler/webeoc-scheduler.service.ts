@@ -88,41 +88,89 @@ export class WebEocScheduler {
     }
   }
 
-  private getLastPolledDate(operationType: string): Date {
-    const fileName = `${operationType}_${new Date().toISOString().substring(0, 10)}.log`; // Use today's date for the file
-    const filePathEnv = process.env.LOG_PATH || "/mnt/data"; // Default to '/mnt/data'
-    const filePath = path.join(filePathEnv, fileName);
-    //Failsafe in case anything goes wrong (5 minutes ago)
-    const defaultDate = new Date();
-    defaultDate.setUTCMinutes(defaultDate.getUTCMinutes() - 5);
-
-    // Check if the file exists
-    if (!fs.existsSync(filePath)) {
-      return defaultDate; // Return the default date if the file doesn't exist
-    }
-
+  private getMostRecentFile(operationType: string, filePathEnv: string): string | null {
     try {
-      const data = fs.readFileSync(filePath, "utf8"); // Synchronously read the file
-      const lines = data.trim().split("\n"); // Split the file by newlines and get the last line
+      const files = fs
+        .readdirSync(filePathEnv)
+        .filter((file) => file.startsWith(`${operationType}_`) && file.endsWith(".log"));
+
+      if (files.length === 0) {
+        return null;
+      }
+
+      const sortedFiles = files
+        .map((file) => {
+          // Extract the date from the file name
+          const datePart = file.substring(operationType.length + 1, file.length - 4); // Extract "YYYY-MM-DD" part
+          const fileDate = new Date(datePart);
+          return { file, fileDate };
+        })
+        .sort((a, b) => b.fileDate.getTime() - a.fileDate.getTime()); // Sort by date descending
+
+      return sortedFiles[0].file; // Return the most recent file
+    } catch (err) {
+      this.logger.error(`Error reading files: ${err.message}`);
+      return null;
+    }
+  }
+
+  private getLastTimestampFromFile(filePath: string, defaultDate: Date): Date {
+    try {
+      const data = fs.readFileSync(filePath, "utf8");
+      const lines = data.trim().split("\n"); // Split by newlines and get the last line
 
       if (lines.length === 0) {
-        return defaultDate; // If the file existed but was empty return the default date
+        return defaultDate; // If the file is empty, return the default date
       }
 
       const lastLine = lines[lines.length - 1]; // Get the last line
       const timestampString = lastLine.substring(0, 19); // Extract the first 19 characters (ISO 8601 format)
 
       // Parse the timestamp string to a Date object
-      const timestamp = new Date(timestampString); // Convert the string to a Date object
+      const timestamp = new Date(timestampString);
 
       if (isNaN(timestamp.getTime())) {
         this.logger.error(`Invalid timestamp format: ${timestampString}`);
-        return defaultDate; // If the file existed, had stuff in it but the time couldn't be parsed out return the default date
+        return defaultDate; // If the timestamp is invalid, return the default date
       }
 
       return timestamp; // Return the Date object
     } catch (err) {
       this.logger.error(`Error reading file ${filePath}: ${err.message}`);
+      return defaultDate; // Return defaultDate if any error occurs
+    }
+  }
+
+  private getLastPolledDate(operationType: string): Date {
+    const filePathEnv = process.env.LOG_PATH || "/mnt/data"; // Default to '/mnt/data'
+
+    // Failsafe in case anything goes wrong (5 minutes ago)
+    const defaultDate = new Date();
+    defaultDate.setUTCMinutes(defaultDate.getUTCMinutes() - 5);
+
+    try {
+      // Generate today's file name
+      const todayFileName = `${operationType}_${new Date().toISOString().substring(0, 10)}.log`;
+      const todayFilePath = path.join(filePathEnv, todayFileName);
+
+      // Check if today's file exists, and if so, return the last polled date from it
+      if (fs.existsSync(todayFilePath)) {
+        return this.getLastTimestampFromFile(todayFilePath, defaultDate);
+      }
+
+      // If today's file does not exist, look for the most recent file
+      const mostRecentFile = this.getMostRecentFile(operationType, filePathEnv);
+
+      // If no files exist, return the default date
+      if (!mostRecentFile) {
+        return defaultDate;
+      }
+
+      // Read the most recent file's content and return the last timestamp from it
+      const filePath = path.join(filePathEnv, mostRecentFile);
+      return this.getLastTimestampFromFile(filePath, defaultDate);
+    } catch (err) {
+      this.logger.error(`Error reading file: ${err.message}`);
       return defaultDate; // Return defaultDate if any error occurs
     }
   }
