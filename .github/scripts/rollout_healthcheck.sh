@@ -48,6 +48,8 @@ trap 'echo "Error occurred at line $LINENO while executing function $FUNCNAME"' 
 
 help_str() {
     echo "Usage: SKIP_AUTH=true LABEL_SELECTOR=\"app.kubernetes.io/instance=nr-compliance-enforcement-PRNUM\" OC_NAMESPACE=c1c7ed-dev .github/scripts/rollout_healthcheck.sh"
+    echo ""
+    echo "Ensure that you have oc, jq and curl installed, and that you've logged in with oc"
 }
 
 # Handle auth
