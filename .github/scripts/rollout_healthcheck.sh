@@ -6,6 +6,8 @@
 #
 # Note that this script does not surface log details, but does provide commands to fetch them if found
 #
+# Requirement: workloads to health check need the label 'app.kubernetes.io/name'
+#
 # Dependencies: oc, jq
 
 # ENV:
@@ -45,7 +47,7 @@ set -e # failfast
 trap 'echo "Error occurred at line $LINENO while executing function $FUNCNAME"' ERR
 
 help_str() {
-    echo "Usage: SKIP_AUTH=true LABEL_SELECTOR=\"app.kubernetes.io/instance=nr-compliance-enforcement-YOURPR\" OC_NAMESPACE=c1c7ed-dev .github/scripts/rollout_healthcheck.sh"
+    echo "Usage: SKIP_AUTH=true LABEL_SELECTOR=\"app.kubernetes.io/instance=nr-compliance-enforcement-PRNUM\" OC_NAMESPACE=c1c7ed-dev .github/scripts/rollout_healthcheck.sh"
 }
 
 # Handle auth
