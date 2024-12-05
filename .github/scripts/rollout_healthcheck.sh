@@ -255,7 +255,7 @@ no_associated_events() {
     local object_pattern
     object_pattern=$(echo "$LABEL_SELECTOR" | cut -d'=' -f2)
     local time_window
-    time_window=$(date -u -d '30 minutes ago' +'%Y-%m-%dT%H:%M:%SZ')
+    time_window=$(date -u -d '5 minutes ago' +'%Y-%m-%dT%H:%M:%SZ')
     local event_summary=""
     local event_count=0
     local event_ln_check=0
@@ -285,6 +285,7 @@ no_associated_events() {
         fi
         event_count=$(echo "$event_summary" | wc -l)
         echo_red "$(echo_cross) Found the following $event_count warning (error) events associated with this helm release:"
+        echo_yellow "\tNote: warning event history can persist between deployments and may not be related to the current rollout. Wait 5 minutes for them to be filtered out."
         echo -e "$event_summary" | sed 's/^/\t/' # tab indent the events for readability
         HEALTH_CHECK_PASSED=1
         COMMANDS_TO_RUN+="\noc get events -n $OC_NAMESPACE | grep -Ei $object_pattern;"
