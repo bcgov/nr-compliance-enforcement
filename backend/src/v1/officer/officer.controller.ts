@@ -7,8 +7,8 @@ import { Role } from "../../enum/role.enum";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { User } from "src/auth/decorators/user.decorator";
-import { Token } from "src/auth/decorators/token.decorator";
+import { User } from "../../auth/decorators/user.decorator";
+import { Token } from "../../auth/decorators/token.decorator";
 
 @ApiTags("officer")
 @UseGuards(JwtRoleGuard)
