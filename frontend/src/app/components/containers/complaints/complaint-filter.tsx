@@ -402,7 +402,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                   setFilter("outcomeAnimal", option);
                 }}
                 classNames={{
-                  menu: () => "top-layer-select",
+                  menu: () => "top-layer-select outcome-animal-select",
                 }}
                 options={outcomeAnimalTypes}
                 placeholder="Select"

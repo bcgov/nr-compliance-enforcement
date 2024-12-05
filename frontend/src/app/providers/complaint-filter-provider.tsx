@@ -53,7 +53,6 @@ const mapFilters = (complaintFilters: Partial<ComplaintFilters>) => {
     speciesCodeFilter,
     natureOfComplaintFilter,
     outcomeAnimalFilter,
-    // outcomeAnimalDateFilter,
     outcomeAnimalStartDateFilter,
     outcomeAnimalEndDateFilter,
   } = complaintFilters;
@@ -66,6 +65,17 @@ const mapFilters = (complaintFilters: Partial<ComplaintFilters>) => {
     parsedEndDate = new Date(endDateFilter);
   } else if (parsedStartDate) {
     parsedEndDate = new Date();
+  }
+
+  //Parse outcomeAnimalDates
+  const parsedOutcomeAnimalStartDate = outcomeAnimalStartDateFilter
+    ? new Date(outcomeAnimalStartDateFilter)
+    : undefined;
+  let parsedOutcomeAnimalEndDate = undefined;
+  if (outcomeAnimalEndDateFilter) {
+    parsedOutcomeAnimalEndDate = new Date(outcomeAnimalEndDateFilter);
+  } else if (parsedOutcomeAnimalStartDate) {
+    parsedOutcomeAnimalEndDate = new Date();
   }
 
   const allFilters: Partial<ComplaintFilters> = {
@@ -83,8 +93,8 @@ const mapFilters = (complaintFilters: Partial<ComplaintFilters>) => {
     girType: girTypeFilter,
     actionTaken: actionTakenFilter,
     outcomeAnimal: outcomeAnimalFilter,
-    outcomeAnimalStartDate: outcomeAnimalStartDateFilter ? new Date(outcomeAnimalStartDateFilter) : undefined,
-    outcomeAnimalEndDate: outcomeAnimalEndDateFilter ? new Date(outcomeAnimalEndDateFilter) : new Date(),
+    outcomeAnimalStartDate: parsedOutcomeAnimalStartDate,
+    outcomeAnimalEndDate: parsedOutcomeAnimalEndDate,
   };
 
   // Only return filters that have a value set
