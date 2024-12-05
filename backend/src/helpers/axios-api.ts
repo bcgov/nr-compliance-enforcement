@@ -27,3 +27,8 @@ export const post = async (apiToken: string, url: string, data: any, headers?: a
   const config = generateConfig(apiToken, headers);
   return axios.post(url, data, config);
 };
+
+export const put = async (apiToken: string, url: string, data: any, headers?: any) => {
+  const config = generateConfig(apiToken, headers);
+  return axios.put(url, data, config);
+};
