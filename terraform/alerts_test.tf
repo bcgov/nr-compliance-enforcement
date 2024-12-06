@@ -257,3 +257,19 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_storage_usage" {
     app = "NatCom"
   }
 }
+resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_storage_usage" {
+  name = "Test Webeoc Custom Log Storage Alert"
+  description = "Alert when the PVC storage usage is too high"
+  severity = "high"
+  query = "sysdig_fs_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_deployment_name=\"nr-compliance-enforcement-test-webeoc\"} > 70"
+  enabled = true
+  duration_seconds = 600
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
+    renotify_every_minutes = 120
+  }
+  labels = {
+    service = "NatCom Webeoc"
+    app = "NatCom"
+  }
+}
