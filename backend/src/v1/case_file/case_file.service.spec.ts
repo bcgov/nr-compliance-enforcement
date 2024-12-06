@@ -71,6 +71,7 @@ import { CssService } from "../../external_api/css/css.service";
 import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
 import { Person } from "../person/entities/person.entity";
+import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 
 describe("Testing: Case File Service", () => {
   let service: CaseFileService;
@@ -212,6 +213,7 @@ describe("Testing: Case File Service", () => {
         ComplaintService,
         CodeTableService,
         OfficerService,
+        LinkedComplaintXrefService,
         OfficeService,
         CssService,
         ConfigurationService,
