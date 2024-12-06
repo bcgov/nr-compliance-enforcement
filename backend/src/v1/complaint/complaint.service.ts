@@ -1247,7 +1247,7 @@ export class ComplaintService {
         log: false,
         radius: 160,
         maxZoom: 18,
-        minPoints: model.zoom == 18 ? 9999999 : 2,
+        minPoints: model.zoom == 18 ? 9999999 : 2, // If at max zoom, don't cluster?
       });
       index.load(points);
 
