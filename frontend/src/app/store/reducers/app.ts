@@ -6,7 +6,7 @@ import Profile from "@apptypes/app/profile";
 import { UUID } from "crypto";
 import { Officer } from "@apptypes/person/person";
 import config from "@/config";
-import { generateApiParameters, get, patch } from "@common/api";
+import { generateApiParameters, get, patch, put } from "@common/api";
 import { AUTH_TOKEN, getUserAgency } from "@service/user-service";
 
 import { DropdownOption } from "@apptypes/app/drop-down-option";
@@ -387,7 +387,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         const requestComsAccessParams = generateApiParameters(
           `${config.API_BASE_URL}/v1/officer/request-coms-access/${response.officer_guid}`,
         );
-        const res = await get<Officer>(dispatch, requestComsAccessParams);
+        const res = await put<Officer>(dispatch, requestComsAccessParams);
         comsEnrolledInd = res.coms_enrolled_ind;
       }
 
