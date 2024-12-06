@@ -137,8 +137,8 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
 
   useEffect(() => {
     //Update map when filters or searchQuery change
-    fetchMapData(filters, searchQuery, true, false);
     fetchMapData(filters, searchQuery, false, true);
+    fetchMapData(filters, searchQuery, true, false);
   }, [fetchMapData, filters, searchQuery]);
 
   const handleMapMoved = (zoom: number, west?: number, south?: number, east?: number, north?: number) => {
