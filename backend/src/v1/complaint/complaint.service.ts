@@ -1194,9 +1194,11 @@ export class ComplaintService {
         }
 
         //-- filter for locations without coordinates
-        unMappedBuilder.andWhere("ST_X(complaint.location_geometry_point) = 0");
-        unMappedBuilder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
+        unMappedBuilder.andWhere("complaint.location_geometry_point is null");
+        //unMappedBuilder.andWhere("ST_X(complaint.location_geometry_point) = 0");
+        //unMappedBuilder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
 
+        let start = new Date().getTime();
         // -- filter by complaint identifiers returned by case management if actionTaken filter is present
         if (hasCEEBRole && filters.actionTaken) {
           const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
@@ -1218,7 +1220,13 @@ export class ComplaintService {
             complaint_identifiers: complaintIdentifiers,
           });
         }
+        let elapsed = new Date().getTime() - start;
+        this.logger.debug("CM filters ran in " + elapsed + "ms");
+
+        start = new Date().getTime();
         const unmappedComplaints = await unMappedBuilder.getCount();
+        elapsed = new Date().getTime() - start;
+        this.logger.debug("unmapped query ran in " + elapsed + "ms");
         results = { ...results, unmappedComplaints };
       }
 
