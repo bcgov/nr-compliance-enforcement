@@ -257,7 +257,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_storage_usage" {
     app = "NatCom"
   }
 }
-resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_storage_usage" {
+resource "sysdig_monitor_alert_v2_prometheus" "nr_webeoc_test_storage_usage" {
   name = "Test Webeoc Custom Log Storage Alert"
   description = "Alert when the PVC storage usage is too high"
   severity = "high"
