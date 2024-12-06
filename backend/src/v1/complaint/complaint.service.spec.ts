@@ -313,12 +313,12 @@ describe("Testing: Complaint Service", () => {
     //-- arrange
     const _complaintType: COMPLAINT_TYPE = "HWCR";
     const payload: ComplaintMapSearchClusteredParameters = {
-      sortBy: "incident_reported_utc_timestmp",
-      orderBy: "DESC",
+      sortBy: null,
+      orderBy: null,
       zone: "CRBOTMPSN",
       status: "OPEN",
-      page: 1,
-      pageSize: 50,
+      page: null,
+      pageSize: null,
       query: "bear",
       zoom: 0,
       unmapped: "true",
@@ -341,12 +341,12 @@ describe("Testing: Complaint Service", () => {
     //-- arrange
     const _complaintType: COMPLAINT_TYPE = "HWCR";
     const payload: ComplaintMapSearchClusteredParameters = {
-      sortBy: "incident_reported_utc_timestmp",
-      orderBy: "DESC",
+      sortBy: null,
+      orderBy: null,
       zone: "CRBOTMPSN",
       status: "OPEN",
-      page: 1,
-      pageSize: 50,
+      page: null,
+      pageSize: null,
       query: "bear",
       zoom: 0,
       unmapped: "true",
