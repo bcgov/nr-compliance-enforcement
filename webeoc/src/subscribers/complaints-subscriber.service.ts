@@ -76,27 +76,23 @@ export class ComplaintsSubscriberService implements OnModuleInit {
         }
       } catch (error) {
         this.logger.error(`Error processing message from ${message.subject}`, error);
-        message.nak(10_000); // retry in 10 seconds
+        message.nak(60_000); // retry in 60 seconds
       }
     }
   }
 
   private async handleNewComplaint(message, complaintMessage: Complaint) {
     this.logger.debug(`Staging complaint: ${complaintMessage?.incident_number}`);
-    const success = await message.ackAck();
-    if (success) {
-      await this.service.createNewComplaintInStaging(complaintMessage);
-      this.complaintsPublisherService.publishStagingComplaintInsertedMessage(complaintMessage.incident_number);
-    }
+    await this.service.createNewComplaintInStaging(complaintMessage);
+    await message.ackAck(); //Message has been loaded into NatCom no need to retry.  If NATS is unavailable there will be 'PENDING' row to process manually.
+    this.complaintsPublisherService.publishStagingComplaintInsertedMessage(complaintMessage.incident_number);
   }
 
   private async handleUpdatedComplaint(message, complaintMessage: ComplaintUpdate) {
     this.logger.debug(`Staging complaint update: ${complaintMessage?.parent_incident_number}`);
-    const success = await message.ackAck();
-    if (success) {
-      await this.service.createUpdateComplaintInStaging(complaintMessage);
-      this.complaintsPublisherService.publishStagingComplaintUpdateInsertedMessage(complaintMessage);
-    }
+    await this.service.createUpdateComplaintInStaging(complaintMessage);
+    await message.ackAck(); //Message has been loaded into NatCom no need to retry.  If NATS is unavailable there will be 'PENDING' row to process manually.
+    this.complaintsPublisherService.publishStagingComplaintUpdateInsertedMessage(complaintMessage);
   }
 
   private async handleStagedComplaint(message, stagingData: string) {
