@@ -1,6 +1,6 @@
 #!/bin/bash
-# Cleanup NATS JetStream PVC (deletion) and other team specific PVCs
-# Why: nats js pvc does not have label passthrough https://github.com/nats-io/k8s/blob/nats-1.2.6/helm/charts/nats/files/stateful-set/jetstream-pvc.yaml
+# Cleanup (deletion) team specific PVCs
+# Why: nats js pvc and other pvcs do not have label passthrough https://github.com/nats-io/k8s/blob/nats-1.2.6/helm/charts/nats/files/stateful-set/jetstream-pvc.yaml
 # So we manually find it and delete it on non-draft PR close and ONLY in *dev namespaces
 #
 # Dependencies: curl, oc
@@ -16,7 +16,7 @@ trap 'echo "Error occurred at line $LINENO while executing function $FUNCNAME"' 
 # PR_NUMBER: PR number
 
 help_str() {
-    echo "Usage: SKIP_AUTH=true OC_NAMESPACE=<namespace> PR_NUMBER=<number> ./cleanup_nats_js.sh"
+    echo "Usage: SKIP_AUTH=true OC_NAMESPACE=<namespace> PR_NUMBER=<number> ./cleanup_pvcs.sh"
     echo ""
     echo "Ensure you have curl, oc installed and available on your path, and have performed a oc login if skipping auth for a local run."
     echo ""
