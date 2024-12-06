@@ -12,6 +12,9 @@ import { Role } from "../enum/role.enum";
 import { ROLES_KEY } from "./decorators/roles.decorator";
 import { IS_PUBLIC_KEY } from "./decorators/public.decorator";
 
+// A list of routes that are exceptions to the READ_ONLY role only being allowed to make get requests
+const READ_ONLY_EXCEPTIONS = ["/api/v1/officer/request-coms-access/:officer_guid"];
+
 @Injectable()
 /**
  * An API guard used to authorize controller methods.  This guard checks for othe @Roles decorator, and compares it against the role_names of the authenticated user's jwt.
@@ -57,8 +60,8 @@ export class JwtRoleGuard extends AuthGuard("jwt") implements CanActivate {
     // Check if the user has the readonly role
     const hasReadOnlyRole = userRoles.includes(Role.READ_ONLY);
 
-    // If the user has readonly role, allow only GET requests
-    if (hasReadOnlyRole) {
+    // If the user has readonly role, allow only GET requests unless the route is in the list of exceptions
+    if (hasReadOnlyRole && !READ_ONLY_EXCEPTIONS.includes(request.route.path)) {
       if (request.method !== "GET") {
         this.logger.debug(`User with readonly role attempted ${request.method} method`);
         throw new ForbiddenException("Access denied: Read-only users cannot perform this action");

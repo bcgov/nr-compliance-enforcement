@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from "@nestjs/common";
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put } from "@nestjs/common";
 import { OfficerService } from "./officer.service";
 import { CreateOfficerDto } from "./dto/create-officer.dto";
 import { UpdateOfficerDto } from "./dto/update-officer.dto";
@@ -67,7 +67,7 @@ export class OfficerController {
     return this.officerService.update(id, updateOfficerDto);
   }
 
-  @Get("/request-coms-access/:officer_guid")
+  @Put("/request-coms-access/:officer_guid")
   @Roles(Role.CEEB, Role.COS_OFFICER, Role.READ_ONLY)
   requestComsAccess(@Token() token, @Param("officer_guid") officer_guid: UUID, @User() user) {
     return this.officerService.requestComsAccess(token, officer_guid, user);
