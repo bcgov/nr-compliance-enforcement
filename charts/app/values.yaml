@@ -48,6 +48,7 @@ global:
     objectstoreBackupDirectory: ~
     objectstoreKey: ~
     objectstoreBucket: ~
+    objectstoreBucketName: ~
     objectstoreSecretKey: ~
     objectstoreApiUrl: ~
     jwksUri: ~
