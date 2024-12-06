@@ -15,7 +15,7 @@ import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { MockOfficeRepository } from "../../../test/mocks/mock-office-repository";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 
-import * as request from "supertest";
+import request from "supertest";
 import { UUID } from "crypto";
 import { CreateOfficeDto } from "./dto/create-office.dto";
 import { AgencyCodeDto } from "../agency_code/dto/agency_code.dto";

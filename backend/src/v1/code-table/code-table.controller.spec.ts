@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { INestApplication } from "@nestjs/common";
-import * as request from "supertest";
+import request from "supertest";
 
 import { authGuardMock } from "../../../test/mocks/authGuardMock";
 import { roleGuardMock } from "../../../test/mocks/roleGuardMock";
