@@ -1198,8 +1198,9 @@ export class ComplaintService {
       const complaintBuilder = await this._generateFilteredMapQueryBuilder(complaintType, model, hasCEEBRole, token);
 
       //-- filter locations without coordinates
-      complaintBuilder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
-      complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
+      complaintBuilder.andWhere("complaint.location_geometry_point is not null");
+      //complaintBuilder.andWhere("complaint.location_geometry_point) <> 0");
+      //complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
 
       //-- filter locations by bounding box if provided, otherwise default to the world
       //   geometry ST_MakeEnvelope(float xmin, float ymin, float xmax, float ymax, integer srid=unknown);
