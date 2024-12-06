@@ -88,6 +88,7 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
       filters: ComplaintFilters,
       searchQuery: string,
       unmapped: boolean,
+      clusters: boolean,
       zoom: number = 0,
       west?: number,
       south?: number,
@@ -97,10 +98,9 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
       setLoadingMapData(true);
       let payload = generateMapComplaintRequestPayload(type, filters);
 
-      let parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/map/search/clustered/${type}`, {
+      let parms: any = {
         bbox: west && south && east && north ? `${west},${south},${east},${north}` : undefined, // If the bbox is not provided, return all complaint clusters
         zoom: zoom,
-        unmapped: unmapped,
         region: payload.regionCodeFilter?.value,
         zone: payload.zoneCodeFilter?.value,
         community: payload.areaCodeFilter?.value,
@@ -115,15 +115,25 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
         actionTaken: payload.actionTakenFilter?.value,
         outcomeAnimal: payload.outcomeAnimalFilter?.value,
         query: searchQuery,
-      });
+      };
+
+      // For a boolean any value including "false" is interpreted as true by our API
+      if (unmapped) {
+        parms = { ...parms, unmapped: true };
+      }
+      if (clusters) {
+        parms = { ...parms, clusters: true };
+      }
+
+      let parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/map/search/clustered/${type}`, parms);
 
       const response: any = await get(dispatch, parameters, {}, false);
       if (response) {
-        setClusters(response.clusters);
+        response.unmappedComplaints && setUnmappedComplaints(response.unmappedComplaints);
+        response.clusters && setClusters(response.clusters);
         if (response.zoom && response.center) {
           setDefaultClusterView({ zoom: response.zoom, center: response.center });
         }
-        response.unmappedComplaints && setUnmappedComplaints(response.unmappedComplaints);
       }
       setLoadingMapData(false);
     },
@@ -132,12 +142,13 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
 
   useEffect(() => {
     //Update map when filters or searchQuery change
-    fetchMapData(filters, searchQuery, true);
+    fetchMapData(filters, searchQuery, true, false);
+    fetchMapData(filters, searchQuery, false, true);
   }, [fetchMapData, filters, searchQuery]);
 
   const handleMapMoved = (zoom: number, west?: number, south?: number, east?: number, north?: number) => {
     setDefaultClusterView(undefined); // Clear the default cluster view when the map is moved
-    fetchMapData(filters, searchQuery, false, zoom, west, south, east, north);
+    fetchMapData(filters, searchQuery, false, true, zoom, west, south, east, north);
   };
 
   return (

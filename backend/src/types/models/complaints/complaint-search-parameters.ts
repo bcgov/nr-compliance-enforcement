@@ -12,5 +12,6 @@ export interface ComplaintSearchParameters
 export interface ComplaintMapSearchClusteredParameters extends ComplaintSearchParameters {
   bbox: string;
   zoom: number;
-  unmapped: string;
+  clusters: boolean;
+  unmapped: boolean;
 }
