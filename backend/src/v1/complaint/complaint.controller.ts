@@ -46,7 +46,7 @@ export class ComplaintController {
     return await this.service.findAllByType(complaintType);
   }
 
-  @Get("/map/search/:complaintType")
+  /*   @Get("/map/search/:complaintType")
   @Roles(Role.COS_OFFICER, Role.CEEB)
   mapSearch(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
@@ -57,7 +57,7 @@ export class ComplaintController {
     const hasCEEBRole = hasRole(req, Role.CEEB);
 
     return this.service.mapSearch(complaintType, model, hasCEEBRole, token);
-  }
+  } */
 
   @Get("/map/search/clustered/:complaintType")
   @Roles(Role.COS_OFFICER, Role.CEEB)
