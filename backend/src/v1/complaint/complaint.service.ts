@@ -1290,7 +1290,7 @@ export class ComplaintService {
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
   };
-
+  /* 
   mapSearch = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintSearchParameters,
@@ -1431,7 +1431,7 @@ export class ComplaintService {
       this.logger.error(error.response);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
-  };
+  }; */
 
   updateComplaintStatusById = async (id: string, status: string): Promise<ComplaintDto> => {
     try {
