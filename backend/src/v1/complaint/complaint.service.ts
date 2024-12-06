@@ -1168,7 +1168,7 @@ export class ComplaintService {
       if (model.unmapped === "true") {
         this.logger.debug("UNMAPPED UNMAPPED UNMAPPED");
         //-- get unmapable complaints
-        let unMappedBuilder = this._generateQueryBuilder(complaintType);
+        let unMappedBuilder = this._generateMapQueryBuilder(complaintType);
 
         //-- apply search
         if (query) {
@@ -1193,7 +1193,7 @@ export class ComplaintService {
           unMappedBuilder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
         }
 
-        //-- filter locations without coordinates
+        //-- filter for locations without coordinates
         unMappedBuilder.andWhere("ST_X(complaint.location_geometry_point) = 0");
         unMappedBuilder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
 
