@@ -305,7 +305,7 @@ describe("Testing: Complaint Service", () => {
     expect(complaints.length).toBe(5);
     expect(totalCount).toBe(35);
   });
-/* 
+  /* 
   it("should return list of complaints by mapSearch for non ceeb role users", async () => {
     //-- arrange
     const _complaintType: COMPLAINT_TYPE = "HWCR";
@@ -354,8 +354,8 @@ describe("Testing: Complaint Service", () => {
 
     expect(complaints.length).toBe(5);
     expect(unmappedComplaints).toBe(55);
-  });
-}); */
+  });*/
+});
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
