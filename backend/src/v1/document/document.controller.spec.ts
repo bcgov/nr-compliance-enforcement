@@ -72,6 +72,8 @@ import { PersonService } from "../person/person.service";
 import { OfficeService } from "../office/office.service";
 import { CssService } from "../../external_api/css/css.service";
 import { Person } from "../person/entities/person.entity";
+import { LinkedComplaintXref } from "../linked_complaint_xref/entities/linked_complaint_xref.entity";
+import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 
 describe("DocumentController", () => {
   let controller: DocumentController;
@@ -200,11 +202,16 @@ describe("DocumentController", () => {
           provide: getRepositoryToken(Person),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(LinkedComplaintXref),
+          useValue: {},
+        },
         ComplaintUpdatesService,
         ComplaintService,
         CodeTableService,
         PersonComplaintXrefService,
         OfficerService,
+        LinkedComplaintXrefService,
         OfficeService,
         CssService,
         PersonService,
