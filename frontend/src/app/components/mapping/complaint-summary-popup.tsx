@@ -9,9 +9,10 @@ import { Popup } from "react-leaflet";
 interface Props {
   complaint_identifier: string;
   complaintType: string;
+  autoPan?: boolean;
 }
 
-export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complaintType }) => {
+export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complaintType, autoPan = true }) => {
   const { officerAssigned, natureOfComplaint, species, violationType, loggedDate, status, girType } = useAppSelector(
     selectComplaintHeader(complaintType),
   );
@@ -25,6 +26,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
   return (
     <Popup
       keepInView={true}
+      autoPan={autoPan}
       className="comp-map-popup"
     >
       <div>

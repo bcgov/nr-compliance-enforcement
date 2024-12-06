@@ -59,10 +59,12 @@ const LeafletMapWithMultiplePoints: React.FC<MapProps> = ({ complaintType, marke
   const dispatch = useAppDispatch();
 
   const handlePopupOpen = (id: string) => (e: L.PopupEvent) => {
+    console.log("Popup opened for complaint id: ", id);
     dispatch(getComplaintById(id, complaintType));
   };
 
   const handlePopupClose = (e: L.LeafletEvent) => {
+    console.log("Popup closed");
     dispatch(setComplaint(null));
   };
 

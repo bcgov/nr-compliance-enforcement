@@ -5,6 +5,9 @@ import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } fro
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { caseFileQueryFields, get } from "../../external_api/case_management";
+import Supercluster from "supercluster";
+import { PointFeature } from "supercluster";
+import { GeoJsonProperties } from "geojson";
 
 import {
   applyAllegationComplaintMap,
@@ -39,7 +42,10 @@ import {
   mapGirComplaintDtoToGirComplaint,
 } from "../../middleware/maps/automapper-dto-to-entity-maps";
 
-import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
+import {
+  ComplaintSearchParameters,
+  ComplaintMapSearchClusteredParameters,
+} from "../../types/models/complaints/complaint-search-parameters";
 import { SearchResults } from "../../types/models/complaints/search-results";
 import { ComplaintFilterParameters } from "../../types/models/complaints/complaint-filter-parameters";
 import { REQUEST } from "@nestjs/core";
@@ -163,6 +169,55 @@ export class ComplaintService {
       default:
         return "complaint";
     }
+  };
+
+  private _generateMapQueryBuilder = (
+    type: COMPLAINT_TYPE,
+  ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GirComplaint> => {
+    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GirComplaint>;
+
+    switch (type) {
+      case "ERS":
+        builder = this._allegationComplaintRepository
+          .createQueryBuilder("allegation")
+          .leftJoin("allegation.complaint_identifier", "complaint")
+          .addSelect(["complaint.complaint_identifier", "complaint.location_geometry_point"])
+          .leftJoin("allegation.violation_code", "violation_code");
+        break;
+      case "GIR":
+        builder = this._girComplaintRepository
+          .createQueryBuilder("general")
+          .leftJoin("general.complaint_identifier", "complaint")
+          .addSelect(["complaint.complaint_identifier", "complaint.location_geometry_point"])
+          .leftJoin("general.gir_type_code", "gir");
+        break;
+      case "HWCR":
+      default:
+        builder = this._wildlifeComplaintRepository
+          .createQueryBuilder("wildlife")
+          .leftJoin("wildlife.complaint_identifier", "complaint")
+          .addSelect(["complaint.complaint_identifier", "complaint.location_geometry_point"])
+          .leftJoin("wildlife.species_code", "species_code")
+          .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
+          .leftJoin("wildlife.attractant_hwcr_xref", "attractants", "attractants.active_ind = true")
+          .leftJoin("attractants.attractant_code", "attractant_code");
+        break;
+    }
+    builder
+      .leftJoin("complaint.complaint_status_code", "complaint_status")
+      .leftJoin("complaint.reported_by_code", "reported_by")
+      .leftJoin("complaint.complaint_update", "complaint_update")
+      .leftJoin("complaint.action_taken", "action_taken")
+      .leftJoin("complaint.owned_by_agency_code", "owned_by")
+      .leftJoin("complaint.linked_complaint_xref", "linked_complaint")
+      .leftJoin("complaint.cos_geo_org_unit", "cos_organization")
+      .leftJoin("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
+      .leftJoin("delegate.person_complaint_xref_code", "delegate_code")
+      .leftJoin("delegate.person_guid", "person", "delegate.active_ind = true")
+      .leftJoin("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
+      .leftJoin("method_xref.complaint_method_received_code", "method_code")
+      .leftJoin("method_xref.agency_code", "method_agency");
+    return builder;
   };
 
   private _generateQueryBuilder = (
@@ -1054,13 +1109,194 @@ export class ComplaintService {
     }
   };
 
+  mapSearchClustered = async (
+    complaintType: COMPLAINT_TYPE,
+    model: ComplaintMapSearchClusteredParameters,
+    hasCEEBRole: boolean,
+    token?: string,
+  ): Promise<MapSearchResults> => {
+    const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
+
+    try {
+      let results: MapSearchResults = { clusters: {} };
+
+      //-- assign the users agency
+      // _getAgencyByUser traces agency through assigned office of the officer, which CEEB users do not have
+      // so the hasCEEBRole is used to assign agency for them.
+      const agency = hasCEEBRole ? "EPO" : (await this._getAgencyByUser()).agency_code;
+      //-- search for complaints
+      let complaintBuilder = this._generateMapQueryBuilder(complaintType);
+
+      //-- apply search
+      if (query) {
+        complaintBuilder = await this._applySearch(complaintBuilder, complaintType, query, token);
+      }
+
+      //-- apply filters
+      if (Object.keys(filters).length !== 0) {
+        complaintBuilder = this._applyFilters(complaintBuilder, filters as ComplaintFilterParameters, complaintType);
+      }
+
+      //-- only return complaints for the agency the user is associated with
+      if (agency) {
+        complaintBuilder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", {
+          agency: agency,
+        });
+      }
+
+      //-- added this for consistency with search method
+      //-- return Waste and Pestivide complaints for CEEB users
+      if (hasCEEBRole && complaintType === "ERS") {
+        complaintBuilder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+      }
+
+      //-- filter locations without coordinates
+      complaintBuilder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
+      complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
+
+      //-- filter locations by bounding box if provided, otherwise default to the world
+      //   geometry ST_MakeEnvelope(float xmin, float ymin, float xmax, float ymax, integer srid=unknown);
+      const bbox = model.bbox ? model.bbox.split(",") : ["-180", "-90", "180", "90"];
+
+      complaintBuilder.andWhere(
+        `complaint.location_geometry_point && ST_MakeEnvelope(${bbox[0]}, ${bbox[1]}, ${bbox[2]}, ${bbox[3]}, 4326)`,
+      );
+
+      // **************************** UNMAPPED COUNT
+      if (model.unmapped === "true") {
+        this.logger.debug("UNMAPPED UNMAPPED UNMAPPED");
+        //-- get unmapable complaints
+        let unMappedBuilder = this._generateQueryBuilder(complaintType);
+
+        //-- apply search
+        if (query) {
+          unMappedBuilder = await this._applySearch(unMappedBuilder, complaintType, query, token);
+        }
+
+        //-- apply filters
+        if (Object.keys(filters).length !== 0) {
+          unMappedBuilder = this._applyFilters(unMappedBuilder, filters as ComplaintFilterParameters, complaintType);
+        }
+
+        //-- only return complaints for the agency the user is associated with
+        if (agency) {
+          unMappedBuilder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", {
+            agency: agency,
+          });
+        }
+
+        //-- added this for consistency with search method
+        //-- return Waste and Pestivide complaints for CEEB users
+        if (hasCEEBRole && complaintType === "ERS") {
+          unMappedBuilder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+        }
+
+        //-- filter locations without coordinates
+        unMappedBuilder.andWhere("ST_X(complaint.location_geometry_point) = 0");
+        unMappedBuilder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
+
+        // -- filter by complaint identifiers returned by case management if actionTaken filter is present
+        if (hasCEEBRole && filters.actionTaken) {
+          const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
+          complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+            complaint_identifiers: complaintIdentifiers,
+          });
+          unMappedBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+            complaint_identifiers: complaintIdentifiers,
+          });
+        }
+
+        // -- filter by complaint identifiers returned by case management if outcome animal filter is present
+        if (agency === "COS" && filters.outcomeAnimal) {
+          const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(token, filters.outcomeAnimal);
+          complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+            complaint_identifiers: complaintIdentifiers,
+          });
+          unMappedBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+            complaint_identifiers: complaintIdentifiers,
+          });
+        }
+        const unmappedComplaints = await unMappedBuilder.getCount();
+        results = { ...results, unmappedComplaints };
+      }
+
+      //-- run mapped query
+      let start = new Date().getTime();
+      const mappedComplaints = await complaintBuilder.getMany();
+      let elapsed = new Date().getTime() - start;
+      this.logger.debug("query ran in " + elapsed + "ms");
+
+      // convert to supercluster PointFeature array
+      start = new Date().getTime();
+      const points: Array<PointFeature<GeoJsonProperties>> = mappedComplaints.map((item) => {
+        return {
+          type: "Feature",
+          properties: {
+            cluster: false,
+            id: item.complaint_identifier.complaint_identifier,
+          },
+          geometry: item.complaint_identifier.location_geometry_point,
+        } as PointFeature<GeoJsonProperties>;
+      });
+      elapsed = new Date().getTime() - start;
+      this.logger.debug(`mapped ${points.length} points to geojson in ${elapsed}ms`);
+
+      start = new Date().getTime();
+      // load into Supercluster
+      const index = new Supercluster({
+        log: false,
+        radius: 160,
+        maxZoom: 18,
+        minPoints: model.zoom == 18 ? 9999999 : 2,
+      });
+      index.load(points);
+
+      // cluster the results
+      let clusters = index.getClusters(
+        [Number(bbox[0]), Number(bbox[1]), Number(bbox[2]), Number(bbox[3])],
+        model.zoom,
+      );
+
+      // If we are doing a global search and there is only one cluster, try to explode it to at least 2 clusters
+      // then return the center and zoom level so the client can then zoom to the clusters at an appropriate zoom level
+      if (!model.bbox && clusters.length === 1) {
+        const center = [clusters[0].geometry.coordinates[1], clusters[0].geometry.coordinates[0]];
+        const expansionZoom = index.getClusterExpansionZoom(clusters[0].properties.cluster_id);
+        // If we can expand the cluster, do so. If not, it's a single point and we don't need to do anything
+        if (expansionZoom) {
+          clusters = index.getClusters(
+            [Number(bbox[0]), Number(bbox[1]), Number(bbox[2]), Number(bbox[3])],
+            expansionZoom,
+          );
+        }
+        results.zoom = expansionZoom || 18; // If we can't expand the cluster, fully zoom to the point
+        results.center = center;
+      }
+      elapsed = new Date().getTime() - start;
+      this.logger.debug("cluster results in " + elapsed + "ms");
+
+      start = new Date().getTime();
+      clusters.forEach((cluster) => {
+        cluster.properties.zoom = index.getClusterExpansionZoom(cluster.properties.cluster_id);
+      });
+      elapsed = new Date().getTime() - start;
+      this.logger.debug("get cluster expansion zoom in " + elapsed + "ms");
+
+      results.clusters = clusters;
+
+      return results;
+    } catch (error) {
+      this.logger.error(error);
+      throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
+    }
+  };
+
   mapSearch = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintSearchParameters,
     hasCEEBRole: boolean,
     token?: string,
   ): Promise<MapSearchResults> => {
-    this.logger.error("Mapping search results");
     const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
 
     try {
