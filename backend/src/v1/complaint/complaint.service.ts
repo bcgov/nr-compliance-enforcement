@@ -1111,46 +1111,91 @@ export class ComplaintService {
     }
   };
 
+  _generateFilteredMapQueryBuilder = async (
+    complaintType: COMPLAINT_TYPE,
+    model: ComplaintMapSearchClusteredParameters,
+    hasCEEBRole: boolean,
+    token?: string,
+  ): Promise<SelectQueryBuilder<complaintAlias>> => {
+    const { query, ...filters } = model;
+
+    try {
+      //-- search for complaints
+      let builder = this._generateMapQueryBuilder(complaintType);
+
+      //-- apply search
+      if (query) {
+        builder = await this._applySearch(builder, complaintType, query, token);
+      }
+
+      //-- apply filters if used
+      if (Object.keys(filters).length !== 0) {
+        builder = this._applyFilters(builder, filters as ComplaintFilterParameters, complaintType);
+      }
+
+      //-- only return complaints for the agency the user is associated with
+      const agency = hasCEEBRole ? "EPO" : (await this._getAgencyByUser()).agency_code;
+      agency && builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency });
+
+      //-- return Waste and Pestivide complaints for CEEB users
+      if (hasCEEBRole && complaintType === "ERS") {
+        builder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+      }
+
+      // -- filter by complaint identifiers returned by case management if actionTaken filter is present
+      if (hasCEEBRole && filters.actionTaken) {
+        const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
+        builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
+      // -- filter by complaint identifiers returned by case management if outcome animal filter is present
+      if (agency === "COS" && filters.outcomeAnimal) {
+        const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(token, filters.outcomeAnimal);
+        builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
+      return builder;
+    } catch (error) {
+      this.logger.error(error);
+    }
+  };
+
   mapSearchClustered = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintMapSearchClusteredParameters,
     hasCEEBRole: boolean,
     token?: string,
   ): Promise<MapSearchResults> => {
-    const { query, ...filters } = model;
-
     try {
       let results: MapSearchResults = { clusters: {} };
 
-      //-- assign the users agency
-      // _getAgencyByUser traces agency through assigned office of the officer, which CEEB users do not have
-      // so the hasCEEBRole is used to assign agency for them.
-      const agency = hasCEEBRole ? "EPO" : (await this._getAgencyByUser()).agency_code;
-      //-- search for complaints
-      let complaintBuilder = this._generateMapQueryBuilder(complaintType);
+      // Get unmappable complaints if requested
+      if (model.unmapped === "true") {
+        this.logger.debug("UNMAPPED UNMAPPED UNMAPPED");
+        //-- get unmapable complaints
+        const unmappedComplaintBuilder = await this._generateFilteredMapQueryBuilder(
+          complaintType,
+          model,
+          hasCEEBRole,
+          token,
+        );
 
-      //-- apply search
-      if (query) {
-        complaintBuilder = await this._applySearch(complaintBuilder, complaintType, query, token);
+        //-- filter for locations without coordinates
+        unmappedComplaintBuilder.andWhere("complaint.location_geometry_point is null");
+
+        // run query and append to results
+        let start = new Date().getTime();
+        const unmappedComplaints = await unmappedComplaintBuilder.getCount();
+        let elapsed = new Date().getTime() - start;
+        this.logger.debug("unmapped query ran in " + elapsed + "ms");
+        results = { ...results, unmappedComplaints };
       }
 
-      //-- apply filters
-      if (Object.keys(filters).length !== 0) {
-        complaintBuilder = this._applyFilters(complaintBuilder, filters as ComplaintFilterParameters, complaintType);
-      }
-
-      //-- only return complaints for the agency the user is associated with
-      if (agency) {
-        complaintBuilder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", {
-          agency: agency,
-        });
-      }
-
-      //-- added this for consistency with search method
-      //-- return Waste and Pestivide complaints for CEEB users
-      if (hasCEEBRole && complaintType === "ERS") {
-        complaintBuilder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
-      }
+      const complaintBuilder = await this._generateFilteredMapQueryBuilder(complaintType, model, hasCEEBRole, token);
 
       //-- filter locations without coordinates
       complaintBuilder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
@@ -1163,72 +1208,6 @@ export class ComplaintService {
       complaintBuilder.andWhere(
         `complaint.location_geometry_point && ST_MakeEnvelope(${bbox[0]}, ${bbox[1]}, ${bbox[2]}, ${bbox[3]}, 4326)`,
       );
-
-      // **************************** UNMAPPED COUNT
-      if (model.unmapped === "true") {
-        this.logger.debug("UNMAPPED UNMAPPED UNMAPPED");
-        //-- get unmapable complaints
-        let unMappedBuilder = this._generateMapQueryBuilder(complaintType);
-
-        //-- apply search
-        if (query) {
-          unMappedBuilder = await this._applySearch(unMappedBuilder, complaintType, query, token);
-        }
-
-        //-- apply filters
-        if (Object.keys(filters).length !== 0) {
-          unMappedBuilder = this._applyFilters(unMappedBuilder, filters as ComplaintFilterParameters, complaintType);
-        }
-
-        //-- only return complaints for the agency the user is associated with
-        if (agency) {
-          unMappedBuilder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", {
-            agency: agency,
-          });
-        }
-
-        //-- added this for consistency with search method
-        //-- return Waste and Pestivide complaints for CEEB users
-        if (hasCEEBRole && complaintType === "ERS") {
-          unMappedBuilder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
-        }
-
-        //-- filter for locations without coordinates
-        unMappedBuilder.andWhere("complaint.location_geometry_point is null");
-        //unMappedBuilder.andWhere("ST_X(complaint.location_geometry_point) = 0");
-        //unMappedBuilder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
-
-        let start = new Date().getTime();
-        // -- filter by complaint identifiers returned by case management if actionTaken filter is present
-        if (hasCEEBRole && filters.actionTaken) {
-          const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
-          complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
-            complaint_identifiers: complaintIdentifiers,
-          });
-          unMappedBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
-            complaint_identifiers: complaintIdentifiers,
-          });
-        }
-
-        // -- filter by complaint identifiers returned by case management if outcome animal filter is present
-        if (agency === "COS" && filters.outcomeAnimal) {
-          const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(token, filters.outcomeAnimal);
-          complaintBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
-            complaint_identifiers: complaintIdentifiers,
-          });
-          unMappedBuilder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
-            complaint_identifiers: complaintIdentifiers,
-          });
-        }
-        let elapsed = new Date().getTime() - start;
-        this.logger.debug("CM filters ran in " + elapsed + "ms");
-
-        start = new Date().getTime();
-        const unmappedComplaints = await unMappedBuilder.getCount();
-        elapsed = new Date().getTime() - start;
-        this.logger.debug("unmapped query ran in " + elapsed + "ms");
-        results = { ...results, unmappedComplaints };
-      }
 
       //-- run mapped query
       let start = new Date().getTime();
@@ -1292,6 +1271,7 @@ export class ComplaintService {
       elapsed = new Date().getTime() - start;
       this.logger.debug("get cluster expansion zoom in " + elapsed + "ms");
 
+      // set the results
       results.clusters = clusters;
 
       return results;
@@ -1300,6 +1280,7 @@ export class ComplaintService {
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
   };
+
   /* 
   mapSearch = async (
     complaintType: COMPLAINT_TYPE,
