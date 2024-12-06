@@ -180,10 +180,7 @@
     "postcss": "^8.4.49"
   },
   "overrides": {
-    "typescript": "^5.0.4",
-    "nth-check": "^2.1.1",
-    "resolve-url-loader": "^5.0.0",
-    "sass-loader": "^16.0.3"
+    "typescript": "^5.0.4"
   },
   "browser": {
     "fs": false,
