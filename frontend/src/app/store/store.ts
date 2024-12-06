@@ -1,5 +1,15 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import { createMigrate, persistReducer, persistStore } from "redux-persist";
+import {
+  createMigrate,
+  persistReducer,
+  persistStore,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { rootReducer } from "./reducers";
 import migration from "./migrations";
@@ -9,7 +19,7 @@ const persistConfig = {
   storage,
   blacklist: ["app"],
   whitelist: ["codeTables", "officers"],
-  version: 22, // This needs to be incremented every time a new migration is added
+  version: 23, // This needs to be incremented every time a new migration is added
   debug: true,
   migrate: createMigrate(migration, { debug: false }),
 };
@@ -18,6 +28,12 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
 
 export type AppDispatch = typeof store.dispatch;
