@@ -417,11 +417,9 @@ metabase:
     limits:
       cpu: 750m
       memory: 1250Mi
-      ephemeral-storage: 64Mi
     requests:
       cpu: 150m
       memory: 500Mi
-      ephemeral-storage: 32Mi
   autoscaling:
     enabled: false
   podAnnotations: {}
