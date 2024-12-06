@@ -331,9 +331,9 @@ describe("Testing: Complaint Service", () => {
     //-- assert
     expect(results).not.toBe(null);
 
-    const { unmappedComplaints, complaints } = results;
+    const { unmappedComplaints, clusters } = results;
 
-    expect(complaints.length).toBe(5);
+    expect(clusters.length).toBe(5);
     expect(unmappedComplaints).toBe(55);
   });
 
@@ -359,9 +359,9 @@ describe("Testing: Complaint Service", () => {
     //-- assert
     expect(results).not.toBe(null);
 
-    const { unmappedComplaints, complaints } = results;
+    const { unmappedComplaints, clusters } = results;
 
-    expect(complaints.length).toBe(5);
+    expect(clusters.length).toBe(5);
     expect(unmappedComplaints).toBe(55);
   });
 });
