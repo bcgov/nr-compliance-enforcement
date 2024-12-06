@@ -321,6 +321,8 @@ describe("Testing: Complaint Service", () => {
       pageSize: 50,
       query: "bear",
       zoom: 18,
+      unmapped: "true",
+      bbox: undefined,
     };
 
     //-- act
@@ -347,6 +349,8 @@ describe("Testing: Complaint Service", () => {
       pageSize: 50,
       query: "bear",
       zoom: 18,
+      unmapped: "true",
+      bbox: undefined,
     };
 
     //-- act
