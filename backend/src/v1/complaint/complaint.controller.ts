@@ -9,8 +9,10 @@ import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { ComplaintDto } from "../../types/models/complaints/complaint";
-import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
-import { ComplaintMapSearchClusteredParameters } from "../../types/models/complaints/complaint-search-parameters";
+import {
+  ComplaintSearchParameters,
+  ComplaintMapSearchClusteredParameters,
+} from "../../types/models/complaints/complaint-search-parameters";
 import { ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
 import { GeneralIncidentComplaintDto } from "src/types/models/complaints/gir-complaint";
 import { ApiKeyGuard } from "src/auth/apikey.guard";

@@ -1,17 +1,10 @@
 import { FC, useState, useContext, useEffect, useCallback } from "react";
-import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { useAppDispatch } from "@hooks/hooks";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
-import { SORT_TYPES } from "@constants/sort-direction";
 import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
 import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complaint-filters";
 import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filters/complaint-request-payload";
 import LeafletMapWithServerSideClustering from "@components/mapping/leaflet-map-with-server-side-clustering";
-import {
-  getMappedComplaints,
-  selectMappedComplaints,
-  selectTotalUnmappedComplaints,
-  setMappedComplaints,
-} from "@store/reducers/complaints";
 import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
 
@@ -90,16 +83,18 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
       unmapped: boolean,
       clusters: boolean,
       zoom: number = 0,
-      west?: number,
-      south?: number,
-      east?: number,
-      north?: number,
+      bbox?: {
+        west?: number;
+        south?: number;
+        east?: number;
+        north?: number;
+      },
     ) => {
       setLoadingMapData(true);
       let payload = generateMapComplaintRequestPayload(type, filters);
 
       let parms: any = {
-        bbox: west && south && east && north ? `${west},${south},${east},${north}` : undefined, // If the bbox is not provided, return all complaint clusters
+        bbox: bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : undefined, // If the bbox is not provided, return all complaint clusters
         zoom: zoom,
         region: payload.regionCodeFilter?.value,
         zone: payload.zoneCodeFilter?.value,
@@ -148,7 +143,7 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
 
   const handleMapMoved = (zoom: number, west?: number, south?: number, east?: number, north?: number) => {
     setDefaultClusterView(undefined); // Clear the default cluster view when the map is moved
-    fetchMapData(filters, searchQuery, false, true, zoom, west, south, east, north);
+    fetchMapData(filters, searchQuery, false, true, zoom, { west, south, east, north });
   };
 
   return (

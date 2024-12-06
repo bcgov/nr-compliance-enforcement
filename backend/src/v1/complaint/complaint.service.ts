@@ -5,8 +5,7 @@ import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } fro
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { caseFileQueryFields, get } from "../../external_api/case_management";
-import Supercluster from "supercluster";
-import { PointFeature } from "supercluster";
+import Supercluster, { PointFeature } from "supercluster";
 import { GeoJsonProperties } from "geojson";
 
 import {
@@ -173,7 +172,7 @@ export class ComplaintService {
     }
   };
 
-  private _generateMapQueryBuilder = (
+  private readonly _generateMapQueryBuilder = (
     type: COMPLAINT_TYPE,
   ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GirComplaint> => {
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GirComplaint>;
