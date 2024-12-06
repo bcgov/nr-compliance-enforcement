@@ -1115,7 +1115,7 @@ export class ComplaintService {
     hasCEEBRole: boolean,
     token?: string,
   ): Promise<MapSearchResults> => {
-    const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
+    const { query, ...filters } = model;
 
     try {
       let results: MapSearchResults = { clusters: {} };
@@ -1431,8 +1431,8 @@ export class ComplaintService {
       this.logger.error(error.response);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
-  }; */
-
+  };
+ */
   updateComplaintStatusById = async (id: string, status: string): Promise<ComplaintDto> => {
     try {
       const idir = getIdirFromRequest(this.request);

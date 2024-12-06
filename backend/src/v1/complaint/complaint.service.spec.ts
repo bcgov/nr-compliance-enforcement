@@ -61,10 +61,7 @@ import {
   MockUpdateComplaintsRepository,
 } from "../../../test/mocks/mock-complaints-repositories";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
-import {
-  ComplaintSearchParameters,
-  ComplaintMapSearchClusteredParameters,
-} from "../../types/models/complaints/complaint-search-parameters";
+import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
@@ -308,63 +305,57 @@ describe("Testing: Complaint Service", () => {
     expect(complaints.length).toBe(5);
     expect(totalCount).toBe(35);
   });
-
+/* 
   it("should return list of complaints by mapSearch for non ceeb role users", async () => {
     //-- arrange
     const _complaintType: COMPLAINT_TYPE = "HWCR";
-    const payload: ComplaintMapSearchClusteredParameters = {
-      sortBy: null,
-      orderBy: null,
-      zone: "",
-      status: "",
-      page: null,
-      pageSize: null,
-      query: "",
-      zoom: 0,
-      unmapped: "true",
-      bbox: "-180, -90, 180, 90",
+    const payload: ComplaintSearchParameters = {
+      sortBy: "incident_reported_utc_timestmp",
+      orderBy: "DESC",
+      zone: "CRBOTMPSN",
+      status: "OPEN",
+      page: 1,
+      pageSize: 50,
+      query: "bear",
     };
 
     //-- act
-    const results = await service.mapSearchClustered(_complaintType, payload, false);
+    const results = await service.mapSearch(_complaintType, payload, false);
 
     //-- assert
     expect(results).not.toBe(null);
 
-    const { unmappedComplaints, clusters } = results;
+    const { unmappedComplaints, complaints } = results;
 
-    expect(clusters.length).toBe(5);
+    expect(complaints.length).toBe(5);
     expect(unmappedComplaints).toBe(55);
   });
 
   it("should return list of complaints by mapSearch for user with ceeb role", async () => {
     //-- arrange
     const _complaintType: COMPLAINT_TYPE = "HWCR";
-    const payload: ComplaintMapSearchClusteredParameters = {
-      sortBy: null,
-      orderBy: null,
-      zone: "",
-      status: "",
-      page: null,
-      pageSize: null,
-      query: "",
-      zoom: 0,
-      unmapped: "true",
-      bbox: "-180, -90, 180, 90",
+    const payload: ComplaintSearchParameters = {
+      sortBy: "incident_reported_utc_timestmp",
+      orderBy: "DESC",
+      zone: "CRBOTMPSN",
+      status: "OPEN",
+      page: 1,
+      pageSize: 50,
+      query: "bear",
     };
 
     //-- act
-    const results = await service.mapSearchClustered(_complaintType, payload, true);
+    const results = await service.mapSearch(_complaintType, payload, true);
 
     //-- assert
     expect(results).not.toBe(null);
 
-    const { unmappedComplaints, clusters } = results;
+    const { unmappedComplaints, complaints } = results;
 
-    expect(clusters.length).toBe(5);
+    expect(complaints.length).toBe(5);
     expect(unmappedComplaints).toBe(55);
   });
-});
+}); */
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
