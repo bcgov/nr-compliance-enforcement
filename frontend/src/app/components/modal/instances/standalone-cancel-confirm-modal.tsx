@@ -4,7 +4,7 @@
 //--
 
 import { FC } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Col, Modal, Row } from "react-bootstrap";
 
 type props = {
   show: boolean;
