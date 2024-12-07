@@ -10,11 +10,21 @@ type props = {
   show: boolean;
   title: string;
   description: string;
-  close: () => void | null;
-  closeAndCancel: () => void | null;
+  confirmText: string;
+  cancelText: string;
+  confirm: () => void | null;
+  cancel: () => void | null;
 };
 
-export const StandaloneConfirmCancelModal: FC<props> = ({ show, title, description, close, closeAndCancel }) => {
+export const StandaloneConfirmCancelModal: FC<props> = ({
+  show,
+  title,
+  description,
+  confirmText,
+  cancelText,
+  confirm,
+  cancel,
+}) => {
   return (
     <Modal
       show={show}
@@ -34,11 +44,11 @@ export const StandaloneConfirmCancelModal: FC<props> = ({ show, title, descripti
       <Modal.Footer>
         <Button
           variant="outline-primary"
-          onClick={close}
+          onClick={confirm}
         >
-          No, go back
+          {confirmText}
         </Button>
-        <Button onClick={closeAndCancel}>Yes, cancel changes</Button>
+        <Button onClick={cancel}>{cancelText}</Button>
       </Modal.Footer>
     </Modal>
   );
