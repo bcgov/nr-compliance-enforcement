@@ -117,5 +117,8 @@ services:
     volumes:
       - ./webeoc:/app:z
       - /app/node_modules
+      - ./webeoc/logs:/mnt/data  # this is just for the developer webeoc logging
     user: root
     working_dir: "/app"
+
+
