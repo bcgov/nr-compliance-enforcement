@@ -174,6 +174,7 @@ export class ComplaintService {
 
   private readonly _generateMapQueryBuilder = (
     type: COMPLAINT_TYPE,
+    includeCosOrganization: boolean,
   ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GirComplaint> => {
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GirComplaint>;
 
@@ -211,13 +212,15 @@ export class ComplaintService {
       .leftJoin("complaint.action_taken", "action_taken")
       .leftJoin("complaint.owned_by_agency_code", "owned_by")
       .leftJoin("complaint.linked_complaint_xref", "linked_complaint")
-      .leftJoin("complaint.cos_geo_org_unit", "cos_organization")
       .leftJoin("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
       .leftJoin("delegate.person_complaint_xref_code", "delegate_code")
       .leftJoin("delegate.person_guid", "person", "delegate.active_ind = true")
       .leftJoin("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
       .leftJoin("method_xref.complaint_method_received_code", "method_code")
       .leftJoin("method_xref.agency_code", "method_agency");
+    if (includeCosOrganization) {
+      builder.leftJoin("complaint.cos_geo_org_unit", "cos_organization");
+    }
     return builder;
   };
 
@@ -1120,7 +1123,9 @@ export class ComplaintService {
 
     try {
       //-- search for complaints
-      let builder = this._generateMapQueryBuilder(complaintType);
+      // Only these options require the cos_geo_org_unit_flat_vw view (cos_organization), which is very slow.
+      const includeCosOrganization: boolean = Boolean(query || filters.community || filters.zone || filters.region);
+      let builder = this._generateMapQueryBuilder(complaintType, includeCosOrganization);
 
       //-- apply search
       if (query) {
