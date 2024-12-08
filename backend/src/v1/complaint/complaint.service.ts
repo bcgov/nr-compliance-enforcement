@@ -74,7 +74,6 @@ import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xr
 import { OfficerService } from "../officer/officer.service";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
-import { debug } from "console";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -176,8 +175,8 @@ export class ComplaintService {
   private readonly _generateMapQueryBuilder = (
     type: COMPLAINT_TYPE,
     includeCosOrganization: boolean,
-  ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GirComplaint> => {
-    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GirComplaint>;
+  ): SelectQueryBuilder<complaintAlias> => {
+    let builder: SelectQueryBuilder<complaintAlias>;
 
     switch (type) {
       case "ERS":
@@ -225,10 +224,8 @@ export class ComplaintService {
     return builder;
   };
 
-  private _generateQueryBuilder = (
-    type: COMPLAINT_TYPE,
-  ): SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GirComplaint> => {
-    let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint | GirComplaint>;
+  private _generateQueryBuilder = (type: COMPLAINT_TYPE): SelectQueryBuilder<complaintAlias> => {
+    let builder: SelectQueryBuilder<complaintAlias>;
     switch (type) {
       case "ERS":
         builder = this._allegationComplaintRepository
