@@ -157,15 +157,15 @@ export class ComplaintController {
   @Public()
   @Post("/staging/action-taken")
   @UseGuards(ApiKeyGuard)
-  stageActionTaken(@Body() action: ActionTaken) {
-    this.stagingService.stageObject("ACTION-TAKEN", action);
+  async stageActionTaken(@Body() action: ActionTaken) {
+    return await this.stagingService.stageObject("ACTION-TAKEN", action);
   }
 
   @Public()
   @Post("/staging/action-taken-update")
   @UseGuards(ApiKeyGuard)
-  stageActionTakenUpdate(@Body() action: ActionTaken) {
-    this.stagingService.stageObject("ACTION-TAKEN-UPDATE", action);
+  async stageActionTakenUpdate(@Body() action: ActionTaken) {
+    return await this.stagingService.stageObject("ACTION-TAKEN-UPDATE", action);
   }
 
   @Public()

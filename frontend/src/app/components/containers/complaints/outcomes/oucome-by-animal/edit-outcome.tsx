@@ -45,6 +45,15 @@ const defaultAuthorization: DrugAuthorization = {
   date: new Date(),
 };
 
+type modalProps = {
+  title: string;
+  description: string;
+  confirmText: string;
+  cancelText: string;
+  confirm: () => void | null;
+  cancel: () => void | null;
+};
+
 export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: officer, agency, update, toggle }) => {
   //-- select data from redux
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
@@ -58,6 +67,18 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const showSectionErrors = isInEdit.showSectionErrors;
 
   const [showModal, setShowModal] = useState(false);
+  const [modalContent, setModalContent] = useState<modalProps>({
+    title: "",
+    description: "",
+    confirmText: "",
+    cancelText: "",
+    confirm: () => {
+      return null;
+    },
+    cancel: () => {
+      return null;
+    },
+  });
 
   //-- new input data
   const [data, applyData] = useState<AnimalOutcome>({ ...outcome });
@@ -318,6 +339,14 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   };
 
   const handleCancel = () => {
+    setModalContent({
+      title: "Cancel changes?",
+      description: "Your changes will be lost.",
+      confirmText: "No, go back",
+      cancelText: "Yes, cancel changes",
+      confirm: close,
+      cancel: cancel,
+    });
     setShowModal(true);
   };
   const close = () => {
@@ -329,16 +358,35 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
     toggle("");
   };
 
+  const showEditWarning = (onConfirm: Function, onCancel?: Function) => {
+    setModalContent({
+      title: "Confirm changes?",
+      description:
+        "Editing the outcome or date of this report might affect public reporting statistics. Are you sure you want to continue?",
+      confirmText: "Yes",
+      cancelText: "No",
+      confirm: () => {
+        if (onConfirm) {
+          onConfirm();
+        }
+        setShowModal(false);
+      },
+      cancel: () => {
+        if (onCancel) {
+          onCancel();
+        }
+        setShowModal(false);
+      },
+    });
+    setShowModal(true);
+  };
+
   return (
     <>
       <StandaloneConfirmCancelModal
-        title="Cancel changes?"
-        description="Your changes will be lost."
+        {...modalContent}
         show={showModal}
-        closeAndCancel={cancel}
-        close={close}
       />
-
       <Card
         className="comp-animal-card comp-outcome-report-block"
         border={showSectionErrors ? "danger" : "default"}
@@ -493,8 +541,11 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     options={outcomes}
                     enableValidation={false}
                     placeholder={"Select"}
+                    value={getDropdownOption(data.outcome, outcomes)}
                     onChange={(evt) => {
-                      updateModel("outcome", evt?.value);
+                      showEditWarning(() => {
+                        updateModel("outcome", evt?.value);
+                      });
                     }}
                     defaultOption={getDropdownOption(data.outcome, outcomes)}
                   />
@@ -540,7 +591,9 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   id="equipment-day-set"
                   maxDate={new Date()}
                   onChange={(input: Date) => {
-                    handleOutcomeDateChange(input);
+                    showEditWarning(() => {
+                      handleOutcomeDateChange(input);
+                    });
                   }}
                   selectedDate={data?.date}
                   placeholder={"Select"}
