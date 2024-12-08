@@ -8,4 +8,5 @@ export interface MapSearchResults {
   unmappedComplaints?: number;
   zoom?: number;
   center?: Array<number>;
+  debugLog?: string;
 }

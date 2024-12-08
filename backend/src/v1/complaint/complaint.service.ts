@@ -74,6 +74,7 @@ import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xr
 import { OfficerService } from "../officer/officer.service";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
+import { debug } from "console";
 
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -1240,14 +1241,16 @@ export class ComplaintService {
   ): Promise<MapSearchResults> => {
     try {
       let results: MapSearchResults = {};
-
+      let debugLog = "";
       // Get unmappable complaints if requested
       if (model.unmapped) {
+        debugLog += "Getting unmapped complaints count\n";
         this.logger.debug("Getting unmapped complaints count");
         // run query and append to results
         let start = new Date().getTime();
         const unmappedComplaints = await this._getUnmappedComplaintsCount(complaintType, model, hasCEEBRole, token);
         let elapsed = new Date().getTime() - start;
+        debugLog += "unmapped query ran in " + elapsed + "ms\n";
         this.logger.debug("unmapped query ran in " + elapsed + "ms");
         results = { ...results, unmappedComplaints };
       }
@@ -1256,6 +1259,7 @@ export class ComplaintService {
         let start = new Date().getTime();
         const points = await this._getClusteredComplaints(complaintType, model, hasCEEBRole, token);
         let elapsed = new Date().getTime() - start;
+        debugLog += "mapped complaints query ran in " + elapsed + "ms\n";
         this.logger.debug("map query ran in " + elapsed + "ms");
 
         start = new Date().getTime();
@@ -1291,6 +1295,7 @@ export class ComplaintService {
           results.center = center;
         }
         elapsed = new Date().getTime() - start;
+        debugLog += "cluster results in " + elapsed + "ms\n";
         this.logger.debug("cluster results in " + elapsed + "ms");
 
         start = new Date().getTime();
@@ -1298,10 +1303,12 @@ export class ComplaintService {
           cluster.properties.zoom = index.getClusterExpansionZoom(cluster.properties.cluster_id);
         });
         elapsed = new Date().getTime() - start;
+        debugLog += "set cluster expansion zoom in " + elapsed + "ms\n";
         this.logger.debug("set cluster expansion zoom in " + elapsed + "ms");
 
         // set the results
         results.clusters = clusters;
+        results.debugLog = debugLog;
       }
       return results;
     } catch (error) {
