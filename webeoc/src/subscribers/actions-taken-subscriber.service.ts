@@ -91,66 +91,60 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
   //-- added to the staging table
   //--
   private stageActionTaken = async (message, action: ActionTaken) => {
-    this.logger.debug("Received action-taken:", action?.action_taken_guid);
-    const success = await message.ackAck();
-    if (success) {
-      //-- reshape the action taken, only send the required data
-      const {
-        action_taken_guid: actionTakenId,
-        action_logged_by: loggedBy,
-        action_datetime: actionTimestamp,
-        action_details: details,
-        fk_table_345: webeocId,
-        dataid,
-      } = action;
+    this.logger.debug(`Received action-taken: ${action?.action_taken_guid}`);
+    //-- reshape the action taken, only send the required data
+    const {
+      action_taken_guid: actionTakenId,
+      action_logged_by: loggedBy,
+      action_datetime: actionTimestamp,
+      action_details: details,
+      fk_table_345: webeocId,
+      dataid,
+    } = action;
 
-      const record: ActionTakenDto = {
-        actionTakenId,
-        webeocId,
-        loggedBy,
-        actionTimestamp,
-        details,
-        isUpdate: false,
-        dataid,
-      };
+    const record: ActionTakenDto = {
+      actionTakenId,
+      webeocId,
+      loggedBy,
+      actionTimestamp,
+      details,
+      isUpdate: false,
+      dataid,
+    };
 
-      this.logger.debug("post message to complaint api for staging");
-      await this.service.stageActionTaken(record);
-      //-- this shouldn't happen here, it should be happening in the backend
-      await this.publisher.publishActionTaken(actionTakenId, webeocId, action);
-    }
+    await this.service.stageActionTaken(record);
+    await message.ackAck(); //Message has been loaded into NatCom no need to retry.  If NATS is unavailable there will be 'PENDING' row to process manually.
+    //-- this shouldn't happen here, it should be happening in the backend
+    await this.publisher.publishActionTaken(actionTakenId, webeocId, action);
   };
 
   private stageActionTakenUpdate = async (message, action: ActionTaken) => {
-    this.logger.debug("Received action-taken-update:", action?.action_taken_guid);
-    const success = await message.ackAck();
+    this.logger.debug(`Received action-taken-update: ${action?.action_taken_guid}`);
 
-    if (success) {
-      //-- reshape the action taken, only send the required data
-      const {
-        action_taken_guid: actionTakenId,
-        action_logged_by: loggedBy,
-        action_datetime: actionTimestamp,
-        action_details: details,
-        fk_table_346: webeocId,
-        dataid,
-      } = action;
+    //-- reshape the action taken, only send the required data
+    const {
+      action_taken_guid: actionTakenId,
+      action_logged_by: loggedBy,
+      action_datetime: actionTimestamp,
+      action_details: details,
+      fk_table_346: webeocId,
+      dataid,
+    } = action;
 
-      const record: ActionTakenDto = {
-        actionTakenId,
-        webeocId,
-        loggedBy,
-        actionTimestamp,
-        details,
-        isUpdate: true,
-        dataid,
-      };
+    const record: ActionTakenDto = {
+      actionTakenId,
+      webeocId,
+      loggedBy,
+      actionTimestamp,
+      details,
+      isUpdate: true,
+      dataid,
+    };
 
-      this.logger.debug("post message to complaint api for staging");
-      await this.service.stageActionTakenUpdate(record);
-      //-- this shouldn't happen here, it should be happening in the backend
-      await this.publisher.publishActionTakenUpdate(actionTakenId, webeocId, action);
-    }
+    await this.service.stageActionTakenUpdate(record);
+    await message.ackAck(); //Message has been loaded into NatCom no need to retry.  If NATS is unavailable there will be 'PENDING' row to process manually.
+    //-- this shouldn't happen here, it should be happening in the backend
+    await this.publisher.publishActionTakenUpdate(actionTakenId, webeocId, action);
   };
 
   //--
@@ -158,7 +152,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
   //-- published to the action-taken table
   //--
   private publishActionTaken = async (message: JsMsg, payload: string) => {
-    this.logger.log("Process Staged action-taken:", payload);
+    this.logger.debug(`Process Staged action-taken: ${payload}`);
     this.service.publishActionTaken(JSON.parse(payload));
     message.ackAck();
   };
@@ -168,8 +162,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
   //-- published to the action-taken table
   //--
   private publishActionTakenUpdate = async (message: JsMsg, payload: string) => {
-    this.logger.log("Process Staged action-taken-update:", payload);
-    this.logger.warn(JSON.stringify(message.subject));
+    this.logger.debug(`Process Staged action-taken-update: ${payload}`);
     this.service.publishActionTakenUpdate(JSON.parse(payload));
     message.ackAck();
   };
