@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: ./.github/scripts/cleanup_nats_js.sh
         env:
-          OC_NAMESPACE: ${{ vars.OC_NAMESPACE }}
+          OC_NAMESPACE: ${{ secrets.OC_NAMESPACE }}
           OC_SERVER: ${{ vars.OC_SERVER }}
           OC_TOKEN: ${{ secrets.OC_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}

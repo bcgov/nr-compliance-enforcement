@@ -70,7 +70,7 @@ jobs:
     needs: [vars]
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.8.3
     secrets:
-      oc_namespace: ${{ vars.OC_NAMESPACE }}
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_BEARER_TOKEN }}
     with:
       environment: prod
