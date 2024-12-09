@@ -77,6 +77,8 @@ import { CssService } from "../../external_api/css/css.service";
 import { ConfigurationService } from "../configuration/configuration.service";
 import { Person } from "../person/entities/person.entity";
 import { Configuration } from "../configuration/entities/configuration.entity";
+import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
+import { LinkedComplaintXref } from "../linked_complaint_xref/entities/linked_complaint_xref.entity";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -108,10 +110,15 @@ describe("Testing: Complaint Service", () => {
           provide: getRepositoryToken(Person),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(LinkedComplaintXref),
+          useValue: {},
+        },
         ComplaintUpdatesService,
         ComplaintService,
         PersonComplaintXrefService,
         OfficerService,
+        LinkedComplaintXrefService,
         OfficeService,
         CssService,
         ConfigurationService,
@@ -388,10 +395,15 @@ describe("Testing: Complaint Service", () => {
           provide: getRepositoryToken(Person),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(LinkedComplaintXref),
+          useValue: {},
+        },
         ComplaintUpdatesService,
         ComplaintService,
         PersonComplaintXrefService,
         OfficerService,
+        LinkedComplaintXrefService,
         OfficeService,
         CssService,
         ConfigurationService,
