@@ -180,7 +180,7 @@ poll_deployments() {
     done
     for pod in $pod_list; do
         _pod_running=$(_pod_running $pod)
-        if [ "$_pod_running" == "false" ]; then
+        if [ "$(_pod_running "$pod")" == "false" ]; then
             succeeded="false"
             break
         fi
@@ -366,7 +366,7 @@ main() {
     echo "$deployment_list"
     echo "---"
     echo_yellow "Beginning polling..."
-    while [ "$(poll_deployments $deployment_list $pod)" == "false" ]; do
+    while [ "$(poll_deployments "$deployment_list" "$pod_list")" == "false" ]; do
         echo "..."
         if [ $(($(date +%s) - $start_time)) -gt $TIMEOUT_SECONDS ]; then
             echo_red "One or more deployments did not finish within the timeout period!"
