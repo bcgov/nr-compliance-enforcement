@@ -19,7 +19,7 @@ export class ComplaintApiService {
   stageActionTaken = async (record: ActionTakenDto) => {
     try {
       const url = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${STAGING_APIS.ACTION_TAKEN}`;
-      this.logger.debug(`Posting action-taken to staging. API URL: ${url}`);
+      this.logger.debug(`Posting action-taken for ${record.actionTakenId} to staging. API URL: ${url}`);
 
       await axios.post(url, record, this._apiConfig);
     } catch (error) {
@@ -33,7 +33,7 @@ export class ComplaintApiService {
   stageActionTakenUpdate = async (record: ActionTakenDto) => {
     try {
       const url = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${STAGING_APIS.UPDATE_ACTION_TAKEN}`;
-      this.logger.debug(`Posting action-taken-update to staging. API URL: ${url}`);
+      this.logger.debug(`Posting action-taken-update ${record.actionTakenId} to staging. API URL: ${url}`);
 
       await axios.post(url, record, this._apiConfig);
     } catch (error) {

@@ -13,4 +13,6 @@ export interface ComplaintFilterParameters {
   complaintMethod?: string;
   actionTaken?: string;
   outcomeAnimal?: string;
+  outcomeAnimalStartDate?: Date;
+  outcomeAnimalEndDate?: Date;
 }

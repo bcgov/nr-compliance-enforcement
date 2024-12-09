@@ -17,7 +17,6 @@ import {
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
 import { selectDecisionTypeDropdown } from "@store/reducers/code-table-selectors";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
-import DatePicker from "react-datepicker";
 import { CompSelect } from "@components/common/comp-select";
 import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
 import { ComplaintFilterPayload, updateFilter } from "@store/reducers/complaint-filters";
@@ -25,6 +24,7 @@ import Option from "@apptypes/app/option";
 import { listActiveFilters } from "@store/reducers/app";
 import UserService from "@service/user-service";
 import Roles from "@apptypes/app/roles";
+import { FilterDate } from "../../common/filter-date";
 
 type Props = {
   type: string;
@@ -47,6 +47,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       complaintMethod,
       actionTaken,
       outcomeAnimal,
+      outcomeAnimalStartDate,
+      outcomeAnimalEndDate,
     },
     dispatch,
   } = useContext(ComplaintFilterContext);
@@ -96,24 +98,20 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     setFilter("endDate", end);
   };
 
-  // manual entry of date change listener.  Looks for a date range format of {yyyy-mm-dd} - {yyyy-mm-dd}
-  const handleManualDateRangeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e?.target?.value?.includes(" - ")) {
-      const [startDateStr, endDateStr] = e.target.value.split(" - ");
-      const startDate = new Date(startDateStr);
-      const endDate = new Date(endDateStr);
-
-      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-        // Invalid date format
-        return [null, null];
-      } else {
-        //  add 1 to date because days start at 0
-        startDate.setDate(startDate.getDate() + 1);
-        endDate.setDate(endDate.getDate() + 1);
-        handleDateRangeChange([startDate, endDate]);
-      }
+  const handleOutcomeDateRangeChange = (dates: [Date, Date]) => {
+    const [start, end] = dates;
+    //set the time to be end of day to ensure that we also search for records after the beginning of the selected day.
+    if (start) {
+      start.setHours(0, 0, 0);
+      start.setMilliseconds(0);
     }
-    return [null, null];
+    if (end) {
+      end.setHours(23, 59, 59);
+      end.setMilliseconds(999);
+    }
+
+    setFilter("outcomeAnimalStartDate", start);
+    setFilter("outcomeAnimalEndDate", end);
   };
 
   ///--
@@ -221,67 +219,13 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           )}
 
         {activeFilters.showDateFilter && (
-          <div id="comp-filter-date-id">
-            <label htmlFor="date-range-picker-id">Date Logged</label>
-            <div className="filter-select-padding">
-              <DatePicker
-                id="date-range-picker-id"
-                showIcon={true}
-                renderCustomHeader={({ monthDate, customHeaderCount, decreaseMonth, increaseMonth }) => (
-                  <div>
-                    <button
-                      aria-label="Previous Month"
-                      className={`react-datepicker__navigation react-datepicker__navigation--previous ${
-                        customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
-                      }`}
-                      onClick={decreaseMonth}
-                    >
-                      <span
-                        className={
-                          "react-datepicker__navigation-icon react-datepicker__navigation-icon--previous datepicker-nav-icon"
-                        }
-                      >
-                        {"<"}
-                      </span>
-                    </button>
-                    <span className="react-datepicker__current-month">
-                      {monthDate.toLocaleString("en-US", {
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </span>
-                    <button
-                      aria-label="Next Month"
-                      className={`react-datepicker__navigation react-datepicker__navigation--next ${
-                        customHeaderCount === 1 ? "datepicker-nav-hidden" : "datepicker-nav-visible"
-                      }`}
-                      onClick={increaseMonth}
-                    >
-                      <span
-                        className={
-                          "react-datepicker__navigation-icon react-datepicker__navigation-icon--next datepicker-nav-icon"
-                        }
-                      >
-                        {">"}
-                      </span>
-                    </button>
-                  </div>
-                )}
-                selected={startDate}
-                onChange={handleDateRangeChange}
-                onChangeRaw={handleManualDateRangeChange}
-                startDate={startDate}
-                endDate={endDate}
-                dateFormat="yyyy-MM-dd"
-                monthsShown={2}
-                selectsRange={true}
-                isClearable={true}
-                wrapperClassName="comp-filter-calendar-input"
-                showPreviousMonths
-                maxDate={new Date()}
-              />
-            </div>
-          </div>
+          <FilterDate
+            id="comp-filter-date-id"
+            label="Date Logged"
+            startDate={startDate}
+            endDate={endDate}
+            handleDateChange={handleDateRangeChange}
+          />
         )}
 
         {activeFilters.showStatusFilter && (
@@ -364,7 +308,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                   setFilter("outcomeAnimal", option);
                 }}
                 classNames={{
-                  menu: () => "top-layer-select",
+                  menu: () => "top-layer-select outcome-animal-select",
                 }}
                 options={outcomeAnimalTypes}
                 placeholder="Select"
@@ -374,6 +318,16 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               />
             </div>
           </div>
+        )}
+
+        {COMPLAINT_TYPES.HWCR === type && activeFilters.showOutcomeAnimalDateFilter && (
+          <FilterDate
+            id="comp-filter-outcome-date-id"
+            label="Outcome Date"
+            startDate={outcomeAnimalStartDate}
+            endDate={outcomeAnimalEndDate}
+            handleDateChange={handleOutcomeDateRangeChange}
+          />
         )}
       </div>
     );

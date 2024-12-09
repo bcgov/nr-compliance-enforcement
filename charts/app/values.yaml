@@ -34,8 +34,8 @@ global:
     webeocPosition: ~
     webeocIncident: ~
     webeocUrl: ~
-    webeocComplaintHistorySeconds: ~
     webeocCronExpression: ~
+    webeocLogPath: ~
     backupDir: ~
     backupStrategy: ~
     numBackups: ~

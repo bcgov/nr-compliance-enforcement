@@ -7,6 +7,13 @@ export const STREAMS = {
   ACTIONS_TAKEN: "actions",
 };
 
+export const OPERATIONS = {
+  COMPLAINT: "Complaint(s)",
+  COMPLAINT_UPDATE: "Complaint Update(s)",
+  ACTION_TAKEN: "Action(s) Taken",
+  ACTION_TAKEN_UPDATE: "Action Taken Update(s)",
+};
+
 export const STREAM_TOPICS = {
   COMPLAINTS: "new_complaints",
   STAGING_COMPLAINTS: "new_staging_complaints",
