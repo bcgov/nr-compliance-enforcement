@@ -75,7 +75,7 @@ import { OfficerService } from "../officer/officer.service";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 
-const BritishColumbiaBounds: Array<number> = [-145, -110, 40, 65];
+const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -1202,7 +1202,7 @@ export class ComplaintService {
 
       //-- filter locations by bounding box if provided, otherwise default to the world
       //   geometry ST_MakeEnvelope(float xmin, float ymin, float xmax, float ymax, integer srid=unknown);
-      const bbox = model.bbox ? model.bbox.split(",") : BritishColumbiaBounds;
+      const bbox = model.bbox ? model.bbox.split(",") : WorldBounds;
       complaintBuilder.andWhere(
         `complaint.location_geometry_point && ST_MakeEnvelope(${bbox[0]}, ${bbox[1]}, ${bbox[2]}, ${bbox[3]}, 4326)`,
       );
@@ -1272,7 +1272,7 @@ export class ComplaintService {
         index.load(points);
 
         // cluster the results
-        const bbox = model.bbox ? model.bbox.split(",") : BritishColumbiaBounds;
+        const bbox = model.bbox ? model.bbox.split(",") : WorldBounds;
         let clusters = index.getClusters(
           [Number(bbox[0]), Number(bbox[1]), Number(bbox[2]), Number(bbox[3])],
           model.zoom,
