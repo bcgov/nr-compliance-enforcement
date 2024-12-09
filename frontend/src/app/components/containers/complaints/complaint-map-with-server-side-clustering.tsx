@@ -32,6 +32,8 @@ export const generateMapComplaintRequestPayload = (
     complaintMethod,
     actionTaken,
     outcomeAnimal,
+    outcomeAnimalStartDate,
+    outcomeAnimalEndDate,
   } = filters;
 
   let common = {
@@ -45,6 +47,8 @@ export const generateMapComplaintRequestPayload = (
     endDateFilter: endDate,
     complaintStatusFilter: status,
     actionTakenFilter: actionTaken,
+    outcomeAnimalStartDateFilter: outcomeAnimalStartDate,
+    outcomeAnimalEndDateFilter: outcomeAnimalEndDate,
   };
 
   switch (complaintType) {
