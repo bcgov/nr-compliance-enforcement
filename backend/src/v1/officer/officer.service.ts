@@ -11,6 +11,8 @@ import { PersonService } from "../person/person.service";
 import { OfficeService } from "../office/office.service";
 import { UUID } from "crypto";
 import { CssService } from "../../external_api/css/css.service";
+import { Role } from "../../enum/role.enum";
+import { put } from "../../helpers/axios-api";
 
 @Injectable()
 export class OfficerService {
@@ -170,6 +172,40 @@ export class OfficerService {
     delete (updateOfficerDto as any).user_roles;
     await this.officerRepository.update({ officer_guid }, updateOfficerDto);
     return this.findOne(officer_guid);
+  }
+
+  /**
+   * This function requests the appropriate level of access to the storage bucket in COMS.
+   * If successful, the officer's record in the officer table has its `coms_enrolled_ind` indicator set to true.
+   * @param requestComsAccessDto An object containing the officer guid
+   * @returns the updated record of the officer who was granted access to COMS
+   */
+  async requestComsAccess(token: string, officer_guid: UUID, user: any): Promise<Officer> {
+    try {
+      const currentRoles = user.client_roles;
+      const permissions = currentRoles.includes(Role.READ_ONLY) ? ["READ"] : ["READ", "CREATE", "UPDATE", "DELETE"];
+      const comsPayload = {
+        accessKeyId: process.env.OBJECTSTORE_ACCESS_KEY,
+        bucket: process.env.OBJECTSTORE_BUCKET,
+        bucketName: process.env.OBJECTSTORE_BUCKET_NAME,
+        key: process.env.OBJECTSTORE_KEY,
+        endpoint: process.env.OBJECTSTORE_HTTPS_URL,
+        secretAccessKey: process.env.OBJECTSTORE_SECRET_KEY,
+        permCodes: permissions,
+      };
+      const comsUrl = `${process.env.OBJECTSTORE_API_URL}/bucket`;
+      await put(token, comsUrl, comsPayload);
+      const officerRes = await this.officerRepository
+        .createQueryBuilder("officer")
+        .update()
+        .set({ coms_enrolled_ind: true })
+        .where({ officer_guid: officer_guid })
+        .returning("*")
+        .execute();
+      return officerRes.raw[0];
+    } catch (error) {
+      this.logger.error("An error occurred while requesting COMS access.", error);
+    }
   }
 
   remove(id: number) {

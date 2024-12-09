@@ -20,6 +20,7 @@ import { DrugAdministeredChanges } from "./migrations/migration-20";
 import { AddCat1TypeAndLocationType } from "./migrations/migration-21";
 import { AddActiveComplaintsViewType } from "./migrations/migration-22";
 import { AssessmentTypeUpdates } from "./migrations/migration-23";
+import { AddComsEnrolledInd } from "./migrations/migration-24";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -54,6 +55,7 @@ migration = {
   ...AddCat1TypeAndLocationType,
   ...AddActiveComplaintsViewType,
   ...AssessmentTypeUpdates,
+  ...AddComsEnrolledInd,
 };
 
 export default migration;
