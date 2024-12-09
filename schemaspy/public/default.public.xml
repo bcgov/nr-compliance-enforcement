@@ -707,6 +707,7 @@
             <parent column="office_guid" foreignKey="FK_officer_office" implied="false" onDeleteCascade="false" schema="public" table="office"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="auth_user_guid" nullable="true" remarks="The SiteMinder guid returned to the application from KeyCloak.   Used to uniquely identify a user over the course of their lifecycle." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="9" name="coms_enrolled_ind" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="officer_guid" sequenceNumberInPK="1"/>
          <index name="PK_officer" unique="true">
             <column ascending="true" name="officer_guid"/>
@@ -886,7 +887,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the species code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="true" remarks="The id of the user that updated the species code." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the species code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="false" digits="0" id="10" name="large_carnivore_ind" nullable="true" remarks="A boolean indicator to determine if the species is in Catergory 1 - large carnivore." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="10" name="large_carnivore_ind" nullable="true" remarks="A boolean indicator representing if an officer has been enrolled in COMS" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="species_code" sequenceNumberInPK="1"/>
          <index name="PK_speciescd" unique="true">
             <column ascending="true" name="species_code"/>
