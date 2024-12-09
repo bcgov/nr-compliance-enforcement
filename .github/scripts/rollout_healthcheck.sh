@@ -179,7 +179,6 @@ poll_deployments() {
         fi
     done
     for pod in $pod_list; do
-        _pod_running=$(_pod_running $pod)
         if [ "$(_pod_running "$pod")" == "false" ]; then
             succeeded="false"
             break
