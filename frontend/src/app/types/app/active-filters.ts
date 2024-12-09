@@ -12,4 +12,5 @@ export interface ActiveFilters {
   showViolationFilter: boolean;
   showZoneFilter: boolean;
   showOutcomeAnimalFilter: boolean;
+  showOutcomeAnimalDateFilter: boolean;
 }

@@ -45,11 +45,15 @@ export class ActionsTakenPublisherService {
       const ack = await this.jsClient.publish(STREAM_TOPICS.STAGE_ACTION_TAKEN, msg, { headers: natsHeaders });
       if (!ack.duplicate) {
         this.logger.debug(
-          `Processing message: ${this._generateHeader("stage-new-action-taken", action, "ACTION-TAKEN")}`,
+          `Publishing new action taken for staging: ${this._generateHeader(
+            "stage-new-action-taken",
+            action,
+            "ACTION-TAKEN",
+          )}`,
         );
       } else {
         this.logger.debug(
-          `Message processed: ${this._generateHeader("stage-new-action-taken", action, "ACTION-TAKEN")}`,
+          `Action taken already published: ${this._generateHeader("stage-new-action-taken", action, "ACTION-TAKEN")}`,
         );
       }
     } catch (error) {
@@ -72,11 +76,19 @@ export class ActionsTakenPublisherService {
 
       if (!ack.duplicate) {
         this.logger.debug(
-          `Processing message: ${this._generateHeader("stage-new-action-taken-update", action, "ACTION-TAKEN-UPDATE")}`,
+          `Publishing new action taken update for staging: ${this._generateHeader(
+            "stage-new-action-taken-update",
+            action,
+            "ACTION-TAKEN-UPDATE",
+          )}`,
         );
       } else {
         this.logger.debug(
-          `Message processed: ${this._generateHeader("stage-new-action-taken-update", action, "ACTION-TAKEN-UPDATE")}`,
+          `Action taken already published: ${this._generateHeader(
+            "stage-new-action-taken-update",
+            action,
+            "ACTION-TAKEN-UPDATE",
+          )}`,
         );
       }
     } catch (error) {
@@ -109,10 +121,20 @@ export class ActionsTakenPublisherService {
 
       if (!ack.duplicate) {
         this.logger.debug(
-          `Processing message: ${this._generateHeader("promote-action-taken", action, "ACTION-TAKEN")}`,
+          `Action taken ready to be moved to operational tables: ${this._generateHeader(
+            "promote-action-taken",
+            action,
+            "ACTION-TAKEN",
+          )}`,
         );
       } else {
-        this.logger.debug(`Message processed: ${this._generateHeader("promote-action-taken", action, "ACTION-TAKEN")}`);
+        this.logger.debug(
+          `Action taken already moved to operational tables: ${this._generateHeader(
+            "promote-action-taken",
+            action,
+            "ACTION-TAKEN",
+          )}`,
+        );
       }
     } catch (error) {
       this.logger.error(`Unable to process request: ${error.message}`, error.stack);
@@ -140,11 +162,19 @@ export class ActionsTakenPublisherService {
 
       if (!ack.duplicate) {
         this.logger.debug(
-          `Processing message: ${this._generateHeader("promote-action-taken-update", action, "ACTION-TAKEN-UPDATE")}`,
+          `Action taken update ready to be moved to operational tables: ${this._generateHeader(
+            "promote-action-taken-update",
+            action,
+            "ACTION-TAKEN-UPDATE",
+          )}`,
         );
       } else {
         this.logger.debug(
-          `Message processed: ${this._generateHeader("promote-action-taken-update", action, "ACTION-TAKEN-UPDATE")}`,
+          `Action taken already moved to operational tables: ${this._generateHeader(
+            "promote-action-taken-update",
+            action,
+            "ACTION-TAKEN-UPDATE",
+          )}`,
         );
       }
     } catch (error) {

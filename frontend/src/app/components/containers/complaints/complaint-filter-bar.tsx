@@ -43,9 +43,11 @@ export const ComplaintFilterBar: FC<Props> = ({
     complaintMethod,
     actionTaken,
     outcomeAnimal,
+    outcomeAnimalStartDate,
+    outcomeAnimalEndDate,
   } = state;
 
-  const dateRangeLabel = (): string | undefined => {
+  const dateRangeLabel = (startDate: Date | undefined | null, endDate: Date | undefined | null): string | undefined => {
     const currentDate = new Date().toLocaleDateString();
     if (startDate !== null && endDate !== null) {
       return `${startDate?.toLocaleDateString()} - ${endDate?.toLocaleDateString()}`;
@@ -58,7 +60,7 @@ export const ComplaintFilterBar: FC<Props> = ({
     }
   };
 
-  const hasDate = () => {
+  const hasDate = (startDate: Date | undefined | null, endDate: Date | undefined | null) => {
     if ((startDate === undefined || startDate === null) && (endDate === undefined || endDate === null)) {
       return false;
     }
@@ -77,6 +79,10 @@ export const ComplaintFilterBar: FC<Props> = ({
         case "dateRange":
           dispatch(clearFilter("startDate"));
           dispatch(clearFilter("endDate"));
+          break;
+        case "outcomeAnimalDateRange":
+          dispatch(clearFilter("outcomeAnimalStartDate"));
+          dispatch(clearFilter("outcomeAnimalEndDate"));
           break;
         default:
           dispatch(clearFilter(name));
@@ -133,10 +139,10 @@ export const ComplaintFilterBar: FC<Props> = ({
           />
         )}
 
-        {hasDate() && (
+        {hasDate(startDate, endDate) && (
           <FilterButton
             id="comp-date-range-filter"
-            label={dateRangeLabel()}
+            label={dateRangeLabel(startDate, endDate)}
             name="dateRange"
             clear={removeFilter}
           />
@@ -237,6 +243,15 @@ export const ComplaintFilterBar: FC<Props> = ({
             id="comp-complaint-method-filter"
             label={outcomeAnimal?.label}
             name="outcomeAnimal"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasDate(outcomeAnimalStartDate, outcomeAnimalEndDate) && (
+          <FilterButton
+            id="comp-complaint-method-filter"
+            label={dateRangeLabel(outcomeAnimalStartDate, outcomeAnimalEndDate)}
+            name="outcomeAnimalDateRange"
             clear={removeFilter}
           />
         )}

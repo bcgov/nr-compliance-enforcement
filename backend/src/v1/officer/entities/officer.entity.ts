@@ -72,6 +72,13 @@ export class Officer {
   @Column()
   auth_user_guid: UUID;
 
+  @ApiProperty({
+    example: false,
+    description: "Indicates whether an officer has been enrolled in COMS",
+  })
+  @Column()
+  coms_enrolled_ind: boolean;
+
   user_roles: string[];
   @AfterLoad()
   updateUserRoles() {
