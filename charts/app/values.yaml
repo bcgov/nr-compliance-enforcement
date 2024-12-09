@@ -49,8 +49,11 @@ global:
     objectstoreAccessKey: ~
     objectstoreUrl: ~
     objectstoreBackupDirectory: ~
+    objectstoreKey: ~
     objectstoreBucket: ~
+    objectstoreBucketName: ~
     objectstoreSecretKey: ~
+    objectstoreApiUrl: ~
     jwksUri: ~
     jwtIssuer: ~
     keycloakClientId: ~

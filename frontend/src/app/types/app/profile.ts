@@ -12,4 +12,5 @@ export default interface Profile {
   zoneDescription: string;
   agency: string;
   personGuid: string;
+  comsEnrolledInd: boolean | null;
 }
