@@ -75,6 +75,7 @@ import { OfficerService } from "../officer/officer.service";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 
+const BritishColumbiaBounds: Array<number> = [-145, -110, 40, 65];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintService {
@@ -1201,7 +1202,7 @@ export class ComplaintService {
 
       //-- filter locations by bounding box if provided, otherwise default to the world
       //   geometry ST_MakeEnvelope(float xmin, float ymin, float xmax, float ymax, integer srid=unknown);
-      const bbox = model.bbox ? model.bbox.split(",") : ["-180", "-90", "180", "90"];
+      const bbox = model.bbox ? model.bbox.split(",") : BritishColumbiaBounds;
       complaintBuilder.andWhere(
         `complaint.location_geometry_point && ST_MakeEnvelope(${bbox[0]}, ${bbox[1]}, ${bbox[2]}, ${bbox[3]}, 4326)`,
       );
@@ -1245,11 +1246,11 @@ export class ComplaintService {
         this.logger.debug("Getting unmapped complaints count");
         // run query and append to results
         let start = new Date().getTime();
-        const unmappedComplaints = await this._getUnmappedComplaintsCount(complaintType, model, hasCEEBRole, token);
+        const unmappedCount = await this._getUnmappedComplaintsCount(complaintType, model, hasCEEBRole, token);
         let elapsed = new Date().getTime() - start;
         debugLog += "unmapped query ran in " + elapsed + "ms\n";
         this.logger.debug("unmapped query ran in " + elapsed + "ms");
-        results = { ...results, unmappedComplaints };
+        results = { ...results, unmappedCount };
       }
 
       if (model.clusters) {
@@ -1259,18 +1260,19 @@ export class ComplaintService {
         debugLog += "mapped complaints query ran in " + elapsed + "ms\n";
         this.logger.debug("map query ran in " + elapsed + "ms");
 
+        results.mappedCount = points.length;
+
         start = new Date().getTime();
         // load into Supercluster
         const index = new Supercluster({
           log: false,
           radius: 160,
-          maxZoom: 18,
-          minPoints: model.zoom == 18 ? 9999999 : 2, // If at max zoom, don't cluster?
+          maxZoom: 16,
         });
         index.load(points);
 
         // cluster the results
-        const bbox = model.bbox ? model.bbox.split(",") : ["-180", "-90", "180", "90"];
+        const bbox = model.bbox ? model.bbox.split(",") : BritishColumbiaBounds;
         let clusters = index.getClusters(
           [Number(bbox[0]), Number(bbox[1]), Number(bbox[2]), Number(bbox[3])],
           model.zoom,
@@ -1280,7 +1282,7 @@ export class ComplaintService {
         // then return the center and zoom level so the client can then zoom to the clusters at an appropriate zoom level
         if (!model.bbox && clusters.length === 1) {
           const center = [clusters[0].geometry.coordinates[1], clusters[0].geometry.coordinates[0]];
-          const expansionZoom = index.getClusterExpansionZoom(clusters[0].properties.cluster_id);
+          const expansionZoom = index.getClusterExpansionZoom(clusters[0].properties.cluster_id) + 2; // At least 2 clusters plus an arbitrary 2 steps of zoom
           // If we can expand the cluster, do so. If not, it's a single point and we don't need to do anything
           if (expansionZoom) {
             clusters = index.getClusters(

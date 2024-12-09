@@ -20,7 +20,7 @@ interface MapProps {
   loadingMapData: boolean;
   clusters: Array<any>;
   defaultClusterView: any;
-  unmappedComplaints: number;
+  unmappedCount: number;
 }
 
 const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
@@ -29,7 +29,7 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
   handleMapMoved,
   clusters,
   defaultClusterView,
-  unmappedComplaints,
+  unmappedCount,
 }) => {
   const loading = useAppSelector(isLoading);
 
@@ -48,7 +48,6 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
   const dispatch = useAppDispatch();
 
   const handlePopupOpen = (id: string) => (e: L.PopupEvent) => {
-    console.log("Popup opened for complaint id: ", id);
     dispatch(getComplaintById(id, complaintType));
     setPopupOpen(true);
   };
@@ -76,12 +75,12 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
   }, [clusters, defaultClusterView]);
 
   const renderInformationBanner = () => {
-    const isPluralized = unmappedComplaints === 1 ? "" : "s";
+    const isPluralized = unmappedCount === 1 ? "" : "s";
 
-    const bannerType = unmappedComplaints >= 1 ? "unmapped" : "no-results";
+    const bannerType = unmappedCount >= 1 ? "unmapped" : "no-results";
     const info =
-      unmappedComplaints >= 1
-        ? `${unmappedComplaints} complaint${isPluralized} could not be mapped`
+      unmappedCount >= 1
+        ? `${unmappedCount} complaint${isPluralized} could not be mapped`
         : "No complaints found using your current filters. Remove or change your filters to see complaints.";
 
     return (
@@ -97,7 +96,6 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
   };
 
   const refreshMapData = () => {
-    console.log("Refreshing map data");
     const bounds = mapRef.current?.getBounds();
     if (bounds && mapRef?.current) {
       handleMapMoved(
@@ -122,7 +120,7 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
     return null;
   };
 
-  const showInfoBar = unmappedComplaints >= 1 || !from(clusters).any();
+  const showInfoBar = unmappedCount >= 1 || !from(clusters).any();
 
   return (
     <div className="comp-map-container">
@@ -165,10 +163,6 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
               size = "medium";
             } else {
               size = "large";
-            }
-
-            if (!(cluster.id || clusterId)) {
-              console.log(cluster);
             }
 
             const customClusterIcon = new Leaflet.DivIcon({

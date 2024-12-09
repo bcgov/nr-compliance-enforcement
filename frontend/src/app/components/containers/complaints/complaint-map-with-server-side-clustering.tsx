@@ -7,6 +7,7 @@ import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filter
 import LeafletMapWithServerSideClustering from "@components/mapping/leaflet-map-with-server-side-clustering";
 import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
+import { setMappedComplaintsCount } from "@/app/store/reducers/complaints";
 
 type Props = {
   type: string;
@@ -70,7 +71,7 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
   const [loadingMapData, setLoadingMapData] = useState<boolean>(false);
   const [clusters, setClusters] = useState<Array<any>>([]);
   const [defaultClusterView, setDefaultClusterView] = useState<any>();
-  const [unmappedComplaints, setUnmappedComplaints] = useState<number>(0);
+  const [unmappedCount, setUnmappedCount] = useState<number>(0);
 
   //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear
@@ -124,7 +125,15 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
 
       const response: any = await get(dispatch, parameters, {}, false);
       if (response) {
-        response.unmappedComplaints && setUnmappedComplaints(response.unmappedComplaints);
+        response.unmappedCount && setUnmappedCount(response.unmappedCount);
+        // If there is no bounding box, update totals
+        bbox === undefined &&
+          dispatch(
+            setMappedComplaintsCount({
+              ...(response.mappedCount && { mapped: response.mappedCount }),
+              ...(response.unmappedCount && { unmapped: response.unmappedCount }),
+            }),
+          );
         response.clusters && setClusters(response.clusters);
         if (response.zoom && response.center) {
           setDefaultClusterView({ zoom: response.zoom, center: response.center });
@@ -153,7 +162,7 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
       loadingMapData={loadingMapData}
       clusters={clusters}
       defaultClusterView={defaultClusterView}
-      unmappedComplaints={unmappedComplaints}
+      unmappedCount={unmappedCount}
     />
   );
 };

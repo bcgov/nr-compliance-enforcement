@@ -18,9 +18,6 @@ import { ToggleSuccess, ToggleError } from "@common/toast";
 import { ComplaintSearchResults } from "@apptypes/api-params/complaint-results";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 
-import { MapSearchResults } from "@apptypes/complaints/map-return";
-import { ComplaintMapItem } from "@apptypes/app/complaints/complaint-map-item";
-
 import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
 import { Complaint as ComplaintDto } from "@apptypes/app/complaints/complaint";
@@ -63,7 +60,7 @@ const initialState: ComplaintState = {
     allegation: { assigned: 0, unassigned: 0, total: 0, offices: [] },
   },
 
-  mappedItems: { items: [], unmapped: 0 },
+  mappedComplaintsCount: { mapped: 0, unmapped: 0 },
 
   webeocUpdates: [],
   actions: [],
@@ -209,21 +206,25 @@ export const complaintSlice = createSlice({
         return { ...state, complaintItems: updatedItems };
       }
     },
-    setMappedComplaints: (state, action) => {
-      const { mappedItems } = state;
+    setMappedComplaintsCount: (state, action) => {
+      const { mappedComplaintsCount } = current(state);
+      console.log("payload", action.payload);
       const {
-        payload: { complaints, unmappedComplaints },
+        payload: { mapped, unmapped },
       } = action;
 
       const update = {
-        ...mappedItems,
-        items: complaints,
-        unmapped: unmappedComplaints,
+        mapped: mapped || mappedComplaintsCount.mapped,
+        unmapped: unmapped || mappedComplaintsCount.unmapped,
       };
 
-      return { ...state, mappedItems: update };
-    },
+      console.log(update);
 
+      return {
+        ...state,
+        mappedComplaintsCount: update,
+      };
+    },
     setWebEOCUpdates: (state, action: PayloadAction<WebEOCComplaintUpdateDTO[]>) => {
       return { ...state, webeocUpdates: action.payload };
     },
@@ -268,7 +269,7 @@ export const {
   updateGeneralComplaintByRow,
   updateAllegationComplaintByRow,
   updateGeneralIncidentComplaintByRow,
-  setMappedComplaints,
+  setMappedComplaintsCount,
   setWebEOCUpdates,
   setRelatedData,
   setActions,
@@ -340,63 +341,6 @@ export const getComplaints =
 
       dispatch(setComplaints({ type: complaintType, data: complaints }));
       dispatch(setTotalCount(totalCount));
-    } catch (error) {
-      console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
-    }
-  };
-
-export const getMappedComplaints =
-  (complaintType: string, payload: ComplaintFilters): AppThunk =>
-  async (dispatch, getState) => {
-    const {
-      sortColumn,
-      sortOrder,
-      regionCodeFilter,
-      areaCodeFilter,
-      zoneCodeFilter,
-      officerFilter,
-      natureOfComplaintFilter,
-      speciesCodeFilter,
-      startDateFilter,
-      endDateFilter,
-      violationFilter,
-      complaintStatusFilter,
-      complaintMethodFilter,
-      actionTakenFilter,
-      outcomeAnimalFilter,
-      page,
-      pageSize,
-      query,
-    } = payload;
-
-    try {
-      dispatch(setComplaint(null));
-      dispatch(setComplaintSearchParameters(payload));
-
-      let parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/map/search/${complaintType}`, {
-        sortBy: sortColumn,
-        orderBy: sortOrder,
-        region: regionCodeFilter?.value,
-        zone: zoneCodeFilter?.value,
-        community: areaCodeFilter?.value,
-        officerAssigned: officerFilter?.value,
-        natureOfComplaint: natureOfComplaintFilter?.value,
-        speciesCode: speciesCodeFilter?.value,
-        incidentReportedStart: startDateFilter,
-        incidentReportedEnd: endDateFilter,
-        violationCode: violationFilter?.value,
-        status: complaintStatusFilter?.value,
-        complaintMethod: complaintMethodFilter?.value,
-        actionTaken: actionTakenFilter?.value,
-        outcomeAnimal: outcomeAnimalFilter?.value,
-        page: page,
-        pageSize: pageSize,
-        query: query,
-      });
-
-      const response = await get<MapSearchResults, ComplaintQueryParams>(dispatch, parameters);
-
-      dispatch(setMappedComplaints(response));
     } catch (error) {
       console.log(`Unable to retrieve ${complaintType} complaints: ${error}`);
     }
@@ -815,45 +759,10 @@ export const selectComplaintsByType =
 export const selectTotalMappedComplaints = (state: RootState): number => {
   const {
     complaints: {
-      mappedItems: { items, unmapped },
+      mappedComplaintsCount: { mapped, unmapped },
     },
   } = state;
-  if (!items && !unmapped) return 0;
-  return items.length + unmapped;
-};
-
-export const selectTotalUnmappedComplaints = (state: RootState): number => {
-  const {
-    complaints: {
-      mappedItems: { unmapped },
-    },
-  } = state;
-
-  return unmapped;
-};
-
-export const selectMappedComplaints = (state: RootState): Array<ComplaintMapItem> => {
-  const {
-    complaints: {
-      mappedItems: { items },
-    },
-  } = state;
-
-  if (items) {
-    const records = items.map(({ id, location: { coordinates } }) => {
-      const record: ComplaintMapItem = {
-        id,
-        latitude: coordinates[Coordinates.Latitude],
-        longitude: coordinates[Coordinates.Longitude],
-      };
-
-      return record;
-    });
-
-    return records;
-  } else {
-    return new Array<ComplaintMapItem>();
-  }
+  return mapped + unmapped;
 };
 
 export const selectComplaint = (

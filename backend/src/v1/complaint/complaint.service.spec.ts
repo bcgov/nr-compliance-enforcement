@@ -339,10 +339,10 @@ describe("Testing: Complaint Service", () => {
     //-- assert
     expect(results).not.toBe(null);
 
-    const { unmappedComplaints, clusters } = results;
+    const { mappedCount, unmappedCount } = results;
 
-    expect(clusters.length).toBe(5);
-    expect(unmappedComplaints).toBe(55);
+    expect(mappedCount).toBe(5);
+    expect(unmappedCount).toBe(55);
   });
 
   it("should return list of complaints by mapSearch for user with ceeb role", async () => {
@@ -368,10 +368,10 @@ describe("Testing: Complaint Service", () => {
     //-- assert
     expect(results).not.toBe(null);
 
-    const { unmappedComplaints, clusters } = results;
+    const { mappedCount, unmappedCount } = results;
 
-    expect(clusters.length).toBe(5);
-    expect(unmappedComplaints).toBe(55);
+    expect(mappedCount).toBe(5);
+    expect(unmappedCount).toBe(55);
   });
 });
 
