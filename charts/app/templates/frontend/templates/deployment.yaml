@@ -74,10 +74,10 @@ spec:
               path: /health
               port: 3001
               scheme: HTTP
-            initialDelaySeconds: 5
-            periodSeconds: 2
+            initialDelaySeconds: 10
+            periodSeconds: 5
             timeoutSeconds: 2
-            successThreshold: 1
+            successThreshold: 2
             failureThreshold: 30
           #-- the liveness probe for the container. it is optional and is an object. for default values check this link: https://github.com/bcgov/helm-service/blob/main/charts/component/templates/deployment.yaml#L324-L328
           livenessProbe:
@@ -87,7 +87,7 @@ spec:
               path: /health
               port: 3001
               scheme: HTTP
-            initialDelaySeconds: 15
+            initialDelaySeconds: 20
             periodSeconds: 30
             timeoutSeconds: 5
           resources:

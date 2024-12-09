@@ -40,8 +40,8 @@ jobs:
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
-    # with:
-      # triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/')
+    with:
+      triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/')
 
   healthcheck:
     name: Healthcheck Deployment
