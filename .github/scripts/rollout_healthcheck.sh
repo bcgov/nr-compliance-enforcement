@@ -20,6 +20,16 @@
 # ERROR_EXPR: error expression to search for in logs
 
 # TODO: break out funcs into plugins
+if [ -z "$LABEL_SELECTOR" ]; then
+    echo "LABEL_SELECTOR is not set. Exiting..."
+    help_str
+    exit 1
+fi
+if [ -z "$OC_NAMESPACE" ]; then
+    echo "OC_NAMESPACE is not set. Exiting..."
+    help_str
+    exit 1
+fi
 
 # configure defaults
 if [ -z "$ERROR_EXPR" ]; then
@@ -40,7 +50,7 @@ TIMED_OUT=0
 COMMANDS_TO_RUN=""
 
 # global flag to indicate if health check passed
-HEALTH_CHECK_PASSED=0
+HEALTH_CHECK_FAILED=0
 
 
 set -e # failfast
@@ -170,7 +180,7 @@ poll_deployments() {
     done
     for pod in $pod_list; do
         _pod_running=$(_pod_running $pod)
-        if [ "$pod_status" == "false" ]; then
+        if [ "$_pod_running" == "false" ]; then
             succeeded="false"
             break
         fi
@@ -193,7 +203,7 @@ on_latest_replicasets() {
         lrsr=$(oc get -n $OC_NAMESPACE replicaset $latest_replicaset -ojson | jq -r '.status.readyReplicas')
         if [ "$lrsr" -eq 0 ]; then
             echo_red "$(echo_cross) Deployment $app_name latest replicaset $latest_replicaset has 0 ready replicas"
-            HEALTH_CHECK_PASSED=1
+            HEALTH_CHECK_FAILED=1
         else
             echo_green "$(echo_checkmark) Deployment $app_name latest replicaset $latest_replicaset in use with $lrsr ready replicas"
         fi
@@ -208,7 +218,7 @@ all_pods_ready() {
     for pod in $pod_list; do
         if [ "$(_pod_running $pod)" == "false" ]; then
             echo_red "$(echo_cross) Pod $pod has not finished startup and is not classified as running"
-            HEALTH_CHECK_PASSED=1
+            HEALTH_CHECK_FAILED=1
         else
             echo_green "$(echo_checkmark) Pod $pod is running"
         fi
@@ -223,7 +233,7 @@ no_pod_restarts() {
         restarts=$(oc get -n $OC_NAMESPACE $pod -ojson | jq -r '.status.containerStatuses[].restartCount')
         if [ "$restarts" -gt 0 ]; then
             echo_red "$(echo_cross) Pod $pod has $restarts restarts!"
-            HEALTH_CHECK_PASSED=1
+            HEALTH_CHECK_FAILED=1
             COMMANDS_TO_RUN+="\noc describe -n $OC_NAMESPACE $pod;"
         else
             echo_green "$(echo_checkmark) Pod $pod has no restarts"
@@ -240,7 +250,7 @@ no_error_logs() {
         error_logs=$(oc logs -n $OC_NAMESPACE $pod --all-containers --tail=100 --since=60m | grep -E "$ERROR_EXPR" || true)
         if [ -n "$error_logs" ]; then
             echo_red "$(echo_cross) Pod $pod has error logs"
-            HEALTH_CHECK_PASSED=1
+            HEALTH_CHECK_FAILED=1
             COMMANDS_TO_RUN+="\noc logs -n $OC_NAMESPACE $pod --all-containers --tail=100 --since=60m | grep -E \"$ERROR_EXPR\" || true;"
         else
             echo_green "$(echo_checkmark) Pod $pod has no recent error logs"
@@ -289,7 +299,7 @@ no_associated_events() {
         echo_red "$(echo_cross) Found the following $event_count warning (error) events associated with this helm release:"
         echo_yellow "\tNote: warning event history can persist between deployments and may not be related to the current rollout. Wait 5 minutes for them to be filtered out."
         echo -e "$event_summary" | sed 's/^/\t/' # tab indent the events for readability
-        HEALTH_CHECK_PASSED=1
+        HEALTH_CHECK_FAILED=1
         COMMANDS_TO_RUN+="\noc get events -n $OC_NAMESPACE | grep -Ei $object_pattern;"
     else
         echo_green "$(echo_checkmark) No warning-type events associated with release $object_pattern"
@@ -322,7 +332,7 @@ triage_rollout() {
     echo_yellow "Triage complete."
     echo ""
     echo_yellow "Overall Health Check Status:"
-    if [ "$HEALTH_CHECK_PASSED" -eq 1 ] || [ "$TIMED_OUT" -eq 1 ]; then
+    if [ "$HEALTH_CHECK_FAILED" -eq 1 ] || [ "$TIMED_OUT" -eq 1 ]; then
         echo_red "$(echo_cross) Health check failed"
     else
         echo_green "$(echo_checkmark) Health check passed"
@@ -370,6 +380,6 @@ main() {
     replicaset_list=$(echo -e "$workload_list" | grep "replicaset")
     statefulset_list=$(echo -e "$workload_list" | grep "statefulset")
     triage_rollout "$deployment_list" "$pod_list" "$replicaset_list" "$statefulset_list"
-    exit $HEALTH_CHECK_PASSED
+    exit $HEALTH_CHECK_FAILED
 }
 main
