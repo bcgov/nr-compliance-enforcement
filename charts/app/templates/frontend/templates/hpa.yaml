@@ -15,23 +15,23 @@ spec:
   maxReplicas: {{ .Values.frontend.autoscaling.maxReplicas }}
   behavior:
     scaleDown:
-      stabilizationWindowSeconds: 300
+      stabilizationWindowSeconds: 600
       policies:
         - type: Percent
           value: 10
           periodSeconds: 60
         - type: Pods
-          value: 2
+          value: 1
           periodSeconds: 60
       selectPolicy: Min
     scaleUp:
-      stabilizationWindowSeconds: 0
+      stabilizationWindowSeconds: 30
       policies:
         - type: Percent
-          value: 100
+          value: 50
           periodSeconds: 30
         - type: Pods
-          value: 2
+          value: 1
           periodSeconds: 30
       selectPolicy: Max
   metrics:
