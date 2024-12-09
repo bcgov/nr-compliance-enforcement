@@ -149,6 +149,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-transform-private-property-in-object": "^7.25.9",
     "@tsconfig/node16": "^1.0.3",
     "@types/jest": "^29.5.1",
     "@types/react-test-renderer": "^18.0.0",

@@ -6,6 +6,7 @@ module.exports = {
     node: true
   },
   extends: [
+    '@babel/plugin-transform-private-property-in-object',
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
