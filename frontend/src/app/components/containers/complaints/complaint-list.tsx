@@ -55,6 +55,8 @@ export const generateComplaintRequestPayload = (
     complaintMethod,
     actionTaken,
     outcomeAnimal,
+    outcomeAnimalStartDate,
+    outcomeAnimalEndDate,
   } = filters;
 
   const common = {
@@ -92,6 +94,8 @@ export const generateComplaintRequestPayload = (
         speciesCodeFilter: species,
         natureOfComplaintFilter: natureOfComplaint,
         outcomeAnimalFilter: outcomeAnimal,
+        outcomeAnimalStartDateFilter: outcomeAnimalStartDate,
+        outcomeAnimalEndDateFilter: outcomeAnimalEndDate,
       } as ComplaintRequestPayload;
   }
 };
@@ -216,10 +220,12 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
 
   const renderNoComplaintsFound = () => {
     return (
-      <td colSpan={11}>
-        <i className="bi bi-info-circle-fill"></i>
-        <span>No complaints found using your current filters. Remove or change your filters to see complaints.</span>
-      </td>
+      <tr>
+        <td colSpan={11}>
+          <i className="bi bi-info-circle-fill p-2"></i>
+          <span>No complaints found using your current filters. Remove or change your filters to see complaints.</span>
+        </td>
+      </tr>
     );
   };
 

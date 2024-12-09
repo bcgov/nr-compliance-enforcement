@@ -6,7 +6,7 @@ import Profile from "@apptypes/app/profile";
 import { UUID } from "crypto";
 import { Officer } from "@apptypes/person/person";
 import config from "@/config";
-import { generateApiParameters, get, patch } from "@common/api";
+import { generateApiParameters, get, patch, put } from "@common/api";
 import { AUTH_TOKEN, getUserAgency } from "@service/user-service";
 
 import { DropdownOption } from "@apptypes/app/drop-down-option";
@@ -335,6 +335,9 @@ export const listActiveFilters =
       showOutcomeAnimalFilter: features.some(
         (feature: any) => feature.featureCode === FEATURE_TYPES.OUTCOME_ANIMAL_FILTER && feature.isActive === true,
       ),
+      showOutcomeAnimalDateFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.OUTCOME_ANIMAL_DATE_FILTER && feature.isActive === true,
+      ),
     };
     return filters;
   };
@@ -367,6 +370,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       let zoneDescription = "";
       let agency = "";
       let personGuid = "";
+      let comsEnrolledInd = response.coms_enrolled_ind;
 
       if (response.office_guid !== null) {
         const {
@@ -382,6 +386,14 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         personGuid = person_guid;
       }
 
+      if (!comsEnrolledInd) {
+        const requestComsAccessParams = generateApiParameters(
+          `${config.API_BASE_URL}/v1/officer/request-coms-access/${response.officer_guid}`,
+        );
+        const res = await put<Officer>(dispatch, requestComsAccessParams);
+        comsEnrolledInd = res.coms_enrolled_ind;
+      }
+
       const profile: Profile = {
         givenName: given_name,
         surName: family_name,
@@ -394,6 +406,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         zoneDescription: zoneDescription,
         agency,
         personGuid,
+        comsEnrolledInd,
       };
 
       dispatch(setTokenProfile(profile));
@@ -528,6 +541,7 @@ const initialState: AppState = {
     zoneDescription: "",
     agency: "",
     personGuid: "",
+    comsEnrolledInd: null,
   },
   isSidebarOpen: true,
 
@@ -582,6 +596,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         zoneDescription: payload.zoneDescription,
         agency: payload.agency,
         personGuid: payload.personGuid,
+        comsEnrolledInd: payload.comsEnrolledInd,
       };
 
       return { ...state, profile };
