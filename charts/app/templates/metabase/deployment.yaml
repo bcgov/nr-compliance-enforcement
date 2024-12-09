@@ -84,8 +84,8 @@ spec:
             httpGet:
               path: /api/health
               port: http
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 60
+            periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 50
           resources:
