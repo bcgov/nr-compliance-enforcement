@@ -17,6 +17,8 @@ export interface ComplaintFilters {
   complaintMethodFilter?: Option;
   actionTakenFilter?: Option;
   outcomeAnimalFilter?: Option;
+  outcomeAnimalStartDateFilter?: Date;
+  outcomeAnimalEndDateFilter?: Date;
   page?: number;
   pageSize?: number;
   query?: string;
