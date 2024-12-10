@@ -129,13 +129,13 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
 
       const response: any = await get(dispatch, parameters, {}, false);
       if (response) {
-        response.unmappedCount && setUnmappedCount(response.unmappedCount);
+        response.unmappedCount != null && setUnmappedCount(response.unmappedCount);
         // If there is no bounding box, update totals
         bbox === undefined &&
           dispatch(
             setMappedComplaintsCount({
-              ...(response.mappedCount && { mapped: response.mappedCount }),
-              ...(response.unmappedCount && { unmapped: response.unmappedCount }),
+              ...(response.mappedCount != null && { mapped: response.mappedCount }),
+              ...(response.unmappedCount != null && { unmapped: response.unmappedCount }),
             }),
           );
         response.clusters && setClusters(response.clusters);

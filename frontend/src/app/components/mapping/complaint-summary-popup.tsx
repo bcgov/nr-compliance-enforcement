@@ -25,8 +25,8 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
 
   return (
     <Popup
-      keepInView={true}
       autoPan={autoPan}
+      keepInView={true}
       className="comp-map-popup"
     >
       <div>
