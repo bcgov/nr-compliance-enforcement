@@ -58,6 +58,7 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
   };
 
   useEffect(() => {
+    setPopupOpen(false);
     if (defaultClusterView) {
       if (mapRef.current && clusters.length > 0) {
         // Calculate the bounds of all markers
