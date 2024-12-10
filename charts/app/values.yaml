@@ -395,7 +395,6 @@ webeoc:
     enabled: false # enable it in PRODUCTION for having pod disruption budget.
     minAvailable: 1 # the minimum number of pods that must be available during the disruption budget.
 
-
 #-- Metabase Values
 metabase:
   enabled: true
@@ -441,8 +440,8 @@ metabase-pg:
     tag: 15.7.0
   auth:
     existingSecret: "{{ .Release.Name }}-metabase"
-    username: "metabase"
-    database: "metabase"
+    username: "postgres"
+    database: "postgres"
   shmVolume:
     enabled: false
   backup:
