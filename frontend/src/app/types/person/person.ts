@@ -25,6 +25,7 @@ export interface Officer {
   office_guid: OfficeGUID;
   person_guid: Person;
   user_roles: string[];
+  coms_enrolled_ind: boolean;
 }
 
 export interface OfficeGUID {

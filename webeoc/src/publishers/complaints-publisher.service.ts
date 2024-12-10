@@ -33,7 +33,7 @@ export class ComplaintsPublisherService {
       natsHeaders.set("Nats-Msg-Id", `staged-${complaint.incident_number}-${complaint.created_by_datetime}`);
       const ack = await this.jsClient.publish(STREAM_TOPICS.COMPLAINTS, msg, { headers: natsHeaders });
       if (!ack.duplicate) {
-        this.logger.debug(`New complaint: ${complaint.incident_number}`);
+        this.logger.debug(`Publishing new complaint for staging: ${complaint.incident_number}`);
       } else {
         this.logger.debug(`Complaint already published: ${complaint.incident_number}`);
       }
@@ -59,12 +59,12 @@ export class ComplaintsPublisherService {
       );
       const ack = await this.jsClient.publish(STREAM_TOPICS.COMPLAINT_UPDATE, jsonData, { headers: natsHeaders });
       if (!ack.duplicate) {
-        this.logger.debug(`Complaint update: ${incidentNumber} ${updateNumber}`);
+        this.logger.debug(`Publishing new complaint update for staging: ${incidentNumber} ${updateNumber}`);
       } else {
         this.logger.debug(`Complaint update already published: ${incidentNumber}`);
       }
     } catch (error) {
-      this.logger.error(`Error publishing complaint: ${error.message}`, error.stack);
+      this.logger.error(`Error publishing complaint update: ${error.message}`, error.stack);
       throw error;
     }
   }
@@ -84,7 +84,7 @@ export class ComplaintsPublisherService {
       if (!ack?.duplicate) {
         this.logger.debug(`Complaint ready to be moved to operational tables: ${incident_number}`);
       } else {
-        this.logger.debug(`Complaint already moved to operational: ${incident_number}`);
+        this.logger.debug(`Complaint already moved to operational tables: ${incident_number}`);
       }
     } catch (error) {
       this.logger.error(`Error saving complaint to staging: ${error.message}`, error.stack);
@@ -119,7 +119,7 @@ export class ComplaintsPublisherService {
           `Complaint update ready to be moved to operational tables: ${incidentNumber} ${updateNumber}`,
         );
       } else {
-        this.logger.debug(`Complaint update already moved to operational: ${incidentNumber} ${updateNumber}`);
+        this.logger.debug(`Complaint update already moved to operational tables: ${incidentNumber} ${updateNumber}`);
       }
     } catch (error) {
       this.logger.error(`Error saving complaint update to staging: ${error.message}`, error.stack);

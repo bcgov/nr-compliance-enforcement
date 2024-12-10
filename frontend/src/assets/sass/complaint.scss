@@ -1363,6 +1363,13 @@ p {
   z-index: 7000 !important;
 }
 
+.top-layer-select.outcome-animal-select {
+  max-height: 250px !important;
+  .comp-select__menu-list {
+    max-height: 250px !important;
+  }
+}
+
 .comp-details-edit-container {
   display: flex;
 }

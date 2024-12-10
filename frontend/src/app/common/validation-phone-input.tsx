@@ -28,13 +28,11 @@ export const ValidationPhoneInput: FC<ValidationPhoneInputProps> = ({
         <PhoneInput
           id={id}
           country="CA"
-          displayInitialValueAsLocalNumber
           className={calulatedClass}
           value={defaultValue}
           onChange={(e) => onChange(e)}
           maxLength={maxLength} //phone input counts () - space, so this is actually a 10 character number
           international={international}
-          initialValueFormat="national"
         />
       </div>
       <div className={errClass}>{errMsg}</div>

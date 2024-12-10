@@ -40,8 +40,28 @@ jobs:
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
-    # with:
-      # triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/')
+    with:
+      triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/')
+
+  healthcheck:
+    name: Healthcheck Deployment
+    runs-on: ubuntu-22.04
+    needs: [builds]
+    environment:
+    timeout-minutes: 15
+    if: ${{ ! github.event.pull_request.draft }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sleep 120 # wait for helm release to startup
+          ./.github/scripts/rollout_healthcheck.sh
+        env:
+          TIMEOUT_SECONDS: 420 # 7m
+          POLL_INTERVAL_SECONDS: 15
+          LABEL_SELECTOR: "app.kubernetes.io/instance=nr-compliance-enforcement-${{ github.event.number }}"
+          OC_NAMESPACE: ${{ vars.OC_NAMESPACE }}
+          OC_SERVER: ${{ vars.OC_SERVER }}
+          OC_TOKEN: ${{ secrets.OC_TOKEN }}
 
   tests:
     name: Tests
@@ -55,7 +75,7 @@ jobs:
 
   results:
     name: PR Results
-    needs: [builds, deploys, tests]
+    needs: [builds, deploys, tests, healthcheck]
     if: always() && (!failure()) && (!cancelled())
     runs-on: ubuntu-22.04
     steps:
