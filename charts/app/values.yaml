@@ -459,7 +459,7 @@ metabase-pg:
       storageClass: netapp-block-standard
       accessModes:
         - ReadWriteOnce
-      size: 512Mi
+      size: 256Mi
     containerSecurityContext:
       enabled: false
     podSecurityContext:
