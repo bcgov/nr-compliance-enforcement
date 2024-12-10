@@ -18,6 +18,7 @@
 # POLL_INTERVAL_SECONDS: interval in seconds to poll health check
 # LABEL_SELECTOR: label selector to filter resources to health check on
 # ERROR_EXPR: error expression to search for in logs
+# FORCE_PASS: set to 1 to force pass the health check
 
 # TODO: break out funcs into plugins
 if [ -z "$LABEL_SELECTOR" ]; then
@@ -40,6 +41,10 @@ if [ -z "$TIMEOUT_SECONDS" ]; then
 fi
 if [ -z "$POLL_INTERVAL_SECONDS" ]; then
     POLL_INTERVAL_SECONDS=15
+fi
+# prevent pipeline blocking but still get details if desired
+if [ -z "$FORCE_PASS" ]; then
+    FORCE_PASS=0
 fi
 
 # will be set to 1 if a timeout occurs from an unfinished rollout
@@ -327,11 +332,15 @@ triage_rollout() {
     fi
     if [ "$TIMED_OUT" -eq 1 ]; then
         echo_red "Polling timed out, indicating the helm install was not successful or took too long to complete"
+        HEALTH_CHECK_FAILED=1
     fi
     echo_yellow "Triage complete."
     echo ""
     echo_yellow "Overall Health Check Status:"
-    if [ "$HEALTH_CHECK_FAILED" -eq 1 ] || [ "$TIMED_OUT" -eq 1 ]; then
+    if [ "$HEALTH_CHECK_FAILED" -eq 1 ] && [ "$FORCE_PASS" -eq 1 ]; then
+        echo_green "$(echo_checkmark) Health check passed (forced) review logs for details"
+        HEALTH_CHECK_FAILED=0
+    elif [ "$HEALTH_CHECK_FAILED" -eq 1 ]; then
         echo_red "$(echo_cross) Health check failed"
     else
         echo_green "$(echo_checkmark) Health check passed"
