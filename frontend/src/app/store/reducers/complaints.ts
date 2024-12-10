@@ -214,8 +214,8 @@ export const complaintSlice = createSlice({
       } = action;
 
       const update = {
-        mapped: mapped != null ? mapped : mappedComplaintsCount.mapped,
-        unmapped: unmapped != null ? unmapped : mappedComplaintsCount.unmapped,
+        mapped: (mapped ?? mapped) || mappedComplaintsCount.mapped,
+        unmapped: (unmapped ?? unmapped) || mappedComplaintsCount.unmapped,
       };
 
       console.log(update);
