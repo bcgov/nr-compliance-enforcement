@@ -16,6 +16,9 @@ global:
     databasePassword: ~
     databaseUser: ~
     databaseName: ~
+    metabaseDatabaseUser: ~
+    metabaseDatabaseName: ~
+    metabaseDatabasePassword: ~
     persist: true
     bcGeocoderApiClientId: ~
     bcGeocoderApiKey: ~
@@ -391,3 +394,86 @@ webeoc:
   pdb:
     enabled: false # enable it in PRODUCTION for having pod disruption budget.
     minAvailable: 1 # the minimum number of pods that must be available during the disruption budget.
+
+
+#-- Metabase Values
+metabase:
+  enabled: true
+  replicaCount: 1
+  nameOverride: ""
+  fullnameOverride: ""
+  deploymentStrategy: Recreate
+  image:
+    repository: ghcr.io/bcgov/nr-metabase/metabase
+    pullPolicy: Always
+  # the below is for renovate to keep pushing PRs, so that it keeps getting updated.
+  metabaseImage:
+    repository: metabase/metabase
+    tag: v0.51.4
+  containerPort: 3000
+  environment: production
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 3000
+  resources:
+    limits:
+      cpu: 750m
+      memory: 1250Mi
+    requests:
+      cpu: 150m
+      memory: 500Mi
+  autoscaling:
+    enabled: false
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  imagePullSecrets: []
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+metabase-pg:
+  enabled: true
+  image:
+    registry: ghcr.io
+    repository: bcgov/nr-containers/bitnami/postgresql
+    tag: 15.7.0
+  auth:
+    existingSecret: "{{ .Release.Name }}-metabase"
+    username: "metabase"
+    database: "metabase"
+  shmVolume:
+    enabled: false
+  backup:
+    enabled: false
+    cronjob:
+      containerSecurityContext: {}
+      podSecurityContext:
+        enabled: false
+      storage:
+        size: 256Mi
+  primary:
+    persistence:
+      enabled: true
+      storageClass: netapp-block-standard
+      accessModes:
+        - ReadWriteOnce
+      size: 256Mi
+    containerSecurityContext:
+      enabled: false
+    podSecurityContext:
+      enabled: false
+    initdb:
+      scripts: # remove the below script, if POSTGIS is not required.
+        postgis.sh: |
+          #!/bin/sh
+          PGPASSWORD=$POSTGRES_PASSWORD psql -U postgres -d postgres -c "CREATE EXTENSION postgis;"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 250Mi
+      limits:
+        cpu: 200m
+        memory: 500Mi
+#-- End Metabase Values
