@@ -77,7 +77,7 @@ spec:
               path: /api
               port: http
               scheme: HTTP
-            initialDelaySeconds: 10
+            initialDelaySeconds: 15
             periodSeconds: 5
             timeoutSeconds: 2
             successThreshold: 2
