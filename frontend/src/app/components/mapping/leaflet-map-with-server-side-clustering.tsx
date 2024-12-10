@@ -180,7 +180,7 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
                   click: () => {
                     // If we are fully zoomed in, all of these clusters share the same coordinates
                     if (mapRef?.current?.getZoom() === 18) {
-                      console.log("fully zoomed");
+                      // TODO: Spiderfy the markers
                       return;
                     }
 

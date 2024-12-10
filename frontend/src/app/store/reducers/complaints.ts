@@ -208,17 +208,14 @@ export const complaintSlice = createSlice({
     },
     setMappedComplaintsCount: (state, action) => {
       const { mappedComplaintsCount } = current(state);
-      console.log("payload", action.payload);
       const {
         payload: { mapped, unmapped },
       } = action;
 
       const update = {
-        mapped: (mapped ?? mapped) || mappedComplaintsCount.mapped,
-        unmapped: (unmapped ?? unmapped) || mappedComplaintsCount.unmapped,
+        mapped: mapped ?? mappedComplaintsCount.mapped,
+        unmapped: unmapped ?? mappedComplaintsCount.unmapped,
       };
-
-      console.log(update);
 
       return {
         ...state,
