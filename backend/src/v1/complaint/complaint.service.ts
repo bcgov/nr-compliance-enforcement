@@ -1220,10 +1220,7 @@ export class ComplaintService {
       );
 
       //-- run mapped query
-      let start = new Date().getTime();
       const mappedComplaints = await complaintBuilder.getMany();
-      let elapsed = new Date().getTime() - start;
-      this.logger.debug("mapped complaints query ran in " + elapsed + "ms");
 
       // convert to supercluster PointFeature array
       const points: Array<PointFeature<GeoJsonProperties>> = mappedComplaints.map((item) => {
@@ -1251,30 +1248,19 @@ export class ComplaintService {
   ): Promise<MapSearchResults> => {
     try {
       let results: MapSearchResults = {};
-      let debugLog = "";
       // Get unmappable complaints if requested
       if (model.unmapped) {
-        debugLog += "Getting unmapped complaints count\n";
-        this.logger.debug("Getting unmapped complaints count");
         // run query and append to results
         let start = new Date().getTime();
         const unmappedCount = await this._getUnmappedComplaintsCount(complaintType, model, hasCEEBRole, token);
-        let elapsed = new Date().getTime() - start;
-        debugLog += "unmapped query ran in " + elapsed + "ms\n";
-        this.logger.debug("unmapped query ran in " + elapsed + "ms");
         results = { ...results, unmappedCount };
       }
 
       if (model.clusters) {
-        let start = new Date().getTime();
         const points = await this._getClusteredComplaints(complaintType, model, hasCEEBRole, token);
-        let elapsed = new Date().getTime() - start;
-        debugLog += "mapped complaints query ran in " + elapsed + "ms\n";
-        this.logger.debug("map query ran in " + elapsed + "ms");
 
         results.mappedCount = points.length;
 
-        start = new Date().getTime();
         // load into Supercluster
         const index = new Supercluster({
           log: false,
@@ -1294,32 +1280,30 @@ export class ComplaintService {
         // then return the center and zoom level so the client can then zoom to the clusters at an appropriate zoom level
         if (!model.bbox && clusters.length === 1) {
           const center = [clusters[0].geometry.coordinates[1], clusters[0].geometry.coordinates[0]];
-          const expansionZoom = index.getClusterExpansionZoom(clusters[0].properties.cluster_id) + 2; // At least 2 clusters plus an arbitrary 2 steps of zoom
+          const expansionZoom = index.getClusterExpansionZoom(clusters[0].properties.cluster_id);
           // If we can expand the cluster, do so. If not, it's a single point and we don't need to do anything
           if (expansionZoom) {
             clusters = index.getClusters(
               [Number(bbox[0]), Number(bbox[1]), Number(bbox[2]), Number(bbox[3])],
-              expansionZoom,
+              expansionZoom + 2, // At least 2 clusters plus an arbitrary 2 steps of zoom
             );
           }
           results.zoom = expansionZoom || 18; // If we can't expand the cluster, fully zoom to the point
           results.center = center;
+        } else if (!model.bbox && clusters.length === 0) {
+          // If we are doing a global search and there are no clusters, return the center of BC
+          if (clusters.length === 0) {
+            results.zoom = 5;
+            results.center = [55.0, -125.0]; // Center of BC
+          }
         }
-        elapsed = new Date().getTime() - start;
-        debugLog += "cluster results in " + elapsed + "ms\n";
-        this.logger.debug("cluster results in " + elapsed + "ms");
 
-        start = new Date().getTime();
         clusters.forEach((cluster) => {
           cluster.properties.zoom = index.getClusterExpansionZoom(cluster.properties.cluster_id);
         });
-        elapsed = new Date().getTime() - start;
-        debugLog += "set cluster expansion zoom in " + elapsed + "ms\n";
-        this.logger.debug("set cluster expansion zoom in " + elapsed + "ms");
 
         // set the results
         results.clusters = clusters;
-        results.debugLog = debugLog;
       }
       return results;
     } catch (error) {

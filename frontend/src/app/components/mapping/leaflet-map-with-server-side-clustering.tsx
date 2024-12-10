@@ -60,7 +60,7 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
   useEffect(() => {
     setPopupOpen(false);
     if (defaultClusterView) {
-      if (mapRef.current && clusters.length > 0) {
+      if (clusters.length > 0) {
         // Calculate the bounds of all markers
         const bounds = Leaflet.latLngBounds(
           clusters.map(
@@ -69,7 +69,9 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
         );
 
         // Fit the map to the bounds
-        mapRef.current.fitBounds(bounds, { padding: [35, 35] });
+        mapRef?.current?.fitBounds(bounds, { padding: [35, 35] });
+      } else if (defaultClusterView.center && defaultClusterView.zoom) {
+        mapRef?.current?.setView(defaultClusterView.center, defaultClusterView.zoom);
       }
     }
   }, [clusters, defaultClusterView]);
@@ -125,7 +127,7 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
   return (
     <div className="comp-map-container">
       {showInfoBar && renderInformationBanner()}
-      {loadingMapData && (
+      {loadingMapData && !loading && (
         <Spinner
           animation="border"
           role="loading"
@@ -136,8 +138,8 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
       <MapContainer
         id="multi-point-map"
         className="map-container"
-        center={[53.7267, -127.6476]}
-        zoom={4}
+        center={[55.0, -125.0]}
+        zoom={5}
         ref={mapRef}
       >
         <ServerSideClusteringHandler />

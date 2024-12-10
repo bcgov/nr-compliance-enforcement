@@ -16,5 +16,7 @@ export interface ComplaintRequestPayload {
   complaintMethodFilter?: Option;
   actionTakenFilter?: Option;
   outcomeAnimalFilter?: Option;
+  outcomeAnimalStartDateFilter?: Date;
+  outcomeAnimalEndDateFilter?: Date;
   query?: string;
 }

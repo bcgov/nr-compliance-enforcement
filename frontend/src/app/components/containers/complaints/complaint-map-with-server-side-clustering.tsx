@@ -114,6 +114,8 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
         complaintMethod: payload.complaintMethodFilter?.value,
         actionTaken: payload.actionTakenFilter?.value,
         outcomeAnimal: payload.outcomeAnimalFilter?.value,
+        outcomeAnimalStartDate: payload.outcomeAnimalStartDateFilter,
+        outcomeAnimalEndDate: payload.outcomeAnimalEndDateFilter,
         query: searchQuery,
       };
 
