@@ -97,7 +97,7 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
     ) => {
       setLoadingMapData(true);
       let payload = generateMapComplaintRequestPayload(type, filters);
-      dispatch(setComplaintSearchParameters(payload));
+      dispatch(setComplaintSearchParameters({ ...payload, query: searchQuery }));
 
       let parms: any = {
         bbox: bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : undefined, // If the bbox is not provided, return all complaint clusters
