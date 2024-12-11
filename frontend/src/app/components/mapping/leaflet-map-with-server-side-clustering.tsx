@@ -12,6 +12,7 @@ import { from } from "linq-to-typescript";
 import { MapGestureHandler } from "./map-gesture-handler";
 import { Alert, Spinner } from "react-bootstrap";
 import { isLoading } from "@store/reducers/app";
+import Spiderfy from "./spiderfy";
 
 interface MapProps {
   complaintType: string;
@@ -46,12 +47,12 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
 
   const dispatch = useAppDispatch();
 
-  const handlePopupOpen = (id: string) => (e: L.PopupEvent) => {
+  const handlePopupOpen = (id: string) => {
     dispatch(getComplaintById(id, complaintType));
     setPopupOpen(true);
   };
 
-  const handlePopupClose = (e: L.LeafletEvent) => {
+  const handlePopupClose = () => {
     dispatch(setComplaint(null));
     setPopupOpen(false);
     refreshMapData();
@@ -148,7 +149,10 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        <LayerGroup>
+        <Spiderfy
+          handlePopupOpen={handlePopupOpen}
+          handlePopupClose={handlePopupClose}
+        >
           {clusters.map((cluster) => {
             const [longitude, latitude] = cluster.geometry.coordinates;
             const {
@@ -180,12 +184,6 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
                 icon={customClusterIcon}
                 eventHandlers={{
                   click: () => {
-                    // If we are fully zoomed in, all of these clusters share the same coordinates
-                    if (mapRef?.current?.getZoom() === 18) {
-                      // Later we will Spiderfy the markers
-                      return;
-                    }
-
                     // What even is this logic
                     const flyToZoom =
                       (clusterZoom && Math.min(clusterZoom, 18)) ||
@@ -201,23 +199,25 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
               />
             ) : (
               <Marker
-                key={`cluster-${cluster.id || clusterId}`}
+                key={`marker-${cluster.id || clusterId}`}
+                alt={`${clusterId}`} // alt is being used to store the complaint id for the Spiderfy handler
+                riseOnHover
                 position={[latitude, longitude]}
                 icon={customMarkerIcon}
                 eventHandlers={{
-                  popupopen: handlePopupOpen(clusterId),
-                  popupclose: handlePopupClose,
+                  click: (event) => {
+                    event.target.closePopup();
+                  },
                 }}
               >
                 <ComplaintSummaryPopup
                   complaintType={complaintType}
                   complaint_identifier={clusterId}
-                  autoPan={true}
                 />
               </Marker>
             );
           })}
-        </LayerGroup>
+        </Spiderfy>
       </MapContainer>
     </div>
   );

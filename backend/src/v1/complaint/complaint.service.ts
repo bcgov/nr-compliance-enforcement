@@ -1251,7 +1251,6 @@ export class ComplaintService {
       // Get unmappable complaints if requested
       if (model.unmapped) {
         // run query and append to results
-        let start = new Date().getTime();
         const unmappedCount = await this._getUnmappedComplaintsCount(complaintType, model, hasCEEBRole, token);
         results = { ...results, unmappedCount };
       }
