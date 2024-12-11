@@ -22,7 +22,7 @@ describe("Complaints on map tests", () => {
       cy.get("#map_toggle_id").should("exist").click({ force: true });
 
       // wait for the map to load
-      cy.waitForSpinner();
+      cy.wait(1000);
 
       // verify default filters
       cy.get("#comp-status-filter").should("exist");
@@ -101,13 +101,13 @@ describe("Complaints on map tests", () => {
       cy.get("#map_toggle_id").click({ force: true });
 
       // wait for the map to load
-      cy.waitForSpinner();
+      cy.wait(1000);
 
       cy.get("#comp-filter-btn").click({ force: true });
       cy.selectItemById("community-select-id", "Kelowna");
 
       // wait for the map to load
-      cy.waitForSpinner();
+      cy.wait(1000);
 
       cy.get("div.leaflet-container").should("exist");
 
@@ -146,7 +146,7 @@ describe("Complaints on map tests", () => {
       cy.get("#map_toggle_id").should("exist").click({ force: true });
 
       // wait for the map to load
-      cy.waitForSpinner();
+      cy.wait(1000);
 
       // verify default filters
       cy.get("#comp-status-filter").should("exist");

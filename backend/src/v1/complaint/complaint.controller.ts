@@ -9,7 +9,10 @@ import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
 import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
 import { ComplaintDto } from "../../types/models/complaints/complaint";
-import { ComplaintSearchParameters } from "../../types/models/complaints/complaint-search-parameters";
+import {
+  ComplaintSearchParameters,
+  ComplaintMapSearchClusteredParameters,
+} from "../../types/models/complaints/complaint-search-parameters";
 import { ZoneAtAGlanceStats } from "src/types/zone_at_a_glance/zone_at_a_glance_stats";
 import { GeneralIncidentComplaintDto } from "src/types/models/complaints/gir-complaint";
 import { ApiKeyGuard } from "src/auth/apikey.guard";
@@ -45,7 +48,7 @@ export class ComplaintController {
     return await this.service.findAllByType(complaintType);
   }
 
-  @Get("/map/search/:complaintType")
+  /*   @Get("/map/search/:complaintType")
   @Roles(Role.COS_OFFICER, Role.CEEB)
   mapSearch(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
@@ -56,6 +59,19 @@ export class ComplaintController {
     const hasCEEBRole = hasRole(req, Role.CEEB);
 
     return this.service.mapSearch(complaintType, model, hasCEEBRole, token);
+  } */
+
+  @Get("/map/search/clustered/:complaintType")
+  @Roles(Role.COS_OFFICER, Role.CEEB)
+  mapSearchClustered(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Query() model: ComplaintMapSearchClusteredParameters,
+    @Request() req,
+    @Token() token,
+  ) {
+    const hasCEEBRole = hasRole(req, Role.CEEB);
+
+    return this.service.mapSearchClustered(complaintType, model, hasCEEBRole, token);
   }
 
   @Get("/search/:complaintType")

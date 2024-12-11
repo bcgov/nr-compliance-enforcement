@@ -1,8 +1,8 @@
-import { WildlifeComplaintDto } from "./wildlife-complaint";
-import { AllegationComplaintDto } from "./allegation-complaint";
-import { GeneralIncidentComplaintDto } from "./gir-complaint";
-
 export interface MapSearchResults {
-  complaints: WildlifeComplaintDto[] | AllegationComplaintDto[] | GeneralIncidentComplaintDto[];
-  unmappedComplaints: number;
+  clusters?: any;
+  mappedCount?: number;
+  unmappedCount?: number;
+  zoom?: number;
+  center?: Array<number>;
+  debugLog?: string;
 }

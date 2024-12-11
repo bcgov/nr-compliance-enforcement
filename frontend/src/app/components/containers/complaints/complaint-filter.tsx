@@ -24,7 +24,7 @@ import Option from "@apptypes/app/option";
 import { listActiveFilters } from "@store/reducers/app";
 import UserService from "@service/user-service";
 import Roles from "@apptypes/app/roles";
-import { FilterDate } from "../../common/filter-date";
+import { FilterDate } from "@components/common/filter-date";
 
 type Props = {
   type: string;
