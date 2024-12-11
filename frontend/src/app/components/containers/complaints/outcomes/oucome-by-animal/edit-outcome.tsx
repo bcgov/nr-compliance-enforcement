@@ -543,9 +543,13 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     placeholder={"Select"}
                     value={getDropdownOption(data.outcome, outcomes)}
                     onChange={(evt) => {
-                      showEditWarning(() => {
+                      if (data?.outcome) {
+                        showEditWarning(() => {
+                          updateModel("outcome", evt?.value);
+                        });
+                      } else {
                         updateModel("outcome", evt?.value);
-                      });
+                      }
                     }}
                     defaultOption={getDropdownOption(data.outcome, outcomes)}
                   />
@@ -591,9 +595,13 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   id="equipment-day-set"
                   maxDate={new Date()}
                   onChange={(input: Date) => {
-                    showEditWarning(() => {
+                    if (data?.date) {
+                      showEditWarning(() => {
+                        handleOutcomeDateChange(input);
+                      });
+                    } else {
                       handleOutcomeDateChange(input);
-                    });
+                    }
                   }}
                   selectedDate={data?.date}
                   placeholder={"Select"}

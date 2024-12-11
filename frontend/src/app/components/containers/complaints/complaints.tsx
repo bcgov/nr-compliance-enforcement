@@ -19,7 +19,7 @@ import {
   setActiveComplaintsViewType,
 } from "../../../store/reducers/app";
 
-import { ComplaintMap } from "./complaint-map";
+import { ComplaintMapWithServerSideClustering } from "./complaint-map-with-server-side-clustering";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
 import { COMPLAINT_TYPES, CEEB_TYPES } from "@apptypes/app/complaint-types";
@@ -45,7 +45,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     if (!storedComplaintType) dispatch(setActiveTab(defaultComplaintType));
   }, [storedComplaintType, dispatch, defaultComplaintType]);
   const [complaintType, setComplaintType] = useState(
-    UserService.hasRole([Roles.CEEB]) ? CEEB_TYPES.ERS : storedComplaintType ?? defaultComplaintType,
+    UserService.hasRole([Roles.CEEB]) ? CEEB_TYPES.ERS : (storedComplaintType ?? defaultComplaintType),
   );
 
   const storedComplaintViewType = useAppSelector(selectActiveComplaintsViewType);
@@ -154,7 +154,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
               searchQuery={search}
             />
           ) : (
-            <ComplaintMap
+            <ComplaintMapWithServerSideClustering
               type={complaintType}
               searchQuery={search}
             />
