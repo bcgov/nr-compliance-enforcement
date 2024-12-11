@@ -3,7 +3,7 @@
 //-- where unable to use the global redux modals
 //--
 
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Button, Col, Modal, Row } from "react-bootstrap";
 
 type props = {
@@ -25,11 +25,22 @@ export const StandaloneConfirmCancelModal: FC<props> = ({
   confirm,
   cancel,
 }) => {
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    setShowModal(show);
+  }, [show]);
+
+  const handleClose = () => {
+    cancel();
+  };
+
   return (
     <Modal
-      show={show}
+      show={showModal}
       aria-labelledby="contained-modal-title-vcenter"
       centered
+      onHide={handleClose}
     >
       {title && (
         <Modal.Header closeButton={true}>
