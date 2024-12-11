@@ -77,6 +77,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const setFilter = useCallback(
     (name: string, value?: Option | Date | null) => {
       let payload: ComplaintFilterPayload = { filter: name, value };
+
       dispatch(updateFilter(payload));
     },
     [dispatch],

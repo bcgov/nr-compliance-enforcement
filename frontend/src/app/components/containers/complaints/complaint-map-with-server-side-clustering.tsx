@@ -7,7 +7,7 @@ import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filter
 import LeafletMapWithServerSideClustering from "@components/mapping/leaflet-map-with-server-side-clustering";
 import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
-import { setMappedComplaintsCount } from "@/app/store/reducers/complaints";
+import { setComplaintSearchParameters, setMappedComplaintsCount } from "@/app/store/reducers/complaints";
 
 type Props = {
   type: string;
@@ -97,6 +97,7 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
     ) => {
       setLoadingMapData(true);
       let payload = generateMapComplaintRequestPayload(type, filters);
+      dispatch(setComplaintSearchParameters(payload));
 
       let parms: any = {
         bbox: bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : undefined, // If the bbox is not provided, return all complaint clusters
