@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
 
@@ -19,7 +19,7 @@ interface SpiderfyProps {
   children?: React.ReactNode;
 }
 
-function Spiderfy(props: SpiderfyProps) {
+const Spiderfy = (props: SpiderfyProps) => {
   const map = useMap();
   // Get the OverlappingMarkerSpiderfier from the window object
   const OverlappingMarkerSpiderfier = window.OverlappingMarkerSpiderfier;
@@ -67,6 +67,6 @@ function Spiderfy(props: SpiderfyProps) {
   }, [oms, map, props.children]);
 
   return <div>{props.children}</div>;
-}
+};
 
 export default Spiderfy;
