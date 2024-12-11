@@ -15,7 +15,7 @@ export interface ComplaintState {
   complaint: WildlifeComplaintDto | AllegationComplaintDto | GeneralInformationComplaintDto | null;
   zoneAtGlance: ZoneAtAGlanceState;
   complaintLocation: Feature | null;
-  mappedItems: MappedComplaintsState;
+  mappedComplaintsCount: MappedComplaintsCountState;
   webeocUpdates: WebEOCComplaintUpdateDTO[];
   actions: ActionTaken[];
   webeocChangeCount: number;
@@ -28,8 +28,8 @@ export interface ComplaintCollection {
   general: Array<GeneralInformationComplaintDto>;
 }
 
-export interface MappedComplaintsState {
-  items: Array<AllegationComplaintDto> | Array<WildlifeComplaintDto> | Array<GeneralInformationComplaintDto>;
+export interface MappedComplaintsCountState {
+  mapped: number;
   unmapped: number;
 }
 

@@ -1,11 +1,10 @@
 import { ChangeEvent, FC, KeyboardEvent, useContext, useState, useEffect } from "react";
 import { InputGroup } from "react-bootstrap";
 import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
-import { getComplaints, getMappedComplaints } from "@store/reducers/complaints";
+import { getComplaints } from "@store/reducers/complaints";
 import { generateComplaintRequestPayload } from "@components/containers/complaints/complaint-list";
 import { useAppDispatch } from "@hooks/hooks";
 import { SORT_TYPES } from "@constants/sort-direction";
-import { generateMapComplaintRequestPayload } from "@components/containers/complaints/complaint-map";
 
 type Props = {
   complaintType: string;
@@ -43,12 +42,6 @@ const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySea
         payload = { ...payload, query: input };
 
         dispatch(getComplaints(complaintType, payload));
-      } else {
-        let payload = generateMapComplaintRequestPayload(complaintType, filters, "", "");
-
-        payload = { ...payload, query: input };
-
-        dispatch(getMappedComplaints(complaintType, payload));
       }
     }
   };

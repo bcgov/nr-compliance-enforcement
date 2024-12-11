@@ -11,7 +11,7 @@ import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { PersonRepositoryMockFactory } from "../../../test/mocks/personRepositoryMockFactory";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { INestApplication } from "@nestjs/common";
-import * as request from "supertest";
+import request from "supertest";
 
 describe("PersonController", () => {
   let controller: PersonController;
