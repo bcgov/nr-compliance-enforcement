@@ -1,6 +1,6 @@
 {
   "name": "nr-sample-natcomplaints",
-  "version": "0.28.1",
+  "version": "0.28.2",
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
@@ -62,7 +62,7 @@
     "lodash": "^4.17.21",
     "make-fetch-happen": "11.0.3",
     "node": "^21.6.1",
-    "npm": "^9.8.1",
+    "npm": "^10.9.1",
     "nrs-ce-common-types": "^1.0.10",
     "omggif": "^1.0.10",
     "os-browserify": "^0.3.0",
@@ -121,7 +121,7 @@
     "url": "https://github.com/bcgov/nr-compliance-enforcement/issues"
   },
   "scripts": {
-    "lint": "./node_modules/.bin/eslint",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
@@ -148,6 +148,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-transform-private-property-in-object": "^7.25.9",
     "@tsconfig/node16": "^1.0.3",
     "@types/jest": "^29.5.1",
     "@types/react-test-renderer": "^18.0.0",
@@ -155,12 +156,12 @@
     "cy-verify-downloads": "^0.2.4",
     "cypress": "^13.6.1",
     "cypress-delete-downloads-folder": "^0.0.5",
-    "eslint": "^8.24.0",
+    "eslint": "^8.57.1",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-standard-with-typescript": "^34.0.0",
     "eslint-plugin-import": "2.27.5",
-    "eslint-plugin-jsdoc": "^40.0.0",
+    "eslint-plugin-jsdoc": "^50.6.0",
     "eslint-plugin-jsx-a11y": "6.7.1",
     "eslint-plugin-n": "^15.0.0",
     "eslint-plugin-promise": "^6.0.0",
@@ -170,12 +171,18 @@
     "playwright-webkit": "^1.27.1",
     "prettier": "^3.0.3",
     "rollup": "^3.29.5",
-    "sass": "^1.62.1",
+    "sass": "1.77.6",
     "ts-jest": "^29.1.0",
     "typescript": "^5.0.4"
   },
+  "peerDependencies": {
+    "postcss": "^8.4.49"
+  },
   "overrides": {
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "nth-check": "^2.1.1",
+    "resolve-url-loader": "^5.0.0",
+    "sass-loader": "^16.0.3"
   },
   "browser": {
     "fs": false,

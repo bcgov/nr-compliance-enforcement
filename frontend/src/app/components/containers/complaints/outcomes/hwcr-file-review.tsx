@@ -44,7 +44,7 @@ export const HWCRFileReview: FC = () => {
   }, [dispatch, componentState, reviewRequired]);
 
   useEffect(() => {
-    setReviewRequired(isReviewRequired);
+    setReviewRequired(isReviewRequired ?? false);
     if (isReviewRequired) setComponentState(DISPLAY_STATE);
   }, [isReviewRequired]);
 

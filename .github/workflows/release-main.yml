@@ -89,6 +89,26 @@ jobs:
         --set backup.enabled=true
         --set backup.persistence.size=256Mi
 
+  healthcheck:
+    name: Healthcheck Prod Deployment
+    runs-on: ubuntu-22.04
+    needs: [vars]
+    environment: prod
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sleep 120 # wait for helm release to startup
+          ./.github/scripts/rollout_healthcheck.sh
+        env:
+          FORCE_PASS: 1 # to prevent pipeline blocking
+          TIMEOUT_SECONDS: 420 # 7m
+          POLL_INTERVAL_SECONDS: 15
+          LABEL_SELECTOR: "app.kubernetes.io/instance=nr-compliance-enforcement-prod"
+          OC_NAMESPACE: ${{ vars.OC_NAMESPACE }}
+          OC_SERVER: ${{ vars.OC_SERVER }}
+          OC_TOKEN: ${{ secrets.OC_TOKEN }}
+
   promote:
     name: Promote Images
     needs: [deploy-prod, vars]

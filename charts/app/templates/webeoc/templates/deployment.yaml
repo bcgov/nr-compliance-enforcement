@@ -61,8 +61,8 @@ spec:
           readinessProbe:
             tcpSocket:
               port: {{ .Values.webeoc.service.targetPort }}
-            initialDelaySeconds: 5
-            periodSeconds: 2
+            initialDelaySeconds: 15
+            periodSeconds: 5
             timeoutSeconds: 2
             successThreshold: 1
             failureThreshold: 30
