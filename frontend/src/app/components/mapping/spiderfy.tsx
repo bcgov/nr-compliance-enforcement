@@ -48,9 +48,7 @@ const Spiderfy = (props: SpiderfyProps) => {
         // our own custom marker class to add but it's not clear that will work with the spiderfier library used here
         props.handlePopupOpen && props.handlePopupOpen(marker.options.alt);
         marker.openPopup();
-        marker.addOneTimeEventListener("popupclose", () => {
-          props.handlePopupClose && props.handlePopupClose();
-        });
+        marker.addOneTimeEventListener("popupclose", props.handlePopupClose);
       }, 100);
 
       if (props.onClick) props.onClick(marker);
