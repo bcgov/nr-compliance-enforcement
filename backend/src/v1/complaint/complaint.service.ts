@@ -434,8 +434,28 @@ export class ComplaintService {
     query: string,
     token: string,
   ): Promise<SelectQueryBuilder<complaintAlias>> {
+    let caseSearchData = [];
+    if (complaintType === "ERS") {
+      // Search CM for any case files that may match based on authorization id
+      const { data, errors } = await get(token, {
+        query: `{getCasesFilesBySearchString (searchString: "${query}")
+        {
+          leadIdentifier,
+          caseIdentifier
+        }
+      }`,
+      });
+
+      if (errors) {
+        this.logger.error("GraphQL errors:", errors);
+        throw new Error("GraphQL errors occurred");
+      }
+
+      caseSearchData = data.getCasesFilesBySearchString;
+    }
+
     builder.andWhere(
-      new Brackets(async (qb) => {
+      new Brackets((qb) => {
         qb.orWhere("complaint.complaint_identifier ILIKE :query", {
           query: `%${query}%`,
         });
@@ -502,23 +522,6 @@ export class ComplaintService {
 
         switch (complaintType) {
           case "ERS": {
-            // Search CM for any case files that may match based on authorization id
-            const { data, errors } = await get(token, {
-              query: `{getCasesFilesBySearchString (searchString: "${query}")
-              {
-                leadIdentifier,
-                caseIdentifier
-              }
-            }`,
-            });
-
-            if (errors) {
-              this.logger.error("GraphQL errors:", errors);
-              throw new Error("GraphQL errors occurred");
-            }
-
-            const caseSearchData = data.getCasesFilesBySearchString;
-
             if (caseSearchData.length > 0) {
               qb.orWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
                 complaint_identifiers: caseSearchData.map((caseData) => caseData.leadIdentifier),
@@ -1131,16 +1134,17 @@ export class ComplaintService {
       //-- search for complaints
       // Only these options require the cos_geo_org_unit_flat_vw view (cos_organization), which is very slow.
       const includeCosOrganization: boolean = Boolean(query || filters.community || filters.zone || filters.region);
+      this.logger.error("includeCosOrganization", includeCosOrganization);
       let builder = this._generateMapQueryBuilder(complaintType, includeCosOrganization);
-
-      //-- apply search
-      if (query) {
-        builder = await this._applySearch(builder, complaintType, query, token);
-      }
 
       //-- apply filters if used
       if (Object.keys(filters).length !== 0) {
         builder = this._applyFilters(builder, filters as ComplaintFilterParameters, complaintType);
+      }
+
+      //-- apply search
+      if (query) {
+        builder = await this._applySearch(builder, complaintType, query, token);
       }
 
       //-- only return complaints for the agency the user is associated with
