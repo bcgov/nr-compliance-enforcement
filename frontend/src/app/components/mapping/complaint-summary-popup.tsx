@@ -5,6 +5,7 @@ import { ComplaintDetails } from "@apptypes/complaints/details/complaint-details
 import { applyStatusClass, formatDate } from "@common/methods";
 import { Badge, Button } from "react-bootstrap";
 import { Popup } from "react-leaflet";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   complaint_identifier: string;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complaintType }) => {
+  const navigate = useNavigate();
   const { officerAssigned, natureOfComplaint, species, violationType, loggedDate, status, girType } = useAppSelector(
     selectComplaintHeader(complaintType),
   );
@@ -77,7 +79,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             size="sm"
             className="comp-map-popup-details-btn"
             id="view-complaint-details-button-id"
-            href={`/complaint/${complaintType}/${complaint_identifier}`}
+            onClick={() => navigate(`/complaint/${complaintType}/${complaint_identifier}`)}
           >
             View Details
           </Button>
