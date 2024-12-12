@@ -1134,7 +1134,6 @@ export class ComplaintService {
       //-- search for complaints
       // Only these options require the cos_geo_org_unit_flat_vw view (cos_organization), which is very slow.
       const includeCosOrganization: boolean = Boolean(query || filters.community || filters.zone || filters.region);
-      this.logger.error("includeCosOrganization", includeCosOrganization);
       let builder = this._generateMapQueryBuilder(complaintType, includeCosOrganization);
 
       //-- apply filters if used
