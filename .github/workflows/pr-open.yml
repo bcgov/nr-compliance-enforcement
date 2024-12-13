@@ -41,8 +41,6 @@ jobs:
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
-    with:
-      triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/' 'charts/')
 
   # https://github.com/bcgov/quickstart-openshift-helpers
   deploys:
@@ -52,8 +50,6 @@ jobs:
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
-    with:
-      triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/' 'charts/')
 
   healthcheck:
     name: Healthcheck Deployment
