@@ -73,7 +73,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
     } else {
       setComponentState(EDIT_STATE);
     }
-  }, [carouselData]);
+  }, [carouselData, showAddButton]);
 
   const handleSlideCountChange = (count: number) => {
     setOutcomeAttachmentCount(count);

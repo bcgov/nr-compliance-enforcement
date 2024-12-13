@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Modal, Row, Col, Button } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
 

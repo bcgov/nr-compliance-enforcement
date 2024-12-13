@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { FC, useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Button, Card } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
@@ -47,8 +47,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const [dateSetErrorMsg, setDateSetErrorMsg] = useState<string>("");
   const [officerRemovedErrorMsg, setOfficerRemovedErrorMsg] = useState<string>("");
   const [dateRemovedErrorMsg, setDateRemovedErrorMsg] = useState<string>("");
-  const [xCoordinateErrorMsg, setXCoordinateErrorMsg] = useState<string>("");
-  const [yCoordinateErrorMsg, setYCoordinateErrorMsg] = useState<string>("");
+  const [, setXCoordinateErrorMsg] = useState<string>("");
+  const [, setYCoordinateErrorMsg] = useState<string>("");
   const [coordinateErrorsInd, setCoordinateErrorsInd] = useState<boolean>(false);
   const [actionSetGuid, setActionSetGuid] = useState<string>();
   const [actionRemovedGuid, setActionRemovedGuid] = useState<string>();
@@ -67,6 +67,17 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
+  // needed to turn equipment type codes into descriptions
+  const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown);
+
+  // for turning codes into values
+  const getValue = useCallback(
+    (property: string): Option | undefined => {
+      return equipmentTypeCodes.find((item) => item.value === equipment?.typeCode);
+    },
+    [equipmentTypeCodes, equipment?.typeCode],
+  );
+
   useEffect(() => {
     if (assignedOfficer && officersInAgencyList) {
       const officerAssigned: any = officersInAgencyList
@@ -81,6 +92,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         setOfficerSet(officerAssigned[0]);
       }
     }
+    // officersInAgencyList should be a dependency but its selector needs to be refactored using a selector creator to avoid an infinte loop here by adding it
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assignedOfficer]);
 
   useEffect(() => {
@@ -110,7 +123,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
       }
     });
     setWasAnimalCaptured(equipment?.wasAnimalCaptured ?? "U");
-  }, [equipment]);
+  }, [assignableOfficers, complaintData, equipment, getValue]);
 
   // Reset error messages
   const resetValidationErrors = () => {
@@ -262,16 +275,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     setXCoordinateErrorMsg("");
     setYCoordinateErrorMsg("");
   };
-
-  // needed to turn equipment type codes into descriptions
-  const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown);
-
-  // for turning codes into values
-  const getValue = (property: string): Option | undefined => {
-    return equipmentTypeCodes.find((item) => item.value === equipment?.typeCode);
-  };
-
-  const hasCoordinates = complaintData?.location?.coordinates[0] !== 0 || complaintData?.location?.coordinates[1] !== 0;
 
   const wasAnimalCapturedOptions: Option[] = [
     { label: "Yes", value: "Y" },
