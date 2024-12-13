@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Param, Query, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Logger, Post, Res, UseGuards } from "@nestjs/common";
 import { Response } from "express";
 import { DocumentService } from "./document.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
@@ -9,6 +9,8 @@ import { Token } from "../../auth/decorators/token.decorator";
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { format } from "date-fns";
 import { escape } from "escape-html";
+import { ExportComplaintParameters } from "src/types/models/complaints/export-complaint-parameters";
+import { Attachment, AttachmentType } from "src/types/models/general/attachment";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("document")
@@ -18,18 +20,36 @@ export class DocumentController {
 
   constructor(private readonly service: DocumentService) {}
 
-  @Get("/export-complaint/:type")
+  @Post("/export-complaint")
   @Roles(Role.COS_OFFICER, Role.CEEB)
-  async exportComplaint(
-    @Param("type") type: COMPLAINT_TYPE,
-    @Query("id") id: string,
-    @Query("tz") tz: string,
-    @Token() token,
-    @Res() res: Response,
-  ): Promise<void> {
+  async exportComplaint(@Body() model: ExportComplaintParameters, @Token() token, @Res() res: Response): Promise<void> {
+    const id: string = model?.id ?? "unknown";
+
+    const attachments: Attachment[] =
+      [
+        ...model.attachments?.complaintsAttachments.map((item, index) => {
+          return {
+            type: AttachmentType.COMPLAINT_ATTACHMENT,
+            user: item.createdBy,
+            name: decodeURIComponent(item.name),
+            date: item.createdAt,
+            sequenceId: index,
+          } as Attachment;
+        }),
+        ...model.attachments?.outcomeAttachments.map((item, index) => {
+          return {
+            type: AttachmentType.OUTCOME_ATTACHMENT,
+            date: item.createdAt,
+            name: decodeURIComponent(item.name),
+            user: item.createdBy,
+            sequenceId: index,
+          } as Attachment;
+        }),
+      ] ?? [];
+
     try {
-      const fileName = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-      const response = await this.service.exportComplaint(id, type, fileName, tz, token);
+      const fileName = `Complaint-${id}-${model.type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
+      const response = await this.service.exportComplaint(id, model.type, fileName, model.tz, token, attachments);
 
       if (!response || !response.data) {
         throw Error(`exception: unable to export document for complaint: ${id}`);

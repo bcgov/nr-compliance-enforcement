@@ -74,7 +74,9 @@ import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xr
 import { OfficerService } from "../officer/officer.service";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
-
+import { Attachment, AttachmentType } from "src/types/models/general/attachment";
+import { filter } from "rxjs";
+import { getFileType } from "src/common/methods";
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -1717,7 +1719,13 @@ export class ComplaintService {
     return results;
   };
 
-  getReportData = async (id: string, complaintType: COMPLAINT_TYPE, tz: string, token: string) => {
+  getReportData = async (
+    id: string,
+    complaintType: COMPLAINT_TYPE,
+    tz: string,
+    token: string,
+    attachments: Attachment[],
+  ) => {
     let data;
     mapWildlifeReport(this.mapper, tz);
     mapAllegationReport(this.mapper, tz);
@@ -2184,6 +2192,29 @@ export class ComplaintService {
       if (data.incidentDateTime) {
         data.incidentDateTime = _applyTimezone(data.incidentDateTime, tz, "datetime");
       }
+      // Using short names like "cAtts" and "oAtts" to fit them in CDOGS template table cells
+      data.cAtts = attachments
+        .filter((item) => item.type === AttachmentType.COMPLAINT_ATTACHMENT)
+        .map((item) => {
+          return {
+            name: item.name,
+            date: _applyTimezone(item.date, tz, "datetime"),
+            fileType: getFileType(item.name),
+          };
+        });
+      data.hasComplaintAttachments = data.cAtts?.length > 0;
+
+      data.oAtts = attachments
+        .filter((item) => item.type === AttachmentType.OUTCOME_ATTACHMENT)
+        .map((item) => {
+          return {
+            name: item.name,
+            date: _applyTimezone(item.date, tz, "datetime"),
+            fileType: getFileType(item.name),
+          };
+        });
+
+      data.hasOutcomeAttachments = data.oAtts?.length > 0;
 
       return data;
     } catch (error) {
