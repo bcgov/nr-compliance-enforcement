@@ -47,8 +47,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const [dateSetErrorMsg, setDateSetErrorMsg] = useState<string>("");
   const [officerRemovedErrorMsg, setOfficerRemovedErrorMsg] = useState<string>("");
   const [dateRemovedErrorMsg, setDateRemovedErrorMsg] = useState<string>("");
-  const [, setXCoordinateErrorMsg] = useState<string>("");
-  const [, setYCoordinateErrorMsg] = useState<string>("");
+  const [xCoordinateErrorMsg, setXCoordinateErrorMsg] = useState<string>("");
+  const [yCoordinateErrorMsg, setYCoordinateErrorMsg] = useState<string>("");
   const [coordinateErrorsInd, setCoordinateErrorsInd] = useState<boolean>(false);
   const [actionSetGuid, setActionSetGuid] = useState<string>();
   const [actionRemovedGuid, setActionRemovedGuid] = useState<string>();
@@ -377,6 +377,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               </div>
             </div>
 
+            <div className="error-message">{xCoordinateErrorMsg || yCoordinateErrorMsg}</div>
             <CompCoordinateInput
               id="equipment-coordinates"
               utmZones={bcUtmZoneNumbers.map((zone: string) => {
