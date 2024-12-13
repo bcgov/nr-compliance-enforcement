@@ -32,16 +32,28 @@ jobs:
           tag_fallback: latest
           triggers: ('${{ matrix.package }}/')
 
+  # https://github.com/bcgov/quickstart-openshift
+  # TODO: using latest for now, but move to tagged version
+  crunchy:
+    name: Deploy Crunchy
+    needs: [builds]
+    uses: bcgov/quickstart-openshift/.github/workflows/.deployer-db.yml
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+    with:
+      triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/' 'charts/')
+
   # https://github.com/bcgov/quickstart-openshift-helpers
   deploys:
     name: Deploys
-    needs: [builds]
+    needs: [builds, crunchy]
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.5.0
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
-      triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/')
+      triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/' 'charts/')
 
   healthcheck:
     name: Healthcheck Deployment
