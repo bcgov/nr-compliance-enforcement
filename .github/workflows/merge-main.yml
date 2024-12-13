@@ -56,8 +56,7 @@ jobs:
             overwrite: false
           - name: frontend
             file: frontend/openshift.deploy.yml
-            parameters: 
-              -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_TEST}} 
+            parameters: -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_TEST}}
               -p COMS_URL=${{vars.COMS_URL_TEST}}
               -p COMS_BUCKET=${{vars.COMS_BUCKET_TEST}}
             overwrite: true
@@ -72,8 +71,7 @@ jobs:
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          parameters:
-            -p ZONE=test -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
+          parameters: -p ZONE=test -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
           penetration_test: true
 
@@ -96,8 +94,7 @@ jobs:
             overwrite: false
           - name: frontend
             file: frontend/openshift.deploy.yml
-            parameters: 
-              -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_PROD}}
+            parameters: -p KEYCLOAK_URL=${{ vars.KEYCLOAK_URL_PROD}}
               -p COMS_URL=${{vars.COMS_URL_PRD}}
               -p COMS_BUCKET=${{vars.COMS_BUCKET_PROD}}
             overwrite: true
@@ -112,8 +109,7 @@ jobs:
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          parameters:
-            -p ZONE=prod -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
+          parameters: -p ZONE=prod -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p NAME=${{ github.event.repository.name }} ${{ matrix.parameters }}
           penetration_test: false
 
