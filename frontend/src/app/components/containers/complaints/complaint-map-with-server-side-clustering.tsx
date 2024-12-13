@@ -1,7 +1,6 @@
 import { FC, useState, useContext, useEffect, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
-import { SORT_TYPES } from "@constants/sort-direction";
 import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
 import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complaint-filters";
 import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filters/complaint-request-payload";
