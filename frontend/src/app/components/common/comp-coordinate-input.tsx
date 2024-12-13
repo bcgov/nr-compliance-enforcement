@@ -262,7 +262,8 @@ export const CompCoordinateInput: FC<Props> = ({
         }
       }
     }
-  }, [coordinateType, handleGeoPointChange, handleUtmGeoPointChange, initXCoordinate, initYCoordinate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coordinateType, initXCoordinate, initYCoordinate]);
 
   const formatUtmCoordinate = (input: string | undefined): string => {
     const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
