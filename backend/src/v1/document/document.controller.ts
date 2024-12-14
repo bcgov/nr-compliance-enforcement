@@ -25,27 +25,26 @@ export class DocumentController {
   async exportComplaint(@Body() model: ExportComplaintParameters, @Token() token, @Res() res: Response): Promise<void> {
     const id: string = model?.id ?? "unknown";
 
-    const attachments: Attachment[] =
-      [
-        ...model.attachments?.complaintsAttachments.map((item, index) => {
-          return {
-            type: AttachmentType.COMPLAINT_ATTACHMENT,
-            user: item.createdBy,
-            name: decodeURIComponent(item.name),
-            date: item.createdAt,
-            sequenceId: index,
-          } as Attachment;
-        }),
-        ...model.attachments?.outcomeAttachments.map((item, index) => {
-          return {
-            type: AttachmentType.OUTCOME_ATTACHMENT,
-            date: item.createdAt,
-            name: decodeURIComponent(item.name),
-            user: item.createdBy,
-            sequenceId: index,
-          } as Attachment;
-        }),
-      ] ?? [];
+    const attachments: Attachment[] = [
+      ...model.attachments?.complaintsAttachments?.map((item, index) => {
+        return {
+          type: AttachmentType.COMPLAINT_ATTACHMENT,
+          user: item.createdBy,
+          name: decodeURIComponent(item.name),
+          date: item.createdAt,
+          sequenceId: index,
+        } as Attachment;
+      }),
+      ...model.attachments?.outcomeAttachments?.map((item, index) => {
+        return {
+          type: AttachmentType.OUTCOME_ATTACHMENT,
+          date: item.createdAt,
+          name: decodeURIComponent(item.name),
+          user: item.createdBy,
+          sequenceId: index,
+        } as Attachment;
+      }),
+    ];
 
     try {
       const fileName = `Complaint-${id}-${model.type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
