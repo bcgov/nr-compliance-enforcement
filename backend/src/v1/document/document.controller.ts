@@ -10,7 +10,7 @@ import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { format } from "date-fns";
 import { escape } from "escape-html";
 import { ExportComplaintParameters } from "src/types/models/complaints/export-complaint-parameters";
-import { Attachment, AttachmentType } from "src/types/models/general/attachment";
+import { Attachment, AttachmentType } from "../../types/models/general/attachment";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("document")
@@ -25,8 +25,11 @@ export class DocumentController {
   async exportComplaint(@Body() model: ExportComplaintParameters, @Token() token, @Res() res: Response): Promise<void> {
     const id: string = model?.id ?? "unknown";
 
+    const complaintsAttachments = model?.attachments?.complaintsAttachments ?? [];
+    const outcomeAttachments = model?.attachments?.outcomeAttachments ?? [];
+
     const attachments: Attachment[] = [
-      ...model?.attachments?.complaintsAttachments?.map((item, index) => {
+      ...complaintsAttachments.map((item, index) => {
         return {
           type: AttachmentType.COMPLAINT_ATTACHMENT,
           user: item.createdBy,
@@ -35,7 +38,7 @@ export class DocumentController {
           sequenceId: index,
         } as Attachment;
       }),
-      ...model?.attachments?.outcomeAttachments?.map((item, index) => {
+      ...outcomeAttachments.map((item, index) => {
         return {
           type: AttachmentType.OUTCOME_ATTACHMENT,
           date: item.createdAt,
