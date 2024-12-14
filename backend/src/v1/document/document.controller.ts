@@ -26,7 +26,7 @@ export class DocumentController {
     const id: string = model?.id ?? "unknown";
 
     const attachments: Attachment[] = [
-      ...model.attachments?.complaintsAttachments?.map((item, index) => {
+      ...model?.attachments?.complaintsAttachments?.map((item, index) => {
         return {
           type: AttachmentType.COMPLAINT_ATTACHMENT,
           user: item.createdBy,
@@ -35,7 +35,7 @@ export class DocumentController {
           sequenceId: index,
         } as Attachment;
       }),
-      ...model.attachments?.outcomeAttachments?.map((item, index) => {
+      ...model?.attachments?.outcomeAttachments?.map((item, index) => {
         return {
           type: AttachmentType.OUTCOME_ATTACHMENT,
           date: item.createdAt,
