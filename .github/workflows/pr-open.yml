@@ -36,7 +36,7 @@ jobs:
   # TODO: using latest for now, but move to tagged version
   crunchy:
     name: Deploy Crunchy
-    needs: [builds]
+    # needs: [builds]
     uses: bcgov/quickstart-openshift/.github/workflows/.deployer-db.yml
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
