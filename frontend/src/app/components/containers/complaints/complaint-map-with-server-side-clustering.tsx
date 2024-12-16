@@ -20,8 +20,6 @@ export const generateMapComplaintRequestPayload = (
   searchQuery: string,
 ): ComplaintRequestPayload => {
   const {
-    sortColumn,
-    sortOrder,
     region,
     zone,
     community,
