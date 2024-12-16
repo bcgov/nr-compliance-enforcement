@@ -1,5 +1,5 @@
 import { FC, useState, useContext, useEffect, useCallback } from "react";
-import { useAppDispatch } from "@hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
 import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complaint-filters";
@@ -7,7 +7,13 @@ import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filter
 import LeafletMapWithServerSideClustering from "@components/mapping/leaflet-map-with-server-side-clustering";
 import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
-import { setComplaint, setComplaintSearchParameters, setMappedComplaintsCount } from "@/app/store/reducers/complaints";
+import {
+  selectComplaintSearchParameters,
+  setComplaint,
+  setComplaintSearchParameters,
+  setMappedComplaintsCount,
+} from "@/app/store/reducers/complaints";
+import { selectDefaultPageSize } from "@/app/store/reducers/app";
 
 type Props = {
   type: string;
@@ -17,6 +23,10 @@ type Props = {
 export const generateMapComplaintRequestPayload = (
   complaintType: string,
   filters: ComplaintFilters,
+  page: number,
+  pageSize: number,
+  sortColumn: string,
+  sortOrder: string,
   searchQuery: string,
 ): ComplaintRequestPayload => {
   const {
@@ -53,6 +63,8 @@ export const generateMapComplaintRequestPayload = (
     outcomeAnimalStartDateFilter: outcomeAnimalStartDate,
     outcomeAnimalEndDateFilter: outcomeAnimalEndDate,
     query: searchQuery,
+    page,
+    pageSize,
   };
 
   switch (complaintType) {
@@ -84,6 +96,8 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
   //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear
   const { state: filters } = useContext(ComplaintFilterContext);
+  const defaultPageSize = useAppSelector(selectDefaultPageSize);
+  const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
 
   const fetchMapData = useCallback(
     async (
@@ -100,7 +114,15 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
       },
     ) => {
       setLoadingMapData(true);
-      let payload = generateMapComplaintRequestPayload(type, filters, searchQuery);
+      let payload = generateMapComplaintRequestPayload(
+        type,
+        filters,
+        storedSearchParams.page || 1,
+        storedSearchParams.pageSize || defaultPageSize,
+        storedSearchParams.sortColumn,
+        storedSearchParams.sortOrder,
+        searchQuery,
+      );
       dispatch(setComplaint(null));
       dispatch(setComplaintSearchParameters(payload));
 
