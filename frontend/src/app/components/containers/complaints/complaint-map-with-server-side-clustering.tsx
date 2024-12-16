@@ -7,7 +7,7 @@ import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filter
 import LeafletMapWithServerSideClustering from "@components/mapping/leaflet-map-with-server-side-clustering";
 import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
-import { setMappedComplaintsCount } from "@/app/store/reducers/complaints";
+import { setComplaint, setComplaintSearchParameters, setMappedComplaintsCount } from "@/app/store/reducers/complaints";
 
 type Props = {
   type: string;
@@ -17,8 +17,11 @@ type Props = {
 export const generateMapComplaintRequestPayload = (
   complaintType: string,
   filters: ComplaintFilters,
+  searchQuery: string,
 ): ComplaintRequestPayload => {
   const {
+    sortColumn,
+    sortOrder,
     region,
     zone,
     community,
@@ -37,8 +40,8 @@ export const generateMapComplaintRequestPayload = (
   } = filters;
 
   let common = {
-    sortColumn: "", // sort or order has no bearing on map data
-    sortOrder: "", // sort or order has no bearing on map data
+    sortColumn: sortColumn,
+    sortOrder: sortOrder,
     regionCodeFilter: region,
     zoneCodeFilter: zone,
     areaCodeFilter: community,
@@ -49,6 +52,7 @@ export const generateMapComplaintRequestPayload = (
     actionTakenFilter: actionTaken,
     outcomeAnimalStartDateFilter: outcomeAnimalStartDate,
     outcomeAnimalEndDateFilter: outcomeAnimalEndDate,
+    query: searchQuery,
   };
 
   switch (complaintType) {
@@ -96,7 +100,9 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
       },
     ) => {
       setLoadingMapData(true);
-      let payload = generateMapComplaintRequestPayload(type, filters);
+      let payload = generateMapComplaintRequestPayload(type, filters, searchQuery);
+      dispatch(setComplaint(null));
+      dispatch(setComplaintSearchParameters(payload));
 
       let parms: any = {
         bbox: bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : undefined, // If the bbox is not provided, return all complaint clusters
