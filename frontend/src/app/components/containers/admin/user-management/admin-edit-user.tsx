@@ -16,7 +16,7 @@ import { Officer } from "@apptypes/person/person";
 import { UUID } from "crypto";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
 
-export const UserManagement: FC = () => {
+export const AdminEditUser: FC = () => {
   const dispatch = useAppDispatch();
   const officers = useAppSelector(selectOfficersDropdown(true));
   const officeAssignments = useAppSelector(selectOfficesForAssignmentDropdown);

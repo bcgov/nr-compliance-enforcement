@@ -1,0 +1,27 @@
+@import "./colours.scss";
+
+.user-management-container {
+  max-width: 860px;
+
+  h3 {
+    color: $gray-900;
+    text-align: justify;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 120%;
+  }
+
+  .admin-subtitle {
+    color: $gray-60;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    margin-top: 31px;
+  }
+
+  .admin-button-groups {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+}
