@@ -64,7 +64,7 @@ export const AttachmentsCarousel: FC<Props> = ({
     if (complaintIdentifier) {
       dispatch(getAttachments(complaintIdentifier, attachmentType));
     }
-  }, [complaintIdentifier, dispatch]);
+  }, [attachmentType, complaintIdentifier, dispatch]);
 
   //-- when the component unmounts clear the attachments from redux
   useEffect(() => {
@@ -82,7 +82,7 @@ export const AttachmentsCarousel: FC<Props> = ({
     if (typeof onSlideCountChange === "function") {
       onSlideCountChange(slides.length);
     }
-  }, [slides.length]);
+  }, [onSlideCountChange, slides.length]);
 
   // Clear all pending upload attachments
   useEffect(() => {
@@ -90,7 +90,7 @@ export const AttachmentsCarousel: FC<Props> = ({
       setSlides([]);
       if (setCancelPendingUpload) setCancelPendingUpload(false); //reset cancelPendingUpload
     }
-  }, [cancelPendingUpload]);
+  }, [cancelPendingUpload, setCancelPendingUpload]);
 
   function sortAttachmentsByName(comsObjects: COMSObject[]): COMSObject[] {
     // Create a copy of the array using slice() or spread syntax

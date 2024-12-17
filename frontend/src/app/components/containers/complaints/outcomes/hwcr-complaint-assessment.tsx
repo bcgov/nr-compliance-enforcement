@@ -475,7 +475,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       return true;
     }
     return false;
-  }, [selectedActionRequired, selectedJustification]);
+  }, [isLargeCarnivore, selectedActionRequired?.value, selectedJustification, selectedLocation]);
 
   const validateJustification = useCallback((): boolean => {
     if (selectedActionRequired?.value === "No" && !selectedJustification) {
