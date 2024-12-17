@@ -61,3 +61,37 @@ export const formatPhonenumber = (input: string): string => {
   //-- return the phone number as its stored
   return input;
 };
+
+export const getFileType = (input: string): string => {
+  const extension = getFileExtension(input);
+  return mapExtensiontoFileType(extension);
+};
+
+export const getFileExtension = (input: string): string => {
+  return input
+    .substring(input.lastIndexOf(".") + 1)
+    .toLowerCase()
+    .trim();
+};
+
+export const mapExtensiontoFileType = (input: string): string => {
+  if (["bmp", "gif", "heif", "heic", "jpg", "jpeg", "png", "psd", "svg", "tif", "tiff"].includes(input)) {
+    return "Image";
+  }
+  if (["doc", "docx", "md", "odt", "pdf", "ppt", "rtf", "txt", "xls", "xlsx"].includes(input)) {
+    return "Document";
+  }
+  if (["flac", "mp3", "aac", "ogg", "wma", "wav", "wave"].includes(input)) {
+    return "Audio";
+  }
+  if (["avi", "flv", "mov", "mp4"].includes(input)) {
+    return "Video";
+  }
+  if (["7z", "jar", "rar", "zip"].includes(input)) {
+    return "Archive";
+  }
+  if (["eml", "msg", "ost", "pst"].includes(input)) {
+    return "Email";
+  }
+  return "Unknown";
+};

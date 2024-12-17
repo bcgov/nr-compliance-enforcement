@@ -34,7 +34,7 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
 
   useEffect(() => {
     setCheckedItems(checkedValues);
-  }, [checkedValues.length]);
+  }, [checkedValues, checkedValues.length]);
 
   return (
     <div id="checkbox-div">
