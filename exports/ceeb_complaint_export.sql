@@ -11,20 +11,20 @@ select
     	WHEN cst.short_description = 'Closed' THEN 'Complete'
     	ELSE cst.short_description 
 	END as "Complaint Status",
-	'IDIR\' || ofc.user_id  as "Officer Assigned",
+	--'IDIR\' || ofc.user_id  as "Officer Assigned",
 	gfv.region_name as "Region",
-	gfv.offloc_name as "Office",
+	--gfv.offloc_name as "Office",
 	goc.short_description as "City/Town",
-	cmp.caller_name  as "Complainant Contact",
-	CASE 
-	    WHEN cmp.is_privacy_requested = 'Y' THEN 'Yes'
-    	ELSE 'No'
-	END as "Privacy Requested",
-	cmp.caller_email as "Email",
-	cmp.caller_phone_1 as "Telephone No.",
-	cmp.location_summary_text as "Facility/Site Location",
-	ST_Y(cmp.location_geometry_point) as "Latitude",
-	ST_X(cmp.location_geometry_point) as "Longitude",
+	--cmp.caller_name  as "Complainant Contact",
+	--CASE 
+	--    WHEN cmp.is_privacy_requested = 'Y' THEN 'Yes'
+  --  	ELSE 'No'
+	--END as "Privacy Requested",
+	--cmp.caller_email as "Email",
+	--cmp.caller_phone_1 as "Telephone No.",
+	--cmp.location_summary_text as "Facility/Site Location",
+	--ST_Y(cmp.location_geometry_point) as "Latitude",
+	--ST_X(cmp.location_geometry_point) as "Longitude",
 	ac.suspect_witnesss_dtl_text as "Alleged Contravener"
 from 
 	complaint cmp
