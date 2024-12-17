@@ -13,6 +13,7 @@ def main():
     complaint_file = "complaints.csv"
     case_file = "cases.csv"
     output_file = "NatCom_Export.csv"
+    merge_column = "Record ID" # CEEB = "Record ID" COS = "Complaint Identifier"
 
     try:
         # Load data from both files
@@ -20,7 +21,7 @@ def main():
         case_df = pd.read_csv(case_file)
 
         # Merge data on 'Record ID' with validation
-        combined_df = pd.merge(complaint_df, case_df, on="Record ID", how="outer", validate="many_to_many")
+        combined_df = pd.merge(complaint_df, case_df, on=merge_column, how="outer", validate="many_to_many")
 
         # Save the merged data to a new CSV file
         combined_df.to_csv(output_file, index=False)
