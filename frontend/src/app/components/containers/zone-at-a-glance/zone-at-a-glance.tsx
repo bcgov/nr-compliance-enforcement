@@ -22,7 +22,6 @@ export const ZoneAtAGlance: FC = () => {
     if (currentZone) {
       dispatch(getZoneAtAGlanceStats(currentZone, ComplaintType.HWCR_COMPLAINT));
       dispatch(getZoneAtAGlanceStats(currentZone, ComplaintType.ALLEGATION_COMPLAINT));
-      dispatch(getZoneAtAGlanceStats(currentZone, ComplaintType.GENERAL_COMPLAINT));
     }
   }, [dispatch, currentZone]);
 
