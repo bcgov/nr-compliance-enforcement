@@ -137,6 +137,8 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
               </div>
             </ListGroupItem>
           );
+        } else {
+          return <></>;
         }
       });
     }

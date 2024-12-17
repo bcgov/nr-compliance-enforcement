@@ -149,6 +149,8 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
         }
       }
     }
+    // officersInAgencyList should be a dependency but its selector needs to be refactored using a selector creator to avoid an infinte loop here by adding it
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaint]);
 
   useEffect(() => {
