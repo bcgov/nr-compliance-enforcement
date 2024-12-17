@@ -3,7 +3,6 @@ import type { AnimalOutcome as AnimalOutcomeData } from "@apptypes/app/complaint
 import { useAppSelector } from "@hooks/hooks";
 import {
   selectAgeDropdown,
-  selectConflictHistoryDropdown,
   selectEarDropdown,
   selectSexDropdown,
   selectSpeciesCodeDropdown,
