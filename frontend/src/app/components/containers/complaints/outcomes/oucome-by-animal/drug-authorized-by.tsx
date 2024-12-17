@@ -20,7 +20,6 @@ type refProps = {
 
 export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
   const {
-    agency,
     update,
     drugAuthorization: { officer, date },
   } = props;

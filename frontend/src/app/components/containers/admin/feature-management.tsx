@@ -11,14 +11,6 @@ export const FeatureManagement: FC = () => {
 
   const [featureData, setFeatureData] = useState<any[]>([]);
 
-  const getAllFeatureFlags = async () => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-flag/all`);
-    const response: any = await get(dispatch, parameters);
-    if (response) {
-      setFeatureData(response);
-    }
-  };
-
   const updateFeatureFlag = async (id: string, active_ind: boolean) => {
     try {
       const update = {
@@ -36,8 +28,15 @@ export const FeatureManagement: FC = () => {
   };
 
   useEffect(() => {
+    const getAllFeatureFlags = async () => {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-flag/all`);
+      const response: any = await get(dispatch, parameters);
+      if (response) {
+        setFeatureData(response);
+      }
+    };
     getAllFeatureFlags();
-  }, []);
+  }, [dispatch]);
 
   const handleChange = (item: any, i: number) => {
     const updateFeatureData = [...featureData];
