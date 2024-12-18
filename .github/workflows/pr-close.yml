@@ -56,8 +56,8 @@ jobs:
       # OC Login
       - run: |
           # OC Login
-          oc login --token=${{ secrets.oc_token }} --server=${{ inputs.oc_server }}
-          oc project ${{ secrets.oc_namespace }} # Safeguard!
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
       - run: |
           # check if postgres-crunchy exists or else exit
           oc get PostgresCluster/postgres-crunchy || exit 0
