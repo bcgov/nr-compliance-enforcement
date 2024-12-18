@@ -37,6 +37,8 @@ jobs:
     name: Deploy Crunchy
     needs: [builds]
     uses: ./.github/workflows/.dbdeployer.yml
+    with:
+      s3_enabled: false # no backups in dev
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
