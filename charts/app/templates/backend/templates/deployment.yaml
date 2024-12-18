@@ -31,9 +31,11 @@ spec:
         - name: {{ include "backend.fullname" . }}-init
           image: "{{ .Values.global.registry }}/{{ .Values.global.repository }}/migrations:{{ .Values.global.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ default "Always" .Values.backend.imagePullPolicy }}
+          {{- if not .Values.global.useCrunchy }}
           envFrom:
             - secretRef:
                 name: {{ .Release.Name }}-flyway
+          {{- end }}
           env:
             - name: NODE_TLS_REJECT_UNAUTHORIZED
               value: "0"
@@ -45,6 +47,13 @@ spec:
               value: "10"
             - name: FLYWAY_LOCATIONS
               value: "{{- if eq .Release.Namespace "c1c7ed-dev" -}}{{ .Values.global.secrets.flywayLocations.dev }}{{- else if eq .Release.Namespace "c1c7ed-test" -}}{{ .Values.global.secrets.flywayLocations.test }}{{- else if eq .Release.Namespace "c1c7ed-prod" -}}{{ .Values.global.secrets.flywayLocations.prod }}{{- else -}}filesystem:./flyway/sql{{- end }}"
+            {{- if .Values.global.useCrunchy }}
+            - name: FLYWAY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag | quote }}
+                  key: pgbouncer-jdbc-uri
+            {{- end }}
           resources:
             limits:
               cpu: 200m
@@ -68,6 +77,28 @@ spec:
               value: info
             - name: NODE_TLS_REJECT_UNAUTHORIZED
               value: "0"
+            {{- if .Values.global.useCrunchy }}
+            - name: POSTGRESQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag | quote }}
+                  key: dbname
+            - name: POSTGRESQL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag | quote }}
+                  key: pgbouncer-host
+            - name: POSTGRESQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag | quote }}
+                  key: user
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag | quote }}
+                  key: password
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.backend.service.targetPort }}

@@ -51,6 +51,9 @@ jobs:
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
+    with:
+      params: --set global.useCrunchy=true
+
 
   healthcheck:
     name: Healthcheck Deployment
