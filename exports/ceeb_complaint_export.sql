@@ -1,6 +1,9 @@
 -----------------------------------------------------
 -- Quarterly CEEB Complaint Export query to be run for CEEB statistics
 -- see https://github.com/bcgov/nr-compliance-enforcement/wiki/Data-Exports for more information
+--
+-- Note some extra fields are commented out of the query as these are currently part of the 
+-- NRIS export however they are not currently being used for reporting
 -----------------------------------------------------
 select 
 	cmp.complaint_identifier as "Record ID",
@@ -11,6 +14,7 @@ select
     	WHEN cst.short_description = 'Closed' THEN 'Complete'
     	ELSE cst.short_description 
 	END as "Complaint Status",
+	cmrc.long_description as "Method Received",
 	--'IDIR\' || ofc.user_id  as "Officer Assigned",
 	gfv.region_name as "Region",
 	--gfv.offloc_name as "Office",
@@ -34,6 +38,10 @@ join
 	geo_organization_unit_code goc on goc.geo_organization_unit_code  = cmp.geo_organization_unit_code 
 join 
 	cos_geo_org_unit_flat_vw gfv on gfv.area_code = goc.geo_organization_unit_code 
+left join
+	comp_mthd_recv_cd_agcy_cd_xref cmrcacx on cmrcacx.comp_mthd_recv_cd_agcy_cd_xref_guid = cmp.comp_mthd_recv_cd_agcy_cd_xref_guid
+left join 
+	complaint_method_received_code cmrc on cmrc.complaint_method_received_code = cmrcacx.complaint_method_received_code
 left join 
 	person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true
 left join 
@@ -43,6 +51,6 @@ left join
 right join 
 	allegation_complaint ac on ac.complaint_identifier = cmp.complaint_identifier 
 where
-	cmp.incident_reported_utc_timestmp BETWEEN 'YYYY-MM-DD' AND 'YYYY-MM-DD' -- replace placeholders with actual values
+	cmp.incident_reported_utc_timestmp BETWEEN '2024-10-01' AND '2024-12-31' -- replace placeholders with actual values
 order by
 	cmp.complaint_identifier asc
