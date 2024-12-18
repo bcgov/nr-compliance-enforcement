@@ -81,22 +81,22 @@ spec:
             - name: POSTGRESQL_DATABASE
               valueFrom:
                 secretKeyRef:
-                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag | quote }}
+                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag }}
                   key: dbname
             - name: POSTGRESQL_HOST
               valueFrom:
                 secretKeyRef:
-                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag | quote }}
+                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag }}
                   key: pgbouncer-host
             - name: POSTGRESQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag | quote }}
+                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag }}
                   key: user
             - name: POSTGRESQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag | quote }}
+                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag }}
                   key: password
             {{- end }}
           ports:
