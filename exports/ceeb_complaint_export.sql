@@ -51,6 +51,6 @@ left join
 right join 
 	allegation_complaint ac on ac.complaint_identifier = cmp.complaint_identifier 
 where
-	cmp.incident_reported_utc_timestmp BETWEEN 'YYYY-MM-DD' AND 'YYYY-MM-DD' -- replace placeholders with actual values
+	cmp.incident_reported_utc_timestmp >= CURRENT_DATE - INTERVAL '1 year'
 order by
 	cmp.complaint_identifier asc

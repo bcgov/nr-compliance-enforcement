@@ -24,7 +24,7 @@ def main():
         combined_df = pd.merge(complaint_df, case_df, on=merge_column, how="outer", validate="many_to_many")
 
         # Save the merged data to a new CSV file
-        combined_df.to_csv(output_file, index=False)
+        combined_df.to_csv(output_file, index=False, encoding='utf-8-sig')
         print(f"Data successfully merged into {output_file}")
 
     except FileNotFoundError as e:
