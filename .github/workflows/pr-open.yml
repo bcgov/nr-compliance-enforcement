@@ -36,7 +36,7 @@ jobs:
   crunchy:
     name: Deploy Crunchy
     needs: [builds]
-    uses: ./.github/actions/dbdeployer
+    uses: ./.github/actions/dbdeployer@CE-596 # TODO: remove tag after testing
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
