@@ -35,8 +35,8 @@ jobs:
   # https://github.com/bcgov/quickstart-openshift
   crunchy:
     name: Deploy Crunchy
-    # needs: [builds]
-    uses: bcgov/quickstart-openshift/.github/workflows/.deployer-db.yml@8b9c1c1c1b3417007fb746595680a5df12ac1204
+    needs: [builds]
+    uses: ./.github/actions/dbdeployer
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
