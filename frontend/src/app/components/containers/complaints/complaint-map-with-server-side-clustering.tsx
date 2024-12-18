@@ -7,7 +7,6 @@ import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filter
 import LeafletMapWithServerSideClustering from "@components/mapping/leaflet-map-with-server-side-clustering";
 import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
-
 import {
   selectComplaintSearchParameters,
   setComplaint,
@@ -24,7 +23,6 @@ type Props = {
 export const generateMapComplaintRequestPayload = (
   complaintType: string,
   filters: ComplaintFilters,
-
   page: number,
   pageSize: number,
   sortColumn: string,
@@ -32,8 +30,6 @@ export const generateMapComplaintRequestPayload = (
   searchQuery: string,
 ): ComplaintRequestPayload => {
   const {
-    sortColumn,
-    sortOrder,
     region,
     zone,
     community,
