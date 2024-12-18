@@ -38,7 +38,7 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
   useEffect(() => {
     // Update the local state whenever selectedValue changes so that the pagination starts at 1 again.
     onPageChange(1);
-  }, [totalItems]);
+  }, [onPageChange, totalItems]);
 
   const handleEnterKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {

@@ -9,7 +9,6 @@ import {
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
 } from "@store/reducers/code-table-selectors";
-import Option from "@apptypes/app/option";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
 
 type props = {
@@ -42,7 +41,6 @@ export const DecisionItem: FC<props> = ({
   const nonComplianceOptions = useAppSelector(selectNonComplianceDropdown);
   const sectorsOptions = useAppSelector(selectSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
-  const scheduleSectorsOptions = useAppSelector(selectSectorDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectLeadAgencyDropdown);
 
