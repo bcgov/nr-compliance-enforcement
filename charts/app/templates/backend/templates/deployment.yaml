@@ -51,7 +51,7 @@ spec:
             - name: FLYWAY_URL
               valueFrom:
                 secretKeyRef:
-                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag | quote }}
+                  name: postgres-crunchy-pguser-app-{{ .Values.global.tag | trimAll "\"" }}
                   key: pgbouncer-jdbc-uri
             {{- end }}
           resources:
