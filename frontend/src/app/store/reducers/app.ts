@@ -518,7 +518,7 @@ export const validateComsAccess =
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(`${config.COMS_URL}/permission/invite/${token}`);
-      const response = await get(dispatch, parameters);
+      await get(dispatch, parameters);
       return { status: "success" };
     } catch (error) {
       const { response } = error as AxiosError;

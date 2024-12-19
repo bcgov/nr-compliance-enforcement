@@ -239,21 +239,13 @@ export class WebEocScheduler {
   private _filterComplaints(complaints: any[], flagName: string) {
     return complaints.filter((complaint: any) => {
       if (flagName === WEBEOC_FLAGS.COMPLAINTS) {
-        return (
+        return ((
           complaint.flag_COS === "Yes" ||
           complaint.violation_type === "Waste" ||
           complaint.violation_type === "Pesticide"
-        );
-      } else if (flagName === WEBEOC_FLAGS.COMPLAINT_UPDATES) {
-        return (
-          complaint.flag_UPD === "Yes" ||
-          complaint.update_violation_type === "Waste" ||
-          complaint.update_violation_type === "Pesticide"
-        );
-      } else if (flagName === WEBEOC_FLAGS.ACTIONS_TAKEN) {
-        return complaint.flag_AT === "Yes";
-      } else if (flagName === WEBEOC_FLAGS.ACTIONS_TAKEN_UPDATES) {
-        return complaint.flag_UAT === "Yes";
+        ) || (complaint.flag_COS !== "Yes" && Date.parse(`${complaint.incident_datetime} PST`) > Date.parse(process.env.WEBEOC_DATE_FILTER))); // 2025-01-01T08:00:00Z is midnight PST
+      } else {
+        return true;
       }
     });
   }

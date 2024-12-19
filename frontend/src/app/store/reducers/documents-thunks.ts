@@ -5,13 +5,15 @@ import { format } from "date-fns";
 import axios, { AxiosRequestConfig } from "axios";
 import { AUTH_TOKEN, getUserAgency } from "@service/user-service";
 import { AgencyType } from "@apptypes/app/agency-types";
+import { ExportComplaintInput } from "@/app/types/complaints/export-complaint-input";
 
 //--
 //-- exports a complaint as a pdf document
 //--
 export const exportComplaint =
   (type: string, id: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
+    const { attachments } = getState();
     try {
       const agency = getUserAgency();
       let tailored_filename = "";
@@ -38,7 +40,7 @@ export const exportComplaint =
         tailored_filename = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
       }
 
-      const tz: string = encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone);
+      const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
       const axiosConfig: AxiosRequestConfig = {
         responseType: "arraybuffer", // Specify response type as arraybuffer
@@ -46,10 +48,11 @@ export const exportComplaint =
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
 
-      const url = `${config.API_BASE_URL}/v1/document/export-complaint/${type}?id=${id}&tz=${tz}`;
+      const exportComplaintInput = { id, type, tz, attachments } as ExportComplaintInput;
 
-      //-- this should not work as there's no authentication token passed to the server,
-      const response = await axios.get(url, axiosConfig);
+      const url = `${config.API_BASE_URL}/v1/document/export-complaint`;
+
+      const response = await axios.post(url, exportComplaintInput, axiosConfig);
 
       //-- this is a janky solution, but as of 2024 it is still the widly
       //-- accepted solution to download a file from a service
