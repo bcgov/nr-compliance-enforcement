@@ -5,7 +5,6 @@ import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "@stor
 import { formatDate } from "@common/methods";
 import { selectOfficerListByAgency } from "@store/reducers/officer";
 import { from } from "linq-to-typescript";
-import { selectComplaint } from "@store/reducers/complaints";
 
 type props = {
   vial: string;
@@ -31,7 +30,6 @@ export const DrugItem: FC<props> = ({
   officer,
   date,
 }) => {
-  const complaintData = useAppSelector(selectComplaint);
   const drugs = useAppSelector(selectDrugs);
   const drugUseMethods = useAppSelector(selectDrugUseMethods);
   const remainingDrugUse = useAppSelector(selectRemainingDrugUse);
