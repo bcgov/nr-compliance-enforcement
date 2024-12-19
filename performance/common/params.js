@@ -1,4 +1,10 @@
-const TEST_RUN_USERS = 5;
+/**
+ * IMPORTANT
+ * These numbers are the values used PER TEST. That means that if you run tests hitting 5 endpoints, each
+ * with its own test, you will get 5 times the number of users specified by the stages of total traffic.
+ * These values were entered assuming 1 test is run at a time. Adjust them accordingly.
+ */
+const TEST_RUN_USERS = 1;
 const MIN_USERS = 20;
 const MAX_USERS = 250;
 const AVERAGE_USERS = 75;
@@ -7,8 +13,8 @@ const STRESS_LOAD_USERS = 150;
 export const STAGES = {
   // Test run stages to make sure all scenarios are working
   test_run: [
-    { duration: "10s", target: TEST_RUN_USERS },
-    { duration: "10s", target: TEST_RUN_USERS },
+    { duration: "5s", target: TEST_RUN_USERS },
+    { duration: "5s", target: TEST_RUN_USERS },
     { duration: "5s", target: 0 },
   ],
 

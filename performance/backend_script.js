@@ -1,9 +1,20 @@
+import http from "k6/http";
 import exec from "k6/execution";
 import { STAGES } from "./common/params.js";
-import { openSearchWithFilters, openSearchWithoutFilters, searchWithoutFilters } from "./tests/backend/search.js";
-import { mapSearchAllComplaints, mapSearchAllOpenComplaints, mapSearchWithFilters } from "./tests/backend/mapSearch.js";
-
-const RPS = __ENV.RPS;
+import {
+  searchWithDefaultFilters,
+  searchWithoutFilters,
+  openSearchWithoutFilters,
+  searchWithCMFilter,
+} from "./tests/backend/search.js";
+import {
+  mapSearchDefaultFilters,
+  mapSearchAllOpenComplaints,
+  mapSearchAllComplaints,
+  mapSearchWithCMFilter,
+} from "./tests/backend/mapSearch.js";
+import { getComplaintDetails, addAndRemoveComplaintOutcome } from "./tests/backend/complaint_details.js";
+import { INITIAL_COS_TOKEN, INITIAL_COS_REFRESH_TOKEN, generateRequestConfig } from "./common/auth.js";
 
 const defaultOptions = {
   executor: "ramping-vus",
@@ -12,41 +23,87 @@ const defaultOptions = {
 
 export const options = {
   scenarios: {
-    // search
-    openSearchWithFilters: defaultOptions,
-    openSearchWithoutFilters: defaultOptions,
-    searchWithoutFilters: defaultOptions,
-    // map search
-    mapSearchAllComplaints: defaultOptions,
-    mapSearchAllOpenComplaints: defaultOptions,
-    mapSearchWithFilters: defaultOptions,
+    // Search
+    // searchWithDefaultFilters: defaultOptions,
+    // searchWithoutFilters: defaultOptions,
+    // openSearchWithoutFilters: defaultOptions,
+    // searchWithCMFilter: defaultOptions,
+
+    // Map Search
+    // mapSearchDefaultFilters: defaultOptions,
+    // mapSearchAllOpenComplaints: defaultOptions,
+    // mapSearchAllComplaints: defaultOptions,
+    // mapSearchWithCMFilter: defaultOptions,
+    getComplaintDetails: defaultOptions,
+    // addAndRemoveComplaintOutcome: defaultOptions,
   },
   thresholds: {
     http_req_duration: ["p(99)<2000"], // 99% of requests must complete below 2s
   },
-  rps: RPS, // If over 50, notify platform services first.
+  rps: __ENV.RPS, // If over 50, notify platform services first.
 };
+
+/**
+ * In order to keep the token active, refresh it often enough to avoid any false 401, but not so often that it will
+ * interfere with the testing. The RPS * refresh time is a rough approximation so tokenRefreshSeconds slightly
+ * conservatively, not the exact token expiry period.
+ * The token and config vars are set outside of the function to take advantage of some scope to allow the refresh to
+ * happen conditionally rather than on every iteration.
+ */
+
+const TOKEN_REFRESH_TIME = 60;
+var cosToken = INITIAL_COS_TOKEN;
+var cosRefreshToken = INITIAL_COS_REFRESH_TOKEN;
+var cosRequestConfig = generateRequestConfig(cosToken);
 
 export default function () {
   const HOST = __ENV.SERVER_HOST;
-  // search
-  if (exec.scenario.name === "openSearchWithFilters") {
-    openSearchWithFilters(HOST);
+  // Refresh the token if necessary based on iteration number, refresh time and rate of requests
+  if (__ITER === 0 || __ITER % (__ENV.RPS * TOKEN_REFRESH_TIME) === 0) {
+    const refreshRes = http.post(
+      "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
+      {
+        grant_type: "refresh_token",
+        refresh_token: cosRefreshToken,
+        client_id: "compliance-and-enforcement-digital-services-web-4794",
+      },
+    );
+
+    cosToken = JSON.parse(refreshRes.body).access_token;
+    cosRefreshToken = JSON.parse(refreshRes.body).refresh_token;
+    cosRequestConfig = generateRequestConfig(cosToken);
   }
-  if (exec.scenario.name === "openSearchWithoutFilters") {
-    openSearchWithoutFilters(HOST);
+  // search
+  if (exec.scenario.name === "searchWithDefaultFilters") {
+    searchWithDefaultFilters(HOST, cosRequestConfig);
   }
   if (exec.scenario.name === "searchWithoutFilters") {
-    searchWithoutFilters(HOST);
+    searchWithoutFilters(HOST, cosRequestConfig);
+  }
+  if (exec.scenario.name === "openSearchWithoutFilters") {
+    openSearchWithoutFilters(HOST, cosRequestConfig);
+  }
+  if (exec.scenario.name === "searchWithCMFilter") {
+    searchWithCMFilter(HOST, cosRequestConfig);
   }
   // map search
-  if (exec.scenario.name === "mapSearchAllComplaints") {
-    mapSearchAllComplaints(HOST);
+  if (exec.scenario.name === "mapSearchDefaultFilters") {
+    mapSearchDefaultFilters(HOST, cosRequestConfig);
   }
   if (exec.scenario.name === "mapSearchAllOpenComplaints") {
-    mapSearchAllOpenComplaints(HOST);
+    mapSearchAllOpenComplaints(HOST, cosRequestConfig);
   }
-  if (exec.scenario.name === "mapSearchWithFilters") {
-    mapSearchWithFilters(HOST);
+  if (exec.scenario.name === "mapSearchAllComplaints") {
+    mapSearchAllComplaints(HOST, cosRequestConfig);
+  }
+  if (exec.scenario.name === "mapSearchWithCMFilter") {
+    mapSearchWithCMFilter(HOST, cosRequestConfig);
+  }
+  // complaint details
+  if (exec.scenario.name === "getComplaintDetails") {
+    getComplaintDetails(HOST, cosRequestConfig);
+  }
+  if (exec.scenario.name === "addAndRemoveComplaintOutcome") {
+    addAndRemoveComplaintOutcome(HOST, cosRequestConfig);
   }
 }
