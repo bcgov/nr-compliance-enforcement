@@ -2074,6 +2074,24 @@ export class ComplaintService {
       return outcomeData.getCaseFileByLeadId;
     };
 
+    const _sortRecords = (first: any, second: any): number => {
+      if (first.fileType < second.fileType) {
+        if (first.date < second.date) {
+          return -2;
+        } else {
+          return -1;
+        }
+      }
+      if (first.fileType > second.fileType) {
+        if (first.date > second.date) {
+          return 1;
+        } else {
+          return 2;
+        }
+      }
+      return 0;
+    };
+
     try {
       if (complaintType) {
         builder = this._generateQueryBuilder(complaintType);
@@ -2200,7 +2218,8 @@ export class ComplaintService {
             date: _applyTimezone(item.date, tz, "datetime"),
             fileType: getFileType(item.name),
           };
-        });
+        })
+        .sort((first, second) => _sortRecords(first, second));
       data.hasComplaintAttachments = data.cAtts?.length > 0;
 
       data.oAtts = attachments
@@ -2211,7 +2230,8 @@ export class ComplaintService {
             date: _applyTimezone(item.date, tz, "datetime"),
             fileType: getFileType(item.name),
           };
-        });
+        })
+        .sort((first, second) => _sortRecords(first, second));
 
       data.hasOutcomeAttachments = data.oAtts?.length > 0;
 
