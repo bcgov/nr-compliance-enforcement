@@ -2076,19 +2076,18 @@ export class ComplaintService {
 
     const _sortRecords = (first: any, second: any): number => {
       if (first.fileType < second.fileType) {
-        if (first.date < second.date) {
-          return -2;
-        } else {
-          return -1;
-        }
+        return -1;
       }
       if (first.fileType > second.fileType) {
-        if (first.date > second.date) {
-          return 1;
-        } else {
-          return 2;
-        }
+        return 1;
       }
+      if (first.date < second.date) {
+        return -1;
+      }
+      if (first.date > second.date) {
+        return 1;
+      }
+
       return 0;
     };
 
