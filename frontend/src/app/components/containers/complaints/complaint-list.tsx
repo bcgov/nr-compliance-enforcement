@@ -1,4 +1,4 @@
-import { FC, useRef, useState, useContext, useEffect } from "react";
+import { FC, useRef, useState, useContext, useEffect, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import {
@@ -173,10 +173,10 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
     }
   };
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     setPage(page);
     scrollToTop();
-  };
+  }, []);
 
   // Scroll to top of table container when paginating
   const divRef = useRef<HTMLDivElement>(null);
