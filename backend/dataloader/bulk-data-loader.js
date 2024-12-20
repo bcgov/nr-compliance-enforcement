@@ -52,7 +52,7 @@ const generateLocation = () => {
 };
 
 // Helper for generating common fields
-const generateCommonFields = (year) => {
+const generateCommonFields = (complaint_identifier) => {
   const { region, zone, district, community } = generateLocation();  // Get location from helper
 
   return {
@@ -63,7 +63,7 @@ const generateCommonFields = (year) => {
     entrydate: faker.date.recent().toISOString(),
     prevdataid: '0',
     created_by_datetime: faker.date.recent().toISOString(),
-    incident_number: `${year}-${faker.datatype.number({ min: 100000, max: 999999 }).toString()}`,
+    incident_number: complaint_identifier,
     incident_datetime: faker.date.recent().toISOString(),
     cos_area_community: community,
     cos_district: district,
@@ -90,9 +90,9 @@ const generateCommonFields = (year) => {
 };
 
 // Function to generate a single Complaint record - Note optional fields are not included in order to keep payload size down
-const generateHWCRData = (year) => {
+const generateHWCRData = (complaint_identifier) => {
   
-  const commonFields = generateCommonFields(year);  // Get common fields
+  const commonFields = generateCommonFields(complaint_identifier);  // Get common fields
 
   return {
     ...commonFields,
@@ -141,13 +141,18 @@ const generateBulkData = (year, num) => {
   const GIRcount = num*0.05;
 
   for (let i = 0; i < HWCRcount; i++) {
-    bulkData.push(generateHWCRData(year));
+    let complaint_identifier = `${year}-${i.toString().padStart(6, '0')}`;
+    bulkData.push(generateHWCRData(complaint_identifier));
   }
   for (let i = 0; i < ERScount; i++) {
-    bulkData.push(generateERSData(year));
+    let identifer = i + HWCRcount;  // Add HWCRcount to i
+    let complaint_identifier = `${year}-${identifer.toString().padStart(6, '0')}`;
+    bulkData.push(generateERSData(complaint_identifier));
   }
   for (let i = 0; i < GIRcount; i++) {
-    bulkData.push(generateGIRData(year));
+    let identifer = i + HWCRcount + ERScount;  // Add HWCRcount and ERScount to i
+    let complaint_identifier = `${year}-${identifer.toString().padStart(6, '0')}`;
+    bulkData.push(generateGIRData(complaint_identifier));
   }
   return bulkData;
 };
@@ -197,7 +202,7 @@ const insertData = async (data) => {
 
 // Adjust these as required.
 // No more than 10k at a time or the insert will blow up.
-const yearPrefix = 24;
+const yearPrefix = 16;
 const numRecords = 10000;
 
 const records = generateBulkData(yearPrefix, numRecords);
