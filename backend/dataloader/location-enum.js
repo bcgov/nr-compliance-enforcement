@@ -7,6 +7,12 @@ const regions = {
           "Dease Lake": ["Bell II North"],
           "Smithers": ["Bell II South"]
         }
+      },
+      "North Coast": {
+        "districts": {
+          "Terrace": ["Terrace", "Klemtu", "Usk"]
+        }
+
       }
     }
   },
@@ -149,6 +155,16 @@ const regions = {
         "districts": {
           "Kamloops": ["Adams Lake", "Anglemont"],
           "Merritt": ["Ashcroft"]
+        }
+      },
+      "Cariboo Chilcotin": {
+        "districts": {
+          "Williams Lake": ["140 Mile House", "Horsefly", "Likely"]
+        }
+      },
+      "Cariboo Thompson": {
+        "districts": {
+          "Lillooet": ["Big Bar", "Pavillion", "Clinton"]
         }
       }
     }

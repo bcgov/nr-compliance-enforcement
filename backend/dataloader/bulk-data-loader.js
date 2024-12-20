@@ -1,3 +1,4 @@
+// Instruction for running: from backend directory: node dataloader/bulk-data-loader.js
 require('dotenv').config();
 const faker = require('faker');
 const db = require('pg-promise')();
@@ -24,88 +25,59 @@ const generateLongitude = (min, max) => {
   return faker.datatype.number({ min: min * 10000, max: max * 10000 }) / 10000;
 };
 
-// Function to generate a single Complaint record
-const generateHWCRData = () => {
+const getRandomLocation = () => {
+  // Randomly select a region
+  const regionKeys = Object.keys(regions);
+  const region = faker.random.arrayElement(regionKeys);
 
-    // Randomly select a region
-    const regionKeys = Object.keys(regions);
-    const region = faker.random.arrayElement(regionKeys);
-  
-    // Randomly select a zone within that region
-    const zoneKeys = Object.keys(regions[region].zones);
-    const zone = faker.random.arrayElement(zoneKeys);
-  
-    // Randomly select a district within that zone
-    const districtKeys = Object.keys(regions[region].zones[zone].districts);
-    const district = faker.random.arrayElement(districtKeys);
-  
-    // Randomly select a community within that district
-    const communities = regions[region].zones[zone].districts[district];
-    const community = faker.random.arrayElement(communities);
+  // Randomly select a zone within that region
+  const zoneKeys = Object.keys(regions[region].zones);
+  const zone = faker.random.arrayElement(zoneKeys);
+
+  // Randomly select a district within that zone
+  const districtKeys = Object.keys(regions[region].zones[zone].districts);
+  const district = faker.random.arrayElement(districtKeys);
+
+  // Randomly select a community within that district
+  const communities = regions[region].zones[zone].districts[district];
+  const community = faker.random.arrayElement(communities);
+
+  return { region, zone, district, community };
+};
+
+// Helper for generating random location (region, zone, district, community)
+const generateLocation = () => {
+  const { region, zone, district, community } = getRandomLocation(); // Reuse the earlier location function
+  return { region, zone, district, community };
+};
+
+// Helper for generating common fields
+const generateCommonFields = (year) => {
+  const { region, zone, district, community } = generateLocation();  // Get location from helper
 
   return {
-    tablename: 'Conservation Officer Service Table', 
+    tablename: 'Conservation Officer Service Table',
     dataid: faker.datatype.number(),
     username: faker.internet.userName(),
     positionname: 'ECC COS_test',
     entrydate: faker.date.recent().toISOString(),
-    subscribername: '',
     prevdataid: '0',
-    report_type: 'HWCR',
-    incident_number: `24-${faker.datatype.number({ min: 100000, max: 999999 }).toString()}`,
     created_by_datetime: faker.date.recent().toISOString(),
-    remove: '',
+    incident_number: `${year}-${faker.datatype.number({ min: 100000, max: 999999 }).toString()}`,
     incident_datetime: faker.date.recent().toISOString(),
-    call_type_gir: '',
-    status: faker.random.arrayElement(['Open', 'Closed']),
-    address: faker.address.streetAddress(),
-    address_coordinates_lat: generateLatitude(48.2513, 60.0).toString(),
-    address_coordinates_long: generateLongitude(-139.0596, -114.0337).toString(),
     cos_area_community: community,
     cos_district: district,
     cos_zone: zone,
     cos_region: region,
+    status: faker.random.arrayElement(['Open', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed', 'Closed' ]), //Close 90% of complaints
+    address: faker.address.streetAddress(),
+    address_coordinates_lat: generateLatitude(48.2513, 60.0).toString(),
+    address_coordinates_long: generateLongitude(-139.0596, -114.0337).toString(),
     cos_location_description: faker.lorem.sentence(),
     cos_caller_name: faker.name.findName(),
-    cos_primary_phone_lst: faker.random.arrayElement(['Cellular', 'Business', 'Residence']),
-    cos_primary_phone: faker.phone.phoneNumber(),
-    cos_alt_phone_lst: faker.random.arrayElement(['Cellular', 'Business', 'Residence']),
-    cos_alt_phone: faker.phone.phoneNumber(),
-    cos_alt_phone_2_lst: faker.random.arrayElement(['Cellular', 'Business', 'Residence']),
-    cos_alt_phone_2: faker.phone.phoneNumber(),
     cos_caller_email: faker.internet.email(),
     caller_address: faker.address.streetAddress(),
-    cos_reffered_by_txt: '',
-    cos_reffered_by_lst: faker.random.arrayElement(['Self', 'COS HQ', 'RAPP email', 'Bylaw', 'BCWF']),
     cos_call_details: faker.lorem.paragraph(),
-    nature_of_complaint: faker.random.arrayElement(['Sightings', 'Food Conditioned', 'Confined', 'Human injury/death', 'Wildlife in trap']),
-    species: faker.random.arrayElement(['Black bear', 'Deer', 'Wolf', 'Moose', 'Cougar', 'Wolverine', 'Elk', 'Rattlesnake']),
-    attractant_bbq: '',
-    attractant_beehive: '',
-    attractant_bird_feeder: '',
-    attractant_campground_food: '',
-    attractant_checked: '',
-    attractant_compost: '',
-    attractant_crops: '',
-    attractant_freezer: '',
-    attractant_fruit_tree: '',
-    attractant_garbage: '',
-    attractant_hunter_kill: '',
-    attractant_industrial_camp: '',
-    attractant_livestock: '',
-    attractant_livestock_feed: '',
-    attractant_not_applicable: '',
-    attractant_other: '',
-    attractant_pet_food: '',
-    attractant_pets: '',
-    attractant_vegetable_garden: '',
-    attractant_vinyard: '',
-    attractant_other_text: '',
-    attractants_list: faker.random.arrayElement(['BBQ', 'Crops', 'Pet Food', 'Beehive', 'Freezer', 'Pets', 'Garbage', 'Industrial Camp']),
-    violation_type: '',
-    suspect_details: '',
-    observe_violation: '',
-    violation_in_progress: '',
     created_by_position: 'ECC COS_test',
     created_by_username: faker.internet.userName(),
     back_number_of_days: faker.datatype.number({ min: 0, max: 365 }).toString(),
@@ -117,17 +89,71 @@ const generateHWCRData = () => {
   };
 };
 
-// Function to generate bulk data (100,000 records)
-const generateBulkData = (num) => {
+// Function to generate a single Complaint record - Note optional fields are not included in order to keep payload size down
+const generateHWCRData = (year) => {
+  
+  const commonFields = generateCommonFields(year);  // Get common fields
+
+  return {
+    ...commonFields,
+    report_type: 'HWCR',
+    nature_of_complaint: faker.random.arrayElement(['Sightings', 'Food Conditioned', 'Confined', 'Human injury/death', 'Wildlife in trap']),
+    species: faker.random.arrayElement(['Black bear', 'Deer', 'Wolf', 'Moose', 'Cougar', 'Wolverine', 'Elk', 'Rattlesnake']),
+    attractants_list: faker.random.arrayElement(['BBQ', 'Crops', 'Pet Food', 'Beehive', 'Freezer', 'Pets', 'Garbage', 'Industrial Camp']),
+  };
+};
+
+// Function to generate a single Complaint record - Note optional fields are not included in order to keep payload size down
+const generateERSData = (year) => {
+
+  const commonFields = generateCommonFields(year);  // Get common fields
+
+return {
+  ...commonFields,
+  report_type: 'ERS',
+  violation_type: faker.random.arrayElement(['Boating', 'Dumping', 'Fisheries ', 'Open Burning', 'Waste', 'Pesticide']),
+  suspect_details: faker.lorem.paragraph(),
+  observe_violation: faker.random.arrayElement(['Yes', 'No']),
+  violation_in_progress: faker.random.arrayElement(['Yes', 'No']),
+};
+};
+
+
+// Function to generate a single Complaint record - Note optional fields are not included in order to keep payload size down
+const generateGIRData = (year) => {
+
+  const commonFields = generateCommonFields(year);  // Get common fields
+
+return {
+  ...commonFields,
+  report_type: 'GIR',
+  call_type_gir: faker.random.arrayElement(['CO Contact', 'CO Disposition', 'General Advice', 'Media', 'Query']),
+};
+};
+
+// Function to generate bulk data 
+const generateBulkData = (year, num) => {
   let bulkData = [];
-  for (let i = 0; i < num; i++) {
-    bulkData.push(generateHWCRData());
+
+  //Distrubte the counts according to a realistic business breakdown
+  const HWCRcount = num*0.7;
+  const ERScount = num*0.25;
+  const GIRcount = num*0.05;
+
+  for (let i = 0; i < HWCRcount; i++) {
+    bulkData.push(generateHWCRData(year));
+  }
+  for (let i = 0; i < ERScount; i++) {
+    bulkData.push(generateERSData(year));
+  }
+  for (let i = 0; i < GIRcount; i++) {
+    bulkData.push(generateGIRData(year));
   }
   return bulkData;
 };
 
 const insertData = async (data) => {
-  // Create an insert query with placeholders for each value (with the correct number of placeholders for each record)
+  // Create an insert query with placeholders for each value 
   const insertQuery = `
     INSERT INTO staging_complaint (
       staging_complaint_guid, 
@@ -169,5 +195,10 @@ const insertData = async (data) => {
   }
 };
 
-const records = generateBulkData(10000);
+// Adjust these as required.
+// No more than 10k at a time or the insert will blow up.
+const yearPrefix = 24;
+const numRecords = 10000;
+
+const records = generateBulkData(yearPrefix, numRecords);
 insertData(records);
