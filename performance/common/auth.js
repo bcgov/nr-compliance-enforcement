@@ -1,5 +1,5 @@
-export const INITIAL_COS_TOKEN = "";
-export const INITIAL_COS_REFRESH_TOKEN = "";
+export const INITIAL_TOKEN = "";
+export const INITIAL_REFRESH_TOKEN = "";
 
 export const COS_USER_CREDS = {
   username: "",
@@ -14,17 +14,4 @@ export const generateRequestConfig = (token) => {
       Authorization: `Bearer ${token}`,
     },
   };
-};
-
-const CEEB_USER_TOKEN = "xxxxxxx";
-export const CEEB_USER_CREDS = {
-  username: "",
-  password: "",
-};
-
-export const CEEB_USER_HEADERS = {
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${CEEB_USER_TOKEN}`,
-  },
 };

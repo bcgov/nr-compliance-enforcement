@@ -14,7 +14,7 @@ import {
   mapSearchWithCMFilter,
 } from "./tests/backend/mapSearch.js";
 import { getComplaintDetails, addAndRemoveComplaintOutcome } from "./tests/backend/complaint_details.js";
-import { INITIAL_COS_TOKEN, INITIAL_COS_REFRESH_TOKEN, generateRequestConfig } from "./common/auth.js";
+import { INITIAL_TOKEN, INITIAL_REFRESH_TOKEN, generateRequestConfig } from "./common/auth.js";
 
 const defaultOptions = {
   executor: "ramping-vus",
@@ -52,9 +52,9 @@ export const options = {
  */
 
 const TOKEN_REFRESH_TIME = 60;
-var cosToken = INITIAL_COS_TOKEN;
-var cosRefreshToken = INITIAL_COS_REFRESH_TOKEN;
-var cosRequestConfig = generateRequestConfig(cosToken);
+var token = INITIAL_TOKEN;
+var refreshToken = INITIAL_REFRESH_TOKEN;
+var requestConfig = generateRequestConfig(token);
 
 export default function () {
   const HOST = __ENV.SERVER_HOST;
@@ -64,46 +64,46 @@ export default function () {
       "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
       {
         grant_type: "refresh_token",
-        refresh_token: cosRefreshToken,
+        refresh_token: refreshToken,
         client_id: "compliance-and-enforcement-digital-services-web-4794",
       },
     );
 
-    cosToken = JSON.parse(refreshRes.body).access_token;
-    cosRefreshToken = JSON.parse(refreshRes.body).refresh_token;
-    cosRequestConfig = generateRequestConfig(cosToken);
+    token = JSON.parse(refreshRes.body).access_token;
+    refreshToken = JSON.parse(refreshRes.body).refresh_token;
+    requestConfig = generateRequestConfig(token);
   }
   // search
   if (exec.scenario.name === "searchWithDefaultFilters") {
-    searchWithDefaultFilters(HOST, cosRequestConfig);
+    searchWithDefaultFilters(HOST, requestConfig);
   }
   if (exec.scenario.name === "searchWithoutFilters") {
-    searchWithoutFilters(HOST, cosRequestConfig);
+    searchWithoutFilters(HOST, requestConfig);
   }
   if (exec.scenario.name === "openSearchWithoutFilters") {
-    openSearchWithoutFilters(HOST, cosRequestConfig);
+    openSearchWithoutFilters(HOST, requestConfig);
   }
   if (exec.scenario.name === "searchWithCMFilter") {
-    searchWithCMFilter(HOST, cosRequestConfig);
+    searchWithCMFilter(HOST, requestConfig);
   }
   // map search
   if (exec.scenario.name === "mapSearchDefaultFilters") {
-    mapSearchDefaultFilters(HOST, cosRequestConfig);
+    mapSearchDefaultFilters(HOST, requestConfig);
   }
   if (exec.scenario.name === "mapSearchAllOpenComplaints") {
-    mapSearchAllOpenComplaints(HOST, cosRequestConfig);
+    mapSearchAllOpenComplaints(HOST, requestConfig);
   }
   if (exec.scenario.name === "mapSearchAllComplaints") {
-    mapSearchAllComplaints(HOST, cosRequestConfig);
+    mapSearchAllComplaints(HOST, requestConfig);
   }
   if (exec.scenario.name === "mapSearchWithCMFilter") {
-    mapSearchWithCMFilter(HOST, cosRequestConfig);
+    mapSearchWithCMFilter(HOST, requestConfig);
   }
   // complaint details
   if (exec.scenario.name === "getComplaintDetails") {
-    getComplaintDetails(HOST, cosRequestConfig);
+    getComplaintDetails(HOST, requestConfig);
   }
   if (exec.scenario.name === "addAndRemoveComplaintOutcome") {
-    addAndRemoveComplaintOutcome(HOST, cosRequestConfig);
+    addAndRemoveComplaintOutcome(HOST, requestConfig);
   }
 }

@@ -14,7 +14,7 @@ export const STAGES = {
   // Test run stages to make sure all scenarios are working
   test_run: [
     { duration: "5s", target: TEST_RUN_USERS },
-    { duration: "5s", target: TEST_RUN_USERS },
+    { duration: "10s", target: TEST_RUN_USERS },
     { duration: "5s", target: 0 },
   ],
 
