@@ -35,7 +35,7 @@ RAISE notice 'EXECUTING FUNCTION';
   AND    sc.staging_activity_code = action_taken_type; 
     
   IF staged_data IS NULL THEN
-	RAISE notice 'NO COMPLAINT FOUND';
+	  -- RAISE notice 'NO COMPLAINT FOUND'; No complaint found is expected now for actions taken on complaints prior to Jan 1 2025
     RETURN;
   END IF;
 
