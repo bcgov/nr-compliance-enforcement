@@ -3,7 +3,7 @@
 # 1. Ensure Python is installed and added to your system PATH.
 # 2. Add the 'Scripts' directory from the Python installation to the PATH (for pip).
 # 3. Install required packages by running: pip install pandas
-# 4. Place 'Complaint_Export.csv' and 'Case_Export.csv' in the same folder as this script.
+# 4. Place 'complaints.csv' and 'cases.csv' in the same folder as this script.
 # 5. Run the script using: python merge_exports.py
 
 import pandas as pd
