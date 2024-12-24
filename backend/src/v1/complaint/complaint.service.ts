@@ -2073,6 +2073,27 @@ export class ComplaintService {
       return outcomeData.getCaseFileByLeadId;
     };
 
+    const _multiFieldCompare = (first: any, second: any, compareInfo: { field: string; sort: string }[]): number => {
+      for (const item of compareInfo) {
+        if (item.sort === "asc") {
+          if (first[item.field] < second[item.field]) {
+            return -1;
+          }
+          if (first[item.field] > second[item.field]) {
+            return 1;
+          }
+        } else if (item.sort === "desc") {
+          if (first[item.field] > second[item.field]) {
+            return -1;
+          }
+          if (first[item.field] < second[item.field]) {
+            return 1;
+          }
+        }
+      }
+      return 0;
+    };
+
     try {
       if (complaintType) {
         builder = this._generateQueryBuilder(complaintType);
@@ -2196,10 +2217,16 @@ export class ComplaintService {
         .map((item) => {
           return {
             name: item.name,
-            date: _applyTimezone(item.date, tz, "datetime"),
+            date: item.date,
             fileType: getFileType(item.name),
           };
-        });
+        })
+        .sort((first, second) =>
+          _multiFieldCompare(first, second, [
+            { field: "fileType", sort: "asc" },
+            { field: "date", sort: "asc" },
+          ]),
+        );
       data.hasComplaintAttachments = data.cAtts?.length > 0;
 
       data.oAtts = attachments
@@ -2207,10 +2234,16 @@ export class ComplaintService {
         .map((item) => {
           return {
             name: item.name,
-            date: _applyTimezone(item.date, tz, "datetime"),
+            date: item.date,
             fileType: getFileType(item.name),
           };
-        });
+        })
+        .sort((first, second) =>
+          _multiFieldCompare(first, second, [
+            { field: "fileType", sort: "asc" },
+            { field: "date", sort: "asc" },
+          ]),
+        );
 
       data.hasOutcomeAttachments = data.oAtts?.length > 0;
 
