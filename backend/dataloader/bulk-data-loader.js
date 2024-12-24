@@ -1,4 +1,5 @@
 // Instruction for running: from backend directory: node dataloader/bulk-data-loader.js
+// Ensure parameters at the bottom of this file are updated as required
 require('dotenv').config();
 const faker = require('faker');
 const db = require('pg-promise')();
@@ -16,15 +17,24 @@ const connection = {
 const pg = db(connection);
 
 // Function to generate a random latitude within the specified range
+// Params:
+//    min: the minimum latitude
+//    max: the maximum latitude
 const generateLatitude = (min, max) => {
   return faker.datatype.number({ min: min * 10000, max: max * 10000 }) / 10000;
 };
 
 // Function to generate a random longitude within the specified range
+// Params:
+//    min: the minimum longitude
+//    max: the maximum longitude
 const generateLongitude = (min, max) => {
   return faker.datatype.number({ min: min * 10000, max: max * 10000 }) / 10000;
 };
 
+// Randomly selects a region, a zone within that region, a district within that zone and a community.
+// Driven from location-enum.js that is a subset of the location view
+// this could be updated to pull from the database in the future
 const getRandomLocation = () => {
   // Randomly select a region
   const regionKeys = Object.keys(regions);
@@ -52,6 +62,8 @@ const generateLocation = () => {
 };
 
 // Helper for generating common fields
+// Params:
+//    complaint_identifier = the identifer to use for the complaint
 const generateCommonFields = (complaint_identifier) => {
   const { region, zone, district, community } = generateLocation();  // Get location from helper
 
@@ -90,6 +102,8 @@ const generateCommonFields = (complaint_identifier) => {
 };
 
 // Function to generate a single Complaint record - Note optional fields are not included in order to keep payload size down
+// Params:
+//    complaint_identifier = the identifer to use for the complaint
 const generateHWCRData = (complaint_identifier) => {
   
   const commonFields = generateCommonFields(complaint_identifier);  // Get common fields
@@ -104,25 +118,33 @@ const generateHWCRData = (complaint_identifier) => {
 };
 
 // Function to generate a single Complaint record - Note optional fields are not included in order to keep payload size down
-const generateERSData = (year) => {
+// Params:
+//    complaint_identifier = the identifer to use for the complaint
+const generateERSData = (complaint_identifier, owner) => {
 
-  const commonFields = generateCommonFields(year);  // Get common fields
+  const commonFields = generateCommonFields(complaint_identifier);  // Get common fields
+  let violationType = faker.random.arrayElement(['Boating', 'Dumping', 'Fisheries ', 'Open Burning', 'Off-road vehicles (ORV)', 'Aquatic: Invasive Species'])
 
-return {
-  ...commonFields,
-  report_type: 'ERS',
-  violation_type: faker.random.arrayElement(['Boating', 'Dumping', 'Fisheries ', 'Open Burning', 'Waste', 'Pesticide']),
-  suspect_details: faker.lorem.paragraph(),
-  observe_violation: faker.random.arrayElement(['Yes', 'No']),
-  violation_in_progress: faker.random.arrayElement(['Yes', 'No']),
+  if(owner === 'CEEB') {
+    violationType = faker.random.arrayElement(['Waste', 'Pesticide'])
+  }
+
+  return {
+    ...commonFields,
+    report_type: 'ERS',
+    violation_type: violationType,
+    suspect_details: faker.lorem.paragraph(),
+    observe_violation: faker.random.arrayElement(['Yes', 'No']),
+    violation_in_progress: faker.random.arrayElement(['Yes', 'No']),
+  };
 };
-};
-
 
 // Function to generate a single Complaint record - Note optional fields are not included in order to keep payload size down
-const generateGIRData = (year) => {
+// Params:
+//    complaint_identifier = the identifer to use for the complaint
+const generateGIRData = (complaint_identifier) => {
 
-  const commonFields = generateCommonFields(year);  // Get common fields
+  const commonFields = generateCommonFields(complaint_identifier);  // Get common fields
 
 return {
   ...commonFields,
@@ -131,32 +153,56 @@ return {
 };
 };
 
-// Function to generate bulk data 
+// Function to generate bulk data.  Sequentially inserts complaints starting at 0: HWCRs first, then ERS, the CEEB ERS, finally GIRs
+// Params:
+//    year = the year prefix for the complaint
+//    num = the number of complaints to generate
 const generateBulkData = (year, num) => {
   let bulkData = [];
 
   //Distrubte the counts according to a realistic business breakdown
   const HWCRcount = num*0.7;
-  const ERScount = num*0.25;
+  const ERScountCOS = num*0.15;
+  const ERScountCEEB = num*0.10;
   const GIRcount = num*0.05;
 
   for (let i = 0; i < HWCRcount; i++) {
     let complaint_identifier = `${year}-${i.toString().padStart(6, '0')}`;
+    if(i === 0) {
+      console.log (`HWCR Complaint Series starts at: ${complaint_identifier}`)
+    }
     bulkData.push(generateHWCRData(complaint_identifier));
   }
-  for (let i = 0; i < ERScount; i++) {
+  for (let i = 0; i < ERScountCOS; i++) {
     let identifer = i + HWCRcount;  // Add HWCRcount to i
     let complaint_identifier = `${year}-${identifer.toString().padStart(6, '0')}`;
-    bulkData.push(generateERSData(complaint_identifier));
+    if(i === 0) {
+      console.log (`COS ERS Complaint Series starts at: ${complaint_identifier}`)
+    }
+    bulkData.push(generateERSData(complaint_identifier, 'COS'));
+  }
+  for (let i = 0; i < ERScountCEEB; i++) {
+    let identifer = i + HWCRcount + ERScountCOS;  // Add HWCRcount and ERScountCOS to i
+    let complaint_identifier = `${year}-${identifer.toString().padStart(6, '0')}`;
+    if(i === 0) {
+      console.log (`CEEB ERS Complaint Series starts at: ${complaint_identifier}`)
+    }
+    bulkData.push(generateERSData(complaint_identifier, 'CEEB'));
   }
   for (let i = 0; i < GIRcount; i++) {
-    let identifer = i + HWCRcount + ERScount;  // Add HWCRcount and ERScount to i
+    let identifer = i + HWCRcount + ERScountCOS + ERScountCEEB;  // Add HWCRcount and both ERScounts to i
     let complaint_identifier = `${year}-${identifer.toString().padStart(6, '0')}`;
+    if(i === 0) {
+      console.log (`GIR Complaint Series starts at: ${complaint_identifier}`)
+    }
     bulkData.push(generateGIRData(complaint_identifier));
   }
   return bulkData;
 };
 
+// Uses bulk insert statements to put all the data into a single statement.  Limit of 10K records
+// Params:
+//    data = all the data to insert
 const insertData = async (data) => {
   // Create an insert query with placeholders for each value 
   const insertQuery = `
@@ -202,7 +248,7 @@ const insertData = async (data) => {
 
 // Adjust these as required.
 // No more than 10k at a time or the insert will blow up.
-const yearPrefix = 16;
+const yearPrefix = 25;
 const numRecords = 10000;
 
 const records = generateBulkData(yearPrefix, numRecords);
