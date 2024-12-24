@@ -16,21 +16,6 @@ const regions = {
       }
     }
   },
-  "Thompson Cariboo": {
-    "zones": {
-      "Cariboo Chilcotin": {
-        "districts": {
-          "Williams Lake": ["140 Mile House", "150 Mile House", "40 Mile Flats"]
-        }
-      },
-      "Cariboo Thompson": {
-        "districts": {
-          "100 Mile House": ["100 Mile House", "108 Mile Ranch"],
-          "Lillooet": ["16 Mile"]
-        }
-      }
-    }
-  },
   "West Coast": {
     "zones": {
       "Central Island": {
