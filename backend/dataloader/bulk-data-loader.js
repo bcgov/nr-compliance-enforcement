@@ -153,11 +153,12 @@ return {
 };
 };
 
-// Function to generate bulk data.  Sequentially inserts complaints starting at 0: HWCRs first, then ERS, the CEEB ERS, finally GIRs
+// Function to generate bulk data.  Sequentially inserts complaints starting at a given number: HWCRs first, then ERS, the CEEB ERS, finally GIRs
 // Params:
 //    year = the year prefix for the complaint
 //    num = the number of complaints to generate
-const generateBulkData = (year, num) => {
+//    startingRecord = the sequence number to start at
+const generateBulkData = (year, num, startingRecord) => {
   let bulkData = [];
 
   //Distrubte the counts according to a realistic business breakdown
@@ -167,14 +168,15 @@ const generateBulkData = (year, num) => {
   const GIRcount = num*0.05;
 
   for (let i = 0; i < HWCRcount; i++) {
-    let complaint_identifier = `${year}-${i.toString().padStart(6, '0')}`;
+    let identifer = i + startingRecord;
+    let complaint_identifier = `${year}-${identifer.toString().padStart(6, '0')}`;
     if(i === 0) {
       console.log (`HWCR Complaint Series starts at: ${complaint_identifier}`)
     }
     bulkData.push(generateHWCRData(complaint_identifier));
   }
   for (let i = 0; i < ERScountCOS; i++) {
-    let identifer = i + HWCRcount;  // Add HWCRcount to i
+    let identifer = i + startingRecord + HWCRcount;  // Add Starting Record and HWCRcount to i
     let complaint_identifier = `${year}-${identifer.toString().padStart(6, '0')}`;
     if(i === 0) {
       console.log (`COS ERS Complaint Series starts at: ${complaint_identifier}`)
@@ -182,7 +184,7 @@ const generateBulkData = (year, num) => {
     bulkData.push(generateERSData(complaint_identifier, 'COS'));
   }
   for (let i = 0; i < ERScountCEEB; i++) {
-    let identifer = i + HWCRcount + ERScountCOS;  // Add HWCRcount and ERScountCOS to i
+    let identifer = i + startingRecord+ HWCRcount + ERScountCOS;  // Add Starting Record, HWCRcount and ERScountCOS to i
     let complaint_identifier = `${year}-${identifer.toString().padStart(6, '0')}`;
     if(i === 0) {
       console.log (`CEEB ERS Complaint Series starts at: ${complaint_identifier}`)
@@ -190,7 +192,7 @@ const generateBulkData = (year, num) => {
     bulkData.push(generateERSData(complaint_identifier, 'CEEB'));
   }
   for (let i = 0; i < GIRcount; i++) {
-    let identifer = i + HWCRcount + ERScountCOS + ERScountCEEB;  // Add HWCRcount and both ERScounts to i
+    let identifer = i + startingRecord + HWCRcount + ERScountCOS + ERScountCEEB;  // Add Starting Record, HWCRcount and both ERScounts to i
     let complaint_identifier = `${year}-${identifer.toString().padStart(6, '0')}`;
     if(i === 0) {
       console.log (`GIR Complaint Series starts at: ${complaint_identifier}`)
@@ -250,6 +252,12 @@ const insertData = async (data) => {
 // No more than 10k at a time or the insert will blow up.
 const yearPrefix = 25;
 const numRecords = 10000;
+const startingRecord = 100000;
 
-const records = generateBulkData(yearPrefix, numRecords);
+// Validate parameters
+if (numRecords > 10000) {
+  console.log ("Please adjust the numRecords parameter to be less than 10000");
+  return;
+}
+const records = generateBulkData(yearPrefix, numRecords, startingRecord);
 insertData(records);
