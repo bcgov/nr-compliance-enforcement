@@ -36,6 +36,13 @@ export const SideBar: FC = () => {
       route: "/zone/at-a-glance",
       roles: ["COS"],
     },
+    {
+      id: "user-management",
+      name: "User administration",
+      icon: "bi bi-people",
+      route: "/admin/user",
+      roles: ["TEMPORARY_TEST_ADMIN"],
+    },
   ];
 
   const renderSideBarMenuItem = (idx: number, item: MenuItem): JSX.Element => {

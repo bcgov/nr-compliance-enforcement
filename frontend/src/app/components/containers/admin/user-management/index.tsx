@@ -16,8 +16,16 @@ import { Officer } from "@apptypes/person/person";
 import { UUID } from "crypto";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
 import "@assets/sass/user-management.scss";
+import { SelectUser } from "@/app/components/containers/admin/user-management/select-user";
+import { EditUser } from "@/app/components/containers/admin/user-management/edit-user";
+import { AddUserSearch } from "@/app/components/containers/admin/user-management/add-user-search";
 
 export const UserManagement: FC = () => {
+  const SEARCH_VIEW = 0;
+  const EDIT_VIEW = 1;
+  const ADD_USER_SEARCH_VIEW = 2;
+  const ADD_VIEW = 3;
+
   const dispatch = useAppDispatch();
   const officers = useAppSelector(selectOfficersDropdown(true));
   const officeAssignments = useAppSelector(selectOfficesForAssignmentDropdown);
@@ -27,6 +35,7 @@ export const UserManagement: FC = () => {
 
   const availableOffices = useAppSelector(selectOffices);
 
+  const [viewState, setViewState] = useState<number>(SEARCH_VIEW);
   const [officer, setOfficer] = useState<Option>();
   const [officerError, setOfficerError] = useState<string>("");
   const [office, setOffice] = useState<Option>();
@@ -38,6 +47,7 @@ export const UserManagement: FC = () => {
   const [selectedUserIdir, setSelectedUserIdir] = useState<string>("");
   const [officerGuid, setOfficerGuid] = useState<string>("");
   const [offices, setOffices] = useState<Array<Option>>([]);
+  const [isInAddUserView, setIsInAddUserView] = useState<boolean>(false);
 
   useEffect(() => {
     if (officeAssignments) {
@@ -267,11 +277,27 @@ export const UserManagement: FC = () => {
     }
   };
 
+  const handleEdit = () => {
+    setViewState(EDIT_VIEW);
+    setIsInAddUserView(false);
+  };
+
   const handleCancel = () => {
+    //return to search view
+    if (viewState !== SEARCH_VIEW) {
+      setViewState(SEARCH_VIEW);
+    }
     resetValidationErrors();
   };
 
-  const handleAddNewUser = () => {};
+  const handleAddNewUser = () => {
+    setViewState(ADD_USER_SEARCH_VIEW);
+  };
+
+  const handleAddNewUserDetails = () => {
+    setViewState(EDIT_VIEW);
+    setIsInAddUserView(true);
+  };
 
   const resetSelect = () => {
     setSelectedAgency({ value: "", label: "" });
@@ -284,11 +310,52 @@ export const UserManagement: FC = () => {
     setOffice({ value: "", label: "" });
     setSelectedRoles([]);
   };
-
+  console.log(viewState);
   return (
     <>
       <ToastContainer />
-      <div className="comp-page-container user-management-container">
+      {viewState === SEARCH_VIEW && (
+        <SelectUser
+          setOfficer={setOfficer}
+          setOfficerError={setOfficeError}
+          getUserIdir={getUserIdir}
+          handleAddNewUser={handleAddNewUser}
+          officers={officers}
+          officer={officer}
+          officerError={officerError}
+          userIdirs={userIdirs}
+          setSelectedUserIdir={setSelectedUserIdir}
+          updateUserIdirByOfficerId={updateUserIdirByOfficerId}
+          officerGuid={officerGuid}
+          handleEdit={handleEdit}
+          handleCancel={handleCancel}
+        />
+      )}
+      {viewState === EDIT_VIEW && (
+        <EditUser
+          isInAddUserView={isInAddUserView}
+          handleCancel={handleCancel}
+        />
+      )}
+      {viewState === ADD_USER_SEARCH_VIEW && (
+        <AddUserSearch
+          setOfficer={setOfficer}
+          setOfficerError={setOfficeError}
+          getUserIdir={getUserIdir}
+          handleAddNewUser={handleAddNewUser}
+          officers={officers}
+          officer={officer}
+          officerError={officerError}
+          userIdirs={userIdirs}
+          setSelectedUserIdir={setSelectedUserIdir}
+          updateUserIdirByOfficerId={updateUserIdirByOfficerId}
+          officerGuid={officerGuid}
+          handleAddNewUserDetails={handleAddNewUserDetails}
+          handleCancel={handleCancel}
+        />
+      )}
+
+      {/* <div className="comp-page-container user-management-container">
         <div className="comp-page-header">
           <div className="comp-page-title-container">
             <h3>User Administration</h3>
@@ -371,14 +438,14 @@ export const UserManagement: FC = () => {
               &nbsp;
               <Button
                 variant="primary"
-                onClick={handleSubmit}
+                onClick={handleEdit}
               >
-                Submit
+                Edit
               </Button>
             </div>
           </div>
         </section>
-      </div>
+      </div> */}
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { assignOfficerToOffice, selectOfficersDropdown } from "@store/reducers/officer";
@@ -15,8 +15,26 @@ import config from "@/config";
 import { Officer } from "@apptypes/person/person";
 import { UUID } from "crypto";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
+import "@assets/sass/user-management.scss";
 
-export const AdminEditUser: FC = () => {
+interface EditUserProps {
+  // officers: any;
+  // officer: any;
+  // officerError: string;
+  // userIdirs: any;
+  // officerGuid: any;
+  // setOfficer: Dispatch<SetStateAction<Option | undefined>>;
+  // setOfficerError: Dispatch<SetStateAction<string>>;
+  // getUserIdir: (person_guid: string, lastName: string, firstName: string) => Promise<void>;
+  // setSelectedUserIdir: Dispatch<SetStateAction<string>>;
+  // updateUserIdirByOfficerId: (userIdir: string, officerGuid: string) => Promise<void>;
+  // handleEdit: () => void;
+  // handleAddNewUser: () => void;
+  isInAddUserView: boolean;
+  handleCancel: () => void;
+}
+
+export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) => {
   const dispatch = useAppDispatch();
   const officers = useAppSelector(selectOfficersDropdown(true));
   const officeAssignments = useAppSelector(selectOfficesForAssignmentDropdown);
@@ -266,9 +284,7 @@ export const AdminEditUser: FC = () => {
     }
   };
 
-  const handleCancel = () => {
-    resetValidationErrors();
-  };
+  const toggleDeactivate = () => {};
 
   const resetSelect = () => {
     setSelectedAgency({ value: "", label: "" });
@@ -283,68 +299,97 @@ export const AdminEditUser: FC = () => {
   };
 
   return (
-    <>
-      <ToastContainer />
-      <div className="comp-page-container comp-page-container--noscroll">
-        <div className="comp-page-header">
-          <div className="comp-page-title-container">
-            <h1>User Administration</h1>
-          </div>
-          <p>Manage user agency / office location. Select a user and Agency + Location </p>
+    <div className="comp-page-container user-management-container">
+      <div className="comp-page-header">
+        <div className="comp-page-title-container">
+          <h3>{isInAddUserView ? "Add new user" : "Edit user"}</h3>
+          {!isInAddUserView && (
+            <Button
+              variant="primary"
+              onClick={toggleDeactivate}
+            >
+              <i className="comp-sidenav-item-icon bi bi-x-circle"></i>Deactivate user
+            </Button>
+          )}
         </div>
-        <div style={{ width: "500px" }}>
-          <div>
-            Select User
-            <CompSelect
-              id="species-select-id"
-              classNamePrefix="comp-select"
-              onChange={(evt) => handleOfficerChange(evt)}
-              classNames={{
-                menu: () => "top-layer-select",
-              }}
-              options={officers}
-              placeholder="Select"
-              enableValidation={true}
-              value={officer}
-              errorMessage={officerError}
+      </div>
+
+      <section
+        className="comp-details-section"
+        style={{ marginTop: "20px" }}
+      >
+        {/* Last name */}
+        <div
+          className="comp-details-form-row"
+          id="last-name-id"
+        >
+          <label htmlFor="last-name-readonly-id">Last name</label>
+          <div className="comp-details-edit-input">
+            <input
+              type="text"
+              id="last-name-readonly-id"
+              className="comp-form-control disable-field"
+              value={"Truong"}
+              disabled
             />
           </div>
-          {userIdirs.length >= 2 && (
-            <>
-              <br />
-              <form>
-                <fieldset>
-                  <p>{`Found ${userIdirs.length} users with same name. Please select the correct email: `}</p>
-                  {userIdirs &&
-                    userIdirs.map((item, index) => {
-                      return (
-                        <div key={`userIdir-${item}`}>
-                          <input
-                            type="radio"
-                            id={`userIdir-${index}`}
-                            name="userIdirEmail"
-                            value={item.username}
-                            onChange={async () => {
-                              setSelectedUserIdir(item.username);
-                              await updateUserIdirByOfficerId(item.username.split("@")[0], officerGuid);
-                            }}
-                          />
-                          <label
-                            style={{ marginLeft: "10px", cursor: "pointer" }}
-                            htmlFor={`userIdir-${index}`}
-                          >
-                            {item.email}
-                          </label>
-                        </div>
-                      );
-                    })}
-                </fieldset>
-              </form>
-            </>
-          )}
-          <br />
-          <div>
-            Select Agency
+        </div>
+
+        {/* First name */}
+        <div
+          className="comp-details-form-row"
+          id="first-name-id"
+        >
+          <label htmlFor="first-name-readonly-id">First name</label>
+          <div className="comp-details-edit-input">
+            <input
+              type="text"
+              id="first-name-readonly-id"
+              className="comp-form-control disable-field"
+              value={"Scarlett"}
+              disabled
+            />
+          </div>
+        </div>
+
+        {/* Email address*/}
+        <div
+          className="comp-details-form-row"
+          id="email-id"
+        >
+          <label htmlFor="email-readonly-id">Email address</label>
+          <div className="comp-details-edit-input">
+            <input
+              type="text"
+              id="email-readonly-id"
+              className="comp-form-control disable-field"
+              value={"scarlett.truong@gov.bc.ca"}
+              disabled
+            />
+          </div>
+        </div>
+
+        {/* IDIR*/}
+        <div
+          className="comp-details-form-row"
+          id="idir-id"
+        >
+          <label htmlFor="idir-readonly-id">IDIR</label>
+          <div className="comp-details-edit-input">
+            <input
+              type="text"
+              id="idir-readonly-id"
+              className="comp-form-control disable-field"
+              value={"struong"}
+              disabled
+            />
+          </div>
+        </div>
+
+        {/* Agency */}
+        <div className="comp-details-form-row">
+          <label htmlFor="user-agency-id">Agency</label>
+          <div className="comp-details-edit-input">
             <CompSelect
               id="agency-select-id"
               classNamePrefix="comp-select"
@@ -358,80 +403,186 @@ export const AdminEditUser: FC = () => {
               value={selectedAgency}
             />
           </div>
-          <br />
-          {selectedAgency?.value === "EPO" && (
-            <>
-              <div>
-                Select Team
-                <CompSelect
-                  id="team-select-id"
-                  classNamePrefix="comp-select"
-                  onChange={(e) => handleTeamChange(e)}
-                  classNames={{
-                    menu: () => "top-layer-select",
-                  }}
-                  options={teams}
-                  placeholder="Select"
-                  enableValidation={true}
-                  value={selectedTeam}
-                  errorMessage={""}
-                />
-              </div>
-              <br />
-            </>
-          )}
-          {selectedAgency?.value === "COS" && (
-            <>
-              <div>
-                Select Office
-                <CompSelect
-                  id="species-select-id"
-                  classNamePrefix="comp-select"
-                  onChange={(evt) => handleOfficeChange(evt)}
-                  classNames={{
-                    menu: () => "top-layer-select",
-                  }}
-                  options={offices}
-                  placeholder="Select"
-                  enableValidation={true}
-                  value={office}
-                  errorMessage={officeError}
-                />
-              </div>
-              <br />
-            </>
-          )}
-          <div>
-            Select Role
+        </div>
+
+        {/* Team/ office */}
+        <div className="comp-details-form-row">
+          <label htmlFor="user-team-office-id">Team / office</label>
+          <div className="comp-details-edit-input user-team-office-id">
+            {selectedAgency?.value === "EPO" ? (
+              <CompSelect
+                id="team-select-id"
+                classNamePrefix="comp-select"
+                onChange={(e) => handleTeamChange(e)}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={teams}
+                placeholder="Select"
+                enableValidation={true}
+                value={selectedTeam}
+                errorMessage={""}
+              />
+            ) : (
+              <CompSelect
+                id="species-select-id"
+                classNamePrefix="comp-select"
+                onChange={(evt) => handleOfficeChange(evt)}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={offices}
+                placeholder="Select"
+                enableValidation={true}
+                value={office}
+                errorMessage={officeError}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Role */}
+        <div className="comp-details-form-row">
+          <label htmlFor="user-role-id">Role</label>
+          <div className="comp-details-edit-input">
             <ValidationMultiSelect
               className="comp-details-input"
               options={CEEB_ROLE_OPTIONS}
               placeholder="Select"
-              id="roles-select-id"
+              id="user-role-id"
               classNamePrefix="comp-select"
               onChange={handleRoleChange}
               errMsg={""}
               values={selectedRoles}
             />
           </div>
-          <br />
-          <div>
-            <Button
-              variant="outline-primary"
-              onClick={handleCancel}
-            >
-              Cancel
-            </Button>{" "}
-            &nbsp;
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-            >
-              Submit
-            </Button>
-          </div>
         </div>
-      </div>
-    </>
+
+        {/* Button groups */}
+        <div className="admin-button-groups">
+          <Button
+            variant="outline-primary"
+            onClick={handleCancel}
+          >
+            Cancel
+          </Button>{" "}
+          &nbsp;
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+          >
+            {isInAddUserView ? "Save" : "Update"}
+          </Button>
+        </div>
+      </section>
+
+      {/* //////////////////////////////////////// */}
+      {/* <div style={{ width: "500px" }}>
+        <div>
+          Select User
+          <CompSelect
+            id="species-select-id"
+            classNamePrefix="comp-select"
+            onChange={(evt) => handleOfficerChange(evt)}
+            classNames={{
+              menu: () => "top-layer-select",
+            }}
+            options={officers}
+            placeholder="Select"
+            enableValidation={true}
+            value={officer}
+            errorMessage={officerError}
+          />
+        </div>
+        <br />
+        <div>
+          Select Agency
+          <CompSelect
+            id="agency-select-id"
+            classNamePrefix="comp-select"
+            onChange={(evt) => handleAgencyChange(evt)}
+            classNames={{
+              menu: () => "top-layer-select",
+            }}
+            options={agency}
+            placeholder="Select"
+            enableValidation={true}
+            value={selectedAgency}
+          />
+        </div>
+        <br />
+        {selectedAgency?.value === "EPO" && (
+          <>
+            <div>
+              Select Team
+              <CompSelect
+                id="team-select-id"
+                classNamePrefix="comp-select"
+                onChange={(e) => handleTeamChange(e)}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={teams}
+                placeholder="Select"
+                enableValidation={true}
+                value={selectedTeam}
+                errorMessage={""}
+              />
+            </div>
+            <br />
+          </>
+        )}
+        {selectedAgency?.value === "COS" && (
+          <>
+            <div>
+              Select Office
+              <CompSelect
+                id="species-select-id"
+                classNamePrefix="comp-select"
+                onChange={(evt) => handleOfficeChange(evt)}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={offices}
+                placeholder="Select"
+                enableValidation={true}
+                value={office}
+                errorMessage={officeError}
+              />
+            </div>
+            <br />
+          </>
+        )}
+        <div>
+          Select Role
+          <ValidationMultiSelect
+            className="comp-details-input"
+            options={CEEB_ROLE_OPTIONS}
+            placeholder="Select"
+            id="roles-select-id"
+            classNamePrefix="comp-select"
+            onChange={handleRoleChange}
+            errMsg={""}
+            values={selectedRoles}
+          />
+        </div>
+        <br />
+        <div>
+          <Button
+            variant="outline-primary"
+            onClick={handleCancel}
+          >
+            Cancel
+          </Button>{" "}
+          &nbsp;
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
+        </div>
+      </div> */}
+    </div>
   );
 };
