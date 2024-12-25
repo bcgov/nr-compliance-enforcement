@@ -19,7 +19,7 @@ export class ActionsTakenSubscriberService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      this.natsConnection = await connect({ servers: process.env.NATS_HOST, waitOnFirstConnect: true });
+      this.natsConnection = await connect({ servers: process.env.NATS_HOST });
       this.jsm = await this.natsConnection.jetstreamManager();
       await this.setupStream();
       await this.subscribeToTopics();
