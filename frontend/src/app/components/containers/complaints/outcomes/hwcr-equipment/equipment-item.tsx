@@ -88,7 +88,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
         confirmText="Yes, delete equipment"
       />
       <Card
-        className={`comp-equipment-card ${!removedEquipmentFullName ? "active" : "inactive"}`}
+        className={`comp-equipment-card ${!removedEquipmentFullName && equipment.typeCode !== "K9UNT" && equipment.typeCode !== "LLTHL" ? "active" : "inactive"}`}
         border={showSectionErrors ? "danger" : "default"}
       >
         <Card.Body>
@@ -103,7 +103,9 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
           <div className="comp-equipment-item-header">
             <div className="comp-equipment-item-header-title">
               <h4 id="equipment-type-title">{getValue("equipment")?.label}</h4>
-              {!removedEquipmentFullName && <Badge bg="success">Active</Badge>}
+              {!removedEquipmentFullName && equipment.typeCode !== "K9UNT" && equipment.typeCode !== "LLTHL" && (
+                <Badge bg="success">Active</Badge>
+              )}
             </div>
             <div className="comp-equipment-item-header-actions">
               <Button
@@ -141,29 +143,32 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
             />
             <br />
             <div>
-              <dt>Set by</dt>
+              <dt>Set/Used by</dt>
               <dd>
                 <span id="equipment-officer-set-div">{setEquipmentFullName}</span>
               </dd>
             </div>
             <div>
-              <dt>Date set</dt>
+              <dt>Date set/used</dt>
               <dd id="equipment-date-set-div">{formatDate(setEquipmentDate?.toString())}</dd>
             </div>
-            {equipment.id && removedEquipmentActor && (
-              <>
-                <div>
-                  <dt>Removed by</dt>
-                  <dd>
-                    <span id="comp-details-assigned-officer-name-text-id">{removedEquipmentFullName}</span>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Removal date</dt>
-                  <dd id="equipment-removal-date">{formatDate(removedEquipmentDate?.toString())}</dd>
-                </div>
-              </>
-            )}
+            {equipment.id &&
+              removedEquipmentActor &&
+              equipment.typeCode !== "K9UNT" &&
+              equipment.typeCode !== "LLTHL" && (
+                <>
+                  <div>
+                    <dt>Removed by</dt>
+                    <dd>
+                      <span id="comp-details-assigned-officer-name-text-id">{removedEquipmentFullName}</span>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Removal date</dt>
+                    <dd id="equipment-removal-date">{formatDate(removedEquipmentDate?.toString())}</dd>
+                  </div>
+                </>
+              )}
             {equipment.id && ["Y", "N"].includes(equipment?.wasAnimalCaptured) && (
               <div>
                 <dt>Was animal captured?</dt>

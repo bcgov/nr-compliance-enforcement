@@ -1394,7 +1394,13 @@ export const selectEquipmentDropdown = (state: RootState): Array<Option> => {
     codeTables: { equipment: items },
   } = state;
 
-  const data = items.map(({ equipment: value, shortDescription: label }) => {
+  // Filter items where active_ind is true and sort them based on display order
+  const filteredAndSortedItems = items
+    .filter((item) => item.isActive === true) // Only items with active_ind = true
+    .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0)); // Sort by display order assume undefined goes to the beginning
+
+  // Map the filtered and sorted items to the Option format
+  const data = filteredAndSortedItems.map(({ equipment: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
