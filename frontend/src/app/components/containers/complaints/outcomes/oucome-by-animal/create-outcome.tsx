@@ -66,7 +66,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const sexes = useAppSelector(selectSexDropdown);
   const ages = useAppSelector(selectAgeDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
-  const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
+  const outcomes = useAppSelector(selectWildlifeComplaintOutcome(true));
   const officers = useAppSelector(selectOfficerListByAgency);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);

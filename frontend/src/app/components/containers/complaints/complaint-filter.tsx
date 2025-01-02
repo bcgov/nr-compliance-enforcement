@@ -63,7 +63,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const statusTypes = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
   const violationTypes = useAppSelector(selectViolationCodeDropdown(agency));
   const girTypes = useAppSelector(selectGirTypeCodeDropdown);
-  const outcomeAnimalTypes = useAppSelector(selectWildlifeComplaintOutcome);
+  const outcomeAnimalTypes = useAppSelector(selectWildlifeComplaintOutcome(false));
 
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));

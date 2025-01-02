@@ -1337,18 +1337,27 @@ export const selectEarDropdown = (state: RootState): Array<Option> => {
   return data;
 };
 
-export const selectWildlifeComplaintOutcome = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { "wildlife-outcomes": items },
-  } = state;
+export const selectWildlifeComplaintOutcome =
+  (activeOnly: boolean) =>
+  (state: RootState): Array<Option> => {
+    const {
+      codeTables: { "wildlife-outcomes": items },
+    } = state;
 
-  const data = items.map(({ outcome: value, shortDescription: label }) => {
-    const item: Option = { label, value };
-    return item;
-  });
+    let filteredItems = items;
 
-  return data;
-};
+    if (activeOnly) {
+      filteredItems = items.filter((item) => item.isActive === true); // Only items with active_ind = true
+    }
+
+    // Map the filtered and sorted items to the Option format
+    const data = filteredItems.map(({ outcome: value, shortDescription: label }) => {
+      const item: Option = { label, value };
+      return item;
+    });
+
+    return data;
+  };
 
 export const selectDrugs = (state: RootState): Array<Option> => {
   const {
@@ -1394,13 +1403,10 @@ export const selectEquipmentDropdown = (state: RootState): Array<Option> => {
     codeTables: { equipment: items },
   } = state;
 
-  // Filter items where active_ind is true and sort them based on display order
-  const filteredAndSortedItems = items
-    .filter((item) => item.isActive === true) // Only items with active_ind = true
-    .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0)); // Sort by display order assume undefined goes to the beginning
+  const filteredItems = items.filter((item) => item.isActive === true); // Only items with active_ind = true
 
   // Map the filtered and sorted items to the Option format
-  const data = filteredAndSortedItems.map(({ equipment: value, shortDescription: label }) => {
+  const data = filteredItems.map(({ equipment: value, shortDescription: label }) => {
     const item: Option = { label, value };
     return item;
   });
