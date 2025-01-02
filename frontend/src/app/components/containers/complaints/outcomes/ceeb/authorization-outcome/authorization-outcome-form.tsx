@@ -61,8 +61,8 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
       return false;
     }
 
-    if (!authorized.match(/^\d{1,10}$/) && !unauthorized) {
-      setAuthorizedErrorMessage("Invalid format. Please only include numbers.");
+    if (!authorized.match(/^[\d-/]{1,20}$/) && !unauthorized) {
+      setAuthorizedErrorMessage("Invalid format. Please only include numbers and ‘-' and '/’ characters.");
       return false;
     }
 
@@ -146,7 +146,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
               inputClass="comp-form-control"
               value={authorized}
               error={authorizedErrorMessage}
-              maxLength={10}
+              maxLength={20}
               onChange={(evt: any) => {
                 const {
                   target: { value },
