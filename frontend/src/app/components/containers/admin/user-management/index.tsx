@@ -9,7 +9,7 @@ import { ToastContainer } from "react-toastify";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { clearNotification, selectNotification } from "@store/reducers/app";
 import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
-import { CEEB_ROLE_OPTIONS } from "@constants/ceeb-roles";
+import { ROLE_OPTIONS } from "@constants/ceeb-roles";
 import { generateApiParameters, get, patch } from "@common/api";
 import config from "@/config";
 import { Officer } from "@apptypes/person/person";
@@ -107,7 +107,7 @@ export const UserManagement: FC = () => {
 
   const mapRolesDropdown = (userRoles: any): Option[] => {
     let result: Option[] = [];
-    CEEB_ROLE_OPTIONS.forEach((roleOption) => {
+    ROLE_OPTIONS.forEach((roleOption) => {
       const found = userRoles.some((role: any) => role.name === roleOption.value);
       if (found) result.push(roleOption);
     });
@@ -122,6 +122,7 @@ export const UserManagement: FC = () => {
   const getUserIdir = async (person_guid: string, lastName: string, firstName: string) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-person-guid/${person_guid}`);
     const officerRes = await get<Officer>(dispatch, parameters);
+    console.log(officerRes);
     setOfficerGuid(officerRes.officer_guid);
     if (officerRes.auth_user_guid) {
       setSelectedUserIdir(`${officerRes.auth_user_guid.split("-").join("")}@idir`);
@@ -299,6 +300,10 @@ export const UserManagement: FC = () => {
     setIsInAddUserView(true);
   };
 
+  const goToSearchView = () => {
+    setViewState(SEARCH_VIEW);
+  };
+
   const resetSelect = () => {
     setSelectedAgency({ value: "", label: "" });
     setSelectedTeam({ value: "", label: "" });
@@ -310,7 +315,7 @@ export const UserManagement: FC = () => {
     setOffice({ value: "", label: "" });
     setSelectedRoles([]);
   };
-  console.log(viewState);
+
   return (
     <>
       <ToastContainer />
@@ -328,13 +333,14 @@ export const UserManagement: FC = () => {
           updateUserIdirByOfficerId={updateUserIdirByOfficerId}
           officerGuid={officerGuid}
           handleEdit={handleEdit}
-          handleCancel={handleCancel}
         />
       )}
-      {viewState === EDIT_VIEW && (
+      {viewState === EDIT_VIEW && officer && (
         <EditUser
+          officer={officer}
           isInAddUserView={isInAddUserView}
           handleCancel={handleCancel}
+          goToSearchView={goToSearchView}
         />
       )}
       {viewState === ADD_USER_SEARCH_VIEW && (

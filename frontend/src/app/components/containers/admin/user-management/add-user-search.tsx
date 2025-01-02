@@ -9,7 +9,7 @@ import { ToastContainer } from "react-toastify";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { clearNotification, selectNotification } from "@store/reducers/app";
 import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
-import { CEEB_ROLE_OPTIONS } from "@constants/ceeb-roles";
+import { ROLE_OPTIONS } from "@constants/ceeb-roles";
 import { generateApiParameters, get, patch } from "@common/api";
 import config from "@/config";
 import { Officer } from "@apptypes/person/person";

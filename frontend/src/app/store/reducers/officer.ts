@@ -466,6 +466,22 @@ export const selectOfficerByAuthUserGuid =
     return null;
   };
 
+export const selectOfficerByPersonGuid =
+  (personGuid: string | undefined) =>
+  (state: RootState): Officer | null => {
+    const {
+      officers: { officers: data },
+    } = state;
+    if (personGuid) {
+      const selected = data.find(({ person_guid }) => person_guid.person_guid === personGuid);
+      if (selected?.person_guid) {
+        return selected;
+      }
+    }
+
+    return null;
+  };
+
 export const selectCurrentOfficer =
   () =>
   (state: RootState): OfficerDto | null => {

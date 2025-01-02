@@ -9,7 +9,7 @@ import { ToastContainer } from "react-toastify";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { clearNotification, selectNotification } from "@store/reducers/app";
 import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
-import { CEEB_ROLE_OPTIONS } from "@constants/ceeb-roles";
+import { ROLE_OPTIONS } from "@constants/ceeb-roles";
 import { generateApiParameters, get, patch } from "@common/api";
 import config from "@/config";
 import { Officer } from "@apptypes/person/person";
@@ -29,7 +29,6 @@ interface SelectUserProps {
   setSelectedUserIdir: Dispatch<SetStateAction<string>>;
   updateUserIdirByOfficerId: (userIdir: string, officerGuid: string) => Promise<void>;
   handleEdit: () => void;
-  handleCancel: () => void;
   handleAddNewUser: () => void;
 }
 
@@ -46,7 +45,6 @@ export const SelectUser: FC<SelectUserProps> = ({
   updateUserIdirByOfficerId,
   officerGuid,
   handleEdit,
-  handleCancel,
 }) => {
   const handleOfficerChange = async (input: any) => {
     setOfficerError("");
@@ -56,6 +54,10 @@ export const SelectUser: FC<SelectUserProps> = ({
       // const firstName = input.label.split(",")[1].trim();
       // await getUserIdir(input.value, lastName, firstName);
     }
+  };
+
+  const handleCancel = () => {
+    setOfficer({ value: "", label: "" });
   };
 
   return (
@@ -144,6 +146,7 @@ export const SelectUser: FC<SelectUserProps> = ({
             <Button
               variant="primary"
               onClick={handleEdit}
+              disabled={officer && officer.value === ""}
             >
               Edit
             </Button>

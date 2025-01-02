@@ -5,6 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { CssService } from "../../external_api/css/css.service";
 import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
 import { Role } from "../../enum/role.enum";
+import { TeamUpdate } from "src/types/models/general/team-update";
 
 @Injectable()
 export class TeamService {
@@ -61,26 +62,18 @@ export class TeamService {
   }
 
   async findUserCurrentTeam(officerGuid) {
-    const officerTeamXref = await this.officerTeamXrefRepository.findOne({
+    return await this.officerTeamXrefRepository.findOne({
       where: { officer_guid: officerGuid },
       relations: { team_guid: { team_code: true } },
     });
-    if (officerTeamXref) {
-      return {
-        value: officerTeamXref.team_guid.team_code.team_code,
-        label: officerTeamXref.team_guid.team_code.short_description,
-      };
-    } else {
-      return null;
-    }
   }
 
-  async update(officerGuid, updateTeamData) {
+  async update(officerGuid, updateTeamData: TeamUpdate) {
     let result = {
       team: false,
       roles: false,
     };
-    const { teamCode, agencyCode, userIdir, roles: updateRoles } = updateTeamData;
+    const { teamCode, agencyCode, userIdir, roles: updateRoles, adminIdirUsername } = updateTeamData;
     try {
       //Update team
       //Assume one officer belong to one team for now
@@ -99,7 +92,7 @@ export class TeamService {
           const updateEnity = {
             team_guid: teamGuid,
             active_ind: true,
-            update_user_id: "postgres",
+            update_user_id: adminIdirUsername,
           };
           const updateResult = await this.officerTeamXrefRepository.update({ officer_guid: officerGuid }, updateEnity);
           if (updateResult.affected > 0) {
@@ -111,8 +104,8 @@ export class TeamService {
             officer_guid: officerGuid,
             team_guid: teamGuid,
             active_ind: true,
-            create_user_id: "postgres",
-            update_user_id: "postgres",
+            create_user_id: adminIdirUsername,
+            update_user_id: adminIdirUsername,
           };
           const newRecord = await this.officerTeamXrefRepository.create(newEntity);
           const saveResult = await this.officerTeamXrefRepository.save(newRecord);

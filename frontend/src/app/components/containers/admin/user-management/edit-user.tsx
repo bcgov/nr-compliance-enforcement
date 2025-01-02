@@ -1,60 +1,48 @@
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { assignOfficerToOffice, selectOfficersDropdown } from "@store/reducers/officer";
+import { assignOfficerToOffice, selectOfficerByPersonGuid } from "@store/reducers/officer";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown, selectOffices } from "@store/reducers/office";
-import { ToastContainer } from "react-toastify";
 import { ToggleError, ToggleSuccess } from "@common/toast";
-import { clearNotification, selectNotification } from "@store/reducers/app";
+import { clearNotification, selectNotification, userId } from "@store/reducers/app";
 import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
-import { CEEB_ROLE_OPTIONS } from "@constants/ceeb-roles";
+import { CEEB_ROLE_OPTIONS, COS_ROLE_OPTIONS, ROLE_OPTIONS } from "@constants/ceeb-roles";
 import { generateApiParameters, get, patch } from "@common/api";
 import config from "@/config";
-import { Officer } from "@apptypes/person/person";
-import { UUID } from "crypto";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
 import "@assets/sass/user-management.scss";
+import { AgencyType } from "@/app/types/app/agency-types";
 
 interface EditUserProps {
-  // officers: any;
-  // officer: any;
-  // officerError: string;
-  // userIdirs: any;
-  // officerGuid: any;
-  // setOfficer: Dispatch<SetStateAction<Option | undefined>>;
-  // setOfficerError: Dispatch<SetStateAction<string>>;
-  // getUserIdir: (person_guid: string, lastName: string, firstName: string) => Promise<void>;
-  // setSelectedUserIdir: Dispatch<SetStateAction<string>>;
-  // updateUserIdirByOfficerId: (userIdir: string, officerGuid: string) => Promise<void>;
-  // handleEdit: () => void;
-  // handleAddNewUser: () => void;
+  officer: Option;
   isInAddUserView: boolean;
   handleCancel: () => void;
+  goToSearchView: () => void;
 }
 
-export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) => {
+export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCancel, goToSearchView }) => {
   const dispatch = useAppDispatch();
-  const officers = useAppSelector(selectOfficersDropdown(true));
+  const officerData = useAppSelector(selectOfficerByPersonGuid(officer.value));
   const officeAssignments = useAppSelector(selectOfficesForAssignmentDropdown);
   const notification = useAppSelector(selectNotification);
   const teams = useAppSelector(selectTeamDropdown);
   const agency = useAppSelector(selectAgencyDropdown);
-
   const availableOffices = useAppSelector(selectOffices);
+  const adminIdirUsername = useAppSelector(userId);
 
-  const [officer, setOfficer] = useState<Option>();
   const [officerError, setOfficerError] = useState<string>("");
-  const [office, setOffice] = useState<Option>();
   const [officeError, setOfficeError] = useState<string>("");
-  const [selectedAgency, setSelectedAgency] = useState<Option | null>();
-  const [selectedTeam, setSelectedTeam] = useState<Option>();
+
+  const [selectedAgency, setSelectedAgency] = useState<Option | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<Option | null>();
   const [selectedRoles, setSelectedRoles] = useState<Array<Option>>();
-  const [userIdirs, setUserIdirs] = useState<any[]>([]);
-  const [selectedUserIdir, setSelectedUserIdir] = useState<string>("");
-  const [officerGuid, setOfficerGuid] = useState<string>("");
+  const [selectedOffice, setSelectedOffice] = useState<Option | null>();
+  const [currentAgency, setCurrentAgency] = useState<Option | null>();
+
   const [offices, setOffices] = useState<Array<Option>>([]);
+  const [roleList, setRoleList] = useState<Array<Option>>([]);
 
   useEffect(() => {
     if (officeAssignments) {
@@ -82,40 +70,53 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
 
   useEffect(() => {
     (async () => {
-      if (officerGuid && selectedUserIdir && agency) {
-        const current = await getUserCurrentSetting(selectedUserIdir, officerGuid);
-        const currentUserAgency = mapAgencyDropDown(current.agency, agency);
-        setSelectedAgency(currentUserAgency);
-        if (current.agency === "EPO") setSelectedTeam(current.team);
-        if (current.roles) {
-          const currentUserRoles = mapRolesDropdown(current.roles);
-          setSelectedRoles(currentUserRoles);
+      if (officerData?.user_roles && officerData.user_roles.length > 0 && selectedAgency === null) {
+        //map current user's roles
+        const currentRoles = mapRolesDropdown(officerData.user_roles);
+        setSelectedRoles(currentRoles);
+
+        //map current user's agency based on roles
+        let currentAgency;
+        const hasCEEBRole = officerData.user_roles.some((role: any) => role.includes("CEEB"));
+        if (hasCEEBRole) {
+          currentAgency = mapAgencyDropDown(AgencyType.CEEB, agency);
+          const currentTeam = await getUserCurrentTeam(officerData.officer_guid);
+          if (currentTeam && currentTeam.team_guid) {
+            const currentTeamMapped = mapAgencyDropDown(currentTeam.team_guid.team_code.team_code, teams);
+            setSelectedTeam(currentTeamMapped);
+          }
+        } else {
+          currentAgency = mapAgencyDropDown(AgencyType.COS, agency);
+
+          //map current user's office if agency is COS
+          if (officerData.office_guid) {
+            const currentOffice = mapAgencyDropDown(officerData.office_guid.office_guid, offices);
+            setSelectedOffice(currentOffice);
+          }
         }
-
-        if (current.agency) {
-          let filtered = availableOffices
-            .filter((item) => item.code === current.agency)
-            .map((item) => {
-              const { id, name, agency } = item;
-              const record: Option = {
-                label: `${agency} - ${name}`,
-                value: id,
-              };
-
-              return record;
-            });
-
-          setOffices(filtered);
-        }
+        setCurrentAgency(currentAgency);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [officerGuid, selectedUserIdir]);
+  }, [officerData, offices, selectedAgency]);
+
+  useEffect(() => {
+    switch (currentAgency?.value ?? selectedAgency?.value) {
+      case AgencyType.CEEB:
+        setRoleList(CEEB_ROLE_OPTIONS);
+        break;
+      case AgencyType.COS:
+      // case for PARKS will use COS_ROLE_OPTIONS for now
+      case AgencyType.PARKS:
+      default:
+        setRoleList(COS_ROLE_OPTIONS);
+        break;
+    }
+  }, [selectedAgency, currentAgency]);
 
   const mapRolesDropdown = (userRoles: any): Option[] => {
     let result: Option[] = [];
-    CEEB_ROLE_OPTIONS.forEach((roleOption) => {
-      const found = userRoles.some((role: any) => role.name === roleOption.value);
+    ROLE_OPTIONS.forEach((roleOption) => {
+      const found = userRoles.some((role: any) => role === roleOption.value);
       if (found) result.push(roleOption);
     });
     return result;
@@ -123,51 +124,25 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
 
   const mapAgencyDropDown = (userAgency: any, agencyList: Option[]) => {
     const result = agencyList.find((agencyItem: Option) => agencyItem.value === userAgency);
-    return result ?? null;
+    return result ?? undefined;
   };
 
-  const getUserIdir = async (person_guid: string, lastName: string, firstName: string) => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-person-guid/${person_guid}`);
-    const officerRes = await get<Officer>(dispatch, parameters);
-    setOfficerGuid(officerRes.officer_guid);
-    if (officerRes.auth_user_guid) {
-      setSelectedUserIdir(`${officerRes.auth_user_guid.split("-").join("")}@idir`);
-    } else {
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/find-user`, { firstName, lastName });
-      const response: any = await get(dispatch, parameters);
-      if (response.length === 0) setOfficerError("Cannot find user idir.");
-      else if (response.length === 1) {
-        setSelectedUserIdir(response[0].username);
-        await updateUserIdirByOfficerId(response[0].username.split("@")[0], officerRes.officer_guid);
-      } else setUserIdirs(response);
-    }
-  };
-
-  const getUserCurrentSetting = async (userIdir: any, officerGuid: any) => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/current`, { userIdir, officerGuid });
+  const getUserCurrentTeam = async (officerGuid: string) => {
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/current`, { officerGuid });
     const response: any = await get(dispatch, parameters);
     return response;
   };
 
-  const updateUserIdirByOfficerId = async (userIdir: string, officerGuid: string) => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${officerGuid}`, {
-      auth_user_guid: userIdir as UUID,
-    });
-    const response = await patch<Officer>(dispatch, parameters);
-    if (!response.auth_user_guid) {
-      setOfficerError("Error updating officer idir.");
-    }
-  };
-
   const updateTeamRole = async (
-    userIdir: string,
-    officerGuid: string,
+    userIdir: string | undefined,
+    officerGuid: string | undefined,
     agencyCode: string | undefined,
     teamCode: string | undefined | null,
     roles: Array<{ name: string | undefined }> | undefined,
   ) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/update/${officerGuid}`, {
       userIdir,
+      adminIdirUsername,
       agencyCode,
       teamCode,
       roles,
@@ -176,23 +151,17 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
     return response;
   };
 
-  const handleOfficerChange = async (input: any) => {
-    resetSelect();
+  const handleOfficeChange = (input: any) => {
     if (input.value) {
-      setOfficer(input);
-      const lastName = input.label.split(",")[0];
-      const firstName = input.label.split(",")[1].trim();
-      await getUserIdir(input.value, lastName, firstName);
+      setSelectedOffice(input);
     }
   };
 
-  const handleOfficeChange = (input: any) => {
-    if (input.value) {
-      setOffice(input);
-    }
-  };
   const handleAgencyChange = (input: any) => {
+    resetSelect();
+
     if (input.value) {
+      //Update offices dropdown list based on selected agency (COS or PARKS)
       let filtered = availableOffices
         .filter((item) => item.code === input.value)
         .map((item) => {
@@ -204,7 +173,6 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
 
           return record;
         });
-
       setOffices(filtered);
 
       setSelectedAgency(input);
@@ -229,25 +197,28 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
     if (!officer) {
       setOfficerError("User is required");
     }
-    if (selectedAgency?.value === "COS" && !office) {
+    if (selectedAgency?.value === "COS" && !selectedOffice) {
       setOfficeError("Office is required");
     }
     return officeError === "" && officerError === "";
   };
 
   const handleSubmit = async () => {
-    if (validateUserAssignment() && selectedAgency) {
+    if (validateUserAssignment() && (selectedAgency || currentAgency)) {
       const mapRoles = selectedRoles?.map((role) => {
         return { name: role.value };
       });
 
-      switch (selectedAgency.value) {
+      const selectedUserAgency = currentAgency ?? selectedAgency;
+      const selectedUserIdir = `${officerData?.auth_user_guid.split("-").join("")}@idir`;
+
+      switch (selectedUserAgency?.value) {
         case "EPO": {
-          if (selectedUserIdir && selectedTeam && selectedRoles) {
+          if (selectedTeam && selectedRoles) {
             let res = await updateTeamRole(
               selectedUserIdir,
-              officerGuid,
-              selectedAgency?.value,
+              officerData?.officer_guid,
+              selectedUserAgency.value,
               selectedTeam?.value,
               mapRoles,
             );
@@ -266,12 +237,18 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
         case "COS":
         default: {
           const officerId = officer?.value ? officer.value : "";
-          const officeId = office?.value ? office.value : "";
+          const officeId = selectedOffice?.value ? selectedOffice.value : "";
           dispatch(assignOfficerToOffice(officerId, officeId));
           const mapRoles = selectedRoles?.map((role) => {
             return { name: role.value };
           });
-          let res = await updateTeamRole(selectedUserIdir, officerGuid, selectedAgency?.value, null, mapRoles);
+          let res = await updateTeamRole(
+            selectedUserIdir,
+            officerData?.officer_guid,
+            selectedUserAgency?.value,
+            null,
+            mapRoles,
+          );
 
           if (res?.roles) {
             ToggleSuccess("Officer updated successfully");
@@ -281,21 +258,20 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
           break;
         }
       }
+
+      goToSearchView();
     }
   };
 
   const toggleDeactivate = () => {};
 
   const resetSelect = () => {
-    setSelectedAgency({ value: "", label: "" });
-    setSelectedTeam({ value: "", label: "" });
+    setCurrentAgency(null);
+    setSelectedTeam(null);
+    setSelectedOffice(null);
+    setSelectedRoles([]);
     setOfficeError("");
     setOfficerError("");
-    setSelectedUserIdir("");
-    setUserIdirs([]);
-    setOfficerGuid("");
-    setOffice({ value: "", label: "" });
-    setSelectedRoles([]);
   };
 
   return (
@@ -329,7 +305,7 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
               type="text"
               id="last-name-readonly-id"
               className="comp-form-control disable-field"
-              value={"Truong"}
+              value={officerData?.person_guid.last_name}
               disabled
             />
           </div>
@@ -346,14 +322,14 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
               type="text"
               id="first-name-readonly-id"
               className="comp-form-control disable-field"
-              value={"Scarlett"}
+              value={officerData?.person_guid.first_name}
               disabled
             />
           </div>
         </div>
 
         {/* Email address*/}
-        <div
+        {/* <div
           className="comp-details-form-row"
           id="email-id"
         >
@@ -363,11 +339,11 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
               type="text"
               id="email-readonly-id"
               className="comp-form-control disable-field"
-              value={"scarlett.truong@gov.bc.ca"}
+              value={"example@gov.bc.ca"}
               disabled
             />
           </div>
-        </div>
+        </div> */}
 
         {/* IDIR*/}
         <div
@@ -380,7 +356,7 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
               type="text"
               id="idir-readonly-id"
               className="comp-form-control disable-field"
-              value={"struong"}
+              value={officerData?.user_id}
               disabled
             />
           </div>
@@ -400,7 +376,7 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
               options={agency}
               placeholder="Select"
               enableValidation={true}
-              value={selectedAgency}
+              value={currentAgency ?? selectedAgency}
             />
           </div>
         </div>
@@ -409,7 +385,7 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
         <div className="comp-details-form-row">
           <label htmlFor="user-team-office-id">Team / office</label>
           <div className="comp-details-edit-input user-team-office-id">
-            {selectedAgency?.value === "EPO" ? (
+            {currentAgency?.value === "EPO" || selectedAgency?.value === "EPO" ? (
               <CompSelect
                 id="team-select-id"
                 classNamePrefix="comp-select"
@@ -434,7 +410,7 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
                 options={offices}
                 placeholder="Select"
                 enableValidation={true}
-                value={office}
+                value={selectedOffice}
                 errorMessage={officeError}
               />
             )}
@@ -447,7 +423,7 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
           <div className="comp-details-edit-input">
             <ValidationMultiSelect
               className="comp-details-input"
-              options={CEEB_ROLE_OPTIONS}
+              options={roleList}
               placeholder="Select"
               id="user-role-id"
               classNamePrefix="comp-select"
@@ -475,114 +451,6 @@ export const EditUser: FC<EditUserProps> = ({ isInAddUserView, handleCancel }) =
           </Button>
         </div>
       </section>
-
-      {/* //////////////////////////////////////// */}
-      {/* <div style={{ width: "500px" }}>
-        <div>
-          Select User
-          <CompSelect
-            id="species-select-id"
-            classNamePrefix="comp-select"
-            onChange={(evt) => handleOfficerChange(evt)}
-            classNames={{
-              menu: () => "top-layer-select",
-            }}
-            options={officers}
-            placeholder="Select"
-            enableValidation={true}
-            value={officer}
-            errorMessage={officerError}
-          />
-        </div>
-        <br />
-        <div>
-          Select Agency
-          <CompSelect
-            id="agency-select-id"
-            classNamePrefix="comp-select"
-            onChange={(evt) => handleAgencyChange(evt)}
-            classNames={{
-              menu: () => "top-layer-select",
-            }}
-            options={agency}
-            placeholder="Select"
-            enableValidation={true}
-            value={selectedAgency}
-          />
-        </div>
-        <br />
-        {selectedAgency?.value === "EPO" && (
-          <>
-            <div>
-              Select Team
-              <CompSelect
-                id="team-select-id"
-                classNamePrefix="comp-select"
-                onChange={(e) => handleTeamChange(e)}
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                options={teams}
-                placeholder="Select"
-                enableValidation={true}
-                value={selectedTeam}
-                errorMessage={""}
-              />
-            </div>
-            <br />
-          </>
-        )}
-        {selectedAgency?.value === "COS" && (
-          <>
-            <div>
-              Select Office
-              <CompSelect
-                id="species-select-id"
-                classNamePrefix="comp-select"
-                onChange={(evt) => handleOfficeChange(evt)}
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                options={offices}
-                placeholder="Select"
-                enableValidation={true}
-                value={office}
-                errorMessage={officeError}
-              />
-            </div>
-            <br />
-          </>
-        )}
-        <div>
-          Select Role
-          <ValidationMultiSelect
-            className="comp-details-input"
-            options={CEEB_ROLE_OPTIONS}
-            placeholder="Select"
-            id="roles-select-id"
-            classNamePrefix="comp-select"
-            onChange={handleRoleChange}
-            errMsg={""}
-            values={selectedRoles}
-          />
-        </div>
-        <br />
-        <div>
-          <Button
-            variant="outline-primary"
-            onClick={handleCancel}
-          >
-            Cancel
-          </Button>{" "}
-          &nbsp;
-          <Button
-            variant="primary"
-            onClick={handleSubmit}
-          >
-            Submit
-          </Button>
-        </div>
-      </div> */}
     </div>
   );
 };
