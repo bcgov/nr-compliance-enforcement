@@ -149,7 +149,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
               </dd>
             </div>
             <div>
-              <dt>Date set/used</dt>
+              <dt>Set/Used date</dt>
               <dd id="equipment-date-set-div">{formatDate(setEquipmentDate?.toString())}</dd>
             </div>
             {equipment.id &&
