@@ -34,8 +34,10 @@ export const options = {
     // mapSearchAllOpenComplaints: defaultOptions,
     // mapSearchAllComplaints: defaultOptions,
     // mapSearchWithCMFilter: defaultOptions,
+
+    // Complaint Details
     getComplaintDetails: defaultOptions,
-    // addAndRemoveComplaintOutcome: defaultOptions,
+    addAndRemoveComplaintOutcome: defaultOptions,
   },
   thresholds: {
     http_req_duration: ["p(99)<2000"], // 99% of requests must complete below 2s

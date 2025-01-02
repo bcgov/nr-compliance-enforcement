@@ -1,7 +1,7 @@
 import http from "k6/http";
 import { check } from "k6";
 
-// Search for open HWCR complaints in the South Peace region
+// Search with default parameters (open HWCR complaints in the South Peace region)
 export const searchWithDefaultFilters = async (host, requestConfig) => {
   check(
     await http.get(
@@ -10,8 +10,8 @@ export const searchWithDefaultFilters = async (host, requestConfig) => {
       requestConfig,
     ),
     {
-      "response status 200": (r) => r.status === 200,
-      "response has entries": (r) => JSON.parse(r.body).totalCount > 0,
+      "Search with default parameters response status 200": (r) => r.status === 200,
+      "Search with default parameters response has entries": (r) => JSON.parse(r.body).totalCount > 0,
     },
   );
 };
@@ -24,8 +24,8 @@ export const searchWithoutFilters = async (host, requestConfig) => {
       requestConfig,
     ),
     {
-      "response status 200": (r) => r.status === 200,
-      "response has entries": (r) => JSON.parse(r.body).totalCount > 0,
+      "Search for all HWCR complaints response status 200": (r) => r.status === 200,
+      "Search for all HWCR complaints response has entries": (r) => JSON.parse(r.body).totalCount > 0,
     },
   );
 };
@@ -39,8 +39,8 @@ export const openSearchWithoutFilters = async (host, requestConfig) => {
       requestConfig,
     ),
     {
-      "response status 200": (r) => r.status === 200,
-      "response has entries": (r) => JSON.parse(r.body).totalCount > 0,
+      "Search for all open HWCR complaints response status 200": (r) => r.status === 200,
+      "Search for all open HWCR complaints response has entries": (r) => JSON.parse(r.body).totalCount > 0,
     },
   );
 };
@@ -55,8 +55,8 @@ export const searchWithCMFilter = async (host, requestConfig) => {
       requestConfig,
     ),
     {
-      "response status 200": (r) => r.status === 200,
-      "response has entries": (r) => JSON.parse(r.body).totalCount > 0,
+      "Search with case management filters response status 200": (r) => r.status === 200,
+      "Search with case management filters response has entries": (r) => JSON.parse(r.body).totalCount > 0,
     },
   );
 };
