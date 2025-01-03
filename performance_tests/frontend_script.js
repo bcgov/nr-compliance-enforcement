@@ -4,15 +4,10 @@ import { browserTest } from "./tests/frontend/browser.js";
 import { protocolTest } from "./tests/frontend/protocol.js";
 import { INITIAL_TOKEN, INITIAL_REFRESH_TOKEN, generateRequestConfig } from "./common/auth.js";
 
-/**
- * To run with an open browser, prepend the make command with K6_BROWSER_HEADLESS=false
- */
-const defaultOptions = {
-  executor: "constant-vus",
-  // Due to the heavy nature of the front end tests experiment with the number of VUs
-  // and maybe try running one scenario at a time to avoid overloading your system and getting errors
-  vus: 1, // If running all 4 scenarios this is 1x4=4 VUs
-  duration: "10000s",
+// Use activeBrowserOptions for the browser test if you aren't running it headless
+const activeBrowserOptions = {
+  executor: "per-vu-iterations",
+  vus: 1,
   options: {
     browser: {
       type: "chromium",
@@ -20,22 +15,26 @@ const defaultOptions = {
   },
 };
 
+const defaultOptions = {
+  executor: "ramping-vus",
+  stages: STAGES[`${__ENV.LOAD}`],
+};
+
+/**
+ * To run with an open browser, prepend the make command with:
+ * K6_BROWSER_HEADLESS=false
+ * It is suggested to use the activeBrowserOptions when doing so as browsers will eat up a significant amount of local
+ * resources which may affect the results of the tests in a way that is not representative of the servers performance.
+ */
 export const options = {
   scenarios: {
-    browserTest: {
-      executor: "per-vu-iterations",
-      options: {
-        browser: {
-          type: "chromium",
-        },
-      },
-    },
-    protocolTest: {
-      executor: "constant-vus",
-      vus: 1,
-      duration: "20s",
-    },
+    browserTest: activeBrowserOptions,
+    protocolTest: defaultOptions,
   },
+  thresholds: {
+    http_req_duration: ["p(99)<2000"], // ms that 99% of requests must be completed within
+  },
+  // rps: 50, // Do not increase to over 50 without informing Platform Services
 };
 
 const TOKEN_REFRESH_TIME = 60;

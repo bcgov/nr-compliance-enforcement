@@ -6,7 +6,7 @@
  */
 const TEST_RUN_USERS = 1;
 const MIN_USERS = 20;
-const MAX_USERS = 250;
+const MAX_USERS = 200;
 const AVERAGE_USERS = 75;
 const STRESS_LOAD_USERS = 150;
 
@@ -20,23 +20,30 @@ export const STAGES = {
 
   // Smoke tests for minimum expected load
   smoke: [
-    { duration: "3m", target: MIN_USERS }, // ramp-up of traffic to the smoke users
-    { duration: "10m", target: MIN_USERS }, // stay at minimum users for 10 minutes
-    { duration: "2m", target: 0 }, // ramp-down to 0 users
+    { duration: "1m", target: MIN_USERS }, // ramp-up of traffic to the smoke users
+    { duration: "2m", target: MIN_USERS }, // stay at minimum users for 10 minutes
+    { duration: "1m", target: 0 }, // ramp-down to 0 users
   ],
 
-  // Load tests for average load
+  // Load tests at average load
   load: [
-    { duration: "2m", target: MIN_USERS }, // ramp up to minimum users
-    { duration: "5m", target: MIN_USERS }, // maintain minimum users
-    { duration: "5m", target: AVERAGE_USERS }, // ramp up to average user  base
-    { duration: "30m", target: AVERAGE_USERS }, // maintain average user base
+    { duration: "1m", target: AVERAGE_USERS }, // ramp up to average user  base
+    { duration: "10m", target: AVERAGE_USERS }, // maintain average user base
+    { duration: "1m", target: 0 }, // ramp down
+  ],
+
+  // Load tests for average load with a spike to stress load
+  load_with_spike: [
+    { duration: "1m", target: MIN_USERS }, // ramp up to minimum users
+    { duration: "2m", target: MIN_USERS }, // maintain minimum users
+    { duration: "1m", target: AVERAGE_USERS }, // ramp up to average user  base
+    { duration: "10m", target: AVERAGE_USERS }, // maintain average user base
     // Small spike
-    { duration: "2m", target: STRESS_LOAD_USERS }, // scale up to stress load
+    { duration: "1m", target: STRESS_LOAD_USERS }, // scale up to stress load
     { duration: "2m", target: STRESS_LOAD_USERS }, // briefly maintain stress load
-    { duration: "2m", target: AVERAGE_USERS }, // scale back to average users
-    { duration: "5m", target: AVERAGE_USERS }, // maintain average users
-    { duration: "10m", target: 0 }, // gradually drop to 0 users
+    { duration: "1m", target: AVERAGE_USERS }, // scale back to average users
+    { duration: "2m", target: AVERAGE_USERS }, // briefly maintain average users
+    { duration: "1m", target: 0 }, // maintain average users
   ],
 
   // Stress tests for heavy load

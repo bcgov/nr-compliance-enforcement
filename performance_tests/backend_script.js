@@ -40,9 +40,9 @@ export const options = {
     addAndRemoveComplaintOutcome: defaultOptions,
   },
   thresholds: {
-    http_req_duration: ["p(99)<2000"], // 99% of requests must complete below 2s
+    http_req_duration: ["p(99)<2000"], // ms that 99% of requests must be completed within
   },
-  rps: __ENV.RPS, // If over 50, notify platform services first.
+  // rps: 50, // Do not increase to over 50 without informing Platform Services
 };
 
 /**
