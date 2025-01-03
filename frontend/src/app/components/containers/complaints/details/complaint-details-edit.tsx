@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate } from "@common/methods";
 import { Coordinates } from "@apptypes/app/coordinate-type";
@@ -184,9 +184,12 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
 
-  const handleSlideCountChange = (count: number) => {
-    setComplaintAttachmentCount(count);
-  };
+  const handleSlideCountChange = useCallback(
+    (count: number) => {
+      setComplaintAttachmentCount(count);
+    },
+    [setComplaintAttachmentCount],
+  );
 
   //-- use effects
   useEffect(() => {
