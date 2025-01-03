@@ -48,7 +48,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData }) => {
   return (
     <div className="comp-complaint-details-block">
       <div>
-        <h2>Linked complaints</h2>
+        <h2>Duplicate complaints</h2>
       </div>
       <div>
         {linkedComplaintData.map((data, index) => (

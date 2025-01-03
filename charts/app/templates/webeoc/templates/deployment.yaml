@@ -75,10 +75,6 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 5
           resources: # this is optional
-            limits:
-              ephemeral-storage: "25Mi"
-              cpu: 80m
-              memory: 150Mi
             requests:
               ephemeral-storage: "15Mi"
               cpu: 40m
