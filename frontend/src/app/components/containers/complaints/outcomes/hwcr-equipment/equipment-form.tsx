@@ -60,7 +60,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const complaintData = useAppSelector(selectComplaint);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
-  const equipmentDropdownOptions = useAppSelector(selectEquipmentDropdown);
+  const equipmentDropdownOptions = useAppSelector(selectEquipmentDropdown(true));
   const trapEquipment = useAppSelector(selectTrapEquipment);
   const assignableOfficers = useAppSelector(selectOfficerListByAgency);
 
@@ -68,7 +68,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const showSectionErrors = isInEdit.showSectionErrors;
 
   // needed to turn equipment type codes into descriptions
-  const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown);
+  const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown(true));
 
   // for turning codes into values
   const getValue = useCallback(

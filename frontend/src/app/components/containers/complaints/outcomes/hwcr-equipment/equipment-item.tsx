@@ -41,7 +41,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
     }
   };
 
-  const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown);
+  const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown(false)); //Want to be able to display inactive equipment
 
   const setEquipmentActor = equipment.actions?.findLast(
     (action) => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT,

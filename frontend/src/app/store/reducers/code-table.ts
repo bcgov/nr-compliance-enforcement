@@ -1398,21 +1398,26 @@ export const selectRemainingDrugUse = (state: RootState): Array<Option> => {
   return data;
 };
 
-export const selectEquipmentDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { equipment: items },
-  } = state;
+export const selectEquipmentDropdown =
+  (activeOnly: boolean) =>
+  (state: RootState): Array<Option> => {
+    const {
+      codeTables: { equipment: items },
+    } = state;
 
-  const filteredItems = items.filter((item) => item.isActive === true); // Only items with active_ind = true
+    let filteredItems = items;
+    if (activeOnly) {
+      filteredItems = items.filter((item) => item.isActive === true); // Only items with active_ind = true
+    }
 
-  // Map the filtered and sorted items to the Option format
-  const data = filteredItems.map(({ equipment: value, shortDescription: label }) => {
-    const item: Option = { label, value };
-    return item;
-  });
+    // Map the filtered and sorted items to the Option format
+    const data = filteredItems.map(({ equipment: value, shortDescription: label }) => {
+      const item: Option = { label, value };
+      return item;
+    });
 
-  return data;
-};
+    return data;
+  };
 
 export const selectLocationDropdown = (state: RootState): Array<Option> => {
   const {
