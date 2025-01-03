@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
-import { selectEquipmentDropdown, selectTrapEquipment } from "@store/reducers/code-table";
+import { selectActiveEquipmentDropdown, selectTrapEquipment } from "@store/reducers/code-table";
 import { getComplaintById, selectComplaint, selectComplaintCallerInformation } from "@store/reducers/complaints";
 import { CompSelect } from "@components/common/comp-select";
 import { ToggleError } from "@common/toast";
@@ -60,22 +60,19 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const complaintData = useAppSelector(selectComplaint);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
-  const equipmentDropdownOptions = useAppSelector(selectEquipmentDropdown(true));
+  const equipmentDropdownOptions = useAppSelector(selectActiveEquipmentDropdown);
   const trapEquipment = useAppSelector(selectTrapEquipment);
   const assignableOfficers = useAppSelector(selectOfficerListByAgency);
 
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
-  // needed to turn equipment type codes into descriptions
-  const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown(true));
-
   // for turning codes into values
   const getValue = useCallback(
     (property: string): Option | undefined => {
-      return equipmentTypeCodes.find((item) => item.value === equipment?.typeCode);
+      return equipmentDropdownOptions.find((item) => item.value === equipment?.typeCode);
     },
-    [equipmentTypeCodes, equipment?.typeCode],
+    [equipmentDropdownOptions, equipment?.typeCode],
   );
 
   useEffect(() => {

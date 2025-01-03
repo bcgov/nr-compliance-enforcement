@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 
 import Option from "@apptypes/app/option";
 
-import { selectEquipmentDropdown } from "@store/reducers/code-table";
+import { selectAllEquipmentDropdown } from "@store/reducers/code-table";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
 import { deleteEquipment } from "@store/reducers/case-thunks";
 import { CompLocationInfo } from "@components/common/comp-location-info";
@@ -41,7 +41,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
     }
   };
 
-  const equipmentTypeCodes = useAppSelector(selectEquipmentDropdown(false)); //Want to be able to display inactive equipment
+  const equipmentTypeCodes = useAppSelector(selectAllEquipmentDropdown); //Want to be able to display inactive equipment
 
   const setEquipmentActor = equipment.actions?.findLast(
     (action) => action.actionCode === CASE_ACTION_CODE.SETEQUIPMT,

@@ -9,7 +9,7 @@ import {
   selectSexDropdown,
   selectSpeciesCodeDropdown,
   selectThreatLevelDropdown,
-  selectWildlifeComplaintOutcome,
+  selectActiveWildlifeComplaintOutcome,
 } from "@store/reducers/code-table";
 import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
 import { AnimalTagV2 } from "@apptypes/app/complaints/outcomes/wildlife/animal-tag";
@@ -66,7 +66,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
   const sexes = useAppSelector(selectSexDropdown);
   const ages = useAppSelector(selectAgeDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
-  const outcomes = useAppSelector(selectWildlifeComplaintOutcome(true));
+  const outcomes = useAppSelector(selectActiveWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficerListByAgency);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);

@@ -6,7 +6,7 @@ import {
   selectSexDropdown,
   selectAgeDropdown,
   selectThreatLevelDropdown,
-  selectWildlifeComplaintOutcome,
+  selectActiveWildlifeComplaintOutcome,
 } from "@store/reducers/code-table";
 import { selectOfficerListByAgency } from "@store/reducers/officer";
 import { Button, Card, ListGroup } from "react-bootstrap";
@@ -60,7 +60,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const sexes = useAppSelector(selectSexDropdown);
   const ages = useAppSelector(selectAgeDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
-  const outcomes = useAppSelector(selectWildlifeComplaintOutcome(true));
+  const outcomes = useAppSelector(selectActiveWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficerListByAgency);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
