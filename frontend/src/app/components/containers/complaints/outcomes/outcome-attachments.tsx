@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { AttachmentsCarousel } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
@@ -75,9 +75,12 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
     }
   }, [carouselData, showAddButton]);
 
-  const handleSlideCountChange = (count: number) => {
-    setOutcomeAttachmentCount(count);
-  };
+  const handleSlideCountChange = useCallback(
+    (count: number) => {
+      setOutcomeAttachmentCount(count);
+    },
+    [setOutcomeAttachmentCount],
+  );
 
   const saveButtonClick = async () => {
     //initial state when there is no attachments
