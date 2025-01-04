@@ -54,9 +54,9 @@ export const options = {
  */
 
 const TOKEN_REFRESH_TIME = 60;
-var token = INITIAL_TOKEN;
-var refreshToken = INITIAL_REFRESH_TOKEN;
-var requestConfig = generateRequestConfig(token);
+let token = INITIAL_TOKEN;
+let refreshToken = INITIAL_REFRESH_TOKEN;
+let requestConfig = generateRequestConfig(token);
 
 export default function () {
   const HOST = __ENV.SERVER_HOST;
