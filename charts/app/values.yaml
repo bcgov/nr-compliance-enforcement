@@ -101,9 +101,6 @@ backend:
       - prod/api-2
     #-- resources specific to vault initContainer. it is optional and is an object.
     resources:
-      limits:
-        cpu: 50m
-        memory: 50Mi
       requests:
         cpu: 50m
         memory: 25Mi
@@ -180,16 +177,10 @@ crunchy: # enable it for TEST and PROD, for PR based pipelines simply use single
     requests:
       cpu: 25m
       memory: 256Mi
-    limits:
-      cpu: 100m
-      memory: 512Mi
     replicaCertCopy:
       requests:
         cpu: 1m
         memory: 32Mi
-      limits:
-        cpu: 50m
-        memory: 64Mi
 
   pgBackRest:
     enabled: false
@@ -210,16 +201,10 @@ crunchy: # enable it for TEST and PROD, for PR based pipelines simply use single
       requests:
         cpu: 1m
         memory: 64Mi
-      limits:
-        cpu: 50m
-        memory: 128Mi
     sidecars:
       requests:
         cpu: 1m
         memory: 64Mi
-      limits:
-        cpu: 50m
-        memory: 128Mi
 
   patroni:
     postgresql:
@@ -238,9 +223,6 @@ crunchy: # enable it for TEST and PROD, for PR based pipelines simply use single
       requests:
         cpu: 1m
         memory: 64Mi
-      limits:
-        cpu: 50m
-        memory: 128Mi
 
   # Postgres Cluster resource values:
   pgmonitor:
@@ -250,9 +232,6 @@ crunchy: # enable it for TEST and PROD, for PR based pipelines simply use single
       requests:
         cpu: 1m
         memory: 64Mi
-      limits:
-        cpu: 50m
-        memory: 128Mi
 
 bitnami-pg:
   enabled: true
@@ -294,9 +273,6 @@ bitnami-pg:
       requests:
         cpu: 100m
         memory: 250Mi
-      limits:
-        cpu: 200m
-        memory: 500Mi
 
 backup:
   enabled: false # save quota in dev environment, see gha for override
@@ -324,9 +300,6 @@ backup:
   failedHistoryLimit: 2 # "The number of failed jobs that will be retained"
   backoffLimit: 0 # "The number of attempts to try for a successful job outcome"
   resources:
-    limits:
-      cpu: 150m
-      memory: 256Mi
     requests:
       cpu: 10m
       memory: 128Mi
@@ -339,9 +312,6 @@ nats:
       requests:
         cpu: 100m
         memory: 100Mi
-      limits:
-        cpu: 200m
-        memory: 400Mi
     jetstream:
       enabled: true
       fileStore:
@@ -366,9 +336,6 @@ nats:
         requests:
           cpu: 100m
           memory: 100Mi
-        limits:
-          cpu: 200m
-          memory: 400Mi
 
 #-- WebEOC Container
 webeoc:
@@ -416,9 +383,6 @@ metabase:
     port: 80
     targetPort: 3000
   resources:
-    limits:
-      cpu: 750m
-      memory: 1250Mi
     requests:
       cpu: 150m
       memory: 500Mi
@@ -472,7 +436,4 @@ metabase-pg:
       requests:
         cpu: 100m
         memory: 250Mi
-      limits:
-        cpu: 200m
-        memory: 500Mi
 #-- End Metabase Values

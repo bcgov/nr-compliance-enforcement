@@ -46,9 +46,6 @@ spec:
             - name: FLYWAY_LOCATIONS
               value: "{{- if eq .Release.Namespace "c1c7ed-dev" -}}{{ .Values.global.secrets.flywayLocations.dev }}{{- else if eq .Release.Namespace "c1c7ed-test" -}}{{ .Values.global.secrets.flywayLocations.test }}{{- else if eq .Release.Namespace "c1c7ed-prod" -}}{{ .Values.global.secrets.flywayLocations.prod }}{{- else -}}filesystem:./flyway/sql{{- end }}"
           resources:
-            limits:
-              cpu: 200m
-              memory: 200Mi
             requests:
               cpu: 50m
               memory: 100Mi
@@ -93,9 +90,6 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 5
           resources: # this is optional
-            limits:
-              cpu: 450m
-              memory: 150Mi
             requests:
               cpu: 50m
               memory: 75Mi
