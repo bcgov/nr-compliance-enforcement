@@ -1,20 +1,11 @@
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction, useState } from "react";
 import { Button } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { assignOfficerToOffice, selectOfficersDropdown } from "@store/reducers/officer";
-import { CompSelect } from "@components/common/comp-select";
+import { useAppDispatch } from "@hooks/hooks";
 import Option from "@apptypes/app/option";
-import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown, selectOffices } from "@store/reducers/office";
-import { ToastContainer } from "react-toastify";
-import { ToggleError, ToggleSuccess } from "@common/toast";
-import { clearNotification, selectNotification } from "@store/reducers/app";
-import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
-import { ROLE_OPTIONS } from "@constants/ceeb-roles";
-import { generateApiParameters, get, patch } from "@common/api";
+import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
-import { Officer } from "@apptypes/person/person";
-import { UUID } from "crypto";
-import { ValidationMultiSelect } from "@common/validation-multiselect";
+import { CssUser, Officer } from "@apptypes/person/person";
+import { CompInput } from "@/app/components/common/comp-input";
 import "@assets/sass/user-management.scss";
 
 interface AddUserSearchProps {
@@ -31,6 +22,9 @@ interface AddUserSearchProps {
   handleAddNewUserDetails: () => void;
   handleCancel: () => void;
   handleAddNewUser: () => void;
+  goToEditView: () => void;
+  setIsInAddUserView: Dispatch<SetStateAction<boolean>>;
+  setNewUser: Dispatch<SetStateAction<CssUser | null>>;
 }
 
 export const AddUserSearch: FC<AddUserSearchProps> = ({
@@ -47,11 +41,45 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
   officerGuid,
   handleAddNewUserDetails,
   handleCancel,
+  goToEditView,
+  setIsInAddUserView,
+  setNewUser,
 }) => {
-  const handleOfficerChange = async (input: any) => {
-    setOfficerError("");
-    if (input.value) {
-      setOfficer(input);
+  const UserStatus = {
+    notInKeyCloak: 0,
+    inNatCom: 1,
+  };
+
+  const dispatch = useAppDispatch();
+  const [emailInput, setEmailInput] = useState<string>("");
+  const [userStatus, setUserStatus] = useState<number>();
+
+  const getCssUserDetails = async (email: string): Promise<Officer | CssUser | null> => {
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-email/${email}`);
+    const response = await get<Officer | CssUser | null>(dispatch, parameters);
+    return response;
+  };
+
+  const handleEmailChange = (input: any) => {
+    setEmailInput(input.trim());
+  };
+
+  const handleSearch = async () => {
+    if (emailInput !== "") {
+      const userDetails = await getCssUserDetails(emailInput);
+      if (userDetails) {
+        if ((userDetails as Officer).officer_guid) {
+          setOfficer({ value: (userDetails as Officer).person_guid.person_guid, label: "" });
+          setUserStatus(UserStatus.inNatCom);
+        } else if ((userDetails as CssUser).username) {
+          setNewUser(userDetails as CssUser);
+          setOfficer({ value: undefined, label: "" });
+          setIsInAddUserView(true);
+          goToEditView();
+        }
+      } else {
+        setUserStatus(UserStatus.notInKeyCloak);
+      }
     }
   };
 
@@ -66,20 +94,17 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
         <div>
           <dl className="comp-call-details-group">
             <div>
-              <dt>Select User</dt>
+              <dt>Search user</dt>
               <dd>
-                <CompSelect
-                  id="species-select-id"
-                  classNamePrefix="comp-select"
-                  onChange={(evt) => handleOfficerChange(evt)}
-                  classNames={{
-                    menu: () => "top-layer-select",
-                  }}
-                  options={officers}
-                  placeholder="Select"
-                  enableValidation={true}
-                  value={officer}
-                  errorMessage={officerError}
+                <CompInput
+                  id="complaint-email-id"
+                  divid="complaint-email-id-value"
+                  type="input"
+                  inputClass="comp-form-control"
+                  error=""
+                  maxLength={120}
+                  placeholder="Search user's email"
+                  onChange={(evt: any) => handleEmailChange(evt.target.value)}
                 />
               </dd>
             </div>
@@ -94,11 +119,39 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
             &nbsp;
             <Button
               variant="primary"
-              onClick={handleAddNewUserDetails}
+              onClick={handleSearch}
             >
               Add
             </Button>
           </div>
+
+          {userStatus === UserStatus.inNatCom && (
+            <div style={{ marginTop: "30px" }}>
+              <p>
+                User already exists in NatCom.{" "}
+                <a
+                  href="/"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsInAddUserView(false);
+                    goToEditView();
+                  }}
+                >
+                  Go to Edit
+                </a>
+              </p>
+            </div>
+          )}
+
+          {userStatus === UserStatus.notInKeyCloak && (
+            <div style={{ marginTop: "30px" }}>
+              <p>There are no results using your search criteria. The user might not exist in KeyCloak.</p>
+              <p>
+                Click this link to add the user in KeyCloak first:{" "}
+                <a href="https://bcgov.github.io/sso-requests">Common Hosted Single Sign-on (CSS)</a>
+              </p>
+            </div>
+          )}
         </div>
       </section>
     </div>

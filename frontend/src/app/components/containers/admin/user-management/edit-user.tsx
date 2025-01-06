@@ -1,12 +1,12 @@
 import { FC, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { assignOfficerToOffice, selectOfficerByPersonGuid } from "@store/reducers/officer";
+import { assignOfficerToOffice, createOfficer, getOfficers, selectOfficerByPersonGuid } from "@store/reducers/officer";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown, selectOffices } from "@store/reducers/office";
 import { ToggleError, ToggleSuccess } from "@common/toast";
-import { clearNotification, selectNotification, userId } from "@store/reducers/app";
+import { clearNotification, openModal, selectNotification, userId } from "@store/reducers/app";
 import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
 import { CEEB_ROLE_OPTIONS, COS_ROLE_OPTIONS, ROLE_OPTIONS } from "@constants/ceeb-roles";
 import { generateApiParameters, get, patch } from "@common/api";
@@ -14,15 +14,18 @@ import config from "@/config";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
 import "@assets/sass/user-management.scss";
 import { AgencyType } from "@/app/types/app/agency-types";
+import { CssUser, NewOfficer } from "@/app/types/person/person";
+import { TOGGLE_DEACTIVATE } from "@/app/types/modal/modal-types";
 
 interface EditUserProps {
   officer: Option;
   isInAddUserView: boolean;
+  newUser: CssUser | null;
   handleCancel: () => void;
   goToSearchView: () => void;
 }
 
-export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCancel, goToSearchView }) => {
+export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, newUser, handleCancel, goToSearchView }) => {
   const dispatch = useAppDispatch();
   const officerData = useAppSelector(selectOfficerByPersonGuid(officer.value));
   const officeAssignments = useAppSelector(selectOfficesForAssignmentDropdown);
@@ -35,6 +38,10 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
   const [officerError, setOfficerError] = useState<string>("");
   const [officeError, setOfficeError] = useState<string>("");
 
+  const [lastName, setLastName] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [idir, setIdir] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [selectedAgency, setSelectedAgency] = useState<Option | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<Option | null>();
   const [selectedRoles, setSelectedRoles] = useState<Array<Option>>();
@@ -87,7 +94,6 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
           }
         } else {
           currentAgency = mapAgencyDropDown(AgencyType.COS, agency);
-
           //map current user's office if agency is COS
           if (officerData.office_guid) {
             const currentOffice = mapAgencyDropDown(officerData.office_guid.office_guid, offices);
@@ -98,6 +104,19 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
       }
     })();
   }, [officerData, offices, selectedAgency]);
+
+  useEffect(() => {
+    if (newUser && !officerData) {
+      setLastName(newUser.lastName);
+      setFirstName(newUser.firstName);
+      setIdir(newUser.attributes.idir_username[0]);
+      setEmail(newUser.email);
+    } else if (officerData && !newUser) {
+      setLastName(officerData.person_guid.last_name);
+      setFirstName(officerData.person_guid.first_name);
+      setIdir(officerData.user_id);
+    }
+  }, [newUser, officerData]);
 
   useEffect(() => {
     switch (currentAgency?.value ?? selectedAgency?.value) {
@@ -204,66 +223,118 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
   };
 
   const handleSubmit = async () => {
-    if (validateUserAssignment() && (selectedAgency || currentAgency)) {
-      const mapRoles = selectedRoles?.map((role) => {
+    if (validateUserAssignment() && (selectedAgency || currentAgency) && selectedRoles) {
+      const mapRoles = selectedRoles.map((role) => {
         return { name: role.value };
       });
 
-      const selectedUserAgency = currentAgency ?? selectedAgency;
-      const selectedUserIdir = `${officerData?.auth_user_guid.split("-").join("")}@idir`;
+      if (newUser) {
+        //create new officer
+        const newOfficerData: NewOfficer = {
+          user_id: newUser.attributes.idir_username[0],
+          create_user_id: adminIdirUsername,
+          create_utc_timestamp: new Date(),
+          update_user_id: adminIdirUsername,
+          update_utc_timestamp: new Date(),
+          auth_user_guid: newUser.username.slice(0, -5),
+          office_guid: selectedOffice?.value ?? null,
+          team_code: selectedTeam?.value ?? null,
+          person_guid: {
+            first_name: newUser.firstName,
+            middle_name_1: null,
+            middle_name_2: null,
+            last_name: newUser.lastName,
+            create_user_id: adminIdirUsername,
+            create_utc_timestamp: new Date(),
+            update_user_id: adminIdirUsername,
+            updateTimestamp: new Date(),
+          },
+          roles: {
+            user_roles: mapRoles,
+            user_idir: newUser.username,
+          },
+          coms_enrolled_ind: false,
+          deactivate_ind: false,
+        };
+        dispatch(createOfficer(newOfficerData));
+      } else {
+        //update existing officer
+        const selectedUserAgency = currentAgency ?? selectedAgency;
+        const selectedUserIdir = `${officerData?.auth_user_guid.split("-").join("")}@idir`;
 
-      switch (selectedUserAgency?.value) {
-        case "EPO": {
-          if (selectedTeam && selectedRoles) {
+        switch (selectedUserAgency?.value) {
+          case "EPO": {
+            if (selectedTeam && selectedRoles) {
+              let res = await updateTeamRole(
+                selectedUserIdir,
+                officerData?.officer_guid,
+                selectedUserAgency.value,
+                selectedTeam?.value,
+                mapRoles,
+              );
+
+              if (res?.team && res?.roles) {
+                ToggleSuccess("Officer updated successfully");
+              } else {
+                ToggleError("Unable to update");
+              }
+            }
+            break;
+          }
+          case "PARKS": {
+            break;
+          }
+          case "COS":
+          default: {
+            const officerId = officer?.value ? officer.value : "";
+            const officeId = selectedOffice?.value ? selectedOffice.value : "";
+            dispatch(assignOfficerToOffice(officerId, officeId));
+            const mapRoles = selectedRoles?.map((role) => {
+              return { name: role.value };
+            });
             let res = await updateTeamRole(
               selectedUserIdir,
               officerData?.officer_guid,
-              selectedUserAgency.value,
-              selectedTeam?.value,
+              selectedUserAgency?.value,
+              null,
               mapRoles,
             );
 
-            if (res?.team && res?.roles) {
+            if (res?.roles) {
+              dispatch(getOfficers());
               ToggleSuccess("Officer updated successfully");
             } else {
               ToggleError("Unable to update");
             }
+            break;
           }
-          break;
-        }
-        case "PARKS": {
-          break;
-        }
-        case "COS":
-        default: {
-          const officerId = officer?.value ? officer.value : "";
-          const officeId = selectedOffice?.value ? selectedOffice.value : "";
-          dispatch(assignOfficerToOffice(officerId, officeId));
-          const mapRoles = selectedRoles?.map((role) => {
-            return { name: role.value };
-          });
-          let res = await updateTeamRole(
-            selectedUserIdir,
-            officerData?.officer_guid,
-            selectedUserAgency?.value,
-            null,
-            mapRoles,
-          );
-
-          if (res?.roles) {
-            ToggleSuccess("Officer updated successfully");
-          } else {
-            ToggleError("Unable to update");
-          }
-          break;
         }
       }
-
+      resetSelect();
       goToSearchView();
     }
   };
 
-  const toggleDeactivate = () => {};
+  const toggleDeactivate = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: TOGGLE_DEACTIVATE,
+        data: {
+          title: officerData?.deactivate_ind ? "Activate user?" : "Deactivate user?",
+          description: officerData?.deactivate_ind
+            ? "This user will gain access to the application."
+            : "This user will lose access to the application until reactivated.",
+          ok: officerData?.deactivate_ind ? "Yes, activate user" : "Yes, deactivate user",
+          cancel: "Cancel",
+          officer_guid: officerData?.officer_guid,
+          deactivate_ind: !officerData?.deactivate_ind,
+          user_roles: officerData?.user_roles,
+          auth_user_guid: officerData?.auth_user_guid,
+        },
+      }),
+    );
+  };
 
   const resetSelect = () => {
     setCurrentAgency(null);
@@ -277,6 +348,11 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
   return (
     <div className="comp-page-container user-management-container">
       <div className="comp-page-header">
+        {officerData?.deactivate_ind && (
+          <div className="comp-page-deactivate-banner">
+            This user is currently deactivated. Click Activate user below to edit the details and grant them access.
+          </div>
+        )}
         <div className="comp-page-title-container">
           <h3>{isInAddUserView ? "Add new user" : "Edit user"}</h3>
           {!isInAddUserView && (
@@ -284,7 +360,15 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
               variant="primary"
               onClick={toggleDeactivate}
             >
-              <i className="comp-sidenav-item-icon bi bi-x-circle"></i>Deactivate user
+              {officerData?.deactivate_ind ? (
+                <span>
+                  <i className="bi bi-person-bounding-box"></i>Activate user
+                </span>
+              ) : (
+                <span>
+                  <i className="comp-sidenav-item-icon bi bi-x-circle"></i>Deactivate user
+                </span>
+              )}
             </Button>
           )}
         </div>
@@ -305,7 +389,7 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
               type="text"
               id="last-name-readonly-id"
               className="comp-form-control disable-field"
-              value={officerData?.person_guid.last_name}
+              value={lastName}
               disabled
             />
           </div>
@@ -322,14 +406,14 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
               type="text"
               id="first-name-readonly-id"
               className="comp-form-control disable-field"
-              value={officerData?.person_guid.first_name}
+              value={firstName}
               disabled
             />
           </div>
         </div>
 
         {/* Email address*/}
-        {/* <div
+        <div
           className="comp-details-form-row"
           id="email-id"
         >
@@ -339,11 +423,11 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
               type="text"
               id="email-readonly-id"
               className="comp-form-control disable-field"
-              value={"example@gov.bc.ca"}
+              value={email}
               disabled
             />
           </div>
-        </div> */}
+        </div>
 
         {/* IDIR*/}
         <div
@@ -356,7 +440,7 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
               type="text"
               id="idir-readonly-id"
               className="comp-form-control disable-field"
-              value={officerData?.user_id}
+              value={idir}
               disabled
             />
           </div>
@@ -377,6 +461,7 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
               placeholder="Select"
               enableValidation={true}
               value={currentAgency ?? selectedAgency}
+              isDisabled={officerData?.deactivate_ind}
             />
           </div>
         </div>
@@ -398,6 +483,7 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
                 enableValidation={true}
                 value={selectedTeam}
                 errorMessage={""}
+                isDisabled={officerData?.deactivate_ind}
               />
             ) : (
               <CompSelect
@@ -412,6 +498,7 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
                 enableValidation={true}
                 value={selectedOffice}
                 errorMessage={officeError}
+                isDisabled={officerData?.deactivate_ind}
               />
             )}
           </div>
@@ -430,6 +517,7 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
               onChange={handleRoleChange}
               errMsg={""}
               values={selectedRoles}
+              isDisabled={officerData?.deactivate_ind}
             />
           </div>
         </div>
@@ -444,8 +532,9 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, handleCa
           </Button>{" "}
           &nbsp;
           <Button
-            variant="primary"
+            variant={officerData?.deactivate_ind ? "outline-primary" : "primary"}
             onClick={handleSubmit}
+            disabled={officerData?.deactivate_ind}
           >
             {isInAddUserView ? "Save" : "Update"}
           </Button>

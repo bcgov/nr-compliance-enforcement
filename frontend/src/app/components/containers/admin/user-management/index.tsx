@@ -1,8 +1,6 @@
 import { FC, useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { assignOfficerToOffice, selectOfficersDropdown } from "@store/reducers/officer";
-import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown, selectOffices } from "@store/reducers/office";
 import { ToastContainer } from "react-toastify";
@@ -12,25 +10,22 @@ import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-t
 import { ROLE_OPTIONS } from "@constants/ceeb-roles";
 import { generateApiParameters, get, patch } from "@common/api";
 import config from "@/config";
-import { Officer } from "@apptypes/person/person";
+import { CssUser, Officer } from "@apptypes/person/person";
 import { UUID } from "crypto";
-import { ValidationMultiSelect } from "@common/validation-multiselect";
-import "@assets/sass/user-management.scss";
 import { SelectUser } from "@/app/components/containers/admin/user-management/select-user";
 import { EditUser } from "@/app/components/containers/admin/user-management/edit-user";
 import { AddUserSearch } from "@/app/components/containers/admin/user-management/add-user-search";
+import "@assets/sass/user-management.scss";
 
 export const UserManagement: FC = () => {
   const SEARCH_VIEW = 0;
   const EDIT_VIEW = 1;
   const ADD_USER_SEARCH_VIEW = 2;
-  const ADD_VIEW = 3;
 
   const dispatch = useAppDispatch();
   const officers = useAppSelector(selectOfficersDropdown(true));
   const officeAssignments = useAppSelector(selectOfficesForAssignmentDropdown);
   const notification = useAppSelector(selectNotification);
-  const teams = useAppSelector(selectTeamDropdown);
   const agency = useAppSelector(selectAgencyDropdown);
 
   const availableOffices = useAppSelector(selectOffices);
@@ -48,6 +43,7 @@ export const UserManagement: FC = () => {
   const [officerGuid, setOfficerGuid] = useState<string>("");
   const [offices, setOffices] = useState<Array<Option>>([]);
   const [isInAddUserView, setIsInAddUserView] = useState<boolean>(false);
+  const [newUser, setNewUser] = useState<CssUser | null>(null);
 
   useEffect(() => {
     if (officeAssignments) {
@@ -122,7 +118,6 @@ export const UserManagement: FC = () => {
   const getUserIdir = async (person_guid: string, lastName: string, firstName: string) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-person-guid/${person_guid}`);
     const officerRes = await get<Officer>(dispatch, parameters);
-    console.log(officerRes);
     setOfficerGuid(officerRes.officer_guid);
     if (officerRes.auth_user_guid) {
       setSelectedUserIdir(`${officerRes.auth_user_guid.split("-").join("")}@idir`);
@@ -170,49 +165,6 @@ export const UserManagement: FC = () => {
     return response;
   };
 
-  const handleOfficerChange = async (input: any) => {
-    resetSelect();
-    if (input.value) {
-      setOfficer(input);
-      const lastName = input.label.split(",")[0];
-      const firstName = input.label.split(",")[1].trim();
-      await getUserIdir(input.value, lastName, firstName);
-    }
-  };
-
-  const handleOfficeChange = (input: any) => {
-    if (input.value) {
-      setOffice(input);
-    }
-  };
-  const handleAgencyChange = (input: any) => {
-    if (input.value) {
-      let filtered = availableOffices
-        .filter((item) => item.code === input.value)
-        .map((item) => {
-          const { id, name, agency } = item;
-          const record: Option = {
-            label: `${agency} - ${name}`,
-            value: id,
-          };
-
-          return record;
-        });
-
-      setOffices(filtered);
-
-      setSelectedAgency(input);
-    }
-  };
-  const handleTeamChange = (input: any) => {
-    if (input.value) {
-      setSelectedTeam(input);
-    }
-  };
-  const handleRoleChange = (input: any) => {
-    setSelectedRoles(input);
-  };
-
   const resetValidationErrors = () => {
     setOfficeError("");
     setOfficerError("");
@@ -229,58 +181,10 @@ export const UserManagement: FC = () => {
     return officeError === "" && officerError === "";
   };
 
-  const handleSubmit = async () => {
-    if (validateUserAssignment() && selectedAgency) {
-      const mapRoles = selectedRoles?.map((role) => {
-        return { name: role.value };
-      });
-
-      switch (selectedAgency.value) {
-        case "EPO": {
-          if (selectedUserIdir && selectedTeam && selectedRoles) {
-            let res = await updateTeamRole(
-              selectedUserIdir,
-              officerGuid,
-              selectedAgency?.value,
-              selectedTeam?.value,
-              mapRoles,
-            );
-
-            if (res?.team && res?.roles) {
-              ToggleSuccess("Officer updated successfully");
-            } else {
-              ToggleError("Unable to update");
-            }
-          }
-          break;
-        }
-        case "PARKS": {
-          break;
-        }
-        case "COS":
-        default: {
-          const officerId = officer?.value ? officer.value : "";
-          const officeId = office?.value ? office.value : "";
-          dispatch(assignOfficerToOffice(officerId, officeId));
-          const mapRoles = selectedRoles?.map((role) => {
-            return { name: role.value };
-          });
-          let res = await updateTeamRole(selectedUserIdir, officerGuid, selectedAgency?.value, null, mapRoles);
-
-          if (res?.roles) {
-            ToggleSuccess("Officer updated successfully");
-          } else {
-            ToggleError("Unable to update");
-          }
-          break;
-        }
-      }
-    }
-  };
-
   const handleEdit = () => {
     setViewState(EDIT_VIEW);
     setIsInAddUserView(false);
+    setNewUser(null);
   };
 
   const handleCancel = () => {
@@ -302,6 +206,10 @@ export const UserManagement: FC = () => {
 
   const goToSearchView = () => {
     setViewState(SEARCH_VIEW);
+  };
+
+  const goToEditView = () => {
+    setViewState(EDIT_VIEW);
   };
 
   const resetSelect = () => {
@@ -341,6 +249,7 @@ export const UserManagement: FC = () => {
           isInAddUserView={isInAddUserView}
           handleCancel={handleCancel}
           goToSearchView={goToSearchView}
+          newUser={newUser}
         />
       )}
       {viewState === ADD_USER_SEARCH_VIEW && (
@@ -358,100 +267,11 @@ export const UserManagement: FC = () => {
           officerGuid={officerGuid}
           handleAddNewUserDetails={handleAddNewUserDetails}
           handleCancel={handleCancel}
+          goToEditView={goToEditView}
+          setIsInAddUserView={setIsInAddUserView}
+          setNewUser={setNewUser}
         />
       )}
-
-      {/* <div className="comp-page-container user-management-container">
-        <div className="comp-page-header">
-          <div className="comp-page-title-container">
-            <h3>User Administration</h3>
-            <Button
-              variant="primary"
-              onClick={handleAddNewUser}
-            >
-              <i className="comp-sidenav-item-icon bi bi-plus-circle"></i>Add new user
-            </Button>
-          </div>
-
-          <p className="admin-subtitle">
-            After selecting a user, click <strong>Edit</strong> for more options, such as: choosing an agency,
-            team/office, specifying roles, updating the last name and/or email address, temporarily disabling or
-            deleting the user.
-          </p>
-        </div>
-        <section className="comp-details-section">
-          <div>
-            <dl className="comp-call-details-group">
-              <div>
-                <dt>Select User</dt>
-                <dd>
-                  <CompSelect
-                    id="species-select-id"
-                    classNamePrefix="comp-select"
-                    onChange={(evt) => handleOfficerChange(evt)}
-                    classNames={{
-                      menu: () => "top-layer-select",
-                    }}
-                    options={officers}
-                    placeholder="Select"
-                    enableValidation={true}
-                    value={officer}
-                    errorMessage={officerError}
-                  />
-                </dd>
-              </div>
-            </dl>
-            {userIdirs.length >= 2 && (
-              <>
-                <br />
-                <form>
-                  <fieldset>
-                    <p>{`Found ${userIdirs.length} users with same name. Please select the correct email: `}</p>
-                    {userIdirs &&
-                      userIdirs.map((item, index) => {
-                        return (
-                          <div key={`userIdir-${item}`}>
-                            <input
-                              type="radio"
-                              id={`userIdir-${index}`}
-                              name="userIdirEmail"
-                              value={item.username}
-                              onChange={async () => {
-                                setSelectedUserIdir(item.username);
-                                await updateUserIdirByOfficerId(item.username.split("@")[0], officerGuid);
-                              }}
-                            />
-                            <label
-                              style={{ marginLeft: "10px", cursor: "pointer" }}
-                              htmlFor={`userIdir-${index}`}
-                            >
-                              {item.email}
-                            </label>
-                          </div>
-                        );
-                      })}
-                  </fieldset>
-                </form>
-              </>
-            )}
-            <div className="admin-button-groups">
-              <Button
-                variant="outline-primary"
-                onClick={handleCancel}
-              >
-                Cancel
-              </Button>{" "}
-              &nbsp;
-              <Button
-                variant="primary"
-                onClick={handleEdit}
-              >
-                Edit
-              </Button>
-            </div>
-          </div>
-        </section>
-      </div> */}
     </>
   );
 };

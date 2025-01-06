@@ -26,6 +26,34 @@ export interface Officer {
   person_guid: Person;
   user_roles: string[];
   coms_enrolled_ind: boolean;
+  deactivate_ind: boolean;
+}
+
+export interface NewOfficer {
+  user_id: string;
+  create_user_id: string;
+  create_utc_timestamp: Date;
+  update_user_id: string;
+  update_utc_timestamp: Date;
+  auth_user_guid: string;
+  office_guid: string | null;
+  team_code: string | null;
+  person_guid: {
+    first_name: string;
+    middle_name_1: null;
+    middle_name_2: null;
+    last_name: string;
+    create_user_id: string;
+    create_utc_timestamp: Date;
+    update_user_id: string;
+    updateTimestamp: Date;
+  };
+  roles: {
+    user_roles: Array<{ name: string | undefined }>;
+    user_idir: string; //Example : fohe4m5pn8clhkxmlho33sn1r7vr7m67@idir
+  };
+  coms_enrolled_ind: boolean;
+  deactivate_ind: boolean;
 }
 
 export interface OfficeGUID {
@@ -49,4 +77,16 @@ export interface CosGeoOrgUnit {
   area_code: string;
   area_name: string;
   administrative_office_ind: boolean;
+}
+
+export interface CssUser {
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  attributes: {
+    idir_user_guid: string[];
+    idir_username: string[];
+    display_name: string[];
+  };
 }
