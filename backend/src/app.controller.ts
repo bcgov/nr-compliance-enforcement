@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from "@nestjs/common";
+import { Controller, Get, HttpException } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { ApiTags } from "@nestjs/swagger";
 import { Public } from "./auth/decorators/public.decorator";
@@ -10,8 +10,11 @@ export class AppController {
 
   @Get()
   @Public()
-  getHello(): string {
-    return this.appService.getHello();
+  async getDBHealthCheck(): Promise<string> {
+    const result = await this.appService.getDBHealthCheck();
+    if (result === "Success") {
+      return Promise.resolve(result);
+    } else throw new HttpException("Unable to connect to database", 503);
   }
 
   @Get()
