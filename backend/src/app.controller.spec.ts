@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { DataSource } from "typeorm";
-import { dataSourceMockFactory } from "../../../test/mocks/datasource";
+import { dataSourceMockFactory } from "../test/mocks/datasource";
 
 describe("AppController", () => {
   let appController: AppController;
