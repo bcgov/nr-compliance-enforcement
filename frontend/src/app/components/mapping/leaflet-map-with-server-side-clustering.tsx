@@ -69,8 +69,8 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
           ),
         );
 
-        // Fit the map to the bounds
-        mapRef?.current?.fitBounds(bounds, { padding: [35, 35] });
+        // Fit the map to the bounds. Disable animation due to known Leaflet issue if map unmounts while animating: https://github.com/Leaflet/Leaflet/issues/9527
+        mapRef?.current?.flyToBounds(bounds, { padding: [35, 35], animate: false });
       } else if (defaultClusterView.center && defaultClusterView.zoom) {
         mapRef?.current?.setView(defaultClusterView.center, defaultClusterView.zoom);
       }
