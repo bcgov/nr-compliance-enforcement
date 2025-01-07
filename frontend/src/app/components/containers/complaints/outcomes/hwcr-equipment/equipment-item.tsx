@@ -72,6 +72,8 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
     !removedEquipmentDate &&
     getValue("equipment")?.value !== "SIGNG" &&
     getValue("equipment")?.value !== "TRCAM" &&
+    getValue("equipment")?.value !== "LLTHL" &&
+    getValue("equipment")?.value !== "K9UNT" &&
     isInEdit.showSectionErrors;
 
   return (
