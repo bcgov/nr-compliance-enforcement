@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { assignOfficerToOffice, createOfficer, getOfficers, selectOfficerByPersonGuid } from "@store/reducers/officer";
@@ -12,10 +12,11 @@ import { CEEB_ROLE_OPTIONS, COS_ROLE_OPTIONS, ROLE_OPTIONS } from "@constants/ce
 import { generateApiParameters, get, patch } from "@common/api";
 import config from "@/config";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
-import "@assets/sass/user-management.scss";
 import { AgencyType } from "@/app/types/app/agency-types";
-import { CssUser, NewOfficer } from "@/app/types/person/person";
+import { CssUser } from "@/app/types/person/person";
+import { NewOfficer } from "@/app/types/person/new-officer";
 import { TOGGLE_DEACTIVATE } from "@/app/types/modal/modal-types";
+import "@assets/sass/user-management.scss";
 
 interface EditUserProps {
   officer: Option;
@@ -23,9 +24,17 @@ interface EditUserProps {
   newUser: CssUser | null;
   handleCancel: () => void;
   goToSearchView: () => void;
+  setOfficer: Dispatch<SetStateAction<Option | undefined>>;
 }
 
-export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, newUser, handleCancel, goToSearchView }) => {
+export const EditUser: FC<EditUserProps> = ({
+  officer,
+  isInAddUserView,
+  newUser,
+  handleCancel,
+  goToSearchView,
+  setOfficer,
+}) => {
   const dispatch = useAppDispatch();
   const officerData = useAppSelector(selectOfficerByPersonGuid(officer.value));
   const officeAssignments = useAppSelector(selectOfficesForAssignmentDropdown);
@@ -88,7 +97,7 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, newUser,
         if (hasCEEBRole) {
           currentAgency = mapAgencyDropDown(AgencyType.CEEB, agency);
           const currentTeam = await getUserCurrentTeam(officerData.officer_guid);
-          if (currentTeam && currentTeam.team_guid) {
+          if (currentTeam?.team_guid) {
             const currentTeamMapped = mapAgencyDropDown(currentTeam.team_guid.team_code.team_code, teams);
             setSelectedTeam(currentTeamMapped);
           }
@@ -230,88 +239,94 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, newUser,
 
       if (newUser) {
         //create new officer
-        const newOfficerData: NewOfficer = {
-          user_id: newUser.attributes.idir_username[0],
-          create_user_id: adminIdirUsername,
-          create_utc_timestamp: new Date(),
-          update_user_id: adminIdirUsername,
-          update_utc_timestamp: new Date(),
-          auth_user_guid: newUser.username.slice(0, -5),
-          office_guid: selectedOffice?.value ?? null,
-          team_code: selectedTeam?.value ?? null,
-          person_guid: {
-            first_name: newUser.firstName,
-            middle_name_1: null,
-            middle_name_2: null,
-            last_name: newUser.lastName,
-            create_user_id: adminIdirUsername,
-            create_utc_timestamp: new Date(),
-            update_user_id: adminIdirUsername,
-            updateTimestamp: new Date(),
-          },
-          roles: {
-            user_roles: mapRoles,
-            user_idir: newUser.username,
-          },
-          coms_enrolled_ind: false,
-          deactivate_ind: false,
-        };
-        dispatch(createOfficer(newOfficerData));
+        addNewOfficer(newUser, mapRoles);
       } else {
         //update existing officer
         const selectedUserAgency = currentAgency ?? selectedAgency;
         const selectedUserIdir = `${officerData?.auth_user_guid.split("-").join("")}@idir`;
-
-        switch (selectedUserAgency?.value) {
-          case "EPO": {
-            if (selectedTeam && selectedRoles) {
-              let res = await updateTeamRole(
-                selectedUserIdir,
-                officerData?.officer_guid,
-                selectedUserAgency.value,
-                selectedTeam?.value,
-                mapRoles,
-              );
-
-              if (res?.team && res?.roles) {
-                ToggleSuccess("Officer updated successfully");
-              } else {
-                ToggleError("Unable to update");
-              }
-            }
-            break;
-          }
-          case "PARKS": {
-            break;
-          }
-          case "COS":
-          default: {
-            const officerId = officer?.value ? officer.value : "";
-            const officeId = selectedOffice?.value ? selectedOffice.value : "";
-            dispatch(assignOfficerToOffice(officerId, officeId));
-            const mapRoles = selectedRoles?.map((role) => {
-              return { name: role.value };
-            });
-            let res = await updateTeamRole(
-              selectedUserIdir,
-              officerData?.officer_guid,
-              selectedUserAgency?.value,
-              null,
-              mapRoles,
-            );
-
-            if (res?.roles) {
-              dispatch(getOfficers());
-              ToggleSuccess("Officer updated successfully");
-            } else {
-              ToggleError("Unable to update");
-            }
-            break;
-          }
-        }
+        await updateOfficer(selectedUserAgency, selectedUserIdir, mapRoles);
       }
       resetSelect();
       goToSearchView();
+      setOfficer({ value: "", label: "" }); //reset select from search view
+    }
+  };
+
+  const addNewOfficer = (newUser: CssUser, mapRoles: Array<{ name: string | undefined }>) => {
+    const newOfficerData: NewOfficer = {
+      user_id: newUser.attributes.idir_username[0],
+      create_user_id: adminIdirUsername,
+      create_utc_timestamp: new Date(),
+      update_user_id: adminIdirUsername,
+      update_utc_timestamp: new Date(),
+      auth_user_guid: newUser.username.slice(0, -5),
+      office_guid: selectedOffice?.value ?? null,
+      team_code: selectedTeam?.value ?? null,
+      person_guid: {
+        first_name: newUser.firstName,
+        middle_name_1: null,
+        middle_name_2: null,
+        last_name: newUser.lastName,
+        create_user_id: adminIdirUsername,
+        create_utc_timestamp: new Date(),
+        update_user_id: adminIdirUsername,
+        updateTimestamp: new Date(),
+      },
+      roles: {
+        user_roles: mapRoles,
+        user_idir: newUser.username,
+      },
+      coms_enrolled_ind: false,
+      deactivate_ind: false,
+    };
+    dispatch(createOfficer(newOfficerData));
+  };
+
+  const updateOfficer = async (
+    selectedUserAgency: Option | null,
+    selectedUserIdir: string,
+    mapRoles: Array<{ name: string | undefined }>,
+  ) => {
+    switch (selectedUserAgency?.value) {
+      case "EPO": {
+        if (selectedTeam && selectedRoles) {
+          let res = await updateTeamRole(
+            selectedUserIdir,
+            officerData?.officer_guid,
+            selectedUserAgency.value,
+            selectedTeam?.value,
+            mapRoles,
+          );
+
+          if (res?.team && res?.roles) {
+            ToggleSuccess("Officer updated successfully");
+          } else {
+            ToggleError("Unable to update");
+          }
+        }
+        break;
+      }
+      case "COS":
+      default: {
+        const officerId = officer?.value ? officer.value : "";
+        const officeId = selectedOffice?.value ? selectedOffice.value : "";
+        dispatch(assignOfficerToOffice(officerId, officeId));
+        let res = await updateTeamRole(
+          selectedUserIdir,
+          officerData?.officer_guid,
+          selectedUserAgency?.value,
+          null,
+          mapRoles,
+        );
+
+        if (res?.roles) {
+          dispatch(getOfficers());
+          ToggleSuccess("Officer updated successfully");
+        } else {
+          ToggleError("Unable to update");
+        }
+        break;
+      }
     }
   };
 

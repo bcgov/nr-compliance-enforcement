@@ -2,7 +2,8 @@ import { Action, createSlice, createSelector, ThunkAction } from "@reduxjs/toolk
 import { RootState, AppThunk } from "@store/store";
 import config from "@/config";
 import { OfficerState } from "@apptypes/complaints/officers-state";
-import { NewOfficer, Officer } from "@apptypes/person/person";
+import { Officer } from "@apptypes/person/person";
+import { NewOfficer } from "@/app/types/person/new-officer";
 import { UUID } from "crypto";
 import { PersonComplaintXref } from "@apptypes/complaints/person-complaint-xref";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";

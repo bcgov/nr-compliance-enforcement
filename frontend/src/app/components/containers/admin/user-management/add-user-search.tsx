@@ -9,19 +9,8 @@ import { CompInput } from "@/app/components/common/comp-input";
 import "@assets/sass/user-management.scss";
 
 interface AddUserSearchProps {
-  officers: any;
-  officer: any;
-  officerError: string;
-  userIdirs: any;
-  officerGuid: any;
   setOfficer: Dispatch<SetStateAction<Option | undefined>>;
-  setOfficerError: Dispatch<SetStateAction<string>>;
-  getUserIdir: (person_guid: string, lastName: string, firstName: string) => Promise<void>;
-  setSelectedUserIdir: Dispatch<SetStateAction<string>>;
-  updateUserIdirByOfficerId: (userIdir: string, officerGuid: string) => Promise<void>;
-  handleAddNewUserDetails: () => void;
   handleCancel: () => void;
-  handleAddNewUser: () => void;
   goToEditView: () => void;
   setIsInAddUserView: Dispatch<SetStateAction<boolean>>;
   setNewUser: Dispatch<SetStateAction<CssUser | null>>;
@@ -29,17 +18,6 @@ interface AddUserSearchProps {
 
 export const AddUserSearch: FC<AddUserSearchProps> = ({
   setOfficer,
-  setOfficerError,
-  getUserIdir,
-  handleAddNewUser,
-  officers,
-  officer,
-  officerError,
-  userIdirs,
-  setSelectedUserIdir,
-  updateUserIdirByOfficerId,
-  officerGuid,
-  handleAddNewUserDetails,
   handleCancel,
   goToEditView,
   setIsInAddUserView,
