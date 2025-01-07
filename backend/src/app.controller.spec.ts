@@ -4,6 +4,7 @@ import { AppService } from "./app.service";
 import { JwtAuthGuard } from "./auth/jwtauth.guard";
 import { JwtRoleGuard } from "./auth/jwtrole.guard";
 import { ROUTE_ARGS_METADATA } from "@nestjs/common/constants";
+import { DataSource } from "typeorm";
 
 describe("AppController", () => {
   let appController: AppController;
@@ -11,7 +12,7 @@ describe("AppController", () => {
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService],
+      providers: [AppService, DataSource],
     }).compile();
 
     appController = app.get<AppController>(AppController);
