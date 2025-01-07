@@ -1063,7 +1063,7 @@ export class ComplaintService {
             sortBy === "incident_reported_utc_timestmp" ? orderBy : "DESC",
           );
       }
-      let sql = builder.getQuery();
+
       //-- search and count
       // Workaround for the issue with getManyAndCount() returning the wrong count and results in complex queries
       // introduced by adding an IN clause in a OrWhere statement: https://github.com/typeorm/typeorm/issues/320
