@@ -148,7 +148,12 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
               <p>There are no results using your search criteria. The user might not exist in KeyCloak.</p>
               <p>
                 Click this link to add the user in KeyCloak first:{" "}
-                <a href="https://bcgov.github.io/sso-requests">Common Hosted Single Sign-on (CSS)</a>
+                <a
+                  href="https://bcgov.github.io/sso-requests"
+                  target="_blank"
+                >
+                  Common Hosted Single Sign-on (CSS)
+                </a>
               </p>
             </div>
           )}

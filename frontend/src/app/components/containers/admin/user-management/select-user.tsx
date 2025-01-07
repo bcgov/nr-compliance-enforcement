@@ -1,7 +1,7 @@
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, FC, Fragment, SetStateAction, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { assignOfficerToOffice, selectOfficersDropdown } from "@store/reducers/officer";
+import { assignOfficerToOffice, selectOfficers, selectOfficersDropdown } from "@store/reducers/officer";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown, selectOffices } from "@store/reducers/office";
@@ -16,9 +16,10 @@ import { Officer } from "@apptypes/person/person";
 import { UUID } from "crypto";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
 import "@assets/sass/user-management.scss";
+import { AsyncTypeahead, Typeahead } from "react-bootstrap-typeahead";
+import Select, { OptionProps, StylesConfig, components } from "react-select";
 
 interface SelectUserProps {
-  officers: any;
   officer: any;
   officerError: string;
   userIdirs: any;
@@ -35,9 +36,7 @@ interface SelectUserProps {
 export const SelectUser: FC<SelectUserProps> = ({
   setOfficer,
   setOfficerError,
-  getUserIdir,
   handleAddNewUser,
-  officers,
   officer,
   officerError,
   userIdirs,
@@ -46,13 +45,22 @@ export const SelectUser: FC<SelectUserProps> = ({
   officerGuid,
   handleEdit,
 }) => {
+  const officers = useAppSelector(selectOfficers);
+  const officerList = officers?.map((officer: Officer) => {
+    const {
+      person_guid: { person_guid: id, first_name, last_name },
+      deactivate_ind,
+    } = officer;
+    return {
+      value: id,
+      label: `${last_name}, ${first_name} ${deactivate_ind ? "(deactivated user)" : ""}`,
+    };
+  });
+
   const handleOfficerChange = async (input: any) => {
     setOfficerError("");
     if (input.value) {
       setOfficer(input);
-      // const lastName = input.label.split(",")[0];
-      // const firstName = input.label.split(",")[1].trim();
-      // await getUserIdir(input.value, lastName, firstName);
     }
   };
 
@@ -83,7 +91,7 @@ export const SelectUser: FC<SelectUserProps> = ({
         <div>
           <dl className="comp-call-details-group">
             <div>
-              <dt>Select User</dt>
+              <dt>Search User</dt>
               <dd>
                 <CompSelect
                   id="species-select-id"
@@ -92,8 +100,9 @@ export const SelectUser: FC<SelectUserProps> = ({
                   classNames={{
                     menu: () => "top-layer-select",
                   }}
-                  options={officers}
-                  placeholder="Select"
+                  //@ts-ignore
+                  options={officerList}
+                  placeholder="Search"
                   enableValidation={true}
                   value={officer}
                   errorMessage={officerError}
@@ -101,40 +110,6 @@ export const SelectUser: FC<SelectUserProps> = ({
               </dd>
             </div>
           </dl>
-          {userIdirs && userIdirs.length >= 2 && (
-            <>
-              <br />
-              <form>
-                <fieldset>
-                  <p>{`Found ${userIdirs.length} users with same name. Please select the correct email: `}</p>
-                  {userIdirs &&
-                    //@ts-ignore
-                    userIdirs.map((item, index) => {
-                      return (
-                        <div key={`userIdir-${item}`}>
-                          <input
-                            type="radio"
-                            id={`userIdir-${index}`}
-                            name="userIdirEmail"
-                            value={item.username}
-                            onChange={async () => {
-                              setSelectedUserIdir(item.username);
-                              await updateUserIdirByOfficerId(item.username.split("@")[0], officerGuid);
-                            }}
-                          />
-                          <label
-                            style={{ marginLeft: "10px", cursor: "pointer" }}
-                            htmlFor={`userIdir-${index}`}
-                          >
-                            {item.email}
-                          </label>
-                        </div>
-                      );
-                    })}
-                </fieldset>
-              </form>
-            </>
-          )}
           <div className="admin-button-groups">
             <Button
               variant="outline-primary"

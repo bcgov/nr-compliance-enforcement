@@ -413,21 +413,23 @@ export const EditUser: FC<EditUserProps> = ({ officer, isInAddUserView, newUser,
         </div>
 
         {/* Email address*/}
-        <div
-          className="comp-details-form-row"
-          id="email-id"
-        >
-          <label htmlFor="email-readonly-id">Email address</label>
-          <div className="comp-details-edit-input">
-            <input
-              type="text"
-              id="email-readonly-id"
-              className="comp-form-control disable-field"
-              value={email}
-              disabled
-            />
+        {isInAddUserView && (
+          <div
+            className="comp-details-form-row"
+            id="email-id"
+          >
+            <label htmlFor="email-readonly-id">Email address</label>
+            <div className="comp-details-edit-input">
+              <input
+                type="text"
+                id="email-readonly-id"
+                className="comp-form-control disable-field"
+                value={email}
+                disabled
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* IDIR*/}
         <div

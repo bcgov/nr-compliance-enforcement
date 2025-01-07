@@ -190,7 +190,10 @@ export const UserManagement: FC = () => {
   const handleCancel = () => {
     //return to search view
     if (viewState !== SEARCH_VIEW) {
-      setViewState(SEARCH_VIEW);
+      //if in add new user details view -> return to add search view
+      if (isInAddUserView && viewState === EDIT_VIEW) {
+        setViewState(ADD_USER_SEARCH_VIEW);
+      } else setViewState(SEARCH_VIEW);
     }
     resetValidationErrors();
   };
@@ -233,7 +236,6 @@ export const UserManagement: FC = () => {
           setOfficerError={setOfficeError}
           getUserIdir={getUserIdir}
           handleAddNewUser={handleAddNewUser}
-          officers={officers}
           officer={officer}
           officerError={officerError}
           userIdirs={userIdirs}

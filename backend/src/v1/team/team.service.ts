@@ -5,8 +5,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { CssService } from "../../external_api/css/css.service";
 import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
 import { Role } from "../../enum/role.enum";
-import { TeamUpdate } from "src/types/models/general/team-update";
-import { Officer } from "src/v1/officer/entities/officer.entity";
+import { TeamUpdate } from "../../types/models/general/team-update";
+import { Officer } from "../officer/entities/officer.entity";
 
 @Injectable()
 export class TeamService {

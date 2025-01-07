@@ -1,6 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, Inject } from "@nestjs/common";
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put } from "@nestjs/common";
 import { OfficerService } from "./officer.service";
-import { CreateOfficerDto } from "./dto/create-officer.dto";
 import { UpdateOfficerDto } from "./dto/update-officer.dto";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role } from "../../enum/role.enum";
@@ -9,7 +8,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { User } from "../../auth/decorators/user.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
-import { NewOfficer } from "src/types/models/people/officer";
+import { NewOfficer } from "../../types/models/people/officer";
 
 @ApiTags("officer")
 @UseGuards(JwtRoleGuard)

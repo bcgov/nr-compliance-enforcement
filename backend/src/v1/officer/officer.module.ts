@@ -8,10 +8,10 @@ import { Officer } from "./entities/officer.entity";
 import { Person } from "../person/entities/person.entity";
 import { Office } from "../office/entities/office.entity";
 import { CssModule } from "../../external_api/css/css.module";
-import { TeamService } from "src/v1/team/team.service";
-import { Team } from "src/v1/team/entities/team.entity";
-import { OfficerTeamXref } from "src/v1/officer_team_xref/entities/officer_team_xref.entity";
-import { OfficerTeamXrefService } from "src/v1/officer_team_xref/officer_team_xref.service";
+import { TeamService } from "../team/team.service";
+import { Team } from "../team/entities/team.entity";
+import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
+import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
 
 @Module({
   imports: [
