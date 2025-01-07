@@ -150,7 +150,6 @@ export class OfficerService {
     await queryRunner.startTransaction();
     let newOfficerObject;
     let personObject;
-    let teamObject;
 
     try {
       //Will always insert the person
@@ -173,10 +172,7 @@ export class OfficerService {
           create_user_id: officer.create_user_id,
           update_user_id: officer.update_user_id,
         };
-        teamObject = await this.officerTeamXrefService.createInTransaction(
-          <CreateOfficerTeamXrefDto>teamEntity,
-          queryRunner,
-        );
+        await this.officerTeamXrefService.createInTransaction(<CreateOfficerTeamXrefDto>teamEntity, queryRunner);
       }
       await queryRunner.commitTransaction();
 
