@@ -56,6 +56,14 @@ const Spiderfy = (props: SpiderfyProps) => {
   }, [oms, props]);
 
   useEffect(() => {
+    return () => {
+      oms.clearListeners("spiderfy");
+      oms.clearListeners("unspiderfy");
+      oms.clearListeners("click");
+    };
+  }, [oms]);
+
+  useEffect(() => {
     map.eachLayer((layer) => {
       // Hacky, but "RiseOnHover" is being used to identify non-clustered markers that should be spiderfied.
       if (layer instanceof L.Marker && layer?.options?.riseOnHover) {
