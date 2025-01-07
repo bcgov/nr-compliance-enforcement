@@ -47,14 +47,14 @@ export const PersonRepositoryMockFactory = () => ({
   }),
   create: jest
     .fn()
-    .mockResolvedValueOnce({
+    .mockReturnValueOnce({
       person_guid: "8a5131e6-1dd0-484d-8cdc-78ba205dfac8",
       first_name: "Miss",
       middle_name_1: "Jane",
       middle_name_2: null,
       last_name: "Marple",
     })
-    .mockRejectedValueOnce(new Error("Simulated error")),
+    .mockReturnValueOnce(new Error("Simulated error")),
   // as these do not actually use their return values in our tests
   // we just make sure that their resolve is true to not crash
   save: jest.fn(() => {
