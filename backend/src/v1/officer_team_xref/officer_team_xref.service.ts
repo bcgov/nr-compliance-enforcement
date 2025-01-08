@@ -1,23 +1,45 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { CreateOfficerTeamXrefDto } from "./dto/create-officer_team_xref.dto";
 import { UpdateOfficerTeamXrefDto } from "./dto/update-officer_team_xref.dto";
 import { OfficerTeamXref } from "./entities/officer_team_xref.entity";
 import { DataSource, QueryRunner, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { REQUEST } from "@nestjs/core";
 
 @Injectable()
 export class OfficerTeamXrefService {
   private readonly logger = new Logger(OfficerTeamXrefService.name);
   @InjectRepository(OfficerTeamXref)
-  private officerTeamXrefRepository: Repository<OfficerTeamXref>;
+  private readonly officerTeamXrefRepository: Repository<OfficerTeamXref>;
 
-  constructor(@Inject(REQUEST) private request: Request, private dataSource: DataSource) {}
+  constructor(private readonly dataSource: DataSource) {}
 
-  async create(queryRunner: QueryRunner, createOfficerTeamXrefDto: CreateOfficerTeamXrefDto) {
-    const createdValue = await this.officerTeamXrefRepository.create(createOfficerTeamXrefDto);
-    queryRunner.manager.save(createdValue);
-    return createdValue;
+  async create(newOfficerTeamXref: CreateOfficerTeamXrefDto): Promise<OfficerTeamXref> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let result;
+    try {
+      result = this.officerTeamXrefRepository.create(newOfficerTeamXref);
+      await queryRunner.manager.save(result);
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      this.logger.error(err);
+      await queryRunner.rollbackTransaction();
+      result = null;
+    } finally {
+      await queryRunner.release();
+    }
+    return result;
+  }
+
+  async createInTransaction(
+    officerTeamXref: CreateOfficerTeamXrefDto,
+    queryRunner: QueryRunner,
+  ): Promise<OfficerTeamXref> {
+    const newTeam = this.officerTeamXrefRepository.create(officerTeamXref);
+    await queryRunner.manager.save(newTeam);
+    return newTeam;
   }
 
   async findAll(): Promise<OfficerTeamXref[]> {

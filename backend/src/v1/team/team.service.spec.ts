@@ -8,6 +8,7 @@ import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref
 import { CssService } from "../../external_api/css/css.service";
 import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
+import { Officer } from "..//officer/entities/officer.entity";
 
 describe("TeamService", () => {
   let service: TeamService;
@@ -22,6 +23,10 @@ describe("TeamService", () => {
         },
         {
           provide: getRepositoryToken(OfficerTeamXref),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(Officer),
           useValue: {},
         },
         {

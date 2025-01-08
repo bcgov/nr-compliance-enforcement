@@ -82,6 +82,10 @@ import { Person } from "../person/entities/person.entity";
 import { Configuration } from "../configuration/entities/configuration.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 import { LinkedComplaintXref } from "../linked_complaint_xref/entities/linked_complaint_xref.entity";
+import { TeamService } from "../team/team.service";
+import { Team } from "../team/entities/team.entity";
+import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
+import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -117,6 +121,14 @@ describe("Testing: Complaint Service", () => {
           provide: getRepositoryToken(LinkedComplaintXref),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(Team),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(OfficerTeamXref),
+          useValue: {},
+        },
         ComplaintUpdatesService,
         ComplaintService,
         PersonComplaintXrefService,
@@ -129,6 +141,8 @@ describe("Testing: Complaint Service", () => {
         AttractantHwcrXrefService,
         CodeTableService,
         CompMthdRecvCdAgcyCdXrefService,
+        TeamService,
+        OfficerTeamXrefService,
         {
           provide: getRepositoryToken(Complaint),
           useFactory: MockComplaintsRepositoryV2,
@@ -410,6 +424,14 @@ describe("Testing: Complaint Service", () => {
           provide: getRepositoryToken(LinkedComplaintXref),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(Team),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(OfficerTeamXref),
+          useValue: {},
+        },
         ComplaintUpdatesService,
         ComplaintService,
         PersonComplaintXrefService,
@@ -422,6 +444,8 @@ describe("Testing: Complaint Service", () => {
         AttractantHwcrXrefService,
         CodeTableService,
         CompMthdRecvCdAgcyCdXrefService,
+        TeamService,
+        OfficerTeamXrefService,
         {
           provide: getRepositoryToken(Complaint),
           useFactory: MockUpdateComplaintsRepository,

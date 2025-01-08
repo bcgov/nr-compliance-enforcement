@@ -1,19 +1,26 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Team } from "./entities/team.entity";
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CssService } from "../../external_api/css/css.service";
 import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
 import { Role } from "../../enum/role.enum";
+import { TeamUpdate } from "../../types/models/general/team-update";
+import { Officer } from "../officer/entities/officer.entity";
 
 @Injectable()
 export class TeamService {
   private readonly logger = new Logger(TeamService.name);
 
+  constructor(private readonly dataSource: DataSource) {}
+
   @InjectRepository(Team)
-  private teamRepository: Repository<Team>;
+  private readonly teamRepository: Repository<Team>;
   @InjectRepository(OfficerTeamXref)
-  private officerTeamXrefRepository: Repository<OfficerTeamXref>;
+  private readonly officerTeamXrefRepository: Repository<OfficerTeamXref>;
+  @InjectRepository(Officer)
+  private readonly officerRepository: Repository<Officer>;
+
   @Inject(CssService)
   private readonly cssService: CssService;
 
@@ -61,26 +68,18 @@ export class TeamService {
   }
 
   async findUserCurrentTeam(officerGuid) {
-    const officerTeamXref = await this.officerTeamXrefRepository.findOne({
+    return await this.officerTeamXrefRepository.findOne({
       where: { officer_guid: officerGuid },
       relations: { team_guid: { team_code: true } },
     });
-    if (officerTeamXref) {
-      return {
-        value: officerTeamXref.team_guid.team_code.team_code,
-        label: officerTeamXref.team_guid.team_code.short_description,
-      };
-    } else {
-      return null;
-    }
   }
 
-  async update(officerGuid, updateTeamData) {
+  async update(officerGuid, updateTeamData: TeamUpdate) {
     let result = {
       team: false,
       roles: false,
     };
-    const { teamCode, agencyCode, userIdir, roles: updateRoles } = updateTeamData;
+    const { teamCode, agencyCode, userIdir, roles: updateRoles, adminIdirUsername } = updateTeamData;
     try {
       //Update team
       //Assume one officer belong to one team for now
@@ -95,11 +94,14 @@ export class TeamService {
         }
       } else {
         const teamGuid = await this.findByTeamCodeAndAgencyCode(teamCode, agencyCode);
+        //set user's office_guid to null because CEEB user doesn't have an office
+        await this.officerRepository.update({ officer_guid: officerGuid }, { office_guid: null });
+
         if (officerTeamXref) {
           const updateEnity = {
             team_guid: teamGuid,
             active_ind: true,
-            update_user_id: "postgres",
+            update_user_id: adminIdirUsername,
           };
           const updateResult = await this.officerTeamXrefRepository.update({ officer_guid: officerGuid }, updateEnity);
           if (updateResult.affected > 0) {
@@ -111,10 +113,10 @@ export class TeamService {
             officer_guid: officerGuid,
             team_guid: teamGuid,
             active_ind: true,
-            create_user_id: "postgres",
-            update_user_id: "postgres",
+            create_user_id: adminIdirUsername,
+            update_user_id: adminIdirUsername,
           };
-          const newRecord = await this.officerTeamXrefRepository.create(newEntity);
+          const newRecord = this.officerTeamXrefRepository.create(newEntity);
           const saveResult = await this.officerTeamXrefRepository.save(newRecord);
           if (saveResult.officer_guid) {
             result.team = true;
@@ -126,8 +128,8 @@ export class TeamService {
       const currentRoles: any = await this.cssService.getUserRoles(userIdir);
       for await (const roleItem of currentRoles) {
         const rolesMatchWithUpdate = updateRoles.some((updateRole) => updateRole.name === roleItem.name);
-        //Remove existing roles that do not match with updated roles, but still keeps Admin and Read only role
-        if (roleItem.name !== Role.TEMPORARY_TEST_ADMIN && roleItem.name !== Role.READ_ONLY && !rolesMatchWithUpdate) {
+        //Remove existing roles that do not match with updated roles, but still keeps Admin role
+        if (roleItem.name !== Role.TEMPORARY_TEST_ADMIN && !rolesMatchWithUpdate) {
           await this.cssService.deleteUserRole(userIdir, roleItem.name);
         }
       }
