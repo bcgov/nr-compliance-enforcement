@@ -39,6 +39,7 @@ jobs:
     uses: ./.github/workflows/.dbdeployer.yml
     with:
       s3_enabled: false # no backups in dev
+      params: --set global.environment=dev
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
@@ -53,7 +54,6 @@ jobs:
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
       params: --set global.useCrunchy=true
-
 
   healthcheck:
     name: Healthcheck Deployment

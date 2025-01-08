@@ -36,10 +36,21 @@ jobs:
       - name: Set PR Output
         run: echo "pr=${{ steps.pr.outputs.pr }}" >> $GITHUB_OUTPUT
 
+  # https://github.com/bcgov/quickstart-openshift
+  crunchy:
+    name: Deploy Crunchy
+    needs: [vars]
+    uses: ./.github/workflows/.dbdeployer.yml
+    with:
+      params: --set global.environment=test
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+
   # https://github.com/bcgov/quickstart-openshift-helpers
   deploy-test:
     name: Deploy (test)
-    needs: vars
+    needs: [vars, crunchy]
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.5.0
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}

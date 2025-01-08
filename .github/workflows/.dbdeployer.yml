@@ -46,6 +46,11 @@ on:
         description: Paths used to trigger a database deployment
         required: false
         type: string
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
     secrets:
       oc_namespace:
         description: OpenShift namespace
@@ -108,12 +113,12 @@ jobs:
         run: |
           echo 'Deploying crunchy helm chart'
           if [ ${{ inputs.s3_enabled }} == true ]; then
-            helm upgrade --install --wait --set crunchy.pgBackRest.s3.enabled=true \
+            helm upgrade ${{ inputs.params }} --install --wait --set crunchy.pgBackRest.s3.enabled=true \
              --set-string crunchy.pgBackRest.s3.accessKey=${{ secrets.s3_access_key }} \
               --set-string crunchy.pgBackRest.s3.secretKey=${{ secrets.s3_secret_key }} \
               --values ${{ inputs.values }} postgres  .
           else
-            helm upgrade --install --wait --values ${{ inputs.values }} postgres .
+            helm upgrade ${{ inputs.params }} --install --wait --values ${{ inputs.values }} postgres .
           fi
 
       - name: Add PR specific user to Crunchy DB # only for PRs
