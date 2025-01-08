@@ -376,7 +376,7 @@ export class ComplaintService {
     }
 
     if (officerAssigned && officerAssigned === "Unassigned") {
-      builder.andWhere("delegate.person_complaint_xref_guid IS NULL");
+      builder.andWhere("delegate.complaint_identifier IS NULL");
     } else if (officerAssigned) {
       builder
         .andWhere("delegate.person_complaint_xref_code = :Assignee", {
