@@ -1,0 +1,2 @@
+UPDATE hwcr_complaint_nature_code SET long_description = 'Livestock/pets - killed/injured - not present' WHERE hwcr_complaint_nature_code = 'LIVNCOU';
+UPDATE hwcr_complaint_nature_code SET long_description = 'Livestock/pets - killed/injured - present/recent/suspected' WHERE hwcr_complaint_nature_code = 'LIVPRES';

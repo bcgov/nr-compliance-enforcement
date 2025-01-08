@@ -23293,6 +23293,29 @@ VALUES
   (
     uuid_generate_v4 (),
     'cmpltntrcd',
+    'Livestock/pets - killed/injured - not present (No Black/Grizzly Bear, Wolf, Cougar suspected)',
+    'LIVNCOU',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+INSERT INTO
+  public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'cmpltntrcd',
     'Dead wildlife - no violation suspected',
     'DEADNV',
     'FLYWAY',
@@ -23409,6 +23432,29 @@ VALUES
     uuid_generate_v4 (),
     'cmpltntrcd',
     'Livestock/pets - killed/injured - present/recent',
+    'LIVPRES',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+INSERT INTO
+  public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'cmpltntrcd',
+    'Livestock/pets - killed/injured - present/recent/suspected (Black/Grizzly Bear, Wolf, Cougar)',
     'LIVPRES',
     'FLYWAY',
     CURRENT_TIMESTAMP,
