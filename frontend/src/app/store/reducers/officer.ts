@@ -3,6 +3,7 @@ import { RootState, AppThunk } from "@store/store";
 import config from "@/config";
 import { OfficerState } from "@apptypes/complaints/officers-state";
 import { Officer } from "@apptypes/person/person";
+import { NewOfficer } from "@/app/types/person/new-officer";
 import { UUID } from "crypto";
 import { PersonComplaintXref } from "@apptypes/complaints/person-complaint-xref";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
@@ -23,6 +24,7 @@ import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/com
 import { OfficerDto } from "@apptypes/app/people/officer";
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
 import Roles from "@apptypes/app/roles";
+import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 
 const initialState: OfficerState = {
   officers: [],
@@ -195,6 +197,79 @@ export const assignComplaintToOfficer =
     }
   };
 
+export const assignOfficerToOffice =
+  (personId: string, officeId: string): AppThunk =>
+  async (dispatch, getState) => {
+    const {
+      officers: { officers },
+    } = getState();
+
+    try {
+      const selectedOfficer = officers.find((item) => {
+        const { person_guid: person } = item;
+        const { person_guid: _personId } = person;
+
+        return personId === _personId;
+      });
+
+      const { office_guid: office } = selectedOfficer || {};
+      const updatedOffice = { ...office, office_guid: officeId };
+
+      const update = { ...selectedOfficer, office_guid: updatedOffice };
+
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${selectedOfficer?.officer_guid}`, {
+        ...update,
+      });
+
+      const response = await patch<Array<Officer>>(dispatch, parameters);
+
+      if (response && from(response).any()) {
+        dispatch(toggleNotification("success", "officer assigned"));
+      }
+    } catch (error) {
+      //-- handle errors
+      dispatch(toggleNotification("error", "unable to assign officer to office"));
+    }
+  };
+
+export const createOfficer =
+  (newOfficerData: NewOfficer): AppThunk =>
+  async (dispatch, getState) => {
+    try {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer`, newOfficerData);
+      const response = await post<Officer>(dispatch, parameters);
+      if (response) {
+        ToggleSuccess("Officer created successfully");
+        dispatch(getOfficers());
+      } else {
+        ToggleError("Unable to add new officer");
+      }
+    } catch (error) {
+      //-- handle errors
+      dispatch(toggleNotification("error", "Unable to create officer"));
+    }
+  };
+
+export const updateOfficer =
+  (
+    officerGuid: string,
+    updatedData: Partial<Officer>,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
+    try {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${officerGuid}`, updatedData);
+      const response = await patch<Officer>(dispatch, parameters);
+
+      if (response) {
+        return "success";
+      }
+      return "error";
+    } catch (error) {
+      //-- handle errors
+      return "error";
+    }
+  };
+
 //-- selectors
 
 export const selectOfficers = (state: RootState): Officer[] | null => {
@@ -297,7 +372,7 @@ const mapAgencyToRole = (agency: string): string => {
   return role;
 };
 
-const filterOfficerByAgency = (agency: string, officers: Officer[]) => {
+const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] => {
   const role = mapAgencyToRole(agency);
   const result = officers.filter((officer) => {
     const { office_guid, user_roles } = officer;
@@ -308,10 +383,23 @@ const filterOfficerByAgency = (agency: string, officers: Officer[]) => {
     const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
     const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
 
+    //Deactivated officers has empty roles,
+    //so the only way to  determine agency is based on whether office_guid null/not null for now
+    let agencyCodeForDeactivatedOfficer;
+    if (officer.deactivate_ind) {
+      if (officer.office_guid) {
+        agencyCodeForDeactivatedOfficer = "COS";
+      } else {
+        agencyCodeForDeactivatedOfficer = "EPO";
+      }
+    }
+
     if (agency === "COS") {
-      return agency === agencyCode && !fromAdminOffice && roleMatch;
+      if (officer.deactivate_ind) {
+        return agency === agencyCodeForDeactivatedOfficer;
+      } else return agency === agencyCode && !fromAdminOffice && roleMatch;
     } else if (agency === "EPO") {
-      let result = roleMatch;
+      let result = officer.deactivate_ind === true ? agency === agencyCodeForDeactivatedOfficer : roleMatch;
       return result;
     } else {
       return false;
@@ -401,41 +489,6 @@ export const selectOfficersByZoneAgencyAndRole =
     return [];
   };
 
-export const assignOfficerToOffice =
-  (personId: string, officeId: string): AppThunk =>
-  async (dispatch, getState) => {
-    const {
-      officers: { officers },
-    } = getState();
-
-    try {
-      const selectedOfficer = officers.find((item) => {
-        const { person_guid: person } = item;
-        const { person_guid: _personId } = person;
-
-        return personId === _personId;
-      });
-
-      const { office_guid: office } = selectedOfficer || {};
-      const updatedOffice = { ...office, office_guid: officeId };
-
-      const update = { ...selectedOfficer, office_guid: updatedOffice };
-
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${selectedOfficer?.officer_guid}`, {
-        ...update,
-      });
-
-      const response = await patch<Array<Officer>>(dispatch, parameters);
-
-      if (response && from(response).any()) {
-        dispatch(toggleNotification("success", "officer assigned"));
-      }
-    } catch (error) {
-      //-- handle errors
-      dispatch(toggleNotification("error", "unable to assign officer to office"));
-    }
-  };
-
 export const selectOfficerByIdir =
   (idir: string) =>
   (state: RootState): Officer | null => {
@@ -461,6 +514,22 @@ export const selectOfficerByAuthUserGuid =
 
     if (selected?.auth_user_guid) {
       return selected;
+    }
+
+    return null;
+  };
+
+export const selectOfficerByPersonGuid =
+  (personGuid: string | undefined) =>
+  (state: RootState): Officer | null => {
+    const {
+      officers: { officers: data },
+    } = state;
+    if (personGuid) {
+      const selected = data.find(({ person_guid }) => person_guid.person_guid === personGuid);
+      if (selected?.person_guid) {
+        return selected;
+      }
     }
 
     return null;

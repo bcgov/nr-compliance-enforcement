@@ -18,6 +18,10 @@ import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
 import { MockRoleRepository } from "../../../test/mocks/mock-role-repository";
 import { REQUEST } from "@nestjs/core";
+import { Team } from "../team/entities/team.entity";
+import { TeamService } from "../team/team.service";
+import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
+import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
 
 describe("Testing: OfficerService", () => {
   let service: OfficerService;
@@ -52,6 +56,16 @@ describe("Testing: OfficerService", () => {
         ConfigurationService,
         {
           provide: getRepositoryToken(Configuration),
+          useValue: {},
+        },
+        TeamService,
+        {
+          provide: getRepositoryToken(Team),
+          useValue: {},
+        },
+        OfficerTeamXrefService,
+        {
+          provide: getRepositoryToken(OfficerTeamXref),
           useValue: {},
         },
       ],

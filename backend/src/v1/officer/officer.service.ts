@@ -3,8 +3,6 @@ import { CreateOfficerDto } from "./dto/create-officer.dto";
 import { CreatePersonDto } from "../person/dto/create-person.dto";
 import { UpdateOfficerDto } from "./dto/update-officer.dto";
 import { Officer } from "./entities/officer.entity";
-import { Office } from "../office/entities/office.entity";
-import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, Repository } from "typeorm";
 import { PersonService } from "../person/person.service";
@@ -13,18 +11,28 @@ import { UUID } from "crypto";
 import { CssService } from "../../external_api/css/css.service";
 import { Role } from "../../enum/role.enum";
 import { put } from "../../helpers/axios-api";
+import { CssUser } from "../../types/css/cssUser";
+import { CreateOfficerTeamXrefDto } from "../officer_team_xref/dto/create-officer_team_xref.dto";
+import { TeamService } from "../team/team.service";
+import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
+import { NewOfficer } from "../../types/models/people/officer";
 
 @Injectable()
 export class OfficerService {
   private readonly logger = new Logger(OfficerService.name);
 
-  constructor(private dataSource: DataSource) {}
+  constructor(private readonly dataSource: DataSource) {}
   @InjectRepository(Officer)
-  private officerRepository: Repository<Officer>;
+  private readonly officerRepository: Repository<Officer>;
+
   @Inject(PersonService)
   protected readonly personService: PersonService;
   @Inject(OfficeService)
   protected readonly officeService: OfficeService;
+  @Inject(TeamService)
+  protected readonly teamService: TeamService;
+  @Inject(OfficerTeamXrefService)
+  protected readonly officerTeamXrefService: OfficerTeamXrefService;
   @Inject(CssService)
   private readonly cssService: CssService;
 
@@ -55,6 +63,8 @@ export class OfficerService {
           update_user_id: officer.update_user_id,
           update_utc_timestamp: officer.update_utc_timestamp,
           auth_user_guid: officer.auth_user_guid,
+          coms_enrolled_ind: officer.coms_enrolled_ind,
+          deactivate_ind: officer.deactivate_ind,
           user_roles: roleMapping[useGuid] ?? [],
         } as Officer;
       });
@@ -93,6 +103,20 @@ export class OfficerService {
     });
   }
 
+  async findByCssEmail(email: string): Promise<CssUser | Officer | null> {
+    const cssUser = await this.cssService.getUserIdirByEmail(email);
+    if (cssUser.length === 0) return null;
+    if (cssUser.length > 0) {
+      //assume email is unique and return only 1 result
+      const officer = await this.findByAuthUserGuid(cssUser[0].attributes.idir_user_guid[0]);
+      //if user already exists in officer table, then return officer data
+      if (officer) {
+        return officer;
+      }
+    }
+    return cssUser[0];
+  }
+
   async findByUserId(userid: string): Promise<Officer> {
     userid = userid.toUpperCase();
     return this.officerRepository.findOne({
@@ -119,60 +143,75 @@ export class OfficerService {
     });
   }
 
-  async create(officer: any): Promise<Officer> {
+  async create(officer: NewOfficer): Promise<Officer> {
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    let newOfficerString;
-    let officeObject;
+    let newOfficerObject;
     let personObject;
 
     try {
-      //Look for the Office
-      officeObject = await this.officeService.findByGeoOrgCode(officer.geo_organization_unit_code);
-      if (officeObject.length === 0) {
-        // insertOffice
-
-        let agencyObject = new AgencyCode("COS");
-        let officeObject = new Office();
-
-        officeObject.agency_code = agencyObject;
-        officeObject.cos_geo_org_unit = officer.geo_organization_unit_code;
-        officeObject.create_user_id = officer.create_user_id;
-        officeObject.create_utc_timestamp = officer.create_utc_timestamp;
-        officeObject.update_user_id = officer.update_user_id;
-        officeObject.update_utc_timestamp = officer.update_utc_timestamp;
-
-        officeObject = await this.officeService.create(officeObject);
-        officer.office_guid = officeObject.office_guid;
-      } else {
-        // use the existing one
-        officer.office_guid = officeObject[0].office_guid;
-      }
-
       //Will always insert the person
-      personObject = await this.personService.createInTransaction(<CreatePersonDto>officer, queryRunner);
+      personObject = await this.personService.createInTransaction(
+        <CreatePersonDto>(<unknown>officer.person_guid),
+        queryRunner,
+      );
       officer.person_guid = personObject.person_guid;
 
-      newOfficerString = await this.officerRepository.create(<CreateOfficerDto>officer);
-      await queryRunner.manager.save(newOfficerString);
+      newOfficerObject = this.officerRepository.create(<CreateOfficerDto>(<unknown>officer));
+      await queryRunner.manager.save(newOfficerObject);
+
+      //Create team
+      if (officer.team_code) {
+        const teamGuid = await this.teamService.findByTeamCodeAndAgencyCode(officer.team_code, "EPO");
+        const teamEntity = {
+          officer_guid: newOfficerObject.officer_guid,
+          team_guid: teamGuid,
+          active_ind: true,
+          create_user_id: officer.create_user_id,
+          update_user_id: officer.update_user_id,
+        };
+        await this.officerTeamXrefService.createInTransaction(<CreateOfficerTeamXrefDto>teamEntity, queryRunner);
+      }
       await queryRunner.commitTransaction();
+
+      //Create roles
+      await this.cssService.updateUserRole(officer.roles.user_idir, officer.roles.user_roles);
     } catch (err) {
       this.logger.error(err);
+      //rollback all transactions
       await queryRunner.rollbackTransaction();
-      newOfficerString = "Error Occured";
+      newOfficerObject = null;
+      //remove all css roles
+      for await (const roleItem of officer.roles.user_roles) {
+        await this.cssService.deleteUserRole(officer.roles.user_idir, roleItem.name);
+      }
     } finally {
       await queryRunner.release();
     }
-    return newOfficerString;
+    return newOfficerObject;
   }
 
   async update(officer_guid: UUID, updateOfficerDto: UpdateOfficerDto): Promise<Officer> {
+    const userRoles = updateOfficerDto.user_roles;
     //exclude roles field populated from keycloak from update
     delete (updateOfficerDto as any).user_roles;
-    await this.officerRepository.update({ officer_guid }, updateOfficerDto);
-    return this.findOne(officer_guid);
+
+    try {
+      await this.officerRepository.update({ officer_guid }, updateOfficerDto);
+
+      //remove all roles if deactivate_ind is true
+      if (updateOfficerDto.deactivate_ind === true) {
+        const officerIdirUsername = `${updateOfficerDto.auth_user_guid.split("-").join("")}@idir`;
+        for await (const roleItem of userRoles) {
+          await this.cssService.deleteUserRole(officerIdirUsername, roleItem);
+        }
+      }
+      return this.findOne(officer_guid);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   /**

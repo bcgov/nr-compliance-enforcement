@@ -8,6 +8,7 @@ export const DELETE_NOTE = "DELETE_NOTE";
 export const DELETE_ANIMAL_OUTCOME = "DELETE_ANIMAL_OUTCOME";
 export const DELETE_CONFIRM = "DELETE_CONFIRM";
 export const QUICK_CLOSE = "QUICK_CLOSE";
+export const TOGGLE_DEACTIVATE = "TOGGLE_DEACTIVATE";
 
 export interface ModalProps {
   modalType: string;
