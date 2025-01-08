@@ -2,7 +2,6 @@ import { PickType } from "@nestjs/swagger";
 import { OfficerTeamXrefDto } from "./officer_team_xref.dto";
 
 export class CreateOfficerTeamXrefDto extends PickType(OfficerTeamXrefDto, [
-  "officer_team_xref_guid",
   "officer_guid",
   "team_guid",
   "create_user_id",

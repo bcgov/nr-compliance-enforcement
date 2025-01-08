@@ -79,6 +79,13 @@ export class Officer {
   @Column()
   coms_enrolled_ind: boolean;
 
+  @ApiProperty({
+    example: false,
+    description: "Indicates whether an officer has been deactivated",
+  })
+  @Column()
+  deactivate_ind: boolean;
+
   user_roles: string[];
   @AfterLoad()
   updateUserRoles() {

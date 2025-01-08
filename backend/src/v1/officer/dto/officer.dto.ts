@@ -57,4 +57,16 @@ export class OfficerDto {
     description: "The keycloak guid for the officer",
   })
   auth_user_guid: UUID;
+
+  @ApiProperty({
+    example: "true",
+    description: "An indicator to determine if the officer has access to COMS",
+  })
+  coms_enrolled_ind: boolean;
+
+  @ApiProperty({
+    example: "false",
+    description: "An indicator to determine if the officer has been deactivated",
+  })
+  deactivate_ind: boolean;
 }

@@ -20,21 +20,28 @@ export const SideBar: FC = () => {
       name: "Complaints",
       icon: "bi bi-file-earmark-medical",
       route: "/complaints",
-      roles: ["COS", "CEEB"],
+      roles: [Roles.COS_OFFICER, Roles.CEEB],
     },
     {
       id: "create-complaints-link",
       name: "Create Complaint",
       icon: "bi bi-plus-circle",
       route: "complaint/createComplaint",
-      roles: ["COS", "CEEB"],
+      roles: [Roles.COS_OFFICER, Roles.CEEB],
     },
     {
       id: "zone-at-a-glance-link",
       name: "Zone at a Glance",
       icon: "bi bi-buildings",
       route: "/zone/at-a-glance",
-      roles: ["COS"],
+      roles: [Roles.COS_OFFICER],
+    },
+    {
+      id: "user-management",
+      name: "User Administration",
+      icon: "bi bi-people",
+      route: "/admin/user",
+      roles: [Roles.TEMPORARY_TEST_ADMIN],
     },
   ];
 
@@ -103,11 +110,10 @@ export const SideBar: FC = () => {
       {/* <!-- menu items for the organization --> */}
       <ul className="nav nav-pills flex-column mb-auto comp-sidenav-list">
         {menueItems.map((item, idx) => {
-          if (UserService.hasRole(Roles.CEEB) && !item.roles.includes("CEEB")) {
-            // Do not display this hence return null
-            return null;
-          }
-          return renderSideBarMenuItem(idx, item);
+          const authorizeMenuView = item.roles.some((role) => UserService.hasRole(role));
+          if (authorizeMenuView) {
+            return renderSideBarMenuItem(idx, item);
+          } else return null;
         })}
       </ul>
       <div

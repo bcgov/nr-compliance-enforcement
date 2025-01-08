@@ -12,6 +12,10 @@ import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { CssService } from "../../external_api/css/css.service";
 import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
+import { Team } from "../team/entities/team.entity";
+import { TeamService } from "../team/team.service";
+import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
+import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
 
 describe("OfficerController", () => {
   let controller: OfficerController;
@@ -33,6 +37,16 @@ describe("OfficerController", () => {
         OfficeService,
         {
           provide: getRepositoryToken(Office),
+          useValue: {},
+        },
+        TeamService,
+        {
+          provide: getRepositoryToken(Team),
+          useValue: {},
+        },
+        OfficerTeamXrefService,
+        {
+          provide: getRepositoryToken(OfficerTeamXref),
           useValue: {},
         },
         {
