@@ -10,9 +10,9 @@ import { UUID } from "crypto";
 export class PersonService {
   private readonly logger = new Logger(PersonService.name);
 
-  constructor(private dataSource: DataSource) {}
+  constructor(private readonly dataSource: DataSource) {}
   @InjectRepository(Person)
-  private personRepository: Repository<Person>;
+  private readonly personRepository: Repository<Person>;
 
   async create(person: any): Promise<Person> {
     const queryRunner = this.dataSource.createQueryRunner();
@@ -21,7 +21,7 @@ export class PersonService {
     await queryRunner.startTransaction();
     let newPersonString;
     try {
-      newPersonString = await this.personRepository.create(<CreatePersonDto>person);
+      newPersonString = this.personRepository.create(<CreatePersonDto>person);
       await queryRunner.manager.save(newPersonString);
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -35,7 +35,7 @@ export class PersonService {
   }
 
   async createInTransaction(person: CreatePersonDto, queryRunner: QueryRunner): Promise<Person> {
-    const newPerson = await this.personRepository.create(person);
+    const newPerson = this.personRepository.create(person);
     await queryRunner.manager.save(newPerson);
     return newPerson;
   }

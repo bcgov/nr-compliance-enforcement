@@ -12,7 +12,7 @@ import {
   selectComplaintStatusWithPendingCodeDropdown,
   selectGirTypeCodeDropdown,
   selectComplaintReceivedMethodDropdown,
-  selectWildlifeComplaintOutcome,
+  selectAllWildlifeComplaintOutcome,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
 import { selectDecisionTypeDropdown } from "@store/reducers/code-table-selectors";
@@ -63,7 +63,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const statusTypes = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
   const violationTypes = useAppSelector(selectViolationCodeDropdown(agency));
   const girTypes = useAppSelector(selectGirTypeCodeDropdown);
-  const outcomeAnimalTypes = useAppSelector(selectWildlifeComplaintOutcome);
+  const outcomeAnimalTypes = useAppSelector(selectAllWildlifeComplaintOutcome); //want to see inactive items in the filter
 
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));

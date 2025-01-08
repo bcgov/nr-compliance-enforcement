@@ -17,6 +17,7 @@ export class ActionsTakenPublisherService {
   private async initializeNATS() {
     const nc = await connect({
       servers: [process.env.NATS_HOST],
+      waitOnFirstConnect: true,
     });
     this.jsClient = nc.jetstream();
   }
