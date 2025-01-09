@@ -56,8 +56,8 @@ spec:
             {{- end }}
           resources:
             requests:
-              cpu: 50m
-              memory: 100Mi
+              cpu: 300m
+              memory: 750Mi
       containers:
         - name: {{ include "backend.fullname" . }}
           {{- if .Values.backend.securityContext }}
