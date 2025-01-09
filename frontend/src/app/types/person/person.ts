@@ -26,6 +26,7 @@ export interface Officer {
   person_guid: Person;
   user_roles: string[];
   coms_enrolled_ind: boolean;
+  deactivate_ind: boolean;
 }
 
 export interface OfficeGUID {
@@ -49,4 +50,16 @@ export interface CosGeoOrgUnit {
   area_code: string;
   area_name: string;
   administrative_office_ind: boolean;
+}
+
+export interface CssUser {
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  attributes: {
+    idir_user_guid: string[];
+    idir_username: string[];
+    display_name: string[];
+  };
 }

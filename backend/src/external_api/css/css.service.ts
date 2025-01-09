@@ -3,6 +3,7 @@ import { ExternalApiService } from "../external-api-service";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { get } from "../../helpers/axios-api";
 import { ConfigurationService } from "../../v1/configuration/configuration.service";
+import { CssUser } from "src/types/css/cssUser";
 
 @Injectable()
 export class CssService implements ExternalApiService {
@@ -61,6 +62,24 @@ export class CssService implements ExternalApiService {
     } catch (error) {
       this.logger.error(`exception: unable to get user: ${firstName} ${lastName} - error: ${error}`);
       throw new Error(`exception: unable to get user: ${firstName} ${lastName} - error: ${error}`);
+    }
+  };
+
+  getUserIdirByEmail = async (email: string): Promise<CssUser[]> => {
+    try {
+      const apiToken = await this.authenticate();
+      const url = `${this.baseUri}/api/v1/${this.env}/idir/users?email=${email}`;
+      const config: AxiosRequestConfig = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiToken}`,
+        },
+      };
+      const response = await get(apiToken, url, config);
+      return response?.data.data;
+    } catch (error) {
+      this.logger.error(`exception: unable to get user by email: ${email} - error: ${error}`);
+      throw new Error(`exception: unable to get user by email: ${email} - error: ${error}`);
     }
   };
 

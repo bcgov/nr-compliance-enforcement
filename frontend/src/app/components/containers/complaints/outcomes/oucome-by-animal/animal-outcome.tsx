@@ -7,7 +7,7 @@ import {
   selectSexDropdown,
   selectSpeciesCodeDropdown,
   selectThreatLevelDropdown,
-  selectWildlifeComplaintOutcome,
+  selectAllWildlifeComplaintOutcome,
 } from "@store/reducers/code-table";
 import { from } from "linq-to-typescript";
 import { BsExclamationCircleFill } from "react-icons/bs";
@@ -32,7 +32,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
   const sexes = useAppSelector(selectSexDropdown);
   const ages = useAppSelector(selectAgeDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
-  const outcomes = useAppSelector(selectWildlifeComplaintOutcome);
+  const outcomes = useAppSelector(selectAllWildlifeComplaintOutcome); //want to display inactive items
   const officers = useAppSelector(selectOfficerListByAgency);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);

@@ -84,7 +84,11 @@ const useValidateComplaint = () => {
       const equipmentCriteria =
         equipment?.find(
           (item: EquipmentDetailsDto) =>
-            item.wasAnimalCaptured === "U" && item.typeCode !== "SIGNG" && item.typeCode !== "TRCAM",
+            item.wasAnimalCaptured === "U" &&
+            item.typeCode !== "SIGNG" &&
+            item.typeCode !== "TRCAM" &&
+            item.typeCode !== "LLTHL" &&
+            item.typeCode !== "K9UNT",
         ) === undefined;
 
       //check Animal has outcome, officer and date

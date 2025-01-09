@@ -60,7 +60,7 @@ describe("HWCR Outcome Equipment", () => {
           officer: "TestAcct, ENV",
           date: "01",
           toastText: "Equipment has been updated",
-          equipmentType: "Bear snare",
+          equipmentType: "Neck snare",
         };
         cy.get("#equipment-copy-address-button").click();
         cy.get("#copy-coordinates-button").click();
@@ -87,7 +87,7 @@ describe("HWCR Outcome Equipment", () => {
           officer: "TestAcct, ENV",
           date: "02",
           toastText: "Equipment has been updated",
-          equipmentType: "Bear live trap",
+          equipmentType: "Live trap",
         };
 
         cy.fillInHWCSection(sectionParams).then(() => {

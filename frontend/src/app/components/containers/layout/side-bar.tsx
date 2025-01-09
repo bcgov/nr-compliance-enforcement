@@ -34,6 +34,13 @@ export const SideBar: FC = () => {
       route: "/zone/at-a-glance",
       excludedRoles: [Roles.CEEB, Roles.PROVINCE_WIDE],
     },
+    {
+      id: "user-management",
+      name: "User Administration",
+      icon: "bi bi-people",
+      route: "/admin/user",
+      requiredRoles: [Roles.TEMPORARY_TEST_ADMIN],
+    },
   ];
 
   const renderSideBarMenuItem = (idx: number, item: MenuItem): JSX.Element => {
@@ -101,10 +108,17 @@ export const SideBar: FC = () => {
       {/* <!-- menu items for the organization --> */}
       <ul className="nav nav-pills flex-column mb-auto comp-sidenav-list">
         {menueItems.map((item, idx) => {
+          // Check if the user has an excluded role (e.g. hide ZAG)
           if (item.excludedRoles && UserService.hasRole(item.excludedRoles)) {
-            // Do not display this hence return null
-            return null;
+            return null; // Exclude this item if the user has an excluded role
           }
+
+          // Check if the item has required roles and if the user has the required role
+          if (item.requiredRoles && !UserService.hasRole(item.requiredRoles)) {
+            return null; // Exclude this item if the user does not have the required role
+          }
+
+          // If neither excludedRoles nor requiredRoles conditions apply, render the item
           return renderSideBarMenuItem(idx, item);
         })}
       </ul>

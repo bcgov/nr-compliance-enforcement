@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSelector, createSlice } from "@reduxjs/toolkit";
 import { AppThunk, RootState, store } from "@store/store";
 import { from } from "linq-to-typescript";
 import config from "@/config";
@@ -723,10 +723,12 @@ export const selectAgencyDropdown = (state: RootState): Array<Option> => {
     codeTables: { agency },
   } = state;
 
-  const data = agency.map(({ agency, longDescription }) => {
-    const item: Option = { label: longDescription, value: agency };
-    return item;
-  });
+  const data = agency
+    .filter(({ agency }) => agency !== "PARKS") //hide PARKS option for now
+    .map(({ agency, longDescription }) => {
+      const item: Option = { label: longDescription, value: agency };
+      return item;
+    });
   return data;
 };
 
@@ -1337,7 +1339,25 @@ export const selectEarDropdown = (state: RootState): Array<Option> => {
   return data;
 };
 
-export const selectWildlifeComplaintOutcome = (state: RootState): Array<Option> => {
+//Used for drop downs on Create / Edit
+export const selectActiveWildlifeComplaintOutcome = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "wildlife-outcomes": items },
+  } = state;
+
+  let filteredItems = items.filter((item) => item.isActive === true); // Only items with active_ind = true
+
+  // Map the filtered and sorted items to the Option format
+  const data = filteredItems.map(({ outcome: value, shortDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
+//Used for filter dropdown and View State (could be legacy data)
+export const selectAllWildlifeComplaintOutcome = (state: RootState): Array<Option> => {
   const {
     codeTables: { "wildlife-outcomes": items },
   } = state;
@@ -1389,18 +1409,29 @@ export const selectRemainingDrugUse = (state: RootState): Array<Option> => {
   return data;
 };
 
-export const selectEquipmentDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { equipment: items },
-  } = state;
+export const selectActiveEquipmentDropdown = createSelector(
+  (state: RootState) => state.codeTables.equipment,
+  (items) => {
+    let filteredItems = items.filter((item) => item.isActive === true); // Only items with active_ind = true
 
-  const data = items.map(({ equipment: value, shortDescription: label }) => {
-    const item: Option = { label, value };
-    return item;
-  });
+    // Map the filtered items to the Option format
+    return filteredItems.map(({ equipment: value, shortDescription: label }) => ({
+      label,
+      value,
+    }));
+  },
+);
 
-  return data;
-};
+export const selectAllEquipmentDropdown = createSelector(
+  (state: RootState) => state.codeTables.equipment,
+  (items) => {
+    // Map the filtered items to the Option format
+    return items.map(({ equipment: value, shortDescription: label }) => ({
+      label,
+      value,
+    }));
+  },
+);
 
 export const selectLocationDropdown = (state: RootState): Array<Option> => {
   const {

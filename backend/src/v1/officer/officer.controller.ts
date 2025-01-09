@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put } from "@nestjs/common";
 import { OfficerService } from "./officer.service";
-import { CreateOfficerDto } from "./dto/create-officer.dto";
 import { UpdateOfficerDto } from "./dto/update-officer.dto";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role } from "../../enum/role.enum";
@@ -9,6 +8,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { User } from "../../auth/decorators/user.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
+import { NewOfficer } from "../../types/models/people/officer";
 
 @ApiTags("officer")
 @UseGuards(JwtRoleGuard)
@@ -21,7 +21,7 @@ export class OfficerController {
 
   @Post()
   @Roles(Role.COS_OFFICER)
-  create(@Body() createOfficerDto: CreateOfficerDto) {
+  create(@Body() createOfficerDto: NewOfficer) {
     return this.officerService.create(createOfficerDto);
   }
 
@@ -59,6 +59,12 @@ export class OfficerController {
   @Roles(Role.COS_OFFICER, Role.CEEB, Role.TEMPORARY_TEST_ADMIN)
   findByPersonId(@Param("person_guid") person_guid: string) {
     return this.officerService.findByPersonGuid(person_guid);
+  }
+
+  @Get("/find-by-email/:email")
+  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  findUserByEmail(@Param("email") email: string) {
+    return this.officerService.findByCssEmail(email);
   }
 
   @Patch(":id")
