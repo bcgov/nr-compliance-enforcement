@@ -7,6 +7,8 @@ enum Roles {
   COS_OFFICER = "COS Officer",
   TEMPORARY_TEST_ADMIN = "TEMPORARY_TEST_ADMIN",
   READ_ONLY = "READ ONLY",
+  INSPECTOR = "Inspector",
+  PROVINCE_WIDE = "Province-wide",
 }
 
 export default Roles;

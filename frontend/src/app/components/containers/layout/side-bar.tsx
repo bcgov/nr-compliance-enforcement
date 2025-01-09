@@ -20,21 +20,19 @@ export const SideBar: FC = () => {
       name: "Complaints",
       icon: "bi bi-file-earmark-medical",
       route: "/complaints",
-      roles: ["COS", "CEEB"],
     },
     {
       id: "create-complaints-link",
       name: "Create Complaint",
       icon: "bi bi-plus-circle",
       route: "complaint/createComplaint",
-      roles: ["COS", "CEEB"],
     },
     {
       id: "zone-at-a-glance-link",
       name: "Zone at a Glance",
       icon: "bi bi-buildings",
       route: "/zone/at-a-glance",
-      roles: ["COS"],
+      excludedRoles: [Roles.CEEB, Roles.PROVINCE_WIDE],
     },
   ];
 
@@ -103,7 +101,7 @@ export const SideBar: FC = () => {
       {/* <!-- menu items for the organization --> */}
       <ul className="nav nav-pills flex-column mb-auto comp-sidenav-list">
         {menueItems.map((item, idx) => {
-          if (UserService.hasRole(Roles.CEEB) && !item.roles.includes("CEEB")) {
+          if (item.excludedRoles && UserService.hasRole(item.excludedRoles)) {
             // Do not display this hence return null
             return null;
           }

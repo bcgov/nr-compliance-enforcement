@@ -32,7 +32,7 @@ let initialState: ComplaintFilters = {
   outcomeAnimalEndDate: undefined,
 };
 
-const mapFilters = (complaintFilters: Partial<ComplaintFilters>) => {
+const convertFilterNames = (complaintFilters: Partial<ComplaintFilters>) => {
   /**
    * This funtion takes a partial set of filters in the shape of the ComplaintSearchParameters from
    * the store, and maps them into the initial state for this provider. This enables the search page
@@ -119,11 +119,9 @@ const ComplaintFilterContext = createContext<ComplaintFilterContextType>({
 const ComplaintFilterProvider: FC<ProviderProps> = ({ children, freshSearch, complaintFilters }) => {
   let startingState = { ...initialState };
   if (freshSearch) {
-    startingState = complaintFilters.zone
-      ? { ...startingState, status: { value: "OPEN", label: "Open" }, zone: complaintFilters.zone }
-      : { ...startingState, status: { value: "OPEN", label: "Open" } };
+    startingState = { ...startingState, ...complaintFilters, status: { value: "OPEN", label: "Open" } };
   } else {
-    const activeFilters = mapFilters(complaintFilters);
+    const activeFilters = convertFilterNames(complaintFilters);
     startingState = { ...startingState, ...activeFilters };
   }
 
