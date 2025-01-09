@@ -6,4 +6,5 @@ export default interface MenuItem {
   icon: string;
   route?: string;
   excludedRoles?: Array<Roles>;
+  requiredRoles?: Array<Roles>;
 }
