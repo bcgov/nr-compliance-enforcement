@@ -20,28 +20,26 @@ export const SideBar: FC = () => {
       name: "Complaints",
       icon: "bi bi-file-earmark-medical",
       route: "/complaints",
-      roles: [Roles.COS_OFFICER, Roles.CEEB],
     },
     {
       id: "create-complaints-link",
       name: "Create Complaint",
       icon: "bi bi-plus-circle",
       route: "complaint/createComplaint",
-      roles: [Roles.COS_OFFICER, Roles.CEEB],
     },
     {
       id: "zone-at-a-glance-link",
       name: "Zone at a Glance",
       icon: "bi bi-buildings",
       route: "/zone/at-a-glance",
-      roles: [Roles.COS_OFFICER],
+      excludedRoles: [Roles.CEEB, Roles.PROVINCE_WIDE],
     },
     {
       id: "user-management",
       name: "User Administration",
       icon: "bi bi-people",
       route: "/admin/user",
-      roles: [Roles.TEMPORARY_TEST_ADMIN],
+      requiredRoles: [Roles.TEMPORARY_TEST_ADMIN],
     },
   ];
 
@@ -110,10 +108,18 @@ export const SideBar: FC = () => {
       {/* <!-- menu items for the organization --> */}
       <ul className="nav nav-pills flex-column mb-auto comp-sidenav-list">
         {menueItems.map((item, idx) => {
-          const authorizeMenuView = item.roles.some((role) => UserService.hasRole(role));
-          if (authorizeMenuView) {
-            return renderSideBarMenuItem(idx, item);
-          } else return null;
+          // Check if the user has an excluded role (e.g. hide ZAG)
+          if (item.excludedRoles && UserService.hasRole(item.excludedRoles)) {
+            return null; // Exclude this item if the user has an excluded role
+          }
+
+          // Check if the item has required roles and if the user has the required role
+          if (item.requiredRoles && !UserService.hasRole(item.requiredRoles)) {
+            return null; // Exclude this item if the user does not have the required role
+          }
+
+          // If neither excludedRoles nor requiredRoles conditions apply, render the item
+          return renderSideBarMenuItem(idx, item);
         })}
       </ul>
       <div
