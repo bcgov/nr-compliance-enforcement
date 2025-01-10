@@ -187,6 +187,14 @@ export const selectDefaultZone = (state: RootState): DropdownOption | null => {
   return value && label ? { value, label } : null;
 };
 
+export const selectDefaultRegion = (state: RootState): DropdownOption | null => {
+  const {
+    profile: { region: value, regionDescription: label },
+  } = state.app;
+
+  return value && label ? { value, label } : null;
+};
+
 export const selectModalOpenState = (state: RootState): boolean => {
   const { app } = state;
   return app.modalIsOpen;
@@ -366,6 +374,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
 
       let office = "";
       let region = "";
+      let regionDescription = "";
       let zone = "";
       let zoneDescription = "";
       let agency = "";
@@ -380,6 +389,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
 
         office = unit.office_location_code;
         region = unit.region_code;
+        regionDescription = unit.region_name;
         zone = unit.zone_code;
         zoneDescription = unit.zone_name;
         agency = agencyCode.agency_code;
@@ -402,6 +412,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         idir_username: idir_username,
         office: office,
         region: region,
+        regionDescription: regionDescription,
         zone: zone,
         zoneDescription: zoneDescription,
         agency,
@@ -537,6 +548,7 @@ const initialState: AppState = {
     idir_username: "",
     office: "",
     region: "",
+    regionDescription: "",
     zone: "",
     zoneDescription: "",
     agency: "",
@@ -592,6 +604,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         idir_username: payload.idir_username,
         office: payload.office,
         region: payload.region,
+        regionDescription: payload.regionDescription,
         zone: payload.zone,
         zoneDescription: payload.zoneDescription,
         agency: payload.agency,
