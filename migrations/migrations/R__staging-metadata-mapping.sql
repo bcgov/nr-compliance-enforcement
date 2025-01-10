@@ -23477,6 +23477,29 @@ VALUES
   (
     uuid_generate_v4 (),
     'cmpltntrcd',
+    'Livestock/pets - killed/injured - present/recent (Coyote/Bobcat)',
+    'LIVPRES',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+INSERT INTO
+  public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'cmpltntrcd',
     'School/park/playground - present/recent',
     'SCHPRES',
     'FLYWAY',
