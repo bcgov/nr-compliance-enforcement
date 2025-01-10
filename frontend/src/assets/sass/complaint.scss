@@ -18,6 +18,18 @@
   padding-bottom: 16px;
 }
 
+.comp-page-deactivate-banner {
+  display: flex;
+  height: 50px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  align-items: center;
+  justify-content: flex-start;
+  border: 1px solid $bc-gov-warning;
+  background: $bc-gov-warning;
+  margin-bottom: 8px;
+}
+
 .comp-page-title-container {
   display: flex;
   flex-direction: row;

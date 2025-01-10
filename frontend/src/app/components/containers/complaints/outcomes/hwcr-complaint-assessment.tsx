@@ -503,9 +503,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       } else if (selectedLinkedComplaint.value === id) {
         setLinkedComplaintErrorMessage("Linked complaint cannot be the same as the current complaint.");
         return true;
-      } else if (selectedLinkedComplaintStatus !== "OPEN") {
-        setLinkedComplaintErrorMessage("Linked complaint must be open");
-        return true;
       }
 
       if (!validationResults.canQuickCloseComplaint) {

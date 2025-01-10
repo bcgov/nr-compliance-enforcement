@@ -72,6 +72,10 @@ import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
 import { Person } from "../person/entities/person.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
+import { TeamService } from "../team/team.service";
+import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
+import { Team } from "../team/entities/team.entity";
+import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
 
 describe("Testing: Case File Service", () => {
   let service: CaseFileService;
@@ -208,6 +212,14 @@ describe("Testing: Case File Service", () => {
           provide: getRepositoryToken(Person),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(Team),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(OfficerTeamXref),
+          useValue: {},
+        },
         ComplaintUpdatesService,
         CaseFileService,
         ComplaintService,
@@ -221,6 +233,8 @@ describe("Testing: Case File Service", () => {
         PersonComplaintXrefService,
         AttractantHwcrXrefService,
         CompMthdRecvCdAgcyCdXrefService,
+        TeamService,
+        OfficerTeamXrefService,
         {
           provide: REQUEST,
           useValue: {

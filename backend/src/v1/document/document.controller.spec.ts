@@ -74,6 +74,10 @@ import { CssService } from "../../external_api/css/css.service";
 import { Person } from "../person/entities/person.entity";
 import { LinkedComplaintXref } from "../linked_complaint_xref/entities/linked_complaint_xref.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
+import { Team } from "../team/entities/team.entity";
+import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
+import { TeamService } from "../team/team.service";
+import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
 
 describe("DocumentController", () => {
   let controller: DocumentController;
@@ -206,6 +210,14 @@ describe("DocumentController", () => {
           provide: getRepositoryToken(LinkedComplaintXref),
           useValue: {},
         },
+        {
+          provide: getRepositoryToken(Team),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(OfficerTeamXref),
+          useValue: {},
+        },
         ComplaintUpdatesService,
         ComplaintService,
         CodeTableService,
@@ -217,6 +229,8 @@ describe("DocumentController", () => {
         PersonService,
         AttractantHwcrXrefService,
         CompMthdRecvCdAgcyCdXrefService,
+        TeamService,
+        OfficerTeamXrefService,
         {
           provide: REQUEST,
           useValue: {

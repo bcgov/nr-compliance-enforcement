@@ -26,5 +26,5 @@ HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3000
 
 # Non-privileged user
 USER app
-# max old space the heap size, 250MB 
-CMD ["--max-old-space-size=250", "/app/dist/main"]
+# max old space the heap size, 500MB 
+CMD ["--max-old-space-size=500", "/app/dist/main"]
