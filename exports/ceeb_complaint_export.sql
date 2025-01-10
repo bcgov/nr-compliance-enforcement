@@ -15,7 +15,7 @@ select
     	ELSE cst.short_description 
 	END as "Complaint Status",
 	cmrc.long_description as "Method Received",
-	--'IDIR\' || ofc.user_id  as "Officer Assigned",
+	'IDIR\' || ofc.user_id  as "Officer Assigned",
 	gfv.region_name as "Region",
 	--gfv.offloc_name as "Office",
 	goc.short_description as "City/Town",
