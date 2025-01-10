@@ -51,6 +51,6 @@ left join
 right join 
 	allegation_complaint ac on ac.complaint_identifier = cmp.complaint_identifier 
 where
-	cmp.incident_reported_utc_timestmp >= CURRENT_DATE - INTERVAL '1 year'
+    cmp.owned_by_agency_code = 'EPO'
 order by
 	cmp.complaint_identifier asc
