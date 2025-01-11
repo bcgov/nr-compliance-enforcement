@@ -708,7 +708,6 @@
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="auth_user_guid" nullable="true" remarks="The SiteMinder guid returned to the application from KeyCloak.   Used to uniquely identify a user over the course of their lifecycle." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="false" digits="0" id="9" name="coms_enrolled_ind" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="false" digits="0" id="10" name="deactivate_ind" nullable="true" remarks="A boolean indicator representing if an officer has been deactivated" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="officer_guid" sequenceNumberInPK="1"/>
          <index name="PK_officer" unique="true">
             <column ascending="true" name="officer_guid"/>
