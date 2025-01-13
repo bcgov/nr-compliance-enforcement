@@ -86,15 +86,15 @@ export class CaseFileService {
   linkComplaintsAndRunQuery = async (token: string, model: CaseFileDto, assessmentInput: any, query: string) => {
     let returnValue;
     const dateLinkCreated = new Date();
-    const complaintBeingLinkedId = assessmentInput.leadIdentifier;
-    const linkingToComplaintId = assessmentInput.assessmentDetails.actionLinkedComplaintIdentifier;
+    const complaintBeingLinkedId = assessmentInput.leadIdentifier; //child complaint (A)
+    let linkingToComplaintId = assessmentInput.assessmentDetails.actionLinkedComplaintIdentifier; //parent complaint (B)
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
       const idir = getIdirFromRequest(this.request);
       // If actionLinkedComplaintIdentifier is present the link must be created in the database
-      if (assessmentInput.assessmentDetails.actionLinkedComplaintIdentifier) {
+      if (linkingToComplaintId) {
         // When linking complaint "A" to complant "B", if "A" is already linked to "B" then the link is not created.
         const existingLink = await this._linkedComplaintXrefRepository.findOne({
           relations: { linked_complaint_identifier: true, complaint_identifier: true },
@@ -139,6 +139,21 @@ export class CaseFileService {
               await queryRunner.manager.save(linkString);
             });
           }
+
+          // check if complaint "B" has linked with (is a child of) other complaints
+          const existingLinkOfParentComplaint = await this._linkedComplaintXrefRepository.findOne({
+            relations: { linked_complaint_identifier: true, complaint_identifier: true },
+            where: {
+              linked_complaint_identifier: { complaint_identifier: linkingToComplaintId },
+              active_ind: true,
+            },
+          });
+
+          //if complaint "B" is a child of complaint "C" -> link "A" directly to "C" (linkingToComplaintId now is "C")
+          if (existingLinkOfParentComplaint?.complaint_identifier?.complaint_identifier) {
+            linkingToComplaintId = existingLinkOfParentComplaint?.complaint_identifier?.complaint_identifier;
+          }
+
           // Create the new link between the complaints
           let newLink = new CreateLinkedComplaintXrefDto();
           newLink = {

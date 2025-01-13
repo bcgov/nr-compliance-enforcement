@@ -17,6 +17,7 @@ import {
   selectActiveTab,
   selectActiveComplaintsViewType,
   setActiveComplaintsViewType,
+  selectDefaultRegion,
 } from "../../../store/reducers/app";
 
 import { ComplaintMapWithServerSideClustering } from "./complaint-map-with-server-side-clustering";
@@ -28,6 +29,8 @@ import UserService from "@service/user-service";
 import Roles from "@apptypes/app/roles";
 import Option from "@apptypes/app/option";
 import { resetComplaintSearchParameters, selectComplaintSearchParameters } from "@/app/store/reducers/complaints";
+import { AgencyType } from "@/app/types/app/agency-types";
+import { DropdownOption } from "@/app/types/app/drop-down-option";
 
 type Props = {
   defaultComplaintType: string;
@@ -45,7 +48,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     if (!storedComplaintType) dispatch(setActiveTab(defaultComplaintType));
   }, [storedComplaintType, dispatch, defaultComplaintType]);
   const [complaintType, setComplaintType] = useState(
-    UserService.hasRole([Roles.CEEB]) ? CEEB_TYPES.ERS : (storedComplaintType ?? defaultComplaintType),
+    UserService.hasRole([Roles.CEEB]) ? CEEB_TYPES.ERS : storedComplaintType ?? defaultComplaintType,
   );
 
   const storedComplaintViewType = useAppSelector(selectActiveComplaintsViewType);
@@ -57,6 +60,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const currentOfficer = useAppSelector(selectCurrentOfficer(), shallowEqual);
 
   const defaultZone = useAppSelector(selectDefaultZone);
+  const defaultRegion = useAppSelector(selectDefaultRegion);
 
   //-- this is used to apply the search to the pager component
   const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
@@ -65,7 +69,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
     dispatch(resetComplaintSearchParameters());
-    let filters = getFilters(currentOfficer, defaultZone);
+    let filters = getFilters(currentOfficer, defaultZone, defaultRegion);
 
     const payload: Array<ComplaintFilterPayload> = [
       ...Object.entries(filters).map(([filter, value]) => ({
@@ -180,14 +184,13 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
 export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
   const defaultZone = useAppSelector(selectDefaultZone, shallowEqual);
+  const defaultRegion = useAppSelector(selectDefaultRegion);
   const currentOfficer = useAppSelector(selectCurrentOfficer(), shallowEqual);
   const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
   // If the search is fresh, there are only 2 default parameters set. If more than 2 exist,
   // this is not a fresh search as the search funtion itself sets more filters, even if blank.
   const freshSearch = Object.keys(storedSearchParams).length === 2;
-  const defaultFilters = getFilters(currentOfficer, defaultZone);
-  const complaintFilters = freshSearch ? defaultFilters : storedSearchParams;
-
+  const complaintFilters = freshSearch ? getFilters(currentOfficer, defaultZone, defaultRegion) : storedSearchParams;
   return (
     <>
       {currentOfficer && (
@@ -205,24 +208,27 @@ const getComplaintTypes = () => {
   return UserService.hasRole(Roles.CEEB) ? CEEB_TYPES : COMPLAINT_TYPES;
 };
 
-const getFilters = (currentOfficer: any, defaultZone: any) => {
+const getFilters = (currentOfficer: any, defaultZone: DropdownOption | null, defaultRegion: DropdownOption | null) => {
   let filters: any = {};
 
-  if (UserService.hasRole([Roles.CEEB]) && !UserService.hasRole([Roles.CEEB_COMPLIANCE_COORDINATOR])) {
-    if (currentOfficer) {
-      let {
-        person: { firstName, lastName, id },
-      } = currentOfficer;
-      const officer = { label: `${lastName}, ${firstName}`, value: id };
-
-      filters = { ...filters, officer };
-    }
+  // Province-wide role defaults to only "Open" so skip the other checks
+  if (UserService.hasRole(Roles.PROVINCE_WIDE)) {
+    return filters;
   }
 
-  if (UserService.hasRole([Roles.CEEB, Roles.CEEB_COMPLIANCE_COORDINATOR])) {
-    // No additional filters needed, default will apply
-  } else if (defaultZone) {
-    filters = { ...filters, zone: defaultZone };
+  const userAgency = UserService.getUserAgency();
+  if (userAgency === AgencyType.COS) {
+    if (UserService.hasRole(Roles.INSPECTOR)) {
+      filters = { ...filters, region: defaultRegion };
+    } else {
+      filters = { ...filters, zone: defaultZone };
+    }
+  } else if (currentOfficer && !UserService.hasRole(Roles.CEEB_COMPLIANCE_COORDINATOR)) {
+    const {
+      person: { firstName, lastName, id },
+    } = currentOfficer;
+    const officer = { label: `${lastName}, ${firstName}`, value: id };
+    filters = { ...filters, officer };
   }
 
   return filters;

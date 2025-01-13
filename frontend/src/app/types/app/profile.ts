@@ -8,6 +8,7 @@ export default interface Profile {
   idir_username: string;
   office: string;
   region: string;
+  regionDescription: string;
   zone: string;
   zoneDescription: string;
   agency: string;

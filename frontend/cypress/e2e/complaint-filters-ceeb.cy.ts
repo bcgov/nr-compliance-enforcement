@@ -40,6 +40,8 @@ describe("Verify CEEB specific search filters work", () => {
     cy.get("#comp-filter-btn").should("exist").click({ force: true });
     cy.selectItemById("action-taken-select-id", actionTaken);
     cy.waitForSpinner();
+    cy.clearFilterById("comp-officer-filter");
+    cy.waitForSpinner();
     cy.get(`#${complaintWithActionTakenID}`).should("exist");
   });
 });
