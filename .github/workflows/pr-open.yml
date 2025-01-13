@@ -59,7 +59,7 @@ jobs:
   healthcheck:
     name: Healthcheck Deployment
     runs-on: ubuntu-22.04
-    needs: [builds]
+    needs: [builds, crunchy]
     environment:
     timeout-minutes: 15
     if: ${{ ! github.event.pull_request.draft }}

@@ -51,7 +51,7 @@ spec:
             - name: FLYWAY_URL
               valueFrom:
                 secretKeyRef:
-                  name: postgres-crunchy-{{ .Values.crunchyClusterEnvironment }}-pguser-app-{{ .Values.global.tag | trimAll "\"" }}
+                  name: postgres-crunchy-{{ .Values.global.crunchyClusterEnvironment }}-pguser-app-{{ .Values.global.tag | trimAll "\"" }}
                   key: pgbouncer-jdbc-uri
             {{- end }}
           resources:
@@ -78,22 +78,22 @@ spec:
             - name: POSTGRESQL_DATABASE
               valueFrom:
                 secretKeyRef:
-                  name: postgres-crunchy-{{ .Values.crunchyClusterEnvironment }}-pguser-app-{{ .Values.global.tag | trimAll "\"" }}
+                  name: postgres-crunchy-{{ .Values.global.crunchyClusterEnvironment }}-pguser-app-{{ .Values.global.tag | trimAll "\"" }}
                   key: dbname
             - name: POSTGRESQL_HOST
               valueFrom:
                 secretKeyRef:
-                  name: postgres-crunchy-{{ .Values.crunchyClusterEnvironment }}-pguser-app-{{ .Values.global.tag | trimAll "\"" }}
+                  name: postgres-crunchy-{{ .Values.global.crunchyClusterEnvironment }}-pguser-app-{{ .Values.global.tag | trimAll "\"" }}
                   key: pgbouncer-host
             - name: POSTGRESQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: postgres-crunchy-{{ .Values.crunchyClusterEnvironment }}-pguser-app-{{ .Values.global.tag | trimAll "\"" }}
+                  name: postgres-crunchy-{{ .Values.global.crunchyClusterEnvironment }}-pguser-app-{{ .Values.global.tag | trimAll "\"" }}
                   key: user
             - name: POSTGRESQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgres-crunchy-{{ .Values.crunchyClusterEnvironment }}-pguser-app-{{ .Values.global.tag | trimAll "\"" }}
+                  name: postgres-crunchy-{{ .Values.global.crunchyClusterEnvironment }}-pguser-app-{{ .Values.global.tag | trimAll "\"" }}
                   key: password
             {{- end }}
           ports:
