@@ -19,13 +19,13 @@ export class ConfigurationController {
   private readonly logger = new Logger(ConfigurationController.name);
 
   @Get()
-  @Roles(Role.COS_OFFICER, Role.CEEB)
+  @Roles(Role.COS, Role.CEEB)
   findAll() {
     return this.configurationService.findAll();
   }
 
   @Get(":configurationCode")
-  @Roles(Role.COS_OFFICER, Role.CEEB)
+  @Roles(Role.COS, Role.CEEB)
   async findOne(@Param("configurationCode") configurationCode: string, @Token() token) {
     try {
       const result = await this.configurationService.findOne(configurationCode);
@@ -62,7 +62,7 @@ export class ConfigurationController {
   }
 
   @Patch(":id")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS)
   update(@Param("id") id: string, @Body() updateConfigurationDto: UpdateConfigurationDto) {
     return this.configurationService.update(+id, updateConfigurationDto);
   }

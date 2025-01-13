@@ -42,7 +42,7 @@ const App: FC = () => {
         <Modal />
         <PageLoader />
         <Routes>
-          <Route element={<ProtectedRoutes roles={[Roles.COS_OFFICER, Roles.CEEB]} />}>
+          <Route element={<ProtectedRoutes roles={[Roles.COS, Roles.CEEB]} />}>
             <Route
               path="/"
               element={<ComplaintsRouteWrapper />}

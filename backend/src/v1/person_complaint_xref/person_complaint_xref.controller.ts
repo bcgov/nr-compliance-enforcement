@@ -20,7 +20,7 @@ export class PersonComplaintXrefController {
   ) {}
 
   @Post(":complaint_id")
-  @Roles(Role.COS_OFFICER, Role.CEEB)
+  @Roles(Role.COS, Role.CEEB)
   assignOfficer(
     @Param("complaint_id") complaintId: string,
     @Body() createPersonComplaintXrefDto: CreatePersonComplaintXrefDto,
@@ -30,7 +30,7 @@ export class PersonComplaintXrefController {
   }
 
   @Get("/:person_guid/:complaint_id")
-  @Roles(Role.COS_OFFICER)
+  @Roles(Role.COS)
   findAssigned(@Param("person_guid") personGuid: string, @Param("complaint_id") complaintId: string) {
     return this.personComplaintXrefService.findAssigned(personGuid, complaintId);
   }
