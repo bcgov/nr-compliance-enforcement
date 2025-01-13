@@ -43,6 +43,7 @@ jobs:
     uses: ./.github/workflows/.dbdeployer.yml
     with:
       params: --set global.environment=test
+      cluster_environment: test
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}

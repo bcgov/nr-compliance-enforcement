@@ -40,6 +40,7 @@ jobs:
     with:
       s3_enabled: false # no backups in dev
       params: --set global.environment=dev
+      cluster_environment: dev
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}

@@ -17,6 +17,11 @@ on:
         description: Environment name; omit for PRs
         required: false
         type: string
+      cluster_environment:
+        description: Cluster environment name, should be dev,test,prod
+        required: false
+        type: string
+        default: 'dev'
       s3_enabled:
         description: Enable S3 backups
         required: false
@@ -127,7 +132,7 @@ jobs:
         run: |
             echo 'Adding PR specific user to Crunchy DB'
             NEW_USER='{"databases":["app-${{ github.event.number }}"],"name":"app-${{ github.event.number }}"}'
-            CURRENT_USERS=$(oc get PostgresCluster/postgres-crunchy -o json | jq '.spec.users')
+            CURRENT_USERS=$(oc get PostgresCluster/postgres-crunchy-${{ inputs.cluster_environment }} -o json | jq '.spec.users')
             echo "${CURRENT_USERS}"
 
             # check if current_users already contains the new_user
@@ -140,11 +145,11 @@ jobs:
             echo "$UPDATED_USERS"
             PATCH_JSON=$(jq -n --argjson users "$UPDATED_USERS" '{"spec": {"users": $users}}')
             echo "$PATCH_JSON"
-            oc patch PostgresCluster/postgres-crunchy --type=merge -p "${PATCH_JSON}"
+            oc patch PostgresCluster/postgres-crunchy-${{ inputs.cluster_environment }} --type=merge -p "${PATCH_JSON}"
 
             # wait for sometime as it takes time to create the user, query the secret and check if it is created, otherwise wait in a loop for 10 rounds
             for i in {1..10}; do
-              if oc get secret postgres-crunchy-pguser-app-${{ github.event.number }} -o jsonpath='{.metadata.name}' > /dev/null; then
+              if oc get secret postgres-crunchy-${{ inputs.cluster_environment }}-pguser-app-${{ github.event.number }} -o jsonpath='{.metadata.name}' > /dev/null; then
                 echo "Secret created"
                 break
               else
