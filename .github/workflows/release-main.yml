@@ -98,6 +98,8 @@ jobs:
         --set nats.config.cluster.enabled=true
         --set backup.enabled=true
         --set backup.persistence.size=256Mi
+        # --set useCrunchy=true
+        # --set crunchyClusterEnvironment=prod
 
   healthcheck:
     name: Healthcheck Prod Deployment

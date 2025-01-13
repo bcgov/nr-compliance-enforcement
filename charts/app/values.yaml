@@ -70,6 +70,8 @@ global:
   databaseAlias: bitnami-pg
   #-- use crunchy for the database, it is optional
   useCrunchy: false
+  # used for crunchy resource lookups based on environment
+  crunchyClusterEnvironment: dev # dev, test, prod
 
 #-- the components of the application, backend.
 backend:
