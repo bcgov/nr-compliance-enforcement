@@ -1,6 +1,16 @@
 UPDATE hwcr_complaint_nature_code SET long_description = 'Livestock/pets - killed/injured - not present' WHERE hwcr_complaint_nature_code = 'LIVNCOU';
 UPDATE hwcr_complaint_nature_code SET long_description = 'Livestock/pets - killed/injured - present/recent/suspected' WHERE hwcr_complaint_nature_code = 'LIVPRES';
 
+-- Delete any duplicate mappings
+DELETE from
+    staging_metadata_mapping a
+        USING staging_metadata_mapping b
+WHERE
+    a.staging_metadata_mapping_guid < b.staging_metadata_mapping_guid
+    AND a.entity_code = b.entity_code
+    AND a.staged_data_value = b.staged_data_value
+    AND a.live_data_value = b.live_data_value;
+
 -- Add unique constraing on staging_metadata_mapping for entity_code, staged_data_value, live_data_value
 ALTER TABLE public.staging_metadata_mapping ADD CONSTRAINT staging_metadata_mapping_unique UNIQUE (entity_code, staged_data_value, live_data_value);
 
