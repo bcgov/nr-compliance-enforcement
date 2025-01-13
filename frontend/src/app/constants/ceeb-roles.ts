@@ -5,7 +5,6 @@ export const ROLE_OPTIONS: Array<Option> = [
   { value: "CEEB Section Head", label: "Section Head" },
   { value: "CEEB Compliance Coordinator", label: "Compliance Coordinator" },
   { value: "COS", label: "COS" },
-  { value: "COS Officer", label: "COS Officer" },
   { value: "COS Administrator", label: "COS Administrator" },
   { value: "READ ONLY", label: "Read Only" },
   { value: "Inspector", label: "Inspector" },
@@ -22,7 +21,6 @@ export const CEEB_ROLE_OPTIONS: Array<Option> = [
 
 export const COS_ROLE_OPTIONS: Array<Option> = [
   { value: "COS", label: "COS" },
-  { value: "COS Officer", label: "COS Officer" },
   { value: "COS Administrator", label: "COS Administrator" },
   { value: "READ ONLY", label: "Read Only" },
   { value: "Inspector", label: "Inspector" },

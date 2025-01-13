@@ -31,7 +31,6 @@ export const complaintTypeForRole = (roleType: string) => {
     case Roles.COS:
     case Roles.COS_ADMINISTRATOR:
     case Roles.SYSTEM_ADMINISTRATOR:
-    case Roles.COS_OFFICER:
     case Roles.TEMPORARY_TEST_ADMIN:
     default:
       return COMPLAINT_TYPES;
