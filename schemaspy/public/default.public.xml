@@ -947,6 +947,11 @@
          <index name="PK_staging_metadata_mapping_guid" unique="true">
             <column ascending="true" name="staging_metadata_mapping_guid"/>
          </index>
+         <index name="staging_metadata_mapping_unique" unique="true">
+            <column ascending="true" name="entity_code"/>
+            <column ascending="true" name="staged_data_value"/>
+            <column ascending="true" name="live_data_value"/>
+         </index>
       </table>
       <table name="staging_status_code" remarks="" schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="staging_status_code" nullable="false" remarks="" size="10" type="varchar" typeCode="12">

@@ -148,7 +148,7 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="staged_data_value">staged_data_value</span></td>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="staged_data_value">staged_data_value</span></td>
                                     <td>varchar</td>
                                     <td>120</td>
                                     <td title=''></td>
@@ -165,7 +165,7 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="live_data_value">live_data_value</span></td>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="live_data_value">live_data_value</span></td>
                                     <td>varchar</td>
                                     <td>10</td>
                                     <td title=''></td>
@@ -284,6 +284,12 @@
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>staging_metadata_mapping_guid</td>
+                                </tr>
+                                <tr>
+                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> staging_metadata_mapping_unique</td>
+                                    <td>Must be unique</td>
+                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
+                                    <td>entity_code + staged_data_value + live_data_value</td>
                                 </tr>
                                 </tbody>
                             </table>
