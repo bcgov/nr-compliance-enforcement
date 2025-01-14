@@ -23,7 +23,7 @@ export class FeatureFlagController {
   }
 
   @Get("features-by-agency/:agencyCode")
-  @Roles(Role.TEMPORARY_TEST_ADMIN, Role.CEEB, Role.COS_OFFICER)
+  @Roles(Role.TEMPORARY_TEST_ADMIN, Role.CEEB, Role.COS)
   async findByAgency(@Param("agencyCode") agencyCode: string) {
     return await this.featureFlagService.findByAgency(agencyCode);
   }

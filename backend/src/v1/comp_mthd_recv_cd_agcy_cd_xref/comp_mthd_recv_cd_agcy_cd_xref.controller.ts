@@ -20,7 +20,7 @@ export class CompMthdRecvCdAgcyCdXrefController {
   }
 
   @Get("/by-agency/:agencyCode")
-  @Roles(Role.COS_OFFICER, Role.CEEB)
+  @Roles(Role.COS, Role.CEEB)
   findByAgency(@Param("agencyCode") agencyCode: string) {
     return this.compMthdRecvCdAgcyCdXrefService.findBy(agencyCode);
   }
