@@ -69,6 +69,12 @@ on:
       s3_secret_key:
         description: S3 secret key
         required: false
+      s3_bucket:
+        description: S3 bucket
+        required: false
+      s3_endpoint:
+        description: S3 endpoint
+        required: false
 jobs:
   deploy_db:
     timeout-minutes: ${{ inputs.timeout-minutes }}
@@ -100,6 +106,14 @@ jobs:
               echo "S3 secret key not found"
               exit 1
             fi
+            if [ ! "${{ secrets.s3_bucket }}" ]; then
+              echo "S3 bucket not found"
+              exit 1
+            fi
+            if [ ! "${{ secrets.s3_endpoint }}" ]; then
+              echo "S3 endpoint not found"
+              exit 1
+            fi
           fi
 
       - name: OC Login
@@ -119,8 +133,10 @@ jobs:
           echo 'Deploying crunchy helm chart'
           if [ ${{ inputs.s3_enabled }} == true ]; then
             helm upgrade ${{ inputs.params }} --install --wait --set crunchy.pgBackRest.s3.enabled=true \
-             --set-string crunchy.pgBackRest.s3.accessKey=${{ secrets.s3_access_key }} \
+              --set-string crunchy.pgBackRest.s3.accessKey=${{ secrets.s3_access_key }} \
               --set-string crunchy.pgBackRest.s3.secretKey=${{ secrets.s3_secret_key }} \
+              --set-string crunchy.pgBackRest.s3.bucket=${{ secrets.s3_bucket }} \
+              --set-string crunchy.pgBackRest.s3.endpoint=${{ secrets.s3_endpoint }} \
               --values ${{ inputs.values }} postgres  .
           else
             helm upgrade ${{ inputs.params }} --install --wait --values ${{ inputs.values }} postgres .
