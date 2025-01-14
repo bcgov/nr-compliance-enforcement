@@ -44,9 +44,14 @@ jobs:
     with:
       params: --set global.environment=test
       cluster_environment: test
+      environment: test
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
+      s3_access_key: ${{ secrets.S3_ACCESS_KEY }}
+      s3_secret_key: ${{ secrets.S3_SECRET_KEY }}
+      s3_bucket: ${{ secrets.S3_BUCKET }}
+      s3_endpoint: ${{ secrets.S3_ENDPOINT }}
 
   # https://github.com/bcgov/quickstart-openshift-helpers
   deploy-test:

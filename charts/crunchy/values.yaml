@@ -64,8 +64,8 @@ crunchy: # enable it for TEST and PROD, for PR based pipelines simply use single
       endpoint: ~
       accessKey: ~
       secretKey: ~
-      fullBackupSchedule: ~ # make sure to provide values here, if s3 is enabled.
-      incrementalBackupSchedule: ~ # make sure to provide values here, if s3 is enabled.
+      fullBackupSchedule: 0 8 * * * # make sure to provide values here, if s3 is enabled.
+      incrementalBackupSchedule: 0 0,12 * * * # make sure to provide values here, if s3 is enabled.
     pvc:
       retention: 1 # one day hot active backup in pvc
       retentionFullType: count
