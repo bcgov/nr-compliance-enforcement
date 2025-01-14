@@ -32,21 +32,34 @@ jobs:
           tag_fallback: latest
           triggers: ('${{ matrix.package }}/')
 
+  # https://github.com/bcgov/quickstart-openshift
+  crunchy:
+    name: Deploy Crunchy
+    needs: [builds]
+    uses: ./.github/workflows/.dbdeployer.yml
+    with:
+      s3_enabled: false # no backups in dev
+      params: --set global.environment=dev
+      cluster_environment: dev
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+
   # https://github.com/bcgov/quickstart-openshift-helpers
   deploys:
     name: Deploys
-    needs: [builds]
+    needs: [builds, crunchy]
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.5.0
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
-      triggers: ('backend/' 'frontend/' 'webeoc/' 'migrations/')
+      params: --set global.useCrunchy=true --set global.crunchyClusterEnvironment=dev
 
   healthcheck:
     name: Healthcheck Deployment
     runs-on: ubuntu-22.04
-    needs: [builds]
+    needs: [builds, crunchy]
     environment:
     timeout-minutes: 15
     if: ${{ ! github.event.pull_request.draft }}

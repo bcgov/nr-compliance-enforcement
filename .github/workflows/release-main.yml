@@ -64,10 +64,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  # https://github.com/bcgov/quickstart-openshift
+  crunchy:
+    name: Deploy Crunchy
+    needs: [vars]
+    uses: ./.github/workflows/.dbdeployer.yml
+    with:
+      params: --set global.environment=prod
+      cluster_environment: prod
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+
   # https://github.com/bcgov/quickstart-openshift-helpers
   deploy-prod:
     name: Deploy (prod)
-    needs: [vars]
+    needs: [vars, crunchy]
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.8.3
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -86,6 +98,8 @@ jobs:
         --set nats.config.cluster.enabled=true
         --set backup.enabled=true
         --set backup.persistence.size=256Mi
+        # --set useCrunchy=true
+        # --set crunchyClusterEnvironment=prod
 
   healthcheck:
     name: Healthcheck Prod Deployment

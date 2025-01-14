@@ -1,0 +1,176 @@
+name: .Crunchy Deploy
+
+on:
+  workflow_call:
+    inputs: ### Required
+      directory:
+        description: Crunchy Chart directory
+        default: 'charts/crunchy'
+        required: false
+        type: string
+      oc_server:
+        default: https://api.silver.devops.gov.bc.ca:6443
+        description: 'OpenShift server'
+        required: false
+        type: string
+      environment:
+        description: Environment name; omit for PRs
+        required: false
+        type: string
+      cluster_environment:
+        description: Cluster environment name, should be dev,test,prod
+        required: false
+        type: string
+        default: 'dev'
+      s3_enabled:
+        description: Enable S3 backups
+        required: false
+        default: true
+        type: boolean
+      values:
+        description: 'Values file'
+        default: 'values.yaml'
+        required: false
+        type: string
+      app_values:
+        description: 'App specific values file which is present inside charts/app'
+        default: 'values.yaml'
+        required: false
+        type: string
+      enabled:
+        description: 'Enable the deployment of the crunchy database, easy switch to turn it on/off'
+        default: true
+        required: false
+        type: boolean
+      timeout-minutes:
+        description: 'Timeout minutes'
+        default: 20
+        required: false
+        type: number
+      triggers:
+        description: Paths used to trigger a database deployment
+        required: false
+        type: string
+      params:
+        description: 'Extra parameters to pass to helm upgrade'
+        default: ''
+        required: false
+        type: string
+    secrets:
+      oc_namespace:
+        description: OpenShift namespace
+        required: true
+      oc_token:
+        description: OpenShift token
+        required: true
+      s3_access_key:
+        description: S3 access key
+        required: false
+      s3_secret_key:
+        description: S3 secret key
+        required: false
+jobs:
+  deploy_db:
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    runs-on: ubuntu-24.04
+    if: ${{ inputs.enabled }}
+    name: Deploy Or Upgrade Crunchy DB
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install CLI tools from OpenShift Mirror
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14.37"
+      - uses: bcgov-nr/action-diff-triggers@v0.2.0
+        id: triggers
+        with:
+          triggers: ${{ inputs.triggers }}
+      - name: Validate Inputs
+        if: steps.triggers.outputs.triggered == 'true'
+        shell: bash
+        run: |
+          if [ ${{ inputs.s3_enabled }} == true ]; then
+            echo "S3 ie enabled for backups, checking for mandatory secrets"
+            if [ ! "${{ secrets.s3_access_key }}" ]; then
+              echo "S3 access key not found"
+              exit 1
+            fi
+            if [ ! "${{ secrets.s3_secret_key }}" ]; then
+              echo "S3 secret key not found"
+              exit 1
+            fi
+          fi
+
+      - name: OC Login
+        shell: bash
+        run: |
+          # OC Login
+          OC_TEMP_TOKEN=$(curl -k -X POST ${{ inputs.oc_server }}/api/v1/namespaces/${{ secrets.oc_namespace }}/serviceaccounts/pipeline/token --header "Authorization: Bearer ${{ secrets.oc_token }}" -d '{"spec": {"expirationSeconds": 600}}' -H 'Content-Type: application/json; charset=utf-8' | jq -r '.status.token' )
+
+          oc login --token=$OC_TEMP_TOKEN --server=${{ inputs.oc_server }}
+          oc project ${{ secrets.oc_namespace }} # Safeguard!
+
+      - name: Deploy Database
+        if: steps.triggers.outputs.triggered == 'true'
+        working-directory: ${{ inputs.directory }}
+        shell: bash
+        run: |
+          echo 'Deploying crunchy helm chart'
+          if [ ${{ inputs.s3_enabled }} == true ]; then
+            helm upgrade ${{ inputs.params }} --install --wait --set crunchy.pgBackRest.s3.enabled=true \
+             --set-string crunchy.pgBackRest.s3.accessKey=${{ secrets.s3_access_key }} \
+              --set-string crunchy.pgBackRest.s3.secretKey=${{ secrets.s3_secret_key }} \
+              --values ${{ inputs.values }} postgres  .
+          else
+            helm upgrade ${{ inputs.params }} --install --wait --values ${{ inputs.values }} postgres .
+          fi
+
+      - name: Add PR specific user to Crunchy DB # only for PRs
+        shell: bash
+        if: github.event_name == 'pull_request'
+        run: |
+            echo 'Adding PR specific user to Crunchy DB'
+            NEW_USER='{"databases":["app-${{ github.event.number }}"],"name":"app-${{ github.event.number }}"}'
+            CURRENT_USERS=$(oc get PostgresCluster/postgres-crunchy-${{ inputs.cluster_environment }} -o json | jq '.spec.users')
+            echo "${CURRENT_USERS}"
+
+            # check if current_users already contains the new_user
+            if echo "${CURRENT_USERS}" | jq -e ".[] | select(.name == \"app-${{ github.event.number }}\")" > /dev/null; then
+              echo "User already exists"
+              exit 0
+            fi
+
+            UPDATED_USERS=$(echo "$CURRENT_USERS" | jq --argjson NEW_USER "$NEW_USER" '. + [$NEW_USER]')
+            echo "$UPDATED_USERS"
+            PATCH_JSON=$(jq -n --argjson users "$UPDATED_USERS" '{"spec": {"users": $users}}')
+            echo "$PATCH_JSON"
+            oc patch PostgresCluster/postgres-crunchy-${{ inputs.cluster_environment }} --type=merge -p "${PATCH_JSON}"
+
+            # wait for sometime as it takes time to create the user, query the secret and check if it is created, otherwise wait in a loop for 10 rounds
+            for i in {1..10}; do
+              if oc get secret postgres-crunchy-${{ inputs.cluster_environment }}-pguser-app-${{ github.event.number }} -o jsonpath='{.metadata.name}' > /dev/null; then
+                echo "Secret created"
+                break
+              else
+                echo "Secret not created, waiting for 60 seconds"
+                sleep 60
+              fi
+            done
+
+            # Add public schema and grant to PR user
+            # get primary crunchy pod and remove the role and db
+            CRUNCHY_PG_PRIMARY_POD_NAME=$(oc get pods -l postgres-operator.crunchydata.com/role=master -o json | jq -r '.items[0].metadata.name')
+            echo "${CRUNCHY_PG_PRIMARY_POD_NAME}"
+            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "CREATE SCHEMA IF NOT EXISTS public;"
+            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON SCHEMA public TO \"app-${{ github.event.number }}\";"
+            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO \"app-${{ github.event.number }}\";"
+            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO \"app-${{ github.event.number }}\";"
+            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO \"app-${{ github.event.number }}\";"
+            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO \"app-${{ github.event.number }}\";"
+            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO \"app-${{ github.event.number }}\";"
+            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON FUNCTIONS TO \"app-${{ github.event.number }}\";"
+            # TODO: remove these
+
+            
+
