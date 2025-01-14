@@ -72,6 +72,7 @@ jobs:
     with:
       params: --set global.environment=prod
       cluster_environment: prod
+      environment: prod
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
