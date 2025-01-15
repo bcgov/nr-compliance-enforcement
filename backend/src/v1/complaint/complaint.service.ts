@@ -1314,6 +1314,33 @@ export class ComplaintService {
     }
   };
 
+  updateComplaintLastUpdatedDate = async (id: string): Promise<boolean> => {
+    try {
+      const idir = getIdirFromRequest(this.request);
+      const timestamp = new Date();
+
+      const result = await this.complaintsRepository
+        .createQueryBuilder("complaint")
+        .update()
+        .set({ update_user_id: idir, comp_last_upd_utc_timestamp: timestamp })
+        .where("complaint_identifier = :id", { id })
+        .execute();
+
+      //-- check to make sure that only one record was updated
+      if (result.affected === 1) {
+        return true;
+      } else {
+        this.logger.error(`Unable to update complaint: ${id}`);
+        throw new HttpException(`Unable to update complaint: ${id}`, HttpStatus.UNPROCESSABLE_ENTITY);
+      }
+    } catch (error) {
+      this.logger.error(`An Error occured trying to update complaint: ${id}`);
+      this.logger.error(error.response);
+
+      throw new HttpException(`Unable to update complaint: ${id}}`, HttpStatus.BAD_REQUEST);
+    }
+  };
+
   updateComplaintStatusById = async (id: string, status: string): Promise<ComplaintDto> => {
     try {
       const idir = getIdirFromRequest(this.request);

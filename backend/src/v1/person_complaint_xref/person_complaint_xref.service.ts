@@ -1,17 +1,22 @@
-import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, Logger } from "@nestjs/common";
 import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref.dto";
 import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, QueryRunner, Repository } from "typeorm";
+import { ComplaintService } from "../complaint/complaint.service";
+import { Complaint } from "../complaint/entities/complaint.entity";
 
 @Injectable()
 export class PersonComplaintXrefService {
   @InjectRepository(PersonComplaintXref)
-  private personComplaintXrefRepository: Repository<PersonComplaintXref>;
+  private readonly personComplaintXrefRepository: Repository<PersonComplaintXref>;
 
   private readonly logger = new Logger(PersonComplaintXrefService.name);
 
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    @Inject(forwardRef(() => ComplaintService)) private readonly _compliantService: ComplaintService,
+  ) {}
 
   async create(createPersonComplaintXrefDto: CreatePersonComplaintXrefDto): Promise<PersonComplaintXref> {
     const newPersonComplaintXref = this.personComplaintXrefRepository.create(createPersonComplaintXrefDto);
@@ -110,8 +115,15 @@ export class PersonComplaintXrefService {
       newPersonComplaintXref = await this.create(createPersonComplaintXrefDto);
       this.logger.debug(`Updating assignment on complaint ${complaintIdentifier}`);
 
-      // save the transaction
-      await queryRunner.manager.save(newPersonComplaintXref);
+      // Update the complaint last updated date on the parent record
+      if (await this._compliantService.updateComplaintLastUpdatedDate(complaintIdentifier)) {
+        // save the transaction
+        await queryRunner.manager.save(newPersonComplaintXref);
+        this.logger.debug(`Successfully assigned person to complaint ${complaintIdentifier}`);
+      } else {
+        throw new BadRequestException(`Unable to assign person to complaint ${complaintIdentifier}`);
+      }
+
       await queryRunner.commitTransaction();
       this.logger.debug(`Successfully assigned person to complaint ${complaintIdentifier}`);
     } catch (err) {
@@ -156,9 +168,14 @@ export class PersonComplaintXrefService {
       newPersonComplaintXref = await this.create(createPersonComplaintXrefDto);
       this.logger.debug(`Updating assignment on complaint ${complaintIdentifier}`);
 
-      // save the transaction
-      await queryRunner.manager.save(newPersonComplaintXref);
-      this.logger.debug(`Successfully assigned person to complaint ${complaintIdentifier}`);
+      // Update the complaint last updated date on the parent record
+      if (await this._compliantService.updateComplaintLastUpdatedDate(complaintIdentifier)) {
+        // save the transaction
+        await queryRunner.manager.save(newPersonComplaintXref);
+        this.logger.debug(`Successfully assigned person to complaint ${complaintIdentifier}`);
+      } else {
+        throw new BadRequestException(`Unable to assign person to complaint ${complaintIdentifier}`);
+      }
     } catch (err) {
       this.logger.error(err);
       this.logger.error(`Rolling back assignment on complaint ${complaintIdentifier}`);
