@@ -4,7 +4,6 @@ import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, QueryRunner, Repository } from "typeorm";
 import { ComplaintService } from "../complaint/complaint.service";
-import { Complaint } from "../complaint/entities/complaint.entity";
 
 @Injectable()
 export class PersonComplaintXrefService {
