@@ -1419,8 +1419,9 @@ export class ComplaintService {
 
       complaintTable.comp_mthd_recv_cd_agcy_cd_xref = xref;
 
-      //set the audit field
+      //set the audit fields
       complaintTable.update_user_id = idir;
+      complaintTable.comp_last_upd_utc_timestamp = new Date();
 
       const complaintUpdateResult = await this.complaintsRepository
         .createQueryBuilder("complaint")
