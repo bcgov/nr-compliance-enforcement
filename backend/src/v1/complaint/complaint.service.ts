@@ -1317,12 +1317,13 @@ export class ComplaintService {
   updateComplaintStatusById = async (id: string, status: string): Promise<ComplaintDto> => {
     try {
       const idir = getIdirFromRequest(this.request);
+      const timestamp = new Date();
 
       const statusCode = await this._codeTableService.getComplaintStatusCodeByStatus(status);
       const result = await this.complaintsRepository
         .createQueryBuilder("complaint")
         .update()
-        .set({ complaint_status_code: statusCode, update_user_id: idir })
+        .set({ complaint_status_code: statusCode, update_user_id: idir, comp_last_upd_utc_timestamp: timestamp })
         .where("complaint_identifier = :id", { id })
         .execute();
 
