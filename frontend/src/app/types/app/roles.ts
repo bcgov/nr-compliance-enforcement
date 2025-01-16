@@ -4,7 +4,7 @@ enum Roles {
   CEEB_SECTION_HEAD = "CEEB Section Head",
   SYSTEM_ADMINISTRATOR = "System Administrator",
   COS_ADMINISTRATOR = "COS Administrator",
-  COS_OFFICER = "COS Officer",
+  COS = "COS",
   TEMPORARY_TEST_ADMIN = "TEMPORARY_TEST_ADMIN",
   READ_ONLY = "READ ONLY",
   INSPECTOR = "Inspector",

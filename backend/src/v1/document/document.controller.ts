@@ -21,7 +21,7 @@ export class DocumentController {
   constructor(private readonly service: DocumentService) {}
 
   @Post("/export-complaint")
-  @Roles(Role.COS_OFFICER, Role.CEEB)
+  @Roles(Role.COS, Role.CEEB)
   async exportComplaint(@Body() model: ExportComplaintParameters, @Token() token, @Res() res: Response): Promise<void> {
     const id: string = model?.id ?? "unknown";
 
