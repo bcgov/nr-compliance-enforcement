@@ -188,7 +188,7 @@ export class CaseFileService {
         query: query,
         variables: model,
       });
-      returnValue = await this.handleAPIResponse(result);
+      returnValue = await this.handleAPIResponse(result, complaintBeingLinkedId);
       // If the mutation succeeded, commit the pending transaction
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -392,7 +392,7 @@ export class CaseFileService {
 
   private readonly handleAPIResponse = async (
     result: { response: AxiosResponse; error: AxiosError },
-    leadIdentifer?: string,
+    leadIdentifer: string,
   ): Promise<any> => {
     if (result?.response?.data?.data) {
       // As per CE-1335 whenever the case data is updated we want to update the last updated date on the complaint table.
