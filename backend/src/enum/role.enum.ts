@@ -1,5 +1,5 @@
 export enum Role {
-  COS_OFFICER = "COS Officer",
+  COS = "COS",
   COS_ADMINISTRATOR = "COS Administrator",
   CEEB = "CEEB",
   CEEB_COMPLIANCE_COORDINATOR = "CEEB Compliance Coordinator",

@@ -365,7 +365,7 @@ export const selectOfficersByZone =
 const mapAgencyToRole = (agency: string): string => {
   let role: string = "";
   if (agency === "COS") {
-    role = "COS Officer";
+    role = "COS";
   } else if (agency === "EPO") {
     role = "CEEB";
   }
