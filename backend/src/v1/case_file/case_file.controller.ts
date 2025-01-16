@@ -61,10 +61,12 @@ export class CaseFileController {
     @Token() token,
     @Query("id") id: string,
     @Query("updateUserId") userId: string,
+    @Query("leadIdentifier") leadIdentifier: string,
   ): Promise<boolean> {
     const deleteEquipment = {
       id: id,
       updateUserId: userId,
+      leadIdentifier: leadIdentifier,
     };
     return await this.service.deleteEquipment(token, deleteEquipment);
   }

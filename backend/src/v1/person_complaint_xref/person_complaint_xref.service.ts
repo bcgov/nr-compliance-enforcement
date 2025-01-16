@@ -14,7 +14,7 @@ export class PersonComplaintXrefService {
 
   constructor(
     private readonly dataSource: DataSource,
-    @Inject(forwardRef(() => ComplaintService)) private readonly _compliantService: ComplaintService,
+    @Inject(forwardRef(() => ComplaintService)) private readonly _complaintService: ComplaintService,
   ) {}
 
   async create(createPersonComplaintXrefDto: CreatePersonComplaintXrefDto): Promise<PersonComplaintXref> {
@@ -115,7 +115,7 @@ export class PersonComplaintXrefService {
       this.logger.debug(`Updating assignment on complaint ${complaintIdentifier}`);
 
       // Update the complaint last updated date on the parent record
-      if (await this._compliantService.updateComplaintLastUpdatedDate(complaintIdentifier)) {
+      if (await this._complaintService.updateComplaintLastUpdatedDate(complaintIdentifier)) {
         // save the transaction
         await queryRunner.manager.save(newPersonComplaintXref);
         this.logger.debug(`Successfully assigned person to complaint ${complaintIdentifier}`);
@@ -168,7 +168,7 @@ export class PersonComplaintXrefService {
       this.logger.debug(`Updating assignment on complaint ${complaintIdentifier}`);
 
       // Update the complaint last updated date on the parent record
-      if (await this._compliantService.updateComplaintLastUpdatedDate(complaintIdentifier)) {
+      if (await this._complaintService.updateComplaintLastUpdatedDate(complaintIdentifier)) {
         // save the transaction
         await queryRunner.manager.save(newPersonComplaintXref);
         this.logger.debug(`Successfully assigned person to complaint ${complaintIdentifier}`);

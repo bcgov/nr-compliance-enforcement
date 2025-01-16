@@ -229,7 +229,8 @@ export class CaseFileService {
         query: query,
         variables: model,
       });
-      returnValue = await this.handleAPIResponse(result);
+
+      returnValue = await this.handleAPIResponse(result, modelAsAny.createAssessmentInput.leadIdentifier);
     }
 
     return returnValue?.createAssessment;
@@ -283,7 +284,7 @@ export class CaseFileService {
         query: query,
         variables: model,
       });
-      returnValue = await this.handleAPIResponse(result);
+      returnValue = await this.handleAPIResponse(result, modelAsAny.updateAssessmentInput.leadIdentifier);
     }
     return returnValue?.updateAssessment;
   };
@@ -296,7 +297,14 @@ export class CaseFileService {
       }`,
       variables: model,
     });
-    const returnValue = await this.handleAPIResponse(result);
+
+    // The model reaches this function in the shape { "reviewInput": {...CaseFlieDTO} } despite that property
+    // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.
+    // For example, leadIdentifier would be found in model.leadIdentifier by the type's definition, however in this
+    // scope it is at model.reviewInput.leadIdentifier, which errors due to type violation.
+    // This copies it into a new variable cast to any to allow access to the nested properties.
+    let modelAsAny: any = { ...model };
+    const returnValue = await this.handleAPIResponse(result, modelAsAny.reviewInput.leadIdentifier);
     const caseFileDTO = returnValue.createReview as CaseFileDto;
     try {
       if (caseFileDTO.isReviewRequired) {
@@ -319,7 +327,13 @@ export class CaseFileService {
       }`,
       variables: model,
     });
-    const returnValue = await this.handleAPIResponse(result);
+    // The model reaches this function in the shape { "reviewInput": {...CaseFlieDTO} } despite that property
+    // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.
+    // For example, leadIdentifier would be found in model.leadIdentifier by the type's definition, however in this
+    // scope it is at model.reviewInput.leadIdentifier, which errors due to type violation.
+    // This copies it into a new variable cast to any to allow access to the nested properties.
+    let modelAsAny: any = { ...model };
+    const returnValue = await this.handleAPIResponse(result, modelAsAny.reviewInput.leadIdentifier);
     const caseFileDTO = returnValue.updateReview as CaseFileDto;
     try {
       if (model.reviewInput.isReviewRequired) {
@@ -348,7 +362,13 @@ export class CaseFileService {
       }`,
       variables: model,
     });
-    const returnValue = await this.handleAPIResponse(result);
+    // The model reaches this function in the shape { "createPreventionInput": {...CaseFlieDTO} } despite that property
+    // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.
+    // For example, leadIdentifier would be found in model.leadIdentifier by the type's definition, however in this
+    // scope it is at model.createPreventionInput.leadIdentifier, which errors due to type violation.
+    // This copies it into a new variable cast to any to allow access to the nested properties.
+    let modelAsAny: any = { ...model };
+    const returnValue = await this.handleAPIResponse(result, modelAsAny.createPreventionInput.leadIdentifier);
     return returnValue?.createPrevention;
   };
 
@@ -360,13 +380,27 @@ export class CaseFileService {
       }`,
       variables: model,
     });
-    const returnValue = await this.handleAPIResponse(result);
+    // The model reaches this function in the shape { "updatePreventionInput": {...CaseFlieDTO} } despite that property
+    // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.
+    // For example, leadIdentifier would be found in model.leadIdentifier by the type's definition, however in this
+    // scope it is at model.updatePreventionInput.leadIdentifier, which errors due to type violation.
+    // This copies it into a new variable cast to any to allow access to the nested properties.
+    let modelAsAny: any = { ...model };
+    const returnValue = await this.handleAPIResponse(result, modelAsAny.updatePreventionInput.leadIdentifier);
     return returnValue?.updatePrevention;
   };
 
-  private handleAPIResponse = async (result: { response: AxiosResponse; error: AxiosError }): Promise<any> => {
+  private readonly handleAPIResponse = async (
+    result: { response: AxiosResponse; error: AxiosError },
+    leadIdentifer?: string,
+  ): Promise<any> => {
     if (result?.response?.data?.data) {
+      // As per CE-1335 whenever the case data is updated we want to update the last updated date on the complaint table.
+      // All Case Actions should call this method so this should work here.
       const caseFileDto = result.response.data.data;
+      if (leadIdentifer) {
+        await this.complaintService.updateComplaintLastUpdatedDate(leadIdentifer);
+      }
       return caseFileDto;
     } else if (result?.response?.data?.errors) {
       this.logger.error(`Error occurred. ${JSON.stringify(result.response.data.errors)}`);
@@ -391,8 +425,13 @@ export class CaseFileService {
     this.logger.debug(mutationQuery);
 
     const result = await post(token, mutationQuery);
-
-    const returnValue = await this.handleAPIResponse(result);
+    // The model reaches this function in the shape { "createEquipmentInput": {...CaseFlieDTO} } despite that property
+    // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.
+    // For example, leadIdentifier would be found in model.leadIdentifier by the type's definition, however in this
+    // scope it is at model.createEquipmentInput.leadIdentifier, which errors due to type violation.
+    // This copies it into a new variable cast to any to allow access to the nested properties.
+    let modelAsAny: any = { ...model };
+    const returnValue = await this.handleAPIResponse(result, modelAsAny.createEquipmentInput.leadIdentifier);
     return returnValue?.createEquipment;
   };
 
@@ -404,20 +443,28 @@ export class CaseFileService {
       }`,
       variables: model,
     });
-    const returnValue = await this.handleAPIResponse(result);
+    // The model reaches this function in the shape { "updateEquipmentInput": {...CaseFlieDTO} } despite that property
+    // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.
+    // For example, leadIdentifier would be found in model.leadIdentifier by the type's definition, however in this
+    // scope it is at model.updateEquipmentInput.leadIdentifier, which errors due to type violation.
+    // This copies it into a new variable cast to any to allow access to the nested properties.
+    let modelAsAny: any = { ...model };
+    const returnValue = await this.handleAPIResponse(result, modelAsAny.updateEquipmentInput.leadIdentifier);
     return returnValue?.updateEquipment;
   };
 
   deleteEquipment = async (token: string, model: DeleteEquipmentDto): Promise<boolean> => {
+    const leadIdentifier = model.leadIdentifier;
+    delete model.leadIdentifier;
     const result = await post(token, {
       query: `mutation DeleteEquipment($deleteEquipmentInput: DeleteEquipmentInput!) {
-        deleteEquipment(deleteEquipmentInput: $deleteEquipmentInput) 
+        deleteEquipment(deleteEquipmentInput: $deleteEquipmentInput)
       }`,
       variables: {
         deleteEquipmentInput: model, // Ensure that the key matches the name of the variable in your mutation
       },
     });
-    const returnValue = await this.handleAPIResponse(result);
+    const returnValue = await this.handleAPIResponse(result, leadIdentifier);
     return returnValue;
   };
 
@@ -432,7 +479,7 @@ export class CaseFileService {
       variables: { input: model },
     });
 
-    const returnValue = await this.handleAPIResponse(result);
+    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     return returnValue?.createNote;
   };
 
@@ -447,7 +494,8 @@ export class CaseFileService {
       variables: { input: model },
     });
 
-    const returnValue = await this.handleAPIResponse(result);
+    console.log(model);
+    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     return returnValue?.updateNote;
   };
 
@@ -461,8 +509,8 @@ export class CaseFileService {
       }`,
       variables: { input: model },
     });
-
-    const returnValue = await this.handleAPIResponse(result);
+    console.log(model);
+    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     return returnValue?.deleteNote;
   };
 
@@ -476,7 +524,7 @@ export class CaseFileService {
       variables: { input: model },
     });
 
-    const returnValue = await this.handleAPIResponse(result);
+    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     return returnValue?.createWildlife;
   };
 
@@ -490,7 +538,7 @@ export class CaseFileService {
       variables: { input: model },
     });
 
-    const returnValue = await this.handleAPIResponse(result);
+    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     return returnValue?.updateWildlife;
   };
 
@@ -504,7 +552,7 @@ export class CaseFileService {
       variables: { input: model },
     });
 
-    const returnValue = await this.handleAPIResponse(result);
+    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     return returnValue?.deleteWildlife;
   };
 

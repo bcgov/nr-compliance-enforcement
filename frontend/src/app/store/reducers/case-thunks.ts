@@ -781,7 +781,7 @@ export const updateReview =
 
 //-- equipment thunks
 export const deleteEquipment =
-  (id: string): AppThunk =>
+  (complaintId: string, id: string): AppThunk =>
   async (dispatch, getState) => {
     if (!id) {
       return;
@@ -794,6 +794,7 @@ export const deleteEquipment =
     const deleteEquipmentInput = {
       id: id,
       updateUserId: profile.idir_username,
+      leadIdentifier: complaintId,
     };
 
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
