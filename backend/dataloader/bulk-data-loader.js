@@ -1,5 +1,6 @@
 // Instruction for running: from backend directory: node dataloader/bulk-data-loader.js
 // Ensure parameters at the bottom of this file are updated as required
+
 require('dotenv').config();
 const faker = require('faker');
 const db = require('pg-promise')();
@@ -248,16 +249,67 @@ const insertData = async (data) => {
   }
 };
 
-// Adjust these as required.
-// No more than 10k at a time or the insert will blow up.
-const yearPrefix = 25;
-const numRecords = 10000;
-const startingRecord = 100000;
+// Process any pending complaints
+const processPendingComplaints = async () => {
+  const query = `DO $$
+    DECLARE
+      complaint_record RECORD;
+    BEGIN
+      -- Loop through each pending complaint
+      FOR complaint_record IN
+          SELECT complaint_identifier
+          FROM staging_complaint
+          WHERE staging_status_code = 'PENDING'
+      LOOP
+          -- Call the insert_complaint_from_staging function for each complaint
+          PERFORM public.insert_complaint_from_staging(complaint_record.complaint_identifier);
+      END LOOP;
+    
+      -- Optional: Add a message indicating completion
+      RAISE NOTICE 'All pending complaints processed successfully.';
+    END;
+    $$;`;
+    
+  try {
+    // Perform the bulk insert
+    await pg.none(query);
+    console.log('Data processing complete.');
+  } catch (error) {
+    console.error('Error processing data:', error);
+  }
+};
 
-// Validate parameters
-if (numRecords > 10000) {
-  console.log ("Please adjust the numRecords parameter to be less than 10000");
-  return;
-}
-const records = generateBulkData(yearPrefix, numRecords, startingRecord);
-insertData(records);
+const bulkDataLoad = async () => {
+
+  // Adjust these as required.
+  const processAfterInsert = true // Will move complaints from staging to the live table after each iteration
+  const numRecords = 1000; // Records created per iteration, no more than 10k at a time or the insert will blow up.
+  const yearPrefix = 20; // Year will increment per iteration
+  const startingRecord = 110000;
+  const iterations = 100;
+
+  // Validate parameters
+  if (numRecords > 10000) {
+    console.log ("Please adjust the numRecords parameter to be less than 10000");
+    return;
+  }
+  if (iterations * numRecords > 1000000) {
+    console.log ("Please adjust the iterations so that fewer than 1000000 records are inserted");
+    return;
+  }
+
+  for (let i = 0; i < iterations; i++) {
+    const startingRecordForIteration = startingRecord + (i * numRecords);
+    const records = generateBulkData(yearPrefix + i, numRecords, startingRecordForIteration);
+    // Insert the staging data
+    await insertData(records);
+    // Process the staging data
+    if (processAfterInsert)
+    {
+      await processPendingComplaints();
+    }
+    console.log(`Inserted records ${startingRecordForIteration} through ${startingRecordForIteration + numRecords}.`);
+  }
+};
+
+bulkDataLoad();

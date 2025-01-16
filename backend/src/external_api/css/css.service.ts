@@ -4,6 +4,8 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { get } from "../../helpers/axios-api";
 import { ConfigurationService } from "../../v1/configuration/configuration.service";
 import { CssUser } from "src/types/css/cssUser";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { Cache } from "cache-manager";
 
 @Injectable()
 export class CssService implements ExternalApiService {
@@ -19,6 +21,9 @@ export class CssService implements ExternalApiService {
 
   @Inject(ConfigurationService)
   readonly configService: ConfigurationService;
+
+  @Inject(CACHE_MANAGER)
+  readonly cacheManager: Cache;
 
   constructor() {
     this.authApi = process.env.CSS_TOKEN_URL;
@@ -137,69 +142,104 @@ export class CssService implements ExternalApiService {
     }
   };
 
+  private readonly fetchAndGroupUserRoles = async (): Promise<any> => {
+    //Try to avoid multiple refreshes of cache in case of multiple requests while the cache is being refreshed
+    await this.cacheManager.set("css-users-roles-refresh-status", true, 15000);
+
+    const apiToken = await this.authenticate();
+    //Get all roles from NatCom CSS integration
+    const rolesUrl = `${this.baseUri}/api/v1/integrations/4794/${this.env}/roles`;
+    const config: AxiosRequestConfig = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiToken}`,
+      },
+    };
+    const roleRes = await get(apiToken, rolesUrl, config);
+    if (roleRes?.data.data.length > 0) {
+      const {
+        data: { data: roleList },
+      } = roleRes;
+
+      //Get all users for each role
+      let usersUrl: string = "";
+      const pages = Array.from(Array(this.maxPages), (_, i) => i + 1);
+      const usersRoles = await Promise.all(
+        roleList.map(async (role) => {
+          let usersRolesTemp = [];
+          for (const page of pages) {
+            usersUrl = `${this.baseUri}/api/v1/integrations/4794/${this.env}/roles/${role.name}/users?page=${page}`;
+            const userRes = await get(apiToken, encodeURI(usersUrl), config);
+            if (userRes?.data.data.length > 0) {
+              const {
+                data: { data: users },
+              } = userRes;
+              let usersRolesSinglePage = await Promise.all(
+                users.map((user) => {
+                  return {
+                    userId: user.username
+                      .replace(/@idir$/i, "")
+                      .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5"),
+                    role: role.name,
+                  };
+                }),
+              );
+              usersRolesTemp.push(...usersRolesSinglePage);
+            } else {
+              break;
+            }
+          }
+          return usersRolesTemp;
+        }),
+      );
+
+      //exclude empty roles and concatenate all sub-array elements
+      const usersRolesFlat = usersRoles.filter((item) => item !== undefined).flat();
+
+      //group the array elements by a user id
+      const usersRolesGrouped = usersRolesFlat.reduce((grouping, item) => {
+        grouping[item.userId] = [...(grouping[item.userId] || []), item.role];
+        return grouping;
+      }, {});
+
+      //set the fresh cache for 10 minutes
+      await this.cacheManager.set("css-users-roles-fresh", usersRolesGrouped, 600000);
+
+      //set the stale cache for 60 minutes
+      await this.cacheManager.set("css-users-roles-stale", usersRolesGrouped, 3600000);
+
+      return usersRolesGrouped;
+    } else {
+      throw new Error(`unable to get user roles from CSS or no roles found`);
+    }
+  };
+
   getUserRoleMapping = async (): Promise<AxiosResponse> => {
     try {
-      const apiToken = await this.authenticate();
-      //Get all roles from NatCom CSS integation
-      const rolesUrl = `${this.baseUri}/api/v1/integrations/4794/${this.env}/roles`;
-      const config: AxiosRequestConfig = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiToken}`,
-        },
-      };
-      const roleRes = await get(apiToken, rolesUrl, config);
-      if (roleRes?.data.data.length > 0) {
-        const {
-          data: { data: roleList },
-        } = roleRes;
-
-        //Get all users for each role
-        let usersUrl: string = "";
-        const pages = Array.from(Array(this.maxPages), (_, i) => i + 1);
-        const usersRoles = await Promise.all(
-          roleList.map(async (role) => {
-            let usersRolesTemp = [];
-            for (const page of pages) {
-              usersUrl = `${this.baseUri}/api/v1/integrations/4794/${this.env}/roles/${role.name}/users?page=${page}`;
-              const userRes = await get(apiToken, encodeURI(usersUrl), config);
-              if (userRes?.data.data.length > 0) {
-                const {
-                  data: { data: users },
-                } = userRes;
-                let usersRolesSinglePage = await Promise.all(
-                  users.map((user) => {
-                    return {
-                      userId: user.username
-                        .replace(/@idir$/i, "")
-                        .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5"),
-                      role: role.name,
-                    };
-                  }),
-                );
-                usersRolesTemp.push(...usersRolesSinglePage);
-              } else {
-                break;
-              }
-            }
-            return usersRolesTemp;
-          }),
-        );
-
-        //exclude empty roles and concatenate all sub-array elements
-        const usersRolesFlat = usersRoles.filter((item) => item !== undefined).flat();
-
-        //group the array elements by a user id
-        const usersRolesGroupped = usersRolesFlat.reduce((grouping, item) => {
-          grouping[item.userId] = [...(grouping[item.userId] || []), item.role];
-          return grouping;
-        }, {});
-
-        return usersRolesGroupped;
+      // return fresh cache if available
+      const usersRolesGroupedFresh = await this.cacheManager.get<any>("css-users-roles-fresh");
+      if (usersRolesGroupedFresh) {
+        return usersRolesGroupedFresh;
       }
+
+      // return the stale cache if available, but asyncronously refresh cache
+      const usersRolesGroupedStale = await this.cacheManager.get<any>("css-users-roles-stale");
+      if (usersRolesGroupedStale) {
+        // check if a refresh is already in progress, if not start a new refresh
+        const refreshingInProgress = await this.cacheManager.get<any>("css-users-roles-refresh-status");
+        if (!refreshingInProgress) {
+          this.fetchAndGroupUserRoles().catch((error) => {
+            this.logger.error(`exception: error: ${error}`);
+          });
+        }
+
+        return usersRolesGroupedStale;
+      }
+
+      // wait for fresh data if no cache is available
+      return await this.fetchAndGroupUserRoles();
     } catch (error) {
       this.logger.error(`exception: error: ${error}`);
-      return;
     }
   };
 }

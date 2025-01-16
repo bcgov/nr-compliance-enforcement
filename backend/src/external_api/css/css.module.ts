@@ -1,9 +1,10 @@
 import { Module } from "@nestjs/common";
 import { CssService } from "./css.service";
 import { ConfigurationModule } from "../../v1/configuration/configuration.module";
+import { CacheModule } from "@nestjs/cache-manager";
 
 @Module({
-  imports: [ConfigurationModule],
+  imports: [ConfigurationModule, CacheModule.register()],
   providers: [CssService],
   exports: [CssService],
 })
