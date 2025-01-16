@@ -100,7 +100,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   //-- when saving make sure that the outcome is successfully
   //-- saved before adding the outcome to the list of outcomes
   const handleUpdate = (item: AnimalOutcomeData) => {
-    dispatch(updateAnimalOutcome(caseId, item)).then((result) => {
+    dispatch(updateAnimalOutcome(caseId, id, item)).then((result) => {
       if (result === "success") {
         dispatch(getCaseFile(id));
         setShowForm(false);

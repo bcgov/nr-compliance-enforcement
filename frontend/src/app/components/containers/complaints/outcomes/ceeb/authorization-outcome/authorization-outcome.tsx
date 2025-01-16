@@ -53,7 +53,7 @@ export const AuthoizationOutcome: FC = () => {
           description: "Your changes will be lost.",
           confirmText: "delete authorization",
           deleteConfirmed: () => {
-            dispatch(deleteAuthorizationOutcome()).then(async (response) => {
+            dispatch(deleteAuthorizationOutcome(id)).then(async (response) => {
               if (response === "success") {
                 dispatch(getCaseFile(id));
               }

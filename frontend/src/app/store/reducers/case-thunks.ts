@@ -610,6 +610,7 @@ export const upsertNote =
 
         const input: UpdateSupplementalNotesInput = {
           note,
+          leadIdentifier: id,
           caseIdentifier: caseId as UUID,
           actor,
           updateUserId: userId,
@@ -674,6 +675,7 @@ export const deleteNote =
       async (dispatch) => {
         const input: DeleteSupplementalNoteInput = {
           caseIdentifier: caseId as UUID,
+          leadIdentifier: id,
           actor,
           updateUserId: userId,
           actionId,
@@ -966,6 +968,7 @@ export const createAnimalOutcome =
 export const updateAnimalOutcome =
   (
     id: UUID,
+    leadIdentifier: string,
     animalOutcome: AnimalOutcome,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
@@ -1020,6 +1023,7 @@ export const updateAnimalOutcome =
 
     const input: UpdateAnimalOutcomeInput = {
       caseIdentifier: id,
+      leadIdentifier: leadIdentifier,
       updateUserId: idir,
       wildlife: {
         id: wildlifeId,
@@ -1070,6 +1074,7 @@ export const deleteAnimalOutcome =
       async (dispatch) => {
         const input: DeleteAnimalOutcomeInput = {
           caseIdentifier: caseId as UUID,
+          leadIdentifier: id,
           actor,
           updateUserId: userId,
           outcomeId,
@@ -1095,7 +1100,11 @@ export const deleteAnimalOutcome =
   };
 
 export const upsertDecisionOutcome =
-  (id: string, decision: Decision): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (
+    id: string,
+    leadIdentifier: string,
+    decision: Decision,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       app: {
@@ -1129,6 +1138,7 @@ export const upsertDecisionOutcome =
 
         const input: UpdateDecisionInput = {
           caseIdentifier: id,
+          leadIdentifier: leadIdentifier,
           agencyCode: "EPO",
           caseCode: "ERS",
           actor: assignedTo,
@@ -1168,7 +1178,11 @@ export const upsertDecisionOutcome =
   };
 
 export const upsertAuthorizationOutcome =
-  (id: string, input: PermitSite): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (
+    id: string,
+    leadIdentifier: string,
+    input: PermitSite,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       app: {
@@ -1197,6 +1211,7 @@ export const upsertAuthorizationOutcome =
       async (dispatch) => {
         const input: UpdateAuthorizationOutcomeInput = {
           caseIdentifier: id,
+          leadIdentifier: leadIdentifier,
           updateUserId: idir,
           input: site,
         };
@@ -1227,7 +1242,8 @@ export const upsertAuthorizationOutcome =
   };
 
 export const deleteAuthorizationOutcome =
-  (): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> => async (dispatch, getState) => {
+  (leadIdentifier: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
     const {
       app: {
         profile: { idir_username: idir },
@@ -1239,6 +1255,7 @@ export const deleteAuthorizationOutcome =
       const { id } = authorization;
       const input: DeleteAuthorizationOutcomeInput = {
         caseIdentifier: caseId,
+        leadIdentifier: leadIdentifier,
         updateUserId: idir,
         id,
       };
