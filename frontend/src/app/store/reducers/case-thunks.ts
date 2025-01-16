@@ -1212,7 +1212,7 @@ export const upsertAuthorizationOutcome =
       };
 
     const _update =
-      (id: string, site: PermitSite): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      (id: string, leadIdentifier: string, site: PermitSite): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
       async (dispatch) => {
         const input: UpdateAuthorizationOutcomeInput = {
           caseIdentifier: id,
@@ -1231,7 +1231,7 @@ export const upsertAuthorizationOutcome =
       result = await dispatch(_create(id, input));
     } else {
       const update = { ...input, id: current.id };
-      result = await dispatch(_update(id, update));
+      result = await dispatch(_update(id, leadIdentifier, update));
     }
     const { authorization } = result;
 

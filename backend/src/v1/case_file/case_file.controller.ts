@@ -219,11 +219,13 @@ export class CaseFileController {
   async deleteAuthorizationOutcome(
     @Token() token,
     @Query("caseIdentifier") caseIdentifier: string,
+    @Query("leadIdentifier") leadIdentifier: string,
     @Query("updateUserId") updateUserId: string,
     @Query("id") id: string,
   ): Promise<CaseFileDto> {
     const input = {
       caseIdentifier,
+      leadIdentifier,
       updateUserId,
       id,
     };

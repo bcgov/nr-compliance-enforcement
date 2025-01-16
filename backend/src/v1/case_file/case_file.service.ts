@@ -580,11 +580,13 @@ export class CaseFileService {
       variables: { input: model },
     });
 
-    const returnValue = await this.handleAPIResponse(result);
+    const returnValue = await this.handleAPIResponse(result, leadId);
     return returnValue?.createDecision;
   };
 
   updateDecision = async (token: any, model: UpdateDecisionInput): Promise<CaseFileDto> => {
+    const leadIdentifier = model.leadIdentifier;
+    delete model.leadIdentifier;
     const result = await post(token, {
       query: `mutation updateDecision($input: UpdateDecisionInput!) {
         updateDecision(input: $input) {
@@ -595,7 +597,7 @@ export class CaseFileService {
       variables: { input: model },
     });
 
-    const returnValue = await this.handleAPIResponse(result);
+    const returnValue = await this.handleAPIResponse(result, leadIdentifier);
     return returnValue?.updateDecision;
   };
 
@@ -610,11 +612,13 @@ export class CaseFileService {
       variables: { input: model },
     });
 
-    const returnValue = await this.handleAPIResponse(result);
+    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     return returnValue?.createAuthorizationOutcome;
   };
 
   updateAuthorizationOutcome = async (token: any, model: UpdateAuthorizationOutcomeInput): Promise<CaseFileDto> => {
+    const leadIdentifier = model.leadIdentifier;
+    delete model.leadIdentifier;
     const result = await post(token, {
       query: `mutation updateAuthorizationOutcome($input: UpdateAuthorizationOutcomeInput!) {
         updateAuthorizationOutcome(input: $input) {
@@ -625,11 +629,13 @@ export class CaseFileService {
       variables: { input: model },
     });
 
-    const returnValue = await this.handleAPIResponse(result);
+    const returnValue = await this.handleAPIResponse(result, leadIdentifier);
     return returnValue?.updateAuthorizationOutcome;
   };
 
   deleteAuthorizationOutcome = async (token: any, model: DeleteAuthorizationOutcomeInput): Promise<CaseFileDto> => {
+    const leadIdentifier = model.leadIdentifier;
+    delete model.leadIdentifier;
     const result = await post(token, {
       query: `mutation deleteAuthorizationOutcome($input: DeleteAuthorizationOutcomeInput!) {
         deleteAuthorizationOutcome(input: $input) {
@@ -640,7 +646,7 @@ export class CaseFileService {
       variables: { input: model },
     });
 
-    const returnValue = await this.handleAPIResponse(result);
+    const returnValue = await this.handleAPIResponse(result, leadIdentifier);
     return returnValue?.deleteAuthorizationOutcome;
   };
 }
