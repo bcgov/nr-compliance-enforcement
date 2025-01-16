@@ -71,7 +71,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
         modalSize: "md",
         modalType: DELETE_ANIMAL_OUTCOME,
         data: {
-          caseFileId: id,
+          leadId: id,
           outcomeId, //-- this is the id of the animal outcome thats being deleted
           title: "Delete animal outcome",
           description: "All the data in this section will be lost.",

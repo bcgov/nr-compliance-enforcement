@@ -656,7 +656,8 @@ export const upsertNote =
   };
 
 export const deleteNote =
-  (): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> => async (dispatch, getState) => {
+  (id: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
     const {
       officers: { officers },
       app: {
@@ -668,14 +669,15 @@ export const deleteNote =
     const _deleteNote =
       (
         id: UUID,
+        leadIdentifer: string,
         actor: string,
         userId: string,
         actionId: string,
       ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
       async (dispatch) => {
         const input: DeleteSupplementalNoteInput = {
-          caseIdentifier: caseId as UUID,
-          leadIdentifier: id,
+          caseIdentifier: id,
+          leadIdentifier: leadIdentifer,
           actor,
           updateUserId: userId,
           actionId,
@@ -691,7 +693,9 @@ export const deleteNote =
       } = currentNote;
 
       const officer = officers.find((item) => item.user_id === idir);
-      const result = await dispatch(_deleteNote(caseId as UUID, officer ? officer.officer_guid : "", idir, actionId));
+      const result = await dispatch(
+        _deleteNote(caseId as UUID, id, officer ? officer.officer_guid : "", idir, actionId),
+      );
 
       if (result !== null) {
         ToggleSuccess("Supplemental note deleted");
@@ -1055,7 +1059,7 @@ export const updateAnimalOutcome =
   };
 
 export const deleteAnimalOutcome =
-  (id: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (id: string, leadIdentifier: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       officers: { officers },
@@ -1068,13 +1072,14 @@ export const deleteAnimalOutcome =
     const _deleteAnimalOutcome =
       (
         outcomeId: string,
+        leadIdentifier: string,
         actor: string,
         userId: string,
       ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
       async (dispatch) => {
         const input: DeleteAnimalOutcomeInput = {
           caseIdentifier: caseId as UUID,
-          leadIdentifier: id,
+          leadIdentifier: leadIdentifier,
           actor,
           updateUserId: userId,
           outcomeId,
@@ -1085,7 +1090,7 @@ export const deleteAnimalOutcome =
       };
 
     const officer = officers.find((item) => item.user_id === idir);
-    const result = await dispatch(_deleteAnimalOutcome(id, officer ? officer.officer_guid : "", idir));
+    const result = await dispatch(_deleteAnimalOutcome(id, leadIdentifier, officer ? officer.officer_guid : "", idir));
 
     if (result) {
       const { caseIdentifier } = result;

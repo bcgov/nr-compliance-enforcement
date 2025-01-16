@@ -484,6 +484,8 @@ export class CaseFileService {
   };
 
   updateNote = async (token: any, model: UpdateSupplementalNotesInput): Promise<CaseFileDto> => {
+    const leadIdentifier = model.leadIdentifier;
+    delete model.leadIdentifier;
     const result = await post(token, {
       query: `mutation UpdateNote($input: UpdateSupplementalNoteInput!) {
         updateNote(input: $input) {
@@ -494,12 +496,13 @@ export class CaseFileService {
       variables: { input: model },
     });
 
-    console.log(model);
-    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
+    const returnValue = await this.handleAPIResponse(result, leadIdentifier);
     return returnValue?.updateNote;
   };
 
   deleteNote = async (token: any, model: DeleteSupplementalNotesInput): Promise<CaseFileDto> => {
+    const leadIdentifier = model.leadIdentifier;
+    delete model.leadIdentifier;
     const result = await post(token, {
       query: `mutation DeleteNote($input: DeleteSupplementalNoteInput!) {
         deleteNote(input: $input) {
@@ -509,8 +512,7 @@ export class CaseFileService {
       }`,
       variables: { input: model },
     });
-    console.log(model);
-    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
+    const returnValue = await this.handleAPIResponse(result, leadIdentifier);
     return returnValue?.deleteNote;
   };
 
@@ -529,6 +531,8 @@ export class CaseFileService {
   };
 
   updateWildlife = async (token: any, model: UpdateWildlifeInput): Promise<CaseFileDto> => {
+    const leadIdentifier = model.leadIdentifier;
+    delete model.leadIdentifier;
     const result = await post(token, {
       query: `mutation updateWildlife($input: UpdateWildlifeInput!) {
         updateWildlife(input: $input) {
@@ -538,11 +542,13 @@ export class CaseFileService {
       variables: { input: model },
     });
 
-    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
+    const returnValue = await this.handleAPIResponse(result, leadIdentifier);
     return returnValue?.updateWildlife;
   };
 
   deleteWildlife = async (token: any, model: DeleteWildlifeInput): Promise<CaseFileDto> => {
+    const leadIdentifier = model.leadIdentifier;
+    delete model.leadIdentifier;
     const result = await post(token, {
       query: `mutation DeleteWildlife($input: DeleteWildlifeInput!) {
         deleteWildlife(input: $input) {
@@ -552,7 +558,7 @@ export class CaseFileService {
       variables: { input: model },
     });
 
-    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
+    const returnValue = await this.handleAPIResponse(result, leadIdentifier);
     return returnValue?.deleteWildlife;
   };
 
