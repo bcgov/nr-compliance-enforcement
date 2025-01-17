@@ -67,17 +67,30 @@ export class PersonComplaintXrefService {
       .getOne();
   }
 
-  async update(
-    //queryRunner: QueryRunner,
-    person_complaint_xref_guid: any,
-    updatePersonComplaintXrefDto,
-  ): Promise<PersonComplaintXref> {
+  async update(person_complaint_xref_guid: any, updatePersonComplaintXrefDto): Promise<PersonComplaintXref> {
     const updatedValue = await this.personComplaintXrefRepository.update(
       person_complaint_xref_guid,
       updatePersonComplaintXrefDto,
     );
-    //queryRunner.manager.save(updatedValue);
     return this.findOne(person_complaint_xref_guid);
+  }
+
+  /**
+   *
+   * Update the complaint last updated date on the parent record
+   */
+  async updateComplaintLastUpdatedDate(
+    complaintIdentifier: string,
+    newPersonComplaintXref: PersonComplaintXref,
+    queryRunner: QueryRunner,
+  ): Promise<void> {
+    if (await this._complaintService.updateComplaintLastUpdatedDate(complaintIdentifier)) {
+      // save the transaction
+      await queryRunner.manager.save(newPersonComplaintXref);
+      this.logger.debug(`Successfully assigned person to complaint ${complaintIdentifier}`);
+    } else {
+      throw new BadRequestException(`Unable to assign person to complaint ${complaintIdentifier}`);
+    }
   }
 
   /**
@@ -115,13 +128,7 @@ export class PersonComplaintXrefService {
       this.logger.debug(`Updating assignment on complaint ${complaintIdentifier}`);
 
       // Update the complaint last updated date on the parent record
-      if (await this._complaintService.updateComplaintLastUpdatedDate(complaintIdentifier)) {
-        // save the transaction
-        await queryRunner.manager.save(newPersonComplaintXref);
-        this.logger.debug(`Successfully assigned person to complaint ${complaintIdentifier}`);
-      } else {
-        throw new BadRequestException(`Unable to assign person to complaint ${complaintIdentifier}`);
-      }
+      await this.updateComplaintLastUpdatedDate(complaintIdentifier, newPersonComplaintXref, queryRunner);
 
       await queryRunner.commitTransaction();
       this.logger.debug(`Successfully assigned person to complaint ${complaintIdentifier}`);
@@ -168,13 +175,7 @@ export class PersonComplaintXrefService {
       this.logger.debug(`Updating assignment on complaint ${complaintIdentifier}`);
 
       // Update the complaint last updated date on the parent record
-      if (await this._complaintService.updateComplaintLastUpdatedDate(complaintIdentifier)) {
-        // save the transaction
-        await queryRunner.manager.save(newPersonComplaintXref);
-        this.logger.debug(`Successfully assigned person to complaint ${complaintIdentifier}`);
-      } else {
-        throw new BadRequestException(`Unable to assign person to complaint ${complaintIdentifier}`);
-      }
+      await this.updateComplaintLastUpdatedDate(complaintIdentifier, newPersonComplaintXref, queryRunner);
     } catch (err) {
       this.logger.error(err);
       this.logger.error(`Rolling back assignment on complaint ${complaintIdentifier}`);
