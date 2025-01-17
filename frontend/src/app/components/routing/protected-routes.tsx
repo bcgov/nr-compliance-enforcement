@@ -20,7 +20,6 @@ export const ProtectedRoutes: FC<Props> = ({ roles }) => {
 
   const token = localStorage.getItem(AUTH_TOKEN);
   if (!token) {
-    console.log("no token");
     return <Navigate to="/not-authorized" />;
   }
 
@@ -28,12 +27,10 @@ export const ProtectedRoutes: FC<Props> = ({ roles }) => {
   try {
     decodedToken = jwt_decode(token);
   } catch (error) {
-    console.log("no decode");
     return <Navigate to="/not-authorized" />;
   }
 
   if (!hasRequiredRole(decodedToken.client_roles, roles)) {
-    console.log("no role", decodedToken.client_roles, roles);
     return <Navigate to="/not-authorized" />;
   }
 

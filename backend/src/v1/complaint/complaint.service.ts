@@ -1000,7 +1000,6 @@ export class ComplaintService {
     token?: string,
   ): Promise<SearchResults> => {
     try {
-      let startTime = new Date();
       let results: SearchResults = { totalCount: 0, complaints: [] };
 
       const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
