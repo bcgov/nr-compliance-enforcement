@@ -74,6 +74,7 @@ import { FeatureFlag } from "@components/common/feature-flag";
 import { LinkedComplaintList } from "./linked-complaint-list";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { ExternalFileReference } from "@components/containers/complaints/outcomes/external-file-reference";
+import { getCaseFile } from "@/app/store/reducers/case-thunks";
 
 export type ComplaintParams = {
   id: string;
@@ -84,6 +85,11 @@ export const ComplaintDetailsEdit: FC = () => {
   const dispatch = useAppDispatch();
 
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
+
+  useEffect(() => {
+    dispatch(getCaseFile(id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   //-- selectors
   const data = useAppSelector(selectComplaint);

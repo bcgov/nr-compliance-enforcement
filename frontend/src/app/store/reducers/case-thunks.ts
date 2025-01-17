@@ -63,11 +63,20 @@ export const findCase =
 
 export const getCaseFile =
   (complaintIdentifier?: string): AppThunk =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     const response = await get<CaseFileDto>(dispatch, parameters);
-
     dispatch(setCaseFile(response));
+    // If there is a case file parse and set the assessment details which is not handled by setCaseFile
+    if (response.assessmentDetails) {
+      const {
+        officers: { officers },
+      } = getState();
+      const assessment = await parseAssessmentResponse(response, officers);
+      dispatch(setAssessment({ assessment }));
+    } else {
+      dispatch(clearAssessment());
+    }
   };
 
 //-- assessment thunks

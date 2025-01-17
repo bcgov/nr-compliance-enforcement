@@ -89,7 +89,6 @@ export const HWCRComplaintPrevention: FC = () => {
     if (complaintData) {
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
-      dispatch(getPrevention(complaintData.id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaintData]);
