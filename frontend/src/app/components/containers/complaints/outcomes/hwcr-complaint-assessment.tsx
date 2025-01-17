@@ -42,7 +42,6 @@ import useValidateComplaint from "@hooks/validate-complaint";
 
 type Props = {
   id: string;
-  complaintType: string;
   handleSave?: () => void;
   handleClose?: () => void;
   showHeader?: boolean;
@@ -86,7 +85,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [assessmentRequiredErrorMessage, setAssessmentRequiredErrorMessage] = useState<string>("");
   const [locationErrorMessage, setLocationErrorMessage] = useState<string>("");
 
-  const complaintData = useAppSelector(selectComplaint);
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
   const assessmentState = useAppSelector(selectAssessment);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
