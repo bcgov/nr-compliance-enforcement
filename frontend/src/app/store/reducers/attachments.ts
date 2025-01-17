@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "@store/store";
-import { deleteMethod, generateApiParameters, get, putFile } from "@common/api";
+import { deleteMethod, generateApiParameters, get, patch, putFile } from "@common/api";
 import { from } from "linq-to-typescript";
 import { COMSObject } from "@apptypes/coms/object";
 import { AttachmentsState } from "@apptypes/state/attachments-state";
@@ -159,7 +159,7 @@ export const getAttachments =
 
 // delete attachments from objectstore
 export const deleteAttachments =
-  (attachments: COMSObject[]): AppThunk =>
+  (attachments: COMSObject[], complaint_identifier: string): AppThunk =>
   async (dispatch) => {
     if (attachments) {
       for (const attachment of attachments) {
@@ -167,13 +167,20 @@ export const deleteAttachments =
           const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}`);
 
           await deleteMethod<string>(dispatch, parameters);
-          dispatch(removeAttachment(attachment.id)); // delete from store
+          const response = dispatch(removeAttachment(attachment.id)); // delete from store
           if (isImage(attachment.name)) {
             const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.imageIconId}`);
 
             await deleteMethod<string>(dispatch, thumbParameters);
           }
-          ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
+
+          if (response) {
+            const parameters = generateApiParameters(
+              `${config.API_BASE_URL}/v1/complaint/update-date-by-id/${complaint_identifier}`,
+            );
+            await patch<boolean>(dispatch, parameters);
+            ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
+          }
         } catch (error) {
           ToggleError(`Attachment ${decodeURIComponent(attachment.name)} could not be deleted`);
         }
@@ -233,6 +240,10 @@ export const saveAttachments =
         }
 
         if (response) {
+          const parameters = generateApiParameters(
+            `${config.API_BASE_URL}/v1/complaint/update-date-by-id/${complaint_identifier}`,
+          );
+          await patch<boolean>(dispatch, parameters);
           ToggleSuccess(`Attachment "${attachment.name}" saved`);
         }
       } catch (error) {

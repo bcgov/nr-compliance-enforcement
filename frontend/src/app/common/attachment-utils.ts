@@ -41,7 +41,7 @@ export async function handlePersistAttachments(
   attachmentType: AttachmentEnum,
 ) {
   if (attachmentsToDelete) {
-    await dispatch(deleteAttachments(attachmentsToDelete));
+    await dispatch(deleteAttachments(attachmentsToDelete, complaintIdentifier));
   }
 
   if (attachmentsToAdd) {

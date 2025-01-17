@@ -1303,6 +1303,13 @@ export class ComplaintService {
     }
   };
 
+  // There is specific business logic around when a complaint is considered to be 'Updated'.
+  // This business logic doesn't align with the standard update audit date in a couple of areas
+  //     - When a complaint is new it is considered untouched and never updated
+  //     - When case data associated with a complaint is modified the complaint is considered updated
+  //     - When attachments are uploaded to a complaint or case the complaint is considered updated
+  //     - Updates from webEOC are considered Updates, however Actions Taken are not
+  // As a result this method can be called whenever you need to set the complaint as 'Updated'
   updateComplaintLastUpdatedDate = async (id: string): Promise<boolean> => {
     try {
       const idir = getIdirFromRequest(this.request);
