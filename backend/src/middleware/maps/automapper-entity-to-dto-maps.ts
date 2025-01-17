@@ -264,6 +264,10 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
       (destination) => destination.isPrivacyRequested,
       mapFrom((source) => source.is_privacy_requested),
     ),
+    forMember(
+      (destination) => destination.updatedOn,
+      mapFrom((source) => source.comp_last_upd_utc_timestamp),
+    ),
   );
 };
 
@@ -722,6 +726,10 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       (destination) => destination.isPrivacyRequested,
       mapFrom((source) => source.complaint_identifier.is_privacy_requested),
     ),
+    forMember(
+      (destination) => destination.updatedOn,
+      mapFrom((source) => source.complaint_identifier.comp_last_upd_utc_timestamp),
+    ),
   );
 };
 
@@ -949,6 +957,10 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
       (destination) => destination.isPrivacyRequested,
       mapFrom((source) => source.complaint_identifier.is_privacy_requested),
     ),
+    forMember(
+      (destination) => destination.updatedOn,
+      mapFrom((source) => source.complaint_identifier.comp_last_upd_utc_timestamp),
+    ),
   );
 };
 export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
@@ -1151,6 +1163,10 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.isPrivacyRequested,
       mapFrom((source) => source.complaint_identifier.is_privacy_requested),
+    ),
+    forMember(
+      (destination) => destination.updatedOn,
+      mapFrom((source) => source.complaint_identifier.comp_last_upd_utc_timestamp),
     ),
   );
 };
@@ -1519,7 +1535,7 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     ),
     forMember(
       (destination) => destination.updatedOn,
-      mapFrom((source) => source.complaint_identifier.update_utc_timestamp),
+      mapFrom((source) => source.complaint_identifier.comp_last_upd_utc_timestamp),
     ),
     forMember(
       (destination) => destination.officerAssigned,
@@ -1732,7 +1748,6 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
         }
       }),
     ),
-
     //--
     forMember(
       (destination) => destination.violationType,

@@ -65,7 +65,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
   };
 
   const reportedOnDateTime = formatDateTime(reportedOn.toString());
-  const updatedOnDateTime = formatDateTime(updatedOn.toString());
+  const updatedOnDateTime = formatDateTime(updatedOn?.toString());
 
   const natureCode = getNatureOfComplaint(natureOfComplaint);
   const species = getSpecies(speciesCode);

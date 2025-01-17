@@ -960,7 +960,7 @@ export const selectComplaintHeader =
         result = {
           loggedDate: loggedDate.toString(),
           createdBy,
-          lastUpdated: lastUpdated.toString(),
+          lastUpdated: lastUpdated?.toString(),
           status,
           statusCode,
           zone,
