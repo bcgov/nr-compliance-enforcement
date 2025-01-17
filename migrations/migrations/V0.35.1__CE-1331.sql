@@ -1,0 +1,1 @@
+DROP VIEW IF EXISTS public.cos_geo_org_unit_flat_vw;

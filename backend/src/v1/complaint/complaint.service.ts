@@ -1001,7 +1001,6 @@ export class ComplaintService {
   ): Promise<SearchResults> => {
     try {
       let startTime = new Date();
-      this.logger.error("1 Time since start: " + (new Date().getTime() - startTime.getTime()) + "ms");
       let results: SearchResults = { totalCount: 0, complaints: [] };
 
       const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
@@ -1013,13 +1012,11 @@ export class ComplaintService {
 
       //-- generate initial query
       let builder = this._generateQueryBuilder(complaintType);
-      this.logger.error("2 Time since start: " + (new Date().getTime() - startTime.getTime()) + "ms");
 
       //-- apply filters if used
       if (Object.keys(filters).length !== 0) {
         builder = this._applyFilters(builder, filters as ComplaintFilterParameters, complaintType);
       }
-      this.logger.error("3 Time since start: " + (new Date().getTime() - startTime.getTime()) + "ms");
 
       // search for complaints based on the user's role
       const agency = hasCEEBRole ? "EPO" : "COS";
@@ -1052,13 +1049,11 @@ export class ComplaintService {
           complaint_identifiers: complaintIdentifiers,
         });
       }
-      this.logger.error("4 Time since start: " + (new Date().getTime() - startTime.getTime()) + "ms");
 
       //-- apply search
       if (query) {
         builder = await this._applySearch(builder, complaintType, query, token);
       }
-      this.logger.error("5 Time since start: " + (new Date().getTime() - startTime.getTime()) + "ms");
 
       //-- apply sort if provided
       if (sortBy && orderBy) {
@@ -1069,17 +1064,11 @@ export class ComplaintService {
             sortBy === "incident_reported_utc_timestmp" ? orderBy : "DESC",
           );
       }
-      this.logger.error("6 Time since start: " + (new Date().getTime() - startTime.getTime()) + "ms");
 
       //-- search and count
-      // Workaround for the issue with getManyAndCount() returning the wrong count and results in complex queries
-      // introduced by adding an IN clause in a OrWhere statement: https://github.com/typeorm/typeorm/issues/320
-      //const [, total] = await builder.take(0).getManyAndCount(); // returns 0 results but the total count is correct
       const total = await builder.getCount();
-      this.logger.error("7 Time since start: " + (new Date().getTime() - startTime.getTime()) + "ms");
       results.totalCount = total;
       const complaints = page && pageSize ? await builder.skip(skip).take(pageSize).getMany() : await builder.getMany();
-      this.logger.error("8 Time since start: " + (new Date().getTime() - startTime.getTime()) + "ms");
 
       switch (complaintType) {
         case "ERS": {
@@ -1112,7 +1101,6 @@ export class ComplaintService {
           break;
         }
       }
-      this.logger.error("9 Time since start: " + (new Date().getTime() - startTime.getTime()) + "ms");
 
       return results;
     } catch (error) {

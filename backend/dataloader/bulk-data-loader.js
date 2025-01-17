@@ -265,6 +265,8 @@ const processPendingComplaints = async () => {
           PERFORM public.insert_complaint_from_staging(complaint_record.complaint_identifier);
       END LOOP;
     
+      TRUNCATE TABLE staging_complaint;
+
       -- Optional: Add a message indicating completion
       RAISE NOTICE 'All pending complaints processed successfully.';
     END;
@@ -283,10 +285,10 @@ const bulkDataLoad = async () => {
 
   // Adjust these as required.
   const processAfterInsert = true // Will move complaints from staging to the live table after each iteration
-  const numRecords = 1000; // Records created per iteration, no more than 10k at a time or the insert will blow up.
+  const numRecords = 10000; // Records created per iteration, no more than 10k at a time or the insert will blow up.
   const yearPrefix = 20; // Year will increment per iteration
   const startingRecord = 110000;
-  const iterations = 100;
+  const iterations = 10;
 
   // Validate parameters
   if (numRecords > 10000) {
