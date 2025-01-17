@@ -1065,9 +1065,8 @@ export class ComplaintService {
       }
 
       //-- search and count
-      const total = await builder.getCount();
+      const [complaints, total] = await builder.skip(skip).take(pageSize).getManyAndCount();
       results.totalCount = total;
-      const complaints = page && pageSize ? await builder.skip(skip).take(pageSize).getMany() : await builder.getMany();
 
       switch (complaintType) {
         case "ERS": {
