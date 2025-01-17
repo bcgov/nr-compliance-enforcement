@@ -26,7 +26,7 @@ AS SELECT DISTINCT gou.geo_organization_unit_code AS region_code,
   AND (gou4.geo_org_unit_type_code::text = 'AREA'::text OR gou4.geo_org_unit_type_code IS NULL) 
   AND gos.agency_code::text = 'COS'::text;
   
- CREATE INDEX sales_summary_seller
+ CREATE INDEX  IF NOT EXISTS area_code
   ON cos_geo_org_unit_flat_vw (area_code);
  
  CREATE OR REPLACE FUNCTION cos_geo_org_unit_flat_vw_refresh()
