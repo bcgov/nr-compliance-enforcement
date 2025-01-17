@@ -652,7 +652,7 @@ export const createComplaint =
         const { id } = res;
         result = id;
 
-        await dispatch(getComplaintById(id, "HWCR"));
+        dispatch(getComplaintById(id, "HWCR"));
       });
       ToggleSuccess("Complaint has been saved");
       return result;
@@ -784,56 +784,44 @@ export const selectComplaintLargeCarnivoreInd = (state: RootState): boolean => {
   return false;
 };
 
-export const selectComplaintDetails =
-  (complaintType: string) =>
-  (state: RootState): ComplaintDetails => {
-    const {
-      complaints: { complaint },
-      codeTables: {
-        "area-codes": areaCodes,
-        attractant: attractantCodeTable,
-        "gir-type": girTypeCodes,
-        "complaint-method-received-codes": complaintMethodReceivedCodes,
-      },
-    } = state;
-
-    const getAttractants = (
-      attractants: Array<AttractantXrefDto>,
-      codes: Array<AttractantDto>,
-    ): Array<ComplaintDetailsAttractant> => {
-      const result = attractants.map(({ xrefId: key, attractant: code }) => {
+export const selectComplaintDetails = createSelector(
+  [
+    (state: RootState) => state.complaints.complaint,
+    (state: RootState) => state.codeTables["area-codes"],
+    (state: RootState) => state.codeTables.attractant,
+    (state: RootState) => state.codeTables["gir-type"],
+    (state: RootState) => state.codeTables["complaint-method-received-codes"],
+    (_, complaintType: string) => complaintType,
+  ],
+  (
+    complaint,
+    areaCodes,
+    attractantCodeTable,
+    girTypeCodes,
+    complaintMethodReceivedCodes,
+    complaintType,
+  ): ComplaintDetails => {
+    const getAttractants = (attractants: AttractantXrefDto[], codes: AttractantDto[]): ComplaintDetailsAttractant[] => {
+      return attractants.map(({ xrefId: key, attractant: code }) => {
         let record: ComplaintDetailsAttractant = { key: "", description: "", code };
-
-        if (key) {
-          record = { ...record, key };
-        }
-
-        const attractant = codes.find((item) => item.attractant === code);
-        if (attractant) {
-          const { shortDescription: description } = attractant;
-
-          record = { ...record, description };
-        }
-
+        if (key) record = { ...record, key };
+        const found = codes.find((item) => item.attractant === code);
+        if (found) record = { ...record, description: found.shortDescription };
         return record;
       });
-
-      return result;
     };
-
-    let result: ComplaintDetails = {};
 
     const getComplaintMethodReceivedCode = (
       code: string,
-      codes: Array<ComplaintMethodReceivedType>,
+      codes: ComplaintMethodReceivedType[],
     ): ComplaintMethodReceivedType | null => {
       if (codes && from(codes).any(({ complaintMethodReceivedCode }) => complaintMethodReceivedCode === code)) {
-        const selected = from(codes).first(({ complaintMethodReceivedCode }) => complaintMethodReceivedCode === code);
-        return selected;
+        return from(codes).first(({ complaintMethodReceivedCode }) => complaintMethodReceivedCode === code);
       }
-
       return null;
     };
+
+    let result: ComplaintDetails = {};
 
     if (complaint?.location) {
       const {
@@ -845,43 +833,24 @@ export const selectComplaintDetails =
         organization: { area: areaCode, region, zone, officeLocation },
       } = complaint as ComplaintDto;
 
-      result = {
-        ...result,
-        details,
-        location,
-        locationDescription,
-        incidentDateTime,
-        coordinates,
-      };
+      result = { ...result, details, location, locationDescription, incidentDateTime, coordinates };
 
       if (complaintType === "HWCR") {
         const { attractants } = complaint as WildlifeComplaintDto;
-
-        if (attractants && from(attractants).any()) {
-          let items = getAttractants(attractants, attractantCodeTable);
-          result = { ...result, attractants: items };
+        if (attractants?.length) {
+          result.attractants = getAttractants(attractants, attractantCodeTable);
         }
       } else if (complaintType === "ERS") {
         const { isInProgress: violationInProgress, wasObserved: violationObserved } =
           complaint as AllegationComplaintDto;
-
-        result = {
-          ...result,
-          violationInProgress,
-          violationObserved,
-        };
+        result = { ...result, violationInProgress, violationObserved };
       } else if (complaintType === "GIR") {
         const { girType: girTypeCode } = complaint as GeneralIncidentComplaintDto;
         const girType = getGirTypeByGirTypeCode(girTypeCode, girTypeCodes);
-        result = {
-          ...result,
-          girType,
-          girTypeCode,
-        };
+        result = { ...result, girType, girTypeCode };
       }
 
       const org = areaCodes.find(({ area }) => area === areaCode);
-
       if (org) {
         const { areaName, regionName, zoneName, officeLocationName } = org;
         result = {
@@ -899,20 +868,13 @@ export const selectComplaintDetails =
 
       if (complaint) {
         const { complaintMethodReceivedCode }: any = complaint;
-        const complaintReceivedMethod = getComplaintMethodReceivedCode(
-          complaintMethodReceivedCode,
-          complaintMethodReceivedCodes,
-        );
-
-        result = {
-          ...result,
-          complaintMethodReceivedCode: complaintReceivedMethod ?? undefined,
-        };
+        result.complaintMethodReceivedCode =
+          getComplaintMethodReceivedCode(complaintMethodReceivedCode, complaintMethodReceivedCodes) ?? undefined;
       }
     }
-
     return result;
-  };
+  },
+);
 
 export const selectComplaintHeader =
   (complaintType: string) =>

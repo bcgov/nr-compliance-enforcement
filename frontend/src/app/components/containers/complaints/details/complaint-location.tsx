@@ -6,7 +6,6 @@ import {
   selectGeocodedComplaintCoordinates,
 } from "@store/reducers/complaints";
 import LeafletMapWithPoint from "@components/mapping/leaflet-map-with-point";
-import { ComplaintDetails } from "@apptypes/complaints/details/complaint-details";
 import { isWithinBC } from "@common/methods";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 
@@ -32,7 +31,7 @@ export const ComplaintLocation: FC<Props> = ({
   editComponent,
 }) => {
   const dispatch = useAppDispatch();
-  const { area, coordinates } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
+  const { area, coordinates } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
   const [markerPosition, setMarkerPosition] = useState<{
     lat: number;

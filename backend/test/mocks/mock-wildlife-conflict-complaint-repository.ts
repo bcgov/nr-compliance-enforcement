@@ -355,7 +355,6 @@ export const MockWildlifeConflictComplaintRepository = () => ({
     return Promise.resolve(true);
   }),
   update: jest.fn(() => {
-    console.log("DERP");
     return Promise.resolve(true);
   }),
   delete: jest.fn(() => {

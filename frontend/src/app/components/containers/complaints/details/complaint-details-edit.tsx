@@ -1,4 +1,4 @@
-import { FC, useEffect, useState, useCallback } from "react";
+import { FC, useEffect, useState, useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate } from "@common/methods";
 import { Coordinates } from "@apptypes/app/coordinate-type";
@@ -111,7 +111,7 @@ export const ComplaintDetailsEdit: FC = () => {
     violationObserved,
     girType,
     complaintMethodReceivedCode,
-  } = useAppSelector(selectComplaintDetails(complaintType));
+  } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
   const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
     selectComplaintHeader(complaintType),
@@ -187,6 +187,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
   const [latitude, setLatitude] = useState<string>("0");
   const [longitude, setLongitude] = useState<string>("0");
+  const parentCoordinates = useMemo(() => ({ lat: +latitude, lng: +longitude }), [latitude, longitude]);
 
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
 
@@ -249,7 +250,7 @@ export const ComplaintDetailsEdit: FC = () => {
       return;
     }
     if (hasValidationErrors()) {
-      await dispatch(updateComplaintById(complaintUpdate, complaintType));
+      dispatch(updateComplaintById(complaintUpdate, complaintType));
 
       dispatch(getComplaintById(id, complaintType));
 
@@ -786,7 +787,7 @@ export const ComplaintDetailsEdit: FC = () => {
           {/* Map */}
           {readOnly && (
             <ComplaintLocation
-              parentCoordinates={{ lat: +latitude, lng: +longitude }}
+              parentCoordinates={parentCoordinates}
               complaintType={complaintType}
               draggable={false}
               hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
@@ -1369,7 +1370,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
             {/* Location Map */}
             <ComplaintLocation
-              parentCoordinates={{ lat: +latitude, lng: +longitude }}
+              parentCoordinates={parentCoordinates}
               complaintType={complaintType}
               draggable={true}
               onMarkerMove={handleMarkerMove}
