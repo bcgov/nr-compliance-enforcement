@@ -117,6 +117,12 @@ export class CssService implements ExternalApiService {
         },
       };
       const response = await axios.post(url, userRoles, config);
+
+      // Refresh cached roles
+      this.fetchAndGroupUserRoles().catch((error) => {
+        this.logger.error(`exception: error: ${error}`);
+      });
+
       return response?.data.data;
     } catch (error) {
       this.logger.error(`exception: unable to update user's roles ${userIdir} - error: ${error}`);
@@ -135,6 +141,12 @@ export class CssService implements ExternalApiService {
         },
       };
       const response = await axios.delete(url, config);
+
+      // Refresh cached roles
+      this.fetchAndGroupUserRoles().catch((error) => {
+        this.logger.error(`exception: error: ${error}`);
+      });
+
       return response?.data.data;
     } catch (error) {
       this.logger.error(`exception: unable to delete user's role ${userIdir} - error: ${error}`);
