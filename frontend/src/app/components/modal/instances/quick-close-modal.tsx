@@ -16,6 +16,7 @@ import {
 } from "@store/reducers/case-selectors";
 import { HWCRComplaintAssessment } from "@components/containers/complaints/outcomes/hwcr-complaint-assessment";
 import useValidateComplaint from "@/app/hooks/validate-complaint";
+import { getAssessment } from "@/app/store/reducers/case-thunks";
 
 const ModalLoading: FC = memo(() => (
   <div className="modal-loader">
@@ -137,7 +138,6 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
         >
           <HWCRComplaintAssessment
             id={complaint_identifier}
-            complaintType={complaint_type}
             showHeader={false}
             handleSave={() => {
               submit();

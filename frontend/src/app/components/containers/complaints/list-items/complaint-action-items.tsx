@@ -62,6 +62,7 @@ export const ComplaintActionItems: FC<Props> = ({
 
   const openQuickCloseModal = async () => {
     document.body.click();
+    await dispatch(getAssessment(complaint_identifier));
     dispatch(
       openModal({
         modalSize: "lg",

@@ -10,7 +10,7 @@ import { ComplaintParams } from "@components/containers/complaints/details/compl
 import { HWCROutcomeByAnimalv2 } from "./hwcr-outcome-by-animal-v2";
 
 export const HWCROutcomeReport: FC = () => {
-  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
+  const { id = "" } = useParams<ComplaintParams>();
 
   return (
     <section className="comp-details-body comp-container comp-hwcr-outcome-report">
@@ -18,10 +18,7 @@ export const HWCROutcomeReport: FC = () => {
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
-      <HWCRComplaintAssessment
-        id={id}
-        complaintType={complaintType}
-      />
+      <HWCRComplaintAssessment id={id} />
       <HWCRComplaintPrevention />
       <HWCREquipment />
       <HWCROutcomeByAnimalv2 />

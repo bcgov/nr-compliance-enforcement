@@ -5,7 +5,6 @@ import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
 import {
-  selectComplaint,
   selectComplaintCallerInformation,
   selectComplaintAssignedBy,
   selectComplaintLargeCarnivoreInd,
@@ -59,7 +58,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
   const [selectedJustification, setSelectedJustification] = useState<Option | null>();
   const [selectedLinkedComplaint, setSelectedLinkedComplaint] = useState<Option | null>();
-  const [selectedLinkedComplaintStatus, setSelectedLinkedComplaintStatus] = useState<string | null>();
   const [selectedDate, setSelectedDate] = useState<Date | null | undefined>();
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>();
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
@@ -152,7 +150,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const handleLinkedComplaintChange = (selected: Option | null, status: string | null) => {
     if (selected) {
       setSelectedLinkedComplaint(selected);
-      setSelectedLinkedComplaintStatus(status);
     } else {
       setSelectedLinkedComplaint(null);
     }
@@ -256,7 +253,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     setSelectedActionRequired(selectedActionRequired);
     setSelectedJustification(selectedJustification);
     setSelectedLinkedComplaint(selectedLinkedComplaint);
-    setSelectedLinkedComplaintStatus("OPEN");
     setSelectedAssessmentTypes(selectedAssessmentTypes);
     setSelectedContacted(selectedContacted);
     setSelectedAttended(selectedAttended);
@@ -496,7 +492,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     id,
     selectedJustification,
     selectedLinkedComplaint,
-    selectedLinkedComplaintStatus,
     validationResults,
     cases.isInEdit.showSectionErrors,
   ]);
