@@ -118,10 +118,8 @@ export class CssService implements ExternalApiService {
       };
       const response = await axios.post(url, userRoles, config);
 
-      // Refresh cached roles
-      this.fetchAndGroupUserRoles().catch((error) => {
-        this.logger.error(`exception: error: ${error}`);
-      });
+      // clear cache
+      await this.clearUserRoleCache();
 
       return response?.data.data;
     } catch (error) {
@@ -142,16 +140,20 @@ export class CssService implements ExternalApiService {
       };
       const response = await axios.delete(url, config);
 
-      // Refresh cached roles
-      this.fetchAndGroupUserRoles().catch((error) => {
-        this.logger.error(`exception: error: ${error}`);
-      });
+      // clear cache
+      await this.clearUserRoleCache();
 
       return response?.data.data;
     } catch (error) {
       this.logger.error(`exception: unable to delete user's role ${userIdir} - error: ${error}`);
       throw new Error(`exception: unable to delete user's role ${userIdir} - error: ${error}`);
     }
+  };
+
+  private readonly clearUserRoleCache = async (): Promise<void> => {
+    await this.cacheManager.del("css-users-roles-fresh");
+    await this.cacheManager.del("css-users-roles-stale");
+    await this.cacheManager.del("css-users-roles-refresh-status");
   };
 
   private readonly fetchAndGroupUserRoles = async (): Promise<any> => {
