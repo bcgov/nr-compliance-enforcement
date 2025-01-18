@@ -5,6 +5,7 @@ import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "@apptypes/modal/moda
 import { Dropdown } from "react-bootstrap";
 import { getAssessment } from "@store/reducers/case-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { getComplaintById } from "@/app/store/reducers/complaints";
 
 type Props = {
   complaint_identifier: string;
@@ -62,6 +63,7 @@ export const ComplaintActionItems: FC<Props> = ({
 
   const openQuickCloseModal = async () => {
     document.body.click();
+    await dispatch(getComplaintById(complaint_identifier, complaint_type));
     await dispatch(getAssessment(complaint_identifier));
     dispatch(
       openModal({
