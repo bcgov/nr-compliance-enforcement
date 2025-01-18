@@ -88,8 +88,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   useEffect(() => {
     dispatch(getCaseFile(id));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, dispatch]);
 
   //-- selectors
   const data = useAppSelector(selectComplaint);
