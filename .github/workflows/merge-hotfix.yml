@@ -32,7 +32,7 @@ jobs:
       # Get PR number for squash merges to main
       - name: PR Number
         id: pr
-        uses: bcgov-nr/action-get-pr@v0.0.1
+        uses: bcgov/action-get-pr@v0.0.1
 
   # https://github.com/bcgov/quickstart-openshift-helpers
   deploy-hotfix:
