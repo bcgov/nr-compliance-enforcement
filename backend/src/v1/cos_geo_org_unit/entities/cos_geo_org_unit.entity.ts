@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ViewEntity, Column, PrimaryColumn } from "typeorm";
 
-@ViewEntity("cos_geo_org_unit_flat_vw")
+@ViewEntity("cos_geo_org_unit_flat_mvw")
 export class CosGeoOrgUnit {
   @ApiProperty({ example: "KTNY", description: "Human readable region code" })
   @Column("character varying", { name: "region_code", length: 10 })
