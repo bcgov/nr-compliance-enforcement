@@ -61,8 +61,8 @@ export class PersonService {
       .createQueryBuilder("person")
       .leftJoinAndSelect("person.officer", "officer")
       .leftJoinAndSelect("officer.office_guid", "office")
-      .leftJoinAndSelect("office.cos_geo_org_unit", "cos_geo_org_unit_flat_vw")
-      .where("cos_geo_org_unit_flat_vw.zone_code = :zone_code", { zone_code });
+      .leftJoinAndSelect("office.cos_geo_org_unit", "cos_geo_org_unit_flat_mvw")
+      .where("cos_geo_org_unit_flat_mvw.zone_code = :zone_code", { zone_code });
     return queryBuilder.getMany();
   }
 
@@ -71,7 +71,7 @@ export class PersonService {
       .createQueryBuilder("person")
       .leftJoinAndSelect("person.officer", "officer")
       .leftJoinAndSelect("officer.office_guid", "office")
-      .leftJoinAndSelect("office.cos_geo_org_unit", "cos_geo_org_unit_flat_vw")
+      .leftJoinAndSelect("office.cos_geo_org_unit", "cos_geo_org_unit_flat_mvw")
       .where("office.office_guid = :office_guid", { office_guid });
     return queryBuilder.getMany();
   }
