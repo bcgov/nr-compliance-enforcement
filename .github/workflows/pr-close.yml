@@ -60,19 +60,19 @@ jobs:
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
       - run: |
           # check if postgres-crunchy exists or else exit
-          oc get PostgresCluster/postgres-crunchy || exit 0
+          oc get PostgresCluster/postgres-crunchy-dev || exit 0
           # Remove the user from the crunchy cluster yaml and apply the changes
           USER_TO_REMOVE='{"databases":["app-${{ github.event.number }}"],"name":"app-${{ github.event.number }}"}'
           
           echo 'getting current users from crunchy'
-          CURRENT_USERS=$(oc get PostgresCluster/postgres-crunchy -o json | jq '.spec.users')
+          CURRENT_USERS=$(oc get PostgresCluster/postgres-crunchy-dev -o json | jq '.spec.users')
           echo "${CURRENT_USERS}"
           
           # Remove the user from the list, 
           UPDATED_USERS=$(echo "$CURRENT_USERS" | jq --argjson user "$USER_TO_REMOVE" 'map(select(. != $user))')
 
           PATCH_JSON=$(jq -n --argjson users "$UPDATED_USERS" '{"spec": {"users": $users}}')
-          oc patch PostgresCluster/postgres-crunchy --type=merge -p "$PATCH_JSON"
+          oc patch PostgresCluster/postgres-crunchy-dev --type=merge -p "$PATCH_JSON"
           
           # get primary crunchy pod and remove the role and db
           CRUNCHY_PG_PRIMARY_POD_NAME=$(oc get pods -l postgres-operator.crunchydata.com/role=master -o json | jq -r '.items[0].metadata.name')
