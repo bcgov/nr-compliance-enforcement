@@ -108,6 +108,12 @@ export class ComplaintController {
     return await this.service.updateComplaintById(id, complaintType, model);
   }
 
+  @Patch("/update-date-by-id/:id")
+  @Roles(Role.COS, Role.CEEB)
+  async updateComplaintLastUpdatedDateById(@Param("id") id: string): Promise<boolean> {
+    return await this.service.updateComplaintLastUpdatedDate(id);
+  }
+
   @Get("/by-complaint-identifier/:complaintType/:id")
   @Roles(Role.COS, Role.CEEB)
   async findComplaintById(

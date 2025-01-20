@@ -1,5 +1,5 @@
 import AttachmentEnum from "@constants/attachment-enum";
-import { deleteAttachments, getAttachments, saveAttachments } from "@store/reducers/attachments";
+import { deleteAttachments, saveAttachments } from "@store/reducers/attachments";
 import { COMSObject } from "@apptypes/coms/object";
 
 // used to update the state of attachments that are to be added to a complaint
@@ -30,26 +30,35 @@ export const handleDeleteAttachments = (
   }
 };
 
+interface PersistAttachmentsParams {
+  dispatch: any;
+  attachmentsToAdd: File[] | null;
+  attachmentsToDelete: COMSObject[] | null;
+  complaintIdentifier: string;
+  setAttachmentsToAdd: any;
+  setAttachmentsToDelete: any;
+  attachmentType: AttachmentEnum;
+  complaintType: string;
+}
+
 // Given a list of attachments to add/delete, call COMS to add/delete those attachments
-export async function handlePersistAttachments(
-  dispatch: any,
-  attachmentsToAdd: File[] | null,
-  attachmentsToDelete: COMSObject[] | null,
-  complaintIdentifier: string,
-  setAttachmentsToAdd: any,
-  setAttachmentsToDelete: any,
-  attachmentType: AttachmentEnum,
-) {
+export async function handlePersistAttachments({
+  dispatch,
+  attachmentsToAdd,
+  attachmentsToDelete,
+  complaintIdentifier,
+  setAttachmentsToAdd,
+  setAttachmentsToDelete,
+  attachmentType,
+  complaintType,
+}: PersistAttachmentsParams) {
   if (attachmentsToDelete) {
-    await dispatch(deleteAttachments(attachmentsToDelete));
+    dispatch(deleteAttachments(attachmentsToDelete, complaintIdentifier, complaintType, attachmentType));
   }
 
   if (attachmentsToAdd) {
-    await dispatch(saveAttachments(attachmentsToAdd, complaintIdentifier, attachmentType));
+    dispatch(saveAttachments(attachmentsToAdd, complaintIdentifier, complaintType, attachmentType));
   }
-
-  // refresh store
-  await dispatch(getAttachments(complaintIdentifier, attachmentType));
 
   // Clear the attachments since they've been added or saved.
   setAttachmentsToAdd(null);

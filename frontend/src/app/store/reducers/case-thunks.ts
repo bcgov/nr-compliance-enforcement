@@ -619,6 +619,7 @@ export const upsertNote =
 
         const input: UpdateSupplementalNotesInput = {
           note,
+          leadIdentifier: id,
           caseIdentifier: caseId as UUID,
           actor,
           updateUserId: userId,
@@ -664,7 +665,8 @@ export const upsertNote =
   };
 
 export const deleteNote =
-  (): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> => async (dispatch, getState) => {
+  (id: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
     const {
       officers: { officers },
       app: {
@@ -676,13 +678,15 @@ export const deleteNote =
     const _deleteNote =
       (
         id: UUID,
+        leadIdentifer: string,
         actor: string,
         userId: string,
         actionId: string,
       ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
       async (dispatch) => {
         const input: DeleteSupplementalNoteInput = {
-          caseIdentifier: caseId as UUID,
+          caseIdentifier: id,
+          leadIdentifier: leadIdentifer,
           actor,
           updateUserId: userId,
           actionId,
@@ -698,7 +702,9 @@ export const deleteNote =
       } = currentNote;
 
       const officer = officers.find((item) => item.user_id === idir);
-      const result = await dispatch(_deleteNote(caseId as UUID, officer ? officer.officer_guid : "", idir, actionId));
+      const result = await dispatch(
+        _deleteNote(caseId as UUID, id, officer ? officer.officer_guid : "", idir, actionId),
+      );
 
       if (result !== null) {
         ToggleSuccess("Supplemental note deleted");
@@ -790,7 +796,7 @@ export const updateReview =
 
 //-- equipment thunks
 export const deleteEquipment =
-  (id: string): AppThunk =>
+  (complaintId: string, id: string): AppThunk =>
   async (dispatch, getState) => {
     if (!id) {
       return;
@@ -803,6 +809,7 @@ export const deleteEquipment =
     const deleteEquipmentInput = {
       id: id,
       updateUserId: profile.idir_username,
+      leadIdentifier: complaintId,
     };
 
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
@@ -974,6 +981,7 @@ export const createAnimalOutcome =
 export const updateAnimalOutcome =
   (
     id: UUID,
+    leadIdentifier: string,
     animalOutcome: AnimalOutcome,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
@@ -1028,6 +1036,7 @@ export const updateAnimalOutcome =
 
     const input: UpdateAnimalOutcomeInput = {
       caseIdentifier: id,
+      leadIdentifier: leadIdentifier,
       updateUserId: idir,
       wildlife: {
         id: wildlifeId,
@@ -1059,7 +1068,7 @@ export const updateAnimalOutcome =
   };
 
 export const deleteAnimalOutcome =
-  (id: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (id: string, leadIdentifier: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       officers: { officers },
@@ -1072,12 +1081,14 @@ export const deleteAnimalOutcome =
     const _deleteAnimalOutcome =
       (
         outcomeId: string,
+        leadIdentifier: string,
         actor: string,
         userId: string,
       ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
       async (dispatch) => {
         const input: DeleteAnimalOutcomeInput = {
           caseIdentifier: caseId as UUID,
+          leadIdentifier: leadIdentifier,
           actor,
           updateUserId: userId,
           outcomeId,
@@ -1088,7 +1099,7 @@ export const deleteAnimalOutcome =
       };
 
     const officer = officers.find((item) => item.user_id === idir);
-    const result = await dispatch(_deleteAnimalOutcome(id, officer ? officer.officer_guid : "", idir));
+    const result = await dispatch(_deleteAnimalOutcome(id, leadIdentifier, officer ? officer.officer_guid : "", idir));
 
     if (result) {
       const { caseIdentifier } = result;
@@ -1103,7 +1114,11 @@ export const deleteAnimalOutcome =
   };
 
 export const upsertDecisionOutcome =
-  (id: string, decision: Decision): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (
+    id: string,
+    leadIdentifier: string,
+    decision: Decision,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       app: {
@@ -1137,6 +1152,7 @@ export const upsertDecisionOutcome =
 
         const input: UpdateDecisionInput = {
           caseIdentifier: id,
+          leadIdentifier: leadIdentifier,
           agencyCode: "EPO",
           caseCode: "ERS",
           actor: assignedTo,
@@ -1176,7 +1192,11 @@ export const upsertDecisionOutcome =
   };
 
 export const upsertAuthorizationOutcome =
-  (id: string, input: PermitSite): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (
+    id: string,
+    leadIdentifier: string,
+    input: PermitSite,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       app: {
@@ -1201,10 +1221,11 @@ export const upsertAuthorizationOutcome =
       };
 
     const _update =
-      (id: string, site: PermitSite): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      (id: string, leadIdentifier: string, site: PermitSite): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
       async (dispatch) => {
         const input: UpdateAuthorizationOutcomeInput = {
           caseIdentifier: id,
+          leadIdentifier: leadIdentifier,
           updateUserId: idir,
           input: site,
         };
@@ -1219,7 +1240,7 @@ export const upsertAuthorizationOutcome =
       result = await dispatch(_create(id, input));
     } else {
       const update = { ...input, id: current.id };
-      result = await dispatch(_update(id, update));
+      result = await dispatch(_update(id, leadIdentifier, update));
     }
     const { authorization } = result;
 
@@ -1235,7 +1256,8 @@ export const upsertAuthorizationOutcome =
   };
 
 export const deleteAuthorizationOutcome =
-  (): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> => async (dispatch, getState) => {
+  (leadIdentifier: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async (dispatch, getState) => {
     const {
       app: {
         profile: { idir_username: idir },
@@ -1247,6 +1269,7 @@ export const deleteAuthorizationOutcome =
       const { id } = authorization;
       const input: DeleteAuthorizationOutcomeInput = {
         caseIdentifier: caseId,
+        leadIdentifier: leadIdentifier,
         updateUserId: idir,
         id,
       };
