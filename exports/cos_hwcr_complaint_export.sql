@@ -32,7 +32,7 @@ join
 join 
 	geo_organization_unit_code goc on goc.geo_organization_unit_code  = cmp.geo_organization_unit_code 
 join 
-	cos_geo_org_unit_flat_vw gfv on gfv.area_code = goc.geo_organization_unit_code 
+	cos_geo_org_unit_flat_mvw gfv on gfv.area_code = goc.geo_organization_unit_code 
 left join 
 	person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true
 left join 

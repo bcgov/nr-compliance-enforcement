@@ -179,4 +179,11 @@ export class UpdateComplaintDto {
       "flag to represent that the caller has asked for special care when handling their personal information",
   })
   is_privacy_requested: string;
+
+  @ApiProperty({
+    example: "true",
+    description:
+      "The time the complaint was last updated, or null if the complaint has never been touched.  This value might also be updated by business logic that touches sub-tables to indicate that the business object complaint has been updated.",
+  })
+  comp_last_upd_utc_timestamp: Date;
 }
