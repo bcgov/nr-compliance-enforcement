@@ -58,7 +58,7 @@ export class JwtRoleGuard extends AuthGuard("jwt") implements CanActivate {
     }
     const userRoles: string[] = user.client_roles;
     // Check if the user has the readonly role
-    const hasReadOnlyRole = userRoles.includes(Role.READ_ONLY);
+    const hasReadOnlyRole = userRoles?.includes(Role.READ_ONLY);
 
     // If the user has readonly role, allow only GET requests unless the route is in the list of exceptions
     if (hasReadOnlyRole && !READ_ONLY_EXCEPTIONS.includes(request.route.path)) {
