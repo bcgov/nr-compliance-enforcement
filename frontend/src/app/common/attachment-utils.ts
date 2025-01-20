@@ -53,7 +53,7 @@ export async function handlePersistAttachments({
   complaintType,
 }: PersistAttachmentsParams) {
   if (attachmentsToDelete) {
-    dispatch(deleteAttachments(attachmentsToDelete, complaintIdentifier, complaintType));
+    dispatch(deleteAttachments(attachmentsToDelete, complaintIdentifier, complaintType, attachmentType));
   }
 
   if (attachmentsToAdd) {

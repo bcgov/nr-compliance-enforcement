@@ -160,7 +160,12 @@ export const getAttachments =
 
 // delete attachments from objectstore
 export const deleteAttachments =
-  (attachments: COMSObject[], complaint_identifier: string, complaintType: string): AppThunk =>
+  (
+    attachments: COMSObject[],
+    complaint_identifier: string,
+    complaintType: string,
+    attachmentType: AttachmentEnum,
+  ): AppThunk =>
   async (dispatch) => {
     if (attachments) {
       for (const attachment of attachments) {
@@ -188,6 +193,7 @@ export const deleteAttachments =
       }
       // refresh store
       dispatch(getComplaintById(complaint_identifier, complaintType));
+      dispatch(getAttachments(complaint_identifier, attachmentType));
     }
   };
 
