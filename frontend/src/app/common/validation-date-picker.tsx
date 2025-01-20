@@ -11,7 +11,7 @@ interface ValidationDatePickerProps {
   id: string;
   classNamePrefix: string;
   errMsg: string;
-  isDisabled?: boolean | undefined;
+  isDisabled?: boolean;
 }
 
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
