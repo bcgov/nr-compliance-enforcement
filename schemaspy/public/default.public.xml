@@ -128,6 +128,9 @@
          <index name="PK_attrhwcrx" unique="true">
             <column ascending="true" name="attractant_hwcr_xref_guid"/>
          </index>
+         <index name="FK_hwcrcmplntguid" unique="false">
+            <column ascending="true" name="hwcr_complaint_guid"/>
+         </index>
       </table>
       <table name="attractant_hwcr_xref_h" remarks="History table for attractant_hwcr_xref table" schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_attrhwcrx_guid" nullable="false" remarks="System generated unique key for attractant hwcr xref history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
@@ -348,7 +351,7 @@
             <column ascending="true" name="h_configuration_guid"/>
          </index>
       </table>
-      <table name="cos_geo_org_unit_flat_vw" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT DISTINCT gou.geo_organization_unit_code AS region_code,&#10;    gou.short_description AS region_name,&#10;    gou2.geo_organization_unit_code AS zone_code,&#10;    gou2.short_description AS zone_name,&#10;    gou3.geo_organization_unit_code AS offloc_code,&#10;    gou3.short_description AS offloc_name,&#10;    (COALESCE(gou4.geo_organization_unit_code, NULL::character varying))::character varying(10) AS area_code,&#10;    (COALESCE(gou4.short_description, NULL::character varying))::character varying(50) AS area_name,&#10;    gou3.administrative_office_ind&#10;   FROM (((((((geo_org_unit_structure gos&#10;     JOIN geo_organization_unit_code gou ON (((gos.parent_geo_org_unit_code)::text = (gou.geo_organization_unit_code)::text)))&#10;     JOIN geo_org_unit_structure gos2 ON (((gos2.parent_geo_org_unit_code)::text = (gou.geo_organization_unit_code)::text)))&#10;     JOIN geo_organization_unit_code gou2 ON (((gos2.child_geo_org_unit_code)::text = (gou2.geo_organization_unit_code)::text)))&#10;     JOIN geo_org_unit_structure gos3 ON (((gos3.parent_geo_org_unit_code)::text = (gou2.geo_organization_unit_code)::text)))&#10;     JOIN geo_organization_unit_code gou3 ON (((gos3.child_geo_org_unit_code)::text = (gou3.geo_organization_unit_code)::text)))&#10;     LEFT JOIN geo_org_unit_structure gos4 ON (((gos4.parent_geo_org_unit_code)::text = (gou3.geo_organization_unit_code)::text)))&#10;     LEFT JOIN geo_organization_unit_code gou4 ON (((gos4.child_geo_org_unit_code)::text = (gou4.geo_organization_unit_code)::text)))&#10;  WHERE (((gou.geo_org_unit_type_code)::text = 'REGION'::text) AND ((gou2.geo_org_unit_type_code)::text = 'ZONE'::text) AND ((gou3.geo_org_unit_type_code)::text = 'OFFLOC'::text) AND (((gou4.geo_org_unit_type_code)::text = 'AREA'::text) OR (gou4.geo_org_unit_type_code IS NULL)) AND ((gos.agency_code)::text = 'COS'::text));">
+      <table name="cos_geo_org_unit_flat_mvw" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT DISTINCT gou.geo_organization_unit_code AS region_code,&#10;    gou.short_description AS region_name,&#10;    gou2.geo_organization_unit_code AS zone_code,&#10;    gou2.short_description AS zone_name,&#10;    gou3.geo_organization_unit_code AS offloc_code,&#10;    gou3.short_description AS offloc_name,&#10;    (COALESCE(gou4.geo_organization_unit_code, NULL::character varying))::character varying(10) AS area_code,&#10;    (COALESCE(gou4.short_description, NULL::character varying))::character varying(50) AS area_name,&#10;    gou3.administrative_office_ind&#10;   FROM (((((((geo_org_unit_structure gos&#10;     JOIN geo_organization_unit_code gou ON (((gos.parent_geo_org_unit_code)::text = (gou.geo_organization_unit_code)::text)))&#10;     JOIN geo_org_unit_structure gos2 ON (((gos2.parent_geo_org_unit_code)::text = (gou.geo_organization_unit_code)::text)))&#10;     JOIN geo_organization_unit_code gou2 ON (((gos2.child_geo_org_unit_code)::text = (gou2.geo_organization_unit_code)::text)))&#10;     JOIN geo_org_unit_structure gos3 ON (((gos3.parent_geo_org_unit_code)::text = (gou2.geo_organization_unit_code)::text)))&#10;     JOIN geo_organization_unit_code gou3 ON (((gos3.child_geo_org_unit_code)::text = (gou3.geo_organization_unit_code)::text)))&#10;     LEFT JOIN geo_org_unit_structure gos4 ON (((gos4.parent_geo_org_unit_code)::text = (gou3.geo_organization_unit_code)::text)))&#10;     LEFT JOIN geo_organization_unit_code gou4 ON (((gos4.child_geo_org_unit_code)::text = (gou4.geo_organization_unit_code)::text)))&#10;  WHERE (((gou.geo_org_unit_type_code)::text = 'REGION'::text) AND ((gou2.geo_org_unit_type_code)::text = 'ZONE'::text) AND ((gou3.geo_org_unit_type_code)::text = 'OFFLOC'::text) AND (((gou4.geo_org_unit_type_code)::text = 'AREA'::text) OR (gou4.geo_org_unit_type_code IS NULL)) AND ((gos.agency_code)::text = 'COS'::text));">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="region_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="region_name" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="zone_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12"/>
@@ -1975,6 +1978,16 @@ END;]]></definition>
          <parameters>
             <parameter mode="IN" type="geometry"/>
             <parameter mode="IN" type="box2df"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="cos_geo_org_unit_flat_mvw_refresh()" returnType="trigger" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="plpgsql"><![CDATA[BEGIN 
+ 	REFRESH MATERIALIZED VIEW cos_geo_org_unit_flat_mvw;
+	RETURN NULL;
+ END;]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
          </parameters>
       </routine>
       <routine dataAccess="MODIFIES" deterministic="true" name="daitch_mokotoff(text)" returnType="text[]" securityType="INVOKER" type="FUNCTION">
