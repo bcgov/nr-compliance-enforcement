@@ -259,6 +259,7 @@ export const saveAttachments =
       }
       // refresh store
       dispatch(getComplaintById(complaint_identifier, complaintType));
+      dispatch(getAttachments(complaint_identifier, attachmentType));
     }
   };
 
