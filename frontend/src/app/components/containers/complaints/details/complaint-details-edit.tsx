@@ -250,15 +250,16 @@ export const ComplaintDetailsEdit: FC = () => {
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);
 
-      handlePersistAttachments(
+      handlePersistAttachments({
         dispatch,
         attachmentsToAdd,
         attachmentsToDelete,
-        id,
+        complaintIdentifier: id,
         setAttachmentsToAdd,
         setAttachmentsToDelete,
-        AttachmentEnum.COMPLAINT_ATTACHMENT,
-      );
+        attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
+        complaintType,
+      });
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {

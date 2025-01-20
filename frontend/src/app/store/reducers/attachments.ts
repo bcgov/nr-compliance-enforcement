@@ -14,6 +14,7 @@ import {
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import axios from "axios";
 import AttachmentEnum from "@constants/attachment-enum";
+import { getComplaintById } from "./complaints";
 
 const initialState: AttachmentsState = {
   complaintsAttachments: [],
@@ -159,7 +160,7 @@ export const getAttachments =
 
 // delete attachments from objectstore
 export const deleteAttachments =
-  (attachments: COMSObject[], complaint_identifier: string): AppThunk =>
+  (attachments: COMSObject[], complaint_identifier: string, complaintType: string): AppThunk =>
   async (dispatch) => {
     if (attachments) {
       for (const attachment of attachments) {
@@ -185,12 +186,19 @@ export const deleteAttachments =
           ToggleError(`Attachment ${decodeURIComponent(attachment.name)} could not be deleted`);
         }
       }
+      // refresh store
+      dispatch(getComplaintById(complaint_identifier, complaintType));
     }
   };
 
 // save new attachment(s) to object store
 export const saveAttachments =
-  (attachments: File[], complaint_identifier: string, attachmentType: AttachmentEnum): AppThunk =>
+  (
+    attachments: File[],
+    complaint_identifier: string,
+    complaintType: string,
+    attachmentType: AttachmentEnum,
+  ): AppThunk =>
   async (dispatch) => {
     if (!attachments) {
       return;
@@ -249,6 +257,8 @@ export const saveAttachments =
       } catch (error) {
         handleError(attachment, error);
       }
+      // refresh store
+      dispatch(getComplaintById(complaint_identifier, complaintType));
     }
   };
 
