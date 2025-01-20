@@ -185,14 +185,14 @@ export class ComplaintService {
         builder = this._allegationComplaintRepository
           .createQueryBuilder("allegation")
           .leftJoin("allegation.complaint_identifier", "complaint")
-          .addSelect(["complaint.complaint_identifier", "complaint.location_geometry_point"])
+          .select(["complaint.complaint_identifier", "complaint.location_geometry_point"])
           .leftJoin("allegation.violation_code", "violation_code");
         break;
       case "GIR":
         builder = this._girComplaintRepository
           .createQueryBuilder("general")
           .leftJoin("general.complaint_identifier", "complaint")
-          .addSelect(["complaint.complaint_identifier", "complaint.location_geometry_point"])
+          .select(["complaint.complaint_identifier", "complaint.location_geometry_point"])
           .leftJoin("general.gir_type_code", "gir");
         break;
       case "HWCR":
@@ -200,7 +200,7 @@ export class ComplaintService {
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife")
           .leftJoin("wildlife.complaint_identifier", "complaint")
-          .addSelect(["complaint.complaint_identifier", "complaint.location_geometry_point"])
+          .select(["complaint.complaint_identifier", "complaint.location_geometry_point"])
           .leftJoin("wildlife.species_code", "species_code")
           .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
           .leftJoin("wildlife.attractant_hwcr_xref", "attractants", "attractants.active_ind = true")
@@ -1065,11 +1065,8 @@ export class ComplaintService {
       }
 
       //-- search and count
-      // Workaround for the issue with getManyAndCount() returning the wrong count and results in complex queries
-      // introduced by adding an IN clause in a OrWhere statement: https://github.com/typeorm/typeorm/issues/320
-      const [, total] = await builder.take(0).getManyAndCount(); // returns 0 results but the total count is correct
+      const [complaints, total] = await builder.skip(skip).take(pageSize).getManyAndCount();
       results.totalCount = total;
-      const complaints = page && pageSize ? await builder.skip(skip).take(pageSize).getMany() : await builder.getMany();
 
       switch (complaintType) {
         case "ERS": {
@@ -1223,7 +1220,7 @@ export class ComplaintService {
       );
 
       //-- run mapped query
-      const mappedComplaints = await complaintBuilder.getMany();
+      const mappedComplaints = await complaintBuilder.getRawMany();
 
       // convert to supercluster PointFeature array
       const points: Array<PointFeature<GeoJsonProperties>> = mappedComplaints.map((item) => {
@@ -1231,9 +1228,9 @@ export class ComplaintService {
           type: "Feature",
           properties: {
             cluster: false,
-            id: item.complaint_identifier.complaint_identifier,
+            id: item.complaint_complaint_identifier,
           },
-          geometry: item.complaint_identifier.location_geometry_point,
+          geometry: item.complaint_location_geometry_point,
         } as PointFeature<GeoJsonProperties>;
       });
 

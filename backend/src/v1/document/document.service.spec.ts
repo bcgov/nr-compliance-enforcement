@@ -77,13 +77,14 @@ import { Team } from "../team/entities/team.entity";
 import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
 import { TeamService } from "../team/team.service";
 import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
+import { CacheModule } from "@nestjs/cache-manager";
 
 describe("DocumentService", () => {
   let service: DocumentService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AutomapperModule],
+      imports: [AutomapperModule, CacheModule.register()],
       providers: [
         AutomapperModule,
         {

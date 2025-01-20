@@ -86,13 +86,14 @@ import { TeamService } from "../team/team.service";
 import { Team } from "../team/entities/team.entity";
 import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
 import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
+import { CacheModule } from "@nestjs/cache-manager";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AutomapperModule],
+      imports: [AutomapperModule, CacheModule.register()],
       providers: [
         AutomapperModule,
         {
@@ -395,7 +396,7 @@ describe("Testing: Complaint Service", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AutomapperModule],
+      imports: [AutomapperModule, CacheModule.register()],
       providers: [
         AutomapperModule,
         {

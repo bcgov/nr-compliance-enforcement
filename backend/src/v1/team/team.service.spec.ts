@@ -9,12 +9,14 @@ import { CssService } from "../../external_api/css/css.service";
 import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
 import { Officer } from "..//officer/entities/officer.entity";
+import { CacheModule } from "@nestjs/cache-manager";
 
 describe("TeamService", () => {
   let service: TeamService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CacheModule.register()],
       providers: [
         TeamService,
         {
