@@ -87,7 +87,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
         value: !unauthorized ? authorized : unauthorized,
       };
 
-      dispatch(upsertAuthorizationOutcome(identifier, data)).then(async (response) => {
+      dispatch(upsertAuthorizationOutcome(identifier, leadIdentifier, data)).then(async (response) => {
         if (response === "success") {
           dispatch(getCaseFile(leadIdentifier));
 

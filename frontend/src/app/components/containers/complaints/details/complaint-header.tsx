@@ -316,7 +316,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       </div>
                     </>
                   )}
-                  {!lastUpdated && <>Not Available</>}
+                  {!lastUpdated && <>N/A</>}
                 </dd>
               </dl>
 

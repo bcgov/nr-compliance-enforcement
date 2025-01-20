@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "@store/store";
-import { deleteMethod, generateApiParameters, get, putFile } from "@common/api";
+import { deleteMethod, generateApiParameters, get, patch, putFile } from "@common/api";
 import { from } from "linq-to-typescript";
 import { COMSObject } from "@apptypes/coms/object";
 import { AttachmentsState } from "@apptypes/state/attachments-state";
@@ -14,6 +14,7 @@ import {
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import axios from "axios";
 import AttachmentEnum from "@constants/attachment-enum";
+import { getComplaintById } from "./complaints";
 
 const initialState: AttachmentsState = {
   complaintsAttachments: [],
@@ -159,7 +160,12 @@ export const getAttachments =
 
 // delete attachments from objectstore
 export const deleteAttachments =
-  (attachments: COMSObject[]): AppThunk =>
+  (
+    attachments: COMSObject[],
+    complaint_identifier: string,
+    complaintType: string,
+    attachmentType: AttachmentEnum,
+  ): AppThunk =>
   async (dispatch) => {
     if (attachments) {
       for (const attachment of attachments) {
@@ -167,23 +173,38 @@ export const deleteAttachments =
           const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}`);
 
           await deleteMethod<string>(dispatch, parameters);
-          dispatch(removeAttachment(attachment.id)); // delete from store
+          const response = dispatch(removeAttachment(attachment.id)); // delete from store
           if (isImage(attachment.name)) {
             const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.imageIconId}`);
 
             await deleteMethod<string>(dispatch, thumbParameters);
           }
-          ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
+
+          if (response) {
+            const parameters = generateApiParameters(
+              `${config.API_BASE_URL}/v1/complaint/update-date-by-id/${complaint_identifier}`,
+            );
+            await patch<boolean>(dispatch, parameters);
+            ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
+          }
         } catch (error) {
           ToggleError(`Attachment ${decodeURIComponent(attachment.name)} could not be deleted`);
         }
       }
+      // refresh store
+      dispatch(getComplaintById(complaint_identifier, complaintType));
+      dispatch(getAttachments(complaint_identifier, attachmentType));
     }
   };
 
 // save new attachment(s) to object store
 export const saveAttachments =
-  (attachments: File[], complaint_identifier: string, attachmentType: AttachmentEnum): AppThunk =>
+  (
+    attachments: File[],
+    complaint_identifier: string,
+    complaintType: string,
+    attachmentType: AttachmentEnum,
+  ): AppThunk =>
   async (dispatch) => {
     if (!attachments) {
       return;
@@ -233,11 +254,18 @@ export const saveAttachments =
         }
 
         if (response) {
+          const parameters = generateApiParameters(
+            `${config.API_BASE_URL}/v1/complaint/update-date-by-id/${complaint_identifier}`,
+          );
+          await patch<boolean>(dispatch, parameters);
           ToggleSuccess(`Attachment "${attachment.name}" saved`);
         }
       } catch (error) {
         handleError(attachment, error);
       }
+      // refresh store
+      dispatch(getComplaintById(complaint_identifier, complaintType));
+      dispatch(getAttachments(complaint_identifier, attachmentType));
     }
   };
 

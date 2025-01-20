@@ -16,13 +16,13 @@ export const DeleteAnimalOutcomeModal: FC<props> = ({ close, submit }) => {
   const { title, description, ok, cancel } = modalData;
 
   const handleSubmit = () => {
-    const { outcomeId, caseFileId } = modalData;
+    const { outcomeId, leadId } = modalData;
 
-    if (caseFileId) {
-      dispatch(deleteAnimalOutcome(outcomeId))
+    if (leadId) {
+      dispatch(deleteAnimalOutcome(outcomeId, leadId))
         .then((res) => {
           if (res === "success") {
-            dispatch(getCaseFile(caseFileId));
+            dispatch(getCaseFile(leadId));
           }
         })
         .finally(() => {

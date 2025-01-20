@@ -112,6 +112,12 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
         return src.isPrivacyRequested;
       }),
     ),
+    forMember(
+      (dest) => dest.comp_last_upd_utc_timestamp,
+      mapFrom((src) => {
+        return src.updatedOn;
+      }),
+    ),
   );
 };
 

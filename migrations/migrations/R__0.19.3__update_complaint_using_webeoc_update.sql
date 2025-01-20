@@ -170,10 +170,9 @@ BEGIN
    
   -- the update caused an edit, set the audit fields
   if (update_edit_ind) then
-	update complaint
-	set update_user_id = _update_userid, update_utc_timestamp = _update_utc_timestamp
-	where complaint_identifier = _complaint_identifier;
-  
+	  update complaint
+	  set update_user_id = _update_userid, update_utc_timestamp = _update_utc_timestamp, comp_last_upd_utc_timestamp = _update_utc_timestamp
+	  where complaint_identifier = _complaint_identifier;
   end if;
   
   if (_parent_report_type = 'HWCR') then
@@ -236,6 +235,11 @@ BEGIN
     	where complaint_identifier = _complaint_identifier;
      end if;		    
   end if;
+
+  -- We always want to update the complaint last updated field to indicate an update was received.
+  update complaint
+	set comp_last_upd_utc_timestamp = _update_utc_timestamp
+	where complaint_identifier = _complaint_identifier;
 END;
 $function$
 ;

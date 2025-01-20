@@ -107,8 +107,10 @@ export class StagingComplaintService {
       "back_number_of_days",
       "back_number_of_hours",
       "back_number_of_minutes",
-      "entrydate",
       "status",
+      "entrydate", // WebEOC will update the following 3 fields when entering an action taken
+      "positionname",
+      "username",
     ];
 
     // Omit the attributes to ignore
