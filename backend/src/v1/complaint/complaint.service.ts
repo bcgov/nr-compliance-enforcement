@@ -1591,6 +1591,7 @@ export class ComplaintService {
       entity.update_user_id = idir;
       entity.complaint_identifier = complaintId;
       entity.owned_by_agency_code = agencyCode;
+      entity.comp_last_upd_utc_timestamp = null; // set to null on create
 
       const xref = await this._compMthdRecvCdAgcyCdXrefService.findByComplaintMethodReceivedCodeAndAgencyCode(
         model.complaintMethodReceivedCode,
