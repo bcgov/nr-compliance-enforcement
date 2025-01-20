@@ -585,15 +585,16 @@ export const CreateComplaint: FC = () => {
   const handleComplaintProcessing = async (complaint: ComplaintAlias) => {
     let complaintId = await handleHwcrComplaint(complaint);
     if (complaintId) {
-      handlePersistAttachments(
+      handlePersistAttachments({
         dispatch,
         attachmentsToAdd,
         attachmentsToDelete,
-        complaintId,
+        complaintIdentifier: complaintId,
         setAttachmentsToAdd,
         setAttachmentsToDelete,
-        AttachmentEnum.COMPLAINT_ATTACHMENT,
-      );
+        attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
+        complaintType,
+      });
     }
 
     setErrorNotificationClass("comp-complaint-error display-none");

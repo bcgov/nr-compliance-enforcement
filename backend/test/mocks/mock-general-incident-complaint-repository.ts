@@ -493,6 +493,7 @@ export const MockGeneralIncidentComplaintRepository = () => ({
     orWhere: jest.fn().mockReturnThis(),
     andWhere: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(manyItems),
+    getRawMany: jest.fn().mockResolvedValue(manyItems),
     getOne: jest.fn().mockResolvedValue(singleItem),
     getQuery: jest.fn(),
     select: jest.fn().mockReturnThis(),

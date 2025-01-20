@@ -10,6 +10,7 @@ import { CssService } from "../../external_api/css/css.service";
 import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
 import { Officer } from "../officer/entities/officer.entity";
+import { CacheModule } from "@nestjs/cache-manager";
 
 describe("TeamController", () => {
   let controller: TeamController;
@@ -17,6 +18,7 @@ describe("TeamController", () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TeamController],
+      imports: [CacheModule.register()],
       providers: [
         TeamService,
         {

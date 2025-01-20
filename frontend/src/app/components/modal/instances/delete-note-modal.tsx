@@ -15,7 +15,7 @@ export const DeleteNoteModal: FC<props> = ({ close, submit }) => {
   const { title, description, ok, cancel, caseIdentifier: id } = modalData;
 
   const handleSubmit = () => {
-    dispatch(deleteNote())
+    dispatch(deleteNote(id))
       .then((res) => {
         if (res === "success") {
           dispatch(getCaseFile(id));

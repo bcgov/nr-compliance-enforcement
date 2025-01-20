@@ -16,6 +16,7 @@ import { Team } from "../team/entities/team.entity";
 import { TeamService } from "../team/team.service";
 import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
 import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
+import { CacheModule } from "@nestjs/cache-manager";
 
 describe("OfficerController", () => {
   let controller: OfficerController;
@@ -23,6 +24,7 @@ describe("OfficerController", () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [OfficerController],
+      imports: [CacheModule.register()],
       providers: [
         OfficerService,
         {

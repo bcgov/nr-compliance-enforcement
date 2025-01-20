@@ -5,6 +5,7 @@ import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
+import { ComplaintService } from "../complaint/complaint.service";
 
 describe("PersonComplaintXrefController", () => {
   let controller: PersonComplaintXrefController;
@@ -14,9 +15,14 @@ describe("PersonComplaintXrefController", () => {
       controllers: [PersonComplaintXrefController],
       providers: [
         PersonComplaintXrefService,
+        ComplaintService,
         {
           provide: getRepositoryToken(PersonComplaintXref),
           useValue: {},
+        },
+        {
+          provide: ComplaintService,
+          useFactory: dataSourceMockFactory,
         },
         {
           provide: DataSource,

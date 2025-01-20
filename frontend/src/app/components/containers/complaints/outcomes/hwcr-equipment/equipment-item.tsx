@@ -14,6 +14,7 @@ import { selectAllEquipmentDropdown } from "@store/reducers/code-table";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
 import { deleteEquipment } from "@store/reducers/case-thunks";
 import { CompLocationInfo } from "@components/common/comp-location-info";
+import { useParams } from "react-router-dom";
 
 interface EquipmentItemProps {
   equipment: EquipmentDetailsDto;
@@ -22,7 +23,7 @@ interface EquipmentItemProps {
 }
 export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisabled, onEdit }) => {
   const dispatch = useAppDispatch();
-
+  const { id = "" } = useParams<{ id: string }>();
   const [showModal, setShowModal] = useState(false);
   const handleEdit = (equipment: EquipmentDetailsDto) => {
     if (equipment.id) {
@@ -35,9 +36,9 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
     return equipmentTypeCodes.find((item) => item.value === equipment.typeCode);
   };
 
-  const handleDeleteEquipment = (id: string | undefined) => {
-    if (id) {
-      dispatch(deleteEquipment(id));
+  const handleDeleteEquipment = (equipmentId: string | undefined) => {
+    if (equipmentId) {
+      dispatch(deleteEquipment(id, equipmentId));
     }
   };
 

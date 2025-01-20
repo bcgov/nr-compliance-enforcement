@@ -63,7 +63,7 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
   };
 
   const reportedOnDateTime = formatDateTime(reportedOn.toString());
-  const updatedOnDateTime = formatDateTime(updatedOn.toString());
+  const updatedOnDateTime = formatDateTime(updatedOn?.toString());
 
   const location = getLocationName(locationCode);
 
