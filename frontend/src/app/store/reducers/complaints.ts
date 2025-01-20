@@ -105,6 +105,10 @@ export const complaintSlice = createSlice({
 
     setComplaint: (state, action) => {
       const { payload: complaint } = action;
+      let currentComplaint: ComplaintDto = complaint as ComplaintDto;
+      if (currentComplaint) {
+        currentComplaint.readOnly = ["CLOSED"].includes(currentComplaint.status);
+      }
       return { ...state, complaint };
     },
 
@@ -240,6 +244,11 @@ export const complaintSlice = createSlice({
 
     setComplaintStatus: (state, action) => {
       if (state.complaint) {
+        let currentComplaint: ComplaintDto = state.complaint as ComplaintDto;
+        if (currentComplaint) {
+          state.complaint.readOnly = ["CLOSED"].includes(action.payload);
+        }
+
         state.complaint.status = action.payload;
       }
     },

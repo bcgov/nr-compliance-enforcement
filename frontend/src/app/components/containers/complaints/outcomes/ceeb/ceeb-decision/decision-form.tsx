@@ -23,6 +23,7 @@ import { selectCaseId } from "@store/reducers/case-selectors";
 import { UUID } from "crypto";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { getDropdownOption } from "@/app/common/methods";
+import { selectComplaint } from "@/app/store/reducers/complaints";
 
 type props = {
   leadIdentifier: string;
@@ -71,6 +72,7 @@ export const DecisionForm: FC<props> = ({
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const leadAgencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const scheduleSectorType = useAppSelector(selectScheduleSectorXref);
+  const complaintData = useAppSelector(selectComplaint);
 
   //-- error messgaes
   const [scheduleErrorMessage, setScheduleErrorMessage] = useState("");
@@ -293,6 +295,7 @@ export const DecisionForm: FC<props> = ({
                   handleScheduleChange(evt.value);
                 }
               }}
+              isDisabled={complaintData?.readOnly}
               value={getDropdownOption(schedule, schedulesOptions)}
             />
           </div>
@@ -317,6 +320,7 @@ export const DecisionForm: FC<props> = ({
                 updateModel("sector", evt?.value);
               }}
               value={getDropdownOption(sector, sectorsOptions)}
+              isDisabled={complaintData?.readOnly}
             />
           </div>
         </div>
@@ -340,6 +344,7 @@ export const DecisionForm: FC<props> = ({
                 updateModel("discharge", evt?.value);
               }}
               value={getDropdownOption(discharge, dischargesOptions)}
+              isDisabled={complaintData?.readOnly}
             />
           </div>
         </div>
@@ -363,6 +368,7 @@ export const DecisionForm: FC<props> = ({
                 handleActionTakenChange(action);
               }}
               value={getDropdownOption(actionTaken, decisionTypeOptions)}
+              isDisabled={complaintData?.readOnly}
             />
           </div>
         </div>
@@ -433,6 +439,7 @@ export const DecisionForm: FC<props> = ({
                 updateModel("nonCompliance", evt?.value);
               }}
               value={getDropdownOption(nonCompliance, nonComplianceOptions)}
+              isDisabled={complaintData?.readOnly}
             />
           </div>
         </div>
@@ -450,6 +457,7 @@ export const DecisionForm: FC<props> = ({
               errMsg={""}
               maxLength={4000}
               onChange={handleRationaleChange}
+              disabled={complaintData?.readOnly}
             />
           </div>
         </div>
@@ -468,6 +476,7 @@ export const DecisionForm: FC<props> = ({
               classNamePrefix="comp-select" // Adjust class as needed
               errMsg={dateActionTakenErrorMessage} // Pass error message if any
               maxDate={new Date()}
+              isDisabled={complaintData?.readOnly}
             />
           </div>
         </div>
@@ -478,6 +487,7 @@ export const DecisionForm: FC<props> = ({
           id="outcome-decision-cancel-button"
           title="Cancel Decision"
           onClick={handleCancelButtonClick}
+          disabled={complaintData?.readOnly}
         >
           Cancel
         </Button>
@@ -486,6 +496,7 @@ export const DecisionForm: FC<props> = ({
           id="outcome-decision-save-button"
           title="Save Decision"
           onClick={() => handleSaveButtonClick()}
+          disabled={complaintData?.readOnly}
         >
           Save
         </Button>

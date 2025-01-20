@@ -214,6 +214,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
             title="Add animal"
             id="outcome-report-add-animal"
             onClick={() => setShowForm(true)}
+            disabled={complaint?.readOnly}
           >
             <i className="bi bi-plus-circle"></i>
             <span>Add animal</span>

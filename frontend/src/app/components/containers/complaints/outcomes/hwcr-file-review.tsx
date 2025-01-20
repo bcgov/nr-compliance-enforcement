@@ -150,6 +150,7 @@ export const HWCRFileReview: FC = () => {
               onClick={(e) => {
                 handleStateChange(EDIT_STATE);
               }}
+              disabled={complaintData?.readOnly}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
@@ -184,6 +185,7 @@ export const HWCRFileReview: FC = () => {
                       type="checkbox"
                       checked={reviewRequired}
                       onChange={handleReviewRequiredClick}
+                      disabled={complaintData?.readOnly}
                     />
                     <label htmlFor="review-required">
                       <span>Review required</span>
@@ -263,6 +265,7 @@ export const HWCRFileReview: FC = () => {
                   id="file-review-cancel-button"
                   title="Cancel File Review"
                   onClick={handleFileReviewCancel}
+                  disabled={complaintData?.readOnly}
                 >
                   Cancel
                 </Button>
@@ -271,6 +274,7 @@ export const HWCRFileReview: FC = () => {
                   id="file-review-save-button"
                   title="Save File Review"
                   onClick={handleFileReviewSave}
+                  disabled={complaintData?.readOnly}
                 >
                   Save
                 </Button>

@@ -740,6 +740,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 size="sm"
                 id="details-screen-edit-button"
                 onClick={editButtonClick}
+                disabled={data?.readOnly}
               >
                 <i className="bi bi-pencil"></i>
                 <span>Edit Complaint</span>

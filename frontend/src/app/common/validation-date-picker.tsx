@@ -11,6 +11,7 @@ interface ValidationDatePickerProps {
   id: string;
   classNamePrefix: string;
   errMsg: string;
+  isDisabled?: boolean | undefined;
 }
 
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
@@ -23,6 +24,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   id,
   classNamePrefix,
   errMsg,
+  isDisabled,
 }) => {
   const handleDateChange = (date: Date) => {
     onChange(date);
@@ -48,6 +50,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
           autoComplete="false"
           monthsShown={2}
           showPreviousMonths
+          disabled={isDisabled}
         />
       </div>
       <div className={calculatedClass}>{errMsg}</div>

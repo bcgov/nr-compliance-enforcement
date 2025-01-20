@@ -242,6 +242,7 @@ export const HWCRComplaintPrevention: FC = () => {
               size="sm"
               id="prevention-edit-button"
               onClick={toggleEdit}
+              disabled={complaintData?.readOnly}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
@@ -258,6 +259,7 @@ export const HWCRComplaintPrevention: FC = () => {
             onClick={() => {
               setShowContent(true);
             }}
+            disabled={complaintData?.readOnly}
           >
             <i className="bi bi-plus-circle"></i>
             <span>Add actions</span>

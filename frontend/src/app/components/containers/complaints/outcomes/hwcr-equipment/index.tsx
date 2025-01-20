@@ -4,7 +4,7 @@ import { EquipmentForm } from "./equipment-form";
 import { EquipmentItem } from "./equipment-item";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectEquipment } from "@store/reducers/case-selectors";
-import { selectComplaintAssignedBy } from "@store/reducers/complaints";
+import { selectComplaint, selectComplaintAssignedBy } from "@store/reducers/complaints";
 import "@assets/sass/hwcr-equipment.scss";
 import { setIsInEdit } from "@store/reducers/cases";
 
@@ -13,6 +13,7 @@ export const HWCREquipment: FC = memo(() => {
   const assigned = useAppSelector(selectComplaintAssignedBy);
   // used to indicate which equipment's guid is in edit mode (only one can be edited at a time
   const equipmentList = useAppSelector(selectEquipment);
+  const complaintData = useAppSelector(selectComplaint);
 
   const [showEquipmentForm, setShowEquipmentForm] = useState<boolean>(false);
   const [editingGuid, setEditingGuid] = useState<string>("");
@@ -81,6 +82,7 @@ export const HWCREquipment: FC = memo(() => {
               id="outcome-report-add-equipment"
               title="Add equipment"
               onClick={() => setShowEquipmentForm(true)}
+              disabled={complaintData?.readOnly}
             >
               <i className="bi bi-plus-circle"></i>
               <span>Add equipment</span>

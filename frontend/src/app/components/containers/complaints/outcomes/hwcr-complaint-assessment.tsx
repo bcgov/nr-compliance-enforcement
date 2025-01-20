@@ -586,6 +586,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 variant="outline-primary"
                 size="sm"
                 onClick={toggleEdit}
+                disabled={complaintData?.readOnly}
               >
                 <i className="bi bi-pencil"></i>
                 <span>Edit</span>
@@ -631,6 +632,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       value={selectedActionRequired}
                       placeholder="Select"
                       onChange={(e) => handleActionRequiredChange(e)}
+                      isDisabled={complaintData?.readOnly}
                     />
                   )}
                 </div>
@@ -856,6 +858,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     value={selectedOfficer}
                     placeholder="Select "
                     onChange={(officer: any) => setSelectedOfficer(officer)}
+                    isDisabled={complaintData?.readOnly}
                   />
                 </div>
               </div>
@@ -874,6 +877,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     classNamePrefix="comp-select" // Adjust class as needed
                     errMsg={assessmentDateErrorMessage} // Pass error message if any
                     maxDate={new Date()}
+                    isDisabled={complaintData?.readOnly}
                   />
                 </div>
               </div>
@@ -883,6 +887,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   id="outcome-cancel-button"
                   title="Cancel Outcome"
                   onClick={quickClose ? handleClose : cancelButtonClick}
+                  disabled={complaintData?.readOnly}
                 >
                   Cancel
                 </Button>
@@ -891,6 +896,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   id="outcome-save-button"
                   title="Save Outcome"
                   onClick={saveButtonClick}
+                  disabled={complaintData?.readOnly}
                 >
                   <span>{quickClose ? "Save and Close" : "Save"}</span>
                 </Button>

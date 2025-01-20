@@ -134,6 +134,7 @@ export const ExternalFileReference: FC = () => {
                 size="sm"
                 id="external-file-reference-edit-button"
                 onClick={(e) => setIsEditable(true)}
+                disabled={complaintData?.readOnly}
               >
                 <i className="bi bi-pencil"></i>
                 <span>Edit</span>
@@ -143,6 +144,7 @@ export const ExternalFileReference: FC = () => {
                 variant="outline-primary"
                 id="external-file-reference-delete-button"
                 onClick={() => handleExternalFileReferenceDelete()}
+                disabled={complaintData?.readOnly}
               >
                 <i className="bi bi-trash3"></i>
                 <span>Delete</span>
@@ -172,6 +174,7 @@ export const ExternalFileReference: FC = () => {
                         } = evt;
                         handleExternalFileReferenceChange(value);
                       }}
+                      disabled={complaintData?.readOnly}
                     />
                   </div>
                   <div className="comp-details-form-buttons">
@@ -180,6 +183,7 @@ export const ExternalFileReference: FC = () => {
                       id="external-file-reference-cancel-button"
                       title="Cancel"
                       onClick={handleExternalFileReferenceCancel}
+                      disabled={complaintData?.readOnly}
                     >
                       Cancel
                     </Button>
@@ -188,6 +192,7 @@ export const ExternalFileReference: FC = () => {
                       id="external-file-reference-save-button"
                       title="Save"
                       onClick={handleExternalFileReferenceSave}
+                      disabled={complaintData?.readOnly}
                     >
                       Save
                     </Button>
