@@ -200,7 +200,7 @@ export const DecisionForm: FC<props> = ({
     resetErrorMessages();
 
     if (isValid()) {
-      dispatch(upsertDecisionOutcome(identifier, data)).then(async (response) => {
+      dispatch(upsertDecisionOutcome(identifier, leadIdentifier, data)).then(async (response) => {
         if (response === "success") {
           dispatch(getCaseFile(leadIdentifier));
 

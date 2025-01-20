@@ -232,10 +232,6 @@ export class ComplaintService {
       case "ERS":
         builder = this._allegationComplaintRepository
           .createQueryBuilder("allegation")
-          .addSelect(
-            "GREATEST(complaint.update_utc_timestamp, allegation.update_utc_timestamp, COALESCE((SELECT MAX(update.update_utc_timestamp) FROM complaint_update update WHERE update.complaint_identifier = complaint.complaint_identifier), '1970-01-01'))",
-            "_update_utc_timestamp",
-          )
           .leftJoinAndSelect("allegation.complaint_identifier", "complaint")
           .leftJoin("allegation.violation_code", "violation_code")
           .addSelect([
@@ -248,10 +244,6 @@ export class ComplaintService {
       case "GIR":
         builder = this._girComplaintRepository
           .createQueryBuilder("general")
-          .addSelect(
-            "GREATEST(complaint.update_utc_timestamp, general.update_utc_timestamp, COALESCE((SELECT MAX(update.update_utc_timestamp) FROM complaint_update update WHERE update.complaint_identifier = complaint.complaint_identifier), '1970-01-01'))",
-            "_update_utc_timestamp",
-          )
           .leftJoinAndSelect("general.complaint_identifier", "complaint")
           .leftJoin("general.gir_type_code", "gir")
           .addSelect(["gir.gir_type_code", "gir.short_description", "gir.long_description"]);
@@ -260,10 +252,6 @@ export class ComplaintService {
       default:
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
-          .addSelect(
-            "GREATEST(complaint.update_utc_timestamp, wildlife.update_utc_timestamp, COALESCE((SELECT MAX(update.update_utc_timestamp) FROM complaint_update update WHERE update.complaint_identifier = complaint.complaint_identifier), '1970-01-01'))",
-            "_update_utc_timestamp",
-          )
           .leftJoinAndSelect("wildlife.complaint_identifier", "complaint")
           .leftJoin("wildlife.species_code", "species_code")
           .addSelect([
@@ -1007,7 +995,8 @@ export class ComplaintService {
       const skip = page && pageSize ? (page - 1) * pageSize : 0;
       const sortTable = this._getSortTable(sortBy);
 
-      const sortString = sortBy !== "update_utc_timestamp" ? `${sortTable}.${sortBy}` : "_update_utc_timestamp";
+      const sortString =
+        sortBy !== "update_utc_timestamp" ? `${sortTable}.${sortBy}` : "complaint.comp_last_upd_utc_timestamp";
 
       //-- generate initial query
       let builder = this._generateQueryBuilder(complaintType);
@@ -1057,7 +1046,7 @@ export class ComplaintService {
       //-- apply sort if provided
       if (sortBy && orderBy) {
         builder
-          .orderBy(sortString, orderBy)
+          .orderBy(sortString, orderBy, "NULLS LAST")
           .addOrderBy(
             "complaint.incident_reported_utc_timestmp",
             sortBy === "incident_reported_utc_timestmp" ? orderBy : "DESC",
@@ -1311,15 +1300,50 @@ export class ComplaintService {
     }
   };
 
+  // There is specific business logic around when a complaint is considered to be 'Updated'.
+  // This business logic doesn't align with the standard update audit date in a couple of areas
+  //     - When a complaint is new it is considered untouched and never updated
+  //     - When case data associated with a complaint is modified the complaint is considered updated
+  //     - When attachments are uploaded to a complaint or case the complaint is considered updated
+  //     - Updates from webEOC are considered Updates, however Actions Taken are not
+  // As a result this method can be called whenever you need to set the complaint as 'Updated'
+  updateComplaintLastUpdatedDate = async (id: string): Promise<boolean> => {
+    try {
+      const idir = getIdirFromRequest(this.request);
+      const timestamp = new Date();
+
+      const result = await this.complaintsRepository
+        .createQueryBuilder("complaint")
+        .update()
+        .set({ update_user_id: idir, comp_last_upd_utc_timestamp: timestamp })
+        .where("complaint_identifier = :id", { id })
+        .execute();
+
+      //-- check to make sure that only one record was updated
+      if (result.affected === 1) {
+        return true;
+      } else {
+        this.logger.error(`Unable to update complaint: ${id}`);
+        throw new HttpException(`Unable to update complaint: ${id}`, HttpStatus.UNPROCESSABLE_ENTITY);
+      }
+    } catch (error) {
+      this.logger.error(`An Error occured trying to update complaint: ${id}`);
+      this.logger.error(error.response);
+
+      throw new HttpException(`Unable to update complaint: ${id}}`, HttpStatus.BAD_REQUEST);
+    }
+  };
+
   updateComplaintStatusById = async (id: string, status: string): Promise<ComplaintDto> => {
     try {
       const idir = getIdirFromRequest(this.request);
+      const timestamp = new Date();
 
       const statusCode = await this._codeTableService.getComplaintStatusCodeByStatus(status);
       const result = await this.complaintsRepository
         .createQueryBuilder("complaint")
         .update()
-        .set({ complaint_status_code: statusCode, update_user_id: idir })
+        .set({ complaint_status_code: statusCode, update_user_id: idir, comp_last_upd_utc_timestamp: timestamp })
         .where("complaint_identifier = :id", { id })
         .execute();
 
@@ -1416,8 +1440,9 @@ export class ComplaintService {
 
       complaintTable.comp_mthd_recv_cd_agcy_cd_xref = xref;
 
-      //set the audit field
+      //set the audit fields
       complaintTable.update_user_id = idir;
+      complaintTable.comp_last_upd_utc_timestamp = new Date();
 
       const complaintUpdateResult = await this.complaintsRepository
         .createQueryBuilder("complaint")

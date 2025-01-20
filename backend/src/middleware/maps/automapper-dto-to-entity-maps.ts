@@ -153,6 +153,10 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
       (dest) => dest.is_privacy_requested,
       mapFrom((src) => src.isPrivacyRequested),
     ),
+    forMember(
+      (dest) => dest.comp_last_upd_utc_timestamp,
+      mapFrom((src) => src.updatedOn),
+    ),
   );
 };
 
@@ -341,6 +345,10 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
       (dest) => dest.complaint_identifier.is_privacy_requested,
       mapFrom((src) => src.isPrivacyRequested),
     ),
+    forMember(
+      (dest) => dest.complaint_identifier.comp_last_upd_utc_timestamp,
+      mapFrom((src) => src.updatedOn),
+    ),
   );
 };
 
@@ -502,6 +510,10 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (mapper: Mapper) =
       (dest) => dest.complaint_identifier.is_privacy_requested,
       mapFrom((src) => src.isPrivacyRequested),
     ),
+    forMember(
+      (dest) => dest.complaint_identifier.comp_last_upd_utc_timestamp,
+      mapFrom((src) => src.updatedOn),
+    ),
   );
 };
 
@@ -608,6 +620,10 @@ export const mapGirComplaintDtoToGirComplaint = (mapper: Mapper) => {
     forMember(
       (dest) => dest.complaint_identifier.is_privacy_requested,
       mapFrom((src) => src.isPrivacyRequested),
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.comp_last_upd_utc_timestamp,
+      mapFrom((src) => src.updatedOn),
     ),
   );
 };

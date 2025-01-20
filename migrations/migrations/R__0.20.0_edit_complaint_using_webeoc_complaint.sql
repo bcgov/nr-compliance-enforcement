@@ -255,7 +255,7 @@ BEGIN
   -- the update caused an edit, set the audit fields
   if (update_edit_ind) then
 	update complaint
-	set update_user_id = _edit_update_userid, update_utc_timestamp = _edit_update_utc_timestamp
+	set update_user_id = _edit_update_userid, update_utc_timestamp = _edit_update_utc_timestamp, comp_last_upd_utc_timestamp = _edit_update_utc_timestamp
 	where complaint_identifier = _complaint_identifier;
   end if;
   
