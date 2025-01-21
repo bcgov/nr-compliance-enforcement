@@ -20,6 +20,7 @@ export interface ComplaintState {
   actions: ActionTaken[];
   webeocChangeCount: number;
   linkedComplaints: [];
+  complaintView: ComplaintView;
 }
 
 export interface ComplaintCollection {
@@ -40,4 +41,8 @@ export interface Coordinate {
 
 export interface MarkerCluster {
   coordinates: Array<Coordinate>;
+}
+
+export interface ComplaintView {
+  isReadOnly: boolean;
 }

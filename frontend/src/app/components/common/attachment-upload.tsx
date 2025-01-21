@@ -3,9 +3,10 @@ import { BsPlus } from "react-icons/bs";
 
 type Props = {
   onFileSelect: (selectedFile: FileList) => void;
+  disabled?: boolean | null;
 };
 
-export const AttachmentUpload: FC<Props> = ({ onFileSelect }) => {
+export const AttachmentUpload: FC<Props> = ({ onFileSelect, disabled }) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       onFileSelect(event.target.files);
@@ -40,6 +41,8 @@ export const AttachmentUpload: FC<Props> = ({ onFileSelect }) => {
         className="comp-attachment-upload-btn"
         tabIndex={0}
         onClick={handleDivClick}
+        disabled={disabled ?? false}
+        style={disabled ?? false ? { cursor: "default" } : {}}
       >
         <div className="upload-icon">
           <BsPlus />

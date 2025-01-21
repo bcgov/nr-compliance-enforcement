@@ -1,6 +1,5 @@
 // Instruction for running: from backend directory: node dataloader/bulk-data-loader.js
 // Ensure parameters at the bottom of this file are updated as required
-
 require('dotenv').config();
 const faker = require('faker');
 const db = require('pg-promise')();

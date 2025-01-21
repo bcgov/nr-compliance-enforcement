@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Link } from "react-router-dom";
 import COMPLAINT_TYPES, { complaintTypeToName } from "@apptypes/app/complaint-types";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectComplaintHeader } from "@store/reducers/complaints";
+import { selectComplaintHeader, selectComplaintViewMode } from "@store/reducers/complaints";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
 
 import { Badge, Button, Dropdown } from "react-bootstrap";
@@ -46,6 +46,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     girType,
   } = useAppSelector(selectComplaintHeader(complaintType));
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
@@ -175,6 +176,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                         <Dropdown.Item
                           as="button"
                           onClick={openQuickCloseModal}
+                          disabled={isReadOnly}
                         >
                           <i className="bi bi-journal-x"></i>
                           <span>Quick close</span>
@@ -183,6 +185,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       <Dropdown.Item
                         as="button"
                         onClick={openAsignOfficerModal}
+                        disabled={isReadOnly}
                       >
                         <i className="bi bi-person-plus"></i>
                         <span>{assignText}</span>
@@ -211,6 +214,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       title="Quick close"
                       variant="outline-light"
                       onClick={openQuickCloseModal}
+                      disabled={isReadOnly}
                     >
                       <i className="bi bi-journal-x"></i>
                       <span>Quick close</span>
@@ -221,6 +225,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     title="Assign to officer"
                     variant="outline-light"
                     onClick={openAsignOfficerModal}
+                    disabled={isReadOnly}
                   >
                     <i className="bi bi-person-plus"></i>
                     <span>{assignText}</span>
