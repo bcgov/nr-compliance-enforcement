@@ -5,7 +5,7 @@ import { formatDate } from "@common/methods";
 import { CaseAction } from "@apptypes/outcomes/case-action";
 import { selectNotesOfficer } from "@store/reducers/case-selectors";
 import { Button, Card } from "react-bootstrap";
-import { selectComplaint } from "@/app/store/reducers/complaints";
+import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 
 type props = {
   notes: string;
@@ -16,7 +16,7 @@ type props = {
 
 export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode, deleteNote }) => {
   const { displayName } = useAppSelector(selectNotesOfficer);
-  const complaintData = useAppSelector(selectComplaint);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   return (
     <>
@@ -28,7 +28,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
             size="sm"
             id="notes-edit-button"
             onClick={(e) => enableEditMode(true)}
-            disabled={complaintData?.readOnly}
+            disabled={isReadOnly}
           >
             <i className="bi bi-pencil"></i>
             <span>Edit</span>
@@ -38,7 +38,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
             variant="outline-primary"
             id="notes-delete-button"
             onClick={() => deleteNote()}
-            disabled={complaintData?.readOnly}
+            disabled={isReadOnly}
           >
             <i className="bi bi-trash3"></i>
             <span>Delete</span>

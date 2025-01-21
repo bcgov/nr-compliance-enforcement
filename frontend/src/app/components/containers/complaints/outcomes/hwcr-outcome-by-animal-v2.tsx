@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectComplaint } from "@store/reducers/complaints";
+import { selectComplaint, selectComplaintViewMode } from "@store/reducers/complaints";
 import { Button } from "react-bootstrap";
 import type { AnimalOutcome as AnimalOutcomeData } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
 import { from } from "linq-to-typescript";
@@ -50,6 +50,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   const complaint = useAppSelector(selectComplaint);
   const subjects = useAppSelector(selectAnimalOutcomes);
   const caseId = useAppSelector(selectCaseId) as UUID;
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const { species, ownedBy: agency } = (complaint as WildlifeComplaint) || {};
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(agency));
@@ -214,7 +215,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
             title="Add animal"
             id="outcome-report-add-animal"
             onClick={() => setShowForm(true)}
-            disabled={complaint?.readOnly}
+            disabled={isReadOnly}
           >
             <i className="bi bi-plus-circle"></i>
             <span>Add animal</span>

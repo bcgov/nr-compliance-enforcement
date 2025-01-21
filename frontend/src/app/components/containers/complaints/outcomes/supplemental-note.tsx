@@ -10,7 +10,7 @@ import { openModal } from "@store/reducers/app";
 import { DELETE_NOTE } from "@apptypes/modal/modal-types";
 import { setIsInEdit } from "@store/reducers/cases";
 import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
-import { selectComplaint } from "@/app/store/reducers/complaints";
+import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 
 export const SupplementalNote: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
@@ -18,7 +18,7 @@ export const SupplementalNote: FC = () => {
 
   const officer = useAppSelector(selectCurrentOfficer());
   const supplementalNote = useAppSelector(selectSupplementalNote);
-  const complaintData = useAppSelector(selectComplaint);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const [showInput, setShowInput] = useState(false);
 
@@ -68,7 +68,7 @@ export const SupplementalNote: FC = () => {
             id="outcome-report-add-note"
             title="Add additional notes"
             onClick={(e) => setShowInput(true)}
-            disabled={complaintData?.readOnly}
+            disabled={isReadOnly}
           >
             <i className="bi bi-plus-circle"></i>
             <span>Add notes</span>

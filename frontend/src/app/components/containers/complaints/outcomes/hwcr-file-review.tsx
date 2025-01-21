@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { openModal, profileDisplayName } from "@store/reducers/app";
 import { formatDate } from "@common/methods";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { getComplaintStatusById, selectComplaint } from "@store/reducers/complaints";
+import { getComplaintStatusById, selectComplaint, selectComplaintViewMode } from "@store/reducers/complaints";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { createReview, updateReview } from "@store/reducers/case-thunks";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
@@ -24,6 +24,7 @@ export const HWCRFileReview: FC = () => {
   const { officers } = useAppSelector((state) => state.officers);
   const displayName = useAppSelector(profileDisplayName);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const [componentState, setComponentState] = useState<number>(REQUEST_REVIEW_STATE);
   const [reviewRequired, setReviewRequired] = useState<boolean>(false);
@@ -150,7 +151,7 @@ export const HWCRFileReview: FC = () => {
               onClick={(e) => {
                 handleStateChange(EDIT_STATE);
               }}
-              disabled={complaintData?.readOnly}
+              disabled={isReadOnly}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
@@ -185,7 +186,7 @@ export const HWCRFileReview: FC = () => {
                       type="checkbox"
                       checked={reviewRequired}
                       onChange={handleReviewRequiredClick}
-                      disabled={complaintData?.readOnly}
+                      disabled={isReadOnly}
                     />
                     <label htmlFor="review-required">
                       <span>Review required</span>
@@ -265,7 +266,7 @@ export const HWCRFileReview: FC = () => {
                   id="file-review-cancel-button"
                   title="Cancel File Review"
                   onClick={handleFileReviewCancel}
-                  disabled={complaintData?.readOnly}
+                  disabled={isReadOnly}
                 >
                   Cancel
                 </Button>
@@ -274,7 +275,7 @@ export const HWCRFileReview: FC = () => {
                   id="file-review-save-button"
                   title="Save File Review"
                   onClick={handleFileReviewSave}
-                  disabled={complaintData?.readOnly}
+                  disabled={isReadOnly}
                 >
                   Save
                 </Button>

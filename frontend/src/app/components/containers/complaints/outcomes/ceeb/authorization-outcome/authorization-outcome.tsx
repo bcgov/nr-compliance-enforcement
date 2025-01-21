@@ -11,7 +11,7 @@ import { AuthoizationOutcomeItem } from "./authorization-outcome-item";
 import { openModal } from "@store/reducers/app";
 import { DELETE_CONFIRM } from "@apptypes/modal/modal-types";
 import { deleteAuthorizationOutcome, getCaseFile } from "@store/reducers/case-thunks";
-import { selectComplaint } from "@/app/store/reducers/complaints";
+import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 
 export const AuthoizationOutcome: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
@@ -27,7 +27,7 @@ export const AuthoizationOutcome: FC = () => {
   const cases = useAppSelector((state) => state.cases);
   const hasAuthorization = !cases.authorization;
 
-  const complaintData = useAppSelector(selectComplaint);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   useEffect(() => {
     if (!hasAuthorization && editable) {
@@ -82,7 +82,7 @@ export const AuthoizationOutcome: FC = () => {
               onClick={() => {
                 toggleEdit();
               }}
-              disabled={complaintData?.readOnly}
+              disabled={isReadOnly}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
@@ -92,7 +92,7 @@ export const AuthoizationOutcome: FC = () => {
               variant="outline-primary"
               size="sm"
               onClick={handleDeleteButtonClick}
-              disabled={complaintData?.readOnly}
+              disabled={isReadOnly}
             >
               <i className="bi bi-trash3"></i>
               <span>Delete</span>

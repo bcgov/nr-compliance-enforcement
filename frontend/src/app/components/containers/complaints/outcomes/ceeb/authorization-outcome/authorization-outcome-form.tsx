@@ -7,7 +7,7 @@ import { selectCaseId } from "@store/reducers/case-selectors";
 import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { selectComplaint } from "@/app/store/reducers/complaints";
+import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 
 type props = {
   leadIdentifier: string;
@@ -22,7 +22,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
   const dispatch = useAppDispatch();
 
   const caseId = useAppSelector(selectCaseId);
-  const complaintData = useAppSelector(selectComplaint);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const [authorized, setAuthorized] = useState("");
   const [unauthorized, setUnauthorized] = useState("");
@@ -156,7 +156,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
 
                 handleUpdateSiteChange("permit", value);
               }}
-              disabled={complaintData?.readOnly}
+              disabled={isReadOnly}
             />
           </div>
         </div>
@@ -186,7 +186,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
 
                 handleUpdateSiteChange("site", value);
               }}
-              disabled={complaintData?.readOnly}
+              disabled={isReadOnly}
             />
           </div>
         </div>
@@ -197,7 +197,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
           id="outcome-decision-cancel-button"
           title="Cancel Decision"
           onClick={handleCancelButtonClick}
-          disabled={complaintData?.readOnly}
+          disabled={isReadOnly}
         >
           Cancel
         </Button>
@@ -206,7 +206,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
           id="outcome-decision-save-button"
           title="Save Decision"
           onClick={() => handleSaveButtonClick()}
-          disabled={complaintData?.readOnly}
+          disabled={isReadOnly}
         >
           Save
         </Button>

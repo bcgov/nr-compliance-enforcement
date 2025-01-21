@@ -15,6 +15,7 @@ import {
   getLinkedComplaints,
   selectLinkedComplaints,
   setLinkedComplaints,
+  selectComplaintViewMode,
 } from "@store/reducers/complaints";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
@@ -89,6 +90,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const data = useAppSelector(selectComplaint);
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
   const enablePrivacyFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.PRIV_REQ));
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const {
     details,
@@ -740,7 +742,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 size="sm"
                 id="details-screen-edit-button"
                 onClick={editButtonClick}
-                disabled={data?.readOnly}
+                disabled={isReadOnly}
               >
                 <i className="bi bi-pencil"></i>
                 <span>Edit Complaint</span>

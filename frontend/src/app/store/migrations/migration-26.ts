@@ -4,9 +4,9 @@ export const ComplaintReadOnlyIndicator = {
       ...state,
       complaints: {
         ...state.complaints,
-        complaint: {
-          ...state.complaints.complaint,
-          readOnly: false,
+        complaintView: {
+          ...state.complaints.complaintView,
+          isReadOnly: false,
         },
       },
     };

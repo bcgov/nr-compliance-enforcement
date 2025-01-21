@@ -8,7 +8,7 @@ import { setIsInEdit } from "@store/reducers/cases";
 import { DecisionForm } from "./decision-form";
 import { DecisionItem } from "./decision-item";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { selectComplaint } from "@/app/store/reducers/complaints";
+import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 
 export const CeebDecision: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
@@ -24,7 +24,7 @@ export const CeebDecision: FC = () => {
   const cases = useAppSelector((state) => state.cases);
   const hasDecision = !cases.decision;
 
-  const complaintData = useAppSelector(selectComplaint);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   useEffect(() => {
     if (!hasDecision && editable) {
@@ -59,7 +59,7 @@ export const CeebDecision: FC = () => {
               onClick={() => {
                 toggleEdit();
               }}
-              disabled={complaintData?.readOnly}
+              disabled={isReadOnly}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>

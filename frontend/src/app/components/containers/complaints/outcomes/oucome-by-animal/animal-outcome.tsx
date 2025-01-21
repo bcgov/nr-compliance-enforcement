@@ -15,7 +15,7 @@ import { formatDate, pad } from "@common/methods";
 import { selectOfficerListByAgency } from "@store/reducers/officer";
 import { DrugItem } from "./drug-item";
 import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
-import { selectComplaint, selectComplaintLargeCarnivoreInd } from "@/app/store/reducers/complaints";
+import { selectComplaintLargeCarnivoreInd, selectComplaintViewMode } from "@/app/store/reducers/complaints";
 
 type props = {
   index: number;
@@ -37,7 +37,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = !data.outcome && !data.officer && !data.date && isInEdit.showSectionErrors;
-  const complaintData = useAppSelector(selectComplaint);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const [animal, setAnimal] = useState("");
   const [animalSex, setAnimalSex] = useState("");
@@ -147,7 +147,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
             onClick={() => hendleEnableEditMode()}
             variant="outline-primary"
             size="sm"
-            disabled={complaintData?.readOnly}
+            disabled={isReadOnly}
           >
             <i className="bi bi-pencil"></i>
             <span>Edit</span>
@@ -156,7 +156,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
             onClick={() => handleDeleteItem()}
             variant="outline-primary"
             size="sm"
-            disabled={complaintData?.readOnly}
+            disabled={isReadOnly}
           >
             <i className="bi bi-trash3"></i>
             <span>Delete</span>

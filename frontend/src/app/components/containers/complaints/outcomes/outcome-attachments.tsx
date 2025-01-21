@@ -12,7 +12,7 @@ import AttachmentEnum from "@constants/attachment-enum";
 import { clearAttachments, getAttachments, selectAttachments } from "@store/reducers/attachments";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { setIsInEdit } from "@store/reducers/cases";
-import { selectComplaint } from "@/app/store/reducers/complaints";
+import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 
 type props = {
   showAddButton?: boolean;
@@ -32,7 +32,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
   const dispatch = useAppDispatch();
   const carouselData = useAppSelector(selectAttachments(AttachmentEnum.OUTCOME_ATTACHMENT));
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
-  const complaintData = useAppSelector(selectComplaint);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   // files to add to COMS when complaint is saved
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
@@ -181,7 +181,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
               onClick={(e) => {
                 setComponentState(EDIT_STATE);
               }}
-              disabled={complaintData?.readOnly}
+              disabled={isReadOnly}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
@@ -198,7 +198,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
           onClick={() => {
             setIsCardVisible(true);
           }}
-          disabled={complaintData?.readOnly}
+          disabled={isReadOnly}
         >
           <i className="bi bi-plus-circle" />
           <span>Add attachments</span>
@@ -224,7 +224,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
               onFilesSelected={onHandleAddAttachments}
               onFileDeleted={onHandleDeleteAttachment}
               onSlideCountChange={handleSlideCountChange}
-              disabled={complaintData?.readOnly}
+              disabled={isReadOnly}
             />
             {componentState === EDIT_STATE && (
               <div className="comp-details-form-buttons">
@@ -233,7 +233,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
                   id="outcome-cancel-button"
                   title="Cancel Outcome"
                   onClick={cancelButtonClick}
-                  disabled={complaintData?.readOnly}
+                  disabled={isReadOnly}
                 >
                   Cancel
                 </Button>
@@ -242,7 +242,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
                   id="outcome-save-button"
                   title="Save Outcome"
                   onClick={saveButtonClick}
-                  disabled={complaintData?.readOnly}
+                  disabled={isReadOnly}
                 >
                   Save
                 </Button>
