@@ -9,6 +9,7 @@ interface ValidationTextAreaProps {
   rows: number;
   maxLength?: number;
   placeholderText?: string;
+  disabled?: boolean;
 }
 
 export const ValidationTextArea: FC<ValidationTextAreaProps> = ({
@@ -20,6 +21,7 @@ export const ValidationTextArea: FC<ValidationTextAreaProps> = ({
   rows,
   maxLength,
   placeholderText,
+  disabled,
 }) => {
   const errClass = errMsg === "" ? "" : "error-message";
   const calulatedClass = errMsg === "" ? className : className + " error-border";
@@ -34,6 +36,7 @@ export const ValidationTextArea: FC<ValidationTextAreaProps> = ({
           onChange={(e) => onChange(e.target.value)}
           maxLength={maxLength}
           placeholder={placeholderText}
+          disabled={disabled}
         />
       </div>
       <div className={errClass}>{errMsg}</div>
