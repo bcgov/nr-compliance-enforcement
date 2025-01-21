@@ -78,8 +78,8 @@ export const getCaseFile =
       dispatch(setPrevention({ prevention: updatedPreventionData }));
     } else {
       // If there is no case file clear the assessment and prevention sections
-      dispatch(clearAssessment());
-      dispatch(clearPrevention());
+      dispatch(setAssessment({}));
+      dispatch(setPrevention({}));
     }
   };
 
