@@ -108,6 +108,7 @@ export const ComplaintActionItems: FC<Props> = ({
         <Dropdown.Item
           id="update-assignee-menu-item"
           onClick={openAssignOfficerModal}
+          disabled={complaint_status === "CLOSED"}
         >
           <i
             className="bi bi-person-up"

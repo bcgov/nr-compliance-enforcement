@@ -14,6 +14,7 @@ import { selectAllEquipmentDropdown } from "@store/reducers/code-table";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
 import { deleteEquipment } from "@store/reducers/case-thunks";
 import { CompLocationInfo } from "@components/common/comp-location-info";
+import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 import { useParams } from "react-router-dom";
 
 interface EquipmentItemProps {
@@ -69,6 +70,8 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
     : null;
 
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
+
   const showSectionErrors =
     !removedEquipmentDate &&
     getValue("equipment")?.value !== "SIGNG" &&
@@ -117,6 +120,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
                 title="Edit equipment details"
                 id="equipment-edit-button"
                 onClick={() => handleEdit(equipment)}
+                disabled={isReadOnly}
               >
                 <i className="bi bi-pencil"></i>
                 <span>Edit</span>
@@ -127,6 +131,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
                 title="Delete equipment"
                 id="equipment-delete-button"
                 onClick={() => setShowModal(true)}
+                disabled={isReadOnly}
               >
                 <i className="bi bi-trash3"></i>
                 <span>Delete</span>

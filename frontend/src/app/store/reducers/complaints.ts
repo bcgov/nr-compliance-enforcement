@@ -67,6 +67,9 @@ const initialState: ComplaintState = {
 
   webeocChangeCount: 0,
   linkedComplaints: [],
+  complaintView: {
+    isReadOnly: false,
+  },
 };
 export const complaintSlice = createSlice({
   name: "complaints",
@@ -105,7 +108,12 @@ export const complaintSlice = createSlice({
 
     setComplaint: (state, action) => {
       const { payload: complaint } = action;
-      return { ...state, complaint };
+      let currentComplaint: ComplaintDto = complaint as ComplaintDto;
+      let isReadOnly = false;
+      if (currentComplaint) {
+        isReadOnly = ["CLOSED"].includes(currentComplaint.status);
+      }
+      return { ...state, complaint, complaintView: { isReadOnly } };
     },
 
     clearComplaint: (state) => {
@@ -240,6 +248,11 @@ export const complaintSlice = createSlice({
 
     setComplaintStatus: (state, action) => {
       if (state.complaint) {
+        let currentComplaint: ComplaintDto = state.complaint as ComplaintDto;
+        if (currentComplaint) {
+          state.complaintView.isReadOnly = ["CLOSED"].includes(action.payload);
+        }
+
         state.complaint.status = action.payload;
       }
     },
@@ -1156,6 +1169,15 @@ export const selectWebEOCChangeCount = (state: RootState): number | null => {
     complaints: { webeocChangeCount },
   } = state;
   return webeocChangeCount;
+};
+
+export const selectComplaintViewMode = (state: RootState): boolean | undefined => {
+  const {
+    complaints: {
+      complaintView: { isReadOnly },
+    },
+  } = state;
+  return isReadOnly;
 };
 
 export default complaintSlice.reducer;
