@@ -57,19 +57,19 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
         <div className="comp-map-popup-details">
           <dl>
             <div>
-              <dt className="text-muted">Date logged</dt>
+              <dt className="comp-summary-popup-details">Date logged</dt>
               <dd>{formatDate(loggedDate)}</dd>
             </div>
             <div>
-              <dt className="text-muted">Officer assigned</dt>
+              <dt className="comp-summary-popup-details">Officer assigned</dt>
               <dd id="comp-details-assigned-officer-name-text-id">{officerAssigned}</dd>
             </div>
             <div>
-              <dt className="text-muted">Community</dt>
+              <dt className="comp-summary-popup-details">Community</dt>
               <dd id="popup-community-label">{area}</dd>
             </div>
             <div>
-              <dt className="text-muted">Location</dt>
+              <dt className="comp-summary-popup-details">Location</dt>
               <dd>{location}</dd>
             </div>
           </dl>
