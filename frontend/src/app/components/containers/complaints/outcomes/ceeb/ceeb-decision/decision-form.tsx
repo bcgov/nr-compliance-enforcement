@@ -202,7 +202,7 @@ export const DecisionForm: FC<props> = ({
     resetErrorMessages();
 
     if (isValid()) {
-      dispatch(upsertDecisionOutcome(identifier, data)).then(async (response) => {
+      dispatch(upsertDecisionOutcome(identifier, leadIdentifier, data)).then(async (response) => {
         if (response === "success") {
           dispatch(getCaseFile(leadIdentifier));
 
@@ -296,7 +296,7 @@ export const DecisionForm: FC<props> = ({
                 }
               }}
               isDisabled={isReadOnly}
-              value={getDropdownOption(schedule, schedulesOptions)}
+              value={getDropdownOption(data.schedule, schedulesOptions)}
             />
           </div>
         </div>
@@ -319,8 +319,8 @@ export const DecisionForm: FC<props> = ({
               onChange={(evt) => {
                 updateModel("sector", evt?.value);
               }}
-              value={getDropdownOption(sector, sectorsOptions)}
               isDisabled={isReadOnly}
+              value={getDropdownOption(data.sector, sectorsOptions) || { value: "", label: "" }}
             />
           </div>
         </div>
@@ -343,8 +343,8 @@ export const DecisionForm: FC<props> = ({
               onChange={(evt) => {
                 updateModel("discharge", evt?.value);
               }}
-              value={getDropdownOption(discharge, dischargesOptions)}
               isDisabled={isReadOnly}
+              value={getDropdownOption(data.discharge, dischargesOptions)}
             />
           </div>
         </div>
@@ -367,8 +367,8 @@ export const DecisionForm: FC<props> = ({
                 const action = evt?.value ? evt?.value : "";
                 handleActionTakenChange(action);
               }}
-              value={getDropdownOption(actionTaken, decisionTypeOptions)}
               isDisabled={isReadOnly}
+              value={getDropdownOption(data.actionTaken, decisionTypeOptions)}
             />
           </div>
         </div>
@@ -390,7 +390,7 @@ export const DecisionForm: FC<props> = ({
                 onChange={(evt) => {
                   updateModel("leadAgency", evt?.value);
                 }}
-                value={getDropdownOption(leadAgency, leadAgencyOptions)}
+                value={getDropdownOption(data.leadAgency, leadAgencyOptions)}
               />
             </div>
           </div>
@@ -438,8 +438,8 @@ export const DecisionForm: FC<props> = ({
               onChange={(evt) => {
                 updateModel("nonCompliance", evt?.value);
               }}
-              value={getDropdownOption(nonCompliance, nonComplianceOptions)}
               isDisabled={isReadOnly}
+              value={getDropdownOption(data.nonCompliance, nonComplianceOptions)}
             />
           </div>
         </div>

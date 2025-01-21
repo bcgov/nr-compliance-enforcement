@@ -24,7 +24,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
     complaintType: string;
   };
 
-  const { id = "" } = useParams<ComplaintParams>();
+  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
 
   const DISPLAY_STATE = 0;
   const EDIT_STATE = 1;
@@ -93,15 +93,16 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
     }
 
     if (!hasValidationErrors()) {
-      handlePersistAttachments(
+      handlePersistAttachments({
         dispatch,
         attachmentsToAdd,
         attachmentsToDelete,
-        id,
+        complaintIdentifier: id,
         setAttachmentsToAdd,
         setAttachmentsToDelete,
-        AttachmentEnum.OUTCOME_ATTACHMENT,
-      );
+        attachmentType: AttachmentEnum.OUTCOME_ATTACHMENT,
+        complaintType,
+      });
       if (outcomeAttachmentCount === 0) {
         if (showAddButton) setIsCardVisible(false);
         setComponentState(EDIT_STATE);

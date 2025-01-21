@@ -142,9 +142,9 @@ export const complaintSlice = createSlice({
       const index = wildlife.findIndex(({ hwcrId }) => hwcrId === updatedComplaint.hwcrId);
 
       if (index !== -1) {
-        const { status, delegates } = updatedComplaint;
+        const { status, delegates, updatedOn } = updatedComplaint;
 
-        let complaint = { ...wildlife[index], status, delegates };
+        let complaint = { ...wildlife[index], status, delegates, updatedOn };
 
         const update = [...wildlife];
         update[index] = complaint;
@@ -162,9 +162,9 @@ export const complaintSlice = createSlice({
       const index = general.findIndex(({ girId }) => girId === updatedComplaint.girId);
 
       if (index !== -1) {
-        const { status, delegates } = updatedComplaint;
+        const { status, delegates, updatedOn } = updatedComplaint;
 
-        let complaint = { ...general[index], status, delegates };
+        let complaint = { ...general[index], status, delegates, updatedOn };
 
         const update = [...general];
         update[index] = complaint;
@@ -182,9 +182,9 @@ export const complaintSlice = createSlice({
       const index = allegations.findIndex(({ ersId }) => ersId === updatedComplaint.ersId);
 
       if (index !== -1) {
-        const { status, delegates } = updatedComplaint;
+        const { status, delegates, updatedOn } = updatedComplaint;
 
-        let complaint = { ...allegations[index], status, delegates };
+        let complaint = { ...allegations[index], status, delegates, updatedOn };
 
         const update = [...allegations];
         update[index] = complaint;
@@ -202,9 +202,9 @@ export const complaintSlice = createSlice({
       const index = general.findIndex(({ girId }) => girId === updatedComplaint.girId);
 
       if (index !== -1) {
-        const { status, delegates } = updatedComplaint;
+        const { status, delegates, updatedOn } = updatedComplaint;
 
-        let complaint = { ...general[index], status, delegates };
+        let complaint = { ...general[index], status, delegates, updatedOn };
 
         const update = [...general];
         update[index] = complaint;
@@ -973,7 +973,7 @@ export const selectComplaintHeader =
         result = {
           loggedDate: loggedDate.toString(),
           createdBy,
-          lastUpdated: lastUpdated.toString(),
+          lastUpdated: lastUpdated?.toString(),
           status,
           statusCode,
           zone,

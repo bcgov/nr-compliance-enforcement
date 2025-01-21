@@ -72,7 +72,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
         modalSize: "md",
         modalType: DELETE_ANIMAL_OUTCOME,
         data: {
-          caseFileId: id,
+          leadId: id,
           outcomeId, //-- this is the id of the animal outcome thats being deleted
           title: "Delete animal outcome",
           description: "All the data in this section will be lost.",
@@ -101,7 +101,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   //-- when saving make sure that the outcome is successfully
   //-- saved before adding the outcome to the list of outcomes
   const handleUpdate = (item: AnimalOutcomeData) => {
-    dispatch(updateAnimalOutcome(caseId, item)).then((result) => {
+    dispatch(updateAnimalOutcome(caseId, id, item)).then((result) => {
       if (result === "success") {
         dispatch(getCaseFile(id));
         setShowForm(false);

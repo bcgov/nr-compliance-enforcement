@@ -237,6 +237,14 @@ export class Complaint {
   @OneToMany(() => ActionTaken, (action_taken) => action_taken.complaintIdentifier)
   action_taken: ActionTaken[];
 
+  @ApiProperty({
+    example: "2003-04-12 04:05:06",
+    description:
+      "The time the complaint was last updated, or null if the complaint has never been touched.  This value might also be updated by business logic that touches sub-tables to indicate that the business object complaint has been updated.",
+  })
+  @Column({ nullable: true })
+  comp_last_upd_utc_timestamp: Date;
+
   constructor(
     detail_text?: string,
     caller_name?: string,
@@ -269,6 +277,7 @@ export class Complaint {
     is_privacy_requested?: string,
     complaint_update?: ComplaintUpdate[],
     action_taken?: ActionTaken[],
+    comp_last_upd_utc_timestamp?: Date,
   ) {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -301,5 +310,6 @@ export class Complaint {
     this.is_privacy_requested = is_privacy_requested;
     this.complaint_update = complaint_update;
     this.action_taken = action_taken;
+    this.comp_last_upd_utc_timestamp = comp_last_upd_utc_timestamp;
   }
 }

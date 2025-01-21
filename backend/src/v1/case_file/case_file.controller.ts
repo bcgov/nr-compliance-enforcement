@@ -61,10 +61,12 @@ export class CaseFileController {
     @Token() token,
     @Query("id") id: string,
     @Query("updateUserId") userId: string,
+    @Query("leadIdentifier") leadIdentifier: string,
   ): Promise<boolean> {
     const deleteEquipment = {
       id: id,
       updateUserId: userId,
+      leadIdentifier: leadIdentifier,
     };
     return await this.service.deleteEquipment(token, deleteEquipment);
   }
@@ -128,12 +130,14 @@ export class CaseFileController {
   async deleteNote(
     @Token() token,
     @Query("caseIdentifier") caseIdentifier: string,
+    @Query("leadIdentifier") leadIdentifier: string,
     @Query("actor") actor: string,
     @Query("updateUserId") updateUserId: string,
     @Query("actionId") actionId: string,
   ): Promise<CaseFileDto> {
     const input = {
       caseIdentifier,
+      leadIdentifier,
       actor,
       updateUserId,
       actionId,
@@ -159,12 +163,14 @@ export class CaseFileController {
   async deleteWildlife(
     @Token() token,
     @Query("caseIdentifier") caseIdentifier: string,
+    @Query("leadIdentifier") leadIdentifier: string,
     @Query("actor") actor: string,
     @Query("updateUserId") updateUserId: string,
     @Query("outcomeId") outcomeId: string,
   ): Promise<CaseFileDto> {
     const input = {
       caseIdentifier,
+      leadIdentifier,
       actor,
       updateUserId,
       wildlifeId: outcomeId,
@@ -213,11 +219,13 @@ export class CaseFileController {
   async deleteAuthorizationOutcome(
     @Token() token,
     @Query("caseIdentifier") caseIdentifier: string,
+    @Query("leadIdentifier") leadIdentifier: string,
     @Query("updateUserId") updateUserId: string,
     @Query("id") id: string,
   ): Promise<CaseFileDto> {
     const input = {
       caseIdentifier,
+      leadIdentifier,
       updateUserId,
       id,
     };

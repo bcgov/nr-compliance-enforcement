@@ -62,7 +62,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
   };
 
   const reportedOnDateTime = formatDateTime(reportedOn.toString());
-  const updatedOnDateTime = formatDateTime(updatedOn.toString());
+  const updatedOnDateTime = formatDateTime(updatedOn?.toString());
 
   const statusButtonClass = `badge ${applyStatusClass(status)}`;
 
