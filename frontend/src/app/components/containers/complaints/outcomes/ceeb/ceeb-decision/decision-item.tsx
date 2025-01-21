@@ -51,7 +51,7 @@ export const DecisionItem: FC<props> = ({
         <dd>{getDropdownOption(schedule, schedulesOptions)?.label}</dd>
       </div>
       <div>
-        <dt>Sector/Category</dt>
+        <dt>Sector/category</dt>
         <dd>{getDropdownOption(sector, sectorsOptions)?.label}</dd>
       </div>
       <div>

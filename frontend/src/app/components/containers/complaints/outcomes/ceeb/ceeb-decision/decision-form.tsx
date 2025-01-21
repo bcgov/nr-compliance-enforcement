@@ -302,7 +302,7 @@ export const DecisionForm: FC<props> = ({
           id="decision-sector-category"
         >
           <label htmlFor="outcome-decision-sector-category">
-            Sector/Category<span className="required-ind">*</span>
+            Sector/category<span className="required-ind">*</span>
           </label>
           <div className="comp-details-input full-width">
             <CompSelect
