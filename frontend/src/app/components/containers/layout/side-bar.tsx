@@ -36,7 +36,7 @@ export const SideBar: FC = () => {
     },
     {
       id: "user-management",
-      name: "User Administration",
+      name: "User administration",
       icon: "bi bi-people",
       route: "/admin/user",
       requiredRoles: [Roles.TEMPORARY_TEST_ADMIN],
