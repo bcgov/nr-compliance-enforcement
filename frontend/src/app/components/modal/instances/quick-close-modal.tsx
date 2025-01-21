@@ -16,7 +16,6 @@ import {
 } from "@store/reducers/case-selectors";
 import { HWCRComplaintAssessment } from "@components/containers/complaints/outcomes/hwcr-complaint-assessment";
 import useValidateComplaint from "@/app/hooks/validate-complaint";
-import { getAssessment } from "@/app/store/reducers/case-thunks";
 
 const ModalLoading: FC = memo(() => (
   <div className="modal-loader">

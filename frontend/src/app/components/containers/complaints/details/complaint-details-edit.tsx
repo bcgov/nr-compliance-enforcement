@@ -249,7 +249,7 @@ export const ComplaintDetailsEdit: FC = () => {
       return;
     }
     if (hasValidationErrors()) {
-      dispatch(updateComplaintById(complaintUpdate, complaintType));
+      await dispatch(updateComplaintById(complaintUpdate, complaintType));
 
       dispatch(getComplaintById(id, complaintType));
 
