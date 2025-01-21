@@ -360,40 +360,40 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     });
     cy.get("#violation-type-pair-id .comp-details-input").should("exist");
 
-    // Officer Assigned
+    // Officer assigned
     cy.get("#officer-assigned-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Officer Assigned");
+      expect($label).to.contain.text("Officer assigned");
     });
     cy.get("#officer-assigned-pair-id .comp-details-input").contains("None");
 
     // Check the Call Details inputs
     // Complaint Location
     cy.get("#complaint-location-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Complaint Location");
+      expect($label).to.contain.text("Complaint location");
     });
     cy.get("#complaint-location-pair-id input").should("exist");
 
     // Incident Time
     cy.get("#incident-time-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Incident Date/Time");
+      expect($label).to.contain.text("Incident date/time");
     });
     cy.get("#incident-time-pair-id input").should("exist");
 
     // Location Description
     cy.get("#location-description-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Location Description");
+      expect($label).to.contain.text("Location description");
     });
     cy.get("#location-description-pair-id textarea").should("exist");
 
     // Violation In Progress
     cy.get("#violation-in-progress-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Violation in Progress");
+      expect($label).to.contain.text("Violation in progress");
     });
     cy.get("#violation-in-progress-pair-id div").should("exist");
 
     // Violation observed
     cy.get("#violation-observed-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Violation Observed");
+      expect($label).to.contain.text("Violation observed");
     });
     cy.get("#violation-observed-pair-id div").should("exist");
 
@@ -457,19 +457,19 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     // Primary Phone
     cy.get("#primary-phone-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Primary Phone");
+      expect($label).to.contain.text("Primary phone");
     });
     cy.get("#primary-phone-pair-id input").should("exist");
 
     // Alternative 1 Phone
     cy.get("#secondary-phone-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Alternate Phone 1");
+      expect($label).to.contain.text("Alternate phone 1");
     });
     cy.get("#secondary-phone-pair-id input").should("exist");
 
     // Alternative 2 Phone
     cy.get("#alternate-phone-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Alternate Phone 2");
+      expect($label).to.contain.text("Alternate phone 2");
     });
     cy.get("#alternate-phone-pair-id input").should("exist");
 
@@ -487,7 +487,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     // Reffered by / Complaint Agency
     cy.get("#reported-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Organization Reporting the Complaint");
+      expect($label).to.contain.text("Organization reporting the complaint");
     });
     cy.get("#reported-pair-id input").should("exist");
 
