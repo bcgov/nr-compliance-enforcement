@@ -56,7 +56,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
       {((updates && updates.length > 0) || (changeCount && changeCount > 0) || (actions && actions.length > 0)) && (
         <div className="comp-complaint-details-block">
           <div>
-            <h6>Complaint Updates {updates && updates.length > 0 && "(" + updates.length + ")"}</h6>
+            <h6>Complaint updates {updates && updates.length > 0 && "(" + updates.length + ")"}</h6>
             {changeCount && changeCount > 0 && (
               <div className="comp-complaint-update-count">
                 This ticket has been updated, or its content has been edited, {changeCount} times since it was created.

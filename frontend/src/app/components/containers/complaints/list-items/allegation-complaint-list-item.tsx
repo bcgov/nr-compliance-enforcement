@@ -189,14 +189,14 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
           >
             <dl className="hwc-table-dl">
               <div>
-                <dt>Complaint Description</dt>
+                <dt>Complaint description</dt>
                 <dd>{truncatedComplaintDetailText}</dd>
               </div>
             </dl>
 
             <dl className="hwc-table-dl">
               <div>
-                <dt>Location Description</dt>
+                <dt>Location description</dt>
                 {truncatedLocationDetailedText ? (
                   <dd>{truncatedLocationDetailedText}</dd>
                 ) : (

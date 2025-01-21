@@ -23,20 +23,20 @@ export const SideBar: FC = () => {
     },
     {
       id: "create-complaints-link",
-      name: "Create Complaint",
+      name: "Create complaint",
       icon: "bi bi-plus-circle",
       route: "complaint/createComplaint",
     },
     {
       id: "zone-at-a-glance-link",
-      name: "Zone at a Glance",
+      name: "Zone at a glance",
       icon: "bi bi-buildings",
       route: "/zone/at-a-glance",
       excludedRoles: [Roles.CEEB, Roles.PROVINCE_WIDE],
     },
     {
       id: "user-management",
-      name: "User Administration",
+      name: "User administration",
       icon: "bi bi-people",
       route: "/admin/user",
       requiredRoles: [Roles.TEMPORARY_TEST_ADMIN],
