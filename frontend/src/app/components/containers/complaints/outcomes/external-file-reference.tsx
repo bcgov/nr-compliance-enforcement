@@ -157,7 +157,7 @@ export const ExternalFileReference: FC = () => {
               {isEditable && (
                 <>
                   <div className="comp-details-form-row">
-                    <label htmlFor="external-file-reference-number-input">COORS Number</label>
+                    <label htmlFor="external-file-reference-number-input">COORS number</label>
                     <CompInput
                       id="external-file-reference-number-input"
                       divid="external-file-reference-number-div"
@@ -198,7 +198,7 @@ export const ExternalFileReference: FC = () => {
               {!isEditable && (
                 <dl>
                   <div id="external-file-reference-number-div">
-                    <dt>COORS Number</dt>
+                    <dt>COORS number</dt>
                     <dd>
                       <span id="external-file-reference-number">{referenceNumber}</span>
                     </dd>

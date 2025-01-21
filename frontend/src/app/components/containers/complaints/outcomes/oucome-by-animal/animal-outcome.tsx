@@ -224,7 +224,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
 
         <section className="mt-0">
           <hr className="mt-0"></hr>
-          <h5 className="fw-bold mb-3">Outcome Details</h5>
+          <h5 className="fw-bold mb-3">Outcome details</h5>
           <Row as="dl">
             <Col
               xs={12}

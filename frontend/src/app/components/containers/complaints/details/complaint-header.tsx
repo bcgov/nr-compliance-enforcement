@@ -288,7 +288,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           <div className="comp-header-status-container">
             <div className="comp-details-status">
               <dl className="comp-details-date-logged">
-                <dt>Date Logged</dt>
+                <dt>Date logged</dt>
                 <dd className="comp-date-time-value">
                   <div>
                     <i className="bi bi-calendar"></i>
@@ -302,7 +302,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               </dl>
 
               <dl className="comp-details-date-assigned">
-                <dt>Last Updated</dt>
+                <dt>Last updated</dt>
                 <dd className="comp-date-time-value">
                   {lastUpdated && (
                     <>
@@ -321,7 +321,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               </dl>
 
               <dl>
-                <dt>Officer Assigned</dt>
+                <dt>Officer assigned</dt>
                 <dd>
                   <div
                     data-initials-sm={getAvatarInitials(officerAssigned)}
@@ -333,7 +333,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               </dl>
 
               <dl>
-                <dt>Created By</dt>
+                <dt>Created by</dt>
                 <dd>
                   <div
                     data-initials-sm={getAvatarInitials(createdBy)}

@@ -57,11 +57,11 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
         <div className="comp-map-popup-details">
           <dl>
             <div>
-              <dt className="text-muted">Date Logged</dt>
+              <dt className="text-muted">Date logged</dt>
               <dd>{formatDate(loggedDate)}</dd>
             </div>
             <div>
-              <dt className="text-muted">Officer Assigned</dt>
+              <dt className="text-muted">Officer assigned</dt>
               <dd id="comp-details-assigned-officer-name-text-id">{officerAssigned}</dd>
             </div>
             <div>
@@ -81,7 +81,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             id="view-complaint-details-button-id"
             onClick={() => navigate(`/complaint/${complaintType}/${complaint_identifier}`)}
           >
-            View Details
+            View details
           </Button>
         </div>
       </div>

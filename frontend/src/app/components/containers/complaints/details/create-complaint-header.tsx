@@ -27,7 +27,7 @@ export const CreateComplaintHeader: FC<CreateComplaintHeaderProps> = ({
                 className="breadcrumb-item"
                 aria-current="page"
               >
-                Create Complaint
+                Create complaint
               </li>
             </ol>
           </nav>
@@ -37,7 +37,7 @@ export const CreateComplaintHeader: FC<CreateComplaintHeaderProps> = ({
         <div className="comp-details-title-container">
           <div className="comp-details-title-info">
             <h1 className="comp-box-complaint-id">
-              <span>Create Complaint </span>
+              <span>Create complaint </span>
             </h1>
           </div>
           <div className="comp-header-actions">

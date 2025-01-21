@@ -57,7 +57,7 @@ export const OfficeUserContainer: FC<Props> = ({ hwcrOfficers, allegationOfficer
                   </div>
                   <div className="comp-zag-float-left">
                     <div className="comp-zag-stats-title">Human Wildlife Conflict</div>
-                    {showExperimentalFeature && <div className="comp-zag-stats-view">View Complaints</div>}
+                    {showExperimentalFeature && <div className="comp-zag-stats-view">View complaints</div>}
                   </div>
                 </Col>
                 <Col className="comp-zag-office-user">
@@ -69,7 +69,7 @@ export const OfficeUserContainer: FC<Props> = ({ hwcrOfficers, allegationOfficer
                   </div>
                   <div className="comp-zag-float-left">
                     <div className="comp-zag-stats-title">Enforcement</div>
-                    {showExperimentalFeature && <div className="comp-zag-stats-view">View Complaints</div>}
+                    {showExperimentalFeature && <div className="comp-zag-stats-view">View complaints</div>}
                   </div>
                 </Col>
               </Row>

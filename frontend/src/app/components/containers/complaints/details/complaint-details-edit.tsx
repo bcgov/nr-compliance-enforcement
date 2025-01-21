@@ -733,7 +733,7 @@ export const ComplaintDetailsEdit: FC = () => {
         {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
 
         <div className="comp-details-section-header">
-          <h2>Complaint Details</h2>
+          <h2>Complaint details</h2>
           {readOnly && (
             <div className="comp-details-section-header-actions">
               <Button
@@ -743,7 +743,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 onClick={editButtonClick}
               >
                 <i className="bi bi-pencil"></i>
-                <span>Edit Complaint</span>
+                <span>Edit complaint</span>
               </Button>
             </div>
           )}
@@ -814,7 +814,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 className="comp-details-form-row"
                 id="officer-assigned-pair-id"
               >
-                <label id="officer-assigned-select-label-id">Officer Assigned</label>
+                <label id="officer-assigned-select-label-id">Officer assigned</label>
                 <CompSelect
                   id="officer-assigned-select-id"
                   classNamePrefix="comp-select"
@@ -830,7 +830,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
             {/* Call Details */}
             <fieldset>
-              <legend>Call Details</legend>
+              <legend>Call details</legend>
               {complaintType === COMPLAINT_TYPES.HWCR && (
                 <>
                   <div
@@ -857,7 +857,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     id="nature-of-complaint-pair-id"
                   >
                     <label id="nature-of-complaint-label-id">
-                      Nature of Complaint<span className="required-ind">*</span>
+                      Nature of complaint<span className="required-ind">*</span>
                     </label>
                     <CompSelect
                       id="nature-of-complaint-select-id"
@@ -880,7 +880,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   id="violation-type-pair-id"
                 >
                   <label id="violation-label-id">
-                    Violation Type<span className="required-ind">*</span>
+                    Violation type<span className="required-ind">*</span>
                   </label>
                   <Select
                     className="comp-details-input full-width"
@@ -900,7 +900,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   id="general-incident-type-pair-id"
                 >
                   <label id="general-incident-label-id">
-                    General Incident Type<span className="required-ind">*</span>
+                    General incident type<span className="required-ind">*</span>
                   </label>
                   <Select
                     className="comp-details-input full-width"
@@ -921,7 +921,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   id="complaint-description-edit-label-id"
                   htmlFor="complaint-description-textarea-id"
                 >
-                  Complaint Description
+                  Complaint description
                   <span className="required-ind">*</span>
                 </label>
                 <div className="comp-details-edit-input">
@@ -939,7 +939,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 className="comp-details-form-row"
                 id="incident-time-pair-id"
               >
-                <label>Incident Date/Time</label>
+                <label>Incident date/time</label>
                 <div className="comp-details-edit-input">
                   <DatePicker
                     id="complaint-incident-time"
@@ -983,7 +983,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     className="comp-details-form-row"
                     id="violation-in-progress-pair-id"
                   >
-                    <label>Violation in Progress</label>
+                    <label>Violation in progress</label>
                     <div className="comp-details-edit-input">
                       <Select
                         options={yesNoOptions}
@@ -999,7 +999,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     className="comp-details-form-row"
                     id="violation-observed-pair-id"
                   >
-                    <label>Violation Observed</label>
+                    <label>Violation observed</label>
                     <div className="comp-details-edit-input">
                       <Select
                         options={yesNoOptions}
@@ -1017,7 +1017,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 className="comp-details-form-row"
                 id="complaint-location-pair-id"
               >
-                <label id="complaint-location-label-id">Complaint Location</label>
+                <label id="complaint-location-label-id">Complaint location</label>
                 <div className="comp-details-edit-input">
                   <input
                     type="text"
@@ -1033,7 +1033,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 className="comp-details-form-row"
                 id="location-description-pair-id"
               >
-                <label>Location Description</label>
+                <label>Location description</label>
                 <textarea
                   className="comp-form-control"
                   id="complaint-location-description-textarea-id"
@@ -1139,7 +1139,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
             {/* Call Information */}
             <fieldset>
-              <legend>Caller Information</legend>
+              <legend>Caller information</legend>
 
               {enablePrivacyFeature && (
                 <div
@@ -1198,7 +1198,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   className="col-auto"
                   htmlFor="caller-primary-phone-id"
                 >
-                  Primary Phone
+                  Primary phone
                 </label>
                 <div className="comp-details-edit-input">
                   <ValidationPhoneInput
@@ -1222,7 +1222,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   className="col-auto"
                   htmlFor="caller-info-secondary-phone-id"
                 >
-                  Alternate Phone 1
+                  Alternate phone 1
                 </label>
                 <div className="comp-details-edit-input">
                   <ValidationPhoneInput
@@ -1246,7 +1246,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   className="col-auto"
                   htmlFor="caller-info-alternate-phone-id"
                 >
-                  Alternate Phone 2
+                  Alternate phone 2
                 </label>
                 <div className="comp-details-edit-input">
                   <ValidationPhoneInput
@@ -1303,7 +1303,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 className="comp-details-form-row"
                 id="reported-pair-id"
               >
-                <label htmlFor="reported-select-id">Organization Reporting the Complaint</label>
+                <label htmlFor="reported-select-id">Organization reporting the complaint</label>
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="reported-select-id"
@@ -1322,7 +1322,7 @@ export const ComplaintDetailsEdit: FC = () => {
             {/* ERS - Subject of Complaint */}
             {complaintType === COMPLAINT_TYPES.ERS && (
               <fieldset>
-                <legend>Subject of Complaint/Witness Details</legend>
+                <legend>Subject of complaint/witness details</legend>
                 <div
                   className="comp-details-form-row"
                   id="subject-of-complaint-pair-id"

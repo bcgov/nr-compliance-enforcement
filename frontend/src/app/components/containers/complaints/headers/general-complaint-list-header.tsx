@@ -12,7 +12,7 @@ export const GeneralComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sor
     <thead className="sticky-table-header">
       <tr>
         <SortableHeader
-          title="Incident#"
+          title="Complaint #"
           sortFnc={handleSort}
           sortKey="complaint_identifier"
           currentSort={sortKey}
@@ -21,7 +21,7 @@ export const GeneralComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sor
         />
         <SortableHeader
           id="incident-date-column"
-          title="Date/Time"
+          title="Date logged"
           sortFnc={handleSort}
           sortKey="incident_reported_utc_timestmp"
           currentSort={sortKey}
@@ -29,7 +29,7 @@ export const GeneralComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sor
           className="comp-cell-width-160 comp-cell-min-width-160"
         />
         <SortableHeader
-          title="GIR Type"
+          title="GIR type"
           sortFnc={handleSort}
           sortKey="gir_type_code"
           currentSort={sortKey}
@@ -45,7 +45,7 @@ export const GeneralComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sor
         />
 
         <th className="unsortable">
-          <div className="comp-header-label">Location/Address</div>
+          <div className="comp-header-label">Location/address</div>
         </th>
 
         <SortableHeader
@@ -57,7 +57,7 @@ export const GeneralComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sor
         />
 
         <SortableHeader
-          title="Officer Assigned"
+          title="Officer assigned"
           sortFnc={handleSort}
           sortKey="last_name"
           currentSort={sortKey}
@@ -66,7 +66,7 @@ export const GeneralComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sor
 
         <SortableHeader
           id="update-date-column"
-          title="Last Updated"
+          title="Last updated"
           sortFnc={handleSort}
           sortKey="update_utc_timestamp"
           currentSort={sortKey}

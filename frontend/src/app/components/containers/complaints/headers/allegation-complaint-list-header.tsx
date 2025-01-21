@@ -14,7 +14,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
     <thead className="sticky-table-header">
       <tr>
         <SortableHeader
-          title="Incident#"
+          title="Complaint #"
           sortFnc={handleSort}
           sortKey="complaint_identifier"
           currentSort={sortKey}
@@ -24,7 +24,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
 
         <SortableHeader
           id="incident-date-column"
-          title="Date/Time"
+          title="Date logged"
           sortFnc={handleSort}
           sortKey="incident_reported_utc_timestmp"
           currentSort={sortKey}
@@ -33,7 +33,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
         />
 
         <SortableHeader
-          title="Violation Type"
+          title="Violation type"
           sortFnc={handleSort}
           sortKey="violation_code"
           currentSort={sortKey}
@@ -43,7 +43,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
         {/* customization 1:, if there are more than 2 of these exceptions create a new listview item */}
         {!UserService.hasRole([Roles.CEEB_COMPLIANCE_COORDINATOR, Roles.CEEB]) && (
           <SortableHeader
-            title="Violation In Progress"
+            title="Violation in progress"
             sortFnc={handleSort}
             sortKey="in_progress_ind"
             currentSort={sortKey}
@@ -59,7 +59,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
           sortDirection={sortDirection}
         />
         <th className="unsortable">
-          <div className="comp-header-label">Location/Address</div>
+          <div className="comp-header-label">Location/address</div>
         </th>
 
         <SortableHeader
@@ -71,7 +71,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
         />
 
         <SortableHeader
-          title="Officer Assigned"
+          title="Officer assigned"
           sortFnc={handleSort}
           sortKey="last_name"
           currentSort={sortKey}
@@ -79,7 +79,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
         />
 
         <SortableHeader
-          title="Last Updated"
+          title="Last updated"
           sortFnc={handleSort}
           sortKey="update_utc_timestamp"
           currentSort={sortKey}

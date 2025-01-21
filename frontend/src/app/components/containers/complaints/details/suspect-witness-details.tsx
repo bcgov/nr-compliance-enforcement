@@ -8,7 +8,7 @@ export const SuspectWitnessDetails: FC = () => {
 
   return (
     <section className="comp-details-section">
-      <h3>Subject of Complaint / Witness Details</h3>
+      <h3>Subject of complaint / witness details</h3>
       <div className="card">
         <div className="card-body">
           <dl>

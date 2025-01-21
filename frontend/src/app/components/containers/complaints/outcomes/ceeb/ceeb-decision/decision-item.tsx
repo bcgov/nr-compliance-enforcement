@@ -71,7 +71,7 @@ export const DecisionItem: FC<props> = ({
       )}
       {actionTaken === CASE_ACTION_CODE.RESPREC && (
         <div>
-          <dt>NRIS Inspection number</dt>
+          <dt>NRIS inspection number</dt>
           <dd>{inspectionNumber}</dd>
         </div>
       )}

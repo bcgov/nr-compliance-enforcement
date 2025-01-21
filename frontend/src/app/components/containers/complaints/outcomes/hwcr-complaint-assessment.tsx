@@ -916,7 +916,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   id="linked-complaint-div"
                   className={justificationLabelClass}
                 >
-                  <dt>Linked Complaint</dt>
+                  <dt>Linked complaint</dt>
                   <dd>
                     <Link
                       to={`/complaint/HWCR/${selectedLinkedComplaint?.value}`}
@@ -1049,7 +1049,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     className={assessmentDivClass}
                     style={{ marginTop: "0px" }}
                   >
-                    <dt>Category Level</dt>
+                    <dt>Category level</dt>
                     <dd>
                       <span>{selectedCategoryLevel.label}</span>
                     </dd>
