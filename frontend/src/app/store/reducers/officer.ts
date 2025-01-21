@@ -161,7 +161,7 @@ export const updateComplaintAssignee =
         dispatch(updateAllegationComplaintByRow(response as AllegationComplaintDto));
       }
 
-      dispatch(getComplaintById(complaint_identifier, complaint_type));
+      await dispatch(getComplaintById(complaint_identifier, complaint_type));
     } catch (error) {
       console.log(error);
     }
