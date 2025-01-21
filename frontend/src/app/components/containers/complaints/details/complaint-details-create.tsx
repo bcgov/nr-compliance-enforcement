@@ -602,7 +602,7 @@ export const CreateComplaint: FC = () => {
   const handleHwcrComplaint = async (complaint: ComplaintAlias) => {
     const complaintId = await dispatch(createComplaint(complaintType, complaint));
     if (complaintId) {
-      dispatch(getComplaintById(complaintId, complaintType));
+      await dispatch(getComplaintById(complaintId, complaintType));
 
       navigate(`/complaint/${complaintType}/${complaintId}`);
     }
