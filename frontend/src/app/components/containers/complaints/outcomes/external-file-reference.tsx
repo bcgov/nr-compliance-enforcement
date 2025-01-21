@@ -43,7 +43,7 @@ export const ExternalFileReference: FC = () => {
       let data = { ...complaintData, referenceNumber: "" };
       let complaintType = getComplaintType(complaintData);
       //since the updateComplaintById thunk has an asynchronous operation inside it we need to make sure it finishes before moving on
-      dispatch(updateComplaintById(data, complaintType));
+      await dispatch(updateComplaintById(data, complaintType));
       setReferenceNumber("");
       dispatch(getComplaintById(complaintData.id, complaintType));
     }
@@ -76,7 +76,7 @@ export const ExternalFileReference: FC = () => {
       let data = { ...complaintData, referenceNumber: referenceNumber };
       let complaintType = getComplaintType(complaintData);
       //since the updateComplaintById thunk has an asynchronous operation inside it we need to make sure it finishes before moving on
-      dispatch(updateComplaintById(data, complaintType));
+      await dispatch(updateComplaintById(data, complaintType));
       dispatch(getComplaintById(complaintData.id, complaintType));
     }
   };
