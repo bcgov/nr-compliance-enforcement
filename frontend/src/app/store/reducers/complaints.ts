@@ -652,7 +652,7 @@ export const createComplaint =
         const { id } = res;
         result = id;
 
-        dispatch(getComplaintById(id, "HWCR"));
+        await dispatch(getComplaintById(id, "HWCR"));
       });
       ToggleSuccess("Complaint has been saved");
       return result;
