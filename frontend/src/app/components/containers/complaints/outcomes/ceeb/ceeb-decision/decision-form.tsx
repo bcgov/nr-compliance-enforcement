@@ -305,7 +305,7 @@ export const DecisionForm: FC<props> = ({
           id="decision-sector-category"
         >
           <label htmlFor="outcome-decision-sector-category">
-            Sector/Category<span className="required-ind">*</span>
+            Sector/category<span className="required-ind">*</span>
           </label>
           <div className="comp-details-input full-width">
             <CompSelect
@@ -400,7 +400,7 @@ export const DecisionForm: FC<props> = ({
             className="comp-details-form-row"
             id="decision-inspection-number"
           >
-            <label htmlFor="outcome-decision-inspection-number">NRIS Inspection number</label>
+            <label htmlFor="outcome-decision-inspection-number">NRIS inspection number</label>
             <div className="comp-details-input full-width">
               <CompInput
                 id="outcome-decision-inspection-number"

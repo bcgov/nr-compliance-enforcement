@@ -12,7 +12,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
     <thead className="sticky-table-header">
       <tr>
         <SortableHeader
-          title="Incident#"
+          title="Complaint #"
           sortFnc={handleSort}
           sortKey="complaint_identifier"
           currentSort={sortKey}
@@ -21,7 +21,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
         />
         <SortableHeader
           id="incident-date-column"
-          title="Date/Time"
+          title="Date logged"
           sortFnc={handleSort}
           sortKey="incident_reported_utc_timestmp"
           currentSort={sortKey}
@@ -29,7 +29,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
           className="comp-cell-width-160 comp-cell-min-width-160"
         />
         <SortableHeader
-          title="Nature of Complaint"
+          title="Nature of complaint"
           sortFnc={handleSort}
           sortKey="hwcr_complaint_nature_code"
           currentSort={sortKey}
@@ -53,7 +53,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
         />
 
         <th className="unsortable-header">
-          <div className="header-label">Location/Address</div>
+          <div className="header-label">Location/address</div>
         </th>
 
         <SortableHeader
@@ -66,7 +66,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
         />
 
         <SortableHeader
-          title="Officer Assigned"
+          title="Officer assigned"
           sortFnc={handleSort}
           sortKey="last_name"
           currentSort={sortKey}
@@ -75,7 +75,7 @@ export const WildlifeComplaintListHeader: FC<Props> = ({ handleSort, sortKey, so
 
         <SortableHeader
           id="update-date-column"
-          title="Last Updated"
+          title="Last updated"
           sortFnc={handleSort}
           sortKey="update_utc_timestamp"
           currentSort={sortKey}

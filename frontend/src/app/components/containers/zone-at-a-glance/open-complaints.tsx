@@ -79,7 +79,7 @@ export const OpenComplaints: FC<Props> = ({
         </Row>
         {showExperimentalFeature && (
           <Row>
-            <Col>View Complaints</Col>
+            <Col>View complaints</Col>
           </Row>
         )}
       </div>

@@ -127,7 +127,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           activeFilters.showSpeciesFilter && ( // wildlife only filter
             <>
               <div id="comp-filter-nature-of-complaint-id">
-                <label htmlFor="nature-of-complaint-select-id">Nature of Complaint</label>
+                <label htmlFor="nature-of-complaint-select-id">Nature of complaint</label>
                 <div className="filter-select-padding">
                   <CompSelect
                     id="nature-of-complaint-select-id"
@@ -174,7 +174,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           activeFilters.showViolationFilter && ( // wildlife only filter
             <div id="comp-filter-violation-id">
               {/* <!-- violation types --> */}
-              <label htmlFor="violation-type-select-id">Violation Type</label>
+              <label htmlFor="violation-type-select-id">Violation type</label>
               <div className="filter-select-padding">
                 <CompSelect
                   id="violation-type-select-id"
@@ -198,7 +198,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         {COMPLAINT_TYPES.GIR === type &&
           activeFilters.showGirTypeFilter && ( // GIR only filter
             <div id="comp-filter-gir-id">
-              <label htmlFor="gir-type-select-id">Gir Type</label>
+              <label htmlFor="gir-type-select-id">Gir type</label>
               <div className="filter-select-padding">
                 <CompSelect
                   id="gir-type-select-id"
@@ -222,7 +222,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         {activeFilters.showDateFilter && (
           <FilterDate
             id="comp-filter-date-id"
-            label="Date Logged"
+            label="Date logged"
             startDate={startDate}
             endDate={endDate}
             handleDateChange={handleDateRangeChange}
@@ -254,7 +254,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
 
         {COMPLAINT_TYPES.ERS === type && activeFilters.showMethodFilter && (
           <div id="comp-filter-complaint-method-id">
-            <label htmlFor="complaint-method-select-id">Complaint Method</label>
+            <label htmlFor="complaint-method-select-id">Complaint method</label>
             <div className="filter-select-padding">
               <CompSelect
                 id="complaint-method-select-id"
@@ -277,7 +277,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
 
         {UserService.hasRole(Roles.CEEB) && (
           <div id="comp-filter-action-taken-id">
-            <label htmlFor="action-taken-select-id">Action Taken</label>
+            <label htmlFor="action-taken-select-id">Action taken</label>
             <div className="filter-select-padding">
               <CompSelect
                 id="action-taken-select-id"
@@ -300,7 +300,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
 
         {COMPLAINT_TYPES.HWCR === type && activeFilters.showOutcomeAnimalFilter && (
           <div id="comp-filter-status-id">
-            <label htmlFor="status-select-id">Outcome by Animal</label>
+            <label htmlFor="status-select-id">Outcome by animal</label>
             <div className="filter-select-padding">
               <CompSelect
                 id="status-select-id"
@@ -324,7 +324,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         {COMPLAINT_TYPES.HWCR === type && activeFilters.showOutcomeAnimalDateFilter && (
           <FilterDate
             id="comp-filter-outcome-date-id"
-            label="Outcome Date"
+            label="Outcome date"
             startDate={outcomeAnimalStartDate}
             endDate={outcomeAnimalEndDate}
             handleDateChange={handleOutcomeDateRangeChange}
@@ -410,7 +410,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           )}
           {activeFilters.showOfficerFilter && (
             <div id="comp-filter-officer-id">
-              <label htmlFor="officer-select-id">Officer Assigned</label>
+              <label htmlFor="officer-select-id">Officer assigned</label>
               <div className="filter-select-padding">
                 <CompSelect
                   id="officer-select-id"

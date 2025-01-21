@@ -80,7 +80,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData }) => {
             {expandedComplaints[data.id] && (
               <div className="comp-details-section">
                 <div>
-                  <dt>Complaint Description</dt>
+                  <dt>Complaint description</dt>
                   <dd>{data.details}</dd>
                 </div>
                 {data.name && (
@@ -91,7 +91,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData }) => {
                 )}
                 {data.phone && (
                   <div>
-                    <dt>Primary Phone</dt>
+                    <dt>Primary phone</dt>
                     <dd>{formatPhoneNumber(data.phone)}</dd>
                   </div>
                 )}

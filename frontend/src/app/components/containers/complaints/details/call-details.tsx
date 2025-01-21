@@ -33,20 +33,20 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
 
   return (
     <section className="comp-details-section">
-      <h3>Call Details</h3>
+      <h3>Call details</h3>
 
       <Card>
         <Card.Body>
           {/* General Call Information */}
           <dl className="comp-call-details-group">
             <div>
-              <dt>Complaint Description</dt>
+              <dt>Complaint description</dt>
               <dd>
                 <pre id="comp-details-description">{details}</pre>
               </dd>
             </div>
             <div>
-              <dt>Incident Date/Time</dt>
+              <dt>Incident date/time</dt>
               <dd
                 className="comp-date-time-value"
                 id="complaint-incident-date-time"
@@ -87,11 +87,11 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
             {complaintType === COMPLAINT_TYPES.ERS && (
               <>
                 <div>
-                  <dt>Violation In Progress</dt>
+                  <dt>Violation in progress</dt>
                   <dd id="comp-details-violation-in-progress">{violationInProgress ? "Yes" : "No"}</dd>
                 </div>
                 <div>
-                  <dt>Violation Observed</dt>
+                  <dt>Violation observed</dt>
                   <dd
                     id="comp-details-violation-observed"
                     className="comp-details-content"
@@ -106,11 +106,11 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
           {/* Location Information */}
           <dl className="comp-call-details-group">
             <div>
-              <dt>Complaint Location</dt>
+              <dt>Complaint location</dt>
               <dd id="comp-details-location">{location}</dd>
             </div>
             <div>
-              <dt>Location Description</dt>
+              <dt>Location description</dt>
               <dd id="comp-details-location-description">{locationDescription}</dd>
             </div>
             <CompLocationInfo
