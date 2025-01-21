@@ -354,9 +354,9 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     // Species - not on ERS tab
     cy.get("#species-pair-id").should("not.exist");
 
-    // Violation Type
+    // Violation type
     cy.get("#violation-type-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Violation Type");
+      expect($label).to.contain.text("Violation type");
     });
     cy.get("#violation-type-pair-id .comp-details-input").should("exist");
 

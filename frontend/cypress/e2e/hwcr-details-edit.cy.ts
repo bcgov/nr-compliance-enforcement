@@ -309,9 +309,9 @@ describe("Complaint Edit Page spec - Edit View", () => {
 
     // Note: if the layout of this page changes, these selectors that use classes may break
     // Check the First Section inputs
-    // Nature of Complaint
+    // Nature of complaint
     cy.get("#nature-of-complaint-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Nature of Complaint");
+      expect($label).to.contain.text("Nature of complaint");
     });
     cy.get("#nature-of-complaint-pair-id .comp-details-input").should("exist");
 
