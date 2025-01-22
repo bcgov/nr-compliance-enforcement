@@ -739,6 +739,7 @@ export const CreateComplaint: FC = () => {
                     onChange={(e) => handleNatureOfComplaintChange(e)}
                     className="comp-details-input"
                     options={hwcrNatureOfComplaintCodes}
+                    showInactive={false}
                     placeholder="Select"
                     enableValidation={true}
                     errorMessage={natureOfComplaintErrorMsg}
@@ -1002,7 +1003,7 @@ export const CreateComplaint: FC = () => {
         </fieldset>
 
         <fieldset>
-          <legend>Caller Information</legend>
+          <legend>Caller information</legend>
           {enablePrivacyFeature && (
             <div
               className="comp-details-form-row"
