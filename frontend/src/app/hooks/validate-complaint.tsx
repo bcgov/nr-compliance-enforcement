@@ -79,7 +79,7 @@ const useValidateComplaint = () => {
         !isInEdit.attachments &&
         !isInEdit.fileReview;
 
-      //check Assessment section must be filled out
+      //check Assessment section must be filled out if complaint type is HWCR
       const assessmentCriteria = complaintType === COMPLAINT_TYPES.HWCR ? Object.keys(assessment).length !== 0 : true;
 
       //check Prevention must be filled out if action required is Yes
