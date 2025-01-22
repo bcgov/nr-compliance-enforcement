@@ -1003,7 +1003,7 @@ export const CreateComplaint: FC = () => {
         </fieldset>
 
         <fieldset>
-          <legend>Caller Information</legend>
+          <legend>Caller information</legend>
           {enablePrivacyFeature && (
             <div
               className="comp-details-form-row"
