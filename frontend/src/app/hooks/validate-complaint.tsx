@@ -11,6 +11,9 @@ import {
 } from "@store/reducers/case-selectors";
 import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
 import { AnimalOutcomeSubject } from "@apptypes/state/cases-state";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { selectComplaint } from "@/app/store/reducers/complaints";
+import { getComplaintType } from "@/app/common/methods";
 
 type validationResults = {
   canCloseComplaint: boolean;
@@ -36,6 +39,8 @@ const useValidateComplaint = () => {
   const isInEdit = useAppSelector(selectIsInEdit);
   const isReviewRequired = useAppSelector(selectIsReviewRequired);
   const reviewComplete = useAppSelector(selectReviewComplete);
+  const complaint = useAppSelector(selectComplaint);
+  const complaintType = getComplaintType(complaint!);
 
   // State
   const [validationResults, setValidationResults] = useState<validationResults>({
@@ -75,7 +80,7 @@ const useValidateComplaint = () => {
         !isInEdit.fileReview;
 
       //check Assessment section must be filled out
-      const assessmentCriteria = Object.keys(assessment).length !== 0;
+      const assessmentCriteria = complaintType === COMPLAINT_TYPES.HWCR ? Object.keys(assessment).length !== 0 : true;
 
       //check Prevention must be filled out if action required is Yes
       const preventionCriteria = assessment.action_required === "Yes" ? Object.keys(prevention).length !== 0 : true;
