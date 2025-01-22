@@ -273,8 +273,12 @@ export const parseCoordinates = (coordinates: Coordinate, coordinateType: Coordi
 // Helper function for determining what type of complaint your are working with
 // so you can pass that type onto the backend for proper processing
 export const getComplaintType = (
-  complaint: WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
+  complaint: WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto | null,
 ): string => {
+  if (!complaint) {
+    return "Unknown";
+  }
+
   if ("hwcrId" in complaint) {
     return COMPLAINT_TYPES.HWCR;
   }

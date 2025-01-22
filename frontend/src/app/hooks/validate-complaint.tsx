@@ -40,7 +40,7 @@ const useValidateComplaint = () => {
   const isReviewRequired = useAppSelector(selectIsReviewRequired);
   const reviewComplete = useAppSelector(selectReviewComplete);
   const complaint = useAppSelector(selectComplaint);
-  const complaintType = getComplaintType(complaint!);
+  const complaintType = getComplaintType(complaint);
 
   // State
   const [validationResults, setValidationResults] = useState<validationResults>({
