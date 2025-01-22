@@ -16,6 +16,7 @@ type Props = {
   onChange?: (selectedOption: Option | null) => void;
   isDisabled?: boolean;
   isClearable?: boolean;
+  showInactive?: boolean;
 };
 
 export const CompSelect: FC<Props> = ({
@@ -32,13 +33,17 @@ export const CompSelect: FC<Props> = ({
   errorMessage,
   isDisabled,
   isClearable,
+  showInactive = true,
 }) => {
   let styles: StylesConfig = {};
 
   let items: Option[] = [];
 
   if (options) {
-    items = [...options];
+    items = [...options.filter((o) => (showInactive ? true : o.isActive))];
+    if (value && !items.find((o) => o.value === value.value)) {
+      items.push(value);
+    }
   }
 
   // If "none" is an option, lighten the colour a bit so that it doesn't appear the same as the other selectable options
