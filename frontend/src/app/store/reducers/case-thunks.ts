@@ -76,6 +76,8 @@ export const getCaseFile =
       dispatch(setAssessment({ assessment }));
       const updatedPreventionData = await parsePreventionResponse(response, officers);
       dispatch(setPrevention({ prevention: updatedPreventionData }));
+      dispatch(setIsReviewedRequired(response.isReviewRequired));
+      dispatch(setReviewComplete(response.reviewComplete));
     } else {
       // If there is no case file clear the assessment and prevention sections
       dispatch(setAssessment({}));
