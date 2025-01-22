@@ -898,8 +898,8 @@ export const selectHwcrNatureOfComplaintCodeDropdown = (state: RootState): Array
     codeTables: { "nature-of-complaint": natureOfComplaints },
   } = state;
 
-  const data = natureOfComplaints.map(({ natureOfComplaint, longDescription }) => {
-    const item: Option = { label: longDescription, value: natureOfComplaint };
+  const data = natureOfComplaints.map(({ natureOfComplaint, longDescription, isActive }) => {
+    const item: Option = { label: longDescription, value: natureOfComplaint, isActive };
     return item;
   });
   return data;

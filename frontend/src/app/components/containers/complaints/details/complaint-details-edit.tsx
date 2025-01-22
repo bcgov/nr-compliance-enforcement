@@ -868,6 +868,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       onChange={(e) => handleNatureOfComplaintChange(e)}
                       className="comp-details-input full-width"
                       options={hwcrNatureOfComplaintCodes}
+                      showInactive={false}
                       defaultOption={selectedNatureOfComplaint}
                       placeholder="Select"
                       enableValidation={true}
