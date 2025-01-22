@@ -9,6 +9,7 @@ import {
   selectComplaintCallerInformation,
   selectComplaintHeader,
   selectComplaintAssignedBy,
+  selectComplaintViewMode,
 } from "@store/reducers/complaints";
 import { selectPreventionTypeCodeDropdown } from "@store/reducers/code-table";
 import { useParams } from "react-router-dom";
@@ -56,6 +57,7 @@ export const HWCRComplaintPrevention: FC = () => {
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const assignableOfficers = useAppSelector(selectOfficerListByAgency);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
@@ -234,6 +236,7 @@ export const HWCRComplaintPrevention: FC = () => {
               size="sm"
               id="prevention-edit-button"
               onClick={toggleEdit}
+              disabled={isReadOnly}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
@@ -250,6 +253,7 @@ export const HWCRComplaintPrevention: FC = () => {
             onClick={() => {
               setShowContent(true);
             }}
+            disabled={isReadOnly}
           >
             <i className="bi bi-plus-circle"></i>
             <span>Add actions</span>

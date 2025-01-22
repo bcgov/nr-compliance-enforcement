@@ -388,7 +388,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               className="comp-details-form-row"
               id="equipment-officer-set-div"
             >
-              <label htmlFor="equipment-officer-set-select">Set/Used by</label>
+              <label htmlFor="equipment-officer-set-select">Set/used by</label>
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="equipment-officer-set-select"
@@ -408,7 +408,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               className="comp-details-form-row"
               id="equipment-date-set-div"
             >
-              <label htmlFor="equipment-day-set">Set/Used date</label>
+              <label htmlFor="equipment-day-set">Set/used date</label>
               <div className="comp-details-input">
                 <ValidationDatePicker
                   id="equipment-day-set"

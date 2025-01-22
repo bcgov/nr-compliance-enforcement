@@ -370,7 +370,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
               className="mb-3"
               id="comp-outcome-report-animal-information-heading"
             >
-              Animal Information
+              Animal information
             </legend>
 
             <div className="comp-details-form-row">
@@ -494,7 +494,7 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
               className="mb-3"
               id="comp-outcome-report-outcome-heading"
             >
-              Outcome Details
+              Outcome details
             </legend>
 
             <div className="comp-details-form">

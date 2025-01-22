@@ -26,7 +26,7 @@ const MapListToggle: React.FC<Props> = ({ activeView, onToggle, className }) => 
       onChange={(view) => onToggle(view as "list" | "map")}
     >
       <ToggleButton
-        title="Complaint List View"
+        title="Complaint list view"
         value="list"
         id="list_toggle_id"
         className={setElementActive("toggle-button", "list")}
@@ -38,7 +38,7 @@ const MapListToggle: React.FC<Props> = ({ activeView, onToggle, className }) => 
         <span className={setElementActive("toggle-button-text", "list")}>List</span>
       </ToggleButton>
       <ToggleButton
-        title="Complaint Map View"
+        title="Complaint map view"
         value="map"
         id="map_toggle_id"
         className={setElementActive("toggle-button", "map")}

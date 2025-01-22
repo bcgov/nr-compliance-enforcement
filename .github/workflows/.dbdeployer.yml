@@ -5,12 +5,12 @@ on:
     inputs: ### Required
       directory:
         description: Crunchy Chart directory
-        default: 'charts/crunchy'
+        default: "charts/crunchy"
         required: false
         type: string
       oc_server:
         default: https://api.silver.devops.gov.bc.ca:6443
-        description: 'OpenShift server'
+        description: "OpenShift server"
         required: false
         type: string
       environment:
@@ -21,29 +21,29 @@ on:
         description: Cluster environment name, should be dev,test,prod
         required: false
         type: string
-        default: 'dev'
+        default: "dev"
       s3_enabled:
         description: Enable S3 backups
         required: false
         default: true
         type: boolean
       values:
-        description: 'Values file'
-        default: 'values.yaml'
+        description: "Values file"
+        default: "values.yaml"
         required: false
         type: string
       app_values:
-        description: 'App specific values file which is present inside charts/app'
-        default: 'values.yaml'
+        description: "App specific values file which is present inside charts/app"
+        default: "values.yaml"
         required: false
         type: string
       enabled:
-        description: 'Enable the deployment of the crunchy database, easy switch to turn it on/off'
+        description: "Enable the deployment of the crunchy database, easy switch to turn it on/off"
         default: true
         required: false
         type: boolean
       timeout-minutes:
-        description: 'Timeout minutes'
+        description: "Timeout minutes"
         default: 20
         required: false
         type: number
@@ -52,8 +52,8 @@ on:
         required: false
         type: string
       params:
-        description: 'Extra parameters to pass to helm upgrade'
-        default: ''
+        description: "Extra parameters to pass to helm upgrade"
+        default: ""
         required: false
         type: string
     secrets:
@@ -146,47 +146,44 @@ jobs:
         shell: bash
         if: github.event_name == 'pull_request'
         run: |
-            echo 'Adding PR specific user to Crunchy DB'
-            NEW_USER='{"databases":["app-${{ github.event.number }}"],"name":"app-${{ github.event.number }}"}'
-            CURRENT_USERS=$(oc get PostgresCluster/postgres-crunchy-${{ inputs.cluster_environment }} -o json | jq '.spec.users')
-            echo "${CURRENT_USERS}"
+          echo 'Adding PR specific user to Crunchy DB'
+          NEW_USER='{"databases":["app-${{ github.event.number }}"],"name":"app-${{ github.event.number }}"}'
+          CURRENT_USERS=$(oc get PostgresCluster/postgres-crunchy-${{ inputs.cluster_environment }} -o json | jq '.spec.users')
+          echo "${CURRENT_USERS}"
 
-            # check if current_users already contains the new_user
-            if echo "${CURRENT_USERS}" | jq -e ".[] | select(.name == \"app-${{ github.event.number }}\")" > /dev/null; then
-              echo "User already exists"
-              exit 0
+          # check if current_users already contains the new_user
+          if echo "${CURRENT_USERS}" | jq -e ".[] | select(.name == \"app-${{ github.event.number }}\")" > /dev/null; then
+            echo "User already exists"
+            exit 0
+          fi
+
+          UPDATED_USERS=$(echo "$CURRENT_USERS" | jq --argjson NEW_USER "$NEW_USER" '. + [$NEW_USER]')
+          echo "$UPDATED_USERS"
+          PATCH_JSON=$(jq -n --argjson users "$UPDATED_USERS" '{"spec": {"users": $users}}')
+          echo "$PATCH_JSON"
+          oc patch PostgresCluster/postgres-crunchy-${{ inputs.cluster_environment }} --type=merge -p "${PATCH_JSON}"
+
+          # wait for sometime as it takes time to create the user, query the secret and check if it is created, otherwise wait in a loop for 10 rounds
+          for i in {1..10}; do
+            if oc get secret postgres-crunchy-${{ inputs.cluster_environment }}-pguser-app-${{ github.event.number }} -o jsonpath='{.metadata.name}' > /dev/null; then
+              echo "Secret created"
+              break
+            else
+              echo "Secret not created, waiting for 60 seconds"
+              sleep 60
             fi
+          done
 
-            UPDATED_USERS=$(echo "$CURRENT_USERS" | jq --argjson NEW_USER "$NEW_USER" '. + [$NEW_USER]')
-            echo "$UPDATED_USERS"
-            PATCH_JSON=$(jq -n --argjson users "$UPDATED_USERS" '{"spec": {"users": $users}}')
-            echo "$PATCH_JSON"
-            oc patch PostgresCluster/postgres-crunchy-${{ inputs.cluster_environment }} --type=merge -p "${PATCH_JSON}"
-
-            # wait for sometime as it takes time to create the user, query the secret and check if it is created, otherwise wait in a loop for 10 rounds
-            for i in {1..10}; do
-              if oc get secret postgres-crunchy-${{ inputs.cluster_environment }}-pguser-app-${{ github.event.number }} -o jsonpath='{.metadata.name}' > /dev/null; then
-                echo "Secret created"
-                break
-              else
-                echo "Secret not created, waiting for 60 seconds"
-                sleep 60
-              fi
-            done
-
-            # Add public schema and grant to PR user
-            # get primary crunchy pod and remove the role and db
-            CRUNCHY_PG_PRIMARY_POD_NAME=$(oc get pods -l postgres-operator.crunchydata.com/role=master -o json | jq -r '.items[0].metadata.name')
-            echo "${CRUNCHY_PG_PRIMARY_POD_NAME}"
-            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "CREATE SCHEMA IF NOT EXISTS public;"
-            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON SCHEMA public TO \"app-${{ github.event.number }}\";"
-            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO \"app-${{ github.event.number }}\";"
-            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO \"app-${{ github.event.number }}\";"
-            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO \"app-${{ github.event.number }}\";"
-            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO \"app-${{ github.event.number }}\";"
-            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO \"app-${{ github.event.number }}\";"
-            oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON FUNCTIONS TO \"app-${{ github.event.number }}\";"
-            # TODO: remove these
-
-            
-
+          # Add public schema and grant to PR user
+          # get primary crunchy pod and remove the role and db
+          CRUNCHY_PG_PRIMARY_POD_NAME=$(oc get pods -l postgres-operator.crunchydata.com/role=master -o json | jq -r '.items[0].metadata.name')
+          echo "${CRUNCHY_PG_PRIMARY_POD_NAME}"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "CREATE SCHEMA IF NOT EXISTS public;"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON SCHEMA public TO \"app-${{ github.event.number }}\";"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO \"app-${{ github.event.number }}\";"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO \"app-${{ github.event.number }}\";"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO \"app-${{ github.event.number }}\";"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO \"app-${{ github.event.number }}\";"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO \"app-${{ github.event.number }}\";"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON FUNCTIONS TO \"app-${{ github.event.number }}\";"
+          # TODO: remove these

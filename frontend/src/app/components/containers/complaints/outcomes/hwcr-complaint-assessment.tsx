@@ -9,6 +9,8 @@ import {
   selectComplaintAssignedBy,
   selectComplaintLargeCarnivoreInd,
   selectLinkedComplaints,
+  getLinkedComplaints,
+  selectComplaintViewMode,
 } from "@store/reducers/complaints";
 import {
   selectAssessmentCat1Dropdown,
@@ -95,6 +97,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const assessmentCat1Options = useAppSelector(selectAssessmentCat1Dropdown);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const validationResults = useValidateComplaint();
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const hasAssessment = Object.keys(cases.assessment).length > 0;
   const showSectionErrors =
@@ -555,6 +558,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 variant="outline-primary"
                 size="sm"
                 onClick={toggleEdit}
+                disabled={isReadOnly}
               >
                 <i className="bi bi-pencil"></i>
                 <span>Edit</span>
@@ -600,6 +604,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       value={selectedActionRequired}
                       placeholder="Select"
                       onChange={(e) => handleActionRequiredChange(e)}
+                      isDisabled={isReadOnly}
                     />
                   )}
                 </div>
@@ -825,6 +830,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     value={selectedOfficer}
                     placeholder="Select "
                     onChange={(officer: any) => setSelectedOfficer(officer)}
+                    isDisabled={isReadOnly}
                   />
                 </div>
               </div>
@@ -843,6 +849,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     classNamePrefix="comp-select" // Adjust class as needed
                     errMsg={assessmentDateErrorMessage} // Pass error message if any
                     maxDate={new Date()}
+                    isDisabled={isReadOnly}
                   />
                 </div>
               </div>
@@ -852,6 +859,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   id="outcome-cancel-button"
                   title="Cancel Outcome"
                   onClick={quickClose ? handleClose : cancelButtonClick}
+                  disabled={isReadOnly}
                 >
                   Cancel
                 </Button>
@@ -860,6 +868,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   id="outcome-save-button"
                   title="Save Outcome"
                   onClick={saveButtonClick}
+                  disabled={isReadOnly}
                 >
                   <span>{quickClose ? "Save and Close" : "Save"}</span>
                 </Button>
@@ -885,7 +894,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   id="linked-complaint-div"
                   className={justificationLabelClass}
                 >
-                  <dt>Linked Complaint</dt>
+                  <dt>Linked complaint</dt>
                   <dd>
                     <Link
                       to={`/complaint/HWCR/${selectedLinkedComplaint?.value}`}
@@ -1018,7 +1027,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     className={assessmentDivClass}
                     style={{ marginTop: "0px" }}
                   >
-                    <dt>Category Level</dt>
+                    <dt>Category level</dt>
                     <dd>
                       <span>{selectedCategoryLevel.label}</span>
                     </dd>

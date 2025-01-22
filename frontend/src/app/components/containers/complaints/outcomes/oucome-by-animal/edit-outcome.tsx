@@ -412,7 +412,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                 className="mb-3"
                 id="comp-outcome-report-animal-information-heading"
               >
-                Animal Information
+                Animal information
               </legend>
               <div className="comp-details-form-row">
                 <label htmlFor="select-species">

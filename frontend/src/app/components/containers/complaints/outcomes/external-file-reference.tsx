@@ -4,13 +4,19 @@ import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { CompInput } from "@components/common/comp-input";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM, DELETE_CONFIRM } from "@apptypes/modal/modal-types";
-import { getComplaintById, selectComplaint, updateComplaintById } from "@store/reducers/complaints";
+import {
+  getComplaintById,
+  selectComplaint,
+  selectComplaintViewMode,
+  updateComplaintById,
+} from "@store/reducers/complaints";
 import { getComplaintType } from "@common/methods";
 
 export const ExternalFileReference: FC = () => {
   const dispatch = useAppDispatch();
 
   const complaintData = useAppSelector(selectComplaint);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const [isEditable, setIsEditable] = useState<boolean>(true);
   const [referenceNumber, setReferenceNumber] = useState<string>("");
@@ -134,6 +140,7 @@ export const ExternalFileReference: FC = () => {
                 size="sm"
                 id="external-file-reference-edit-button"
                 onClick={(e) => setIsEditable(true)}
+                disabled={isReadOnly}
               >
                 <i className="bi bi-pencil"></i>
                 <span>Edit</span>
@@ -143,6 +150,7 @@ export const ExternalFileReference: FC = () => {
                 variant="outline-primary"
                 id="external-file-reference-delete-button"
                 onClick={() => handleExternalFileReferenceDelete()}
+                disabled={isReadOnly}
               >
                 <i className="bi bi-trash3"></i>
                 <span>Delete</span>
@@ -157,7 +165,7 @@ export const ExternalFileReference: FC = () => {
               {isEditable && (
                 <>
                   <div className="comp-details-form-row">
-                    <label htmlFor="external-file-reference-number-input">COORS Number</label>
+                    <label htmlFor="external-file-reference-number-input">COORS number</label>
                     <CompInput
                       id="external-file-reference-number-input"
                       divid="external-file-reference-number-div"
@@ -172,6 +180,7 @@ export const ExternalFileReference: FC = () => {
                         } = evt;
                         handleExternalFileReferenceChange(value);
                       }}
+                      disabled={isReadOnly}
                     />
                   </div>
                   <div className="comp-details-form-buttons">
@@ -180,6 +189,7 @@ export const ExternalFileReference: FC = () => {
                       id="external-file-reference-cancel-button"
                       title="Cancel"
                       onClick={handleExternalFileReferenceCancel}
+                      disabled={isReadOnly}
                     >
                       Cancel
                     </Button>
@@ -188,6 +198,7 @@ export const ExternalFileReference: FC = () => {
                       id="external-file-reference-save-button"
                       title="Save"
                       onClick={handleExternalFileReferenceSave}
+                      disabled={isReadOnly}
                     >
                       Save
                     </Button>
@@ -198,7 +209,7 @@ export const ExternalFileReference: FC = () => {
               {!isEditable && (
                 <dl>
                   <div id="external-file-reference-number-div">
-                    <dt>COORS Number</dt>
+                    <dt>COORS number</dt>
                     <dd>
                       <span id="external-file-reference-number">{referenceNumber}</span>
                     </dd>

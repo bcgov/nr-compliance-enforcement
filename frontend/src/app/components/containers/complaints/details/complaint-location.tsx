@@ -74,7 +74,7 @@ export const ComplaintLocation: FC<Props> = ({
 
   return (
     <section className={"comp-details-section" + calculatedClass}>
-      <h3>Complaint Location</h3>
+      <h3>Complaint location</h3>
       <LeafletMapWithPoint
         coordinates={markerPosition && { lat: markerPosition.lat, lng: markerPosition.lng }}
         draggable={draggable}

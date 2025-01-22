@@ -21,6 +21,7 @@ type Props = {
   onFileDeleted?: (attachments: COMSObject) => void;
   onSlideCountChange?: (count: number) => void;
   setCancelPendingUpload?: (isCancelUpload: boolean) => void | null;
+  disabled?: boolean | null;
 };
 
 export const AttachmentsCarousel: FC<Props> = ({
@@ -33,6 +34,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   onFileDeleted,
   onSlideCountChange,
   setCancelPendingUpload,
+  disabled,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -207,7 +209,12 @@ export const AttachmentsCarousel: FC<Props> = ({
           className="comp-carousel"
         >
           <Slider className="coms-slider">
-            {allowUpload && <AttachmentUpload onFileSelect={onFileSelect} />}
+            {allowUpload && (
+              <AttachmentUpload
+                onFileSelect={onFileSelect}
+                disabled={disabled}
+              />
+            )}
             {slides?.map((item, index) => (
               <AttachmentSlide
                 key={item.name}

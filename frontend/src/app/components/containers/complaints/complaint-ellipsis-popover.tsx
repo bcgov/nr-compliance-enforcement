@@ -59,7 +59,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
           className="popover-text"
           onClick={openStatusChangeModal}
         >
-          Update Status
+          Update status
         </div>
       </Popover.Body>
     </Popover>

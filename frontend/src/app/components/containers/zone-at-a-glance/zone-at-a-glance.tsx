@@ -30,7 +30,7 @@ export const ZoneAtAGlance: FC = () => {
   return (
     <div className="comp-page-container">
       <div className="comp-page-title-container">
-        <h1 className="mb-4">Zone At a Glance</h1>
+        <h1 className="mb-4">Zone at a glance</h1>
       </div>
       <div className="comp-zag-container">
         <div className="comp-zag-banner">
@@ -42,7 +42,7 @@ export const ZoneAtAGlance: FC = () => {
           />
         </div>
         <div className="comp-zag-charts comp-padding-left-md">
-          <h6 className="comp-margin-top-xs">Open Complaints</h6>
+          <h6 className="comp-margin-top-xs">Open complaints</h6>
 
           <Row>
             <Col md="6">

@@ -20,7 +20,7 @@ export const CallerInformation: FC = () => {
 
   return (
     <section className="comp-details-section">
-      <h3>Caller Information</h3>
+      <h3>Caller information</h3>
       <Card>
         <Card.Body>
           <dl>
@@ -35,15 +35,15 @@ export const CallerInformation: FC = () => {
               <dd id="comp-details-name">{name}</dd>
             </div>
             <div>
-              <dt>Primary Phone</dt>
+              <dt>Primary phone</dt>
               <dd id="comp-details-phone">{formatPhoneNumber(primaryPhone !== undefined ? primaryPhone : "")}</dd>
             </div>
             <div>
-              <dt>Alternative Phone 1</dt>
+              <dt>Alternative phone 1</dt>
               <dd id="comp-details-phone-1">{formatPhoneNumber(secondaryPhone !== undefined ? secondaryPhone : "")}</dd>
             </div>
             <div>
-              <dt>Alternative Phone 2</dt>
+              <dt>Alternative phone 2</dt>
               <dd id="comp-details-phone-2">{formatPhoneNumber(alternatePhone !== undefined ? alternatePhone : "")}</dd>
             </div>
             <div>
@@ -55,7 +55,7 @@ export const CallerInformation: FC = () => {
               <dd id="comp-details-email">{email}</dd>
             </div>
             <div>
-              <dt>Organization Reporting the Complaint</dt>
+              <dt>Organization reporting the complaint</dt>
               <dd id="comp-details-reported">{reportedByCode?.longDescription}</dd>
             </div>
           </dl>

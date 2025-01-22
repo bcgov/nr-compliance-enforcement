@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Link } from "react-router-dom";
 import COMPLAINT_TYPES, { complaintTypeToName } from "@apptypes/app/complaint-types";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectComplaintHeader } from "@store/reducers/complaints";
+import { selectComplaintHeader, selectComplaintViewMode } from "@store/reducers/complaints";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
 
 import { Badge, Button, Dropdown } from "react-bootstrap";
@@ -46,6 +46,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     girType,
   } = useAppSelector(selectComplaintHeader(complaintType));
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
@@ -175,6 +176,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                         <Dropdown.Item
                           as="button"
                           onClick={openQuickCloseModal}
+                          disabled={isReadOnly}
                         >
                           <i className="bi bi-journal-x"></i>
                           <span>Quick close</span>
@@ -183,6 +185,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       <Dropdown.Item
                         as="button"
                         onClick={openAsignOfficerModal}
+                        disabled={isReadOnly}
                       >
                         <i className="bi bi-person-plus"></i>
                         <span>{assignText}</span>
@@ -211,6 +214,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       title="Quick close"
                       variant="outline-light"
                       onClick={openQuickCloseModal}
+                      disabled={isReadOnly}
                     >
                       <i className="bi bi-journal-x"></i>
                       <span>Quick close</span>
@@ -221,6 +225,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     title="Assign to officer"
                     variant="outline-light"
                     onClick={openAsignOfficerModal}
+                    disabled={isReadOnly}
                   >
                     <i className="bi bi-person-plus"></i>
                     <span>{assignText}</span>
@@ -288,7 +293,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           <div className="comp-header-status-container">
             <div className="comp-details-status">
               <dl className="comp-details-date-logged">
-                <dt>Date Logged</dt>
+                <dt>Date logged</dt>
                 <dd className="comp-date-time-value">
                   <div>
                     <i className="bi bi-calendar"></i>
@@ -302,7 +307,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               </dl>
 
               <dl className="comp-details-date-assigned">
-                <dt>Last Updated</dt>
+                <dt>Last updated</dt>
                 <dd className="comp-date-time-value">
                   {lastUpdated && (
                     <>
@@ -321,7 +326,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               </dl>
 
               <dl>
-                <dt>Officer Assigned</dt>
+                <dt>Officer assigned</dt>
                 <dd>
                   <div
                     data-initials-sm={getAvatarInitials(officerAssigned)}
@@ -333,7 +338,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               </dl>
 
               <dl>
-                <dt>Created By</dt>
+                <dt>Created by</dt>
                 <dd>
                   <div
                     data-initials-sm={getAvatarInitials(createdBy)}

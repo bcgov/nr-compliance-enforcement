@@ -51,7 +51,7 @@ export const DecisionItem: FC<props> = ({
         <dd>{getDropdownOption(schedule, schedulesOptions)?.label}</dd>
       </div>
       <div>
-        <dt>Sector/Category</dt>
+        <dt>Sector/category</dt>
         <dd>{getDropdownOption(sector, sectorsOptions)?.label}</dd>
       </div>
       <div>
@@ -71,7 +71,7 @@ export const DecisionItem: FC<props> = ({
       )}
       {actionTaken === CASE_ACTION_CODE.RESPREC && (
         <div>
-          <dt>NRIS Inspection number</dt>
+          <dt>NRIS inspection number</dt>
           <dd>{inspectionNumber}</dd>
         </div>
       )}

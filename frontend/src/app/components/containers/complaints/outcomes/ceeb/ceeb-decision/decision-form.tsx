@@ -23,6 +23,7 @@ import { selectCaseId } from "@store/reducers/case-selectors";
 import { UUID } from "crypto";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { getDropdownOption } from "@/app/common/methods";
+import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 
 type props = {
   leadIdentifier: string;
@@ -71,6 +72,7 @@ export const DecisionForm: FC<props> = ({
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const leadAgencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const scheduleSectorType = useAppSelector(selectScheduleSectorXref);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   //-- error messgaes
   const [scheduleErrorMessage, setScheduleErrorMessage] = useState("");
@@ -293,6 +295,7 @@ export const DecisionForm: FC<props> = ({
                   handleScheduleChange(evt.value);
                 }
               }}
+              isDisabled={isReadOnly}
               value={getDropdownOption(data.schedule, schedulesOptions)}
             />
           </div>
@@ -302,7 +305,7 @@ export const DecisionForm: FC<props> = ({
           id="decision-sector-category"
         >
           <label htmlFor="outcome-decision-sector-category">
-            Sector/Category<span className="required-ind">*</span>
+            Sector/category<span className="required-ind">*</span>
           </label>
           <div className="comp-details-input full-width">
             <CompSelect
@@ -316,6 +319,7 @@ export const DecisionForm: FC<props> = ({
               onChange={(evt) => {
                 updateModel("sector", evt?.value);
               }}
+              isDisabled={isReadOnly}
               value={getDropdownOption(data.sector, sectorsOptions) || { value: "", label: "" }}
             />
           </div>
@@ -339,6 +343,7 @@ export const DecisionForm: FC<props> = ({
               onChange={(evt) => {
                 updateModel("discharge", evt?.value);
               }}
+              isDisabled={isReadOnly}
               value={getDropdownOption(data.discharge, dischargesOptions)}
             />
           </div>
@@ -362,6 +367,7 @@ export const DecisionForm: FC<props> = ({
                 const action = evt?.value ? evt?.value : "";
                 handleActionTakenChange(action);
               }}
+              isDisabled={isReadOnly}
               value={getDropdownOption(data.actionTaken, decisionTypeOptions)}
             />
           </div>
@@ -394,7 +400,7 @@ export const DecisionForm: FC<props> = ({
             className="comp-details-form-row"
             id="decision-inspection-number"
           >
-            <label htmlFor="outcome-decision-inspection-number">NRIS Inspection number</label>
+            <label htmlFor="outcome-decision-inspection-number">NRIS inspection number</label>
             <div className="comp-details-input full-width">
               <CompInput
                 id="outcome-decision-inspection-number"
@@ -432,6 +438,7 @@ export const DecisionForm: FC<props> = ({
               onChange={(evt) => {
                 updateModel("nonCompliance", evt?.value);
               }}
+              isDisabled={isReadOnly}
               value={getDropdownOption(data.nonCompliance, nonComplianceOptions)}
             />
           </div>
@@ -450,6 +457,7 @@ export const DecisionForm: FC<props> = ({
               errMsg={""}
               maxLength={4000}
               onChange={handleRationaleChange}
+              disabled={isReadOnly}
             />
           </div>
         </div>
@@ -468,6 +476,7 @@ export const DecisionForm: FC<props> = ({
               classNamePrefix="comp-select" // Adjust class as needed
               errMsg={dateActionTakenErrorMessage} // Pass error message if any
               maxDate={new Date()}
+              isDisabled={isReadOnly}
             />
           </div>
         </div>
@@ -478,6 +487,7 @@ export const DecisionForm: FC<props> = ({
           id="outcome-decision-cancel-button"
           title="Cancel Decision"
           onClick={handleCancelButtonClick}
+          disabled={isReadOnly}
         >
           Cancel
         </Button>
@@ -486,6 +496,7 @@ export const DecisionForm: FC<props> = ({
           id="outcome-decision-save-button"
           title="Save Decision"
           onClick={() => handleSaveButtonClick()}
+          disabled={isReadOnly}
         >
           Save
         </Button>

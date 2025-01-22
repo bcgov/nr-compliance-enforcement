@@ -22,6 +22,7 @@ import { AddActiveComplaintsViewType } from "./migrations/migration-22";
 import { AssessmentTypeUpdates } from "./migrations/migration-23";
 import { AddComsEnrolledInd } from "./migrations/migration-24";
 import { UpdateMapLogicForClustering } from "./migrations/migration-25";
+import { ComplaintReadOnlyIndicator } from "./migrations/migration-26";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -58,6 +59,7 @@ migration = {
   ...AssessmentTypeUpdates,
   ...AddComsEnrolledInd,
   ...UpdateMapLogicForClustering,
+  ...ComplaintReadOnlyIndicator,
 };
 
 export default migration;

@@ -51,7 +51,7 @@ export const SelectUser: FC<SelectUserProps> = ({
     <div className="comp-page-container user-management-container">
       <div className="comp-page-header">
         <div className="comp-page-title-container">
-          <h3>User Administration</h3>
+          <h3>User administration</h3>
           <Button
             variant="primary"
             onClick={handleAddNewUser}
