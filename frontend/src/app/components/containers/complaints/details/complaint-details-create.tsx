@@ -740,6 +740,7 @@ export const CreateComplaint: FC = () => {
                     onChange={(e) => handleNatureOfComplaintChange(e)}
                     className="comp-details-input"
                     options={hwcrNatureOfComplaintCodes}
+                    showInactive={false}
                     placeholder="Select"
                     enableValidation={true}
                     errorMessage={natureOfComplaintErrorMsg}
