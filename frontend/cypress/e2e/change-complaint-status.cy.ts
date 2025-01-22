@@ -125,7 +125,7 @@ const canChangeStatus = (reviewComplete: boolean) => {
 
   cy.get("#update-status-icon").filter(":visible").click({ force: true });
 
-  cy.get(".change_status_modal")
+  cy.get(".status-change-subtext")
     .should("contain", reviewComplete ? "" : "Complaint is pending review.")
     .find("#complaint_status_dropdown input")
     .should(reviewComplete ? "be.enabled" : "be.disabled");
