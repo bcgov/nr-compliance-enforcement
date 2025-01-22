@@ -9,7 +9,6 @@ import {
   selectComplaintAssignedBy,
   selectComplaintLargeCarnivoreInd,
   selectLinkedComplaints,
-  getLinkedComplaints,
   selectComplaintViewMode,
 } from "@store/reducers/complaints";
 import {
