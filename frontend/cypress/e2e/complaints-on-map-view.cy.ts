@@ -113,7 +113,7 @@ describe("Complaints on map tests", () => {
 
       cy.get(".leaflet-popup").should("not.exist");
 
-      cy.get(".leaflet-marker-icon").each(($marker, index) => {
+      cy.get(".map-marker").each(($marker, index) => {
         // Click the first marker (index 0)
         if (index === 0) {
           cy.wrap($marker).should("exist").click({ force: true });
