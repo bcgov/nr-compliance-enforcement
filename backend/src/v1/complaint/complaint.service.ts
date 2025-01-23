@@ -185,14 +185,20 @@ export class ComplaintService {
         builder = this._allegationComplaintRepository
           .createQueryBuilder("allegation")
           .leftJoin("allegation.complaint_identifier", "complaint")
-          .select(["complaint.complaint_identifier", "complaint.location_geometry_point"])
+          .select("complaint.complaint_identifier", "complaint_identifier")
+          .distinctOn(["complaint.complaint_identifier"])
+          .groupBy("complaint.complaint_identifier")
+          .addSelect("complaint.location_geometry_point", "location_geometry_point")
           .leftJoin("allegation.violation_code", "violation_code");
         break;
       case "GIR":
         builder = this._girComplaintRepository
           .createQueryBuilder("general")
           .leftJoin("general.complaint_identifier", "complaint")
-          .select(["complaint.complaint_identifier", "complaint.location_geometry_point"])
+          .select("complaint.complaint_identifier", "complaint_identifier")
+          .distinctOn(["complaint.complaint_identifier"])
+          .groupBy("complaint.complaint_identifier")
+          .addSelect("complaint.location_geometry_point", "location_geometry_point")
           .leftJoin("general.gir_type_code", "gir");
         break;
       case "HWCR":
@@ -200,7 +206,10 @@ export class ComplaintService {
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife")
           .leftJoin("wildlife.complaint_identifier", "complaint")
-          .select(["complaint.complaint_identifier", "complaint.location_geometry_point"])
+          .select("complaint.complaint_identifier", "complaint_identifier")
+          .distinctOn(["complaint.complaint_identifier"])
+          .groupBy("complaint.complaint_identifier")
+          .addSelect("complaint.location_geometry_point", "location_geometry_point")
           .leftJoin("wildlife.species_code", "species_code")
           .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
           .leftJoin("wildlife.attractant_hwcr_xref", "attractants", "attractants.active_ind = true")
@@ -1181,7 +1190,7 @@ export class ComplaintService {
       builder.andWhere("ST_X(complaint.location_geometry_point) = 0");
       builder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
 
-      return builder.getCount();
+      return (await builder.getRawMany()).length;
     } catch (error) {
       this.logger.error(error);
     }
@@ -1217,9 +1226,9 @@ export class ComplaintService {
           type: "Feature",
           properties: {
             cluster: false,
-            id: item.complaint_complaint_identifier,
+            id: item.complaint_identifier,
           },
-          geometry: item.complaint_location_geometry_point,
+          geometry: item.location_geometry_point,
         } as PointFeature<GeoJsonProperties>;
       });
 

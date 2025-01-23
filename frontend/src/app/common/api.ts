@@ -117,6 +117,9 @@ export const get = <T, M = {}>(
     axios
       .get(url, config)
       .then((response: AxiosResponse) => {
+        if (!response) {
+          return reject(new Error("No response"));
+        }
         const { data, status } = response;
 
         if (status === STATUS_CODES.Unauthorized) {
