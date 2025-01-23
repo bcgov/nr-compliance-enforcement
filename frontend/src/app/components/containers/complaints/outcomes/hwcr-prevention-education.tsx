@@ -5,7 +5,6 @@ import { Officer } from "@apptypes/person/person";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
 import {
-  getComplaintById,
   selectComplaint,
   selectComplaintCallerInformation,
   selectComplaintHeader,
@@ -28,7 +27,7 @@ import { BsExclamationCircleFill } from "react-icons/bs";
 import "@assets/sass/hwcr-assessment.scss";
 import { Prevention } from "@apptypes/outcomes/prevention";
 import { selectPrevention } from "@store/reducers/case-selectors";
-import { getPrevention, upsertPrevention } from "@store/reducers/case-thunks";
+import { upsertPrevention } from "@store/reducers/case-thunks";
 
 export const HWCRComplaintPrevention: FC = () => {
   const dispatch = useAppDispatch();
@@ -82,16 +81,9 @@ export const HWCRComplaintPrevention: FC = () => {
   }, [dispatch, editable, showContent]);
 
   useEffect(() => {
-    if (id && (!complaintData || complaintData.id !== id)) {
-      dispatch(getComplaintById(id, complaintType));
-    }
-  }, [id, complaintType, complaintData, dispatch]);
-
-  useEffect(() => {
     if (complaintData) {
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
-      dispatch(getPrevention(complaintData.id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaintData]);

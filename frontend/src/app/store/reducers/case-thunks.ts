@@ -63,11 +63,26 @@ export const findCase =
 
 export const getCaseFile =
   (complaintIdentifier?: string): AppThunk =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     const response = await get<CaseFileDto>(dispatch, parameters);
-
     dispatch(setCaseFile(response));
+    // If there is a case file parse and set the assessment details which is not handled by setCaseFile
+    if (response) {
+      const {
+        officers: { officers },
+      } = getState();
+      const assessment = await parseAssessmentResponse(response, officers);
+      dispatch(setAssessment({ assessment }));
+      const updatedPreventionData = await parsePreventionResponse(response, officers);
+      dispatch(setPrevention({ prevention: updatedPreventionData }));
+      dispatch(setIsReviewedRequired(response.isReviewRequired));
+      dispatch(setReviewComplete(response.reviewComplete));
+    } else {
+      // If there is no case file clear the assessment and prevention sections
+      dispatch(setAssessment({}));
+      dispatch(setPrevention({}));
+    }
   };
 
 //-- assessment thunks
@@ -1212,7 +1227,11 @@ export const upsertAuthorizationOutcome =
       };
 
     const _update =
-      (id: string, leadIdentifier: string, site: PermitSite): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      (
+        id: string,
+        leadIdentifier: string,
+        site: PermitSite,
+      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
       async (dispatch) => {
         const input: UpdateAuthorizationOutcomeInput = {
           caseIdentifier: id,

@@ -3,8 +3,9 @@ import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { isFeatureActive, openModal } from "@store/reducers/app";
 import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "@apptypes/modal/modal-types";
 import { Dropdown } from "react-bootstrap";
-import { getAssessment } from "@store/reducers/case-thunks";
+import { getAssessment, getCaseFile } from "@store/reducers/case-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { getComplaintById } from "@/app/store/reducers/complaints";
 
 type Props = {
   complaint_identifier: string;
@@ -62,6 +63,8 @@ export const ComplaintActionItems: FC<Props> = ({
 
   const openQuickCloseModal = async () => {
     document.body.click();
+    dispatch(getComplaintById(complaint_identifier, complaint_type));
+    dispatch(getCaseFile(complaint_identifier));
     dispatch(
       openModal({
         modalSize: "lg",
