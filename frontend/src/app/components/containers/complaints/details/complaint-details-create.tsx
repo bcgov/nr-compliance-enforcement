@@ -50,7 +50,6 @@ import { ComplaintAlias } from "@apptypes/app/aliases";
 import AttachmentEnum from "@constants/attachment-enum";
 import { getUserAgency } from "@service/user-service";
 import { useSelector } from "react-redux";
-import { ComplaintDetails } from "@apptypes/complaints/details/complaint-details";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { FeatureFlag } from "@components/common/feature-flag";
 
@@ -116,8 +115,8 @@ export const CreateComplaint: FC = () => {
   const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
   const [alternatePhoneMsg, setAlternatePhoneMsg] = useState<string>("");
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
-  const complaintMethodReceivedCodes = useSelector(selectComplaintReceivedMethodDropdown) as Option[];
-  const { complaintMethodReceivedCode } = useAppSelector(selectComplaintDetails(complaintType)) as ComplaintDetails;
+  const complaintMethodReceivedCodes = useSelector(selectComplaintReceivedMethodDropdown);
+  const { complaintMethodReceivedCode } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
   const selectedComplaintMethodReceivedCode = complaintMethodReceivedCodes.find(
     (option) => option.value === complaintMethodReceivedCode?.complaintMethodReceivedCode,
   );

@@ -5,14 +5,10 @@ import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
 import {
-  getComplaintById,
-  selectComplaint,
   selectComplaintCallerInformation,
-  selectComplaintHeader,
   selectComplaintAssignedBy,
   selectComplaintLargeCarnivoreInd,
   selectLinkedComplaints,
-  getLinkedComplaints,
   selectComplaintViewMode,
 } from "@store/reducers/complaints";
 import {
@@ -24,10 +20,10 @@ import {
   selectThreatLevelDropdown,
   selectYesNoCodeDropdown,
 } from "@store/reducers/code-table";
-import { formatDate, getSelectedOfficer } from "@common/methods";
+import { formatDate } from "@common/methods";
 import { CompSelect } from "@components/common/comp-select";
 import { ValidationCheckboxGroup } from "@common/validation-checkbox-group";
-import { clearAssessment, setIsInEdit } from "@store/reducers/cases";
+import { setIsInEdit } from "@store/reducers/cases";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { ToggleError } from "@common/toast";
@@ -38,7 +34,7 @@ import { BsExclamationCircleFill } from "react-icons/bs";
 
 import "@assets/sass/hwcr-assessment.scss";
 import { selectAssessment } from "@store/reducers/case-selectors";
-import { getAssessment, upsertAssessment, getCaseFile, getPrevention } from "@store/reducers/case-thunks";
+import { upsertAssessment } from "@store/reducers/case-thunks";
 import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
@@ -46,7 +42,6 @@ import useValidateComplaint from "@hooks/validate-complaint";
 
 type Props = {
   id: string;
-  complaintType: string;
   handleSave?: () => void;
   handleClose?: () => void;
   showHeader?: boolean;
@@ -55,7 +50,6 @@ type Props = {
 
 export const HWCRComplaintAssessment: FC<Props> = ({
   id,
-  complaintType,
   handleSave = () => {},
   handleClose = () => {},
   showHeader = true,
@@ -65,7 +59,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
   const [selectedJustification, setSelectedJustification] = useState<Option | null>();
   const [selectedLinkedComplaint, setSelectedLinkedComplaint] = useState<Option | null>();
-  const [selectedLinkedComplaintStatus, setSelectedLinkedComplaintStatus] = useState<string | null>();
   const [selectedDate, setSelectedDate] = useState<Date | null | undefined>();
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>();
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
@@ -91,7 +84,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [assessmentRequiredErrorMessage, setAssessmentRequiredErrorMessage] = useState<string>("");
   const [locationErrorMessage, setLocationErrorMessage] = useState<string>("");
 
-  const complaintData = useAppSelector(selectComplaint);
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
   const assessmentState = useAppSelector(selectAssessment);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
@@ -160,7 +152,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const handleLinkedComplaintChange = (selected: Option | null, status: string | null) => {
     if (selected) {
       setSelectedLinkedComplaint(selected);
-      setSelectedLinkedComplaintStatus(status);
     } else {
       setSelectedLinkedComplaint(null);
     }
@@ -169,28 +160,8 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const actionRequiredList = useAppSelector(selectYesNoCodeDropdown);
   const justificationList = useAppSelector(selectJustificationCodeDropdown);
   const assessmentTypeList = useAppSelector(selectAssessmentTypeCodeDropdown);
-  const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
   const assigned = useAppSelector(selectComplaintAssignedBy);
   const noYesOptions = [...actionRequiredList].reverse();
-
-  useEffect(() => {
-    if (id && (!complaintData || complaintData?.id !== id)) {
-      dispatch(clearAssessment());
-      dispatch(getComplaintById(id, complaintType));
-    }
-  }, [id, complaintType, complaintData, dispatch]);
-
-  useEffect(() => {
-    if (id === complaintData?.id) {
-      const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
-      setSelectedOfficer(officer);
-      dispatch(clearAssessment());
-      dispatch(getAssessment(complaintData.id));
-      quickClose && dispatch(getPrevention(complaintData.id));
-      quickClose && dispatch(getLinkedComplaints(complaintData.id));
-      dispatch(getCaseFile(id));
-    }
-  }, [dispatch, id, complaintData, personGuid, assignableOfficers, quickClose]);
 
   const populateAssessmentUI = useCallback(() => {
     const selectedOfficer = (
@@ -284,7 +255,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     setSelectedActionRequired(selectedActionRequired);
     setSelectedJustification(selectedJustification);
     setSelectedLinkedComplaint(selectedLinkedComplaint);
-    setSelectedLinkedComplaintStatus("OPEN");
     setSelectedAssessmentTypes(selectedAssessmentTypes);
     setSelectedContacted(selectedContacted);
     setSelectedAttended(selectedAttended);
@@ -524,7 +494,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     id,
     selectedJustification,
     selectedLinkedComplaint,
-    selectedLinkedComplaintStatus,
     validationResults,
     cases.isInEdit.showSectionErrors,
   ]);

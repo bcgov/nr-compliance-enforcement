@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { HWCRComplaintAssessment } from "./hwcr-complaint-assessment";
 import { HWCREquipment } from "./hwcr-equipment";
 import { HWCRFileReview } from "./hwcr-file-review";
@@ -7,18 +7,10 @@ import { OutcomeAttachments } from "./outcome-attachments";
 import { HWCRComplaintPrevention } from "./hwcr-prevention-education";
 import { useParams } from "react-router-dom";
 import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
-import { useAppDispatch } from "@hooks/hooks";
-import { getCaseFile } from "@store/reducers/case-thunks";
 import { HWCROutcomeByAnimalv2 } from "./hwcr-outcome-by-animal-v2";
 
 export const HWCROutcomeReport: FC = () => {
-  const { id = "", complaintType = "" } = useParams<ComplaintParams>();
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(getCaseFile(id));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  const { id = "" } = useParams<ComplaintParams>();
 
   return (
     <section className="comp-details-body comp-container comp-hwcr-outcome-report">
@@ -26,10 +18,7 @@ export const HWCROutcomeReport: FC = () => {
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
-      <HWCRComplaintAssessment
-        id={id}
-        complaintType={complaintType}
-      />
+      <HWCRComplaintAssessment id={id} />
       <HWCRComplaintPrevention />
       <HWCREquipment />
       <HWCROutcomeByAnimalv2 />

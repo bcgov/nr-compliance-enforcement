@@ -137,7 +137,6 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
         >
           <HWCRComplaintAssessment
             id={complaint_identifier}
-            complaintType={complaint_type}
             showHeader={false}
             handleSave={() => {
               submit();

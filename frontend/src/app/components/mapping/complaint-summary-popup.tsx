@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { selectComplaintDetails, selectComplaintHeader } from "@store/reducers/complaints";
 import { useAppSelector } from "@hooks/hooks";
-import { ComplaintDetails } from "@apptypes/complaints/details/complaint-details";
 import { applyStatusClass, formatDate } from "@common/methods";
 import { Badge, Button } from "react-bootstrap";
 import { Popup } from "react-leaflet";
@@ -18,9 +17,9 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
     selectComplaintHeader(complaintType),
   );
 
-  const { violationInProgress, location, area } = useAppSelector(
-    selectComplaintDetails(complaintType),
-  ) as ComplaintDetails;
+  const { violationInProgress, location, area } = useAppSelector((state) =>
+    selectComplaintDetails(state, complaintType),
+  );
 
   const inProgressInd = violationInProgress ? "In Progress" : "";
 

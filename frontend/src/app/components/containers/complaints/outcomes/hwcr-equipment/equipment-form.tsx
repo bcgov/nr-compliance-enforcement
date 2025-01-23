@@ -6,7 +6,7 @@ import { ToastContainer } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
 import { selectActiveEquipmentDropdown, selectTrapEquipment } from "@store/reducers/code-table";
-import { getComplaintById, selectComplaint, selectComplaintCallerInformation } from "@store/reducers/complaints";
+import { selectComplaint, selectComplaintCallerInformation } from "@store/reducers/complaints";
 import { CompSelect } from "@components/common/comp-select";
 import { ToggleError } from "@common/toast";
 import { bcUtmZoneNumbers, getSelectedItem, formatLatLongCoordinate } from "@common/methods";
@@ -92,12 +92,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     // officersInAgencyList should be a dependency but its selector needs to be refactored using a selector creator to avoid an infinte loop here by adding it
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assignedOfficer]);
-
-  useEffect(() => {
-    if (id && (!complaintData || complaintData.id !== id)) {
-      dispatch(getComplaintById(id, complaintType));
-    }
-  }, [id, complaintType, complaintData, dispatch]);
 
   useEffect(() => {
     // set the equipment type code in the form

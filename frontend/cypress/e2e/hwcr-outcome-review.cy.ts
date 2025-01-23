@@ -123,7 +123,7 @@ describe("HWCR File Review", () => {
 
         cy.get("#details-screen-update-status-button").click({ force: true });
 
-        cy.get(".change_status_modal")
+        cy.get(".status-change-subtext")
           .should("contain", "Complaint is pending review.")
           .find("#complaint_status_dropdown input")
           .should("be.disabled");

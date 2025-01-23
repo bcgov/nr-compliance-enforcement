@@ -1,5 +1,6 @@
 import { createAction, createSlice } from "@reduxjs/toolkit";
 import { CasesState } from "@apptypes/state/cases-state";
+import { Assessment } from "@apptypes/outcomes/assessment";
 
 const initialState: CasesState = {
   caseId: undefined,
@@ -77,7 +78,7 @@ export const casesSlice = createSlice({
       return { ...state, reviewComplete: payload };
     },
     clearAssessment: (state) => {
-      state.assessment = { ...initialState.assessment };
+      state.assessment = {} as Assessment;
     },
     clearPrevention: (state) => {
       state.prevention = { ...initialState.prevention };
