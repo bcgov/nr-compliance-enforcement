@@ -735,6 +735,7 @@ export const MockComplaintsRepository = () => ({
     getRawMany: jest.fn().mockResolvedValue(complaints),
     getCount: jest.fn().mockResolvedValue(complaints.length),
     getOne: jest.fn().mockResolvedValue(complaints[3]),
+    getRawOne: jest.fn().mockResolvedValue(complaints[3]),
     update: jest.fn().mockResolvedValue({ affected: 1 }),
   })),
 });
@@ -756,6 +757,7 @@ export const MockComplaintsRepositoryV2 = () => ({
       getRawMany: jest.fn().mockResolvedValue(complaints),
       getCount: jest.fn().mockResolvedValue(complaints.length),
       getOne: jest.fn().mockResolvedValue(complaints[3]),
+      getRawOne: jest.fn().mockResolvedValue(complaints[3]),
       update: jest.fn().mockResolvedValue({ affected: 1 }),
     };
   }),
