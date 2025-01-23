@@ -112,7 +112,6 @@ describe("Complaints on map tests", () => {
       cy.get("div.leaflet-container").should("exist");
 
       cy.get(".leaflet-popup").should("not.exist");
-      cy.wait(1000);
 
       cy.get(".leaflet-marker-icon").each(($marker, index) => {
         // Click the first marker (index 0)
@@ -122,6 +121,7 @@ describe("Complaints on map tests", () => {
       });
 
       // wait for the popup to load
+      cy.wait(1000);
 
       cy.get(".leaflet-popup").should("exist");
 
