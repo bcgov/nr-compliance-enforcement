@@ -9909,6 +9909,11 @@ VALUES
     CURRENT_TIMESTAMP
   ) ON CONFLICT DO NOTHING;
 
+DELETE FROM hwcr_complaint_nature_code WHERE hwcr_complaint_nature_code = 'COUGARN';
+DELETE FROM hwcr_complaint_nature_code WHERE short_description = 'Livestock/pets - killed/injured - present/recent (Coyote/Bobcat)';
+DELETE FROM hwcr_complaint_nature_code WHERE short_description = 'Livestock/pets - killed/injured - present/recent/suspected (Black/Grizzly Bear, Wolf, Cougar)';
+DELETE FROM hwcr_complaint_nature_code WHERE short_description = 'Livestock/pets - killed/injured - not present (No Black/Grizzly Bear, Wolf, Cougar suspected)';
+DELETE FROM hwcr_complaint_nature_code WHERE short_description = 'Livestock/pets - killed/injured - (No Black/Grizzly Bear, Wolf, Cougar suspected)';
 
 --------------------------
 -- New Changes above this line

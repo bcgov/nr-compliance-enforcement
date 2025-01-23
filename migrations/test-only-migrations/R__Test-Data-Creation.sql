@@ -1914,3 +1914,5 @@ SET
   auth_user_guid = '303c6924-2540-4490-8581-70fddf8b3d70'
 WHERE
   user_id = 'TYILDIRO';
+
+UPDATE hwcr_complaint SET hwcr_complaint_nature_code = 'LIVNCOU' WHERE hwcr_complaint_nature_code = 'COUGARN';
