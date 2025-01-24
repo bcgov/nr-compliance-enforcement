@@ -879,7 +879,7 @@ export const CreateComplaint: FC = () => {
               id="complaint-location-label-id"
               htmlFor="location-edit-id"
             >
-              Complaint location
+              Location/address
             </label>
             <div className="comp-details-edit-input">
               <input
