@@ -69,7 +69,7 @@ describe("COMPENF-37 Display ECR Details", () => {
     cy.get(".comp-nav-item-name-inverted > a").should("have.css", "color").should("include", "rgb(255, 255, 255)");
   });
 
-  it.only("allows users to add additional notes", function () {
+  it("allows users to add additional notes", function () {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.GIR, "23-900001", true);
 
     cy.get("#outcome-report-add-note").click({ force: true });
