@@ -177,7 +177,7 @@ describe("Testing: CodeTable Service", () => {
     //-- assert
     expect(results).not.toBe(null);
     expect(results.length).not.toBe(0);
-    expect(results.length).toBe(6);
+    expect(results.length).toBe(5);
   });
 
   it("should return collection of organization unit types", async () => {

@@ -778,7 +778,7 @@ VALUES('163d2996-0f09-48b7-b100-2810db7fc316'::uuid, NULL, 'FLYWAY', '2023-06-29
 ON CONFLICT DO NOTHING;
 INSERT INTO public.hwcr_complaint
 (hwcr_complaint_guid, other_attractants_text, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, complaint_identifier, species_code, hwcr_complaint_nature_code)
-VALUES('496f3ef1-bf6e-48ce-8858-7edb04572d40'::uuid, NULL, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '23-000179', 'COUGAR', 'COUGARN')
+VALUES('496f3ef1-bf6e-48ce-8858-7edb04572d40'::uuid, NULL, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '23-000179', 'COUGAR', 'SGHTNGS')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.hwcr_complaint
 (hwcr_complaint_guid, other_attractants_text, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, complaint_identifier, species_code, hwcr_complaint_nature_code)
@@ -850,7 +850,7 @@ VALUES('9d9d43ca-7c0b-4830-824e-eea3839852b8'::uuid, NULL, 'FLYWAY', '2023-06-29
 ON CONFLICT DO NOTHING;
 INSERT INTO public.hwcr_complaint
 (hwcr_complaint_guid, other_attractants_text, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, complaint_identifier, species_code, hwcr_complaint_nature_code)
-VALUES('61740fa4-3329-4bc7-98fc-aea1142349e2'::uuid, NULL, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '23-000079', 'COUGAR', 'COUGARN')
+VALUES('61740fa4-3329-4bc7-98fc-aea1142349e2'::uuid, NULL, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '23-000079', 'COUGAR', 'SGHTNGS')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.hwcr_complaint
 (hwcr_complaint_guid, other_attractants_text, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, complaint_identifier, species_code, hwcr_complaint_nature_code)
