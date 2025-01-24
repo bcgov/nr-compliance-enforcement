@@ -365,28 +365,22 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                     <span>Copy location from complaint details</span>
                   </Button>
                 )}
-              </div>
-            </div>
-            <div>
-              <div className="comp-details-form-row">
-                <label></label> {/* Empty label to align the coordinate error message */}
                 <div className="error-message">{xCoordinateErrorMsg || yCoordinateErrorMsg}</div>
               </div>
-              <CompCoordinateInput
-                id="equipment-coordinates"
-                utmZones={bcUtmZoneNumbers.map((zone: string) => {
-                  return { value: zone, label: zone } as Option;
-                })}
-                initXCoordinate={equipment?.xCoordinate}
-                initYCoordinate={equipment?.yCoordinate}
-                syncCoordinates={syncCoordinates}
-                throwError={throwError}
-                sourceXCoordinate={complaintData?.location?.coordinates[0].toString() ?? ""}
-                sourceYCoordinate={complaintData?.location?.coordinates[1].toString() ?? ""}
-                enableCopyCoordinates={true}
-              />
             </div>
-
+            <CompCoordinateInput
+              id="equipment-coordinates"
+              utmZones={bcUtmZoneNumbers.map((zone: string) => {
+                return { value: zone, label: zone } as Option;
+              })}
+              initXCoordinate={equipment?.xCoordinate}
+              initYCoordinate={equipment?.yCoordinate}
+              syncCoordinates={syncCoordinates}
+              throwError={throwError}
+              sourceXCoordinate={complaintData?.location?.coordinates[0].toString() ?? ""}
+              sourceYCoordinate={complaintData?.location?.coordinates[1].toString() ?? ""}
+              enableCopyCoordinates={true}
+            />
             {/* SET BY */}
             <div
               className="comp-details-form-row"
