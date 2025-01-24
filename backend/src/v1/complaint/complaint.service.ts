@@ -1209,9 +1209,8 @@ export class ComplaintService {
 
       //-- filter locations without coordinates
       complaintBuilder.andWhere("complaint.location_geometry_point is not null");
-      complaintBuilder.andWhere(
-        "ST_X(complaint.location_geometry_point) <> 0 OR ST_Y(complaint.location_geometry_point) <> 0",
-      );
+      complaintBuilder.andWhere("ST_X(complaint.location_geometry_point) <> 0");
+      complaintBuilder.andWhere("ST_Y(complaint.location_geometry_point) <> 0");
 
       //-- filter locations by bounding box if provided, otherwise default to the world
       //   geometry ST_MakeEnvelope(float xmin, float ymin, float xmax, float ymax, integer srid=unknown);
@@ -1807,10 +1806,6 @@ export class ComplaintService {
     };
 
     const _applyTimezone = (input: Date, tz: string, output: "date" | "time" | "datetime"): string => {
-      if (!input) {
-        return "N/A"; // No date, so just return a placeholder string for the report
-      }
-
       const utcDate = toDate(input, { timeZone: "UTC" });
       const zonedDate = toZonedTime(utcDate, tz);
 
