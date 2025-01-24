@@ -697,6 +697,8 @@ const officers = [
   },
 ];
 
+const count = { count: "55" };
+
 export const MockComplaintsAgencyRepository = () => ({
   getIdirFromRequest: jest.fn().mockReturnThis(),
   find: jest.fn().mockReturnThis(),
@@ -733,8 +735,11 @@ export const MockComplaintsRepository = () => ({
     execute: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(complaints),
     getRawMany: jest.fn().mockResolvedValue(complaints),
+    distinctOn: jest.fn().mockReturnThis(),
+    groupBy: jest.fn().mockResolvedValue(complaints),
     getCount: jest.fn().mockResolvedValue(complaints.length),
     getOne: jest.fn().mockResolvedValue(complaints[3]),
+    getRawOne: jest.fn().mockResolvedValue(count),
     update: jest.fn().mockResolvedValue({ affected: 1 }),
   })),
 });
@@ -754,8 +759,11 @@ export const MockComplaintsRepositoryV2 = () => ({
       execute: jest.fn().mockReturnThis(),
       getMany: jest.fn().mockResolvedValue(complaints),
       getRawMany: jest.fn().mockResolvedValue(complaints),
+      distinctOn: jest.fn().mockReturnThis(),
+      groupBy: jest.fn().mockResolvedValue(complaints),
       getCount: jest.fn().mockResolvedValue(complaints.length),
       getOne: jest.fn().mockResolvedValue(complaints[3]),
+      getRawOne: jest.fn().mockResolvedValue(count),
       update: jest.fn().mockResolvedValue({ affected: 1 }),
     };
   }),

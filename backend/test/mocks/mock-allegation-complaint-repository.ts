@@ -468,6 +468,8 @@ const singleItem = {
   allegation_complaint_guid: "686ea89d-693b-4fdf-9266-226171e6dbd3",
 };
 
+const count = { count: "55" };
+
 export const MockAllegationComplaintRepository = () => ({
   find: jest.fn().mockResolvedValue(manyItems),
   findOneBy: jest.fn().mockResolvedValue(singleItem),
@@ -494,7 +496,10 @@ export const MockAllegationComplaintRepository = () => ({
     andWhere: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue(manyItems),
     getRawMany: jest.fn().mockResolvedValue(manyItems),
+    distinctOn: jest.fn().mockReturnThis(),
+    groupBy: jest.fn().mockReturnThis(),
     getOne: jest.fn().mockResolvedValue(singleItem),
+    getRawOne: jest.fn().mockResolvedValue(count),
     getQuery: jest.fn(),
     select: jest.fn().mockReturnThis(),
     addSelect: jest.fn().mockReturnThis(),

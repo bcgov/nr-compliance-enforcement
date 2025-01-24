@@ -177,6 +177,7 @@ export class ComplaintService {
   private readonly _generateMapQueryBuilder = (
     type: COMPLAINT_TYPE,
     includeCosOrganization: boolean,
+    count: boolean,
   ): SelectQueryBuilder<complaintAlias> => {
     let builder: SelectQueryBuilder<complaintAlias>;
 
@@ -185,14 +186,12 @@ export class ComplaintService {
         builder = this._allegationComplaintRepository
           .createQueryBuilder("allegation")
           .leftJoin("allegation.complaint_identifier", "complaint")
-          .select(["complaint.complaint_identifier", "complaint.location_geometry_point"])
           .leftJoin("allegation.violation_code", "violation_code");
         break;
       case "GIR":
         builder = this._girComplaintRepository
           .createQueryBuilder("general")
           .leftJoin("general.complaint_identifier", "complaint")
-          .select(["complaint.complaint_identifier", "complaint.location_geometry_point"])
           .leftJoin("general.gir_type_code", "gir");
         break;
       case "HWCR":
@@ -200,13 +199,23 @@ export class ComplaintService {
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife")
           .leftJoin("wildlife.complaint_identifier", "complaint")
-          .select(["complaint.complaint_identifier", "complaint.location_geometry_point"])
           .leftJoin("wildlife.species_code", "species_code")
           .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
           .leftJoin("wildlife.attractant_hwcr_xref", "attractants", "attractants.active_ind = true")
           .leftJoin("attractants.attractant_code", "attractant_code");
         break;
     }
+
+    if (count) {
+      builder.select("COUNT(DISTINCT complaint.complaint_identifier)", "count");
+    } else {
+      builder
+        .select("complaint.complaint_identifier", "complaint_identifier")
+        .distinctOn(["complaint.complaint_identifier"])
+        .groupBy("complaint.complaint_identifier")
+        .addSelect("complaint.location_geometry_point", "location_geometry_point");
+    }
+
     builder
       .leftJoin("complaint.complaint_status_code", "complaint_status")
       .leftJoin("complaint.reported_by_code", "reported_by")
@@ -1113,6 +1122,7 @@ export class ComplaintService {
     model: ComplaintMapSearchClusteredParameters,
     hasCEEBRole: boolean,
     token?: string,
+    count: boolean = false,
   ): Promise<SelectQueryBuilder<complaintAlias>> => {
     const { query, ...filters } = model;
 
@@ -1120,7 +1130,7 @@ export class ComplaintService {
       //-- search for complaints
       // Only these options require the cos_geo_org_unit_flat_mvw view (cos_organization), which is very slow.
       const includeCosOrganization: boolean = Boolean(query || filters.community || filters.zone || filters.region);
-      let builder = this._generateMapQueryBuilder(complaintType, includeCosOrganization);
+      let builder = this._generateMapQueryBuilder(complaintType, includeCosOrganization, count);
 
       //-- apply filters if used
       if (Object.keys(filters).length !== 0) {
@@ -1175,13 +1185,14 @@ export class ComplaintService {
     token?: string,
   ): Promise<number> => {
     try {
-      const builder = await this._generateFilteredMapQueryBuilder(complaintType, model, hasCEEBRole, token);
+      const builder = await this._generateFilteredMapQueryBuilder(complaintType, model, hasCEEBRole, token, true);
 
       //-- filter for locations without coordinates
       builder.andWhere("ST_X(complaint.location_geometry_point) = 0");
       builder.andWhere("ST_Y(complaint.location_geometry_point) = 0");
 
-      return builder.getCount();
+      const results = await builder.getRawOne();
+      return results.count ? Number(results.count) : 0;
     } catch (error) {
       this.logger.error(error);
     }
@@ -1217,9 +1228,9 @@ export class ComplaintService {
           type: "Feature",
           properties: {
             cluster: false,
-            id: item.complaint_complaint_identifier,
+            id: item.complaint_identifier,
           },
-          geometry: item.complaint_location_geometry_point,
+          geometry: item.location_geometry_point,
         } as PointFeature<GeoJsonProperties>;
       });
 
