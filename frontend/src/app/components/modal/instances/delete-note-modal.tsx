@@ -45,7 +45,12 @@ export const DeleteNoteModal: FC<props> = ({ close, submit }) => {
         >
           {cancel}
         </Button>
-        <Button onClick={() => handleSubmit()}>{ok}</Button>
+        <Button
+          id="confirm-delete-note-button"
+          onClick={() => handleSubmit()}
+        >
+          {ok}
+        </Button>
       </Modal.Footer>
     </>
   );
