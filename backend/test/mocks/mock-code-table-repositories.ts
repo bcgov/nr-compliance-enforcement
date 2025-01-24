@@ -196,13 +196,6 @@ const natureOfComplaints = [
     active_ind: true,
   },
   {
-    hwcr_complaint_nature_code: "COUGARN",
-    short_description: "COUGARN",
-    long_description: "Cougar suspected - killed/injured livestock/pets - not present",
-    display_order: 4,
-    active_ind: true,
-  },
-  {
     hwcr_complaint_nature_code: "DAMNP",
     short_description: "DAMNP",
     long_description: "Damage to property - not present",
