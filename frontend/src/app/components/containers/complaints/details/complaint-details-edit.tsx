@@ -76,6 +76,7 @@ import { LinkedComplaintList } from "./linked-complaint-list";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { ExternalFileReference } from "@components/containers/complaints/outcomes/external-file-reference";
 import { getCaseFile } from "@/app/store/reducers/case-thunks";
+import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
 
 export type ComplaintParams = {
   id: string;
@@ -1404,6 +1405,8 @@ export const ComplaintDetailsEdit: FC = () => {
           <ExternalFileReference />
         </FeatureFlag>
       )}
+
+      {readOnly && complaintType === COMPLAINT_TYPES.GIR && <GIROutcomeReport />}
     </div>
   );
 };

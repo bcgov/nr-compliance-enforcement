@@ -243,7 +243,7 @@ export class WebEocScheduler {
           complaint.flag_COS === "Yes" ||
           complaint.violation_type === "Waste" ||
           complaint.violation_type === "Pesticide"
-        ) || (complaint.flag_COS !== "Yes" && Date.parse(`${complaint.incident_datetime} PST`) > Date.parse(process.env.WEBEOC_DATE_FILTER))); // 2025-01-01T08:00:00Z is midnight PST
+        ) || (complaint.flag_COS !== "Yes" && Date.parse(`${complaint.created_by_datetime} PST`) > Date.parse(process.env.WEBEOC_DATE_FILTER))); // 2025-01-01T08:00:00Z is midnight PST
       } else {
         return true;
       }
