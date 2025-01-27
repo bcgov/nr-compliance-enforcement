@@ -110,7 +110,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   };
 
   const exportComplaintToPdf = () => {
-    dispatch(exportComplaint(complaintType, id));
+    dispatch(exportComplaint(complaintType, id, new Date(loggedDate)));
   };
 
   return (
