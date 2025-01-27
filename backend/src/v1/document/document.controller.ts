@@ -6,7 +6,6 @@ import { ApiTags } from "@nestjs/swagger";
 import { Role } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
-import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { format } from "date-fns";
 import { escape } from "escape-html";
 import { ExportComplaintParameters } from "src/types/models/complaints/export-complaint-parameters";
@@ -50,8 +49,7 @@ export class DocumentController {
     ];
 
     try {
-      const fileName = `Complaint-${id}-${model.type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-      const response = await this.service.exportComplaint(id, model.type, fileName, model.tz, token, attachments);
+      const response = await this.service.exportComplaint(id, model.type, model.fileName, model.tz, token, attachments);
 
       if (!response || !response.data) {
         throw Error(`exception: unable to export document for complaint: ${id}`);
@@ -61,7 +59,7 @@ export class DocumentController {
 
       res.set({
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename=${fileName}`,
+        "Content-Disposition": `attachment; filename=${model.fileName}`,
         "Content-Length": buffer.length,
       });
 
