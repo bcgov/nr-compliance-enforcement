@@ -105,7 +105,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
           {/* Location Information */}
           <dl className="comp-call-details-group">
             <div>
-              <dt>Complaint location</dt>
+              <dt>Location/address</dt>
               <dd id="comp-details-location">{location}</dd>
             </div>
             <div>

@@ -76,6 +76,7 @@ import { LinkedComplaintList } from "./linked-complaint-list";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { ExternalFileReference } from "@components/containers/complaints/outcomes/external-file-reference";
 import { getCaseFile } from "@/app/store/reducers/case-thunks";
+import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
 
 export type ComplaintParams = {
   id: string;
@@ -839,7 +840,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
             {/* Call Details */}
             <fieldset>
-              <legend>Call details</legend>
+              <h3>Call details</h3>
               {complaintType === COMPLAINT_TYPES.HWCR && (
                 <>
                   <div
@@ -1027,7 +1028,12 @@ export const ComplaintDetailsEdit: FC = () => {
                 className="comp-details-form-row"
                 id="complaint-location-pair-id"
               >
-                <label id="complaint-location-label-id">Complaint location</label>
+                <label
+                  id="complaint-location-label-id"
+                  htmlFor="location-edit-id"
+                >
+                  Location/address
+                </label>
                 <div className="comp-details-edit-input">
                   <input
                     type="text"
@@ -1149,7 +1155,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
             {/* Call Information */}
             <fieldset>
-              <legend>Caller information</legend>
+              <h3>Caller information</h3>
 
               {enablePrivacyFeature && (
                 <div
@@ -1332,7 +1338,7 @@ export const ComplaintDetailsEdit: FC = () => {
             {/* ERS - Subject of Complaint */}
             {complaintType === COMPLAINT_TYPES.ERS && (
               <fieldset>
-                <legend>Subject of complaint/witness details</legend>
+                <h3>Subject of complaint/witness details</h3>
                 <div
                   className="comp-details-form-row"
                   id="subject-of-complaint-pair-id"
@@ -1358,7 +1364,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
             {/* Attachments */}
             <fieldset>
-              <legend>Complainant attachments ({complaintAttachmentCount})</legend>
+              <h3>Complainant attachments ({complaintAttachmentCount})</h3>
               <div>
                 <AttachmentsCarousel
                   attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
@@ -1404,6 +1410,8 @@ export const ComplaintDetailsEdit: FC = () => {
           <ExternalFileReference />
         </FeatureFlag>
       )}
+
+      {readOnly && complaintType === COMPLAINT_TYPES.GIR && <GIROutcomeReport />}
     </div>
   );
 };
