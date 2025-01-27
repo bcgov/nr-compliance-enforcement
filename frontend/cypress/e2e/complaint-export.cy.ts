@@ -21,16 +21,21 @@ describe("Export Complaint Functionality", () => {
     it(`Can export complaint: ${index === 0 ? "HWCR" : "ERS"}`, () => {
       let fileName = "";
 
-      const date = fns.format(new Date(), "yyMMdd");
-
       if ("#hwcr-tab".includes(complaintTypes[index])) {
-        fileName = `HWC_23-000076_${date}.pdf`;
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
+        const date = cy.get("div#complaint-date-logged");
+        date.invoke("text").then((dateText) => {
+          const formattedDate = fns.format(new Date(dateText), "yyMMdd");
+          fileName = `HWC_23-000076_${formattedDate}.pdf`;
+        });
       } else {
-        fileName = `EC_23-006888_${date}.pdf`;
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
+        const date = cy.get("div#complaint-date-logged");
+        date.invoke("text").then((dateText) => {
+          const formattedDate = fns.format(new Date(dateText), "yyMMdd");
+          fileName = `EC_23-006888_${formattedDate}.pdf`;
+        });
       }
-
       cy.get("#details-screen-export-complaint-button").click({ force: true });
       cy.verifyDownload(fileName, { timeout: 10000 });
     });
