@@ -365,10 +365,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                     <span>Copy location from complaint details</span>
                   </Button>
                 )}
+                <div className="error-message">{xCoordinateErrorMsg || yCoordinateErrorMsg}</div>
               </div>
             </div>
-
-            <div className="error-message">{xCoordinateErrorMsg || yCoordinateErrorMsg}</div>
             <CompCoordinateInput
               id="equipment-coordinates"
               utmZones={bcUtmZoneNumbers.map((zone: string) => {
@@ -382,7 +381,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               sourceYCoordinate={complaintData?.location?.coordinates[1].toString() ?? ""}
               enableCopyCoordinates={true}
             />
-
             {/* SET BY */}
             <div
               className="comp-details-form-row"

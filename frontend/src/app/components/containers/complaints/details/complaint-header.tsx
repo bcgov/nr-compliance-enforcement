@@ -295,7 +295,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               <dl className="comp-details-date-logged">
                 <dt>Date logged</dt>
                 <dd className="comp-date-time-value">
-                  <div>
+                  <div id="complaint-date-logged">
                     <i className="bi bi-calendar"></i>
                     {formatDate(loggedDate)}
                   </div>
