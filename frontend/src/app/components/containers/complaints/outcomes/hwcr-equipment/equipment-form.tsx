@@ -56,7 +56,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const [wasAnimalCapturedErrorMsg, setWasAnimalCapturedErrorMsg] = useState<string>("");
 
   const dispatch = useAppDispatch();
-  const { id = "", complaintType = "" } = useParams<{ id: string; complaintType: string }>();
+  const { id = "" } = useParams<{ id: string }>();
   const complaintData = useAppSelector(selectComplaint);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
