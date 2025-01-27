@@ -68,4 +68,18 @@ describe("COMPENF-37 Display ECR Details", () => {
     cy.get(".comp-nav-item-name-inverted > a").should("have.css", "text-decoration").should("include", "underline");
     cy.get(".comp-nav-item-name-inverted > a").should("have.css", "color").should("include", "rgb(255, 255, 255)");
   });
+
+  it("allows users to add additional notes", function () {
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.GIR, "23-900001", true);
+
+    cy.get("#outcome-report-add-note").click({ force: true });
+    cy.get("#supporting-notes-textarea-id").click({ force: true }).clear().type("A");
+    cy.get("#supporting-notes-save-button").click({ force: true });
+    cy.waitForSpinner();
+    cy.get("#additional-notes-text").should("have.text", "A");
+    cy.get("#notes-delete-button").click({ force: true });
+    cy.get("#confirm-delete-note-button").click({ force: true });
+    cy.waitForSpinner();
+    cy.get("#outcome-report-add-note").should("exist");
+  });
 });

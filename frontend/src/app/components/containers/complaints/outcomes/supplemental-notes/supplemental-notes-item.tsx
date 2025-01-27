@@ -52,7 +52,7 @@ export const SupplementalNotesItem: FC<props> = ({ notes, action, enableEditMode
               <div>
                 <dt>Notes</dt>
                 <dd>
-                  <pre>{notes}</pre>
+                  <pre id="additional-notes-text">{notes}</pre>
                 </dd>
               </div>
               <div>
