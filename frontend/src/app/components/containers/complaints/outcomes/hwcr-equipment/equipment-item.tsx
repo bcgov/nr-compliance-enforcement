@@ -142,7 +142,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
           {/* EQUIPMENT META */}
           <dl>
             <div>
-              <dt>Address</dt>
+              <dt>Location/address</dt>
               <dd>{equipment.address}</dd>
             </div>
             <CompLocationInfo

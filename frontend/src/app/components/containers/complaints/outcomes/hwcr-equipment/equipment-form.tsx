@@ -56,7 +56,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const [wasAnimalCapturedErrorMsg, setWasAnimalCapturedErrorMsg] = useState<string>("");
 
   const dispatch = useAppDispatch();
-  const { id = "", complaintType = "" } = useParams<{ id: string; complaintType: string }>();
+  const { id = "" } = useParams<{ id: string }>();
   const complaintData = useAppSelector(selectComplaint);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
@@ -136,9 +136,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     const isYCoordinateEmpty = !yCoordinate;
 
     if (isAddressEmpty && (isXCoordinateEmpty || isYCoordinateEmpty)) {
-      setEquipmentAddressErrorMsg("Address is required if coordinates are not provided.");
-      if (isXCoordinateEmpty) setXCoordinateErrorMsg("Longitude is required if address is not provided.");
-      if (isYCoordinateEmpty) setYCoordinateErrorMsg("Latitude is required if address is not provided.");
+      setEquipmentAddressErrorMsg("Location/address is required if coordinates are not provided.");
+      if (isXCoordinateEmpty) setXCoordinateErrorMsg("Longitude is required if location/address is not provided.");
+      if (isYCoordinateEmpty) setYCoordinateErrorMsg("Latitude is required if location/address is not provided.");
       return true; // Errors found
     }
     return false; // No errors
@@ -330,7 +330,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               id="equipment-address-div"
               className="comp-details-form-row"
             >
-              <label htmlFor="equipment-address">Address</label>
+              <label htmlFor="equipment-address">Location/address</label>
               <div className="comp-details-input full-width">
                 <input
                   type="text"

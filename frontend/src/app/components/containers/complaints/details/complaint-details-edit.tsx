@@ -1028,7 +1028,12 @@ export const ComplaintDetailsEdit: FC = () => {
                 className="comp-details-form-row"
                 id="complaint-location-pair-id"
               >
-                <label id="complaint-location-label-id">Complaint location</label>
+                <label
+                  id="complaint-location-label-id"
+                  htmlFor="location-edit-id"
+                >
+                  Location/address
+                </label>
                 <div className="comp-details-edit-input">
                   <input
                     type="text"
