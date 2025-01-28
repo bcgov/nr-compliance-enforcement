@@ -17,6 +17,8 @@ import { CANCEL_CONFIRM, DELETE_ANIMAL_OUTCOME } from "@apptypes/modal/modal-typ
 import { EditOutcome } from "./oucome-by-animal/edit-outcome";
 import { UUID } from "crypto";
 import { setIsInEdit } from "@store/reducers/cases";
+import { BsExclamationCircleFill } from "react-icons/bs";
+import useValidateComplaint from "@hooks/validate-complaint";
 
 type props = {};
 
@@ -131,6 +133,8 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
 
   const [showForm, setShowForm] = useState(false);
 
+  const validationResults = useValidateComplaint();
+
   //-- useEffects
   useEffect(() => {
     const { delegates } = (complaint as WildlifeComplaint) || {};
@@ -206,6 +210,12 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
       id="outcome-animal"
     >
       <h3>Outcome by animal</h3>
+      {!validationResults.validationDetails.animalCapturedCriteria && (
+        <div className="section-error-message">
+          <BsExclamationCircleFill />
+          <span>Outcome of animal is required to close the complaint once captured.</span>
+        </div>
+      )}
       {renderOutcomeList()}
 
       <div className="comp-outcome-report-button">
