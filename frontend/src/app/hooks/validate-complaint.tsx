@@ -111,13 +111,6 @@ const useValidateComplaint = () => {
           ? !(equipment?.find((item: EquipmentDetailsDto) => item.wasAnimalCaptured === "Y") && outcomes.length === 0)
           : true;
 
-      console.log("animalCapturedCriteria", animalCapturedCriteria);
-      console.log(equipment?.find((item: EquipmentDetailsDto) => item.wasAnimalCaptured === "Y"));
-      console.log(outcomes.length === 0);
-      console.log(
-        !(equipment?.find((item: EquipmentDetailsDto) => item.wasAnimalCaptured === "Y") && outcomes.length === 0),
-      );
-
       //check if file review is required, review must be completed
       const fileReviewCriteria = (isReviewRequired && reviewComplete !== null) || !isReviewRequired;
 

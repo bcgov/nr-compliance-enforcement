@@ -53,6 +53,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   const subjects = useAppSelector(selectAnimalOutcomes);
   const caseId = useAppSelector(selectCaseId) as UUID;
   const isReadOnly = useAppSelector(selectComplaintViewMode);
+  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
 
   const { species, ownedBy: agency } = (complaint as WildlifeComplaint) || {};
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(agency));
@@ -159,8 +160,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   }, [complaint]);
 
   useEffect(() => {
-    const items = subjects || [];
-    setOutcomes(items);
+    setOutcomes([...subjects]);
   }, [dispatch, subjects]);
 
   useEffect(() => {
@@ -169,6 +169,14 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
       dispatch(setIsInEdit({ animal: false }));
     };
   }, [dispatch, showForm, editId]);
+
+  // Outcome of animal is required to close the complaint once captured, if none are recorded show the form so that the validation message can be displayed
+  // Using an effect to control this behavior using the existing flag would be preferable but would require a refactor around the way the add buttons work
+  const showFormBasedOnOutcomes =
+    showForm ||
+    (isInEdit?.showSectionErrors &&
+      !validationResults?.canCloseComplaint &&
+      !validationResults?.validationDetails?.animalCapturedCriteria);
 
   //-- render a list of outcomes
   const renderOutcomeList = () => {
@@ -198,6 +206,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
             agency={agency}
             edit={handleEnableEdit}
             remove={openDeleteAnimalOutcomeModal}
+            outcomeRequired={!validationResults?.validationDetails?.animalCapturedCriteria}
           />
         );
       });
@@ -210,16 +219,10 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
       id="outcome-animal"
     >
       <h3>Outcome by animal</h3>
-      {!validationResults.validationDetails.animalCapturedCriteria && (
-        <div className="section-error-message">
-          <BsExclamationCircleFill />
-          <span>Outcome of animal is required to close the complaint once captured.</span>
-        </div>
-      )}
       {renderOutcomeList()}
 
       <div className="comp-outcome-report-button">
-        {!showForm && (
+        {!showFormBasedOnOutcomes && (
           <Button
             variant="primary"
             title="Add animal"
@@ -232,7 +235,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
           </Button>
         )}
 
-        {showForm && (
+        {showFormBasedOnOutcomes && (
           <CreateAnimalOutcome
             index={getNextOrderNumber<AnimalOutcomeData>(outcomes)}
             assignedOfficer={assignedOfficer}
@@ -240,6 +243,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
             species={species}
             save={handleSave}
             cancel={handleCancelCreateOutcome}
+            outcomeRequired={!validationResults?.validationDetails?.animalCapturedCriteria}
           />
         )}
       </div>
