@@ -17,7 +17,6 @@ import { CANCEL_CONFIRM, DELETE_ANIMAL_OUTCOME } from "@apptypes/modal/modal-typ
 import { EditOutcome } from "./oucome-by-animal/edit-outcome";
 import { UUID } from "crypto";
 import { setIsInEdit } from "@store/reducers/cases";
-import { BsExclamationCircleFill } from "react-icons/bs";
 import useValidateComplaint from "@hooks/validate-complaint";
 
 type props = {};
