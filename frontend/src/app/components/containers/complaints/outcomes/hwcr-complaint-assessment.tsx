@@ -589,7 +589,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 id="action-required-div"
               >
                 <label htmlFor="action-required">
-                  Action required?<span className="required-ind">*</span>
+                  Action required? {!quickClose && <span className="required-ind">*</span>}
                 </label>
                 <div className="comp-details-input full-width">
                   {quickClose ? (
