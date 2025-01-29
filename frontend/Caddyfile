@@ -51,6 +51,14 @@
     Referrer-Policy "same-origin"
     Feature-Policy "fullscreen 'self'; camera 'none'; microphone 'none'"
   }
+  # Ensure non-existent static files return 404
+  @missingFiles {
+      not file
+      not path /api/*
+      not path /health/*
+  }
+  respond @missingFiles "404 - Not Found" 404
+
 }
 
 :3001 {
