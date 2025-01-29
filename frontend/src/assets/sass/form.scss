@@ -70,6 +70,23 @@
   display: none;
 }
 
+.validation-group-label {
+  padding-left: 25px;
+}
+
+@media screen and (max-width: 1024px) {
+  .validation-group-sub-label {
+    padding-left: 25px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .validation-group-input {
+    margin-left: 25px;
+    max-width: calc(100% - 25px); /* Prevent overflow by reducing the width */
+  }
+}
+
 // LAT/LONG INPUTS
 .comp-lat-long-input {
   display: grid;
