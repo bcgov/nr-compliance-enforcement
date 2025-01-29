@@ -9916,6 +9916,69 @@ DELETE FROM hwcr_complaint_nature_code WHERE long_description = 'Livestock/pets 
 DELETE FROM hwcr_complaint_nature_code WHERE long_description = 'Livestock/pets - killed/injured - not present (No Black/Grizzly Bear, Wolf, Cougar suspected)';
 DELETE FROM hwcr_complaint_nature_code WHERE long_description = 'Livestock/pets - killed/injured - (No Black/Grizzly Bear, Wolf, Cougar suspected)';
 
+-------------------------
+-- Move Houston in Location Hierarchy
+-------------------------
+
+UPDATE geo_org_unit_structure set parent_geo_org_unit_code='SMITHRS' where child_geo_org_unit_code='HOUSTON';
+
+------------------------
+-- Add Field under Golden office
+------------------------
+
+insert into 
+  geo_organization_unit_code (
+    geo_organization_unit_code, 
+    short_description, 
+    long_description, 
+    effective_date, 
+    expiry_date, 
+    create_user_id, 
+    create_utc_timestamp, 
+    update_user_id, 
+    update_utc_timestamp, 
+    geo_org_unit_type_code, 
+    administrative_office_ind)
+values (
+    'FIELD',
+    'Field',
+    'Field', 
+    now(), 
+    null, 
+    user, 
+    now(), 
+    user, 
+    now(), 
+    'AREA', 
+    'N') ON CONFLICT DO NOTHING;
+
+insert into
+  geo_org_unit_structure (
+    effective_date,
+    expiry_date,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    agency_code,
+    parent_geo_org_unit_code,
+    child_geo_org_unit_code
+  )
+values
+  (
+    now(),
+    null,
+    user,
+    now(),
+    user,
+    now(),
+    'COS',
+    'GLDN',
+    'FIELD'
+  ) ON CONFLICT
+DO NOTHING;
+
+
 --------------------------
 -- New Changes above this line
 -------------------------
