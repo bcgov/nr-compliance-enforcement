@@ -329,23 +329,32 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
 
             {/* ADDRESS */}
             <div
-              id="equipment-address-coordinates-header"
+              id="equipment-address-coordinates-div"
               className="comp-details-form-row"
             >
               <label htmlFor="equipment-address">
-                Location (Address or Coordinates)<span className="required-ind">*</span>
+                Location info (choose one)<span className="required-ind">*</span>
               </label>
             </div>
             <div
               id="equipment-address-div"
               className="comp-details-form-row"
             >
-              <label htmlFor="equipment-address">Location/address</label>
+              <label
+                className="validation-group-label"
+                htmlFor="equipment-address"
+              >
+                Location/address
+              </label>
               <div className="comp-details-input full-width">
                 <input
                   type="text"
                   id="equipment-address"
-                  className={equipmentAddressErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
+                  className={
+                    equipmentAddressErrorMsg
+                      ? "comp-form-control error-border validation-group-input"
+                      : "comp-form-control validation-group-input"
+                  }
                   onChange={(e) => setAddress(e.target.value)}
                   maxLength={120}
                   value={address}
@@ -390,6 +399,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               sourceXCoordinate={complaintData?.location?.coordinates[0].toString() ?? ""}
               sourceYCoordinate={complaintData?.location?.coordinates[1].toString() ?? ""}
               enableCopyCoordinates={true}
+              validationRequired={true}
             />
             {/* SET BY */}
             <div
