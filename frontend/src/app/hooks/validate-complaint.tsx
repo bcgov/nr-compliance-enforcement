@@ -4,6 +4,7 @@ import {
   selectAssessment,
   selectPrevention,
   selectEquipment,
+  selectAnimalOutcomes,
   selectSubject,
   selectIsInEdit,
   selectIsReviewRequired,
@@ -23,6 +24,7 @@ type validationResults = {
     noEditSections: boolean;
     onlyAssessmentInEdit: boolean;
     assessmentCriteria: boolean;
+    animalCapturedCriteria: boolean;
     preventionCriteria: boolean;
     equipmentCriteria: boolean;
     animalCriteria: boolean;
@@ -35,6 +37,7 @@ const useValidateComplaint = () => {
   const assessment = useAppSelector(selectAssessment);
   const prevention = useAppSelector(selectPrevention);
   const equipment = useAppSelector(selectEquipment);
+  const outcomes = useAppSelector(selectAnimalOutcomes);
   const subject = useAppSelector(selectSubject);
   const isInEdit = useAppSelector(selectIsInEdit);
   const isReviewRequired = useAppSelector(selectIsReviewRequired);
@@ -51,6 +54,7 @@ const useValidateComplaint = () => {
       noEditSections: false,
       onlyAssessmentInEdit: false,
       assessmentCriteria: false,
+      animalCapturedCriteria: false,
       preventionCriteria: false,
       equipmentCriteria: false,
       animalCriteria: false,
@@ -100,6 +104,13 @@ const useValidateComplaint = () => {
       const animalCriteria =
         //@ts-ignore
         subject?.find((item: AnimalOutcomeSubject) => !item.outcome) === undefined;
+
+      // Check Outcome by animal is filled out if animal was captured
+      const animalCapturedCriteria =
+        complaintType === COMPLAINT_TYPES.HWCR
+          ? !(equipment?.find((item: EquipmentDetailsDto) => item.wasAnimalCaptured === "Y") && outcomes.length === 0)
+          : true;
+
       //check if file review is required, review must be completed
       const fileReviewCriteria = (isReviewRequired && reviewComplete !== null) || !isReviewRequired;
 
@@ -109,6 +120,7 @@ const useValidateComplaint = () => {
         equipmentCriteria: boolean,
         animalCriteria: boolean,
         fileReviewCriteria: boolean,
+        animalCapturedCriteria: boolean,
       ) => {
         const { assessment, prevention, equipment, animal, note, attachments, fileReview } = isInEdit;
         if (!preventionCriteria || prevention) {
@@ -116,6 +128,8 @@ const useValidateComplaint = () => {
         } else if (!equipmentCriteria || equipment) {
           document.getElementById("outcome-equipment")?.scrollIntoView({ block: "end" });
         } else if (!animalCriteria || animal) {
+          document.getElementById("outcome-animal")?.scrollIntoView({ block: "end" });
+        } else if (!animalCapturedCriteria || animal) {
           document.getElementById("outcome-animal")?.scrollIntoView({ block: "end" });
         } else if (note) {
           document.getElementById("outcome-note")?.scrollIntoView({ block: "end" });
@@ -135,19 +149,30 @@ const useValidateComplaint = () => {
           equipmentCriteria,
           animalCriteria,
           fileReviewCriteria,
+          animalCapturedCriteria,
         );
       };
 
       setValidationResults({
         canCloseComplaint:
-          noEditSections && assessmentCriteria && equipmentCriteria && animalCriteria && fileReviewCriteria,
+          noEditSections &&
+          assessmentCriteria &&
+          equipmentCriteria &&
+          animalCriteria &&
+          animalCapturedCriteria &&
+          fileReviewCriteria,
         canQuickCloseComplaint:
-          (noEditSections || onlyAssessmentInEdit) && equipmentCriteria && animalCriteria && fileReviewCriteria,
+          (noEditSections || onlyAssessmentInEdit) &&
+          equipmentCriteria &&
+          animalCriteria &&
+          animalCapturedCriteria &&
+          fileReviewCriteria,
         scrollToErrors,
         validationDetails: {
           noEditSections: noEditSections,
           onlyAssessmentInEdit: onlyAssessmentInEdit,
           assessmentCriteria: assessmentCriteria,
+          animalCapturedCriteria: animalCapturedCriteria,
           preventionCriteria: preventionCriteria,
           equipmentCriteria: equipmentCriteria,
           animalCriteria: animalCriteria,
@@ -157,7 +182,7 @@ const useValidateComplaint = () => {
     };
 
     validateComplaint();
-  }, [assessment, equipment, isInEdit, isReviewRequired, prevention, reviewComplete, subject]);
+  }, [assessment, equipment, isInEdit, isReviewRequired, prevention, reviewComplete, subject, complaintType, outcomes]);
 
   return validationResults;
 };
