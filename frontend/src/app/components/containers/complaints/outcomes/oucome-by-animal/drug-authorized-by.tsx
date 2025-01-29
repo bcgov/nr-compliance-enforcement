@@ -91,7 +91,7 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
             id="officer-assigned-authorization-select-label-id"
             htmlFor="officer-assigned-authorization-select-id"
           >
-            Officer
+            Officer<span className="required-ind">*</span>
           </label>
           <div className="comp-details-input full-width">
             <CompSelect
@@ -117,7 +117,7 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
             id="drug-authorization-incident-time-label-id"
             htmlFor="drug-authorization-incident-time"
           >
-            Date
+            Date<span className="required-ind">*</span>
           </label>
           <div className="comp-details-input">
             <ValidationDatePicker
