@@ -308,7 +308,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               className="comp-details-form-row"
               id="equipment-type-div"
             >
-              <label htmlFor="equipment-type-select">Equipment type</label>
+              <label htmlFor="equipment-type-select">
+                Equipment type<span className="required-ind">*</span>
+              </label>
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="equipment-type-select"
@@ -326,6 +328,14 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
             </div>
 
             {/* ADDRESS */}
+            <div
+              id="equipment-address-coordinates-header"
+              className="comp-details-form-row"
+            >
+              <label htmlFor="equipment-address">
+                Location (Address or Coordinates)<span className="required-ind">*</span>
+              </label>
+            </div>
             <div
               id="equipment-address-div"
               className="comp-details-form-row"
@@ -386,7 +396,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               className="comp-details-form-row"
               id="equipment-officer-set-div"
             >
-              <label htmlFor="equipment-officer-set-select">Set/used by</label>
+              <label htmlFor="equipment-officer-set-select">
+                Set/used by<span className="required-ind">*</span>
+              </label>
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="equipment-officer-set-select"
@@ -406,7 +418,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               className="comp-details-form-row"
               id="equipment-date-set-div"
             >
-              <label htmlFor="equipment-day-set">Set/used date</label>
+              <label htmlFor="equipment-day-set">
+                Set/used date<span className="required-ind">*</span>
+              </label>
               <div className="comp-details-input">
                 <ValidationDatePicker
                   id="equipment-day-set"
@@ -470,7 +484,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                 className="comp-details-form-row"
                 id="reported-pair-id"
               >
-                <label htmlFor="equipment-animal-captured-radiogroup-1">Was an animal captured?</label>
+                <label htmlFor="equipment-animal-captured-radiogroup-1">
+                  Was an animal captured?<span className="required-ind">*</span>
+                </label>
                 <div className="comp-details-input full-width">
                   {
                     <CompRadioGroup
