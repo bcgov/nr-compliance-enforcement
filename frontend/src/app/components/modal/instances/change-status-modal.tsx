@@ -65,6 +65,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   };
 
   const { title, description, complaint_identifier } = modalData;
+  const is_officer_assigned: boolean = modalData.is_officer_assigned;
 
   const handleSelectChange = (selectedValue: string) => {
     selectedStatus = selectedValue;
@@ -114,6 +115,19 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
             </Col>
           </Row>
         )}
+        {!is_officer_assigned && (
+          <Row className="status-change-subtext">
+            <Col
+              xs="auto"
+              className="change_status_modal_icon"
+            >
+              <i className="bi bi-exclamation-circle"></i>
+            </Col>
+            <Col>
+              <div>An officer must be assigned to the complaint before it can be closed.</div>
+            </Col>
+          </Row>
+        )}
         <label style={{ marginBottom: "8px" }}>{description}</label>
         <ComplaintStatusSelect
           isDisabled={statusChangeDisabledInd}
@@ -128,10 +142,11 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
           Cancel
         </Button>
         <Button
-          active={!statusChangeDisabledInd}
+          active={!statusChangeDisabledInd && is_officer_assigned}
           id="update_complaint_status_button"
           onClick={handleSubmit}
-          className={!statusChangeDisabledInd ? "" : "inactive-button"}
+          className={!statusChangeDisabledInd && is_officer_assigned ? "" : "inactive-button"}
+          disabled={!is_officer_assigned}
         >
           Update
         </Button>
