@@ -2,7 +2,7 @@ import { FC, memo, useEffect } from "react";
 import { Modal, Spinner, Alert, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
-import { selectModalData, isLoading } from "@store/reducers/app";
+import { profileDisplayName, profileIdir, selectModalData, isLoading, userId } from "@store/reducers/app";
 import { selectComplaint, refreshComplaints } from "@store/reducers/complaints";
 import { setIsInEdit } from "@store/reducers/cases";
 import {
@@ -14,6 +14,7 @@ import {
   selectIsReviewRequired,
   selectReviewComplete,
 } from "@store/reducers/case-selectors";
+import { assignCurrentUserToComplaint } from "@store/reducers/officer";
 import { HWCRComplaintAssessment } from "@components/containers/complaints/outcomes/hwcr-complaint-assessment";
 import useValidateComplaint from "@/app/hooks/validate-complaint";
 
@@ -92,6 +93,9 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   const noteData = useAppSelector(selectSupplementalNote);
   const isReviewRequired = useAppSelector(selectIsReviewRequired);
   const reviewComplete = useAppSelector(selectReviewComplete);
+  const displayName = useAppSelector(profileDisplayName);
+  const idir = useAppSelector(profileIdir);
+  const userid = useAppSelector(userId);
 
   // Vars
   const { title, complaint_identifier } = modalData;
@@ -129,6 +133,21 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
             close={close}
           />
         )}
+        {!loading && complaintData?.delegates?.every((delegate) => !delegate.isActive) && (
+          <div>
+            <Alert
+              variant="info"
+              className="comp-complaint-details-alert"
+            >
+              <i className="bi bi-info-circle-fill"></i>
+              <span>
+                {" "}
+                Without an officer assigned to this complaint, {displayName} will be assigned as part of the quick
+                close.
+              </span>
+            </Alert>
+          </div>
+        )}
         <div
           style={{
             visibility: loading ? "hidden" : "inherit",
@@ -140,6 +159,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
             showHeader={false}
             handleSave={() => {
               submit();
+              dispatch(assignCurrentUserToComplaint(userid, idir, complaint_identifier, complaint_type));
               refreshComplaintsOnClose && dispatch(refreshComplaints(complaint_type));
             }}
             handleClose={close}
