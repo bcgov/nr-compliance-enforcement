@@ -49,6 +49,7 @@ spec:
           requests:
             cpu: {{ .Values.crunchy.pgmonitor.exporter.requests.cpu }}
             memory: {{ .Values.crunchy.pgmonitor.exporter.requests.memory }}
+          limits: ~
 
   {{ end }}
 
@@ -63,6 +64,7 @@ spec:
         requests:
           cpu: {{ .Values.crunchy.instances.requests.cpu }}
           memory: {{ .Values.crunchy.instances.requests.memory }}
+        limits: ~
 
       sidecars:
         replicaCertCopy:
@@ -70,6 +72,7 @@ spec:
             requests:
               cpu: {{ .Values.crunchy.instances.replicaCertCopy.requests.cpu }}
               memory: {{ .Values.crunchy.instances.replicaCertCopy.requests.memory }}
+            limits: ~
       dataVolumeClaimSpec:
         accessModes:
           - "ReadWriteOnce"
@@ -164,6 +167,7 @@ spec:
           requests:
             cpu: {{ .Values.crunchy.pgBackRest.repoHost.requests.cpu }}
             memory: {{ .Values.crunchy.pgBackRest.repoHost.requests.memory }}
+          limits: ~
       sidecars:
         # this stuff is for the "pgbackrest" container in the "postgres-crunchy-ha" set of pods
         pgbackrest:
@@ -171,16 +175,19 @@ spec:
             requests:
               cpu: {{ .Values.crunchy.pgBackRest.sidecars.requests.cpu }}
               memory: {{ .Values.crunchy.pgBackRest.sidecars.requests.memory }}
+            limits: ~
         pgbackrestConfig:
           resources:
             requests:
               cpu: {{ .Values.crunchy.pgBackRest.sidecars.requests.cpu }}
               memory: {{ .Values.crunchy.pgBackRest.sidecars.requests.memory }}
+            limits: ~
       jobs:
         resources:
           requests:
             cpu: {{ .Values.crunchy.pgBackRest.jobs.requests.cpu }}
             memory: {{ .Values.crunchy.pgBackRest.jobs.requests.memory }}
+          limits: ~
   {{- end }}
   patroni:
     dynamicConfiguration:
@@ -213,6 +220,7 @@ spec:
         requests:
           cpu: {{ .Values.crunchy.proxy.pgBouncer.requests.cpu }}
           memory: {{ .Values.crunchy.proxy.pgBouncer.requests.memory }}
+        limits: ~
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
