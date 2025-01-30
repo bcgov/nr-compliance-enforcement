@@ -12,6 +12,7 @@
     }
     level {$LOG_LEVEL}
   }
+
   handle /static/js/config.js {
     header {
       Content-Type text/javascript
@@ -22,41 +23,50 @@
              window.REACT_APP_API_URL="/api";
              window.REACT_APP_COMS_URL="{$COMS_URL}";
              window.REACT_APP_COMS_BUCKET="{$COMS_BUCKET}";
-             window.REACT_APP_ENVIRONMENT_NAME="{$ENVIRONMENT_NAME}"`
+             window.REACT_APP_ENVIRONMENT_NAME="{$ENVIRONMENT_NAME}"` 200
   }
 
   root * /app/dist
   encode zstd gzip
   file_server
-  @spa_router {
-    not path /api/* /static/js/config.js
-    not file #
+
+  # Ensure missing static files return 404
+  @missingStatic {
+    path_regexp .*\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|otf|json|txt|map)$
+    not file
   }
-  rewrite @spa_router /index.html
+  respond @missingStatic "404 - Not Found" 404
+
+  # Serve index.html for valid React routes but return 404 for unknown paths
+  @validReactRoutes {
+    not path /api/* /static/js/config.js
+    file index.html
+  }
+  rewrite @validReactRoutes /index.html
+
+  @unknownRoutes {
+    not path /api/* /static/js/config.js
+    not file
+  }
+  respond @unknownRoutes "404 - Not Found" 404
+
   # Proxy requests to API service
   reverse_proxy /api/* {$BACKEND_URL} {
     header_up Host {http.reverse_proxy.upstream.hostport}
     header_up X-Real-IP {remote_host}
     header_up X-Forwarded-For {remote_host}
   }
+
   header {
     X-Frame-Options "SAMEORIGIN"
     X-XSS-Protection "1;mode=block"
     Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate"
     X-Content-Type-Options "nosniff"
     Strict-Transport-Security "max-age=31536000"
-    Content-Security-Policy "default-src 'self' https://*.gov.bc.ca; script-src 'self' 'unsafe-eval' https://*.gov.bc.ca https://www2.gov.bc.ca; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.fontawesome.com; font-src 'self' https://fonts.gstatic.com;  img-src 'self' data: https://fonts.googleapis.com https://www.w3.org https://*.gov.bc.ca https://*.tile.openstreetmap.org;"
+    Content-Security-Policy "default-src 'self' https://*.gov.bc.ca; script-src 'self' 'unsafe-eval' https://*.gov.bc.ca https://www2.gov.bc.ca; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.fontawesome.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://fonts.googleapis.com https://www.w3.org https://*.gov.bc.ca https://*.tile.openstreetmap.org;"
     Referrer-Policy "same-origin"
     Feature-Policy "fullscreen 'self'; camera 'none'; microphone 'none'"
   }
-  # Ensure non-existent static files return 404
-  @missingFiles {
-      not file
-      not path /api/*
-      not path /health/*
-  }
-  respond @missingFiles "404 - Not Found" 404
-
 }
 
 :3001 {
