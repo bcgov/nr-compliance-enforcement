@@ -37,6 +37,7 @@ import { GirTypeCode } from "../../v1/gir_type_code/entities/gir_type_code.entit
 import { AllegationReportData } from "../../types/models/reports/complaints/allegation-report-data";
 import { WildlifeReportData } from "../../types/models/reports/complaints/wildlife-report-data";
 import { formatPhonenumber } from "../../common/methods";
+import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
 // @SONAR_STOP@
 
 //-- define entity -> model mapping
@@ -1792,6 +1793,286 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
 
         return null;
       }),
+    ),
+  );
+};
+
+export const mapGeneralIncidentReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
+  reportedByCodeToReportedByDto(mapper);
+  violationCodeToViolationDto(mapper);
+  personComplaintToDelegateDtoMap(mapper);
+  cosGeoOrgUnitToOrganizationDtoMap(mapper);
+  agencyCodeToAgencyDto(mapper);
+
+  createMap<GirComplaint, GeneralIncidentReportData>(
+    mapper,
+    "GirComplaint",
+    "GeneralIncidentReportData",
+
+    forMember(
+      (destination) => destination.complaintMethodReceivedCode,
+      mapFrom((source) => {
+        const { complaint_identifier } = source;
+        const { comp_mthd_recv_cd_agcy_cd_xref } = complaint_identifier || {};
+
+        if (comp_mthd_recv_cd_agcy_cd_xref) {
+          const { complaint_method_received_code } = comp_mthd_recv_cd_agcy_cd_xref;
+          return complaint_method_received_code?.long_description || null;
+        }
+
+        return null;
+      }),
+    ),
+    forMember(
+      (destination) => destination.referenceNumber,
+      mapFrom((source) => source.complaint_identifier.reference_number),
+    ),
+    forMember(
+      (destination) => destination.webeocId,
+      mapFrom((source) => source.complaint_identifier.webeoc_identifier),
+    ),
+    forMember(
+      (destination) => destination.generalIncidentType,
+      mapFrom((src) => {
+        if (src.gir_type_code) {
+          return src.gir_type_code.long_description;
+        }
+        return "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.privacyRequested,
+      mapFrom((source) => {
+        if (source.complaint_identifier.is_privacy_requested === "Y") {
+          return "Yes";
+        } else if (source.complaint_identifier.is_privacy_requested === "N") {
+          return "No";
+        } else {
+          return null;
+        }
+      }),
+    ),
+    forMember(
+      (destination) => destination.reportedBy,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { reported_by_code: reported_by },
+        } = source;
+        if (reported_by) {
+          const code = mapper.map<ReportedByCode, ReportedBy>(reported_by, "ReportedByCode", "ReportedByCodeDto");
+          return code.longDescription;
+        }
+
+        return "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.address,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_address !== null ? complaint.caller_address : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.email,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_email !== null ? complaint.caller_email : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.phone3,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        const { caller_phone_3: phone } = complaint;
+
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
+        }
+
+        return "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.phone2,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        const { caller_phone_2: phone } = complaint;
+
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
+        }
+
+        return "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.phone1,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        const { caller_phone_1: phone } = complaint;
+
+        try {
+          if (phone) {
+            return formatPhonenumber(phone);
+          }
+        } catch (error) {
+          return phone;
+        }
+
+        return "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.name,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.caller_name !== null ? complaint.caller_name : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.description,
+      mapFrom((source) => {
+        const { complaint_identifier: complaint } = source;
+        return complaint.detail_text !== null ? complaint.detail_text : "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.locationDescription,
+      mapFrom((source) => source.complaint_identifier.location_detailed_text),
+    ),
+    forMember(
+      (destination) => destination.region,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
+        } = source;
+
+        return sourceOrganization.region_name;
+      }),
+    ),
+    forMember(
+      (destination) => destination.zone,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
+        } = source;
+
+        return sourceOrganization.zone_name;
+      }),
+    ),
+    forMember(
+      (destination) => destination.office,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
+        } = source;
+
+        return sourceOrganization.office_location_name;
+      }),
+    ),
+    forMember(
+      (destination) => destination.community,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
+        } = source;
+
+        return sourceOrganization.area_name;
+      }),
+    ),
+    forMember(
+      (destination) => destination.longitude,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: {
+            location_geometry_point: { coordinates },
+          },
+        } = source;
+        return coordinates[0].toString();
+      }),
+    ),
+    forMember(
+      (destination) => destination.latitude,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: {
+            location_geometry_point: { coordinates },
+          },
+        } = source;
+        return coordinates[1].toString();
+      }),
+    ),
+    forMember(
+      (destination) => destination.location,
+      mapFrom((source) => source.complaint_identifier.location_summary_text),
+    ),
+    forMember(
+      (destination) => destination.incidentDateTime,
+      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
+    ),
+    forMember(
+      (destination) => destination.status,
+      mapFrom((source) => {
+        return source.complaint_identifier.complaint_status_code.short_description;
+      }),
+    ),
+    forMember(
+      (destination) => destination.officerAssigned,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { person_complaint_xref: people },
+        } = source;
+
+        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
+
+        if (delegates.length === 0) {
+          return "Not Assigned";
+        } else {
+          const assignee = delegates.find((item) => item.type === "ASSIGNEE");
+          if (!assignee) {
+            return "Not Assigned";
+          } else {
+            const {
+              person: { firstName, lastName },
+            } = assignee;
+            return `${firstName} ${lastName}`;
+          }
+        }
+      }),
+    ),
+    forMember(
+      (destination) => destination.updatedOn,
+      mapFrom((source) => source.complaint_identifier.update_utc_timestamp),
+    ),
+    forMember(
+      (destination) => destination.reportedOn,
+      mapFrom((source) => {
+        const {
+          complaint_identifier: { incident_reported_utc_timestmp: reported },
+        } = source;
+        return reported || "";
+      }),
+    ),
+    forMember(
+      (destination) => destination.ownedBy,
+      mapFrom((source) => source.complaint_identifier.owned_by_agency_code.agency_code),
+    ),
+    forMember(
+      (destination) => destination.createdBy,
+      mapFrom((source) => source.create_user_id),
+    ),
+    forMember(
+      (destination) => destination.id,
+      mapFrom((source) => source.complaint_identifier.complaint_identifier),
     ),
   );
 };
