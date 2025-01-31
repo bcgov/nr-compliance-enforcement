@@ -52,6 +52,8 @@
     Referrer-Policy "same-origin"
     Permissions-Policy "fullscreen=(self), camera=(), microphone=()"
     Cross-Origin-Resource-Policy "same-origin"
+    Cross-Origin-Opener-Policy "same-origin"
+    Cross-Origin-Embedder-Policy "require-corp"
   }
 }
 
