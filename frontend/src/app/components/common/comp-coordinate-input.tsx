@@ -16,6 +16,7 @@ type Props = {
   sourceXCoordinate?: string;
   sourceYCoordinate?: string;
   enableCopyCoordinates: boolean;
+  validationRequired: boolean;
 };
 
 const COORDINATE_TYPES = {
@@ -33,6 +34,7 @@ export const CompCoordinateInput: FC<Props> = ({
   syncCoordinates,
   throwError,
   enableCopyCoordinates,
+  validationRequired,
 }) => {
   const [coordinateType, setCoordinateType] = useState(COORDINATE_TYPES.LatLong);
   const [xCoordinate, setXCoordinate] = useState<string | undefined>("");
@@ -283,7 +285,12 @@ export const CompCoordinateInput: FC<Props> = ({
       className="comp-details-form-row"
       id={id}
     >
-      <label htmlFor="coordinate-type-radio-group">Coordinates</label>
+      <label
+        className={validationRequired ? "validation-group-label" : ""}
+        htmlFor="coordinate-type-radio-group"
+      >
+        Coordinates
+      </label>
       <div
         id="coordinate-input-div"
         className="comp-details-input full-width"
@@ -299,7 +306,11 @@ export const CompCoordinateInput: FC<Props> = ({
               enableValidation={true}
               errorMessage=""
               itemClassName="comp-radio-btn"
-              groupClassName="comp-coordinate-type-radio-group"
+              groupClassName={
+                validationRequired
+                  ? "comp-coordinate-type-radio-group validation-group-sub-label"
+                  : "comp-coordinate-type-radio-group"
+              }
               value={coordinateType}
               onChange={(option: any) => handleChangeCoordinateType(option.target.value)}
               isDisabled={false}
@@ -315,7 +326,11 @@ export const CompCoordinateInput: FC<Props> = ({
                 aria-label="Latitude"
                 type="text"
                 id="input-y-coordinate"
-                className={yCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
+                className={`
+                  comp-form-control
+                  ${yCoordinateErrorMsg ? "error-border" : ""}
+                  ${validationRequired ? "validation-group-input" : ""}
+                `}
                 onChange={(evt: any) => handleGeoPointChange(evt.target.value, xCoordinate ?? "")}
                 value={yCoordinate ?? ""}
                 maxLength={120}
@@ -334,7 +349,11 @@ export const CompCoordinateInput: FC<Props> = ({
                 aria-label="Longitude"
                 type="text"
                 id="input-x-coordinate"
-                className={xCoordinateErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
+                className={`
+                  comp-form-control
+                  ${xCoordinateErrorMsg ? "error-border" : ""}
+                  ${validationRequired ? "validation-group-input" : ""}
+                `}
                 onChange={(evt: any) => handleGeoPointChange(yCoordinate ?? "", evt.target.value)}
                 value={xCoordinate ?? ""}
                 maxLength={120}
@@ -420,7 +439,10 @@ export const CompCoordinateInput: FC<Props> = ({
           <Button
             variant="outline-primary"
             size="sm"
-            className="btn-txt svg-icon mt-2"
+            className={`
+              btn-txt svg-icon mt-2
+              ${validationRequired ? "validation-group-sub-label" : ""}
+            `}
             id="copy-coordinates-button"
             onClick={() => {
               if (coordinateType === COORDINATE_TYPES.LatLong) {

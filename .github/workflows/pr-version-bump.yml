@@ -9,7 +9,7 @@ jobs:
   handle_pr:
     name: Handle Merged PR
     runs-on: ubuntu-22.04
-    if: ${{ github.event.pull_request.merged == true }}
+    if: github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v4
         with:

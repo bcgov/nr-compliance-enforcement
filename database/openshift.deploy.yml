@@ -28,10 +28,6 @@ parameters:
     value: "50m"
   - name: MEMORY_REQUEST
     value: "250Mi"
-  - name: CPU_LIMIT
-    value: "250m"
-  - name: MEMORY_LIMIT
-    value: "1Gi"
   ### Backup-Container starts here ###
   - name: BACKUP_COMPONENT
     description: BACKUP_COMPONENT name

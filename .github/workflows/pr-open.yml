@@ -62,7 +62,7 @@ jobs:
     needs: [builds, crunchy]
     environment:
     timeout-minutes: 15
-    if: ${{ ! github.event.pull_request.draft }}
+    if: (! github.event.pull_request.draft)
     steps:
       - uses: actions/checkout@v4
       - run: |
@@ -78,7 +78,7 @@ jobs:
 
   tests:
     name: Tests
-    if: needs.deploys.outputs.triggered == 'true' && ${{ !github.event.pull_request.draft }}
+    if: needs.deploys.outputs.triggered == 'true' && (! github.event.pull_request.draft)
     needs: [deploys]
     uses: ./.github/workflows/.tests.yml
 

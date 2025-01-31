@@ -85,7 +85,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
     return result;
   };
 
-   const updateModel = (property: string, value: string | Date | number | null | undefined) => {
+  const updateModel = (property: string, value: string | Date | number | null | undefined) => {
     const source = {
       id,
       vial,
@@ -164,7 +164,9 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
       </Card.Header>
       <Card.Body className="pt-0">
         <div className="comp-details-form-row">
-          <label htmlFor={`vial-number-${id}`}>Vial number</label>
+          <label htmlFor={`vial-number-${id}`}>
+            Vial number<span className="required-ind">*</span>
+          </label>
           <div className="comp-details-input">
             <CompInput
               id={`vial-number-${id}`}
@@ -184,7 +186,9 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
           </div>
         </div>
         <div className="comp-details-form-row">
-          <label htmlFor={`select-drug-name-${id}`}>Drug name</label>
+          <label htmlFor={`select-drug-name-${id}`}>
+            Drug name<span className="required-ind">*</span>
+          </label>
           <div className="comp-details-input full-width">
             <CompSelect
               id={`select-drug-name-${id}`}
@@ -202,7 +206,9 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
         </div>
 
         <div className="comp-details-form-row">
-          <label htmlFor={`injection-method-${id}`}>Injection method</label>
+          <label htmlFor={`injection-method-${id}`}>
+            Injection method<span className="required-ind">*</span>
+          </label>
           <div className="comp-details-input full-width">
             <CompSelect
               id={`injection-method-${id}`}
@@ -219,7 +225,9 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
           </div>
         </div>
         <div className="comp-details-form-row">
-          <label htmlFor={`amount-used-${id}`}>Amount used (mL)</label>
+          <label htmlFor={`amount-used-${id}`}>
+            Amount used (mL)<span className="required-ind">*</span>
+          </label>
           <div className="comp-details-input">
             <CompInput
               id={`amount-used-${id}`}

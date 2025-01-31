@@ -1070,6 +1070,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 syncCoordinates={syncCoordinates}
                 throwError={throwError}
                 enableCopyCoordinates={false}
+                validationRequired={false}
               />
               <div
                 className="comp-details-form-row"
