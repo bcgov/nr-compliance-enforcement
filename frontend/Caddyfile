@@ -24,6 +24,7 @@
              window.REACT_APP_COMS_BUCKET="{$COMS_BUCKET}";
              window.REACT_APP_ENVIRONMENT_NAME="{$ENVIRONMENT_NAME}"`
   }
+
   root * /app/dist
   encode zstd gzip
   file_server
@@ -41,12 +42,6 @@
     header_up X-Forwarded-For ""
     header_up X-Forwarded-Host ""
   }
-  # Block TRACE and OPTIONS methods
-  @block_trace_options {
-    method TRACE
-    method OPTIONS
-  }
-  respond @block_trace_options 405
   header {
     X-Frame-Options "SAMEORIGIN"
     X-XSS-Protection "1;mode=block"
@@ -57,7 +52,7 @@
     Referrer-Policy "same-origin"
     Permissions-Policy "fullscreen=(self), camera=(), microphone=()"
     Cross-Origin-Resource-Policy "cross-origin"
-    Cross-Origin-Embedder-Policy "require-corp"
+    Cross-Origin-Opener-Policy "cross-origin"
   }
 }
 
