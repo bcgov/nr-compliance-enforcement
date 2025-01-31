@@ -43,6 +43,7 @@
     header_up X-Forwarded-Host ""
   }
   header {
+    -Server
     X-Frame-Options "SAMEORIGIN"
     X-XSS-Protection "1;mode=block"
     Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate"
@@ -52,7 +53,7 @@
     Referrer-Policy "same-origin"
     Permissions-Policy "fullscreen=(self), camera=(), microphone=()"
     Cross-Origin-Resource-Policy "cross-origin"
-    Cross-Origin-Opener-Policy "cross-origin"
+    Cross-Origin-Opener-Policy "same-origin"
   }
 }
 
