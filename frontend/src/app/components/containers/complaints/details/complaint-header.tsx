@@ -63,7 +63,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           complaint_identifier: id,
           complaint_type: complaintType,
           complaint_status: statusCode,
-          is_officer_assigned: officerAssigned === "Not Assigned" ? false : true,
+          is_officer_assigned: officerAssigned !== "Not Assigned",
         },
       }),
     );
