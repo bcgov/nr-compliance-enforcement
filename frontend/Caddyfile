@@ -54,6 +54,7 @@
     Permissions-Policy "fullscreen=(self), camera=(), microphone=()"
     Cross-Origin-Resource-Policy "cross-origin"
     Cross-Origin-Opener-Policy "same-origin"
+    Cross-Origin-Embedder-Policy "unsafe-none"
   }
 }
 
