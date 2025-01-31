@@ -42,6 +42,12 @@
     header_up X-Forwarded-For ""
     header_up X-Forwarded-Host ""
   }
+  # Block TRACE and OPTIONS methods
+  @block_trace_options {
+    method TRACE
+    method OPTIONS
+  }
+  respond @block_trace_options 405
   header {
     -Server
     X-Frame-Options "SAMEORIGIN"
@@ -54,7 +60,9 @@
     Permissions-Policy "fullscreen=(self), camera=(), microphone=()"
     Cross-Origin-Resource-Policy "cross-origin"
     Cross-Origin-Opener-Policy "same-origin"
-    Cross-Origin-Embedder-Policy "credentialless"
+    # Without this the ZAP scan will raise (Insufficient Site Isolation Against Spectre Vulnerability) (Low).  
+    # With this we can't use Keycloak -at least not out of the box
+    #Cross-Origin-Embedder-Policy "require-corp" 
   }
 }
 
