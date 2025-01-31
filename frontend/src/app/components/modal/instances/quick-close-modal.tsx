@@ -142,8 +142,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
               <i className="bi bi-info-circle-fill"></i>
               <span>
                 {" "}
-                Without an officer assigned to this complaint, {displayName} will be assigned as part of the quick
-                close.
+                Without an officer assigned to this complaint {displayName} will be assigned as part of the quick close.
               </span>
             </Alert>
           </div>
