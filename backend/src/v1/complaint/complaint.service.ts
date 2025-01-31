@@ -76,8 +76,8 @@ import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 import { Attachment, AttachmentType } from "../../types/models/general/attachment";
 import { getFileType } from "../../common/methods";
-import { ActionTaken } from "src/v1/complaint/entities/action_taken.entity";
-import { ActionTakenDto } from "src/types/models/complaints/action-taken";
+import { ActionTaken } from "../complaint/entities/action_taken.entity";
+
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
