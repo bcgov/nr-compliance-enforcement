@@ -29,9 +29,9 @@ jobs:
       PREFIX: ${{ github.event.repository.name }}-${{ inputs.target }}
     steps:
       - name: ZAP Scan - Frontend
-        uses: zaproxy/action-full-scan@v0.10.0
+        uses: zaproxy/action-full-scan@v0.12.0
         with:
-          allow_issue_writing: true
+          allow_issue_writing: false
           artifact_name: "zap_frontend"
           cmd_options: "-a"
           issue_title: "ZAP: Frontend"
