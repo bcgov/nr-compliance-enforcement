@@ -51,6 +51,9 @@
     Content-Security-Policy "default-src 'self' https://*.gov.bc.ca; script-src 'self' 'unsafe-eval' https://*.gov.bc.ca https://www2.gov.bc.ca; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.fontawesome.com; font-src 'self' https://fonts.gstatic.com;  img-src 'self' data: https://fonts.googleapis.com https://www.w3.org https://*.gov.bc.ca https://*.tile.openstreetmap.org;"
     Referrer-Policy "same-origin"
     Permissions-Policy "fullscreen=(self), camera=(), microphone=()"
+    Cross-Origin-Resource-Policy "cross-origin"
+    Cross-Origin-Opener-Policy "cross-origin"
+    Cross-Origin-Embedder-Policy "require-corp"
   }
 }
 
