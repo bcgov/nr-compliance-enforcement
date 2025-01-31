@@ -159,7 +159,9 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
             showHeader={false}
             handleSave={() => {
               submit();
-              dispatch(assignCurrentUserToComplaint(userid, idir, complaint_identifier, complaint_type));
+              if (complaintData?.delegates?.every((delegate) => !delegate.isActive)) {
+                dispatch(assignCurrentUserToComplaint(userid, idir, complaint_identifier, complaint_type));
+              }
               refreshComplaintsOnClose && dispatch(refreshComplaints(complaint_type));
             }}
             handleClose={close}
