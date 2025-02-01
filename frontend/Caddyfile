@@ -3,15 +3,14 @@
   admin off
 }
 
-# Block TRACE and OPTIONS methods
-@block_trace_options {
-  method TRACE
-  method OPTIONS
-  method TRACK
-}
-respond @block_trace_options 405
-
 :3000 {
+  # Block TRACE and OPTIONS methods
+  @block_trace_options {
+    method TRACE
+    method OPTIONS
+    method TRACK
+  }
+  respond @block_trace_options 405
   log {
     output stdout
     format console {
