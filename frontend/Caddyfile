@@ -3,6 +3,14 @@
   admin off
 }
 
+# Block TRACE and OPTIONS methods
+@block_trace_options {
+  method TRACE
+  method OPTIONS
+  method TRACK
+}
+respond @block_trace_options 405
+
 :3000 {
   log {
     output stdout
@@ -45,12 +53,6 @@
     header_up -Via
     header_up -Forwarded
   }
-  # Block TRACE and OPTIONS methods
-  @block_trace_options {
-    method TRACE
-    method OPTIONS
-  }
-  respond @block_trace_options 405
   header {
     -Server
     X-Frame-Options "SAMEORIGIN"
