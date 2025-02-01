@@ -38,9 +38,12 @@
   # Proxy requests to API service
   reverse_proxy /api/* {$BACKEND_URL} {
     header_up Host {http.reverse_proxy.upstream.hostport}
-    header_up X-Real-IP ""
-    header_up X-Forwarded-For ""
-    header_up X-Forwarded-Host ""
+    header_up -X-Real-IP
+    header_up -X-Forwarded-For
+    header_up -X-Forwarded-Host
+    header_up -X-Forwarded-Proto
+    header_up -Via
+    header_up -Forwarded
   }
   # Block TRACE and OPTIONS methods
   @block_trace_options {
@@ -64,6 +67,7 @@
     # With this we can't use Keycloak -at least not out of the box
     #Cross-Origin-Embedder-Policy "require-corp" 
   }
+  header /api/* -Server
 }
 
 :3001 {
