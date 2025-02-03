@@ -916,6 +916,7 @@ export const CreateComplaint: FC = () => {
             syncCoordinates={syncCoordinates}
             throwError={throwError}
             enableCopyCoordinates={false}
+            validationRequired={false}
           />
 
           <div

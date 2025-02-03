@@ -36,6 +36,7 @@ type props = {
   species: string;
   save: Function;
   cancel: Function;
+  outcomeRequired: boolean;
 };
 
 //-- this object is used to create an empty outcome
@@ -60,7 +61,15 @@ const defaultAuthorization: DrugAuthorization = {
   date: new Date(),
 };
 
-export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer, agency, species, save, cancel }) => {
+export const CreateAnimalOutcome: FC<props> = ({
+  index,
+  assignedOfficer: officer,
+  agency,
+  species,
+  save,
+  cancel,
+  outcomeRequired,
+}) => {
   //-- select data from redux
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
   const sexes = useAppSelector(selectSexDropdown);
@@ -360,7 +369,11 @@ export const CreateAnimalOutcome: FC<props> = ({ index, assignedOfficer: officer
         {showSectionErrors && (
           <div className="section-error-message">
             <BsExclamationCircleFill />
-            <span>Save section before closing the complaint.</span>
+            <span>
+              {outcomeRequired
+                ? "Outcome of animal is required to close the complaint once captured."
+                : "Save section before closing the complaint."}
+            </span>
           </div>
         )}
 

@@ -23,9 +23,10 @@ type props = {
   agency: string;
   edit: Function;
   remove: Function;
+  outcomeRequired: boolean;
 };
 
-export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) => {
+export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove, outcomeRequired }) => {
   //-- select data from redux
   const ears = useAppSelector(selectEarDropdown);
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
@@ -126,13 +127,18 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove }) 
       className="comp-animal-card comp-outcome-report-block"
       border={showSectionErrors ? "danger" : "default"}
     >
-      {showSectionErrors && (
-        <div className="section-error-message">
-          <BsExclamationCircleFill />
-          <span>Complete or delete section before closing the complaint.</span>
-        </div>
-      )}
-
+      <Card.Body>
+        {showSectionErrors && (
+          <div className="section-error-message">
+            <BsExclamationCircleFill />
+            <span>
+              {outcomeRequired
+                ? "Outcome of animal is required to be completed before closing."
+                : "Complete or delete section before closing the complaint."}
+            </span>
+          </div>
+        )}
+      </Card.Body>
       <Card.Header className="comp-card-header">
         <div className="comp-card-header-title">
           <h4>Animal {pad(animalNumber.toString(), 2)}</h4>
