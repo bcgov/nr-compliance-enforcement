@@ -77,7 +77,9 @@ import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 import { Attachment, AttachmentType } from "../../types/models/general/attachment";
 import { getFileType } from "../../common/methods";
+import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
+
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
 @Injectable({ scope: Scope.REQUEST })
@@ -95,6 +97,8 @@ export class ComplaintService {
   private readonly _girComplaintRepository: Repository<GirComplaint>;
   @InjectRepository(ComplaintUpdate)
   private readonly _complaintUpdateRepository: Repository<ComplaintUpdate>;
+  @InjectRepository(ActionTaken)
+  private readonly _actionTakenRepository: Repository<ActionTaken>;
   @InjectRepository(Officer)
   private readonly _officertRepository: Repository<Officer>;
   @InjectRepository(Office)
@@ -1808,9 +1812,37 @@ export class ComplaintService {
       return updates;
     };
 
+    const _getActions = async (id: string) => {
+      const result = await this._actionTakenRepository.find({
+        where: {
+          complaintIdentifier: {
+            complaint_identifier: id,
+          },
+        },
+        order: {
+          actionUtcTimestamp: "DESC",
+        },
+      });
+
+      const actions = result?.map((item) => {
+        const utcDate = toDate(item.actionUtcTimestamp, { timeZone: "UTC" });
+        const zonedDate = toZonedTime(utcDate, tz);
+        let updatedOn = format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
+        let updatedAt = format(zonedDate, "HH:mm", { timeZone: tz });
+        let record = {
+          actionDetailsTxt: item.actionDetailsTxt,
+          loggedByTxt: item.loggedByTxt,
+          actionLogged: `${updatedOn} ${updatedAt}`,
+        };
+        return record;
+      });
+
+      return actions;
+    };
+
     const _applyTimezone = (input: Date, tz: string, output: "date" | "time" | "datetime"): string => {
       if (!input) {
-        return "N/A";  // No date, so just return a placeholder string for the report
+        return "N/A"; // No date, so just return a placeholder string for the report
       }
 
       const utcDate = toDate(input, { timeZone: "UTC" });
@@ -2206,6 +2238,9 @@ export class ComplaintService {
 
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);
+
+      // -- get any webeoc callce tner actions on the complaint
+      data.actions = await _getActions(id);
 
       //-- find the linked complaints
       data.linkedComplaints = data.linkedComplaintIdentifier
