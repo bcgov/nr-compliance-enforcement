@@ -64,10 +64,6 @@ spec:
                 secretKeyRef:
                   name: react-app
                   key: environment-name
-            - name: CSP_NONCE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.uid
           ports:
             - name: http
               containerPort: 3000
