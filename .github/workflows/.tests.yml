@@ -36,6 +36,15 @@ jobs:
           cmd_options: "-a"
           issue_title: "ZAP: Frontend"
           target: https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+      - name: Check for High Risk Alerts
+        run: |
+          HIGH_RISK_COUNT=$(jq '[.site[].alerts[] | select(.riskcode == "3")] | length' report_json.json)
+          if [ "$HIGH_RISK_COUNT" -gt 0 ]; then
+            echo "High risk issues found: $HIGH_RISK_COUNT"
+            exit 1
+          else
+            echo "No high risk issues found."
+          fi
   cypress-tests:
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
