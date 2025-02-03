@@ -56,10 +56,6 @@
     # Without this the ZAP scan will raise (Insufficient Site Isolation Against Spectre Vulnerability) (Low).  
     # With this we can't use Keycloak -at least not out of the box
     #Cross-Origin-Embedder-Policy "require-corp" 
-    Sec-Fetch-Dest "document"
-    Sec-Fetch-Mode "navigate"
-    Sec-Fetch-Site "same-origin"
-    Sec-Fetch-User "?1"
   }
 }
 
