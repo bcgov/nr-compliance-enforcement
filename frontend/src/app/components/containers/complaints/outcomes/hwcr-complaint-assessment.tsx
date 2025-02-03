@@ -3,7 +3,7 @@ import { Button, Card, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
+import { selectOfficerListByAgency, selectOfficersByAgency, assignComplaintToOfficer } from "@store/reducers/officer";
 import {
   selectComplaintCallerInformation,
   selectComplaintAssignedBy,
@@ -40,7 +40,6 @@ import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
 import useValidateComplaint from "@hooks/validate-complaint";
-import { assignComplaintToOfficer } from "@store/reducers/officer";
 import { Officer } from "@/app/types/person/person";
 
 type Props = {
