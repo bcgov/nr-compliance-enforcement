@@ -20,7 +20,6 @@ env:
   PREFIX: ${{ github.event.repository.name }}-${{ inputs.target }}
 
 jobs:
-  # Run sequentially to reduce chances of rate limiting
   zap-scan-fe:
     runs-on: ubuntu-latest
     name: ZAP Scan - Front End
@@ -46,7 +45,12 @@ jobs:
             echo "No high risk issues found."
           fi
   zap-scan-be:
-      - name: ZAP Scan - Backend
+    runs-on: ubuntu-latest
+    name: ZAP Scan - Back End
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ github.event.repository.name }}-${{ inputs.target }}
+    - name: ZAP Scan - Backend
       uses: zaproxy/action-full-scan@v0.12.0
       with:
         allow_issue_writing: false
