@@ -48,7 +48,7 @@
     Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate"
     X-Content-Type-Options "nosniff"
     Strict-Transport-Security "max-age=31536000"
-    Content-Security-Policy "default-src 'self' https://*.gov.bc.ca; script-src 'self' https://*.gov.bc.ca https://www2.gov.bc.ca; style-src 'self' https://fonts.googleapis.com https://use.fontawesome.com 'nonce-{$CSP_NONCE}'; font-src 'self' https://fonts.gstatic.com;  img-src 'self' data: https://fonts.googleapis.com https://www.w3.org https://*.gov.bc.ca https://*.tile.openstreetmap.org; frame-ancestors 'self'; form-action 'self';"
+    Content-Security-Policy "default-src 'self' https://*.gov.bc.ca; script-src 'self' https://*.gov.bc.ca https://www2.gov.bc.ca; style-src 'self' https://fonts.googleapis.com https://use.fontawesome.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com;  img-src 'self' data: https://fonts.googleapis.com https://www.w3.org https://*.gov.bc.ca https://*.tile.openstreetmap.org; frame-ancestors 'self'; form-action 'self';"
     Referrer-Policy "same-origin"
     Permissions-Policy "fullscreen=(self), camera=(), microphone=()"
     Cross-Origin-Resource-Policy "cross-origin"
