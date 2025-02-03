@@ -98,7 +98,7 @@ export class ComplaintService {
   @InjectRepository(ComplaintUpdate)
   private readonly _complaintUpdateRepository: Repository<ComplaintUpdate>;
   @InjectRepository(ActionTaken)
-  private _actionTakenRepository: Repository<ActionTaken>;
+  private readonly _actionTakenRepository: Repository<ActionTaken>;
   @InjectRepository(Officer)
   private readonly _officertRepository: Repository<Officer>;
   @InjectRepository(Office)
