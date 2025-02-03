@@ -47,6 +47,7 @@ jobs:
   zap-scan-be:
     runs-on: ubuntu-latest
     name: ZAP Scan - Back End
+    needs: zap-scan-fe
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
       PREFIX: ${{ github.event.repository.name }}-${{ inputs.target }}
