@@ -287,6 +287,7 @@ export const fetchComplaintCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchRegions());
     dispatch(fetchZones());
     dispatch(fetchAreaCodes());
+    dispatch(fetchCommunities());
     dispatch(fetchComplaintTypeCodes());
     dispatch(fetchReportedByCodes());
     dispatch(fetchGirTypes());

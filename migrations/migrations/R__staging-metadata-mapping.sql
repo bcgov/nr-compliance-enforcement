@@ -24475,3 +24475,35 @@ VALUES
     'FLYWAY',
     CURRENT_TIMESTAMP
   ) on conflict do nothing;
+
+INSERT INTO
+  public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'Field',
+    'FIELD',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+--------------------------
+-- New Changes above this line
+-------------------------
+UPDATE configuration
+SET
+  configuration_value = configuration_value::int + 1
+WHERE
+  configuration_code = 'CDTABLEVER';

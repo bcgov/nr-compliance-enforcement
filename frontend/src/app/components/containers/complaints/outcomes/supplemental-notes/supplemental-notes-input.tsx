@@ -106,7 +106,9 @@ export const SupplementalNotesInput: FC<props> = ({ id, complaintType, notes, cu
 
           <div className="comp-details-form">
             <div className="comp-details-form-row">
-              <label htmlFor="supporting-notes-textarea-id">Notes</label>
+              <label htmlFor="supporting-notes-textarea-id">
+                Notes<span className="required-ind">*</span>
+              </label>
               <div className="comp-details-input full-width">
                 <ValidationTextArea
                   className="comp-form-control"

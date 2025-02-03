@@ -14,6 +14,7 @@ import {
   applyWildlifeComplaintMap,
   complaintToComplaintDtoMap,
   mapAllegationReport,
+  mapGeneralIncidentReport,
   mapWildlifeReport,
 } from "../../middleware/maps/automapper-entity-to-dto-maps";
 
@@ -77,6 +78,7 @@ import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_comp
 import { Attachment, AttachmentType } from "../../types/models/general/attachment";
 import { getFileType } from "../../common/methods";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
+import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
 
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
@@ -1765,6 +1767,7 @@ export class ComplaintService {
     let data;
     mapWildlifeReport(this.mapper, tz);
     mapAllegationReport(this.mapper, tz);
+    mapGeneralIncidentReport(this.mapper, tz);
     let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
 
     const _getUpdates = async (id: string) => {
@@ -2209,6 +2212,13 @@ export class ComplaintService {
           break;
         }
         case "GIR": {
+          mapGeneralIncidentReport(this.mapper, tz);
+
+          data = this.mapper.map<GirComplaint, GeneralIncidentReportData>(
+            result as GirComplaint,
+            "GirComplaint",
+            "GeneralIncidentReportData",
+          );
           break;
         }
         case "ERS": {
