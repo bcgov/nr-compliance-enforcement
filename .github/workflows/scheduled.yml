@@ -99,29 +99,3 @@ jobs:
     uses: ./.github/workflows/.tests.yml
     with:
       target: test
-
-  # Run sequentially to reduce chances of rate limiting
-  zap_scan:
-    runs-on: ubuntu-latest
-    name: ZAP Scans
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-test
-    steps:
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.10.0
-        with:
-          allow_issue_writing: true
-          artifact_name: "zap_backend"
-          cmd_options: "-a"
-          issue_title: "ZAP: Backend"
-          target: https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/api
-
-      - name: ZAP Scan - Frontend
-        uses: zaproxy/action-full-scan@v0.10.0
-        with:
-          allow_issue_writing: true
-          artifact_name: "zap_frontend"
-          cmd_options: "-a"
-          issue_title: "ZAP: Frontend"
-          target: https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}

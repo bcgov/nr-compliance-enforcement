@@ -597,7 +597,7 @@ export const upsertNote =
         note: string,
         actor: string,
         userId: string,
-      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const input: CreateSupplementalNotesInput = {
           note,
@@ -619,7 +619,7 @@ export const upsertNote =
         actor: string,
         userId: string,
         actionId: string,
-      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const caseId = await dispatch(findCase(id));
 
@@ -688,7 +688,7 @@ export const deleteNote =
         actor: string,
         userId: string,
         actionId: string,
-      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const input: DeleteSupplementalNoteInput = {
           caseIdentifier: id,
@@ -1093,7 +1093,7 @@ export const deleteAnimalOutcome =
         leadIdentifier: string,
         actor: string,
         userId: string,
-      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const input: DeleteAnimalOutcomeInput = {
           caseIdentifier: caseId as UUID,
@@ -1137,7 +1137,7 @@ export const upsertDecisionOutcome =
     } = getState();
 
     const _createDecision =
-      (id: string, decision: Decision): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      (id: string, decision: Decision): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const { assignedTo } = decision;
 
@@ -1155,7 +1155,7 @@ export const upsertDecisionOutcome =
       };
 
     const _updateDecison =
-      (id: string, decision: Decision): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      (id: string, decision: Decision): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const { assignedTo } = decision;
 
@@ -1215,7 +1215,7 @@ export const upsertAuthorizationOutcome =
     } = getState();
 
     const _create =
-      (id: string, input: PermitSite): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      (id: string, input: PermitSite): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const payload: CreateAuthorizationOutcomeInput = {
           leadIdentifier: id,
@@ -1234,7 +1234,7 @@ export const upsertAuthorizationOutcome =
         id: string,
         leadIdentifier: string,
         site: PermitSite,
-      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<CaseFileDto>> =>
+      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const input: UpdateAuthorizationOutcomeInput = {
           caseIdentifier: id,

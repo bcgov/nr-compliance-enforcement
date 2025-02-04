@@ -20,6 +20,55 @@ env:
   PREFIX: ${{ github.event.repository.name }}-${{ inputs.target }}
 
 jobs:
+  zap-scan-fe:
+    runs-on: ubuntu-latest
+    name: ZAP Scan - Front End
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ github.event.repository.name }}-${{ inputs.target }}
+    steps:
+      - name: ZAP Scan - Frontend
+        uses: zaproxy/action-full-scan@v0.12.0
+        with:
+          allow_issue_writing: false
+          artifact_name: "zap_frontend"
+          cmd_options: "-a"
+          issue_title: "ZAP: Frontend"
+          target: https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}
+      - name: Check for Front End High Risk Alerts
+        run: |
+          HIGH_RISK_COUNT=$(jq '[.site[].alerts[] | select(.riskcode == "3")] | length' report_json.json)
+          if [ "$HIGH_RISK_COUNT" -gt 0 ]; then
+            echo "High risk issues found in front end: $HIGH_RISK_COUNT"
+            exit 1
+          else
+            echo "No high risk issues found."
+          fi
+  zap-scan-be:
+    runs-on: ubuntu-latest
+    name: ZAP Scan - Back End
+    needs: zap-scan-fe
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ github.event.repository.name }}-${{ inputs.target }}
+    steps:
+      - name: ZAP Scan - Backend
+        uses: zaproxy/action-full-scan@v0.12.0
+        with:
+          allow_issue_writing: false
+          artifact_name: "zap_backend"
+          cmd_options: "-a"
+          issue_title: "ZAP: Backend"
+          target: https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }}/api
+      - name: Check for Back End High Risk Alerts
+        run: |
+          HIGH_RISK_COUNT=$(jq '[.site[].alerts[] | select(.riskcode == "3")] | length' report_json.json)
+          if [ "$HIGH_RISK_COUNT" -gt 0 ]; then
+            echo "High risk issues found in back end: $HIGH_RISK_COUNT"
+            exit 1
+          else
+            echo "No high risk issues found."
+          fi
   cypress-tests:
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
