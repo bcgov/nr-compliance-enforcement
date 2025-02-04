@@ -360,7 +360,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                 className="comp-details-form-row"
                 id="equipment-quantity-div"
               >
-                <label htmlFor="equipment-quantity">Quantity</label>
+                <label htmlFor="equipment-quantity">
+                  Quantity<span className="required-ind">*</span>
+                </label>
                 <div className="comp-details-input">
                   <CompInput
                     type="input"
