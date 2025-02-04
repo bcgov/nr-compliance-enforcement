@@ -129,6 +129,21 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
             close={close}
           />
         )}
+        {!loading && !hasOutcomeData && complaintData?.delegates?.every((delegate) => !delegate.isActive) && (
+          <div>
+            <Alert
+              variant="info"
+              className="comp-complaint-details-alert"
+            >
+              <i className="bi bi-info-circle-fill"></i>
+              <span>
+                {" "}
+                Without an officer assigned to this complaint the selected officer will be assigned as part of the quick
+                close.
+              </span>
+            </Alert>
+          </div>
+        )}
         <div
           style={{
             visibility: loading ? "hidden" : "inherit",

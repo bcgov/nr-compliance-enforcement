@@ -3,13 +3,14 @@ import { Button, Card, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
+import { selectOfficerListByAgency, selectOfficersByAgency, assignComplaintToOfficer } from "@store/reducers/officer";
 import {
   selectComplaintCallerInformation,
   selectComplaintAssignedBy,
   selectComplaintLargeCarnivoreInd,
   selectLinkedComplaints,
   selectComplaintViewMode,
+  selectComplaint,
 } from "@store/reducers/complaints";
 import {
   selectAssessmentCat1Dropdown,
@@ -39,6 +40,7 @@ import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
 import useValidateComplaint from "@hooks/validate-complaint";
+import { Officer } from "@/app/types/person/person";
 
 type Props = {
   id: string;
@@ -65,6 +67,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [editable, setEditable] = useState<boolean>(true);
   const [validateOnChange, setValidateOnChange] = useState<boolean>(false);
   const [selectedContacted, setSelectedContacted] = useState<string | null>("No");
+  const [selectedOfficerData, setSelectedOfficerData] = useState<Officer | null>();
   const [selectedAttended, setSelectedAttended] = useState<string | null>("No");
   const [selectedLocation, setSelectedLocation] = useState<Option | null>(null);
   const [selectedConflictHistory, setSelectedConflictHistory] = useState<Option | null>(null);
@@ -84,6 +87,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [assessmentRequiredErrorMessage, setAssessmentRequiredErrorMessage] = useState<string>("");
   const [locationErrorMessage, setLocationErrorMessage] = useState<string>("");
 
+  const complaintData = useAppSelector(selectComplaint);
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
   const assessmentState = useAppSelector(selectAssessment);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
@@ -155,6 +159,14 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     } else {
       setSelectedLinkedComplaint(null);
     }
+  };
+
+  const handleSelectedOfficerChange = (selected: Option | null) => {
+    if (selected && officersInAgencyList) {
+      let filteredOfficer = officersInAgencyList?.find((officer) => officer.auth_user_guid === selected.value);
+      setSelectedOfficerData(filteredOfficer);
+    }
+    setSelectedOfficer(selected);
   };
 
   const actionRequiredList = useAppSelector(selectYesNoCodeDropdown);
@@ -379,6 +391,14 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       };
 
       dispatch(upsertAssessment(id, updatedAssessmentData));
+      if (
+        selectedOfficer?.value &&
+        !assigned &&
+        selectedOfficerData?.person_guid?.person_guid &&
+        (complaintData?.delegates.length === 0 || complaintData?.delegates?.every((delegate) => !delegate.isActive))
+      ) {
+        dispatch(assignComplaintToOfficer(id, selectedOfficerData?.person_guid?.person_guid));
+      }
       setEditable(false);
       handleSave();
     } else {
@@ -842,7 +862,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     errorMessage={officerErrorMessage}
                     value={selectedOfficer}
                     placeholder="Select "
-                    onChange={(officer: any) => setSelectedOfficer(officer)}
+                    onChange={handleSelectedOfficerChange}
                     isDisabled={isReadOnly}
                   />
                 </div>

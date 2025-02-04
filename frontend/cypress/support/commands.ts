@@ -448,4 +448,12 @@ Cypress.Commands.add(
   },
 );
 
+Cypress.Commands.add(
+  "assignSelfToComplaint",
+  () => {
+  cy.get("#details-screen-assign-button").click();
+  cy.get("#self_assign_button").click();
+  cy.waitForSpinner();
+});
+
 module.exports = {};

@@ -35,9 +35,11 @@ describe("Complaint Change Status spec - Details View", () => {
     it("Changes status of closeable complaint to open, closed, and back to open", () => {
       if ("#hwcr-tab".includes(complaintTypes[index])) {
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
+        cy.assignSelfToComplaint();
         fillInAssessmentSection();
       } else {
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
+        cy.assignSelfToComplaint();
       }
 
       cy.get("#details-screen-update-status-button").click({ force: true });
@@ -70,6 +72,7 @@ describe("Complaint Change Status spec - Details View", () => {
 
   it("Changes status of unclosable hwcr complaint from open to closed", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000078", true);
+    cy.assignSelfToComplaint();
 
     cy.get("#details-screen-update-status-button").click({ force: true });
 
