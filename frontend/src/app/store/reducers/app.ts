@@ -525,7 +525,7 @@ export const getFeatureFlag = (): AppThunk => async (dispatch) => {
 };
 
 export const validateComsAccess =
-  (token: string): ThunkAction<Promise<ComsInviteResponse>, RootState, unknown, Action<ComsInviteResponse>> =>
+  (token: string): ThunkAction<Promise<ComsInviteResponse>, RootState, unknown, Action<string>> =>
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(`${config.COMS_URL}/permission/invite/${token}`);
