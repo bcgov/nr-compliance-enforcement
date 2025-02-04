@@ -203,9 +203,9 @@ export class CdogsService implements ExternalApiService {
     try {
       const apiToken = await this.authenticate();
 
-      //if (!(await this.isTemplateCached(apiToken, templateCode))) {
-      await this.upload(apiToken, type, templateCode);
-      //}
+      if (!(await this.isTemplateCached(apiToken, templateCode))) {
+        await this.upload(apiToken, type, templateCode);
+      }
 
       const uid = await this._getTemplateId(templateCode);
       const url = `${this.baseUri}/api/v2/template/${uid}/render`;
