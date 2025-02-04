@@ -1807,7 +1807,7 @@ export class ComplaintService {
 
     const _applyTimezone = (input: Date, tz: string, output: "date" | "time" | "datetime"): string => {
       if (!input) {
-        return "N/A";  // No date, so just return a placeholder string for the report
+        return "N/A"; // No date, so just return a placeholder string for the report
       }
 
       const utcDate = toDate(input, { timeZone: "UTC" });

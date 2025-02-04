@@ -5,7 +5,11 @@ import { ToastContainer } from "react-toastify";
 
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
-import { selectActiveEquipmentDropdown, selectTrapEquipment } from "@store/reducers/code-table";
+import {
+  selectActiveEquipmentDropdown,
+  selectTrapEquipment,
+  selectHasQuantityEquipment,
+} from "@store/reducers/code-table";
 import { selectComplaint, selectComplaintCallerInformation } from "@store/reducers/complaints";
 import { CompSelect } from "@components/common/comp-select";
 import { ToggleError } from "@common/toast";
@@ -24,6 +28,7 @@ import { upsertEquipment } from "@store/reducers/case-thunks";
 import { CompRadioGroup } from "@components/common/comp-radiogroup";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
+import { CompInput } from "@/app/components/common/comp-input";
 
 export interface EquipmentFormProps {
   equipment?: EquipmentDetailsDto;
@@ -34,6 +39,7 @@ export interface EquipmentFormProps {
 
 export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOfficer, onSave, onCancel }) => {
   const [type, setType] = useState<Option>();
+  const [quantity, setQuantity] = useState<number>();
   const [dateSet, setDateSet] = useState<Date>(new Date());
   const [dateRemoved, setDateRemoved] = useState<Date>();
   const [officerSet, setOfficerSet] = useState<Option | undefined>();
@@ -54,6 +60,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const [actionRemovedGuid, setActionRemovedGuid] = useState<string>();
   const [wasAnimalCaptured, setWasAnimalCaptured] = useState<string>("U");
   const [wasAnimalCapturedErrorMsg, setWasAnimalCapturedErrorMsg] = useState<string>("");
+  const [quantityErrorMsg, setQuantityErrorMsg] = useState<string>("");
 
   const dispatch = useAppDispatch();
   const { id = "" } = useParams<{ id: string }>();
@@ -62,6 +69,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const equipmentDropdownOptions = useAppSelector(selectActiveEquipmentDropdown);
   const trapEquipment = useAppSelector(selectTrapEquipment);
+  const hasQuantityEquipment = useAppSelector(selectHasQuantityEquipment);
   const assignableOfficers = useAppSelector(selectOfficerListByAgency);
 
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
@@ -96,7 +104,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   useEffect(() => {
     // set the equipment type code in the form
     setType(getValue("equipment"));
-
+    setQuantity(equipment?.quantity ?? 1);
     setAddress(equipment?.address);
     setXCoordinate(equipment?.xCoordinate);
     setYCoordinate(equipment?.yCoordinate);
@@ -127,6 +135,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     setOfficerRemovedErrorMsg("");
     setDateRemovedErrorMsg("");
     setWasAnimalCapturedErrorMsg("");
+    setQuantityErrorMsg("");
   };
 
   // Helper function to check if coordinates or address are provided
@@ -188,6 +197,11 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
       hasErrors = true;
     }
 
+    if (hasQuantityEquipment.includes(type?.value ?? "") && (!quantity || quantity < 1)) {
+      setQuantityErrorMsg("Required");
+      hasErrors = true;
+    }
+
     return hasErrors;
   };
 
@@ -229,7 +243,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         yCoordinate: formatLatLongCoordinate(yCoordinate),
         actions: actions,
         wasAnimalCaptured: wasAnimalCaptured,
+        quantity: quantity ?? 1,
       } as EquipmentDetailsDto;
+      console.log(equipmentDetails);
       dispatch(upsertEquipment(id, equipmentDetails));
       onSave();
     }
@@ -276,6 +292,17 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     setType(type);
     if (!trapEquipment.includes(type?.value ?? "")) {
       setWasAnimalCaptured("U");
+    }
+    if (!hasQuantityEquipment.includes(type?.value ?? "")) {
+      setQuantity(1);
+    }
+  };
+
+  const handleSetQuantity = (quantity: any) => {
+    if (quantity === "") {
+      setQuantity(undefined);
+    } else if (!isNaN(quantity) && quantity >= 0) {
+      setQuantity(parseInt(quantity));
     }
   };
 
@@ -324,6 +351,28 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                 />
               </div>
             </div>
+
+            {/* QUANTITY */}
+            {hasQuantityEquipment.includes(type?.value ?? "") && (
+              <div
+                className="comp-details-form-row"
+                id="equipment-quantity-div"
+              >
+                <label htmlFor="equipment-quantity">Quantity</label>
+                <div className="comp-details-input">
+                  <CompInput
+                    type="input"
+                    inputClass="comp-form-control"
+                    id="equipment-quantity"
+                    divid="equipment-quantity-div"
+                    maxLength={3}
+                    value={quantity}
+                    onChange={(e: { target: { value: any } }) => handleSetQuantity(e.target.value)}
+                    error={quantityErrorMsg}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* ADDRESS */}
             <div

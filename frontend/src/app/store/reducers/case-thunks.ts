@@ -842,6 +842,8 @@ export const upsertEquipment =
       return;
     }
 
+    console.log("equipment", equipment);
+
     const {
       app: { profile },
       cases: { caseId },
@@ -879,7 +881,10 @@ export const upsertEquipment =
         },
       } as UpdateEquipmentInput;
 
+      console.log("updateEquipmentInput", updateEquipmentInput);
+
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, updateEquipmentInput);
+      console.log("parameters", parameters);
       await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
         if (res) {
           dispatch(setCaseFile(res));

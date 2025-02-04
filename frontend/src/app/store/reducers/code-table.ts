@@ -1473,6 +1473,20 @@ export const selectTrapEquipment = (state: RootState): Array<string> => {
   return data;
 };
 
+export const selectHasQuantityEquipment = (state: RootState): Array<string> => {
+  const {
+    codeTables: { equipment: items },
+  } = state;
+  const data = items
+    .filter(({ hasQuantityIndicator: value }) => value)
+    .map(({ equipment: label }) => {
+      const item = label;
+      return item;
+    });
+
+  return data;
+};
+
 export const selectPrivacyDropdown = (): Array<Option> => {
   const data: Option[] = [
     { value: "Y", label: "Yes" },
