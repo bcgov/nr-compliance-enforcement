@@ -104,7 +104,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   useEffect(() => {
     // set the equipment type code in the form
     setType(getValue("equipment"));
-    setQuantity(equipment?.quantity ?? 1);
+    setQuantity(equipment?.quantity);
     setAddress(equipment?.address);
     setXCoordinate(equipment?.xCoordinate);
     setYCoordinate(equipment?.yCoordinate);
@@ -243,7 +243,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         yCoordinate: formatLatLongCoordinate(yCoordinate),
         actions: actions,
         wasAnimalCaptured: wasAnimalCaptured,
-        quantity: quantity ?? 1,
+        quantity: quantity,
       } as EquipmentDetailsDto;
       console.log(equipmentDetails);
       dispatch(upsertEquipment(id, equipmentDetails));
@@ -293,8 +293,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     if (!trapEquipment.includes(type?.value ?? "")) {
       setWasAnimalCaptured("U");
     }
-    if (!hasQuantityEquipment.includes(type?.value ?? "")) {
+    if (hasQuantityEquipment.includes(type?.value ?? "")) {
       setQuantity(1);
+    } else {
+      setQuantity(undefined);
     }
   };
 

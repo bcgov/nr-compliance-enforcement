@@ -9,5 +9,5 @@ export interface EquipmentDetailsDto {
   yCoordinate: string;
   actions: Array<AssessmentActionDto>;
   wasAnimalCaptured: string;
-  quantity: number;
+  quantity?: number;
 }
