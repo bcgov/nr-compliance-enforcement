@@ -20,7 +20,7 @@ export class OfficerController {
   constructor(private readonly officerService: OfficerService) {}
 
   @Post()
-  @Roles(Role.COS)
+  @Roles(Role.TEMPORARY_TEST_ADMIN)
   create(@Body() createOfficerDto: NewOfficer) {
     return this.officerService.create(createOfficerDto);
   }
