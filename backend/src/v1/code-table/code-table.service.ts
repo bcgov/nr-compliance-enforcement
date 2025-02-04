@@ -533,10 +533,18 @@ export class CodeTableService {
       case "equipment": {
         const { data } = await get(token, {
           query:
-            "{equipmentCodes{equipmentCode shortDescription longDescription displayOrder activeIndicator isTrapIndicator}}",
+            "{equipmentCodes{equipmentCode shortDescription longDescription displayOrder activeIndicator isTrapIndicator hasQuantityIndicator}}",
         });
         const results = data.equipmentCodes.map(
-          ({ equipmentCode, shortDescription, longDescription, displayOrder, activeIndicator, isTrapIndicator }) => {
+          ({
+            equipmentCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator,
+            isTrapIndicator,
+            hasQuantityIndicator,
+          }) => {
             const table: Equipment = {
               equipment: equipmentCode,
               shortDescription: shortDescription,
@@ -544,6 +552,7 @@ export class CodeTableService {
               displayOrder: displayOrder,
               isActive: activeIndicator,
               isTrapIndicator: isTrapIndicator,
+              hasQuantityIndicator: hasQuantityIndicator,
             };
             return table;
           },
