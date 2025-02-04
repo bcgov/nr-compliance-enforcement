@@ -1980,6 +1980,9 @@ export class ComplaintService {
           equip.animalCaptured.push({ value: equip.wasAnimalCaptured }); // Add the object with the 'value' property
         }
 
+        //-- Same for quantity
+        equip.quantity = equip.quantity ? [{ value: equip.quantity }] : []; // Ensure quantity is an array
+
         //give it a nice friendly number as nothing comes back from the GQL
         equip.order = equipmentCount;
         equipmentCount++;

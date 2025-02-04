@@ -11,4 +11,5 @@ export interface EquipmentDetailsDto {
   yCoordinate: string;
   actions?: Array<CaseActionDto>;
   wasAnimalCaptured: string;
+  quantity?: number;
 }
