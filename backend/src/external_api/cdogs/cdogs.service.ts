@@ -135,6 +135,9 @@ export class CdogsService implements ExternalApiService {
       case "CEEBTMPLAT":
         template = "templates/complaint/CDOGS-CEEB-COMPLAINT-TEMPLATE-v1.docx";
         break;
+      case "GIRTMPLATE":
+        template = "templates/complaint/CDOGS-GIR-COMPLAINT-TEMPLATE-v1.docx";
+        break;
       default:
         this.logger.error(`exception: unable to find template: ${template}`);
         break;
@@ -191,6 +194,9 @@ export class CdogsService implements ExternalApiService {
         } else {
           templateCode = CONFIGURATION_CODES.ERSTMPLATE;
         }
+        break;
+      case "GIR":
+        templateCode = CONFIGURATION_CODES.GIRTMPLATE;
         break;
     }
 

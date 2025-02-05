@@ -61,10 +61,9 @@ spec:
                   key: coms-bucket
             - name: ENVIRONMENT_NAME
               valueFrom:
-                    secretKeyRef:
-                      name: react-app
-                      key: environment-name
-
+                secretKeyRef:
+                  name: react-app
+                  key: environment-name
           ports:
             - name: http
               containerPort: 3000

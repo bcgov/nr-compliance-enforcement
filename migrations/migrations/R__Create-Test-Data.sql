@@ -9979,6 +9979,535 @@ values
 DO NOTHING;
 
 
+------------------------
+-- Add Canyon Hotsprings under Golden office
+------------------------
+
+insert into 
+  geo_organization_unit_code (
+    geo_organization_unit_code, 
+    short_description, 
+    long_description, 
+    effective_date, 
+    expiry_date, 
+    create_user_id, 
+    create_utc_timestamp, 
+    update_user_id, 
+    update_utc_timestamp, 
+    geo_org_unit_type_code, 
+    administrative_office_ind)
+values (
+    'CNYNHTSPRN',
+    'Canyon Hotsprings',
+    'Canyon Hotsprings', 
+    now(), 
+    null, 
+    user, 
+    now(), 
+    user, 
+    now(), 
+    'AREA', 
+    'N') ON CONFLICT DO NOTHING;
+
+insert into
+  geo_org_unit_structure (
+    effective_date,
+    expiry_date,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    agency_code,
+    parent_geo_org_unit_code,
+    child_geo_org_unit_code
+  )
+values
+  (
+    now(),
+    null,
+    user,
+    now(),
+    user,
+    now(),
+    'COS',
+    'GLDN',
+    'CNYNHTSPRN'
+  ) ON CONFLICT
+DO NOTHING;
+
+------------------------
+-- Add Deep Creek (Near Salmon Arm) under Salmon Arm office
+------------------------
+
+insert into 
+  geo_organization_unit_code (
+    geo_organization_unit_code, 
+    short_description, 
+    long_description, 
+    effective_date, 
+    expiry_date, 
+    create_user_id, 
+    create_utc_timestamp, 
+    update_user_id, 
+    update_utc_timestamp, 
+    geo_org_unit_type_code, 
+    administrative_office_ind)
+values (
+    'DPCRKNRSLM',
+    'Deep Creek (Near Salmon Arm)',
+    'Deep Creek (Near Salmon Arm)', 
+    now(), 
+    null, 
+    user, 
+    now(), 
+    user, 
+    now(), 
+    'AREA', 
+    'N') ON CONFLICT DO NOTHING;
+
+insert into
+  geo_org_unit_structure (
+    effective_date,
+    expiry_date,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    agency_code,
+    parent_geo_org_unit_code,
+    child_geo_org_unit_code
+  )
+values
+  (
+    now(),
+    null,
+    user,
+    now(),
+    user,
+    now(),
+    'COS',
+    'SLMONRM',
+    'DPCRKNRSLM'
+  ) ON CONFLICT
+DO NOTHING;
+
+------------------------
+-- Add Hagwilget under Smithers office
+------------------------
+
+insert into 
+  geo_organization_unit_code (
+    geo_organization_unit_code, 
+    short_description, 
+    long_description, 
+    effective_date, 
+    expiry_date, 
+    create_user_id, 
+    create_utc_timestamp, 
+    update_user_id, 
+    update_utc_timestamp, 
+    geo_org_unit_type_code, 
+    administrative_office_ind)
+values (
+    'HGWLGT',
+    'Hagwilget',
+    'Hagwilget', 
+    now(), 
+    null, 
+    user, 
+    now(), 
+    user, 
+    now(), 
+    'AREA', 
+    'N') ON CONFLICT DO NOTHING;
+
+insert into
+  geo_org_unit_structure (
+    effective_date,
+    expiry_date,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    agency_code,
+    parent_geo_org_unit_code,
+    child_geo_org_unit_code
+  )
+values
+  (
+    now(),
+    null,
+    user,
+    now(),
+    user,
+    now(),
+    'COS',
+    'SMITHRS',
+    'HGWLGT'
+  ) ON CONFLICT
+DO NOTHING;
+
+------------------------
+-- Add Rose Lake (Burns Lake) under Burns Lake office
+------------------------
+
+insert into 
+  geo_organization_unit_code (
+    geo_organization_unit_code, 
+    short_description, 
+    long_description, 
+    effective_date, 
+    expiry_date, 
+    create_user_id, 
+    create_utc_timestamp, 
+    update_user_id, 
+    update_utc_timestamp, 
+    geo_org_unit_type_code, 
+    administrative_office_ind)
+values (
+    'RSLKBNSLK',
+    'Rose Lake (Burns Lake)',
+    'Rose Lake (Burns Lake)', 
+    now(), 
+    null, 
+    user, 
+    now(), 
+    user, 
+    now(), 
+    'AREA', 
+    'N') ON CONFLICT DO NOTHING;
+
+insert into
+  geo_org_unit_structure (
+    effective_date,
+    expiry_date,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    agency_code,
+    parent_geo_org_unit_code,
+    child_geo_org_unit_code
+  )
+values
+  (
+    now(),
+    null,
+    user,
+    now(),
+    user,
+    now(),
+    'COS',
+    'BURNSLK',
+    'RSLKBNSLK'
+  ) ON CONFLICT
+DO NOTHING;
+
+
+------------------------
+-- Assign Illecillewaet to Golden office
+------------------------
+
+UPDATE geo_org_unit_structure set parent_geo_org_unit_code='GLDN' where child_geo_org_unit_code='ILLECILL';
+
+------------------------
+-- Move complaints from  Birkenhead Estates - (Whistler) to Birkenhead Estates area and delete Birkenhead Estates - (Whistler) area
+------------------------
+
+UPDATE complaint SET geo_organization_unit_code='BRKHES' WHERE geo_organization_unit_code='BRKHES-W' 
+AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
+
+DELETE FROM geo_org_unit_structure
+WHERE child_geo_org_unit_code='BRKHES-W' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+DELETE FROM geo_organization_unit_code
+WHERE geo_organization_unit_code='BRKHES-W' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+
+------------------------
+-- Update area text for Mica Creek
+------------------------
+UPDATE geo_organization_unit_code SET short_description='Mica Creek', long_description='Mica Creek' 
+WHERE  geo_organization_unit_code = 'MICACREK';
+
+
+------------------------
+-- Rename Moricetown area to Witset (Moricetown)
+------------------------
+
+insert into 
+  geo_organization_unit_code (
+    geo_organization_unit_code, 
+    short_description, 
+    long_description, 
+    effective_date, 
+    expiry_date, 
+    create_user_id, 
+    create_utc_timestamp, 
+    update_user_id, 
+    update_utc_timestamp, 
+    geo_org_unit_type_code, 
+    administrative_office_ind)
+values (
+    'WTSMTMRCTW',
+    'Witset (Moricetown)',
+    'Witset (Moricetown)', 
+    now(), 
+    null, 
+    user, 
+    now(), 
+    user, 
+    now(), 
+    'AREA', 
+    'N') ON CONFLICT DO NOTHING;
+
+insert into
+  geo_org_unit_structure (
+    effective_date,
+    expiry_date,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    agency_code,
+    parent_geo_org_unit_code,
+    child_geo_org_unit_code
+  )
+values
+  (
+    now(),
+    null,
+    user,
+    now(),
+    user,
+    now(),
+    'COS',
+    'SMITHRS',
+    'WTSMTMRCTW'
+  ) ON CONFLICT
+DO NOTHING;
+
+UPDATE complaint SET geo_organization_unit_code='WTSMTMRCTW' WHERE geo_organization_unit_code='MORICETN' 
+AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
+
+DELETE FROM geo_org_unit_structure
+WHERE child_geo_org_unit_code='MORICETN' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+DELETE FROM geo_organization_unit_code
+WHERE geo_organization_unit_code='MORICETN' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+------------------------
+-- Rename Deep Creek to Deep Creek (Near Williams Lake)
+------------------------
+
+insert into 
+  geo_organization_unit_code (
+    geo_organization_unit_code, 
+    short_description, 
+    long_description, 
+    effective_date, 
+    expiry_date, 
+    create_user_id, 
+    create_utc_timestamp, 
+    update_user_id, 
+    update_utc_timestamp, 
+    geo_org_unit_type_code, 
+    administrative_office_ind)
+values (
+    'DPCRKNRWLL',
+    'Deep Creek (Near Williams Lake)',
+    'Deep Creek (Near Williams Lake)', 
+    now(), 
+    null, 
+    user, 
+    now(), 
+    user, 
+    now(), 
+    'AREA', 
+    'N') ON CONFLICT DO NOTHING;
+
+insert into
+  geo_org_unit_structure (
+    effective_date,
+    expiry_date,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    agency_code,
+    parent_geo_org_unit_code,
+    child_geo_org_unit_code
+  )
+values
+  (
+    now(),
+    null,
+    user,
+    now(),
+    user,
+    now(),
+    'COS',
+    'WLMSLK',
+    'DPCRKNRWLL'
+  ) ON CONFLICT
+DO NOTHING;
+
+UPDATE complaint SET geo_organization_unit_code='DPCRKNRWLL' WHERE geo_organization_unit_code='DEEPCRK' 
+AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
+
+DELETE FROM geo_org_unit_structure
+WHERE child_geo_org_unit_code='DEEPCRK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+DELETE FROM geo_organization_unit_code
+WHERE geo_organization_unit_code='DEEPCRK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+
+------------------------
+-- Rename Rose Lake (Williams Lake) to Rose Lake (150 Mile House)
+------------------------
+
+insert into 
+  geo_organization_unit_code (
+    geo_organization_unit_code, 
+    short_description, 
+    long_description, 
+    effective_date, 
+    expiry_date, 
+    create_user_id, 
+    create_utc_timestamp, 
+    update_user_id, 
+    update_utc_timestamp, 
+    geo_org_unit_type_code, 
+    administrative_office_ind)
+values (
+    'RSLK150MLH',
+    'Rose Lake (150 Mile House)',
+    'Rose Lake (150 Mile House)', 
+    now(), 
+    null, 
+    user, 
+    now(), 
+    user, 
+    now(), 
+    'AREA', 
+    'N') ON CONFLICT DO NOTHING;
+
+insert into
+  geo_org_unit_structure (
+    effective_date,
+    expiry_date,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    agency_code,
+    parent_geo_org_unit_code,
+    child_geo_org_unit_code
+  )
+values
+  (
+    now(),
+    null,
+    user,
+    now(),
+    user,
+    now(),
+    'COS',
+    'WLMSLK',
+    'RSLK150MLH'
+  ) ON CONFLICT
+DO NOTHING;
+
+UPDATE complaint SET geo_organization_unit_code='RSLK150MLH' WHERE geo_organization_unit_code='ROSELAK' 
+AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
+
+DELETE FROM geo_org_unit_structure
+WHERE child_geo_org_unit_code='ROSELAK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+DELETE FROM geo_organization_unit_code
+WHERE geo_organization_unit_code='ROSELAK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+------------------------
+-- Rename Daajing Giids (Queen Charlotte City) to Daajing Giids
+------------------------
+
+insert into 
+  geo_organization_unit_code (
+    geo_organization_unit_code, 
+    short_description, 
+    long_description, 
+    effective_date, 
+    expiry_date, 
+    create_user_id, 
+    create_utc_timestamp, 
+    update_user_id, 
+    update_utc_timestamp, 
+    geo_org_unit_type_code, 
+    administrative_office_ind)
+values (
+    'DJNGGDS',
+    'Daajing Giids',
+    'Daajing Giids', 
+    now(), 
+    null, 
+    user, 
+    now(), 
+    user, 
+    now(), 
+    'AREA', 
+    'N') ON CONFLICT DO NOTHING;
+
+insert into
+  geo_org_unit_structure (
+    effective_date,
+    expiry_date,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    agency_code,
+    parent_geo_org_unit_code,
+    child_geo_org_unit_code
+  )
+values
+  (
+    now(),
+    null,
+    user,
+    now(),
+    user,
+    now(),
+    'COS',
+    'DJNG',
+    'DJNGGDS'
+  ) ON CONFLICT
+DO NOTHING;
+
+UPDATE complaint SET geo_organization_unit_code='DJNGGDS' WHERE geo_organization_unit_code='QUEENCHA' 
+AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
+
+DELETE FROM geo_org_unit_structure
+WHERE child_geo_org_unit_code='QUEENCHA' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+DELETE FROM geo_organization_unit_code
+WHERE geo_organization_unit_code='QUEENCHA' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+
+-------------------------
+-- Move Beryl Prairie in Location Hierarchy
+-------------------------
+
+UPDATE geo_org_unit_structure set parent_geo_org_unit_code='FRTSTJN' where child_geo_org_unit_code='BRYLPRR';
+
+
+-------------------------
+-- Move Farrell Creek in Location Hierarchy
+-------------------------
+
+UPDATE geo_org_unit_structure set parent_geo_org_unit_code='FRTSTJN' where child_geo_org_unit_code='FARRELLC';
+
+
+
 --------------------------
 -- New Changes above this line
 -------------------------
