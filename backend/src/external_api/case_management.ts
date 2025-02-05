@@ -96,6 +96,7 @@ export const caseFileQueryFields: string = `
       date
     }
     wasAnimalCaptured
+    quantity
   },
   subject { 
     id
