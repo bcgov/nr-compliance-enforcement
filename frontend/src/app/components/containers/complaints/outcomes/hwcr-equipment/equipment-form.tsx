@@ -243,9 +243,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         yCoordinate: formatLatLongCoordinate(yCoordinate),
         actions: actions,
         wasAnimalCaptured: wasAnimalCaptured,
-        quantity: quantity,
+        quantity: quantity ? Number(quantity) : undefined,
       } as EquipmentDetailsDto;
-      console.log(equipmentDetails);
       dispatch(upsertEquipment(id, equipmentDetails));
       onSave();
     }
