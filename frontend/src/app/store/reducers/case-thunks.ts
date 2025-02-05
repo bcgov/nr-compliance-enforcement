@@ -1040,6 +1040,8 @@ export const updateAnimalOutcome =
       return record;
     });
 
+    const tagsInput = tags.map(({ id, ear, identifier }) => ({ id, ear, identifier }));
+
     const input: UpdateAnimalOutcomeInput = {
       caseIdentifier: id,
       leadIdentifier: leadIdentifier,
@@ -1052,7 +1054,7 @@ export const updateAnimalOutcome =
         categoryLevel: threatLevel,
         identifyingFeatures,
         outcome,
-        tags,
+        tags: tagsInput,
         drugs: drugsUsed,
         actions: from(actions).any() ? actions : undefined,
       },
