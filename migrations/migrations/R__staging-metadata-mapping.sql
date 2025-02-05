@@ -24739,19 +24739,19 @@ VALUES
 ------------------------
 
 DELETE FROM public.staging_metadata_mapping
-WHERE live_data_value='MORICETN' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE live_data_value='MORICETN' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 DELETE FROM public.staging_metadata_mapping
-WHERE live_data_value='DEEPCRK' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE live_data_value='DEEPCRK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 DELETE FROM public.staging_metadata_mapping
-WHERE live_data_value='ROSELAK' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE live_data_value='ROSELAK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 DELETE FROM public.staging_metadata_mapping
-WHERE live_data_value='QUEENCHA' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE live_data_value='QUEENCHA' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 DELETE FROM public.staging_metadata_mapping
-WHERE live_data_value='BRKHES-W' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE live_data_value='BRKHES-W' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 
 

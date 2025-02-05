@@ -10215,13 +10215,13 @@ UPDATE geo_org_unit_structure set parent_geo_org_unit_code='GLDN' where child_ge
 ------------------------
 
 UPDATE complaint SET geo_organization_unit_code='BRKHES' WHERE geo_organization_unit_code='BRKHES-W' 
-AND incident_utc_datetime <= '2025-02-05 00:00:00.000';
+AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
 
 DELETE FROM geo_org_unit_structure
-WHERE child_geo_org_unit_code='BRKHES-W' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE child_geo_org_unit_code='BRKHES-W' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 DELETE FROM geo_organization_unit_code
-WHERE geo_organization_unit_code='BRKHES-W' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE geo_organization_unit_code='BRKHES-W' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 
 ------------------------
@@ -10288,13 +10288,13 @@ values
 DO NOTHING;
 
 UPDATE complaint SET geo_organization_unit_code='WTSMTMRCTW' WHERE geo_organization_unit_code='MORICETN' 
-AND incident_utc_datetime <= '2025-02-05 00:00:00.000';
+AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
 
 DELETE FROM geo_org_unit_structure
-WHERE child_geo_org_unit_code='MORICETN' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE child_geo_org_unit_code='MORICETN' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 DELETE FROM geo_organization_unit_code
-WHERE geo_organization_unit_code='MORICETN' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE geo_organization_unit_code='MORICETN' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 ------------------------
 -- Rename Deep Creek to Deep Creek (Near Williams Lake)
@@ -10353,13 +10353,13 @@ values
 DO NOTHING;
 
 UPDATE complaint SET geo_organization_unit_code='DPCRKNRWLL' WHERE geo_organization_unit_code='DEEPCRK' 
-AND incident_utc_datetime <= '2025-02-05 00:00:00.000';
+AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
 
 DELETE FROM geo_org_unit_structure
-WHERE child_geo_org_unit_code='DEEPCRK' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE child_geo_org_unit_code='DEEPCRK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 DELETE FROM geo_organization_unit_code
-WHERE geo_organization_unit_code='DEEPCRK' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE geo_organization_unit_code='DEEPCRK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 
 ------------------------
@@ -10419,13 +10419,13 @@ values
 DO NOTHING;
 
 UPDATE complaint SET geo_organization_unit_code='RSLK150MLH' WHERE geo_organization_unit_code='ROSELAK' 
-AND incident_utc_datetime <= '2025-02-05 00:00:00.000';
+AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
 
 DELETE FROM geo_org_unit_structure
-WHERE child_geo_org_unit_code='ROSELAK' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE child_geo_org_unit_code='ROSELAK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 DELETE FROM geo_organization_unit_code
-WHERE geo_organization_unit_code='ROSELAK' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE geo_organization_unit_code='ROSELAK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 ------------------------
 -- Rename Daajing Giids (Queen Charlotte City) to Daajing Giids
@@ -10484,13 +10484,13 @@ values
 DO NOTHING;
 
 UPDATE complaint SET geo_organization_unit_code='DJNGGDS' WHERE geo_organization_unit_code='QUEENCHA' 
-AND incident_utc_datetime <= '2025-02-05 00:00:00.000';
+AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
 
 DELETE FROM geo_org_unit_structure
-WHERE child_geo_org_unit_code='QUEENCHA' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE child_geo_org_unit_code='QUEENCHA' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 DELETE FROM geo_organization_unit_code
-WHERE geo_organization_unit_code='QUEENCHA' AND create_utc_timestamp <= '2025-02-05 00:00:00.000';
+WHERE geo_organization_unit_code='QUEENCHA' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
 
 
 -------------------------
