@@ -320,7 +320,7 @@ export const CreateAnimalOutcome: FC<props> = ({
       }
     });
 
-    if (authorizationRef.current && !authorizationRef.current.isValid()) {
+    if (data.drugAuthorization && authorizationRef.current && !authorizationRef.current.isValid()) {
       _isValid = false;
     }
 
