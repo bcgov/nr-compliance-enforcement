@@ -300,12 +300,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     }
   };
 
-  const handleSetQuantity = (quantity: any) => {
-    if (quantity === "") {
-      setQuantity(undefined);
-    } else if (!isNaN(quantity) && quantity >= 0) {
-      setQuantity(parseInt(quantity));
-    }
+  const handleSetQuantity = (input: any) => {
+    setQuantity(input.replace(/\D/g, ""));
   };
 
   const syncCoordinates = (yCoordinate: string | undefined, xCoordinate: string | undefined) => {
