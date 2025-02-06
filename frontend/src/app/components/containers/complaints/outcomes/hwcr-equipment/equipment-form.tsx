@@ -5,7 +5,11 @@ import { ToastContainer } from "react-toastify";
 
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
-import { selectActiveEquipmentDropdown, selectTrapEquipment } from "@store/reducers/code-table";
+import {
+  selectActiveEquipmentDropdown,
+  selectTrapEquipment,
+  selectHasQuantityEquipment,
+} from "@store/reducers/code-table";
 import { selectComplaint, selectComplaintCallerInformation } from "@store/reducers/complaints";
 import { CompSelect } from "@components/common/comp-select";
 import { ToggleError } from "@common/toast";
@@ -24,6 +28,7 @@ import { upsertEquipment } from "@store/reducers/case-thunks";
 import { CompRadioGroup } from "@components/common/comp-radiogroup";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
+import { CompInput } from "@/app/components/common/comp-input";
 
 export interface EquipmentFormProps {
   equipment?: EquipmentDetailsDto;
@@ -34,6 +39,7 @@ export interface EquipmentFormProps {
 
 export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOfficer, onSave, onCancel }) => {
   const [type, setType] = useState<Option>();
+  const [quantity, setQuantity] = useState<number>();
   const [dateSet, setDateSet] = useState<Date>(new Date());
   const [dateRemoved, setDateRemoved] = useState<Date>();
   const [officerSet, setOfficerSet] = useState<Option | undefined>();
@@ -54,14 +60,16 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const [actionRemovedGuid, setActionRemovedGuid] = useState<string>();
   const [wasAnimalCaptured, setWasAnimalCaptured] = useState<string>("U");
   const [wasAnimalCapturedErrorMsg, setWasAnimalCapturedErrorMsg] = useState<string>("");
+  const [quantityErrorMsg, setQuantityErrorMsg] = useState<string>("");
 
   const dispatch = useAppDispatch();
-  const { id = "", complaintType = "" } = useParams<{ id: string; complaintType: string }>();
+  const { id = "" } = useParams<{ id: string }>();
   const complaintData = useAppSelector(selectComplaint);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const equipmentDropdownOptions = useAppSelector(selectActiveEquipmentDropdown);
   const trapEquipment = useAppSelector(selectTrapEquipment);
+  const hasQuantityEquipment = useAppSelector(selectHasQuantityEquipment);
   const assignableOfficers = useAppSelector(selectOfficerListByAgency);
 
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
@@ -96,7 +104,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   useEffect(() => {
     // set the equipment type code in the form
     setType(getValue("equipment"));
-
+    setQuantity(equipment?.quantity);
     setAddress(equipment?.address);
     setXCoordinate(equipment?.xCoordinate);
     setYCoordinate(equipment?.yCoordinate);
@@ -127,6 +135,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     setOfficerRemovedErrorMsg("");
     setDateRemovedErrorMsg("");
     setWasAnimalCapturedErrorMsg("");
+    setQuantityErrorMsg("");
   };
 
   // Helper function to check if coordinates or address are provided
@@ -136,9 +145,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     const isYCoordinateEmpty = !yCoordinate;
 
     if (isAddressEmpty && (isXCoordinateEmpty || isYCoordinateEmpty)) {
-      setEquipmentAddressErrorMsg("Address is required if coordinates are not provided.");
-      if (isXCoordinateEmpty) setXCoordinateErrorMsg("Longitude is required if address is not provided.");
-      if (isYCoordinateEmpty) setYCoordinateErrorMsg("Latitude is required if address is not provided.");
+      setEquipmentAddressErrorMsg("Location/address is required if coordinates are not provided.");
+      if (isXCoordinateEmpty) setXCoordinateErrorMsg("Longitude is required if location/address is not provided.");
+      if (isYCoordinateEmpty) setYCoordinateErrorMsg("Latitude is required if location/address is not provided.");
       return true; // Errors found
     }
     return false; // No errors
@@ -188,6 +197,11 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
       hasErrors = true;
     }
 
+    if (hasQuantityEquipment.includes(type?.value ?? "") && (!quantity || quantity < 1)) {
+      setQuantityErrorMsg("Required");
+      hasErrors = true;
+    }
+
     return hasErrors;
   };
 
@@ -229,6 +243,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         yCoordinate: formatLatLongCoordinate(yCoordinate),
         actions: actions,
         wasAnimalCaptured: wasAnimalCaptured,
+        quantity: quantity ? Number(quantity) : undefined,
       } as EquipmentDetailsDto;
       dispatch(upsertEquipment(id, equipmentDetails));
       onSave();
@@ -277,6 +292,15 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     if (!trapEquipment.includes(type?.value ?? "")) {
       setWasAnimalCaptured("U");
     }
+    if (hasQuantityEquipment.includes(type?.value ?? "")) {
+      setQuantity(1);
+    } else {
+      setQuantity(undefined);
+    }
+  };
+
+  const handleSetQuantity = (input: any) => {
+    setQuantity(input.replace(/\D/g, ""));
   };
 
   const syncCoordinates = (yCoordinate: string | undefined, xCoordinate: string | undefined) => {
@@ -308,7 +332,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               className="comp-details-form-row"
               id="equipment-type-div"
             >
-              <label htmlFor="equipment-type-select">Equipment type</label>
+              <label htmlFor="equipment-type-select">
+                Equipment type<span className="required-ind">*</span>
+              </label>
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="equipment-type-select"
@@ -325,17 +351,58 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               </div>
             </div>
 
+            {/* QUANTITY */}
+            {hasQuantityEquipment.includes(type?.value ?? "") && (
+              <div
+                className="comp-details-form-row"
+                id="equipment-quantity-div"
+              >
+                <label htmlFor="equipment-quantity">
+                  Quantity<span className="required-ind">*</span>
+                </label>
+                <div className="comp-details-input">
+                  <CompInput
+                    type="input"
+                    inputClass="comp-form-control"
+                    id="equipment-quantity"
+                    divid="equipment-quantity-div"
+                    maxLength={3}
+                    value={quantity}
+                    onChange={(e: { target: { value: any } }) => handleSetQuantity(e.target.value)}
+                    error={quantityErrorMsg}
+                  />
+                </div>
+              </div>
+            )}
+
             {/* ADDRESS */}
+            <div
+              id="equipment-address-coordinates-div"
+              className="comp-details-form-row"
+            >
+              <label htmlFor="equipment-address">
+                Location info (choose one)<span className="required-ind">*</span>
+              </label>
+            </div>
             <div
               id="equipment-address-div"
               className="comp-details-form-row"
             >
-              <label htmlFor="equipment-address">Address</label>
+              <label
+                className="validation-group-label"
+                htmlFor="equipment-address"
+              >
+                Location/address
+              </label>
               <div className="comp-details-input full-width">
                 <input
                   type="text"
                   id="equipment-address"
-                  className={equipmentAddressErrorMsg ? "comp-form-control error-border" : "comp-form-control"}
+                  className={
+                    equipmentAddressErrorMsg
+                      ? "comp-form-control error-border validation-group-input"
+                      : "comp-form-control validation-group-input"
+                  }
                   onChange={(e) => setAddress(e.target.value)}
                   maxLength={120}
                   value={address}
@@ -365,10 +432,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                     <span>Copy location from complaint details</span>
                   </Button>
                 )}
+                <div className="error-message">{xCoordinateErrorMsg || yCoordinateErrorMsg}</div>
               </div>
             </div>
-
-            <div className="error-message">{xCoordinateErrorMsg || yCoordinateErrorMsg}</div>
             <CompCoordinateInput
               id="equipment-coordinates"
               utmZones={bcUtmZoneNumbers.map((zone: string) => {
@@ -381,14 +447,16 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               sourceXCoordinate={complaintData?.location?.coordinates[0].toString() ?? ""}
               sourceYCoordinate={complaintData?.location?.coordinates[1].toString() ?? ""}
               enableCopyCoordinates={true}
+              validationRequired={true}
             />
-
             {/* SET BY */}
             <div
               className="comp-details-form-row"
               id="equipment-officer-set-div"
             >
-              <label htmlFor="equipment-officer-set-select">Set/used by</label>
+              <label htmlFor="equipment-officer-set-select">
+                Set/used by<span className="required-ind">*</span>
+              </label>
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="equipment-officer-set-select"
@@ -408,7 +476,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               className="comp-details-form-row"
               id="equipment-date-set-div"
             >
-              <label htmlFor="equipment-day-set">Set/used date</label>
+              <label htmlFor="equipment-day-set">
+                Set/used date<span className="required-ind">*</span>
+              </label>
               <div className="comp-details-input">
                 <ValidationDatePicker
                   id="equipment-day-set"
@@ -472,7 +542,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                 className="comp-details-form-row"
                 id="reported-pair-id"
               >
-                <label htmlFor="equipment-animal-captured-radiogroup-1">Was an animal captured?</label>
+                <label htmlFor="equipment-animal-captured-radiogroup-1">
+                  Was an animal captured?<span className="required-ind">*</span>
+                </label>
                 <div className="comp-details-input full-width">
                   {
                     <CompRadioGroup

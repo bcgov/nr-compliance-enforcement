@@ -31,5 +31,6 @@ declare namespace Cypress {
     fillInHWCSection(section: HwcSection): Chainable<void>;
     validateHWCSection(section: HwcSection): Chainable<void>;
     hasErrorMessage(inputs: Array<string>, toastText?: string): Chainable<void>;
+    assignSelfToComplaint(): Chainable<void>;
   }
 }

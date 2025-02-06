@@ -84,6 +84,7 @@ export const HWCRComplaintPrevention: FC = () => {
     if (complaintData) {
       const officer = getSelectedOfficer(assignableOfficers, personGuid, complaintData);
       setSelectedOfficer(officer);
+      populatePreventionUI();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [complaintData]);
@@ -275,7 +276,9 @@ export const HWCRComplaintPrevention: FC = () => {
                   className="comp-details-form-row"
                   id="prev-educ-checkbox-div"
                 >
-                  <label htmlFor="checkbox-div">Actions</label>
+                  <label htmlFor="checkbox-div">
+                    Actions<span className="required-ind">*</span>
+                  </label>
                   <div className="comp-details-input full-width">
                     <ValidationCheckboxGroup
                       errMsg={preventionRequiredErrorMessage}
@@ -289,7 +292,9 @@ export const HWCRComplaintPrevention: FC = () => {
                   className="comp-details-form-row"
                   id="prev-educ-outcome-officer-div"
                 >
-                  <label htmlFor="prev-educ-outcome-officer">Officer</label>
+                  <label htmlFor="prev-educ-outcome-officer">
+                    Officer<span className="required-ind">*</span>
+                  </label>
                   <div className="comp-details-input full-width">
                     <CompSelect
                       id="prev-educ-outcome-officer"
@@ -307,7 +312,9 @@ export const HWCRComplaintPrevention: FC = () => {
                   className="comp-details-form-row"
                   id="prev-educ-outcome-date-div"
                 >
-                  <label htmlFor="prev-educ-outcome-date">Date</label>
+                  <label htmlFor="prev-educ-outcome-date">
+                    Date<span className="required-ind">*</span>
+                  </label>
                   <div className="comp-details-input">
                     <ValidationDatePicker
                       id="prev-educ-outcome-date"

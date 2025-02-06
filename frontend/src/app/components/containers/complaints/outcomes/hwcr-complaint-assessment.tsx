@@ -3,13 +3,14 @@ import { Button, Card, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
+import { selectOfficerListByAgency, selectOfficersByAgency, assignComplaintToOfficer } from "@store/reducers/officer";
 import {
   selectComplaintCallerInformation,
   selectComplaintAssignedBy,
   selectComplaintLargeCarnivoreInd,
   selectLinkedComplaints,
   selectComplaintViewMode,
+  selectComplaint,
 } from "@store/reducers/complaints";
 import {
   selectAssessmentCat1Dropdown,
@@ -39,6 +40,7 @@ import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
 import useValidateComplaint from "@hooks/validate-complaint";
+import { Officer } from "@/app/types/person/person";
 
 type Props = {
   id: string;
@@ -65,6 +67,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [editable, setEditable] = useState<boolean>(true);
   const [validateOnChange, setValidateOnChange] = useState<boolean>(false);
   const [selectedContacted, setSelectedContacted] = useState<string | null>("No");
+  const [selectedOfficerData, setSelectedOfficerData] = useState<Officer | null>();
   const [selectedAttended, setSelectedAttended] = useState<string | null>("No");
   const [selectedLocation, setSelectedLocation] = useState<Option | null>(null);
   const [selectedConflictHistory, setSelectedConflictHistory] = useState<Option | null>(null);
@@ -84,6 +87,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [assessmentRequiredErrorMessage, setAssessmentRequiredErrorMessage] = useState<string>("");
   const [locationErrorMessage, setLocationErrorMessage] = useState<string>("");
 
+  const complaintData = useAppSelector(selectComplaint);
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
   const assessmentState = useAppSelector(selectAssessment);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
@@ -155,6 +159,14 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     } else {
       setSelectedLinkedComplaint(null);
     }
+  };
+
+  const handleSelectedOfficerChange = (selected: Option | null) => {
+    if (selected && officersInAgencyList) {
+      let filteredOfficer = officersInAgencyList?.find((officer) => officer.auth_user_guid === selected.value);
+      setSelectedOfficerData(filteredOfficer);
+    }
+    setSelectedOfficer(selected);
   };
 
   const actionRequiredList = useAppSelector(selectYesNoCodeDropdown);
@@ -379,6 +391,14 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       };
 
       dispatch(upsertAssessment(id, updatedAssessmentData));
+      if (
+        selectedOfficer?.value &&
+        !assigned &&
+        selectedOfficerData?.person_guid?.person_guid &&
+        (complaintData?.delegates.length === 0 || complaintData?.delegates?.every((delegate) => !delegate.isActive))
+      ) {
+        dispatch(assignComplaintToOfficer(id, selectedOfficerData?.person_guid?.person_guid));
+      }
       setEditable(false);
       handleSave();
     } else {
@@ -588,7 +608,9 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 className="comp-details-form-row"
                 id="action-required-div"
               >
-                <label htmlFor="action-required">Action required?</label>
+                <label htmlFor="action-required">
+                  Action required? {!quickClose && <span className="required-ind">*</span>}
+                </label>
                 <div className="comp-details-input full-width">
                   {quickClose ? (
                     <span>{selectedActionRequired?.value}</span>
@@ -612,7 +634,9 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 className={`comp-details-form-row ${justificationEditClass}`}
                 id="justification-div"
               >
-                <label htmlFor="justification">Justification</label>
+                <label htmlFor="justification">
+                  Justification<span className="required-ind">*</span>
+                </label>
                 <div className="comp-details-input full-width">
                   <CompSelect
                     id="justification"
@@ -649,7 +673,9 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   className="comp-details-form-row"
                   id="linked-complaint-div"
                 >
-                  <label htmlFor="linkedComplaint">Link current complaint to:</label>
+                  <label htmlFor="linkedComplaint">
+                    Link current complaint to:<span className="required-ind">*</span>
+                  </label>
                   <div className="comp-details-input full-width">
                     <HWCRComplaintAssessmentLinkComplaintSearch
                       id="linkedComplaint"
@@ -666,7 +692,9 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 className={assessmentDivClass}
                 id="assessment-contacted-complainant-div"
               >
-                <label htmlFor="assessment-contacted-complainant-div">Contacted complainant</label>
+                <label htmlFor="assessment-contacted-complainant-div">
+                  Contacted complainant<span className="required-ind">*</span>
+                </label>
                 <div className="comp-details-input full-width">
                   <CompRadioGroup
                     id="assessment-contacted-complainant-radiogroup"
@@ -687,7 +715,9 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 className={assessmentDivClass}
                 id="assessment-attended-div"
               >
-                <label htmlFor="assessment-attended-div">Attended</label>
+                <label htmlFor="assessment-attended-div">
+                  Attended<span className="required-ind">*</span>
+                </label>
                 <div className="comp-details-input full-width">
                   <CompRadioGroup
                     id="assessment-attended-radiogroup"
@@ -710,7 +740,9 @@ export const HWCRComplaintAssessment: FC<Props> = ({
               >
                 <div className="muliline-label">
                   <div>
-                    <div>Animal actions</div>
+                    <div>
+                      Animal actions<span className="required-ind">*</span>
+                    </div>
                     <div>(Select all applicable boxes)</div>
                   </div>
                 </div>
@@ -743,7 +775,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       className="mb-2"
                       htmlFor="select-location-type"
                     >
-                      Location type
+                      Location type<span className="required-ind">*</span>
                     </label>
                     <CompSelect
                       id="select-location-type"
@@ -817,7 +849,9 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 className="comp-details-form-row"
                 id="outcome-officer-div"
               >
-                <label htmlFor="outcome-officer">Officer</label>
+                <label htmlFor="outcome-officer">
+                  Officer<span className="required-ind">*</span>
+                </label>
                 <div className="comp-details-input full-width">
                   <CompSelect
                     id="outcome-officer"
@@ -828,7 +862,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     errorMessage={officerErrorMessage}
                     value={selectedOfficer}
                     placeholder="Select "
-                    onChange={(officer: any) => setSelectedOfficer(officer)}
+                    onChange={handleSelectedOfficerChange}
                     isDisabled={isReadOnly}
                   />
                 </div>
@@ -837,7 +871,9 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 className="comp-details-form-row"
                 id="complaint-outcome-date-div"
               >
-                <label htmlFor="complaint-outcome-date">Date</label>
+                <label htmlFor="complaint-outcome-date">
+                  Date<span className="required-ind">*</span>
+                </label>
                 <div className="comp-details-input">
                   <ValidationDatePicker
                     id="complaint-outcome-date"

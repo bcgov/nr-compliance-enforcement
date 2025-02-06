@@ -178,7 +178,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                   <div className="complaint-location-row">
                     {update.updLocationSummaryText && (
                       <div className="complaint-location-label-value-pair">
-                        <div className="complaint-location-label">Complaint location:</div>
+                        <div className="complaint-location-label">Location/address:</div>
                         <div className="complaint-location-value">{update.updLocationSummaryText}</div>
                       </div>
                     )}

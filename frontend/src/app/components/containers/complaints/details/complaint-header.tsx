@@ -63,6 +63,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           complaint_identifier: id,
           complaint_type: complaintType,
           complaint_status: statusCode,
+          is_officer_assigned: officerAssigned !== "Not Assigned",
         },
       }),
     );
@@ -110,7 +111,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   };
 
   const exportComplaintToPdf = () => {
-    dispatch(exportComplaint(complaintType, id));
+    dispatch(exportComplaint(complaintType, id, new Date(loggedDate)));
   };
 
   return (
@@ -295,7 +296,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               <dl className="comp-details-date-logged">
                 <dt>Date logged</dt>
                 <dd className="comp-date-time-value">
-                  <div>
+                  <div id="complaint-date-logged">
                     <i className="bi bi-calendar"></i>
                     {formatDate(loggedDate)}
                   </div>

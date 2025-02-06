@@ -369,7 +369,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     // Check the Call Details inputs
     // Complaint Location
     cy.get("#complaint-location-pair-id label").should(($label) => {
-      expect($label).to.contain.text("Complaint location");
+      expect($label).to.contain.text("Location/address");
     });
     cy.get("#complaint-location-pair-id input").should("exist");
 

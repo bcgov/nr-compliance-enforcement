@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 
 import Option from "@apptypes/app/option";
 
-import { selectAllEquipmentDropdown } from "@store/reducers/code-table";
+import { selectAllEquipmentDropdown, selectHasQuantityEquipment } from "@store/reducers/code-table";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
 import { deleteEquipment } from "@store/reducers/case-thunks";
 import { CompLocationInfo } from "@components/common/comp-location-info";
@@ -24,6 +24,7 @@ interface EquipmentItemProps {
 }
 export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisabled, onEdit }) => {
   const dispatch = useAppDispatch();
+  const hasQuantityEquipment = useAppSelector(selectHasQuantityEquipment);
   const { id = "" } = useParams<{ id: string }>();
   const [showModal, setShowModal] = useState(false);
   const handleEdit = (equipment: EquipmentDetailsDto) => {
@@ -141,8 +142,14 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
 
           {/* EQUIPMENT META */}
           <dl>
+            {hasQuantityEquipment.includes(equipment.typeCode) && (
+              <div>
+                <dt>Quantity</dt>
+                <dd>{equipment.quantity}</dd>
+              </div>
+            )}
             <div>
-              <dt>Address</dt>
+              <dt>Location/address</dt>
               <dd>{equipment.address}</dd>
             </div>
             <CompLocationInfo

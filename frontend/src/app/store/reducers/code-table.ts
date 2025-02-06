@@ -287,6 +287,7 @@ export const fetchComplaintCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchRegions());
     dispatch(fetchZones());
     dispatch(fetchAreaCodes());
+    dispatch(fetchCommunities());
     dispatch(fetchComplaintTypeCodes());
     dispatch(fetchReportedByCodes());
     dispatch(fetchGirTypes());
@@ -1465,6 +1466,20 @@ export const selectTrapEquipment = (state: RootState): Array<string> => {
   } = state;
   const data = items
     .filter(({ isTrapIndicator: value }) => value)
+    .map(({ equipment: label }) => {
+      const item = label;
+      return item;
+    });
+
+  return data;
+};
+
+export const selectHasQuantityEquipment = (state: RootState): Array<string> => {
+  const {
+    codeTables: { equipment: items },
+  } = state;
+  const data = items
+    .filter(({ hasQuantityIndicator: value }) => value)
     .map(({ equipment: label }) => {
       const item = label;
       return item;

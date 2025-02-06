@@ -879,7 +879,7 @@ export const CreateComplaint: FC = () => {
               id="complaint-location-label-id"
               htmlFor="location-edit-id"
             >
-              Complaint location
+              Location/address
             </label>
             <div className="comp-details-edit-input">
               <input
@@ -916,6 +916,7 @@ export const CreateComplaint: FC = () => {
             syncCoordinates={syncCoordinates}
             throwError={throwError}
             enableCopyCoordinates={false}
+            validationRequired={false}
           />
 
           <div

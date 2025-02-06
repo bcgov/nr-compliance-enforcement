@@ -24475,3 +24475,291 @@ VALUES
     'FLYWAY',
     CURRENT_TIMESTAMP
   ) on conflict do nothing;
+
+INSERT INTO
+  public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'Field',
+    'FIELD',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+
+INSERT INTO
+public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'Canyon Hotsprings',
+    'CNYNHTSPRN',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+INSERT INTO
+public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'Deep Creek (Near Salmon Arm)',
+    'DPCRKNRSLM',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+INSERT INTO
+public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'Hagwilget',
+    'HGWLGT',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+INSERT INTO
+public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'Illecillewaet',
+    'ILLECILL',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+INSERT INTO
+public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'Rose Lake (Burns Lake)',
+    'RSLKBNSLK',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+INSERT INTO
+public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'Witset (Moricetown)',
+    'WTSMTMRCTW',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+
+ INSERT INTO
+ public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'Deep Creek (Near Williams Lake)',
+    'DPCRKNRWLL',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+
+
+ INSERT INTO
+ public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'Deep Creek (Near Williams Lake)',
+    'DPCRKNRWLL',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+ INSERT INTO
+ public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'Rose Lake (150 Mile House)',
+    'RSLK150MLH',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+
+INSERT INTO
+public.staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'Daajing Giids',
+    'DJNGGDS',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+------------------------
+-- Remove obsolete mapping
+------------------------
+
+DELETE FROM public.staging_metadata_mapping
+WHERE live_data_value='MORICETN' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+DELETE FROM public.staging_metadata_mapping
+WHERE live_data_value='DEEPCRK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+DELETE FROM public.staging_metadata_mapping
+WHERE live_data_value='ROSELAK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+DELETE FROM public.staging_metadata_mapping
+WHERE live_data_value='QUEENCHA' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+DELETE FROM public.staging_metadata_mapping
+WHERE live_data_value='BRKHES-W' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+
+
+
+--------------------------
+-- New Changes above this line
+-------------------------
+UPDATE configuration
+SET
+  configuration_value = configuration_value::int + 1
+WHERE
+  configuration_code = 'CDTABLEVER';

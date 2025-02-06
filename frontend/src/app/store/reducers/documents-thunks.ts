@@ -11,16 +11,20 @@ import { ExportComplaintInput } from "@/app/types/complaints/export-complaint-in
 //-- exports a complaint as a pdf document
 //--
 export const exportComplaint =
-  (type: string, id: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (
+    type: string,
+    id: string,
+    dateLogged: Date,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const { attachments } = getState();
     try {
       const agency = getUserAgency();
-      let tailored_filename = "";
+      let fileName = "";
       if (agency != null) {
         switch (agency) {
           case AgencyType.CEEB: {
-            tailored_filename = `${format(new Date(), "yyyy-MM-dd")} Complaint ${id}.pdf`;
+            fileName = `${format(dateLogged, "yyyy-MM-dd")} Complaint ${id}.pdf`;
             break;
           }
           case AgencyType.COS:
@@ -31,13 +35,13 @@ export const exportComplaint =
             } else if (type === "HWCR") {
               typeName = "HWC";
             }
-            tailored_filename = `${typeName}_${id}_${format(new Date(), "yyMMdd")}.pdf`;
+            fileName = `${typeName}_${id}_${format(dateLogged, "yyMMdd")}.pdf`;
             break;
           }
         }
       } else {
         // Can't find any agency information - use previous standard
-        tailored_filename = `Complaint-${id}-${type}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
+        fileName = `Complaint-${id}-${type}-${format(dateLogged, "yyyy-MM-dd")}.pdf`;
       }
 
       const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -48,7 +52,7 @@ export const exportComplaint =
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
 
-      const exportComplaintInput = { id, type, tz, attachments } as ExportComplaintInput;
+      const exportComplaintInput = { id, type, fileName, tz, attachments } as ExportComplaintInput;
 
       const url = `${config.API_BASE_URL}/v1/document/export-complaint`;
 
@@ -61,7 +65,7 @@ export const exportComplaint =
       let link = document.createElement("a");
       link.id = "hidden-details-screen-export-complaint";
       link.href = fileURL;
-      link.download = tailored_filename;
+      link.download = fileName;
 
       document.body.appendChild(link);
       link.click();

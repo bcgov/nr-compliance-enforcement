@@ -5,7 +5,7 @@ global:
 crunchy: # enable it for TEST and PROD, for PR based pipelines simply use single postgres
   enabled: true
   postgresVersion: 16
-  postGISVersion: '3.4'
+  postGISVersion: "3.4"
   imagePullPolicy: IfNotPresent
   # enable below to start a new crunchy cluster after disaster from a backed-up location, crunchy will choose the best place to recover from.
   # follow https://access.crunchydata.com/documentation/postgres-operator/5.2.0/tutorial/disaster-recovery/
@@ -29,8 +29,8 @@ crunchy: # enable it for TEST and PROD, for PR based pipelines simply use single
     replicas: 2 # 2 or 3 for high availability in TEST and PROD.
     metadata:
       annotations:
-        prometheus.io/scrape: 'true'
-        prometheus.io/port: '9187'
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9187"
     dataVolumeClaimSpec:
       storage: 2Gi
       storageClassName: netapp-block-standard
@@ -39,15 +39,9 @@ crunchy: # enable it for TEST and PROD, for PR based pipelines simply use single
     requests:
       cpu: 200m
       memory: 256Mi
-    limits:
-      cpu: 400m
-      memory: 512Mi
     replicaCertCopy:
       requests:
-        cpu: 1m
-        memory: 32Mi
-      limits:
-        cpu: 50m
+        cpu: 32m
         memory: 64Mi
 
   pgBackRest:
@@ -78,32 +72,20 @@ crunchy: # enable it for TEST and PROD, for PR based pipelines simply use single
 
     config:
       requests:
-        cpu: 15m
+        cpu: 32m
         memory: 64Mi
-      limits:
-        cpu: 60m
-        memory: 128Mi
     repoHost:
       requests:
         cpu: 60m
         memory: 256Mi
-      limits:
-        cpu: 150m
-        memory: 512Mi
     sidecars:
       requests:
-        cpu: 20m
-        memory: 32Mi
-      limits:
         cpu: 40m
-        memory: 128Mi
+        memory: 64Mi
     jobs:
       requests:
         cpu: 100m
         memory: 256Mi
-      limits:
-        cpu: 300m
-        memory: 512Mi
 
   patroni:
     postgresql:
@@ -126,10 +108,7 @@ crunchy: # enable it for TEST and PROD, for PR based pipelines simply use single
       image: # it's not necessary to specify an image as the images specified in the Crunchy Postgres Operator will be pulled by default
       replicas: 1
       requests:
-        cpu: 20m
-        memory: 64Mi
-      limits:
-        cpu: 40m
+        cpu: 64m
         memory: 128Mi
       maxConnections: 10 # make sure less than postgres max connections
 
@@ -139,8 +118,5 @@ crunchy: # enable it for TEST and PROD, for PR based pipelines simply use single
     exporter:
       image: # it's not necessary to specify an image as the images specified in the Crunchy Postgres Operator will be pulled by default
       requests:
-        cpu: 1m
-        memory: 16Mi
-      limits:
-        cpu: 35m
-        memory: 32Mi
+        cpu: 32m
+        memory: 64Mi
