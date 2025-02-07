@@ -208,11 +208,12 @@ const getComplaintTypes = () => {
   return UserService.hasRole(Roles.CEEB) ? CEEB_TYPES : COMPLAINT_TYPES;
 };
 
+// Sets the default filters
 const getFilters = (currentOfficer: any, defaultZone: DropdownOption | null, defaultRegion: DropdownOption | null) => {
   let filters: any = {};
 
-  // Province-wide role defaults to only "Open" so skip the other checks
-  if (UserService.hasRole(Roles.PROVINCE_WIDE)) {
+  // Province-wide and Parks role defaults to only "Open" so skip the other checks
+  if (UserService.hasRole(Roles.PROVINCE_WIDE) || UserService.hasRole(Roles.PARKS)) {
     return filters;
   }
 
