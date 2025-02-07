@@ -1,6 +1,6 @@
 import { Controller, Get, Body, Patch, Param, UseGuards, Query, Post, Logger, Request } from "@nestjs/common";
 import { ComplaintService } from "./complaint.service";
-import { Role } from "../../enum/role.enum";
+import { Role, coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { Token } from "../../auth/decorators/token.decorator";
@@ -41,7 +41,7 @@ export class ComplaintController {
   private readonly logger = new Logger(ComplaintController.name);
 
   @Get(":complaintType")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   async findAllByType(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
   ): Promise<Array<WildlifeComplaintDto | AllegationComplaintDto>> {
@@ -62,7 +62,7 @@ export class ComplaintController {
   } */
 
   @Get("/map/search/clustered/:complaintType")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   mapSearchClustered(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Query() model: ComplaintMapSearchClusteredParameters,
@@ -75,7 +75,7 @@ export class ComplaintController {
   }
 
   @Get("/search/:complaintType")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   async search(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Query() model: ComplaintSearchParameters,
@@ -88,7 +88,7 @@ export class ComplaintController {
   }
 
   @Patch("/update-status-by-id/:id")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   async updateComplaintStatusById(@Param("id") id: string, @Body() model: any): Promise<ComplaintDto> {
     const { status } = model;
     try {
@@ -99,7 +99,7 @@ export class ComplaintController {
   }
 
   @Patch("/update-by-id/:complaintType/:id")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   async updateComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
@@ -109,13 +109,13 @@ export class ComplaintController {
   }
 
   @Patch("/update-date-by-id/:id")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   async updateComplaintLastUpdatedDateById(@Param("id") id: string): Promise<boolean> {
     return await this.service.updateComplaintLastUpdatedDate(id);
   }
 
   @Get("/by-complaint-identifier/:complaintType/:id")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   async findComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
@@ -126,13 +126,13 @@ export class ComplaintController {
       | GeneralIncidentComplaintDto;
   }
   @Get("/related-data/:id")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   async findRelatedDataById(@Param("id") id: string): Promise<RelatedDataDto> {
     return await this.service.findRelatedDataById(id);
   }
 
   @Post("/create/:complaintType")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   async create(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Body() model: WildlifeComplaintDto | AllegationComplaintDto,
@@ -141,7 +141,7 @@ export class ComplaintController {
   }
 
   @Get("/stats/:complaintType/by-zone/:zone")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   statsByZone(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("zone") zone: string,
@@ -150,7 +150,7 @@ export class ComplaintController {
   }
 
   @Get("/linked-complaints/:complaint_id")
-  @Roles(Role.COS)
+  @Roles(Role.COS, Role.PARKS) // Might want to expose this to others in the future instead of just making it coupled to HWCRs
   async findLinkedComplaintsById(@Param("complaint_id") complaintId: string) {
     const childComplaints = await this.linkedComplaintXrefService.findChildComplaints(complaintId);
     if (childComplaints.length > 0) return childComplaints;

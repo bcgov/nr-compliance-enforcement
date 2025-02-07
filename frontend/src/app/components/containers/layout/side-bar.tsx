@@ -7,7 +7,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import { AgencyBanner } from "./agency-banner";
 import UserService from "@service/user-service";
-import Roles from "@apptypes/app/roles";
+import { Roles } from "@apptypes/app/roles";
 
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();

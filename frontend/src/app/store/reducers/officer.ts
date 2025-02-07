@@ -23,7 +23,7 @@ import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complai
 import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
 import { OfficerDto } from "@apptypes/app/people/officer";
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
-import Roles from "@apptypes/app/roles";
+import { Roles } from "@apptypes/app/roles";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 
 const initialState: OfficerState = {

@@ -1,5 +1,5 @@
 import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
-import Roles from "../../src/app/types/app/roles";
+import { Roles } from "../../src/app/types/app/roles";
 
 /*
 Test that confirms that CEEB Users see different values in the Method Complaint Received field.

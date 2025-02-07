@@ -3,7 +3,7 @@ import { ComplaintUpdatesService } from "./complaint_updates.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { Role } from "../../enum/role.enum";
+import { Role, coreRoles } from "../../enum/role.enum";
 
 @ApiTags("complaint-updates")
 @UseGuards(JwtRoleGuard)
@@ -16,22 +16,22 @@ export class ComplaintUpdatesController {
   private readonly logger = new Logger(ComplaintUpdatesController.name);
 
   @Get("/:id")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   findByComplaintId(@Param("id") id: string) {
     return this.configurationService.findByComplaintId(id);
   }
   @Get("/related/:id")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   findRelatedDataById(@Param("id") id: string) {
     return this.configurationService.findRelatedDataById(id);
   }
   @Get("/actions/:id")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   findActionsById(@Param("id") id: string) {
     return this.configurationService.findActionsByComplaintId(id);
   }
   @Get("/count/:id")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   getComplaintChangeCount(@Param("id") id: string) {
     return this.configurationService.getComplaintChangeCount(id);
   }

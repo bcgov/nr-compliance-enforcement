@@ -2,7 +2,7 @@ import { Controller, Get, Param, UseGuards } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { CompMthdRecvCdAgcyCdXrefService } from "./comp_mthd_recv_cd_agcy_cd_xref.service";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { Role } from "../../enum/role.enum";
+import { Role, coreRoles } from "../../enum/role.enum";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 
 @UseGuards(JwtRoleGuard)
@@ -20,7 +20,7 @@ export class CompMthdRecvCdAgcyCdXrefController {
   }
 
   @Get("/by-agency/:agencyCode")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   findByAgency(@Param("agencyCode") agencyCode: string) {
     return this.compMthdRecvCdAgcyCdXrefService.findBy(agencyCode);
   }

@@ -26,7 +26,7 @@ import { ComplaintListTabs } from "./complaint-list-tabs";
 import { COMPLAINT_TYPES, CEEB_TYPES } from "@apptypes/app/complaint-types";
 import { selectCurrentOfficer } from "@store/reducers/officer";
 import UserService from "@service/user-service";
-import Roles from "@apptypes/app/roles";
+import { Roles } from "@apptypes/app/roles";
 import Option from "@apptypes/app/option";
 import { resetComplaintSearchParameters, selectComplaintSearchParameters } from "@/app/store/reducers/complaints";
 import { AgencyType } from "@/app/types/app/agency-types";

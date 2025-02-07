@@ -3,7 +3,7 @@ import { PersonComplaintXrefService } from "./person_complaint_xref.service";
 import { ApiTags } from "@nestjs/swagger";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { Role } from "../../enum/role.enum";
+import { Role, coreRoles } from "../../enum/role.enum";
 import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref.dto";
 import { DataSource } from "typeorm";
 
@@ -20,7 +20,7 @@ export class PersonComplaintXrefController {
   ) {}
 
   @Post(":complaint_id")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   assignOfficer(
     @Param("complaint_id") complaintId: string,
     @Body() createPersonComplaintXrefDto: CreatePersonComplaintXrefDto,
@@ -30,7 +30,7 @@ export class PersonComplaintXrefController {
   }
 
   @Get("/:person_guid/:complaint_id")
-  @Roles(Role.COS)
+  @Roles(coreRoles)
   findAssigned(@Param("person_guid") personGuid: string, @Param("complaint_id") complaintId: string) {
     return this.personComplaintXrefService.findAssigned(personGuid, complaintId);
   }
