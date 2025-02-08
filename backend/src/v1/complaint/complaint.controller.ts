@@ -25,6 +25,7 @@ import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { ACTION_TAKEN_ACTION_TYPES } from "src/types/constants";
 import { hasRole } from "src/common/has-role";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
+import { getAgenciesFromRoles } from "src/common/methods";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -69,9 +70,8 @@ export class ComplaintController {
     @Request() req,
     @Token() token,
   ) {
-    const hasCEEBRole = hasRole(req, Role.CEEB);
-
-    return this.service.mapSearchClustered(complaintType, model, hasCEEBRole, token);
+    const roles = getAgenciesFromRoles(req.user.client_roles);
+    return this.service.mapSearchClustered(complaintType, model, roles, token);
   }
 
   @Get("/search/:complaintType")
@@ -82,8 +82,8 @@ export class ComplaintController {
     @Request() req,
     @Token() token,
   ) {
-    const hasCEEBRole = hasRole(req, Role.CEEB);
-    const result = await this.service.search(complaintType, model, hasCEEBRole, token);
+    const roles = getAgenciesFromRoles(req.user.client_roles);
+    const result = await this.service.search(complaintType, model, roles, token);
     return result;
   }
 

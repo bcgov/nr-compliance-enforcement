@@ -79,6 +79,7 @@ import { Attachment, AttachmentType } from "../../types/models/general/attachmen
 import { getFileType } from "../../common/methods";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
+import { Role } from "src/enum/role.enum";
 
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
@@ -999,7 +1000,7 @@ export class ComplaintService {
   search = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintSearchParameters,
-    hasCEEBRole: boolean,
+    agencies: string[],
     token?: string,
   ): Promise<SearchResults> => {
     try {
@@ -1022,16 +1023,21 @@ export class ComplaintService {
       }
 
       // search for complaints based on the user's role
-      const agency = hasCEEBRole ? "EPO" : "COS";
-      builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency });
+      if (agencies.length > 0) {
+        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
+          agency_codes: agencies,
+        });
+      } else {
+        builder.andWhere("1 = 0"); // In case of no agency, no rows will be returned
+      }
 
       //-- return Waste and Pestivide complaints for CEEB users
-      if (hasCEEBRole && complaintType === "ERS") {
+      if (agencies.includes("EPO") && complaintType === "ERS") {
         builder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
       }
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
-      if (hasCEEBRole && filters.actionTaken) {
+      if (agencies.includes("EPO") && filters.actionTaken) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
 
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
@@ -1040,7 +1046,10 @@ export class ComplaintService {
       }
 
       // -- filter by complaint identifiers returned by case management if outcome animal filter is present
-      if (agency === "COS" && (filters.outcomeAnimal || filters.outcomeAnimalStartDate)) {
+      if (
+        (agencies.includes("EPO") || agencies.includes(Role.PARKS)) &&
+        (filters.outcomeAnimal || filters.outcomeAnimalStartDate)
+      ) {
         const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(
           token,
           filters.outcomeAnimal,
@@ -1106,7 +1115,7 @@ export class ComplaintService {
 
       return results;
     } catch (error) {
-      this.logger.error(error.response);
+      this.logger.error(error);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
   };
@@ -1126,7 +1135,7 @@ export class ComplaintService {
   _generateFilteredMapQueryBuilder = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintMapSearchClusteredParameters,
-    hasCEEBRole: boolean,
+    agencies: string[],
     token?: string,
     count: boolean = false,
   ): Promise<SelectQueryBuilder<complaintAlias>> => {
@@ -1149,16 +1158,19 @@ export class ComplaintService {
       }
 
       //-- only return complaints for the agency the user is associated with
-      const agency = hasCEEBRole ? "EPO" : (await this._getAgencyByUser()).agency_code;
-      agency && builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency });
+      if (agencies.length > 0) {
+        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
+          agency_codes: agencies,
+        });
+      }
 
       //-- return Waste and Pestivide complaints for CEEB users
-      if (hasCEEBRole && complaintType === "ERS") {
+      if (agencies.includes("EPO") && complaintType === "ERS") {
         builder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
       }
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
-      if (hasCEEBRole && filters.actionTaken) {
+      if (agencies.includes("EPO") && filters.actionTaken) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
@@ -1166,7 +1178,10 @@ export class ComplaintService {
       }
 
       // -- filter by complaint identifiers returned by case management if outcome animal filter is present
-      if (agency === "COS" && (filters.outcomeAnimal || filters.outcomeAnimalStartDate)) {
+      if (
+        (agencies.includes("COS") || agencies.includes("PARKS")) &&
+        (filters.outcomeAnimal || filters.outcomeAnimalStartDate)
+      ) {
         const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(
           token,
           filters.outcomeAnimal,
@@ -1187,11 +1202,11 @@ export class ComplaintService {
   _getUnmappedComplaintsCount = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintMapSearchClusteredParameters,
-    hasCEEBRole: boolean,
+    agencies: string[],
     token?: string,
   ): Promise<number> => {
     try {
-      const builder = await this._generateFilteredMapQueryBuilder(complaintType, model, hasCEEBRole, token, true);
+      const builder = await this._generateFilteredMapQueryBuilder(complaintType, model, agencies, token, true);
 
       //-- filter for locations without coordinates
       builder.andWhere("ST_X(complaint.location_geometry_point) = 0");
@@ -1207,11 +1222,11 @@ export class ComplaintService {
   _getClusteredComplaints = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintMapSearchClusteredParameters,
-    hasCEEBRole: boolean,
+    agencies: string[],
     token?: string,
   ): Promise<Array<PointFeature<GeoJsonProperties>>> => {
     try {
-      const complaintBuilder = await this._generateFilteredMapQueryBuilder(complaintType, model, hasCEEBRole, token);
+      const complaintBuilder = await this._generateFilteredMapQueryBuilder(complaintType, model, agencies, token);
 
       //-- filter locations without coordinates
       complaintBuilder.andWhere("complaint.location_geometry_point is not null");
@@ -1249,7 +1264,7 @@ export class ComplaintService {
   mapSearchClustered = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintMapSearchClusteredParameters,
-    hasCEEBRole: boolean,
+    agencies: string[],
     token?: string,
   ): Promise<MapSearchResults> => {
     try {
@@ -1257,12 +1272,12 @@ export class ComplaintService {
       // Get unmappable complaints if requested
       if (model.unmapped) {
         // run query and append to results
-        const unmappedCount = await this._getUnmappedComplaintsCount(complaintType, model, hasCEEBRole, token);
+        const unmappedCount = await this._getUnmappedComplaintsCount(complaintType, model, agencies, token);
         results = { ...results, unmappedCount };
       }
 
       if (model.clusters) {
-        const points = await this._getClusteredComplaints(complaintType, model, hasCEEBRole, token);
+        const points = await this._getClusteredComplaints(complaintType, model, agencies, token);
 
         results.mappedCount = points.length;
 
