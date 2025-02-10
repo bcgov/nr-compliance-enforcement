@@ -79,7 +79,7 @@ import { Attachment, AttachmentType } from "../../types/models/general/attachmen
 import { getFileType } from "../../common/methods";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
-import { Role } from "src/enum/role.enum";
+import { Role } from "../../enum/role.enum";
 
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;

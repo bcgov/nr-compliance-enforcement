@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { formatPhoneNumber } from "react-phone-number-input/input";
-import { Role } from "src/enum/role.enum";
+import { Role } from "../enum/role.enum";
 
 export const formatDate = (input: string | undefined): string => {
   if (!input) {
