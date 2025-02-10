@@ -3,7 +3,7 @@ import { ComplaintUpdatesService } from "./complaint_updates.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { Role, coreRoles } from "../../enum/role.enum";
+import { coreRoles } from "../../enum/role.enum";
 
 @ApiTags("complaint-updates")
 @UseGuards(JwtRoleGuard)

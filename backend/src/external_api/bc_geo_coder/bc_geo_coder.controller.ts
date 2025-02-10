@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from "@nestjs/common";
 import { BcGeoCoderService } from "./bc_geo_coder.service";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { Role, coreRoles } from "../../enum/role.enum";
+import { coreRoles } from "../../enum/role.enum";
 
 @Controller("bc-geo-coder")
 export class BcGeoCoderController {

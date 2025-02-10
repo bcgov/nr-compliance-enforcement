@@ -3,7 +3,7 @@ import { PersonComplaintXrefService } from "./person_complaint_xref.service";
 import { ApiTags } from "@nestjs/swagger";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { Role, coreRoles } from "../../enum/role.enum";
+import { coreRoles } from "../../enum/role.enum";
 import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref.dto";
 import { DataSource } from "typeorm";
 
