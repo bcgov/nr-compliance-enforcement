@@ -1914,3 +1914,13 @@ SET
   auth_user_guid = '303c6924-2540-4490-8581-70fddf8b3d70'
 WHERE
   user_id = 'TYILDIRO';
+
+-----------------------
+-- Thanos snap to update 1/8 of the COS test data to BC Parks
+-----------------------
+
+UPDATE public.complaint
+SET owned_by_agency_code = 'PARKS'
+WHERE CAST(SUBSTRING(complaint_identifier FROM 4 FOR 6) AS INTEGER) % 8 = 0
+AND owned_by_agency_code = 'COS';
+
