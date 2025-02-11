@@ -1047,7 +1047,7 @@ export class ComplaintService {
 
       // -- filter by complaint identifiers returned by case management if outcome animal filter is present
       if (
-        (agencies.includes("EPO") || agencies.includes(Role.PARKS)) &&
+        (agencies.includes("COS") || agencies.includes(Role.PARKS)) &&
         (filters.outcomeAnimal || filters.outcomeAnimalStartDate)
       ) {
         const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(
@@ -1056,7 +1056,6 @@ export class ComplaintService {
           filters.outcomeAnimalStartDate,
           filters.outcomeAnimalEndDate,
         );
-
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
         });
