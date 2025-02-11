@@ -43,6 +43,7 @@ select distinct
     END AS "Original Species",
 	hnc.long_description as "Nature of Complaint",
 	coalesce (cup.update_count, 0) as "Number of Updates",
+	cu.create_utc_timestamp as "Update Logged Date",
 	goc.short_description as "Area/Community",
 	gfv.offloc_name as "District",
 	gfv.zone_name as "Zone",
@@ -73,13 +74,12 @@ left join (
     from complaint_update
     group by complaint_identifier
 ) cup on cup.complaint_identifier = cmp.complaint_identifier
+left join
+   complaint_update cu ON cu.complaint_identifier = cmp.complaint_identifier 
 LEFT JOIN 
     hwcr_complaint_h hch ON hch.target_row_id = hwc.hwcr_complaint_guid
     AND hch.operation_type = 'I'
 LEFT JOIN 
     species_code prev_spc ON prev_spc.species_code = hch.data_after_executed_operation ->> 'species_code' 
 order by
-	cmp.complaint_identifier desc
-	
-	
-	
+	cmp.complaint_identifier asc
