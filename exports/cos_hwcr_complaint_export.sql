@@ -6,6 +6,7 @@ select distinct
 	cmp.complaint_identifier as "Complaint Identifier",
 	case 
         	when hwc.complaint_identifier is not null then 'HWCR'
+        	when alc.complaint_identifier is not null then 'ERS'
 		else 'Unknown' 
     	end as "Complaint Type",
 	case -- This is a temporary solution as it isn't really scalable.
@@ -63,8 +64,10 @@ left join
 	person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true
 left join 
 	person per on per.person_guid = pcx.person_guid 
-right join 
+left join 
 	hwcr_complaint hwc on hwc.complaint_identifier = cmp.complaint_identifier 
+left join
+	allegation_complaint alc on alc.complaint_identifier = cmp.complaint_identifier
 left join
 	species_code spc on spc.species_code = hwc.species_code
 left join 
