@@ -60,3 +60,4 @@ export class ConfigurationController {
       this.logger.error(`Error calling configurationCode ${configurationCode}`, err);
     }
   }
+}
