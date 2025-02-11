@@ -2,7 +2,7 @@
 -- Monthly HWCR Complaint Export query to be run for COS statistics
 -- see https://github.com/bcgov/nr-compliance-enforcement/wiki/Data-Exports for more information
 -----------------------------------------------------
-select 
+select distinct
 	cmp.complaint_identifier as "Complaint Identifier",
 	case 
         	when hwc.complaint_identifier is not null then 'HWCR'
@@ -13,9 +13,10 @@ select
 	cst.short_description as "Complaint Status",
 	spc.short_description as "Species",
 	case
-        when hch.data_after_executed_operation ->> 'species_code' != hwc.species_code THEN 'YES!'
+        when hch.data_after_executed_operation ->> 'species_code' != hwc.species_code THEN 
+        	prev_spc.short_description
         else ''
-    END AS "Was species changed?",
+    END AS "Previous Species",
 	hnc.long_description as "Nature of Complaint",
 	coalesce (cup.update_count, 0) as "Number of Updates",
 	goc.short_description as "Area/Community",
@@ -51,5 +52,7 @@ left join (
 LEFT JOIN 
     hwcr_complaint_h hch ON hch.target_row_id = hwc.hwcr_complaint_guid
     AND hch.operation_type = 'I'
+LEFT JOIN 
+    species_code prev_spc ON prev_spc.species_code = hch.data_after_executed_operation ->> 'species_code' 
 order by
 	cmp.complaint_identifier asc
