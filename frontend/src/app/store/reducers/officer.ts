@@ -378,7 +378,7 @@ const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] =
       let result = officer.deactivate_ind === true ? agency === agencyCodeForDeactivatedOfficer : roleMatch;
       return result;
     } else if (agency === "PARKS") {
-      //Cannot handle deactivated officers for parks... (Note CEEB Might be broken)
+      //Cannot handle deactivated officers for parks... will be addressed once we understand if Parks users have offices
       return roleMatch;
     } else {
       return false;
