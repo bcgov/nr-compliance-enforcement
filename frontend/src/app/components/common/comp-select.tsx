@@ -40,6 +40,7 @@ export const CompSelect: FC<Props> = ({
   let items: Option[] = [];
 
   if (options) {
+    // If the options do not have the field isActive, then show all options
     if (options.length > 0 && !("isActive" in options[0])) {
       items = [...options];
     } else {
