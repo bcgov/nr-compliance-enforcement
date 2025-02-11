@@ -60,10 +60,3 @@ export class ConfigurationController {
       this.logger.error(`Error calling configurationCode ${configurationCode}`, err);
     }
   }
-
-  @Patch(":id")
-  @Roles(Role.COS) // Does this even get called?
-  update(@Param("id") id: string, @Body() updateConfigurationDto: UpdateConfigurationDto) {
-    return this.configurationService.update(+id, updateConfigurationDto);
-  }
-}
