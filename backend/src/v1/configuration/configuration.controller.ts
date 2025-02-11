@@ -5,7 +5,7 @@ import { JwtRoleGuard } from "./../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "./../../auth/decorators/roles.decorator";
 import { Token } from "./../../auth/decorators/token.decorator";
-import { Role, coreRoles } from "./../../enum/role.enum";
+import { coreRoles } from "./../../enum/role.enum";
 import { get } from "../../external_api/case_management";
 
 @ApiTags("configuration")
