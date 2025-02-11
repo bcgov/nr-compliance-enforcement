@@ -192,6 +192,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
           <div className="comp-details-input full-width">
             <CompSelect
               id={`select-drug-name-${id}`}
+              showInactive={false}
               classNamePrefix="comp-select"
               options={drugs}
               enableValidation={true}
@@ -212,6 +213,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
           <div className="comp-details-input full-width">
             <CompSelect
               id={`injection-method-${id}`}
+              showInactive={false}
               classNamePrefix="comp-select"
               options={drugUseMethods}
               enableValidation={true}
@@ -252,6 +254,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
           <div className="comp-details-input full-width">
             <CompSelect
               id={`remaining-drug-use-${id}`}
+              showInactive={false}
               classNamePrefix="comp-select"
               options={remainingDrugUse}
               enableValidation={false}

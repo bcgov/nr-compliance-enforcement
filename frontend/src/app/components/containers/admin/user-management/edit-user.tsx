@@ -469,6 +469,7 @@ export const EditUser: FC<EditUserProps> = ({
           <div className="comp-details-edit-input">
             <CompSelect
               id="agency-select-id"
+              showInactive={false}
               classNamePrefix="comp-select"
               onChange={(evt) => handleAgencyChange(evt)}
               classNames={{
@@ -490,6 +491,7 @@ export const EditUser: FC<EditUserProps> = ({
             {currentAgency?.value === "EPO" || selectedAgency?.value === "EPO" ? (
               <CompSelect
                 id="team-select-id"
+                showInactive={false}
                 classNamePrefix="comp-select"
                 onChange={(e) => handleTeamChange(e)}
                 classNames={{
@@ -505,6 +507,7 @@ export const EditUser: FC<EditUserProps> = ({
             ) : (
               <CompSelect
                 id="species-select-id"
+                showInactive={false}
                 classNamePrefix="comp-select"
                 onChange={(evt) => handleOfficeChange(evt)}
                 classNames={{
