@@ -6,7 +6,7 @@ import { COMPLAINT_VIEW_TYPES } from "@constants/complaint-view-type";
 import { useAppSelector } from "@hooks/hooks";
 import { selectTotalComplaintsByType, selectTotalMappedComplaints } from "@store/reducers/complaints";
 import UserService from "@service/user-service";
-import Roles from "@apptypes/app/roles";
+import { Roles } from "@apptypes/app/roles";
 
 type props = {
   complaintType: string;

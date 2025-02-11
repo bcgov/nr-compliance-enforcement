@@ -724,12 +724,10 @@ export const selectAgencyDropdown = (state: RootState): Array<Option> => {
     codeTables: { agency },
   } = state;
 
-  const data = agency
-    .filter(({ agency }) => agency !== "PARKS") //hide PARKS option for now
-    .map(({ agency, longDescription }) => {
-      const item: Option = { label: longDescription, value: agency };
-      return item;
-    });
+  const data = agency.map(({ agency, longDescription }) => {
+    const item: Option = { label: longDescription, value: agency };
+    return item;
+  });
   return data;
 };
 

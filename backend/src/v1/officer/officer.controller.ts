@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put } fro
 import { OfficerService } from "./officer.service";
 import { UpdateOfficerDto } from "./dto/update-officer.dto";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { Role } from "../../enum/role.enum";
+import { Role, coreRoles } from "../../enum/role.enum";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { UUID } from "crypto";
@@ -26,7 +26,7 @@ export class OfficerController {
   }
 
   @Get()
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   findAll() {
     return this.officerService.findAll();
   }
@@ -44,19 +44,19 @@ export class OfficerController {
   }
 
   @Get("/find-by-auth-user-guid/:auth_user_guid")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   findByAuthUserGuid(@Param("auth_user_guid") auth_user_guid: string) {
     return this.officerService.findByAuthUserGuid(auth_user_guid);
   }
 
   @Get("/find-by-userid/:userid")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   findByUserId(@Param("userid") userid: string) {
     return this.officerService.findByUserId(userid);
   }
 
   @Get("/find-by-person-guid/:person_guid")
-  @Roles(Role.COS, Role.CEEB, Role.TEMPORARY_TEST_ADMIN)
+  @Roles(coreRoles, Role.TEMPORARY_TEST_ADMIN)
   findByPersonId(@Param("person_guid") person_guid: string) {
     return this.officerService.findByPersonGuid(person_guid);
   }
@@ -68,13 +68,13 @@ export class OfficerController {
   }
 
   @Patch(":id")
-  @Roles(Role.COS, Role.CEEB, Role.TEMPORARY_TEST_ADMIN)
+  @Roles(coreRoles, Role.TEMPORARY_TEST_ADMIN)
   update(@Param("id") id: UUID, @Body() updateOfficerDto: UpdateOfficerDto) {
     return this.officerService.update(id, updateOfficerDto);
   }
 
   @Put("/request-coms-access/:officer_guid")
-  @Roles(Role.CEEB, Role.COS, Role.READ_ONLY)
+  @Roles(coreRoles, Role.READ_ONLY)
   requestComsAccess(@Token() token, @Param("officer_guid") officer_guid: UUID, @User() user) {
     return this.officerService.requestComsAccess(token, officer_guid, user);
   }
