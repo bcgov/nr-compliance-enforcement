@@ -7,7 +7,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import { AgencyBanner } from "./agency-banner";
 import UserService from "@service/user-service";
-import Roles from "@apptypes/app/roles";
+import { Roles } from "@apptypes/app/roles";
 
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
@@ -32,7 +32,7 @@ export const SideBar: FC = () => {
       name: "Zone at a glance",
       icon: "bi bi-buildings",
       route: "/zone/at-a-glance",
-      excludedRoles: [Roles.CEEB, Roles.PROVINCE_WIDE],
+      excludedRoles: [Roles.CEEB, Roles.PARKS, Roles.PROVINCE_WIDE],
     },
     {
       id: "user-management",
