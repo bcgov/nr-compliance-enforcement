@@ -25,13 +25,15 @@ comment on column public.violation_agency_xref.active_ind is 'A boolean indicato
 -- Copy the data
 INSERT into public.violation_agency_xref (violation_code, agency_code, create_user_id, update_user_id, active_ind)
 SELECT violation_code, agency_code, 'FLYWAY', 'FLYWAY', TRUE
-from public.violation_code;
+from public.violation_code
+on conflict do nothing;
 
 -- Insert new data for PARKS (clone of COS)
 INSERT into public.violation_agency_xref (violation_code, agency_code, create_user_id, update_user_id, active_ind)
 SELECT violation_code, 'PARKS', 'FLYWAY', 'FLYWAY', TRUE
 from violation_code
-where agency_code = 'COS';
+where agency_code = 'COS'
+on conflict do nothing;
 
 -- Drop the old column
 ALTER TABLE public.violation_code
