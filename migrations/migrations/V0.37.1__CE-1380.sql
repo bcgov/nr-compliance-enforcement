@@ -23,6 +23,13 @@ comment on column public.violation_agency_xref.update_utc_timestamp is 'The time
 comment on column public.violation_agency_xref.active_ind is 'A boolean indicator to determine if the relationship type between an agency and a violation code is active.';
 
 ---------------
+-- Update CEEB types
+-- This was moved from the repeatable script as it might not be there in the dev environment.
+---------------
+update violation_code set agency_code = 'EPO'
+where violation_code = 'WASTE' OR violation_code = 'PESTICDE';
+
+---------------
 -- insert new BCPARK agency
 -- This was moved from the repeatable script as it might not be there in the dev environment.
 ---------------

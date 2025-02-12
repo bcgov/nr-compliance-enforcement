@@ -1,3 +1,3 @@
 --
--- No longer required.
+-- Moved to V0.37.1
 --
