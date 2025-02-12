@@ -135,8 +135,8 @@ export class ComplaintController {
   @Roles(Role.COS, Role.CEEB)
   async create(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
-    @Body() model: WildlifeComplaintDto | AllegationComplaintDto,
-  ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
+    @Body() model: WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
+  ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> {
     return await this.service.create(complaintType, model);
   }
 

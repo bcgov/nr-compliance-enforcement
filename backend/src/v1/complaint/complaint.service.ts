@@ -1584,9 +1584,9 @@ export class ComplaintService {
 
   create = async (
     complaintType: COMPLAINT_TYPE,
-    model: WildlifeComplaintDto | AllegationComplaintDto,
+    model: WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
     webeocInd?: boolean,
-  ): Promise<WildlifeComplaintDto | AllegationComplaintDto> => {
+  ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> => {
     this.logger.debug("Creating new complaint");
     const generateComplaintId = async (queryRunner: QueryRunner): Promise<string> => {
       let sequence;
@@ -1688,6 +1688,22 @@ export class ComplaintService {
 
           const newAllegation = await this._allegationComplaintRepository.create(ers);
           await this._allegationComplaintRepository.save(newAllegation);
+          break;
+        }
+        case "GIR": {
+          const { girType } = model as GeneralIncidentComplaintDto;
+          const girId = randomUUID();
+
+          const gir = {
+            gir_complaint_guid: girId,
+            complaint_identifier: complaintId,
+            gir_type_code: girType,
+            create_user_id: idir,
+            update_user_id: idir,
+          } as any;
+
+          const newGir = await this._girComplaintRepository.create(gir);
+          await this._girComplaintRepository.save(newGir);
           break;
         }
         case "HWCR":
