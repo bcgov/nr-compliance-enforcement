@@ -22,6 +22,34 @@ comment on column public.violation_agency_xref.update_user_id is 'The id of the 
 comment on column public.violation_agency_xref.update_utc_timestamp is 'The timestamp when the relationship between an agency and a violation code was updated.  The timestamp is stored in UTC with no Offset.';
 comment on column public.violation_agency_xref.active_ind is 'A boolean indicator to determine if the relationship type between an agency and a violation code is active.';
 
+---------------
+-- insert new BCPARK agency
+-- This was moved from the repeatable script as it might not be there in the dev environment.
+---------------
+INSERT INTO
+  agency_code (
+    agency_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'PARKS',
+  'BC Parks',
+  'BC Parks',
+  1,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
 -- Copy the data
 INSERT into public.violation_agency_xref (violation_code, agency_code, create_user_id, update_user_id, active_ind)
 SELECT violation_code, agency_code, 'FLYWAY', 'FLYWAY', TRUE
