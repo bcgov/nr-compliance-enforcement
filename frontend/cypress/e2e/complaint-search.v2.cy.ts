@@ -1,5 +1,3 @@
-import Roles from "../../src/app/types/app/roles";
-import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 /*
 Tests to verify complaint list specification functionality
 */
