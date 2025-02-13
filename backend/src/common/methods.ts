@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { formatPhoneNumber } from "react-phone-number-input/input";
+import { Role } from "../enum/role.enum";
 
 export const formatDate = (input: string | undefined): string => {
   if (!input) {
@@ -94,4 +95,16 @@ export const mapExtensiontoFileType = (input: string): string => {
     return "Email";
   }
   return "Unknown";
+};
+
+export const getAgenciesFromRoles = (roles: string[]): string[] => {
+  const roleToAgencyMap = {
+    [Role.COS]: "COS",
+    [Role.CEEB]: "EPO",
+    [Role.PARKS]: "PARKS",
+  };
+
+  return Object.keys(roleToAgencyMap)
+    .filter((role) => roles.includes(role))
+    .map((role) => roleToAgencyMap[role]);
 };

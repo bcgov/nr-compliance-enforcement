@@ -320,7 +320,7 @@ describe("Testing: Complaint Service", () => {
     };
 
     //-- act
-    const results = await service.search(_complaintType, payload, false);
+    const results = await service.search(_complaintType, payload, ["COS"]);
 
     //-- assert
     expect(results).not.toBe(null);
@@ -349,7 +349,7 @@ describe("Testing: Complaint Service", () => {
     };
 
     //-- act
-    const results = await service.mapSearchClustered(_complaintType, payload, false);
+    const results = await service.mapSearchClustered(_complaintType, payload, ["COS"]);
 
     //-- assert
     expect(results).not.toBe(null);
@@ -378,7 +378,7 @@ describe("Testing: Complaint Service", () => {
     };
 
     //-- act
-    const results = await service.mapSearchClustered(_complaintType, payload, true);
+    const results = await service.mapSearchClustered(_complaintType, payload, ["CEEB"]);
 
     //-- assert
     expect(results).not.toBe(null);

@@ -1,4 +1,4 @@
-import Roles from "@/app/types/app/roles";
+import { Roles } from "@/app/types/app/roles";
 
 export default interface MenuItem {
   id?: string;

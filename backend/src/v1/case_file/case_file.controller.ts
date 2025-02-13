@@ -13,7 +13,7 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import { CaseFileService } from "./case_file.service";
-import { Role } from "../../enum/role.enum";
+import { Role, coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
@@ -44,19 +44,19 @@ export class CaseFileController {
   private readonly logger = new Logger(CaseFileController.name);
 
   @Post("/equipment")
-  @Roles(Role.COS)
+  @Roles(Role.COS, Role.PARKS)
   async createEquipment(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
     return await this.service.createEquipment(token, model);
   }
 
   @Patch("/equipment")
-  @Roles(Role.COS)
+  @Roles(Role.COS, Role.PARKS)
   async updateEquipment(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
     return await this.service.updateEquipment(token, model);
   }
 
   @Delete("/equipment")
-  @Roles(Role.COS)
+  @Roles(Role.COS, Role.PARKS)
   async deleteEquipment(
     @Token() token,
     @Query("id") id: string,
@@ -72,61 +72,61 @@ export class CaseFileController {
   }
 
   @Post("/createAssessment")
-  @Roles(Role.COS)
+  @Roles(Role.COS, Role.PARKS)
   async createAssessment(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
     return await this.service.createAssessment(token, model);
   }
 
   @Patch("/updateAssessment")
-  @Roles(Role.COS)
+  @Roles(Role.COS, Role.PARKS)
   async updateAssessment(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
     return await this.service.updateAssessment(token, model);
   }
 
   @Post("/createPrevention")
-  @Roles(Role.COS)
+  @Roles(Role.COS, Role.PARKS)
   async createPrevention(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
     return await this.service.createPrevention(token, model);
   }
 
   @Patch("/updatePrevention")
-  @Roles(Role.COS)
+  @Roles(Role.COS, Role.PARKS)
   async updatePrevention(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
     return await this.service.updatePrevention(token, model);
   }
 
   @Post("/review")
-  @Roles(Role.COS)
+  @Roles(Role.COS, Role.PARKS)
   async createReview(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
     return await this.service.createReview(token, model);
   }
 
   @Patch("/review")
-  @Roles(Role.COS)
+  @Roles(Role.COS, Role.PARKS)
   async updateReview(@Token() token, @Body() model: FileReviewInput): Promise<CaseFileDto> {
     return await this.service.updateReview(token, model);
   }
 
   @Get("/:complaint_id")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   find(@Param("complaint_id") complaint_id: string, @Token() token) {
     return this.service.find(complaint_id, token);
   }
 
   @Post("/note")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   async createNote(@Token() token, @Body() model: CreateSupplementalNotesInput): Promise<CaseFileDto> {
     return await this.service.createNote(token, model);
   }
 
   @Patch("/note")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   async UpdateNote(@Token() token, @Body() model: UpdateSupplementalNotesInput): Promise<CaseFileDto> {
     return await this.service.updateNote(token, model);
   }
 
   @Delete("/note")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   async deleteNote(
     @Token() token,
     @Query("caseIdentifier") caseIdentifier: string,
@@ -147,19 +147,19 @@ export class CaseFileController {
   }
 
   @Post("/wildlife")
-  @Roles(Role.COS)
+  @Roles(Role.COS, Role.PARKS)
   async createWildlife(@Token() token, @Body() model: CreateWildlifeInput): Promise<CaseFileDto> {
     return await this.service.createWildlife(token, model);
   }
 
   @Patch("/wildlife")
-  @Roles(Role.COS)
+  @Roles(Role.COS, Role.PARKS)
   async updateWildlife(@Token() token, @Body() model: UpdateWildlifeInput): Promise<CaseFileDto> {
     return await this.service.updateWildlife(token, model);
   }
 
   @Delete("/wildlife")
-  @Roles(Role.COS)
+  @Roles(Role.COS, Role.PARKS)
   async deleteWildlife(
     @Token() token,
     @Query("caseIdentifier") caseIdentifier: string,

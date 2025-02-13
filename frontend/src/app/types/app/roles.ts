@@ -1,3 +1,4 @@
+//Note - these must match exactly the name of the role in Keycloak
 enum Roles {
   CEEB = "CEEB",
   CEEB_COMPLIANCE_COORDINATOR = "CEEB Compliance Coordinator",
@@ -9,6 +10,9 @@ enum Roles {
   READ_ONLY = "READ ONLY",
   INSPECTOR = "Inspector",
   PROVINCE_WIDE = "Province-wide",
+  PARKS = "PARKS",
 }
 
-export default Roles;
+const coreRoles: Roles[] = [Roles.COS, Roles.CEEB, Roles.PARKS];
+
+export { Roles, coreRoles };

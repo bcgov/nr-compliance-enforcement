@@ -3,10 +3,9 @@ import { Response } from "express";
 import { DocumentService } from "./document.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
-import { Role } from "../../enum/role.enum";
+import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
-import { format } from "date-fns";
 import { escape } from "escape-html";
 import { ExportComplaintParameters } from "src/types/models/complaints/export-complaint-parameters";
 import { Attachment, AttachmentType } from "../../types/models/general/attachment";
@@ -20,7 +19,7 @@ export class DocumentController {
   constructor(private readonly service: DocumentService) {}
 
   @Post("/export-complaint")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   async exportComplaint(@Body() model: ExportComplaintParameters, @Token() token, @Res() res: Response): Promise<void> {
     const id: string = model?.id ?? "unknown";
 

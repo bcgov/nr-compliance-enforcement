@@ -23,7 +23,7 @@ import { ComplaintFilterPayload, updateFilter } from "@store/reducers/complaint-
 import Option from "@apptypes/app/option";
 import { listActiveFilters } from "@store/reducers/app";
 import UserService from "@service/user-service";
-import Roles from "@apptypes/app/roles";
+import { Roles } from "@apptypes/app/roles";
 import { FilterDate } from "@components/common/filter-date";
 
 type Props = {

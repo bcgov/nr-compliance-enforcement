@@ -1,6 +1,6 @@
 import { defineConfig } from "cypress";
 import dotenv from "dotenv";
-import Roles from "./src/app/types/app/roles";
+import { Roles } from "./src/app/types/app/roles";
 dotenv.config({ path: "./.env" });
 
 const { isFileExist } = require("cy-verify-downloads");

@@ -8,7 +8,7 @@ import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown, selectOffic
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { clearNotification, openModal, selectNotification, userId } from "@store/reducers/app";
 import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
-import { CEEB_ROLE_OPTIONS, COS_ROLE_OPTIONS, ROLE_OPTIONS } from "@constants/ceeb-roles";
+import { CEEB_ROLE_OPTIONS, COS_ROLE_OPTIONS, PARKS_ROLE_OPTIONS, ROLE_OPTIONS } from "@constants/ceeb-roles";
 import { generateApiParameters, get, patch } from "@common/api";
 import config from "@/config";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
@@ -56,6 +56,7 @@ export const EditUser: FC<EditUserProps> = ({
   const [selectedRoles, setSelectedRoles] = useState<Array<Option>>();
   const [selectedOffice, setSelectedOffice] = useState<Option | null>();
   const [currentAgency, setCurrentAgency] = useState<Option | null>();
+  const [hideTeamOffice, setHideTeamOffice] = useState(false);
 
   const [offices, setOffices] = useState<Array<Option>>([]);
   const [roleList, setRoleList] = useState<Array<Option>>([]);
@@ -86,6 +87,12 @@ export const EditUser: FC<EditUserProps> = ({
 
   useEffect(() => {
     (async () => {
+      const getUserCurrentTeam = async (officerGuid: string) => {
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/current`, { officerGuid });
+        const response: any = await get(dispatch, parameters);
+        return response;
+      };
+
       if (officerData?.user_roles && officerData.user_roles.length > 0 && selectedAgency === null) {
         //map current user's roles
         const currentRoles = mapRolesDropdown(officerData.user_roles);
@@ -112,7 +119,7 @@ export const EditUser: FC<EditUserProps> = ({
         setCurrentAgency(currentAgency);
       }
     })();
-  }, [officerData, offices, selectedAgency]);
+  }, [officerData, offices, selectedAgency, agency, teams, dispatch]);
 
   useEffect(() => {
     if (newUser && !officerData) {
@@ -130,13 +137,17 @@ export const EditUser: FC<EditUserProps> = ({
   useEffect(() => {
     switch (currentAgency?.value ?? selectedAgency?.value) {
       case AgencyType.CEEB:
+        setHideTeamOffice(false);
         setRoleList(CEEB_ROLE_OPTIONS);
         break;
       case AgencyType.COS:
-      // case for PARKS will use COS_ROLE_OPTIONS for now
+        setHideTeamOffice(false);
+        setRoleList(COS_ROLE_OPTIONS);
+        break;
       case AgencyType.PARKS:
       default:
-        setRoleList(COS_ROLE_OPTIONS);
+        setHideTeamOffice(true);
+        setRoleList(PARKS_ROLE_OPTIONS);
         break;
     }
   }, [selectedAgency, currentAgency]);
@@ -153,12 +164,6 @@ export const EditUser: FC<EditUserProps> = ({
   const mapAgencyDropDown = (userAgency: any, agencyList: Option[]) => {
     const result = agencyList.find((agencyItem: Option) => agencyItem.value === userAgency);
     return result ?? undefined;
-  };
-
-  const getUserCurrentTeam = async (officerGuid: string) => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/current`, { officerGuid });
-    const response: any = await get(dispatch, parameters);
-    return response;
   };
 
   const updateTeamRole = async (
@@ -485,44 +490,44 @@ export const EditUser: FC<EditUserProps> = ({
         </div>
 
         {/* Team/ office */}
-        <div className="comp-details-form-row">
-          <label htmlFor="user-team-office-id">Team / office</label>
-          <div className="comp-details-edit-input user-team-office-id">
-            {currentAgency?.value === "EPO" || selectedAgency?.value === "EPO" ? (
-              <CompSelect
-                id="team-select-id"
-                showInactive={false}
-                classNamePrefix="comp-select"
-                onChange={(e) => handleTeamChange(e)}
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                options={teams}
-                placeholder="Select"
-                enableValidation={true}
-                value={selectedTeam}
-                errorMessage={""}
-                isDisabled={officerData?.deactivate_ind}
-              />
-            ) : (
-              <CompSelect
-                id="species-select-id"
-                showInactive={false}
-                classNamePrefix="comp-select"
-                onChange={(evt) => handleOfficeChange(evt)}
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                options={offices}
-                placeholder="Select"
-                enableValidation={true}
-                value={selectedOffice}
-                errorMessage={officeError}
-                isDisabled={officerData?.deactivate_ind}
-              />
-            )}
+        {!hideTeamOffice && (
+          <div className="comp-details-form-row">
+            <label htmlFor="user-team-office-id">Team / office</label>
+            <div className="comp-details-edit-input user-team-office-id">
+              {currentAgency?.value === "EPO" || selectedAgency?.value === "EPO" ? (
+                <CompSelect
+                  id="team-select-id"
+                  classNamePrefix="comp-select"
+                  onChange={(e) => handleTeamChange(e)}
+                  classNames={{
+                    menu: () => "top-layer-select",
+                  }}
+                  options={teams}
+                  placeholder="Select"
+                  enableValidation={true}
+                  value={selectedTeam}
+                  errorMessage={""}
+                  isDisabled={officerData?.deactivate_ind}
+                />
+              ) : (
+                <CompSelect
+                  id="species-select-id"
+                  classNamePrefix="comp-select"
+                  onChange={(evt) => handleOfficeChange(evt)}
+                  classNames={{
+                    menu: () => "top-layer-select",
+                  }}
+                  options={offices}
+                  placeholder="Select"
+                  enableValidation={true}
+                  value={selectedOffice}
+                  errorMessage={officeError}
+                  isDisabled={officerData?.deactivate_ind}
+                />
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Role */}
         <div className="comp-details-form-row">
