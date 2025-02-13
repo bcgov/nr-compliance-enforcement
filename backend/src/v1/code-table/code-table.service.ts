@@ -274,7 +274,6 @@ export class CodeTableService {
           };
           return table;
         });
-        console.log(results);
         return results;
       }
       case "complaint-type": {
