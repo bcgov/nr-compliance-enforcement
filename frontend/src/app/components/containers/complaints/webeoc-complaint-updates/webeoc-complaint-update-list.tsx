@@ -1,11 +1,6 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import {
-  getWebEOCChangeCount,
-  selectWebEOCChangeCount,
-  selectRelatedData,
-  getRelatedData,
-} from "@store/reducers/complaints";
+import { getWebEOCChangeCount, selectRelatedData, getRelatedData } from "@store/reducers/complaints";
 import { WebEOCComplaintUpdateDTO } from "@apptypes/app/complaints/webeoc-complaint-update";
 import { formatDate, formatTime } from "@common/methods";
 import { ActionTaken } from "@apptypes/app/complaints/action-taken";
@@ -17,11 +12,11 @@ type Props = {
 export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) => {
   const dispatch = useAppDispatch();
   const { updates, actions } = useAppSelector(selectRelatedData) || { updates: [], actions: [] };
-  const changeCount = useAppSelector(selectWebEOCChangeCount);
   const [expandedUpdates, setExpandedUpdates] = useState<Record<string, boolean>>({});
   const [expandedActions, setExpandedActions] = useState<Record<string, boolean>>({});
   const [showLinks, setShowLinks] = useState<Record<string, boolean>>({});
   const descriptionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [allUpdates, setAllUpdates] = useState<(WebEOCComplaintUpdateDTO | ActionTaken)[]>([]);
 
   useEffect(() => {
     dispatch(getRelatedData(complaintIdentifier));
@@ -40,166 +35,167 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
   };
 
   useEffect(() => {
-    Object.keys(descriptionRefs.current).forEach((id) => {
-      const element = descriptionRefs.current[id];
-      if (element && element.scrollHeight > element.clientHeight) {
-        setShowLinks((prev) => ({
-          ...prev,
-          [id]: true,
-        }));
-      }
-    });
-  }, [updates]);
+    if (allUpdates.length > 0) {
+      Object.keys(descriptionRefs.current).forEach((id) => {
+        const element = descriptionRefs.current[id];
+        if (element && element.scrollHeight > element.clientHeight) {
+          setShowLinks((prev) => ({
+            ...prev,
+            [id]: true,
+          }));
+        }
+      });
+    } else {
+      descriptionRefs.current = {};
+    }
+  }, [allUpdates]);
+
+  useEffect(() => {
+    //merge complaint updates and action updates then sort allUpdates by timestamp
+    if ((updates && updates.length > 0) || (actions && actions.length > 0)) {
+      const allUpdatesArr = [...updates, ...actions].sort((a, b) => {
+        const aTime = (a as ActionTaken).actionUtcTimestamp
+          ? (a as ActionTaken).actionUtcTimestamp
+          : (a as WebEOCComplaintUpdateDTO).createUtcTimestamp;
+        const bTime = (b as ActionTaken).actionUtcTimestamp
+          ? (b as ActionTaken).actionUtcTimestamp
+          : (b as WebEOCComplaintUpdateDTO).createUtcTimestamp;
+        return new Date(bTime).valueOf() - new Date(aTime).valueOf();
+      });
+      setAllUpdates(allUpdatesArr);
+    } else setAllUpdates([]);
+  }, [updates.length, actions.length]);
 
   return (
     <>
-      {((updates && updates.length > 0) || (changeCount && changeCount > 0) || (actions && actions.length > 0)) && (
+      {allUpdates && allUpdates.length > 0 && (
         <div className="comp-complaint-details-block">
           <div>
-            <h6>Complaint updates {updates && updates.length > 0 && "(" + updates.length + ")"}</h6>
-            {changeCount && changeCount > 0 && (
-              <div className="comp-complaint-update-count">
-                This ticket has been updated, or its content has been edited, {changeCount} times since it was created.
-                Please review all the details below to see the latest information.
-              </div>
-            )}
+            <h6>Complaint updates {"(" + allUpdates.length + ")"}</h6>
+            <div className="comp-complaint-update-count">
+              This ticket has been updated {allUpdates.length} {allUpdates.length === 1 ? "time" : "times"} since it was
+              created. Please review all the details below to see the latest information.
+            </div>
           </div>
-          {actions && actions.length > 0 && (
-            <div>
-              {actions.map((action: ActionTaken) => (
-                <div
-                  className="comp-complaint-update-item comp-complaint-top-row"
-                  key={action.actionTakenGuid}
-                >
-                  <div className="comp-complaint-update-item-row first-row">
-                    <div className="update-number">Call center action: </div>
-                    <div className="received">
-                      <span
-                        className="date-time-logged-label"
-                        id="date-time-logged-label-id"
-                      >
-                        Received
-                      </span>
+          {allUpdates.map((update: ActionTaken | WebEOCComplaintUpdateDTO, index) => {
+            const isActionTakenUpdate = !!(update as ActionTaken).actionTakenGuid;
+            const guid = isActionTakenUpdate
+              ? (update as ActionTaken).actionTakenGuid
+              : (update as WebEOCComplaintUpdateDTO).complaintUpdateGuid;
+            return (
+              <div
+                className="comp-complaint-update-item"
+                key={(update as ActionTaken).actionTakenGuid || update.complaintUpdateGuid}
+              >
+                <div className="comp-complaint-update-item-row first-row">
+                  <div className="update-number">Update {allUpdates.length - index}:</div>
+                  <div className="received">
+                    <span style={{ fontWeight: 700 }}>
+                      {isActionTakenUpdate ? "Call center action" : "Complaint details update"}
+                    </span>{" "}
+                    |{" "}
+                    <span>
                       <i className="bi bi-calendar"></i>
-                      {formatDate(action.actionUtcTimestamp)}
+                      {isActionTakenUpdate
+                        ? formatDate((update as ActionTaken).actionUtcTimestamp)
+                        : formatDate((update as WebEOCComplaintUpdateDTO).createUtcTimestamp)}
                       <i className="bi bi-clock comp-margin-left-xs"></i>
-                      {formatTime(action.actionUtcTimestamp)}
-                    </div>
+                      {isActionTakenUpdate
+                        ? formatTime((update as ActionTaken).actionUtcTimestamp)
+                        : formatTime((update as WebEOCComplaintUpdateDTO).createUtcTimestamp)}
+                    </span>{" "}
+                    |{" "}
+                    <span>
+                      {isActionTakenUpdate
+                        ? (update as ActionTaken).loggedByTxt
+                        : (update as WebEOCComplaintUpdateDTO).createUserId}
+                    </span>
                   </div>
+                  {showLinks[guid] && (
+                    <div className="expand-collapse-button">
+                      <button
+                        className="comp-icon-button-container"
+                        onClick={() => toggleExpand(guid)}
+                      >
+                        {expandedUpdates[guid] ? (
+                          <i className="bi bi-chevron-up h2"></i>
+                        ) : (
+                          <i className="bi bi-chevron-down h2"></i>
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
 
+                {(update as ActionTaken).actionDetailsTxt && (
                   <div className="comp-complaint-update-item-row first-row">
                     <div className="complaint-description-label">Details</div>
                     <div
-                      className={`update-description-text ${
-                        expandedActions[action.actionTakenGuid] ? "expanded" : ""
-                      } ${showLinks[action.actionTakenGuid] ? "needs-gradient" : ""}`}
-                      ref={(el) => (descriptionRefs.current[action.actionTakenGuid] = el)}
+                      className={`complaint-description-text ${
+                        expandedActions[(update as ActionTaken).actionTakenGuid] ? "expanded" : ""
+                      } ${showLinks[(update as ActionTaken).actionTakenGuid] ? "needs-gradient" : ""}`}
+                      ref={(el) => (descriptionRefs.current[(update as ActionTaken).actionTakenGuid] = el)}
                       style={{
-                        maxHeight: expandedActions[action.actionTakenGuid] ? "none" : "6em",
-                        overflow: expandedUpdates[action.actionTakenGuid] ? "visible" : "hidden",
+                        maxHeight: expandedActions[(update as ActionTaken).actionTakenGuid] ? "none" : "6em",
+                        overflow: expandedUpdates[(update as ActionTaken).actionTakenGuid] ? "visible" : "hidden",
                       }}
                     >
-                      {action.actionDetailsTxt}
+                      {(update as ActionTaken).actionDetailsTxt}
                     </div>
-                    {showLinks[action.actionTakenGuid] && (
-                      <div className="show-more-container">
-                        <button
-                          type="button"
-                          className="show-more-link"
-                          onClick={() => toggleExpand(action.actionTakenGuid)}
-                        >
-                          {expandedActions[action.actionTakenGuid] ? "Click to collapse" : "Click to expand"}
-                        </button>
-                      </div>
-                    )}
                   </div>
+                )}
 
-                  <div className="comp-complaint-update-item-row first-row">
-                    <div className="complaint-description-label">Logged by </div>
-                    <div className="logged-by-text">
-                      <div className="complaint-description-text">{action.loggedByTxt}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          {updates &&
-            updates.length > 0 &&
-            updates.map((update: WebEOCComplaintUpdateDTO) => (
-              <div
-                className="comp-complaint-update-item"
-                key={update.complaintUpdateGuid}
-              >
-                <div className="comp-complaint-update-item-row first-row">
-                  <div className="update-number">Update {update.updateSeqNumber}:</div>
-                  <div className="received">
-                    <span
-                      className="date-time-logged-label"
-                      id="date-time-logged-label-id"
-                    >
-                      Received
-                    </span>
-                    <i className="bi bi-calendar"></i>
-                    {formatDate(update.createUtcTimestamp)}
-                    <i className="bi bi-clock comp-margin-left-xs"></i>
-                    {formatTime(update.createUtcTimestamp)}
-                  </div>
-                </div>
-                {update.updDetailText && (
+                {(update as WebEOCComplaintUpdateDTO).updDetailText && (
                   <div className="complaint-description-section">
                     <div className="complaint-description-label">Complaint description</div>
                     <div
                       className={`complaint-description-text ${
-                        expandedUpdates[update.complaintUpdateGuid] ? "expanded" : ""
-                      } ${showLinks[update.complaintUpdateGuid] ? "needs-gradient" : ""}`}
-                      ref={(el) => (descriptionRefs.current[update.complaintUpdateGuid] = el)}
+                        expandedUpdates[(update as WebEOCComplaintUpdateDTO).complaintUpdateGuid] ? "expanded" : ""
+                      } ${showLinks[(update as WebEOCComplaintUpdateDTO).complaintUpdateGuid] ? "needs-gradient" : ""}`}
+                      ref={(el) =>
+                        (descriptionRefs.current[(update as WebEOCComplaintUpdateDTO).complaintUpdateGuid] = el)
+                      }
                       style={{
-                        maxHeight: expandedUpdates[update.complaintUpdateGuid] ? "none" : "6em",
-                        overflow: expandedUpdates[update.complaintUpdateGuid] ? "visible" : "hidden",
+                        maxHeight: expandedUpdates[(update as WebEOCComplaintUpdateDTO).complaintUpdateGuid]
+                          ? "none"
+                          : "6em",
+                        overflow: expandedUpdates[(update as WebEOCComplaintUpdateDTO).complaintUpdateGuid]
+                          ? "visible"
+                          : "hidden",
                       }}
                     >
-                      {update.updDetailText}
+                      {(update as WebEOCComplaintUpdateDTO).updDetailText}
                     </div>
-                    {showLinks[update.complaintUpdateGuid] && (
-                      <div className="show-more-container">
-                        <button
-                          type="button"
-                          className="show-more-link"
-                          onClick={() => toggleExpand(update.complaintUpdateGuid)}
-                        >
-                          {expandedUpdates[update.complaintUpdateGuid] ? "Click to collapse" : "Click to expand"}
-                        </button>
-                      </div>
-                    )}
                   </div>
                 )}
-                <div className="complaint-location-section">
-                  <div className="complaint-location-row">
-                    {update.updLocationSummaryText && (
-                      <div className="complaint-location-label-value-pair">
-                        <div className="complaint-location-label">Location/address:</div>
-                        <div className="complaint-location-value">{update.updLocationSummaryText}</div>
-                      </div>
-                    )}
-                    {update.updLocationDetailedText && (
-                      <div className="complaint-location-label-value-pair">
-                        <div className="complaint-location-label">Location description:</div>
-                        <div className="complaint-location-value">{update.updLocationDetailedText}</div>
-                      </div>
-                    )}
+                {(update as WebEOCComplaintUpdateDTO).updLocationSummaryText && (
+                  <div className="complaint-description-section">
+                    <div className="complaint-description-label">Complaint location</div>
+                    <div className="complaint-description-text">
+                      {(update as WebEOCComplaintUpdateDTO).updLocationSummaryText}
+                    </div>
                   </div>
-                </div>
-                {update.updLocationGeometryPoint?.coordinates && (
-                  <div className="coordinates-section">
-                    <div className="complaint-description-label">Latitude:</div>
-                    <div className="complaint-description-text">{update.updLocationGeometryPoint.coordinates[1]}</div>
-                    <div className="complaint-description-label">Longitude:</div>
-                    <div className="complaint-description-text">{update.updLocationGeometryPoint.coordinates[0]}</div>
+                )}
+                {(update as WebEOCComplaintUpdateDTO).updLocationDetailedText && (
+                  <div className="complaint-description-section">
+                    <div className="complaint-description-label">Location description:</div>
+                    <div className="complaint-description-text">
+                      {(update as WebEOCComplaintUpdateDTO).updLocationDetailedText}
+                    </div>
+                  </div>
+                )}
+                {(update as WebEOCComplaintUpdateDTO).updLocationGeometryPoint && (
+                  <div className="complaint-description-section">
+                    <div className="complaint-description-label">Latitude/Longitude</div>
+                    <div className="complaint-description-text">
+                      {(update as WebEOCComplaintUpdateDTO).updLocationGeometryPoint?.coordinates[1]} ,{" "}
+                      {(update as WebEOCComplaintUpdateDTO).updLocationGeometryPoint?.coordinates[0]}
+                    </div>
                   </div>
                 )}
               </div>
-            ))}
+            );
+          })}
         </div>
       )}
     </>
