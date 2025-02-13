@@ -454,7 +454,10 @@ export const selectOfficersByZoneAgencyAndRole =
           const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
           const fromAdminOffice = officer?.office_guid?.cos_geo_org_unit?.administrative_office_ind;
           const zoneAgencyMatch = zone === zoneCode && (agency === agencyCode || !agency);
-          const roleMatch = officer?.user_roles.includes(role) && !officer?.user_roles.includes(Roles.READ_ONLY);
+          const roleMatch =
+            officer?.user_roles.includes(role) &&
+            !officer?.user_roles.includes(Roles.READ_ONLY) &&
+            !officer?.user_roles.includes(Roles.HWCR_ONLY);
           result = !fromAdminOffice && zoneAgencyMatch && roleMatch;
           return result;
         });

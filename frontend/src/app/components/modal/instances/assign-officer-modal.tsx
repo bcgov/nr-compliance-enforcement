@@ -104,7 +104,6 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
     };
 
     const items = getOfficerList();
-
     if (items && from(items).any()) {
       return items.map((val) => {
         const {
