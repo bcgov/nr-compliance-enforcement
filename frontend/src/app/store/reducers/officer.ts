@@ -280,7 +280,7 @@ export const selectOfficers = (state: RootState): Officer[] | null => {
 };
 
 export const searchOfficers =
-  (input: string, agency: string) =>
+  (input: string, agency: string, complaintType: string) =>
   (state: RootState): Array<Officer> => {
     const {
       officers: { officers: items },
@@ -305,7 +305,10 @@ export const searchOfficers =
           firstName.toLocaleLowerCase().includes(searchInput) || lastName.toLocaleLowerCase().includes(searchInput);
         const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
 
-        if (agency === "COS") {
+        if (complaintType !== "HWCR" && user_roles.includes(Roles.HWCR_ONLY)) {
+          //Don't include HWCR_ONLY users if the complaint is not an HWCR
+          return false;
+        } else if (agency === "COS") {
           return !fromAdminOffice && nameMatch && roleMatch;
         } else if (agency === "EPO") {
           return roleMatch && nameMatch;
