@@ -23,12 +23,12 @@ import { Prevention } from "@apptypes/outcomes/prevention";
 import { PreventionActionDto } from "@apptypes/app/case-files/prevention/prevention-action";
 import { UpdatePreventionInput } from "@apptypes/app/case-files/prevention/update-prevention-input";
 import { CreatePreventionInput } from "@apptypes/app/case-files/prevention/create-prevention-input";
-import { CreateSupplementalNotesInput } from "@apptypes/app/case-files/supplemental-notes/create-supplemental-notes-input";
+import { CreateNoteInput } from "@apptypes/app/case-files/notes/create-note-input";
+import { UpdateNoteInput } from "@apptypes/app/case-files/notes/update-note-input";
+import { DeleteNoteInput } from "@apptypes/app/case-files/notes/delete-note-input";
 import { UUID } from "crypto";
-import { UpdateSupplementalNotesInput } from "@apptypes/app/case-files/supplemental-notes/update-supplemental-notes-input";
 import { ReviewInput } from "@apptypes/app/case-files/review-input";
 import { ReviewCompleteAction } from "@apptypes/app/case-files/review-complete-action";
-import { DeleteSupplementalNoteInput } from "@apptypes/app/case-files/supplemental-notes/delete-supplemental-notes-input";
 import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
 import { CreateEquipmentInput } from "@apptypes/app/case-files/equipment-inputs/create-equipment-input";
 import { UpdateEquipmentInput } from "@apptypes/app/case-files/equipment-inputs/update-equipment-input";
@@ -51,6 +51,7 @@ import { CreateAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/a
 import { UpdateAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/update-authorization-outcome-input";
 import { getUserAgency } from "@service/user-service";
 import { DeleteAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/delete-authorization-outcome-input";
+import { Note } from "@/app/types/outcomes/note";
 
 //-- general thunks
 export const findCase =
@@ -575,12 +576,13 @@ const parsePreventionResponse = async (
   }
 };
 
-//-- supplemental note thunks
+//-- note thunks
 export const upsertNote =
   (
-    id: string,
+    leadIdentifier: string,
     complaintType: string,
     note: string,
+    id?: UUID,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
@@ -588,7 +590,7 @@ export const upsertNote =
       app: {
         profile: { idir_username: idir },
       },
-      cases: { note: currentNote },
+      cases: { notes: currentNotes },
     } = getState();
 
     const _createNote =
@@ -599,9 +601,9 @@ export const upsertNote =
         userId: string,
       ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
-        const input: CreateSupplementalNotesInput = {
+        const input: CreateNoteInput = {
           note,
-          leadIdentifier: id,
+          leadIdentifier: leadIdentifier,
           agencyCode: getUserAgency(),
           caseCode: complaintType,
           actor,
@@ -618,18 +620,17 @@ export const upsertNote =
         note: string,
         actor: string,
         userId: string,
-        actionId: string,
       ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
-        const caseId = await dispatch(findCase(id));
+        const caseId = await dispatch(findCase(leadIdentifier));
 
-        const input: UpdateSupplementalNotesInput = {
+        const input: UpdateNoteInput = {
+          id,
           note,
-          leadIdentifier: id,
+          leadIdentifier: leadIdentifier,
           caseIdentifier: caseId as UUID,
           actor,
           updateUserId: userId,
-          actionId,
         };
 
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
@@ -639,28 +640,29 @@ export const upsertNote =
     const officer = officers.find((item) => item.user_id === idir);
 
     let result;
-    if (!currentNote?.action) {
-      result = await dispatch(_createNote(id, note, officer ? officer.auth_user_guid : "", idir));
+    if (!id) {
+      result = await dispatch(_createNote(leadIdentifier, note, officer ? officer.auth_user_guid : "", idir));
 
       if (result !== null) {
+        console.log(result.caseIdentifier);
         dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
 
-        ToggleSuccess("Supplemental note created");
+        ToggleSuccess("Note created");
       } else {
-        ToggleError("Error, unable to create supplemental note");
+        ToggleError("Error, unable to create note");
       }
-    } else {
-      const {
-        action: { actionId },
-      } = currentNote;
-      result = await dispatch(_updateNote(id as UUID, note, officer ? officer.auth_user_guid : "", idir, actionId));
+    } else if (currentNotes.find((note: Note) => note.id === id)) {
+      result = await dispatch(_updateNote(id, note, officer ? officer.auth_user_guid : "", idir));
 
       if (result !== null) {
+        console.log(result.caseIdentifier);
         dispatch(setCaseId(result.caseIdentifier));
-        ToggleSuccess("Supplemental note updated");
+        ToggleSuccess("Note updated");
       } else {
-        ToggleError("Error, unable to update supplemental note");
+        ToggleError("Error, unable to update note");
       }
+    } else {
+      ToggleError("Error, unable to update note");
     }
 
     if (result !== null) {
@@ -671,56 +673,50 @@ export const upsertNote =
   };
 
 export const deleteNote =
-  (id: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (leadIdentifer: string, id: UUID): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       officers: { officers },
       app: {
         profile: { idir_username: idir },
       },
-      cases: { caseId, note: currentNote },
+      cases: { caseId, notes: currentNotes },
     } = getState();
 
     const _deleteNote =
       (
         id: UUID,
-        leadIdentifer: string,
         actor: string,
         userId: string,
-        actionId: string,
       ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
-        const input: DeleteSupplementalNoteInput = {
-          caseIdentifier: id,
+        const input: DeleteNoteInput = {
           leadIdentifier: leadIdentifer,
+          caseIdentifier: caseId as UUID,
+          id,
           actor,
           updateUserId: userId,
-          actionId,
         };
 
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
         return await deleteMethod<CaseFileDto>(dispatch, parameters);
       };
 
-    if (currentNote?.action) {
-      const {
-        action: { actionId },
-      } = currentNote;
-
+    if (currentNotes.find((note: Note) => note.id === id)) {
       const officer = officers.find((item) => item.user_id === idir);
-      const result = await dispatch(
-        _deleteNote(caseId as UUID, id, officer ? officer.officer_guid : "", idir, actionId),
-      );
+      const result = await dispatch(_deleteNote(id, officer ? officer.officer_guid : "", idir));
 
       if (result !== null) {
-        ToggleSuccess("Supplemental note deleted");
+        console.log(result.caseIdentifier);
+        dispatch(setCaseId(result.caseIdentifier));
+        ToggleSuccess("Note deleted");
         return "success";
       } else {
-        ToggleError("Error, unable to delete supplemental note");
+        ToggleError("Error, unable to delete note");
         return "error";
       }
     } else {
-      ToggleError("Error, unable to delete supplemental note");
+      ToggleError("Error, unable to delete note");
       return "error";
     }
   };
@@ -823,11 +819,11 @@ export const deleteEquipment =
       if (res) {
         // remove equipment from state
         const {
-          cases: { equipment, note, subject, reviewComplete },
+          cases: { equipment, notes, subject, reviewComplete },
         } = getState();
         const updatedEquipment = equipment?.filter((equipment) => equipment.id !== id);
 
-        dispatch(setCaseFile({ equipment: updatedEquipment, note, subject, reviewComplete }));
+        dispatch(setCaseFile({ equipment: updatedEquipment, notes, subject, reviewComplete }));
         ToggleSuccess(`Equipment has been deleted`);
       } else {
         ToggleError(`Unable to update equipment`);

@@ -452,16 +452,16 @@
   }
 }
 
-.comp-equipment-item-header-actions {
-  display: flex;
-  gap: 8px;
-}
-
 .comp-outcome-supporting-notes {
   margin-bottom: 24px;
 }
 
 // OUTCOME REPORT - GENERIC
+.comp-outcome-item-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .comp-outcome-report-form {
   fieldset + fieldset {
     margin-top: 32px;

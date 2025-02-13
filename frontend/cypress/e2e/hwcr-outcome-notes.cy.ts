@@ -69,7 +69,7 @@ describe("HWCR Outcome Notes", () => {
 
         //validate the toast
         cy.get(".Toastify__toast-body").then(($toast) => {
-          expect($toast).to.contain.text("Supplemental note created");
+          expect($toast).to.contain.text("Note created");
         });
       } else {
         cy.log("Test was previously run. Skip the Test");
@@ -123,7 +123,7 @@ describe("HWCR Outcome Notes", () => {
 
         //validate the toast
         cy.get(".Toastify__toast-body").then(($toast) => {
-          expect($toast).to.contain.text("Supplemental note updated");
+          expect($toast).to.contain.text("Note updated");
         });
       } else {
         cy.log("Note Edit Button Not Found, did a previous test fail? Skip the Test");
@@ -143,7 +143,7 @@ describe("HWCR Outcome Notes", () => {
 
         //validate the toast
         cy.get(".Toastify__toast-body").then(($toast) => {
-          expect($toast).to.contain.text("Supplemental note deleted");
+          expect($toast).to.contain.text("Note deleted");
         });
 
         cy.get("#outcome-report-add-note").should("exist");
