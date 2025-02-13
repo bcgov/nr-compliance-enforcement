@@ -573,10 +573,7 @@ export const getComplaintById =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
       );
-      const response = await get<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
-        dispatch,
-        parameters,
-      );
+      const response = await get<dtoAlias>(dispatch, parameters);
 
       dispatch(setComplaint({ ...response }));
     } catch (error) {

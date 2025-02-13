@@ -807,7 +807,10 @@ export const CreateComplaint: FC = () => {
               className="comp-details-form-row"
               id="general-incident-type-type-pair-id"
             >
-              <label id="general-incident-type-label-id">
+              <label
+                id="general-incident-type-label-id"
+                htmlFor="general-incident-type-type-select-id"
+              >
                 General incident type<span className="required-ind">*</span>
               </label>
               <div className="comp-details-edit-input">
