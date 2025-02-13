@@ -18,7 +18,7 @@ describe("Complaint Create Page spec - Create View", () => {
     methodComplaintReceived: "RAPP",
     status: "Closed",
     statusIndex: 1,
-    assigned: "Caruth, Breanna",
+    assigned: "Kot, Steve",
     assignedIndex: 1,
     generalIncidentType: "Media",
   };
