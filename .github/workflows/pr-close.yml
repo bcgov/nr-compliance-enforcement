@@ -79,7 +79,7 @@ jobs:
 
           echo "${CRUNCHY_PG_PRIMARY_POD_NAME}"
           # Terminate all connections to the database before trying terminate and Drop the databse and role right after
-          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'app-${{ github.event.number }}' AND pid <> pg_backend_pid();DROP DATABASE \"app-${{ github.event.number }}\;DROP ROLE \"app-${{ github.event.number }}\;"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'app-${{ github.event.number }}' AND pid <> pg_backend_pid();DROP DATABASE \"app-${{ github.event.number }}\" --cascade;DROP ROLE \"app-${{ github.event.number }}\" --cascade;"
 
           echo "Database and Role for PR is cleaned."
 
