@@ -709,10 +709,7 @@ export const selectCreatableComplaintTypeDropdown = (state: RootState): Array<Op
     codeTables: { "complaint-type": complaintTypes },
   } = state;
 
-  // Filter out complaintType is "GIR" since it should not appear as a createable type.
-  const filteredTypes = complaintTypes.filter((complaintType) => complaintType.complaintType !== "GIR");
-
-  const data = filteredTypes.map(({ complaintType, longDescription }) => {
+  const data = complaintTypes.map(({ complaintType, longDescription }) => {
     const item: Option = { label: longDescription, value: complaintType };
     return item;
   });
