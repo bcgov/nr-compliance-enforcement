@@ -195,28 +195,19 @@ export const CreateComplaint: FC = () => {
   };
 
   const refreshOfficers = (complaintType: string) => {
-    if (complaintType !== COMPLAINT_TYPES.HWCR) {
-      const filteredOfficers = officerList
-        ? officerList
-            .filter((officer: Officer) => !officer.user_roles.includes(Roles.HWCR_ONLY)) // Filter out officers with the specified role
-            .map((officer: Officer) => ({
-              value: officer.person_guid.person_guid,
-              label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-            }))
-        : [];
-
-      setAssignableOfficers(filteredOfficers); // Set the filtered officers as options
-    } else {
-      // it is an HWCR
-      const allOfficers = officerList
-        ? officerList.map((officer: Officer) => ({
+    const filteredOfficers = officerList
+      ? officerList
+          .filter(
+            (officer: Officer) =>
+              complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+          ) // Filter out officers with the specified role
+          .map((officer: Officer) => ({
             value: officer.person_guid.person_guid,
             label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
           }))
-        : [];
+      : [];
 
-      setAssignableOfficers(allOfficers); // Set all officers as options
-    }
+    setAssignableOfficers(filteredOfficers); // Set the filtered officers as options
   };
 
   const handleComplaintChange = (selected: Option | null) => {

@@ -78,6 +78,7 @@ import { ExternalFileReference } from "@components/containers/complaints/outcome
 import { getCaseFile } from "@/app/store/reducers/case-thunks";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
 import { RootState } from "@/app/store/store";
+import { Roles } from "@/app/types/app/roles";
 
 export type ComplaintParams = {
   id: string;
@@ -153,10 +154,15 @@ export const ComplaintDetailsEdit: FC = () => {
 
   let assignableOfficers: Option[] =
     officersInAgencyList !== null
-      ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-        }))
+      ? officersInAgencyList
+          .filter(
+            (officer: Officer) =>
+              complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+          ) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR
+          .map((officer: Officer) => ({
+            value: officer.person_guid.person_guid,
+            label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+          }))
       : [];
 
   assignableOfficers.unshift({ value: "Unassigned", label: "None" });
