@@ -573,10 +573,7 @@ export const getComplaintById =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
       );
-      const response = await get<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
-        dispatch,
-        parameters,
-      );
+      const response = await get<dtoAlias>(dispatch, parameters);
 
       dispatch(setComplaint({ ...response }));
     } catch (error) {
@@ -621,7 +618,7 @@ export const getLinkedComplaints =
 export const createComplaint =
   (
     complaintType: string,
-    complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto,
+    complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
@@ -661,7 +658,10 @@ export const createComplaint =
         complaint,
       );
 
-      await post<WildlifeComplaintDto | AllegationComplaintDto>(dispatch, postParameters).then(async (res) => {
+      await post<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
+        dispatch,
+        postParameters,
+      ).then(async (res) => {
         const { id } = res;
         result = id;
 

@@ -119,10 +119,7 @@ export class ComplaintController {
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
   ): Promise<dtoAlias> {
-    return (await this.service.findById(id, complaintType)) as
-      | WildlifeComplaintDto
-      | AllegationComplaintDto
-      | GeneralIncidentComplaintDto;
+    return (await this.service.findById(id, complaintType)) as dtoAlias;
   }
   @Get("/related-data/:id")
   @Roles(coreRoles)
@@ -132,10 +129,7 @@ export class ComplaintController {
 
   @Post("/create/:complaintType")
   @Roles(coreRoles)
-  async create(
-    @Param("complaintType") complaintType: COMPLAINT_TYPE,
-    @Body() model: WildlifeComplaintDto | AllegationComplaintDto,
-  ): Promise<WildlifeComplaintDto | AllegationComplaintDto> {
+  async create(@Param("complaintType") complaintType: COMPLAINT_TYPE, @Body() model: dtoAlias): Promise<dtoAlias> {
     return await this.service.create(complaintType, model);
   }
 
