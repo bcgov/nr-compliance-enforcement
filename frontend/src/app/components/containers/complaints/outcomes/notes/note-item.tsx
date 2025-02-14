@@ -1,6 +1,6 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useAppSelector } from "@hooks/hooks";
-import { formatDate, formatTime } from "@common/methods";
+import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
 
 import { CaseAction } from "@apptypes/outcomes/case-action";
 import { Button, Card } from "react-bootstrap";
@@ -16,15 +16,18 @@ type props = {
 
 export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDelete }) => {
   const officers = useAppSelector(selectOfficers);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const { actor } = actions[0];
   const officer = officers?.find((item) => item.auth_user_guid === actor);
   const displayName = officer ? `${officer.person_guid.last_name}, ${officer.person_guid.first_name}` : "";
 
-  const isReadOnly = useAppSelector(selectComplaintViewMode);
+  const longNoteLength = 600;
+  const isLongNote = note.length > longNoteLength;
+  const [showFullNote, setShowFullNote] = useState(false);
 
   return (
-    <Card className="comp-outcome-supporting-notes">
+    <Card className="comp-outcome-notes">
       <Card.Body>
         <div className="comp-details-section-header">
           <div className="comp-details-section">
@@ -32,7 +35,7 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
               <div>
                 <dt>Created by</dt>
                 <dd>
-                  <span id="comp-notes-officer">{displayName}</span>
+                  <span id="comp-details-assigned-officer-name-text-id">{displayName}</span>
                 </dd>
               </div>
             </dl>
@@ -82,11 +85,32 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
           <dl>
             <div>
               <dt>Note</dt>
-              <dd>
-                <pre id="additional-note-text">{note}</pre>
+              <dd className={!showFullNote && isLongNote ? "comp-outcome-notes-fade" : ""}>
+                <pre id="additional-note-text">
+                  {showFullNote && note}
+                  {!showFullNote && note.substring(0, longNoteLength)}
+                  {!showFullNote && isLongNote && " ..."}
+                </pre>
               </dd>
             </div>
           </dl>
+          {isLongNote && (
+            <dl>
+              <div className="comp-outcome-notes-see-more">
+                <dt />
+                <dd>
+                  <Button
+                    size="sm"
+                    variant="outline-primary"
+                    id="notes-see-more-button"
+                    onClick={() => setShowFullNote(!showFullNote)}
+                  >
+                    {showFullNote ? "Hide full note" : "See full note"}
+                  </Button>
+                </dd>
+              </div>
+            </dl>
+          )}
         </div>
       </Card.Body>
     </Card>

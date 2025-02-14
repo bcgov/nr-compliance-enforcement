@@ -46,32 +46,6 @@ export const Note: FC<props> = ({ id = "", complaintType = "", note }) => {
     );
   };
 
-  /*   const renderNote = (noteItem: any) => {
-    const { actions, note } = !noteItem ? { actions: undefined, note: "" } : noteItem;
-    if (action?.activeIndicator && !showInput) {
-      return (
-        <NoteItem
-          note={note}
-          actions={actions}
-          enableEditMode={setShowInput}
-          deleteNote={openDeleteNoteModal}
-        />
-      );
-    } else {
-      const { note } = noteItem;
-      return (
-        <NoteInput
-          id={id}
-          complaintType={complaintType}
-          notes={note}
-          currentOfficer={officer}
-          setShowInput={setShowInput}
-          mode={!action ? "create" : "update"}
-        />
-      );
-    }
-  }; */
-
   return (
     <>
       {showInput ? (

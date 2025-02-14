@@ -88,7 +88,7 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
 
   return (
     <Card
-      className="comp-outcome-supporting-notes"
+      className="comp-outcome-notes"
       border={showSectionErrors ? "danger" : "default"}
     >
       <Card.Body>
@@ -102,22 +102,6 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
         <p className="mb-4">Use this field to add critical contextual information not reported in the form above</p>
 
         <div className="comp-details-form">
-          <div className="comp-details-form-row">
-            <label htmlFor="supporting-notes-textarea-id">
-              Notes<span className="required-ind">*</span>
-            </label>
-            <div className="comp-details-input full-width">
-              <ValidationTextArea
-                className="comp-form-control"
-                id="supporting-notes-textarea-id"
-                defaultValue={currentNote}
-                rows={4}
-                errMsg={notesError}
-                onChange={handleNotesChange}
-              />
-            </div>
-          </div>
-
           <div
             className="comp-details-form-row"
             id="officer-supporting-notes-pair-id"
@@ -126,7 +110,7 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
               id="officer-supporting-notes-pair-id"
               htmlFor="officer-supporting-notes-select-id"
             >
-              Officer
+              Created by
             </label>
             <div className="comp-details-input full-width">
               <CompSelect
@@ -144,7 +128,9 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
             className="comp-details-form-row"
             id="supporting-notes-time-pair-id"
           >
-            <label htmlFor="supporting-notes-time-pair-id">Date</label>
+            <label htmlFor="supporting-notes-time-pair-id">
+              Date logged{note?.actions && note.actions.length > 1 && ` (updated ${note.actions.length} times)`}
+            </label>
             <div className="comp-details-input">
               <DatePicker
                 id="supporting-notes-time-pair-id"
@@ -155,6 +141,21 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
                 readOnly
                 disabled
                 showIcon
+              />
+            </div>
+          </div>
+          <div className="comp-details-form-row">
+            <label htmlFor="supporting-notes-textarea-id">
+              Note<span className="required-ind">*</span>
+            </label>
+            <div className="comp-details-input full-width">
+              <ValidationTextArea
+                className="comp-form-control"
+                id="supporting-notes-textarea-id"
+                defaultValue={currentNote}
+                rows={8}
+                errMsg={notesError}
+                onChange={handleNotesChange}
               />
             </div>
           </div>

@@ -22,7 +22,7 @@ describe("HWCR Animal Outcomes", () => {
     //   }
     // });
 
-    // cy.get(".comp-outcome-supporting-notes").then(function () {
+    // cy.get(".comp-outcome-notes").then(function () {
     //   cy.validateComplaint("23-032454", "Black Bear");
 
     //   //click Save Button
