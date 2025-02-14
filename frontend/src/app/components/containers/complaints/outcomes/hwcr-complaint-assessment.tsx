@@ -41,6 +41,8 @@ import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-ass
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { Officer } from "@/app/types/person/person";
+import { RootState } from "@/app/store/store";
+import { useSelector } from "react-redux";
 
 type Props = {
   id: string;
@@ -91,8 +93,10 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
   const assessmentState = useAppSelector(selectAssessment);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
-  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
   const cases = useAppSelector((state) => state.cases);
+  const officersInAgencyList = useSelector((state: RootState) =>
+    selectOfficersByAgency(state, ownedByAgencyCode?.agency),
+  );
   const assignableOfficers = useAppSelector(selectOfficerListByAgency);
   const conflictHistoryOptions = useAppSelector(selectConflictHistoryDropdown);
   const threatLevelOptions = useAppSelector(selectThreatLevelDropdown);

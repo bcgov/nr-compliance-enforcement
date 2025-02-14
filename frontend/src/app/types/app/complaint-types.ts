@@ -8,6 +8,9 @@ export const COMPLAINT_TYPES = {
 export const CEEB_TYPES = {
   ERS: "ERS",
 };
+export const HWCR_ONLY_TYPES = {
+  HWCR: "HWCR",
+};
 
 export const complaintTypeToName = (complaintType: string | undefined | null, singular?: boolean) => {
   switch (complaintType) {

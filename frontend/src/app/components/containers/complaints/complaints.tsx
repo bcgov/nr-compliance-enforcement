@@ -23,7 +23,7 @@ import {
 import { ComplaintMapWithServerSideClustering } from "./complaint-map-with-server-side-clustering";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
-import { COMPLAINT_TYPES, CEEB_TYPES } from "@apptypes/app/complaint-types";
+import { COMPLAINT_TYPES, CEEB_TYPES, HWCR_ONLY_TYPES } from "@apptypes/app/complaint-types";
 import { selectCurrentOfficer } from "@store/reducers/officer";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
@@ -205,15 +205,32 @@ export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
   );
 };
 const getComplaintTypes = () => {
-  return UserService.hasRole(Roles.CEEB) ? CEEB_TYPES : COMPLAINT_TYPES;
+  let returnTypes;
+  switch (true) {
+    case UserService.hasRole(Roles.CEEB):
+      returnTypes = CEEB_TYPES;
+      break;
+    case UserService.hasRole(Roles.HWCR_ONLY):
+      returnTypes = HWCR_ONLY_TYPES;
+      break;
+    default:
+      returnTypes = COMPLAINT_TYPES;
+      break;
+  }
+
+  return returnTypes;
 };
 
 // Sets the default filters
 const getFilters = (currentOfficer: any, defaultZone: DropdownOption | null, defaultRegion: DropdownOption | null) => {
   let filters: any = {};
 
-  // Province-wide and Parks role defaults to only "Open" so skip the other checks
-  if (UserService.hasRole(Roles.PROVINCE_WIDE) || UserService.hasRole(Roles.PARKS)) {
+  // Province-wide, HWCR only and Parks role defaults to only "Open" so skip the other checks
+  if (
+    UserService.hasRole(Roles.PROVINCE_WIDE) ||
+    UserService.hasRole(Roles.PARKS) ||
+    UserService.hasRole(Roles.HWCR_ONLY)
+  ) {
     return filters;
   }
 

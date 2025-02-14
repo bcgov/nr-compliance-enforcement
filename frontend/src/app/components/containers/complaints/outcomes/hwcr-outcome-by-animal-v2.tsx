@@ -18,6 +18,8 @@ import { EditOutcome } from "./oucome-by-animal/edit-outcome";
 import { UUID } from "crypto";
 import { setIsInEdit } from "@store/reducers/cases";
 import useValidateComplaint from "@hooks/validate-complaint";
+import { RootState } from "@/app/store/store";
+import { useSelector } from "react-redux";
 
 type props = {};
 
@@ -55,8 +57,9 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
 
   const { species, ownedBy: agency } = (complaint as WildlifeComplaint) || {};
-  const officersInAgencyList = useAppSelector(selectOfficersByAgency(agency));
-
+  const officersInAgencyList = useSelector(
+    (state: RootState) => selectOfficersByAgency(state, agency), // Pass agency here
+  );
   //-- if there's an assigned officer pull them off
   //-- the complaint and pass as a kvp to the input
   const [assignedOfficer, setAssignedOfficer] = useState("");

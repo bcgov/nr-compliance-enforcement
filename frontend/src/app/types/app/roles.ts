@@ -11,6 +11,7 @@ enum Roles {
   INSPECTOR = "Inspector",
   PROVINCE_WIDE = "Province-wide",
   PARKS = "PARKS",
+  HWCR_ONLY = "HWCR only",
 }
 
 const coreRoles: Roles[] = [Roles.COS, Roles.CEEB, Roles.PARKS];

@@ -54,7 +54,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   } = useContext(ComplaintFilterContext);
 
   const agency = UserService.getUserAgency();
-  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdownUsingPersonGuid(agency));
+  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdownUsingPersonGuid(agency, type));
   if (officersByAgency && officersByAgency[0]?.value !== "Unassigned") {
     officersByAgency.unshift({ value: "Unassigned", label: "Unassigned" });
   }

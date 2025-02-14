@@ -41,7 +41,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
   const [searchInput, setSearchInput] = useState<string>("");
 
   const officersJson = useAppSelector(selectOfficersByZoneAgencyAndRole(modalData?.agency_code, zone));
-  const searchResults = useAppSelector(searchOfficers(searchInput, modalData?.agency_code));
+  const searchResults = useAppSelector(searchOfficers(searchInput, modalData?.agency_code, complaint_type));
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   // stores the state of the officer that was clicked
@@ -104,7 +104,6 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
     };
 
     const items = getOfficerList();
-
     if (items && from(items).any()) {
       return items.map((val) => {
         const {
