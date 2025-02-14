@@ -35,7 +35,7 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
               <div>
                 <dt>Created by</dt>
                 <dd>
-                  <span id="comp-details-assigned-officer-name-text-id">{displayName}</span>
+                  <span id="comp-note-created-by">{displayName}</span>
                 </dd>
               </div>
             </dl>

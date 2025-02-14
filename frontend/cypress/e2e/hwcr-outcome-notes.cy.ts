@@ -63,7 +63,7 @@ describe("HWCR Outcome Notes", () => {
         });
 
         //validate the officer
-        cy.get("#comp-notes-officer").should(($div) => {
+        cy.get("#comp-note-created-by").should(($div) => {
           expect($div).to.contain.text("TestAcct, ENV");
         });
 
