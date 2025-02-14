@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { useAppSelector } from "@hooks/hooks";
-import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
+import { formatDate, formatTime } from "@common/methods";
 
 import { CaseAction } from "@apptypes/outcomes/case-action";
 import { Badge, Button, Card } from "react-bootstrap";
