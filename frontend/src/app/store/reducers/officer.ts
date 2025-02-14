@@ -414,15 +414,19 @@ export const selectOfficerListByAgency = createSelector(
 );
 
 export const selectOfficersByAgencyDropdownUsingPersonGuid =
-  (agency: string) =>
+  (agency: string, complaintType: string) =>
   (state: RootState): Array<Option> => {
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
     const officerList = filterOfficerByAgency(agency, officers);
-    const officerDropdown = officerList.map((officer: Officer) => ({
-      value: officer.person_guid.person_guid,
-      label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-    }));
+    const officerDropdown = officerList
+      .filter(
+        (officer: Officer) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+      ) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR.
+      .map((officer: Officer) => ({
+        value: officer.person_guid.person_guid,
+        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+      }));
 
     return officerDropdown;
   };

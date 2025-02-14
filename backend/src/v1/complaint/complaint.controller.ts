@@ -23,7 +23,6 @@ import { dtoAlias } from "../../types/models/complaints/dtoAlias-type";
 
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { ACTION_TAKEN_ACTION_TYPES } from "src/types/constants";
-import { hasRole } from "src/common/has-role";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 import { getAgenciesFromRoles } from "src/common/methods";
 
