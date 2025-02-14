@@ -828,6 +828,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 <label id="officer-assigned-select-label-id">Officer assigned</label>
                 <CompSelect
                   id="officer-assigned-select-id"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   onChange={(e) => handleAssignedOfficerChange(e)}
                   className="comp-details-input full-width"
@@ -853,6 +854,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     </label>
                     <CompSelect
                       id="species-select-id"
+                      showInactive={false}
                       classNamePrefix="comp-select"
                       onChange={(e) => handleSpeciesChange(e)}
                       className="comp-details-input full-width"
@@ -872,11 +874,11 @@ export const ComplaintDetailsEdit: FC = () => {
                     </label>
                     <CompSelect
                       id="nature-of-complaint-select-id"
+                      showInactive={false}
                       classNamePrefix="comp-select"
                       onChange={(e) => handleNatureOfComplaintChange(e)}
                       className="comp-details-input full-width"
                       options={hwcrNatureOfComplaintCodes}
-                      showInactive={false}
                       defaultOption={selectedNatureOfComplaint}
                       placeholder="Select"
                       enableValidation={true}
@@ -1083,6 +1085,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="community-select-id"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     onChange={(e) => handleCommunityChange(e)}
                     className="comp-details-input"
@@ -1143,6 +1146,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="complaint-received-method-select-id"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     className="comp-details-input"
                     defaultOption={selectedComplaintMethodReceivedCode}
@@ -1325,6 +1329,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="reported-select-id"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     className="comp-details-input"
                     defaultOption={selectedReportedByCode}

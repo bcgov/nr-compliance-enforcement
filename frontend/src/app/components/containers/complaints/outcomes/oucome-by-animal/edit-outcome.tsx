@@ -421,6 +421,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
                 <CompSelect
                   id="select-species"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   className="comp-details-input full-width"
                   options={speciesList}
@@ -435,6 +436,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                 <label htmlFor="select-sex">Sex</label>
                 <CompSelect
                   id="select-sex"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   className="comp-details-input full-width"
                   options={sexes}
@@ -450,6 +452,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                 <label htmlFor="select-age">Age</label>
                 <CompSelect
                   id="select-age"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   className="comp-details-input full-width"
                   options={ages}
@@ -483,6 +486,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   <label htmlFor="select-category-level">Category level</label>
                   <CompSelect
                     id="select-category-level"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     className="comp-details-input full-width"
                     options={threatLevels}
@@ -536,6 +540,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                 <div className="comp-details-input full-width">
                   <CompSelect
                     id="select-ears"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     className="comp-details-input"
                     options={outcomes}
@@ -567,6 +572,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                 </label>
                 <CompSelect
                   classNamePrefix="comp-select"
+                  showInactive={false}
                   className="comp-details-input full-width"
                   id="officer-assigned-select-id"
                   options={officers}

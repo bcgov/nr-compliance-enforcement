@@ -410,6 +410,7 @@ export const CompCoordinateInput: FC<Props> = ({
 
             <CompSelect
               id="utm-zone-id"
+              showInactive={false}
               classNamePrefix="comp-select"
               className="comp-details-input coordinate-zone-select"
               placeholder="Zone"

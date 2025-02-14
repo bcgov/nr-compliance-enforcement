@@ -96,6 +96,7 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
           <div className="comp-details-input full-width">
             <CompSelect
               id="officer-assigned-authorization-select-id"
+              showInactive={false}
               classNamePrefix="comp-select"
               onChange={(evt) => {
                 handleOfficerChange(evt);

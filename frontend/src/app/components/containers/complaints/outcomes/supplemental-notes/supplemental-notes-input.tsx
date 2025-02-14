@@ -134,6 +134,7 @@ export const SupplementalNotesInput: FC<props> = ({ id, complaintType, notes, cu
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="officer-supporting-notes-select-id"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   className="comp-details-input"
                   isDisabled={true}

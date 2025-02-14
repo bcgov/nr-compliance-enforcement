@@ -393,6 +393,7 @@ export const CreateAnimalOutcome: FC<props> = ({
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="select-species"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   className="comp-details-input"
                   options={speciesList}
@@ -410,6 +411,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                 {" "}
                 <CompSelect
                   id="select-sex"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   options={sexes}
                   enableValidation={false}
@@ -425,6 +427,7 @@ export const CreateAnimalOutcome: FC<props> = ({
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="select-age"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   options={ages}
                   enableValidation={false}
@@ -457,6 +460,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                 <label htmlFor="select-category-level">Category level</label>
                 <CompSelect
                   id="select-category-level"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   className="comp-details-input"
                   options={threatLevels}
@@ -516,6 +520,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                 <div className="comp-details-input full-width">
                   <CompSelect
                     id="select-ears"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     className="comp-details-input"
                     options={outcomes}
@@ -539,6 +544,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                 <div className="comp-details-input full-width">
                   <CompSelect
                     id="officer-assigned-select-id"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     className="comp-details-input"
                     options={officers}

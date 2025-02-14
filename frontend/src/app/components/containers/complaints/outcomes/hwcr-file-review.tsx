@@ -230,6 +230,7 @@ export const HWCRFileReview: FC = () => {
                     <div className="comp-details-input full-width">
                       <CompSelect
                         id="officer-file-review-select-id"
+                        showInactive={false}
                         classNamePrefix="comp-select"
                         isDisabled={true}
                         enableValidation={false}
