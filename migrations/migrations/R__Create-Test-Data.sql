@@ -4405,6 +4405,26 @@ INSERT INTO
     update_utc_timestamp
   )
 SELECT
+  'OUT_A_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
   'OUT_D_FLTR',
   'COS',
   'Y',
@@ -4413,6 +4433,27 @@ SELECT
   user,
   now() ON CONFLICT
 DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'OUT_D_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
 
 INSERT INTO
   feature_agency_xref (

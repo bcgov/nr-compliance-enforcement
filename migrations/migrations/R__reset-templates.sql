@@ -6,9 +6,13 @@
 --
 -- Last Run on: ${flyway:timestamp}
 ----------------------
-
 UPDATE "configuration"
 SET
   configuration_value = ''
 WHERE
-  configuration_code IN ('ERSTMPLATE', 'HWCTMPLATE', 'CEEBTMPLAT');
+  configuration_code IN (
+    'ERSTMPLATE',
+    'HWCTMPLATE',
+    'CEEBTMPLAT',
+    'GIRTMPLATE'
+  );

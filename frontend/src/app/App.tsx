@@ -20,7 +20,7 @@ import { UserManagement } from "@components/containers/admin/user-management";
 import UserService from "./service/user-service";
 import GenericErrorBoundary from "./components/error-handling/generic-error-boundary";
 import { VerifyAccess } from "./components/containers/pages/verify-access";
-import Roles from "./types/app/roles";
+import { Roles, coreRoles } from "./types/app/roles";
 import { FeatureManagement } from "./components/containers/admin/feature-management";
 
 const App: FC = () => {
@@ -42,7 +42,7 @@ const App: FC = () => {
         <Modal />
         <PageLoader />
         <Routes>
-          <Route element={<ProtectedRoutes roles={[Roles.COS, Roles.CEEB]} />}>
+          <Route element={<ProtectedRoutes roles={coreRoles} />}>
             <Route
               path="/"
               element={<ComplaintsRouteWrapper />}

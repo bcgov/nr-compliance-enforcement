@@ -1,4 +1,4 @@
-import Roles from "../../src/app/types/app/roles";
+import { Roles } from "../../src/app/types/app/roles";
 import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 
 /**
