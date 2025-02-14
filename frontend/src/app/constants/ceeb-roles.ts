@@ -9,6 +9,7 @@ export const ROLE_OPTIONS: Array<Option> = [
   { value: "READ ONLY", label: "Read Only" },
   { value: "Inspector", label: "Inspector" },
   { value: "Province-wide", label: "Province-wide" },
+  { value: "HWCR only", label: "HWCR only" },
 ];
 
 export const CEEB_ROLE_OPTIONS: Array<Option> = [
@@ -25,6 +26,7 @@ export const COS_ROLE_OPTIONS: Array<Option> = [
   { value: "READ ONLY", label: "Read Only" },
   { value: "Inspector", label: "Inspector" },
   { value: "Province-wide", label: "Province-wide" },
+  { value: "HWCR only", label: "HWCR only" },
 ];
 
 export const PARKS_ROLE_OPTIONS: Array<Option> = [
