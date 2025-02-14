@@ -50,7 +50,7 @@ import { UUID } from "crypto";
 import { AttractantXref } from "@apptypes/app/complaints/attractant-xref";
 import { ComplaintAlias } from "@apptypes/app/aliases";
 import AttachmentEnum from "@constants/attachment-enum";
-import { getUserAgency } from "@service/user-service";
+import UserService, { getUserAgency } from "@service/user-service";
 import { useSelector } from "react-redux";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { FeatureFlag } from "@components/common/feature-flag";
@@ -92,6 +92,14 @@ export const CreateComplaint: FC = () => {
       setAssignableOfficers(initialAssignableOfficers);
     }
   }, [officerList]);
+
+  //Only remove all options but HWCR for HWCR only
+  let selectableComplaintTypeCodes = complaintTypeCodes;
+  if (UserService.hasRole(Roles.HWCR_ONLY)) {
+    selectableComplaintTypeCodes = complaintTypeCodes.filter(
+      (complaintType) => complaintType.value === COMPLAINT_TYPES.HWCR,
+    );
+  }
 
   const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
@@ -717,8 +725,8 @@ export const CreateComplaint: FC = () => {
                   classNamePrefix="comp-select"
                   onChange={(e) => handleComplaintChange(e)}
                   className="comp-details-input"
-                  options={complaintTypeCodes}
-                  defaultOption={complaintTypeCodes.find((option) => option.value === complaintType)}
+                  options={selectableComplaintTypeCodes}
+                  defaultOption={selectableComplaintTypeCodes.find((option) => option.value === complaintType)}
                   placeholder="Select"
                   enableValidation={true}
                   errorMessage={complaintTypeMsg}
