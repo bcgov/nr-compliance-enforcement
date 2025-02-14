@@ -14,8 +14,6 @@ export const DeleteNoteModal: FC<props> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
   const { title, description, ok, cancel, caseIdentifier, id } = modalData;
 
-  console.log("modalData", modalData);
-
   const handleSubmit = () => {
     dispatch(deleteNote(caseIdentifier, id))
       .then((res) => {

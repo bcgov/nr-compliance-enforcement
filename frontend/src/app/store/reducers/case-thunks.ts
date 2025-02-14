@@ -644,7 +644,6 @@ export const upsertNote =
       result = await dispatch(_createNote(leadIdentifier, note, officer ? officer.auth_user_guid : "", idir));
 
       if (result !== null) {
-        console.log(result.caseIdentifier);
         dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
 
         ToggleSuccess("Note created");
@@ -655,7 +654,6 @@ export const upsertNote =
       result = await dispatch(_updateNote(id, note, officer ? officer.auth_user_guid : "", idir));
 
       if (result !== null) {
-        console.log(result.caseIdentifier);
         dispatch(setCaseId(result.caseIdentifier));
         ToggleSuccess("Note updated");
       } else {
@@ -707,7 +705,6 @@ export const deleteNote =
       const result = await dispatch(_deleteNote(id, officer ? officer.officer_guid : "", idir));
 
       if (result !== null) {
-        console.log(result.caseIdentifier);
         dispatch(setCaseId(result.caseIdentifier));
         ToggleSuccess("Note deleted");
         return "success";

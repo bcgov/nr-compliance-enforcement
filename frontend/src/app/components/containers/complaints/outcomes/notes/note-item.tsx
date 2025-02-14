@@ -3,7 +3,7 @@ import { useAppSelector } from "@hooks/hooks";
 import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
 
 import { CaseAction } from "@apptypes/outcomes/case-action";
-import { Button, Card } from "react-bootstrap";
+import { Badge, Button, Card } from "react-bootstrap";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 import { selectOfficers } from "@/app/store/reducers/officer";
 
@@ -53,6 +53,9 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
                   {formatDate(new Date(actions[0]?.date).toString())}
                   <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
                   {formatTime(new Date(actions[0]?.date).toString())}
+                  {actions.length > 1 && (
+                    <Badge className="badge comp-status-badge-closed">Updated {actions.length} times</Badge>
+                  )}
                 </dd>
               </div>
             </dl>

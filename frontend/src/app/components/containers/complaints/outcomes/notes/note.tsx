@@ -15,7 +15,6 @@ type props = {
 };
 
 export const Note: FC<props> = ({ id = "", complaintType = "", note }) => {
-  console.log("Note", note);
   const dispatch = useAppDispatch();
   const officer = useAppSelector(selectCurrentOfficer());
 

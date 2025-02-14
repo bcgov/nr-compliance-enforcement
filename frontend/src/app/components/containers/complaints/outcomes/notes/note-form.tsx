@@ -128,9 +128,7 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
             className="comp-details-form-row"
             id="supporting-notes-time-pair-id"
           >
-            <label htmlFor="supporting-notes-time-pair-id">
-              Date logged{note?.actions && note.actions.length > 1 && ` (updated ${note.actions.length} times)`}
-            </label>
+            <label htmlFor="supporting-notes-time-pair-id">Date logged</label>
             <div className="comp-details-input">
               <DatePicker
                 id="supporting-notes-time-pair-id"
