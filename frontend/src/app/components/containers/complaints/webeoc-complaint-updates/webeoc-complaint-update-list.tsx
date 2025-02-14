@@ -129,7 +129,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
 
                 {(update as ActionTaken).actionDetailsTxt && (
                   <div className="comp-complaint-update-item-row first-row">
-                    <div className="complaint-description-label">Details:</div>
+                    <div className=".comp-complaint-update-label">Details:</div>
                     <div
                       className={`complaint-description-text ${
                         expandedActions[(update as ActionTaken).actionTakenGuid] ? "expanded" : ""
