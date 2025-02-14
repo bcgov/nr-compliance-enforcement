@@ -20,6 +20,7 @@ import {
   selectCommunityCodeDropdown,
   selectComplaintReceivedMethodDropdown,
   selectCreatableComplaintTypeDropdown,
+  selectGirTypeCodeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
   selectPrivacyDropdown,
   selectReportedByDropdown,
@@ -42,6 +43,7 @@ import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments
 
 import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
+import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
 import { Complaint as ComplaintDto } from "@apptypes/app/complaints/complaint";
 import { Delegate } from "@apptypes/app/people/delegate";
 import { UUID } from "crypto";
@@ -67,6 +69,7 @@ export const CreateComplaint: FC = () => {
   const attractantCodes = useAppSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useAppSelector(selectReportedByDropdown) as Option[];
   const violationTypeCodes = useAppSelector(selectViolationCodeDropdown(agency)) as Option[];
+  const generalIncidentTypeCodes = useAppSelector(selectGirTypeCodeDropdown) as Option[];
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
 
   const activeTab = useAppSelector(selectActiveTab);
@@ -106,6 +109,7 @@ export const CreateComplaint: FC = () => {
   const [complaintTypeMsg, setComplaintTypeMsg] = useState<string>("");
   const [natureOfComplaintErrorMsg, setNatureOfComplaintErrorMsg] = useState<string>("");
   const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
+  const [generalIncidentTypeErrorMsg, setGeneralIncidentTypeErrorMsg] = useState<string>("");
   const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
   const [complaintDescriptionErrorMsg, setComplaintDescriptionErrorMsg] = useState<string>("");
   const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
@@ -197,6 +201,7 @@ export const CreateComplaint: FC = () => {
       const {
         ersId,
         hwcrId,
+        girId,
         violation,
         isInProgress,
         wasObserved,
@@ -261,6 +266,21 @@ export const CreateComplaint: FC = () => {
         setNatureOfComplaintErrorMsg("");
 
         const complaint = { ...complaintData, violation: value } as AllegationComplaintDto;
+        applyComplaintData(complaint);
+      }
+    }
+  };
+
+  const handleGeneralIncidentTypeChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+
+      if (!value) {
+        setGeneralIncidentTypeErrorMsg("Required");
+      } else {
+        setGeneralIncidentTypeErrorMsg("");
+
+        const complaint = { ...complaintData, girType: value } as GeneralIncidentComplaintDto;
         applyComplaintData(complaint);
       }
     }
@@ -542,6 +562,15 @@ export const CreateComplaint: FC = () => {
           setViolationTypeErrorMsg("Required");
           result = true;
         }
+        break;
+      }
+      case "GIR": {
+        const { girType } = complaintData as GeneralIncidentComplaintDto;
+
+        if (!girType) {
+          setGeneralIncidentTypeErrorMsg("Required");
+          result = true;
+        }
 
         break;
       }
@@ -772,6 +801,32 @@ export const CreateComplaint: FC = () => {
                   placeholder="Select"
                   enableValidation={true}
                   errorMessage={violationTypeErrorMsg}
+                />
+              </div>
+            </div>
+          )}
+
+          {complaintType === COMPLAINT_TYPES.GIR && (
+            <div
+              className="comp-details-form-row"
+              id="general-incident-type-type-pair-id"
+            >
+              <label
+                id="general-incident-type-label-id"
+                htmlFor="general-incident-type-type-select-id"
+              >
+                General incident type<span className="required-ind">*</span>
+              </label>
+              <div className="comp-details-edit-input">
+                <CompSelect
+                  id="general-incident-type-type-select-id"
+                  classNamePrefix="comp-select"
+                  onChange={(e) => handleGeneralIncidentTypeChange(e)}
+                  className="comp-details-input"
+                  options={generalIncidentTypeCodes}
+                  placeholder="Select"
+                  enableValidation={true}
+                  errorMessage={generalIncidentTypeErrorMsg}
                 />
               </div>
             </div>
