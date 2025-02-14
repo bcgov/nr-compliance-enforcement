@@ -37,8 +37,16 @@ export class CdogsService implements ExternalApiService {
       "Content-Type": "application/json",
     };
 
-    this.logger.log(`Template not cached: `);
-    return false;
+    try {
+      const response: AxiosResponse = await get(apiToken, url, headers);
+      const { status } = response;
+      if (status === constants.HTTP_STATUS_OK) {
+        return true;
+      }
+    } catch (error) {
+      this.logger.log(`Template not cached: ${error}`);
+      return false;
+    }
   };
 
   private _getTemplateId = async (code: string) => {
