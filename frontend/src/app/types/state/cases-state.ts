@@ -1,7 +1,7 @@
 import { Assessment } from "@apptypes/outcomes/assessment";
 import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
 import { Prevention } from "@apptypes/outcomes/prevention";
-import { SupplementalNote } from "@apptypes/outcomes/supplemental-note";
+import { Note } from "@/app/types/outcomes/note";
 import { CaseAction } from "@apptypes/outcomes/case-action";
 import { AnimalTagV2 } from "@apptypes/app/complaints/outcomes/wildlife/animal-tag";
 import { DrugUsed } from "@apptypes/app/complaints/outcomes/wildlife/drug-used";
@@ -12,7 +12,7 @@ export interface CasesState {
   caseId: string | undefined;
   assessment: Assessment;
   prevention: Prevention;
-  note: SupplementalNote;
+  notes: Note[];
   isReviewRequired: boolean;
   reviewComplete?: Review | null;
   equipment: EquipmentDetailsDto[];
@@ -27,7 +27,7 @@ export interface IsInEdit {
   prevention: boolean;
   equipment: boolean;
   animal: boolean;
-  note: boolean;
+  notes: boolean;
   attachments: boolean;
   fileReview: boolean;
   showSectionErrors: boolean;

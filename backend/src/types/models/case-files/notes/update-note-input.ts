@@ -1,5 +1,6 @@
 import { BaseCaseFileInput } from "../base-case-file-input";
 
-export interface CreateSupplementalNotesInput extends BaseCaseFileInput {
+export interface UpdateNoteInput extends BaseCaseFileInput {
+  id: string;
   note: string;
 }

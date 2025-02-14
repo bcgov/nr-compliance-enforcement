@@ -19,9 +19,9 @@ import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { CaseFileDto } from "../../types/models/case-files/case-file";
 import { Token } from "../../auth/decorators/token.decorator";
-import { CreateSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/create-supplemental-notes-input";
-import { UpdateSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/update-supplemental-note-input";
-import { DeleteSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
+import { CreateNoteInput } from "../../types/models/case-files/notes/create-note-input";
+import { UpdateNoteInput } from "../../types/models/case-files/notes/update-note-input";
+import { DeleteNoteInput } from "../../types/models/case-files/notes/delete-note-input";
 import { FileReviewInput } from "../../types/models/case-files/file-review-input";
 import { CreateWildlifeInput } from "../../types/models/case-files/wildlife/create-wildlife-input";
 import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/delete-wildlife-outcome";
@@ -115,13 +115,13 @@ export class CaseFileController {
 
   @Post("/note")
   @Roles(coreRoles)
-  async createNote(@Token() token, @Body() model: CreateSupplementalNotesInput): Promise<CaseFileDto> {
+  async createNote(@Token() token, @Body() model: CreateNoteInput): Promise<CaseFileDto> {
     return await this.service.createNote(token, model);
   }
 
   @Patch("/note")
   @Roles(coreRoles)
-  async UpdateNote(@Token() token, @Body() model: UpdateSupplementalNotesInput): Promise<CaseFileDto> {
+  async UpdateNote(@Token() token, @Body() model: UpdateNoteInput): Promise<CaseFileDto> {
     return await this.service.updateNote(token, model);
   }
 
@@ -129,21 +129,19 @@ export class CaseFileController {
   @Roles(coreRoles)
   async deleteNote(
     @Token() token,
+    @Query("id") id: string,
     @Query("caseIdentifier") caseIdentifier: string,
-    @Query("leadIdentifier") leadIdentifier: string,
     @Query("actor") actor: string,
     @Query("updateUserId") updateUserId: string,
-    @Query("actionId") actionId: string,
   ): Promise<CaseFileDto> {
     const input = {
+      id,
       caseIdentifier,
-      leadIdentifier,
       actor,
       updateUserId,
-      actionId,
     };
 
-    return await this.service.deleteNote(token, input as DeleteSupplementalNotesInput);
+    return await this.service.deleteNote(token, input as DeleteNoteInput);
   }
 
   @Post("/wildlife")

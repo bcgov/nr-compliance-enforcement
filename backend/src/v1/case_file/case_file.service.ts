@@ -5,9 +5,9 @@ import { caseFileQueryFields, get, post } from "../../external_api/case_manageme
 import { CaseFileDto } from "src/types/models/case-files/case-file";
 import { REQUEST } from "@nestjs/core";
 import { AxiosResponse, AxiosError } from "axios";
-import { CreateSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/create-supplemental-notes-input";
-import { UpdateSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/update-supplemental-note-input";
-import { DeleteSupplementalNotesInput } from "../../types/models/case-files/supplemental-notes/delete-supplemental-notes-input";
+import { CreateNoteInput } from "../../types/models/case-files/notes/create-note-input";
+import { UpdateNoteInput } from "../../types/models/case-files/notes/update-note-input";
+import { DeleteNoteInput } from "../../types/models/case-files/notes/delete-note-input";
 import { ComplaintService } from "../complaint/complaint.service";
 import { ComplaintStatusCodeEnum } from "../../enum/complaint_status_code.enum";
 import { DeleteEquipmentDto } from "../../types/models/case-files/equipment/delete-equipment-dto";
@@ -468,12 +468,12 @@ export class CaseFileService {
     return returnValue;
   };
 
-  createNote = async (token: any, model: CreateSupplementalNotesInput): Promise<CaseFileDto> => {
+  createNote = async (token: any, model: CreateNoteInput): Promise<CaseFileDto> => {
     const result = await post(token, {
-      query: `mutation CreateNote($input: CreateSupplementalNoteInput!) {
+      query: `mutation CreateNote($input: CreateNoteInput!) {
         createNote(input: $input) {
           caseIdentifier
-          note { note, action { actor,date,actionCode, actionId } }
+          notes { note, actions { actor, date, actionCode, actionId } }
         }
       }`,
       variables: { input: model },
@@ -483,14 +483,14 @@ export class CaseFileService {
     return returnValue?.createNote;
   };
 
-  updateNote = async (token: any, model: UpdateSupplementalNotesInput): Promise<CaseFileDto> => {
+  updateNote = async (token: any, model: UpdateNoteInput): Promise<CaseFileDto> => {
     const leadIdentifier = model.leadIdentifier;
     delete model.leadIdentifier;
     const result = await post(token, {
-      query: `mutation UpdateNote($input: UpdateSupplementalNoteInput!) {
+      query: `mutation UpdateNote($input: UpdateNoteInput!) {
         updateNote(input: $input) {
           caseIdentifier
-          note { note, action { actor,date,actionCode, actionId } }
+          notes { note, actions { actor, date, actionCode, actionId } }
         }
       }`,
       variables: { input: model },
@@ -500,14 +500,14 @@ export class CaseFileService {
     return returnValue?.updateNote;
   };
 
-  deleteNote = async (token: any, model: DeleteSupplementalNotesInput): Promise<CaseFileDto> => {
+  deleteNote = async (token: any, model: DeleteNoteInput): Promise<CaseFileDto> => {
     const leadIdentifier = model.leadIdentifier;
     delete model.leadIdentifier;
     const result = await post(token, {
-      query: `mutation DeleteNote($input: DeleteSupplementalNoteInput!) {
+      query: `mutation DeleteNote($input: DeleteNoteInput!) {
         deleteNote(input: $input) {
           caseIdentifier
-          note { note, action { actor,date,actionCode, actionId } }
+          notes { note, actions { actor, date, actionCode, actionId } }
         }
       }`,
       variables: { input: model },

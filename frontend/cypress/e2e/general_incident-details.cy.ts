@@ -76,7 +76,7 @@ describe("COMPENF-37 Display ECR Details", () => {
     cy.get("#supporting-notes-textarea-id").click({ force: true }).clear().type("A");
     cy.get("#supporting-notes-save-button").click({ force: true });
     cy.waitForSpinner();
-    cy.get("#additional-notes-text").should("have.text", "A");
+    cy.get("#additional-note-text").should("have.text", "A");
     cy.get("#notes-delete-button").click({ force: true });
     cy.get("#confirm-delete-note-button").click({ force: true });
     cy.waitForSpinner();
