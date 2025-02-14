@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Entity, Column, PrimaryColumn } from "typeorm";
+import { ViolationAgencyXref } from "../../violation_agency_xref/entities/violation_agency_entity_xref";
+import { Entity, Column, PrimaryColumn, OneToMany } from "typeorm";
 
 @Entity()
 export class AgencyCode {
@@ -53,6 +54,9 @@ export class AgencyCode {
   })
   @Column()
   update_utc_timestamp: Date;
+
+  @OneToMany(() => ViolationAgencyXref, (violationAgencyXref) => violationAgencyXref.agency_code)
+  violationAgencyXrefs: ViolationAgencyXref[];
 
   constructor(agency_code?: string) {
     this.agency_code = agency_code;

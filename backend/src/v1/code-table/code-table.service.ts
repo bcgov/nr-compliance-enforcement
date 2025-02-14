@@ -58,41 +58,42 @@ import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/enti
 import { ComplaintMethodReceivedType } from "src/types/models/code-tables/complaint-method-received-type";
 import { ScheduleSectorXref } from "src/types/models/code-tables/schedule-sector-xref";
 import { CaseLocationCode } from "src/types/models/code-tables/case-location-code";
+import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
 
 @Injectable()
 export class CodeTableService {
   private readonly logger = new Logger(CodeTableService.name);
 
   @InjectRepository(AgencyCode)
-  private _agencyRepository: Repository<AgencyCode>;
+  private readonly _agencyRepository: Repository<AgencyCode>;
   @InjectRepository(AttractantCode)
-  private _attractantRepository: Repository<AttractantCode>;
+  private readonly _attractantRepository: Repository<AttractantCode>;
   @InjectRepository(ComplaintStatusCode)
-  private _complaintStatusRepository: Repository<ComplaintStatusCode>;
+  private readonly _complaintStatusRepository: Repository<ComplaintStatusCode>;
   @InjectRepository(HwcrComplaintNatureCode)
-  private _natureOfComplaintRepository: Repository<HwcrComplaintNatureCode>;
+  private readonly _natureOfComplaintRepository: Repository<HwcrComplaintNatureCode>;
   @InjectRepository(GeoOrgUnitTypeCode)
-  private _organizationUnitTypeRepository: Repository<GeoOrgUnitTypeCode>;
+  private readonly _organizationUnitTypeRepository: Repository<GeoOrgUnitTypeCode>;
   @InjectRepository(GeoOrganizationUnitCode)
-  private _organizationUnitRepository: Repository<GeoOrganizationUnitCode>;
+  private readonly _organizationUnitRepository: Repository<GeoOrganizationUnitCode>;
   @InjectRepository(PersonComplaintXrefCode)
-  private _personComplaintTypeRepository: Repository<PersonComplaintXrefCode>;
+  private readonly _personComplaintTypeRepository: Repository<PersonComplaintXrefCode>;
   @InjectRepository(SpeciesCode)
-  private _speciesRepository: Repository<SpeciesCode>;
-  @InjectRepository(ViolationCode)
-  private _violationsRepository: Repository<ViolationCode>;
+  private readonly _speciesRepository: Repository<SpeciesCode>;
+  @InjectRepository(ViolationAgencyXref)
+  private readonly _violationAgencyXrefRepository: Repository<ViolationAgencyXref>;
   @InjectRepository(CosGeoOrgUnit)
-  private _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
+  private readonly _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
   @InjectRepository(ComplaintTypeCode)
-  private _complaintTypetRepository: Repository<ComplaintTypeCode>;
+  private readonly _complaintTypetRepository: Repository<ComplaintTypeCode>;
   @InjectRepository(GirTypeCode)
-  private _girTypeCodeRepository: Repository<GirTypeCode>;
+  private readonly _girTypeCodeRepository: Repository<GirTypeCode>;
   @InjectRepository(ReportedByCode)
-  private _reportedByRepository: Repository<ReportedByCode>;
+  private readonly _reportedByRepository: Repository<ReportedByCode>;
   @InjectRepository(TeamCode)
-  private _teamCodeRepository: Repository<TeamCode>;
+  private readonly _teamCodeRepository: Repository<TeamCode>;
   @InjectRepository(CompMthdRecvCdAgcyCdXref)
-  private _compMthdRecvCdAgcyCdXrefRepository: Repository<CompMthdRecvCdAgcyCdXref>;
+  private readonly _compMthdRecvCdAgcyCdXrefRepository: Repository<CompMthdRecvCdAgcyCdXref>;
 
   getCodeTableByName = async (table: string, token?: string): Promise<BaseCodeTable[]> => {
     this.logger.debug("in code table: " + JSON.stringify(table));
@@ -261,20 +262,18 @@ export class CodeTableService {
         return results;
       }
       case "violation": {
-        const data = await this._violationsRepository.find({ order: { display_order: "ASC" } });
-        let results = data.map(
-          ({ violation_code, short_description, long_description, display_order, active_ind, agency_code }) => {
-            let table: Violation = {
-              violation: violation_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order,
-              isActive: active_ind,
-              agencyCode: agency_code,
-            };
-            return table;
-          },
-        );
+        const data = await this._violationAgencyXrefRepository.find();
+        let results = data.map(({ violation_code, agency_code, active_ind }) => {
+          let table: Violation = {
+            violation: violation_code.violation_code,
+            shortDescription: violation_code.short_description,
+            longDescription: violation_code.long_description,
+            displayOrder: violation_code.display_order,
+            agencyCode: agency_code.agency_code,
+            isActive: active_ind,
+          };
+          return table;
+        });
         return results;
       }
       case "complaint-type": {
