@@ -77,7 +77,7 @@ import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { ExternalFileReference } from "@components/containers/complaints/outcomes/external-file-reference";
 import { getCaseFile } from "@/app/store/reducers/case-thunks";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
-
+import { RootState } from "@/app/store/store";
 
 export type ComplaintParams = {
   id: string;
@@ -146,8 +146,11 @@ export const ComplaintDetailsEdit: FC = () => {
   const violationTypeCodes = useSelector(selectViolationCodeDropdown(agency)) as Option[];
   const girTypeCodes = useSelector(selectGirTypeCodeDropdown) as Option[];
 
-  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
-  const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
+  const officersInAgencyList = useSelector((state: RootState) =>
+    selectOfficersByAgency(state, ownedByAgencyCode?.agency),
+  );
+  const officerList = useSelector((state: RootState) => selectOfficersByAgency(state, ownedByAgencyCode?.agency));
+
   let assignableOfficers: Option[] =
     officersInAgencyList !== null
       ? officersInAgencyList.map((officer: Officer) => ({

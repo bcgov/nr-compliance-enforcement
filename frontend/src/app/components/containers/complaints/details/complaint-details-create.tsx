@@ -52,6 +52,8 @@ import { getUserAgency } from "@service/user-service";
 import { useSelector } from "react-redux";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { FeatureFlag } from "@components/common/feature-flag";
+import { Roles } from "@/app/types/app/roles";
+import { RootState } from "@/app/store/store";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -59,7 +61,8 @@ export const CreateComplaint: FC = () => {
 
   const userid = useAppSelector(userId);
   const agency = getUserAgency();
-  const officerList = useAppSelector(selectOfficersByAgency(agency));
+  const officerList = useSelector((state: RootState) => selectOfficersByAgency(state, agency));
+  const [assignableOfficers, setAssignableOfficers] = useState<Option[]>([]);
   const speciesCodes = useAppSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
   const complaintTypeCodes = useAppSelector(selectCreatableComplaintTypeDropdown) as Option[];
@@ -75,12 +78,17 @@ export const CreateComplaint: FC = () => {
     setComplaintAttachmentCount(count);
   };
 
-  let assignableOfficers: Option[] = officerList
-    ? officerList.map((officer: Officer) => ({
+  // Initialize the assignableOfficers when the page first loads
+  useEffect(() => {
+    if (officerList) {
+      const initialAssignableOfficers = officerList.map((officer: Officer) => ({
         value: officer.person_guid.person_guid,
         label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-      }))
-    : [];
+      }));
+
+      setAssignableOfficers(initialAssignableOfficers);
+    }
+  }, [officerList]);
 
   const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
@@ -186,12 +194,39 @@ export const CreateComplaint: FC = () => {
     handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
   };
 
+  const refreshOfficers = (complaintType: string) => {
+    if (complaintType !== COMPLAINT_TYPES.HWCR) {
+      const filteredOfficers = officerList
+        ? officerList
+            .filter((officer: Officer) => !officer.user_roles.includes(Roles.HWCR_ONLY)) // Filter out officers with the specified role
+            .map((officer: Officer) => ({
+              value: officer.person_guid.person_guid,
+              label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+            }))
+        : [];
+
+      setAssignableOfficers(filteredOfficers); // Set the filtered officers as options
+    } else {
+      // it is an HWCR
+      const allOfficers = officerList
+        ? officerList.map((officer: Officer) => ({
+            value: officer.person_guid.person_guid,
+            label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+          }))
+        : [];
+
+      setAssignableOfficers(allOfficers); // Set all officers as options
+    }
+  };
+
   const handleComplaintChange = (selected: Option | null) => {
     if (selected?.value) {
       const { value } = selected;
 
       setComplaintTypeMsg("");
       setComplaintType(value);
+
+      refreshOfficers(value);
 
       //-- remove all of the properties associated with a wildlife or allegation complaint
       const {

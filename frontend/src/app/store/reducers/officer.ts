@@ -390,14 +390,13 @@ const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] =
   return result;
 };
 
-export const selectOfficersByAgency =
-  (agency: string) =>
-  (state: RootState): Officer[] | null => {
-    const { officers: officerRoot } = state;
-    const { officers } = officerRoot;
-    const result = filterOfficerByAgency(agency, officers);
-    return result;
-  };
+export const selectOfficersByAgency = createSelector(
+  (state: RootState) => state.officers.officers,
+  (state: RootState, agency: string) => agency,
+  (officers, agency) => {
+    return filterOfficerByAgency(agency, officers);
+  },
+);
 
 export const selectOfficerListByAgency = createSelector(
   [selectOfficers, selectComplaint],

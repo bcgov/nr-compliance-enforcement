@@ -28,6 +28,8 @@ import "@assets/sass/hwcr-assessment.scss";
 import { Prevention } from "@apptypes/outcomes/prevention";
 import { selectPrevention } from "@store/reducers/case-selectors";
 import { upsertPrevention } from "@store/reducers/case-thunks";
+import { RootState } from "@/app/store/store";
+import { useSelector } from "react-redux";
 
 export const HWCRComplaintPrevention: FC = () => {
   const dispatch = useAppDispatch();
@@ -55,7 +57,9 @@ export const HWCRComplaintPrevention: FC = () => {
   const preventionState = useAppSelector(selectPrevention);
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
-  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
+  const officersInAgencyList = useSelector(
+    (state: RootState) => selectOfficersByAgency(state, ownedByAgencyCode?.agency), // Pass agency here
+  );
   const assignableOfficers = useAppSelector(selectOfficerListByAgency);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
