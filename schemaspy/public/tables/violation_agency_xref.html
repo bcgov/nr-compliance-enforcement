@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>team - default.public</title>
+        <title>violation_agency_xref - default.public</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>team</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <h1>violation_agency_xref</h1><p><span id="recordNumber">-1</span> rows</p><br />
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <i class="fa fa-file-text-o"></i>
@@ -84,7 +84,7 @@
                             </div>
                         </div><!-- /.box-header -->
                         <div class="box-body clearfix">
-                            <p>Contains a list of TEAM types</p>
+                            <p>Used to track the relationship type between an agency and a violation code.  For example: violation code &lsquo;WASTE&rsquo; is only used by EPO (CEEB) but &lsquo;WILDLIFE&rsquo; is used by both COS and PARKS</p>
                         </div><!-- /.box-body -->
                     </div>
                 </section>
@@ -122,7 +122,7 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="team_guid">team_guid</span></td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="violation_agency_xref_guid">violation_agency_xref_guid</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
                                     <td title=''></td>
@@ -130,23 +130,18 @@
                                     <td>uuid_generate_v4()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="officer_team_xref.team_guid references team.team_guid via officer_team_xref_team_fk"><a href='officer_team_xref.html'>officer_team_xref</a><span class='relatedKey'>.team_guid</span></td>
-                                                <td class="constraint detail">officer_team_xref_team_fk</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
                                         </table>
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>A system generated guid to uniquely identify a TEAM</p></td>
+                                    <td><p>A human readable code used to identify a relationship type between an agency and a violation code.</p></td>
                                 </tr>
                                 <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="team_code">team_code</span></td>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="violation_code">violation_code</span></td>
                                     <td>varchar</td>
-                                    <td>15</td>
+                                    <td>10</td>
                                     <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -157,18 +152,18 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="team.team_code references team_code.team_code via team_team_code_fk"><a href='team_code.html'>team_code</a><span class='relatedKey'>.team_code</span></td>
-                                                <td class="constraint detail">team_team_code_fk</td>
+                                                <td title="violation_agency_xref.violation_code references violation_code.violation_code via FK_violation_agency_xref__violation_code"><a href='violation_code.html'>violation_code</a><span class='relatedKey'>.violation_code</span></td>
+                                                <td class="constraint detail">FK_violation_agency_xref__violation_code</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td><p>A human readable code used to identify a TEAM</p></td>
+                                    <td><p>A human readable code used to identify a violation.</p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="agency_code">agency_code</span></td>
                                     <td>varchar</td>
-                                    <td>6</td>
+                                    <td>10</td>
                                     <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -179,13 +174,81 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="team.agency_code references agency_code.agency_code via team_agency_code_fk"><a href='agency_code.html'>agency_code</a><span class='relatedKey'>.agency_code</span></td>
-                                                <td class="constraint detail">team_agency_code_fk</td>
+                                                <td title="violation_agency_xref.agency_code references agency_code.agency_code via FK_violation_agency_xref__agency_code"><a href='agency_code.html'>agency_code</a><span class='relatedKey'>.agency_code</span></td>
+                                                <td class="constraint detail">FK_violation_agency_xref__agency_code</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>A human readable code used to identify an agency.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="create_user_id">create_user_id</span></td>
+                                    <td>varchar</td>
+                                    <td>32</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The id of the user that created the relationship between an agency and a violation code.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="create_utc_timestamp">create_utc_timestamp</span></td>
+                                    <td>timestamp</td>
+                                    <td>29,6</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>now()</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The timestamp when the relationship between an agency and a violation code was created.  The timestamp is stored in UTC with no Offset.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="update_user_id">update_user_id</span></td>
+                                    <td>varchar</td>
+                                    <td>32</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The id of the user that updated the relationship between an agency and a violation code.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="update_utc_timestamp">update_utc_timestamp</span></td>
+                                    <td>timestamp</td>
+                                    <td>29,6</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>now()</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The timestamp when the relationship between an agency and a violation code was updated.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="active_ind">active_ind</span></td>
@@ -202,75 +265,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>A boolean indicator to determine if the TEAM is active.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="create_user_id">create_user_id</span></td>
-                                    <td>varchar</td>
-                                    <td>32</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The id of the user that created the TEAM.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="create_utc_timestamp">create_utc_timestamp</span></td>
-                                    <td>timestamp</td>
-                                    <td>29,6</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The timestamp when the TEAM was created.  The timestamp is stored in UTC with no Offset.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="update_user_id">update_user_id</span></td>
-                                    <td>varchar</td>
-                                    <td>32</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The id of the user that updated the TEAM</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="update_utc_timestamp">update_utc_timestamp</span></td>
-                                    <td>timestamp</td>
-                                    <td>29,6</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The timestamp when the TEAM was updated.  The timestamp is stored in UTC with no Offset.</p></td>
+                                    <td><p>A boolean indicator to determine if the relationship type between an agency and a violation code is active.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -303,16 +298,10 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> team_pk</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_violation_agency_xref_guid</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>team_guid</td>
-                                </tr>
-                                <tr>
-                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> team_un</td>
-                                    <td>Must be unique</td>
-                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
-                                    <td>team_code + agency_code</td>
+                                    <td>violation_agency_xref_guid</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -337,28 +326,26 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="officer_team_xref.html" target="_top" title="officer_team_xref" alt="" coords="692,5,924,181">
-<area shape="rect" id="node2" href="team.html" target="_top" title="team" alt="" coords="281,61,648,365">
-<area shape="rect" id="node3" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,175,237,292">
-<area shape="rect" id="node4" href="team_code.html" target="_top" title="team_code" alt="" coords="5,40,237,157">
+<area shape="rect" id="node1" href="violation_agency_xref.html" target="_top" title="violation_agency_xref" alt="" coords="281,27,677,331">
+<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,140,237,257">
+<area shape="rect" id="node3" href="violation_code.html" target="_top" title="violation_code" alt="" coords="5,5,237,123">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/team.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/violation_agency_xref.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="292,5,637,93">
-<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,249,237,367">
-<area shape="rect" id="node3" href="complaint.html" target="_top" title="complaint" alt="" coords="728,40,888,128">
-<area shape="rect" id="node4" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="341,147,588,235">
-<area shape="rect" id="node5" href="feature_agency_xref.html" target="_top" title="feature_agency_xref" alt="" coords="345,252,585,340">
-<area shape="rect" id="node6" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="334,357,595,445">
-<area shape="rect" id="node7" href="officer_team_xref.html" target="_top" title="officer_team_xref" alt="" coords="692,576,924,752">
-<area shape="rect" id="node8" href="officer.html" target="_top" title="officer" alt="" coords="399,568,531,656">
-<area shape="rect" id="node9" href="team.html" target="_top" title="team" alt="" coords="281,673,648,977">
-<area shape="rect" id="node10" href="team_code.html" target="_top" title="team_code" alt="" coords="5,705,237,823">
-<area shape="rect" id="node11" href="violation_agency_xref.html" target="_top" title="violation_agency_xref" alt="" coords="339,463,591,551">
+<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="1021,200,1268,288">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="707,73,867,161">
+<area shape="rect" id="node3" href="violation_code.html" target="_top" title="violation_code" alt="" coords="671,251,903,368">
+<area shape="rect" id="node4" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="281,5,627,93">
+<area shape="rect" id="node5" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,249,237,367">
+<area shape="rect" id="node6" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="331,147,577,235">
+<area shape="rect" id="node7" href="feature_agency_xref.html" target="_top" title="feature_agency_xref" alt="" coords="334,252,574,340">
+<area shape="rect" id="node8" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="323,357,585,445">
+<area shape="rect" id="node9" href="team.html" target="_top" title="team" alt="" coords="393,463,515,551">
+<area shape="rect" id="node10" href="violation_agency_xref.html" target="_top" title="violation_agency_xref" alt="" coords="947,395,1343,699">
 </map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/team.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/violation_agency_xref.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>
