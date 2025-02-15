@@ -1,7 +1,6 @@
 agency_code
 person
 spatial_ref_sys
-violation_code
 attractant_code
 complaint_method_received_code
 complaint_status_code
@@ -21,6 +20,7 @@ comp_mthd_recv_cd_agcy_cd_xref
 complaint
 office
 complaint_update
+violation_code
 officer
 team
 hwcr_complaint
@@ -33,7 +33,6 @@ feature_agency_xref
 gir_complaint
 linked_complaint_xref
 officer_team_xref
-violation_agency_xref
 geo_org_unit_structure
 person_complaint_xref
 staging_complaint

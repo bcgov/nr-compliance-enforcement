@@ -44,7 +44,7 @@
             <child column="agency_code" foreignKey="FK_agencycode" implied="false" onDeleteCascade="false" schema="public" table="feature_agency_xref"/>
             <child column="agency_code" foreignKey="FK_gorgustrct_agencycode" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_structure"/>
             <child column="agency_code" foreignKey="team_agency_code_fk" implied="false" onDeleteCascade="false" schema="public" table="team"/>
-            <child column="agency_code" foreignKey="FK_violation_agency_xref__agency_code" implied="false" onDeleteCascade="false" schema="public" table="violation_agency_xref"/>
+            <child column="agency_code" foreignKey="FK_violation_code_agency_code" implied="false" onDeleteCascade="false" schema="public" table="violation_code"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the agency code." size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the agency code." size="250" type="varchar" typeCode="12"/>
@@ -1027,28 +1027,9 @@
             <column ascending="true" name="h_team_guid"/>
          </index>
       </table>
-      <table name="violation_agency_xref" remarks="Used to track the relationship type between an agency and a violation code.  For example: violation code 'WASTE' is only used by EPO (CEEB) but 'WILDLIFE' is used by both COS and PARKS" schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="violation_agency_xref_guid" nullable="false" remarks="A human readable code used to identify a relationship type between an agency and a violation code." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="violation_code" nullable="false" remarks="A human readable code used to identify a violation." size="10" type="varchar" typeCode="12">
-            <parent column="violation_code" foreignKey="FK_violation_agency_xref__violation_code" implied="false" onDeleteCascade="false" schema="public" table="violation_code"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code" nullable="false" remarks="A human readable code used to identify an agency." size="10" type="varchar" typeCode="12">
-            <parent column="agency_code" foreignKey="FK_violation_agency_xref__agency_code" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_id" nullable="false" remarks="The id of the user that created the relationship between an agency and a violation code." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the relationship between an agency and a violation code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="false" remarks="The id of the user that updated the relationship between an agency and a violation code." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the relationship between an agency and a violation code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="true" digits="0" id="7" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the relationship type between an agency and a violation code is active." size="1" type="bool" typeCode="-7"/>
-         <primaryKey column="violation_agency_xref_guid" sequenceNumberInPK="1"/>
-         <index name="PK_violation_agency_xref_guid" unique="true">
-            <column ascending="true" name="violation_agency_xref_guid"/>
-         </index>
-      </table>
       <table name="violation_code" remarks="The alleged violation involved in the complaint.   (E.g. ORV = Off Road Vehicles; PESTICDE = Pesticide)" schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="violation_code" nullable="false" remarks="A human readable code used to identify a violation." size="10" type="varchar" typeCode="12">
             <child column="violation_code" foreignKey="FK_algtncmplt_violatncd" implied="false" onDeleteCascade="false" schema="public" table="allegation_complaint"/>
-            <child column="violation_code" foreignKey="FK_violation_agency_xref__violation_code" implied="false" onDeleteCascade="false" schema="public" table="violation_agency_xref"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the violation code." size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the violation code." size="250" type="varchar" typeCode="12"/>
@@ -1058,6 +1039,9 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the violation code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the violation code." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the violation code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="'COS'::character varying" digits="0" id="9" name="agency_code" nullable="false" remarks="A human readable code used to identify an agency." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_violation_code_agency_code" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
          <primaryKey column="violation_code" sequenceNumberInPK="1"/>
          <index name="PK_violatncd" unique="true">
             <column ascending="true" name="violation_code"/>
