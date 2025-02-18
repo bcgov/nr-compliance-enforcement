@@ -74,6 +74,7 @@ export const SelectUser: FC<SelectUserProps> = ({
               <dd>
                 <CompSelect
                   id="species-select-id"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   onChange={(evt) => handleOfficerChange(evt)}
                   classNames={{
