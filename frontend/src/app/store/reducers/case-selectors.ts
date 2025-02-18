@@ -3,7 +3,7 @@ import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details"
 import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
 import { Assessment } from "@apptypes/outcomes/assessment";
 import { Prevention } from "@apptypes/outcomes/prevention";
-import { SupplementalNote } from "@apptypes/outcomes/supplemental-note";
+import { Note } from "@/app/types/outcomes/note";
 import { AnimalOutcomeSubject, Subject } from "@apptypes/state/cases-state";
 import { RootState } from "@store/store";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
@@ -41,46 +41,7 @@ export const selectIsReviewRequired = (state: RootState): boolean => state.cases
 
 export const selectReviewComplete = (state: RootState): any => state.cases.reviewComplete;
 
-export const selectSupplementalNote = (state: RootState): SupplementalNote => {
-  const {
-    cases: { note },
-  } = state;
-
-  return !note?.note ? { ...note, note: "" } : note;
-};
-
-export const selectNotesOfficer = (state: RootState) => {
-  const {
-    app: { profile },
-    cases: {
-      note: { action },
-    },
-    officers: { officers: data },
-  } = state;
-
-  let currentOfficer: { initials: string; displayName: string } = { initials: "UN", displayName: "Unknown" };
-
-  if (!action) {
-    currentOfficer = {
-      initials: `${profile.surName?.substring(0, 1)}${profile.givenName?.substring(0, 1)}`,
-      displayName: `${profile.surName}, ${profile.givenName}`,
-    };
-  } else {
-    const { actor } = action;
-    const officer = data.find((item) => item.auth_user_guid === actor);
-    if (officer) {
-      const {
-        person_guid: { first_name: givenName, last_name: surName },
-      } = officer;
-      currentOfficer = {
-        initials: `${surName?.substring(0, 1)}${givenName?.substring(0, 1)}`,
-        displayName: `${surName}, ${givenName}`,
-      };
-    }
-  }
-
-  return currentOfficer;
-};
+export const selectNotes = (state: RootState): Note[] => state.cases.notes;
 
 export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcome> => {
   const {

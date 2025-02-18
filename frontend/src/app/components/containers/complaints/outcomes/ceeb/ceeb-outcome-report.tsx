@@ -6,7 +6,7 @@ import { getCaseFile } from "@store/reducers/case-thunks";
 import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
 import { OutcomeAttachments } from "@components/containers/complaints/outcomes/outcome-attachments";
 import { AuthoizationOutcome } from "./authorization-outcome/authorization-outcome";
-import { SupplementalNote } from "@components/containers/complaints/outcomes/supplemental-note";
+import { Notes } from "@/app/components/containers/complaints/outcomes/notes";
 
 export const CeebOutcomeReport: FC = () => {
   const { id = "" } = useParams<ComplaintParams>();
@@ -25,7 +25,7 @@ export const CeebOutcomeReport: FC = () => {
       </div>
       <AuthoizationOutcome />
       <CeebDecision />
-      <SupplementalNote />
+      <Notes />
       <OutcomeAttachments showAddButton={true} />
     </section>
   );
