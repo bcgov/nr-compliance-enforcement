@@ -29,6 +29,8 @@ import { CompRadioGroup } from "@components/common/comp-radiogroup";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { CompInput } from "@/app/components/common/comp-input";
+import { RootState } from "@/app/store/store";
+import { useSelector } from "react-redux";
 
 export interface EquipmentFormProps {
   equipment?: EquipmentDetailsDto;
@@ -66,7 +68,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const { id = "" } = useParams<{ id: string }>();
   const complaintData = useAppSelector(selectComplaint);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
-  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
+  const officersInAgencyList = useSelector(
+    (state: RootState) => selectOfficersByAgency(state, ownedByAgencyCode?.agency), // Pass agency here
+  );
   const equipmentDropdownOptions = useAppSelector(selectActiveEquipmentDropdown);
   const trapEquipment = useAppSelector(selectTrapEquipment);
   const hasQuantityEquipment = useAppSelector(selectHasQuantityEquipment);

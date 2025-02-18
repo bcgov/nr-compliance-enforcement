@@ -10,7 +10,7 @@ import {
   selectPrevention,
   selectEquipment,
   selectSubject,
-  selectSupplementalNote,
+  selectNotes,
   selectIsReviewRequired,
   selectReviewComplete,
 } from "@store/reducers/case-selectors";
@@ -89,7 +89,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   const equipmentData = useAppSelector(selectEquipment);
   const preventionData = useAppSelector(selectPrevention);
   const subjectData = useAppSelector(selectSubject);
-  const noteData = useAppSelector(selectSupplementalNote);
+  const notesData = useAppSelector(selectNotes);
   const isReviewRequired = useAppSelector(selectIsReviewRequired);
   const reviewComplete = useAppSelector(selectReviewComplete);
 
@@ -100,7 +100,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
     equipmentData?.length > 0 ||
     preventionData?.date !== undefined ||
     subjectData?.length > 0 ||
-    noteData?.note ||
+    notesData?.length > 0 ||
     isReviewRequired ||
     reviewComplete;
   const isClosed = complaintData?.status === "CLOSED";

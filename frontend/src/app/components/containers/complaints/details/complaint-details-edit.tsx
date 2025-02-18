@@ -77,7 +77,8 @@ import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { ExternalFileReference } from "@components/containers/complaints/outcomes/external-file-reference";
 import { getCaseFile } from "@/app/store/reducers/case-thunks";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
-
+import { RootState } from "@/app/store/store";
+import { Roles } from "@/app/types/app/roles";
 
 export type ComplaintParams = {
   id: string;
@@ -146,14 +147,22 @@ export const ComplaintDetailsEdit: FC = () => {
   const violationTypeCodes = useSelector(selectViolationCodeDropdown(agency)) as Option[];
   const girTypeCodes = useSelector(selectGirTypeCodeDropdown) as Option[];
 
-  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
-  const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
+  const officersInAgencyList = useSelector((state: RootState) =>
+    selectOfficersByAgency(state, ownedByAgencyCode?.agency),
+  );
+  const officerList = useSelector((state: RootState) => selectOfficersByAgency(state, ownedByAgencyCode?.agency));
+
   let assignableOfficers: Option[] =
     officersInAgencyList !== null
-      ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-        }))
+      ? officersInAgencyList
+          .filter(
+            (officer: Officer) =>
+              complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+          ) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR
+          .map((officer: Officer) => ({
+            value: officer.person_guid.person_guid,
+            label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+          }))
       : [];
 
   assignableOfficers.unshift({ value: "Unassigned", label: "None" });
