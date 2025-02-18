@@ -117,11 +117,14 @@
     }
   }
 
-  .comp-outcome-supporting-notes {
+  .comp-outcome-notes {
     margin-bottom: 24px;
     border: 1px solid $gray-300;
-    border-radius: 3px;
-    padding: 24px;
+    padding: 12px;
+  }
+
+  .comp-outcome-notes-fade {
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0) 100%);
   }
 
   .comp-outcome-report-actions {
@@ -452,16 +455,56 @@
   }
 }
 
-.comp-equipment-item-header-actions {
+.comp-outcome-notes {
+  margin-bottom: 24px;
+  border: 1px solid $gray-300;
+  padding: 12px;
+}
+
+.comp-outcome-notes-fade {
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0) 100%);
+}
+
+.comp-outcome-notes-tooltip {
+  width: fit-content;
+  color: $bc-gov-primary-700;
+  .tooltip-arrow::before {
+    border-right-color: $bc-gov-primary-700;
+    color: $white;
+  }
+  .tooltip-inner {
+    background-color: $bc-gov-primary-700;
+    color: $white;
+    font-size: 12px;
+    max-width: 400px;
+  }
+}
+
+.comp-outcome-notes-expand-collapse-button {
+  position: absolute;
+  right: 0;
+  padding-right: 24px;
+}
+
+.comp-outcome-notes-note {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  border: transparent;
+  border-style: none;
+  font: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  text-align: inherit;
+}
+
+// OUTCOME REPORT - GENERIC
+.comp-outcome-item-header-actions {
   display: flex;
   gap: 8px;
 }
 
-.comp-outcome-supporting-notes {
-  margin-bottom: 24px;
-}
-
-// OUTCOME REPORT - GENERIC
 .comp-outcome-report-form {
   fieldset + fieldset {
     margin-top: 32px;

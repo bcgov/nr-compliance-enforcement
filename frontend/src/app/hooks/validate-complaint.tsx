@@ -70,7 +70,7 @@ const useValidateComplaint = () => {
         !isInEdit.prevention &&
         !isInEdit.equipment &&
         !isInEdit.animal &&
-        !isInEdit.note &&
+        !isInEdit.notes &&
         !isInEdit.attachments &&
         !isInEdit.fileReview;
 
@@ -79,7 +79,7 @@ const useValidateComplaint = () => {
         !isInEdit.prevention &&
         !isInEdit.equipment &&
         !isInEdit.animal &&
-        !isInEdit.note &&
+        !isInEdit.notes &&
         !isInEdit.attachments &&
         !isInEdit.fileReview;
 
