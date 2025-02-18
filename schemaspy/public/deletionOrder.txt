@@ -18,6 +18,7 @@ action_taken_h
 staging_complaint
 person_complaint_xref
 geo_org_unit_structure
+violation_agency_xref
 officer_team_xref
 linked_complaint_xref
 gir_complaint
@@ -30,7 +31,6 @@ complaint_type_code
 hwcr_complaint
 team
 officer
-violation_code
 complaint_update
 office
 complaint
@@ -50,6 +50,7 @@ entity_code
 complaint_status_code
 complaint_method_received_code
 attractant_code
+violation_code
 spatial_ref_sys
 person
 agency_code
