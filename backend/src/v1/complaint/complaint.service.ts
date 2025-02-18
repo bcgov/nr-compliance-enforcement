@@ -2086,7 +2086,7 @@ export class ComplaintService {
           .person_guid;
 
         note.actions[0].actor = last_name + ", " + first_name;
-        note.actions[0].date = _applyTimezone(note.actions[0].date, tz, "date");
+        note.actions[0].date = _applyTimezone(note.actions[0].date, tz, "datetime");
         //give it a nice friendly number as nothing comes back from the GQL
         note.order = noteCount;
         noteCount++;
