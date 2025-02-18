@@ -77,6 +77,7 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
         </label>
         <CompSelect
           id={`comp-ear-tag-${id}`}
+          showInactive={false}
           classNamePrefix="comp-select"
           className="comp-details-input comp-ear-tag-side-input"
           options={ears}

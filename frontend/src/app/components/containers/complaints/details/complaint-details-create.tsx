@@ -20,6 +20,7 @@ import {
   selectCommunityCodeDropdown,
   selectComplaintReceivedMethodDropdown,
   selectCreatableComplaintTypeDropdown,
+  selectGirTypeCodeDropdown,
   selectHwcrNatureOfComplaintCodeDropdown,
   selectPrivacyDropdown,
   selectReportedByDropdown,
@@ -42,16 +43,19 @@ import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments
 
 import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
+import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
 import { Complaint as ComplaintDto } from "@apptypes/app/complaints/complaint";
 import { Delegate } from "@apptypes/app/people/delegate";
 import { UUID } from "crypto";
 import { AttractantXref } from "@apptypes/app/complaints/attractant-xref";
 import { ComplaintAlias } from "@apptypes/app/aliases";
 import AttachmentEnum from "@constants/attachment-enum";
-import { getUserAgency } from "@service/user-service";
+import UserService, { getUserAgency } from "@service/user-service";
 import { useSelector } from "react-redux";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { FeatureFlag } from "@components/common/feature-flag";
+import { Roles } from "@/app/types/app/roles";
+import { RootState } from "@/app/store/store";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -59,7 +63,8 @@ export const CreateComplaint: FC = () => {
 
   const userid = useAppSelector(userId);
   const agency = getUserAgency();
-  const officerList = useAppSelector(selectOfficersByAgency(agency));
+  const officerList = useSelector((state: RootState) => selectOfficersByAgency(state, agency));
+  const [assignableOfficers, setAssignableOfficers] = useState<Option[]>([]);
   const speciesCodes = useAppSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
   const complaintTypeCodes = useAppSelector(selectCreatableComplaintTypeDropdown) as Option[];
@@ -67,6 +72,7 @@ export const CreateComplaint: FC = () => {
   const attractantCodes = useAppSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useAppSelector(selectReportedByDropdown) as Option[];
   const violationTypeCodes = useAppSelector(selectViolationCodeDropdown(agency)) as Option[];
+  const generalIncidentTypeCodes = useAppSelector(selectGirTypeCodeDropdown) as Option[];
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
 
   const activeTab = useAppSelector(selectActiveTab);
@@ -75,12 +81,25 @@ export const CreateComplaint: FC = () => {
     setComplaintAttachmentCount(count);
   };
 
-  let assignableOfficers: Option[] = officerList
-    ? officerList.map((officer: Officer) => ({
+  // Initialize the assignableOfficers when the page first loads
+  useEffect(() => {
+    if (officerList) {
+      const initialAssignableOfficers = officerList.map((officer: Officer) => ({
         value: officer.person_guid.person_guid,
         label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-      }))
-    : [];
+      }));
+
+      setAssignableOfficers(initialAssignableOfficers);
+    }
+  }, [officerList]);
+
+  //Only remove all options but HWCR for HWCR only
+  let selectableComplaintTypeCodes = complaintTypeCodes;
+  if (UserService.hasRole(Roles.HWCR_ONLY)) {
+    selectableComplaintTypeCodes = complaintTypeCodes.filter(
+      (complaintType) => complaintType.value === COMPLAINT_TYPES.HWCR,
+    );
+  }
 
   const yesNoOptions: Option[] = [
     { value: "Yes", label: "Yes" },
@@ -106,6 +125,7 @@ export const CreateComplaint: FC = () => {
   const [complaintTypeMsg, setComplaintTypeMsg] = useState<string>("");
   const [natureOfComplaintErrorMsg, setNatureOfComplaintErrorMsg] = useState<string>("");
   const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
+  const [generalIncidentTypeErrorMsg, setGeneralIncidentTypeErrorMsg] = useState<string>("");
   const [speciesErrorMsg, setSpeciesErrorMsg] = useState<string>("");
   const [complaintDescriptionErrorMsg, setComplaintDescriptionErrorMsg] = useState<string>("");
   const [communityErrorMsg, setCommunityErrorMsg] = useState<string>("");
@@ -186,6 +206,22 @@ export const CreateComplaint: FC = () => {
     handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
   };
 
+  const refreshOfficers = (complaintType: string) => {
+    const filteredOfficers = officerList
+      ? officerList
+          .filter(
+            (officer: Officer) =>
+              complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+          ) // Filter out officers with the specified role
+          .map((officer: Officer) => ({
+            value: officer.person_guid.person_guid,
+            label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+          }))
+      : [];
+
+    setAssignableOfficers(filteredOfficers); // Set the filtered officers as options
+  };
+
   const handleComplaintChange = (selected: Option | null) => {
     if (selected?.value) {
       const { value } = selected;
@@ -193,10 +229,13 @@ export const CreateComplaint: FC = () => {
       setComplaintTypeMsg("");
       setComplaintType(value);
 
+      refreshOfficers(value);
+
       //-- remove all of the properties associated with a wildlife or allegation complaint
       const {
         ersId,
         hwcrId,
+        girId,
         violation,
         isInProgress,
         wasObserved,
@@ -261,6 +300,21 @@ export const CreateComplaint: FC = () => {
         setNatureOfComplaintErrorMsg("");
 
         const complaint = { ...complaintData, violation: value } as AllegationComplaintDto;
+        applyComplaintData(complaint);
+      }
+    }
+  };
+
+  const handleGeneralIncidentTypeChange = (selected: Option | null) => {
+    if (selected) {
+      const { value } = selected;
+
+      if (!value) {
+        setGeneralIncidentTypeErrorMsg("Required");
+      } else {
+        setGeneralIncidentTypeErrorMsg("");
+
+        const complaint = { ...complaintData, girType: value } as GeneralIncidentComplaintDto;
         applyComplaintData(complaint);
       }
     }
@@ -542,6 +596,15 @@ export const CreateComplaint: FC = () => {
           setViolationTypeErrorMsg("Required");
           result = true;
         }
+        break;
+      }
+      case "GIR": {
+        const { girType } = complaintData as GeneralIncidentComplaintDto;
+
+        if (!girType) {
+          setGeneralIncidentTypeErrorMsg("Required");
+          result = true;
+        }
 
         break;
       }
@@ -645,7 +708,7 @@ export const CreateComplaint: FC = () => {
 
         <fieldset>
           {/* Complaint Type */}
-          {agency === "COS" && (
+          {(agency === "COS" || agency === "PARKS") && (
             <div
               className="comp-details-form-row"
               id="nature-of-complaint-pair-id"
@@ -659,11 +722,12 @@ export const CreateComplaint: FC = () => {
               <div className="comp-details-edit-input">
                 <CompSelect
                   id="complaint-type-select-id"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   onChange={(e) => handleComplaintChange(e)}
                   className="comp-details-input"
-                  options={complaintTypeCodes}
-                  defaultOption={complaintTypeCodes.find((option) => option.value === complaintType)}
+                  options={selectableComplaintTypeCodes}
+                  defaultOption={selectableComplaintTypeCodes.find((option) => option.value === complaintType)}
                   placeholder="Select"
                   enableValidation={true}
                   errorMessage={complaintTypeMsg}
@@ -684,6 +748,7 @@ export const CreateComplaint: FC = () => {
             <div className="comp-details-edit-input">
               <CompSelect
                 id="officer-assigned-select-id"
+                showInactive={false}
                 classNamePrefix="comp-select"
                 onChange={(e) => handleAssignedOfficerChange(e)}
                 className="comp-details-input"
@@ -712,6 +777,7 @@ export const CreateComplaint: FC = () => {
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="species-select-id"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     onChange={(e) => handleSpeciesChange(e)}
                     className="comp-details-input"
@@ -735,11 +801,11 @@ export const CreateComplaint: FC = () => {
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="nature-of-complaint-select-id"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     onChange={(e) => handleNatureOfComplaintChange(e)}
                     className="comp-details-input"
                     options={hwcrNatureOfComplaintCodes}
-                    showInactive={false}
                     placeholder="Select"
                     enableValidation={true}
                     errorMessage={natureOfComplaintErrorMsg}
@@ -761,6 +827,7 @@ export const CreateComplaint: FC = () => {
               <div className="comp-details-edit-input">
                 <CompSelect
                   id="violation-type-select-id"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   onChange={(e) => handleViolationTypeChange(e)}
                   className="comp-details-input"
@@ -768,6 +835,33 @@ export const CreateComplaint: FC = () => {
                   placeholder="Select"
                   enableValidation={true}
                   errorMessage={violationTypeErrorMsg}
+                />
+              </div>
+            </div>
+          )}
+
+          {complaintType === COMPLAINT_TYPES.GIR && (
+            <div
+              className="comp-details-form-row"
+              id="general-incident-type-type-pair-id"
+            >
+              <label
+                id="general-incident-type-label-id"
+                htmlFor="general-incident-type-type-select-id"
+              >
+                General incident type<span className="required-ind">*</span>
+              </label>
+              <div className="comp-details-edit-input">
+                <CompSelect
+                  id="general-incident-type-type-select-id"
+                  classNamePrefix="comp-select"
+                  onChange={(e) => handleGeneralIncidentTypeChange(e)}
+                  className="comp-details-input"
+                  options={generalIncidentTypeCodes}
+                  placeholder="Select"
+                  enableValidation={true}
+                  errorMessage={generalIncidentTypeErrorMsg}
+                  showInactive={false}
                 />
               </div>
             </div>
@@ -929,6 +1023,7 @@ export const CreateComplaint: FC = () => {
             <div className="comp-details-edit-input">
               <CompSelect
                 id="community-select-id"
+                showInactive={false}
                 classNamePrefix="comp-select"
                 onChange={(e) => handleCommunityChange(e)}
                 className="comp-details-input"
@@ -991,6 +1086,7 @@ export const CreateComplaint: FC = () => {
             <div className="comp-details-edit-input">
               <CompSelect
                 id="complaint-received-method-select-id"
+                showInactive={false}
                 classNamePrefix="comp-select"
                 className="comp-details-input"
                 defaultOption={selectedComplaintMethodReceivedCode}
@@ -1157,6 +1253,7 @@ export const CreateComplaint: FC = () => {
             <div className="comp-details-edit-input">
               <CompSelect
                 id="reported-select-id"
+                showInactive={false}
                 classNamePrefix="comp-select"
                 className="comp-details-edit-input"
                 options={reportedByCodes}

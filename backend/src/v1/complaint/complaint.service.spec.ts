@@ -27,7 +27,6 @@ import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/
 import { Office } from "../office/entities/office.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
-import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { PersonComplaintXref } from "../person_complaint_xref/entities/person_complaint_xref.entity";
 import { AttractantHwcrXref } from "../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
@@ -87,6 +86,7 @@ import { Team } from "../team/entities/team.entity";
 import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
 import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
 import { CacheModule } from "@nestjs/cache-manager";
+import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -205,7 +205,7 @@ describe("Testing: Complaint Service", () => {
           useFactory: MockSpeciesCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(ViolationCode),
+          provide: getRepositoryToken(ViolationAgencyXref),
           useFactory: MockViolationsCodeTableRepository,
         },
         {
@@ -508,7 +508,7 @@ describe("Testing: Complaint Service", () => {
           useFactory: MockSpeciesCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(ViolationCode),
+          provide: getRepositoryToken(ViolationAgencyXref),
           useFactory: MockViolationsCodeTableRepository,
         },
         {

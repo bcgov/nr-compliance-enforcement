@@ -54,7 +54,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   } = useContext(ComplaintFilterContext);
 
   const agency = UserService.getUserAgency();
-  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdownUsingPersonGuid(agency));
+  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdownUsingPersonGuid(agency, type));
   if (officersByAgency && officersByAgency[0]?.value !== "Unassigned") {
     officersByAgency.unshift({ value: "Unassigned", label: "Unassigned" });
   }
@@ -131,6 +131,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 <div className="filter-select-padding">
                   <CompSelect
                     id="nature-of-complaint-select-id"
+                    showInactive={true}
                     classNamePrefix="comp-select"
                     onChange={(option) => {
                       setFilter("natureOfComplaint", option);
@@ -152,6 +153,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 <div className="filter-select-padding">
                   <CompSelect
                     id="species-select-id"
+                    showInactive={true}
                     classNamePrefix="comp-select"
                     onChange={(option) => {
                       setFilter("species", option);
@@ -178,6 +180,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               <div className="filter-select-padding">
                 <CompSelect
                   id="violation-type-select-id"
+                  showInactive={true}
                   classNamePrefix="comp-select"
                   onChange={(option) => {
                     setFilter("violationType", option);
@@ -202,6 +205,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               <div className="filter-select-padding">
                 <CompSelect
                   id="gir-type-select-id"
+                  showInactive={true}
                   classNamePrefix="comp-select"
                   onChange={(option) => {
                     setFilter("girType", option);
@@ -235,6 +239,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             <div className="filter-select-padding">
               <CompSelect
                 id="status-select-id"
+                showInactive={true}
                 classNamePrefix="comp-select"
                 onChange={(option) => {
                   setFilter("status", option);
@@ -258,6 +263,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             <div className="filter-select-padding">
               <CompSelect
                 id="complaint-method-select-id"
+                showInactive={true}
                 classNamePrefix="comp-select"
                 onChange={(option) => {
                   setFilter("complaintMethod", option);
@@ -281,6 +287,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             <div className="filter-select-padding">
               <CompSelect
                 id="action-taken-select-id"
+                showInactive={true}
                 classNamePrefix="comp-select"
                 onChange={(option) => {
                   setFilter("actionTaken", option);
@@ -304,6 +311,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             <div className="filter-select-padding">
               <CompSelect
                 id="status-select-id"
+                showInactive={true}
                 classNamePrefix="comp-select"
                 onChange={(option) => {
                   setFilter("outcomeAnimal", option);
@@ -347,6 +355,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               <div className="filter-select-padding">
                 <CompSelect
                   id="region-select-filter-id"
+                  showInactive={true}
                   classNamePrefix="comp-select"
                   onChange={(option) => {
                     setFilter("region", option);
@@ -369,6 +378,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               <div className="filter-select-padding">
                 <CompSelect
                   id="zone-select-id"
+                  showInactive={true}
                   classNamePrefix="comp-select"
                   onChange={(option) => {
                     setFilter("zone", option);
@@ -392,6 +402,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               <div className="filter-select-padding">
                 <CompSelect
                   id="community-select-id"
+                  showInactive={true}
                   classNamePrefix="comp-select"
                   onChange={(option) => {
                     setFilter("community", option);
@@ -414,6 +425,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               <div className="filter-select-padding">
                 <CompSelect
                   id="officer-select-id"
+                  showInactive={true}
                   classNamePrefix="comp-select"
                   onChange={(option) => {
                     setFilter("officer", option);

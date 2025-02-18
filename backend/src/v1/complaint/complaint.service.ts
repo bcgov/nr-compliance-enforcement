@@ -80,6 +80,7 @@ import { getFileType } from "../../common/methods";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
 import { Role } from "../../enum/role.enum";
+import { dtoAlias } from "src/types/models/complaints/dtoAlias-type";
 
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
@@ -250,11 +251,13 @@ export class ComplaintService {
           .createQueryBuilder("allegation")
           .leftJoinAndSelect("allegation.complaint_identifier", "complaint")
           .leftJoin("allegation.violation_code", "violation_code")
+          .leftJoin("violation_code.violationAgencyXrefs", "violation_agency_xref")
+          .leftJoin("violation_agency_xref.agency_code", "agency_code")
           .addSelect([
             "violation_code.violation_code",
             "violation_code.short_description",
             "violation_code.long_description",
-            "violation_code.agency_code",
+            "agency_code.agency_code",
           ]);
         break;
       case "GIR":
@@ -1033,7 +1036,7 @@ export class ComplaintService {
 
       //-- return Waste and Pestivide complaints for CEEB users
       if (agencies.includes("EPO") && complaintType === "ERS") {
-        builder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+        builder.andWhere("agency_code.agency_code = :agency", { agency: "EPO" });
       }
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
@@ -1165,7 +1168,7 @@ export class ComplaintService {
 
       //-- return Waste and Pestivide complaints for CEEB users
       if (agencies.includes("EPO") && complaintType === "ERS") {
-        builder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+        builder.andWhere("agency_code.agency_code = :agency", { agency: "EPO" });
       }
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
@@ -1403,8 +1406,8 @@ export class ComplaintService {
   updateComplaintById = async (
     id: string,
     complaintType: string,
-    model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
-  ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> => {
+    model: ComplaintDto | dtoAlias,
+  ): Promise<dtoAlias> => {
     const agencyCode = model.ownedBy;
     const hasAssignees = (delegates: Array<DelegateDto>): boolean => {
       if (delegates && delegates.length > 0) {
@@ -1596,11 +1599,7 @@ export class ComplaintService {
     }
   };
 
-  create = async (
-    complaintType: COMPLAINT_TYPE,
-    model: WildlifeComplaintDto | AllegationComplaintDto,
-    webeocInd?: boolean,
-  ): Promise<WildlifeComplaintDto | AllegationComplaintDto> => {
+  create = async (complaintType: COMPLAINT_TYPE, model: dtoAlias, webeocInd?: boolean): Promise<dtoAlias> => {
     this.logger.debug("Creating new complaint");
     const generateComplaintId = async (queryRunner: QueryRunner): Promise<string> => {
       let sequence;
@@ -1702,6 +1701,22 @@ export class ComplaintService {
 
           const newAllegation = await this._allegationComplaintRepository.create(ers);
           await this._allegationComplaintRepository.save(newAllegation);
+          break;
+        }
+        case "GIR": {
+          const { girType } = model as GeneralIncidentComplaintDto;
+          const girId = randomUUID();
+
+          const gir = {
+            gir_complaint_guid: girId,
+            complaint_identifier: complaintId,
+            gir_type_code: girType,
+            create_user_id: idir,
+            update_user_id: idir,
+          } as any;
+
+          const newGir = await this._girComplaintRepository.create(gir);
+          await this._girComplaintRepository.save(newGir);
           break;
         }
         case "HWCR":
@@ -2063,14 +2078,18 @@ export class ComplaintService {
       return wildlife;
     };
 
-    const _applyNoteData = async (caseFile) => {
-      //-- Convert Officer Guid to Name
-      if (caseFile.note) {
-        const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(caseFile.note.action.actor))
+    const _applyNoteData = async (notes) => {
+      let noteCount = 1;
+      for (const note of notes) {
+        //-- Convert Officer Guid to Name
+        const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(note.actions[0].actor))
           .person_guid;
 
-        caseFile.note.action.actor = last_name + ", " + first_name;
-        caseFile.note.action.date = _applyTimezone(caseFile.note.action.date, tz, "date");
+        note.actions[0].actor = last_name + ", " + first_name;
+        note.actions[0].date = _applyTimezone(note.actions[0].date, tz, "datetime");
+        //give it a nice friendly number as nothing comes back from the GQL
+        note.order = noteCount;
+        noteCount++;
       }
     };
 
@@ -2126,6 +2145,8 @@ export class ComplaintService {
       const preventionActions = preventionDetails?.actions;
       const equipment = outcomeData.getCaseFileByLeadId.equipment;
       const wildlife = outcomeData.getCaseFileByLeadId.subject;
+      const notes = outcomeData.getCaseFileByLeadId.notes;
+
       let hasOutcome = false;
 
       if (assessmentDetails?.actionNotRequired !== null && assessmentDetails?.actionNotRequired !== undefined) {
@@ -2148,9 +2169,9 @@ export class ComplaintService {
         await _applyWildlifeData(wildlife);
       }
 
-      if (outcomeData.getCaseFileByLeadId.note) {
+      if (notes) {
         hasOutcome = true;
-        await _applyNoteData(outcomeData.getCaseFileByLeadId);
+        await _applyNoteData(notes);
       }
 
       if (outcomeData.getCaseFileByLeadId.isReviewRequired) {

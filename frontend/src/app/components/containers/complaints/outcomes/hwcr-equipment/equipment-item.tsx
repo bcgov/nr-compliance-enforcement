@@ -114,7 +114,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
                 <Badge bg="success">Active</Badge>
               )}
             </div>
-            <div className="comp-equipment-item-header-actions">
+            <div className="comp-outcome-item-header-actions">
               <Button
                 variant="outline-primary"
                 size="sm"
