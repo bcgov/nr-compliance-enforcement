@@ -129,7 +129,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
 
                 {(update as ActionTaken).actionDetailsTxt && (
                   <div className="comp-complaint-update-item-row first-row">
-                    <div className="complaint-description-label">Details</div>
+                    <div className="comp-complaint-update-label">Details:</div>
                     <div
                       className={`complaint-description-text ${
                         expandedActions[(update as ActionTaken).actionTakenGuid] ? "expanded" : ""
@@ -147,7 +147,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
 
                 {(update as WebEOCComplaintUpdateDTO).updDetailText && (
                   <div className="complaint-description-section">
-                    <div className="complaint-description-label">Complaint description</div>
+                    <div className="comp-complaint-update-label">Complaint description:</div>
                     <div
                       className={`complaint-description-text ${
                         expandedUpdates[(update as WebEOCComplaintUpdateDTO).complaintUpdateGuid] ? "expanded" : ""
@@ -170,7 +170,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                 )}
                 {(update as WebEOCComplaintUpdateDTO).updLocationSummaryText && (
                   <div className="complaint-description-section">
-                    <div className="complaint-description-label">Complaint location</div>
+                    <div className="comp-complaint-update-label">Complaint location:</div>
                     <div className="complaint-description-text">
                       {(update as WebEOCComplaintUpdateDTO).updLocationSummaryText}
                     </div>
@@ -178,7 +178,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                 )}
                 {(update as WebEOCComplaintUpdateDTO).updLocationDetailedText && (
                   <div className="complaint-description-section">
-                    <div className="complaint-description-label">Location description:</div>
+                    <div className="comp-complaint-update-label">Location description:</div>
                     <div className="complaint-description-text">
                       {(update as WebEOCComplaintUpdateDTO).updLocationDetailedText}
                     </div>
@@ -186,7 +186,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                 )}
                 {(update as WebEOCComplaintUpdateDTO).updLocationGeometryPoint && (
                   <div className="complaint-description-section">
-                    <div className="complaint-description-label">Latitude/Longitude</div>
+                    <div className="comp-complaint-update-label">Latitude/Longitude:</div>
                     <div className="complaint-description-text">
                       {(update as WebEOCComplaintUpdateDTO).updLocationGeometryPoint?.coordinates[1]} ,{" "}
                       {(update as WebEOCComplaintUpdateDTO).updLocationGeometryPoint?.coordinates[0]}

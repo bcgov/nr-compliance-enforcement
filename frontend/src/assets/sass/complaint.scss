@@ -1056,6 +1056,7 @@ p {
     background-color: $green-90-10;
     border-radius: 4px;
     padding: 24px;
+    word-break: break-word;
   }
 
   .comp-complaint-update-item-row {
@@ -1065,6 +1066,16 @@ p {
     gap: 12px;
     margin-bottom: 8px;
     position: relative;
+  }
+
+  .comp-complaint-update-label {
+    color: $gray-900;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    width: 175px;
+    box-sizing: border-box;
   }
 
   .comp-linked-complaint-item {
@@ -1167,16 +1178,6 @@ p {
       display: flex;
       flex-direction: row;
     }
-  }
-
-  .complaint-description-label {
-    color: $gray-600;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 150%;
-    width: 175px;
-    box-sizing: border-box;
   }
 
   .complaint-description-text {
