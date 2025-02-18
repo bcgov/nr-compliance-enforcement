@@ -674,7 +674,7 @@ export const CreateComplaint: FC = () => {
 
         <fieldset>
           {/* Complaint Type */}
-          {agency === "COS" && (
+          {(agency === "COS" || agency === "PARKS") && (
             <div
               className="comp-details-form-row"
               id="nature-of-complaint-pair-id"

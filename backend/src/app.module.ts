@@ -54,6 +54,7 @@ import { OfficerTeamXrefModule } from "./v1/officer_team_xref/officer_team_xref.
 import { ComplaintMethodReceivedCodeModule } from "./v1/complaint_method_received_code/complaint_method_received_code.module";
 import { CompMthdRecvCdAgcyCdXrefModule } from "./v1/comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.module";
 import { LinkedComplaintXrefModule } from "./v1/linked_complaint_xref/linked_complaint_xref.module";
+import { ViolationAgencyXrefModule } from "./v1/violation_agency_xref/violation_agency_xref.module";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -130,6 +131,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     ComplaintMethodReceivedCodeModule,
     CompMthdRecvCdAgcyCdXrefModule,
     LinkedComplaintXrefModule,
+    ViolationAgencyXrefModule,
   ],
   controllers: [AppController],
   providers: [AppService, ComplaintSequenceResetScheduler],
