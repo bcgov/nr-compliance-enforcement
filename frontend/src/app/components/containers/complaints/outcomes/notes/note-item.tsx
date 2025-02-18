@@ -110,22 +110,13 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
             </Button>
           </div>
         </div>
-        <div
-          className="comp-details-section"
-          role="button"
-          tabIndex={0}
-          onClick={() => setShowFullNote(!showFullNote)}
-          onTouchEnd={() => setShowFullNote(!showFullNote)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              setShowFullNote(!showFullNote);
-            }
-          }}
-        >
+        <div className="comp-details-section">
           {isLongNote && (
             <div className="comp-outcome-notes-expand-collapse-button">
-              <button className="comp-icon-button-container">
+              <button
+                className="comp-icon-button-container"
+                onClick={() => setShowFullNote(!showFullNote)}
+              >
                 {showFullNote ? <i className="bi bi-chevron-up h2"></i> : <i className="bi bi-chevron-down h2"></i>}
               </button>
             </div>
@@ -136,11 +127,16 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
               <div>
                 <dt>Note</dt>
                 <dd className={!showFullNote && isLongNote ? "comp-outcome-notes-fade" : ""}>
-                  <pre id="additional-note-text">
-                    {showFullNote && note}
-                    {!showFullNote && note.substring(0, longNoteLength)}
-                    {!showFullNote && isLongNote && " ..."}
-                  </pre>
+                  <button
+                    onClick={() => setShowFullNote(!showFullNote)}
+                    className="comp-outcome-notes-note"
+                  >
+                    <pre id="additional-note-text">
+                      {showFullNote && note}
+                      {!showFullNote && note.substring(0, longNoteLength)}
+                      {!showFullNote && isLongNote && " ..."}
+                    </pre>
+                  </button>
                 </dd>
               </div>
             </dl>

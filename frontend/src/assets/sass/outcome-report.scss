@@ -486,6 +486,19 @@
   padding-right: 24px;
 }
 
+.comp-outcome-notes-note {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  border: transparent;
+  border-style: none;
+  font: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  text-align: inherit;
+}
+
 // OUTCOME REPORT - GENERIC
 .comp-outcome-item-header-actions {
   display: flex;
