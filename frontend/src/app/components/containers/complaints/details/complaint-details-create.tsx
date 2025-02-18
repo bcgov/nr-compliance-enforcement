@@ -827,6 +827,7 @@ export const CreateComplaint: FC = () => {
                   placeholder="Select"
                   enableValidation={true}
                   errorMessage={generalIncidentTypeErrorMsg}
+                  showInactive={false}
                 />
               </div>
             </div>
