@@ -338,6 +338,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="equipment-type-select"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   className="comp-details-input"
                   placeholder="Select"
@@ -460,6 +461,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="equipment-officer-set-select"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   placeholder="Select"
                   options={assignableOfficers}
@@ -504,6 +506,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                   <div className="comp-details-input full-width">
                     <CompSelect
                       id="equipment-officer-removed-select"
+                      showInactive={false}
                       classNamePrefix="comp-select"
                       placeholder="Select"
                       options={assignableOfficers}
