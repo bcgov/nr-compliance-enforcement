@@ -120,6 +120,7 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
                 isDisabled={true}
                 enableValidation={false}
                 value={defaultOfficer}
+                showInactive={false}
               />
             </div>
           </div>
