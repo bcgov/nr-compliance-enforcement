@@ -55,7 +55,7 @@ export const Header: FC = () => {
               alt={"Government of British Columbia"}
             />
           </picture>
-          NatComplaints test
+          NatComplaints
         </Link>
 
         <div className="comp-header-content">
