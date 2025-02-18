@@ -116,8 +116,18 @@ export const CreateComplaint: FC = () => {
   let initialComplaintType: string = COMPLAINT_TYPES.HWCR;
   if (agency === "EPO") {
     initialComplaintType = COMPLAINT_TYPES.ERS;
-  } else if (agency === "COS") {
-    initialComplaintType = activeTab === COMPLAINT_TYPES.ERS ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR;
+  } else if (agency === "COS" || agency === "PARKS") {
+    switch (activeTab) {
+      case COMPLAINT_TYPES.ERS:
+        initialComplaintType = COMPLAINT_TYPES.ERS;
+        break;
+      case COMPLAINT_TYPES.GIR:
+        initialComplaintType = COMPLAINT_TYPES.GIR;
+        break;
+      default:
+        initialComplaintType = COMPLAINT_TYPES.HWCR;
+        break;
+    }
   }
 
   const [complaintType, setComplaintType] = useState<string>(initialComplaintType);
