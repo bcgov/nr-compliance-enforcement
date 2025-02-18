@@ -280,7 +280,7 @@ export const selectOfficers = (state: RootState): Officer[] | null => {
 };
 
 export const searchOfficers =
-  (input: string, agency: string) =>
+  (input: string, agency: string, complaintType: string) =>
   (state: RootState): Array<Officer> => {
     const {
       officers: { officers: items },
@@ -305,7 +305,10 @@ export const searchOfficers =
           firstName.toLocaleLowerCase().includes(searchInput) || lastName.toLocaleLowerCase().includes(searchInput);
         const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
 
-        if (agency === "COS") {
+        if (complaintType !== "HWCR" && user_roles.includes(Roles.HWCR_ONLY)) {
+          //Don't include HWCR_ONLY users if the complaint is not an HWCR
+          return false;
+        } else if (agency === "COS") {
           return !fromAdminOffice && nameMatch && roleMatch;
         } else if (agency === "EPO") {
           return roleMatch && nameMatch;
@@ -387,14 +390,13 @@ const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] =
   return result;
 };
 
-export const selectOfficersByAgency =
-  (agency: string) =>
-  (state: RootState): Officer[] | null => {
-    const { officers: officerRoot } = state;
-    const { officers } = officerRoot;
-    const result = filterOfficerByAgency(agency, officers);
-    return result;
-  };
+export const selectOfficersByAgency = createSelector(
+  (state: RootState) => state.officers.officers,
+  (state: RootState, agency: string) => agency,
+  (officers, agency) => {
+    return filterOfficerByAgency(agency, officers);
+  },
+);
 
 export const selectOfficerListByAgency = createSelector(
   [selectOfficers, selectComplaint],
@@ -412,15 +414,19 @@ export const selectOfficerListByAgency = createSelector(
 );
 
 export const selectOfficersByAgencyDropdownUsingPersonGuid =
-  (agency: string) =>
+  (agency: string, complaintType: string) =>
   (state: RootState): Array<Option> => {
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
     const officerList = filterOfficerByAgency(agency, officers);
-    const officerDropdown = officerList.map((officer: Officer) => ({
-      value: officer.person_guid.person_guid,
-      label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-    }));
+    const officerDropdown = officerList
+      .filter(
+        (officer: Officer) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+      ) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR.
+      .map((officer: Officer) => ({
+        value: officer.person_guid.person_guid,
+        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+      }));
 
     return officerDropdown;
   };
@@ -454,7 +460,10 @@ export const selectOfficersByZoneAgencyAndRole =
           const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
           const fromAdminOffice = officer?.office_guid?.cos_geo_org_unit?.administrative_office_ind;
           const zoneAgencyMatch = zone === zoneCode && (agency === agencyCode || !agency);
-          const roleMatch = officer?.user_roles.includes(role) && !officer?.user_roles.includes(Roles.READ_ONLY);
+          const roleMatch =
+            officer?.user_roles.includes(role) &&
+            !officer?.user_roles.includes(Roles.READ_ONLY) &&
+            !officer?.user_roles.includes(Roles.HWCR_ONLY);
           result = !fromAdminOffice && zoneAgencyMatch && roleMatch;
           return result;
         });
