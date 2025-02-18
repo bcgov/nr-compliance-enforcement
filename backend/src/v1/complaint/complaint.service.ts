@@ -251,11 +251,13 @@ export class ComplaintService {
           .createQueryBuilder("allegation")
           .leftJoinAndSelect("allegation.complaint_identifier", "complaint")
           .leftJoin("allegation.violation_code", "violation_code")
+          .leftJoin("violation_code.violationAgencyXrefs", "violation_agency_xref")
+          .leftJoin("violation_agency_xref.agency_code", "agency_code")
           .addSelect([
             "violation_code.violation_code",
             "violation_code.short_description",
             "violation_code.long_description",
-            "violation_code.agency_code",
+            "agency_code.agency_code",
           ]);
         break;
       case "GIR":
@@ -1034,7 +1036,7 @@ export class ComplaintService {
 
       //-- return Waste and Pestivide complaints for CEEB users
       if (agencies.includes("EPO") && complaintType === "ERS") {
-        builder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+        builder.andWhere("agency_code.agency_code = :agency", { agency: "EPO" });
       }
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
@@ -1166,7 +1168,7 @@ export class ComplaintService {
 
       //-- return Waste and Pestivide complaints for CEEB users
       if (agencies.includes("EPO") && complaintType === "ERS") {
-        builder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+        builder.andWhere("agency_code.agency_code = :agency", { agency: "EPO" });
       }
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present

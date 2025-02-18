@@ -30,13 +30,13 @@ import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_u
 import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
-import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 import { TeamCode } from "../team_code/entities/team_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
+import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
 
 describe("Testing: CodeTable Service", () => {
   let service: CodeTableService;
@@ -78,7 +78,7 @@ describe("Testing: CodeTable Service", () => {
           useFactory: MockSpeciesCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(ViolationCode),
+          provide: getRepositoryToken(ViolationAgencyXref),
           useFactory: MockViolationsCodeTableRepository,
         },
         {
@@ -312,7 +312,7 @@ describe("Testing: CodeTable service", () => {
           useFactory: MockSpeciesCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(ViolationCode),
+          provide: getRepositoryToken(ViolationAgencyXref),
           useFactory: MockViolationsCodeTableRepository,
         },
         {
@@ -403,7 +403,7 @@ describe("Testing: CodeTable service", () => {
           useFactory: MockSpeciesCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(ViolationCode),
+          provide: getRepositoryToken(ViolationAgencyXref),
           useFactory: MockViolationsCodeTableRepository,
         },
         {
@@ -494,7 +494,7 @@ describe("Testing: CodeTable service", () => {
           useFactory: MockSpeciesCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(ViolationCode),
+          provide: getRepositoryToken(ViolationAgencyXref),
           useFactory: MockViolationsCodeTableRepository,
         },
         {
