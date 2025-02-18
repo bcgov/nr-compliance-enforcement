@@ -87,7 +87,6 @@ export const EditUser: FC<EditUserProps> = ({
 
   useEffect(() => {
     (async () => {
-      console.log("TRIGGER");
       const getUserCurrentTeam = async (officerGuid: string) => {
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/current`, { officerGuid });
         const response: any = await get(dispatch, parameters);
