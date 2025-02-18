@@ -722,6 +722,7 @@ export const CreateComplaint: FC = () => {
               <div className="comp-details-edit-input">
                 <CompSelect
                   id="complaint-type-select-id"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   onChange={(e) => handleComplaintChange(e)}
                   className="comp-details-input"
@@ -747,6 +748,7 @@ export const CreateComplaint: FC = () => {
             <div className="comp-details-edit-input">
               <CompSelect
                 id="officer-assigned-select-id"
+                showInactive={false}
                 classNamePrefix="comp-select"
                 onChange={(e) => handleAssignedOfficerChange(e)}
                 className="comp-details-input"
@@ -775,6 +777,7 @@ export const CreateComplaint: FC = () => {
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="species-select-id"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     onChange={(e) => handleSpeciesChange(e)}
                     className="comp-details-input"
@@ -798,11 +801,11 @@ export const CreateComplaint: FC = () => {
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="nature-of-complaint-select-id"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     onChange={(e) => handleNatureOfComplaintChange(e)}
                     className="comp-details-input"
                     options={hwcrNatureOfComplaintCodes}
-                    showInactive={false}
                     placeholder="Select"
                     enableValidation={true}
                     errorMessage={natureOfComplaintErrorMsg}
@@ -824,6 +827,7 @@ export const CreateComplaint: FC = () => {
               <div className="comp-details-edit-input">
                 <CompSelect
                   id="violation-type-select-id"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   onChange={(e) => handleViolationTypeChange(e)}
                   className="comp-details-input"
@@ -857,6 +861,7 @@ export const CreateComplaint: FC = () => {
                   placeholder="Select"
                   enableValidation={true}
                   errorMessage={generalIncidentTypeErrorMsg}
+                  showInactive={false}
                 />
               </div>
             </div>
@@ -1018,6 +1023,7 @@ export const CreateComplaint: FC = () => {
             <div className="comp-details-edit-input">
               <CompSelect
                 id="community-select-id"
+                showInactive={false}
                 classNamePrefix="comp-select"
                 onChange={(e) => handleCommunityChange(e)}
                 className="comp-details-input"
@@ -1080,6 +1086,7 @@ export const CreateComplaint: FC = () => {
             <div className="comp-details-edit-input">
               <CompSelect
                 id="complaint-received-method-select-id"
+                showInactive={false}
                 classNamePrefix="comp-select"
                 className="comp-details-input"
                 defaultOption={selectedComplaintMethodReceivedCode}
@@ -1246,6 +1253,7 @@ export const CreateComplaint: FC = () => {
             <div className="comp-details-edit-input">
               <CompSelect
                 id="reported-select-id"
+                showInactive={false}
                 classNamePrefix="comp-select"
                 className="comp-details-edit-input"
                 options={reportedByCodes}

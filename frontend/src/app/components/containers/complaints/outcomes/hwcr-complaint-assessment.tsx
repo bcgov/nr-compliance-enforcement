@@ -621,6 +621,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   ) : (
                     <CompSelect
                       id="action-required"
+                      showInactive={false}
                       className="comp-details-input"
                       classNamePrefix="comp-select"
                       options={actionRequiredList}
@@ -644,6 +645,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 <div className="comp-details-input full-width">
                   <CompSelect
                     id="justification"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     options={justificationList}
                     enableValidation={true}
@@ -783,6 +785,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     </label>
                     <CompSelect
                       id="select-location-type"
+                      showInactive={false}
                       classNamePrefix="comp-select"
                       className="comp-details-input"
                       options={locationOptions}
@@ -809,6 +812,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     </label>
                     <CompSelect
                       id="select-conflict-history"
+                      showInactive={false}
                       classNamePrefix="comp-select"
                       className="comp-details-input"
                       options={conflictHistoryOptions}
@@ -834,6 +838,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     </label>
                     <CompSelect
                       id="select-category-level"
+                      showInactive={false}
                       classNamePrefix="comp-select"
                       className="comp-details-input"
                       options={threatLevelOptions}
@@ -859,6 +864,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 <div className="comp-details-input full-width">
                   <CompSelect
                     id="outcome-officer"
+                    showInactive={false}
                     className="comp-details-input"
                     classNamePrefix="comp-select"
                     options={assignableOfficers}

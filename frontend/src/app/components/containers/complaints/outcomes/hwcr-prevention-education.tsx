@@ -302,6 +302,7 @@ export const HWCRComplaintPrevention: FC = () => {
                   <div className="comp-details-input full-width">
                     <CompSelect
                       id="prev-educ-outcome-officer"
+                      showInactive={false}
                       classNamePrefix="comp-select"
                       options={assignableOfficers}
                       enableValidation={true}
