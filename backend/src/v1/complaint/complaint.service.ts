@@ -2078,14 +2078,18 @@ export class ComplaintService {
       return wildlife;
     };
 
-    const _applyNoteData = async (caseFile) => {
-      //-- Convert Officer Guid to Name
-      if (caseFile.note) {
-        const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(caseFile.note.action.actor))
+    const _applyNoteData = async (notes) => {
+      let noteCount = 1;
+      for (const note of notes) {
+        //-- Convert Officer Guid to Name
+        const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(note.actions[0].actor))
           .person_guid;
 
-        caseFile.note.action.actor = last_name + ", " + first_name;
-        caseFile.note.action.date = _applyTimezone(caseFile.note.action.date, tz, "date");
+        note.actions[0].actor = last_name + ", " + first_name;
+        note.actions[0].date = _applyTimezone(note.actions[0].date, tz, "datetime");
+        //give it a nice friendly number as nothing comes back from the GQL
+        note.order = noteCount;
+        noteCount++;
       }
     };
 
@@ -2141,6 +2145,8 @@ export class ComplaintService {
       const preventionActions = preventionDetails?.actions;
       const equipment = outcomeData.getCaseFileByLeadId.equipment;
       const wildlife = outcomeData.getCaseFileByLeadId.subject;
+      const notes = outcomeData.getCaseFileByLeadId.notes;
+
       let hasOutcome = false;
 
       if (assessmentDetails?.actionNotRequired !== null && assessmentDetails?.actionNotRequired !== undefined) {
@@ -2163,9 +2169,9 @@ export class ComplaintService {
         await _applyWildlifeData(wildlife);
       }
 
-      if (outcomeData.getCaseFileByLeadId.note) {
+      if (notes) {
         hasOutcome = true;
-        await _applyNoteData(outcomeData.getCaseFileByLeadId);
+        await _applyNoteData(notes);
       }
 
       if (outcomeData.getCaseFileByLeadId.isReviewRequired) {

@@ -28,7 +28,7 @@ describe("HWCR Outcome Notes", () => {
       }
     });
 
-    cy.get(".comp-outcome-supporting-notes").then(function () {
+    cy.get(".comp-outcome-notes").then(function () {
       cy.validateComplaint("23-032454", "Black Bear");
 
       //click Save Button
@@ -58,18 +58,18 @@ describe("HWCR Outcome Notes", () => {
         cy.get("#supporting-notes-save-button").click();
 
         //validate the note
-        cy.get(".comp-outcome-supporting-notes").should(($div) => {
+        cy.get(".comp-outcome-notes").should(($div) => {
           expect($div).to.contain.text("This is test supporting note from Cypress");
         });
 
         //validate the officer
-        cy.get("#comp-notes-officer").should(($div) => {
+        cy.get("#comp-note-created-by").should(($div) => {
           expect($div).to.contain.text("TestAcct, ENV");
         });
 
         //validate the toast
         cy.get(".Toastify__toast-body").then(($toast) => {
-          expect($toast).to.contain.text("Supplemental note created");
+          expect($toast).to.contain.text("Note created");
         });
       } else {
         cy.log("Test was previously run. Skip the Test");
@@ -83,7 +83,7 @@ describe("HWCR Outcome Notes", () => {
 
     cy.validateComplaint("23-032454", "Black Bear");
 
-    cy.get(".comp-outcome-supporting-notes").then(function ($notes) {
+    cy.get(".comp-outcome-notes").then(function ($notes) {
       if ($notes.find("#notes-edit-button").length) {
         cy.get("#notes-edit-button").click();
 
@@ -93,7 +93,7 @@ describe("HWCR Outcome Notes", () => {
 
         cy.get(".modal-footer > .btn-primary").click();
 
-        cy.get(".comp-outcome-supporting-notes").should(($div) => {
+        cy.get(".comp-outcome-notes").should(($div) => {
           expect($div).to.not.contain.text("This text will be cancelled by Cypress");
         });
       } else {
@@ -108,7 +108,7 @@ describe("HWCR Outcome Notes", () => {
 
     cy.validateComplaint("23-032454", "Black Bear");
 
-    cy.get(".comp-outcome-supporting-notes").then(function ($notes) {
+    cy.get(".comp-outcome-notes").then(function ($notes) {
       if ($notes.find("#notes-edit-button").length) {
         cy.get("#notes-edit-button").click();
 
@@ -117,13 +117,13 @@ describe("HWCR Outcome Notes", () => {
         cy.get("#supporting-notes-save-button").click();
 
         //Validate the text
-        cy.get(".comp-outcome-supporting-notes").should(($div) => {
+        cy.get(".comp-outcome-notes").should(($div) => {
           expect($div).to.contain.text("This note is edited by Cypress");
         });
 
         //validate the toast
         cy.get(".Toastify__toast-body").then(($toast) => {
-          expect($toast).to.contain.text("Supplemental note updated");
+          expect($toast).to.contain.text("Note updated");
         });
       } else {
         cy.log("Note Edit Button Not Found, did a previous test fail? Skip the Test");
@@ -135,7 +135,7 @@ describe("HWCR Outcome Notes", () => {
   it("it can delete an existing note", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032454", true);
 
-    cy.get(".comp-outcome-supporting-notes").then(function ($notes) {
+    cy.get(".comp-outcome-notes").then(function ($notes) {
       if ($notes.find("#notes-delete-button").length) {
         cy.get("#notes-delete-button").click();
 
@@ -143,7 +143,7 @@ describe("HWCR Outcome Notes", () => {
 
         //validate the toast
         cy.get(".Toastify__toast-body").then(($toast) => {
-          expect($toast).to.contain.text("Supplemental note deleted");
+          expect($toast).to.contain.text("Note deleted");
         });
 
         cy.get("#outcome-report-add-note").should("exist");
