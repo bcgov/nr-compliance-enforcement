@@ -465,8 +465,25 @@
   mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0) 100%);
 }
 
-.comp-outcome-notes-see-more {
-  padding-top: 12px;
+.comp-outcome-notes-tooltip {
+  width: fit-content;
+  color: $bc-gov-primary-700;
+  .tooltip-arrow::before {
+    border-right-color: $bc-gov-primary-700;
+    color: $white;
+  }
+  .tooltip-inner {
+    background-color: $bc-gov-primary-700;
+    color: $white;
+    font-size: 12px;
+    max-width: 400px;
+  }
+}
+
+.comp-outcome-notes-expand-collapse-button {
+  position: absolute;
+  right: 0;
+  padding-right: 24px;
 }
 
 // OUTCOME REPORT - GENERIC

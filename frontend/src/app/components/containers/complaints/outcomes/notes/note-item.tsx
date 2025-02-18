@@ -3,7 +3,7 @@ import { useAppSelector } from "@hooks/hooks";
 import { formatDate, formatTime } from "@common/methods";
 
 import { CaseAction } from "@apptypes/outcomes/case-action";
-import { Badge, Button, Card } from "react-bootstrap";
+import { Badge, Button, Card, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 import { selectOfficers } from "@/app/store/reducers/officer";
 
@@ -14,17 +14,38 @@ type props = {
   handleDelete: Function;
 };
 
+const getActorDisplayName = (actor: string, officers: any) => {
+  const officer = officers?.find((item: { auth_user_guid: string }) => item.auth_user_guid === actor);
+  return officer ? `${officer.person_guid.last_name}, ${officer.person_guid.first_name}` : "";
+};
+
+const longNoteLength = 300;
+
 export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDelete }) => {
   const officers = useAppSelector(selectOfficers);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
-  const { actor } = actions[0];
-  const officer = officers?.find((item) => item.auth_user_guid === actor);
-  const displayName = officer ? `${officer.person_guid.last_name}, ${officer.person_guid.first_name}` : "";
+  const displayName = getActorDisplayName(actions[0].actor, officers);
 
-  const longNoteLength = 600;
   const isLongNote = note.length > longNoteLength;
   const [showFullNote, setShowFullNote] = useState(false);
+
+  const updateUserTooltip = (props: any) => (
+    <Tooltip
+      id="button-tooltip"
+      className="comp-outcome-notes-tooltip"
+      {...props}
+    >
+      {actions.slice(1).map((action) => (
+        <div key={action.actor}>
+          <span>{getActorDisplayName(action.actor, officers)}</span>
+          <span>
+            {` (${formatDate(new Date(action.date).toString())} ${formatTime(new Date(action.date).toString())})`}
+          </span>
+        </div>
+      ))}
+    </Tooltip>
+  );
 
   return (
     <Card className="comp-outcome-notes">
@@ -54,7 +75,13 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
                   <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
                   {formatTime(new Date(actions[0]?.date).toString())}
                   {actions.length > 1 && (
-                    <Badge className="badge comp-status-badge-closed">Updated {actions.length} times</Badge>
+                    <OverlayTrigger
+                      placement="right"
+                      delay={{ show: 250, hide: 400 }}
+                      overlay={updateUserTooltip}
+                    >
+                      <Badge className="badge comp-status-badge-closed">Updated {actions.length - 1} times</Badge>
+                    </OverlayTrigger>
                   )}
                 </dd>
               </div>
@@ -83,37 +110,41 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
             </Button>
           </div>
         </div>
-        <div className="comp-details-section">
-          <dl />
-          <dl>
-            <div>
-              <dt>Note</dt>
-              <dd className={!showFullNote && isLongNote ? "comp-outcome-notes-fade" : ""}>
-                <pre id="additional-note-text">
-                  {showFullNote && note}
-                  {!showFullNote && note.substring(0, longNoteLength)}
-                  {!showFullNote && isLongNote && " ..."}
-                </pre>
-              </dd>
-            </div>
-          </dl>
+        <div
+          className="comp-details-section"
+          role="button"
+          tabIndex={0}
+          onClick={() => setShowFullNote(!showFullNote)}
+          onTouchEnd={() => setShowFullNote(!showFullNote)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setShowFullNote(!showFullNote);
+            }
+          }}
+        >
           {isLongNote && (
+            <div className="comp-outcome-notes-expand-collapse-button">
+              <button className="comp-icon-button-container">
+                {showFullNote ? <i className="bi bi-chevron-up h2"></i> : <i className="bi bi-chevron-down h2"></i>}
+              </button>
+            </div>
+          )}
+          <div>
+            <dl />
             <dl>
-              <div className="comp-outcome-notes-see-more">
-                <dt />
-                <dd>
-                  <Button
-                    size="sm"
-                    variant="outline-primary"
-                    id="notes-see-more-button"
-                    onClick={() => setShowFullNote(!showFullNote)}
-                  >
-                    {showFullNote ? "Hide full note" : "See full note"}
-                  </Button>
+              <div>
+                <dt>Note</dt>
+                <dd className={!showFullNote && isLongNote ? "comp-outcome-notes-fade" : ""}>
+                  <pre id="additional-note-text">
+                    {showFullNote && note}
+                    {!showFullNote && note.substring(0, longNoteLength)}
+                    {!showFullNote && isLongNote && " ..."}
+                  </pre>
                 </dd>
               </div>
             </dl>
-          )}
+          </div>
         </div>
       </Card.Body>
     </Card>
