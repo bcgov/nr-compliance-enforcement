@@ -716,17 +716,15 @@ export const selectCreatableComplaintTypeDropdown = (state: RootState): Array<Op
   return data;
 };
 
-export const selectAgencyDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { agency },
-  } = state;
-
-  const data = agency.map(({ agency, longDescription, isActive }) => {
-    const item: Option = { label: longDescription, value: agency, isActive };
-    return item;
-  });
-  return data;
-};
+export const selectAgencyDropdown = createSelector(
+  (state: RootState) => state.codeTables.agency,
+  (agencyItems) =>
+    agencyItems.map(({ agency, longDescription, isActive }) => ({
+      label: longDescription,
+      value: agency,
+      isActive,
+    })),
+);
 
 export const selectLeadAgencyDropdown = (state: RootState): Array<Option> => {
   const {
@@ -740,17 +738,15 @@ export const selectLeadAgencyDropdown = (state: RootState): Array<Option> => {
   return data;
 };
 
-export const selectTeamDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { team },
-  } = state;
-
-  const data = team.map(({ team, longDescription, isActive }) => {
-    const item: Option = { label: longDescription, value: team, isActive };
-    return item;
-  });
-  return data;
-};
+export const selectTeamDropdown = createSelector(
+  (state: RootState) => state.codeTables.team,
+  (team) =>
+    team.map(({ team, longDescription, isActive }) => ({
+      label: longDescription,
+      value: team,
+      isActive,
+    })),
+);
 
 export const selectReportedByDropdown = (state: RootState): Array<Option> => {
   const {
