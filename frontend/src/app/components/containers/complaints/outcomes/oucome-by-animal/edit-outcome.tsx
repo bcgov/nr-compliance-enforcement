@@ -446,6 +446,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     updateModel("sex", evt?.value);
                   }}
                   defaultOption={getDropdownOption(data.sex, sexes)}
+                  isClearable={true}
                 />
               </div>
               <div className="comp-details-form-row">
@@ -462,6 +463,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     updateModel("age", evt?.value);
                   }}
                   defaultOption={getDropdownOption(data.age, ages)}
+                  isClearable={true}
                 />
               </div>
               <div
@@ -496,6 +498,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                       updateModel("threatLevel", evt?.value);
                     }}
                     defaultOption={getDropdownOption(data.threatLevel, threatLevels)}
+                    isClearable={true}
                   />
                 </div>
               )}
@@ -557,6 +560,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                       }
                     }}
                     defaultOption={getDropdownOption(data.outcome, outcomes)}
+                    isClearable={true}
                   />
                 </div>
               </div>

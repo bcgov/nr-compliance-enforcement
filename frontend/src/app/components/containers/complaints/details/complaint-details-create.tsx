@@ -277,12 +277,12 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleComplaintReceivedMethodChange = (selected: Option | null) => {
+    let value = null;
     if (selected) {
-      const { value } = selected;
-
-      const complaint = { ...complaintData, complaintMethodReceivedCode: value } as ComplaintDto;
-      applyComplaintData(complaint);
+      value = selected.value;
     }
+    const complaint = { ...complaintData, complaintMethodReceivedCode: value } as ComplaintDto;
+    applyComplaintData(complaint);
   };
 
   const handleSpeciesChange = (selected: Option | null) => {
@@ -542,12 +542,12 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleReportedByChange = (selected: Option | null) => {
+    let value = null;
     if (selected) {
-      const { value } = selected;
-
-      const complaint = { ...complaintData, reportedBy: value } as ComplaintDto;
-      applyComplaintData(complaint);
+      value = selected.value;
     }
+    const complaint = { ...complaintData, reportedBy: value } as ComplaintDto;
+    applyComplaintData(complaint);
   };
 
   const handleSuspectDetailsChange = (value: string) => {
@@ -955,6 +955,7 @@ export const CreateComplaint: FC = () => {
                     id="violation-in-progress-select-id"
                     classNamePrefix="comp-select"
                     onChange={(e) => handleViolationInProgessChange(e)}
+                    isClearable={true}
                   />
                 </div>
               </div>
@@ -970,6 +971,7 @@ export const CreateComplaint: FC = () => {
                     id="violation-observed-select-id"
                     classNamePrefix="comp-select"
                     onChange={(e) => handleViolationObservedChange(e)}
+                    isClearable={true}
                   />
                 </div>
               </div>
@@ -1104,6 +1106,7 @@ export const CreateComplaint: FC = () => {
                 options={complaintMethodReceivedCodes}
                 enableValidation={false}
                 onChange={(e) => handleComplaintReceivedMethodChange(e)}
+                isClearable={true}
               />
             </div>
           </div>
@@ -1130,6 +1133,7 @@ export const CreateComplaint: FC = () => {
                   id="caller-privacy-id"
                   classNamePrefix="comp-select"
                   onChange={(e) => handlePrivacyRequestedChange(e)}
+                  isClearable={true}
                 />
               </div>
             </div>
@@ -1271,6 +1275,7 @@ export const CreateComplaint: FC = () => {
                 placeholder="Select"
                 enableValidation={false}
                 onChange={(e) => handleReportedByChange(e)}
+                isClearable={true}
               />
             </div>
           </div>

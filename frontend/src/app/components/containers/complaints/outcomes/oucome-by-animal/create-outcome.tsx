@@ -419,6 +419,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                   onChange={(evt) => {
                     updateModel("sex", evt?.value);
                   }}
+                  isClearable={true}
                 />
               </div>
             </div>
@@ -435,6 +436,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                   onChange={(evt) => {
                     updateModel("age", evt?.value);
                   }}
+                  isClearable={true}
                 />
               </div>
             </div>
@@ -469,6 +471,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                   onChange={(evt) => {
                     updateModel("threatLevel", evt?.value);
                   }}
+                  isClearable={true}
                 />
               </div>
             )}
@@ -528,6 +531,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                     onChange={(evt) => {
                       updateModel("outcome", evt?.value);
                     }}
+                    isClearable={true}
                   />
                 </div>
               </div>

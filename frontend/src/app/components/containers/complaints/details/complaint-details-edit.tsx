@@ -616,16 +616,15 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handlePrivacyRequestedChange = (selected: Option | null) => {
+    let value = null;
     if (selected) {
-      const { value } = selected;
-      if (value) {
-        let updatedComplaint = {
-          ...complaintUpdate,
-          isPrivacyRequested: value,
-        } as ComplaintDto;
-        applyComplaintUpdate(updatedComplaint);
-      }
+      value = selected.value;
     }
+    let updatedComplaint = {
+      ...complaintUpdate,
+      isPrivacyRequested: value,
+    } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
   };
 
   const handlePrimaryPhoneChange = (value: string) => {
@@ -685,21 +684,21 @@ export const ComplaintDetailsEdit: FC = () => {
   }
 
   const handleReportedByChange = (selected: Option | null) => {
+    let value = null;
     if (selected) {
-      const { value } = selected;
-
-      const updatedComplaint = { ...complaintUpdate, reportedBy: value } as ComplaintDto;
-      applyComplaintUpdate(updatedComplaint);
+      value = selected.value;
     }
+    const updatedComplaint = { ...complaintUpdate, reportedBy: value } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
   };
 
   const handleComplaintReceivedMethodChange = (selected: Option | null) => {
+    let value = null;
     if (selected) {
-      const { value } = selected;
-
-      const updatedComplaint = { ...complaintUpdate, complaintMethodReceivedCode: value } as ComplaintDto;
-      applyComplaintUpdate(updatedComplaint);
+      value = selected.value;
     }
+    const updatedComplaint = { ...complaintUpdate, complaintMethodReceivedCode: value } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
   };
 
   const maxDate = new Date();
@@ -996,6 +995,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       classNamePrefix="comp-select"
                       onChange={handleAttractantsChange}
                       errMsg={attractantsErrorMsg}
+                      isClearable={true}
                     />
                   </div>
                 </div>
@@ -1015,6 +1015,7 @@ export const ComplaintDetailsEdit: FC = () => {
                         id="violation-in-progress-select-id"
                         classNamePrefix="comp-select"
                         onChange={(e) => handleViolationInProgessChange(e)}
+                        isClearable={true}
                       />
                     </div>
                   </div>
@@ -1031,6 +1032,7 @@ export const ComplaintDetailsEdit: FC = () => {
                         id="violation-observed-select-id"
                         classNamePrefix="comp-select"
                         onChange={(e) => handleViolationObservedChange(e)}
+                        isClearable={true}
                       />
                     </div>
                   </div>
@@ -1163,6 +1165,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     options={complaintMethodReceivedCodes}
                     enableValidation={false}
                     onChange={(e) => handleComplaintReceivedMethodChange(e)}
+                    isClearable={true}
                   />
                 </div>
               </div>
@@ -1192,6 +1195,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       id="caller-privacy-id"
                       classNamePrefix="comp-select"
                       onChange={(e) => handlePrivacyRequestedChange(e)}
+                      isClearable={true}
                     />
                   </div>
                 </div>
@@ -1346,6 +1350,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     options={reportedByCodes}
                     enableValidation={false}
                     onChange={(e) => handleReportedByChange(e)}
+                    isClearable={true}
                   />
                 </div>
               </div>

@@ -263,6 +263,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
                 handleRemainingUsed(evt?.value ?? "");
               }}
               value={getDropdownOption(remainingUse, remainingDrugUse)}
+              isClearable={true}
             />
           </div>
         </div>

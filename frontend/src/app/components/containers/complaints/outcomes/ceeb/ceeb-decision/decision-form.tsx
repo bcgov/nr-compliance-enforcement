@@ -33,7 +33,7 @@ type props = {
   schedule: string;
   sector: string;
   discharge: string;
-  nonCompliance: string;
+  nonCompliance?: string;
   rationale: string;
   inspectionNumber?: string;
   leadAgency?: string;
@@ -114,7 +114,7 @@ export const DecisionForm: FC<props> = ({
   }, [sector, schedule, scheduleSectorType]);
 
   //-- update the decision state by property
-  const updateModel = (property: string, value: string | Date | undefined) => {
+  const updateModel = (property: string, value: string | Date | undefined | null) => {
     const model = { ...data, [property]: value };
 
     setData(model);
@@ -373,6 +373,7 @@ export const DecisionForm: FC<props> = ({
               }}
               isDisabled={isReadOnly}
               value={getDropdownOption(data.actionTaken, decisionTypeOptions)}
+              isClearable={true}
             />
           </div>
         </div>
@@ -442,10 +443,11 @@ export const DecisionForm: FC<props> = ({
               errorMessage={nonComplianceErrorMessage}
               placeholder="Select"
               onChange={(evt) => {
-                updateModel("nonCompliance", evt?.value);
+                updateModel("nonCompliance", evt ? evt?.value : null);
               }}
               isDisabled={isReadOnly}
               value={getDropdownOption(data.nonCompliance, nonComplianceOptions)}
+              isClearable={true}
             />
           </div>
         </div>
