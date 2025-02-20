@@ -9,7 +9,7 @@ import { useAppSelector } from "@hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import UserService from "@service/user-service";
-import Roles from "@apptypes/app/roles";
+import { Roles } from "@apptypes/app/roles";
 
 type Props = {
   type: string;

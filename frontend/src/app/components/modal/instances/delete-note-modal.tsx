@@ -12,13 +12,13 @@ type props = {
 export const DeleteNoteModal: FC<props> = ({ close, submit }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  const { title, description, ok, cancel, caseIdentifier: id } = modalData;
+  const { title, description, ok, cancel, caseIdentifier, id } = modalData;
 
   const handleSubmit = () => {
-    dispatch(deleteNote(id))
+    dispatch(deleteNote(caseIdentifier, id))
       .then((res) => {
         if (res === "success") {
-          dispatch(getCaseFile(id));
+          dispatch(getCaseFile(caseIdentifier));
         }
       })
       .finally(() => {

@@ -5,7 +5,7 @@ import { JwtRoleGuard } from "./../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "./../../auth/decorators/roles.decorator";
 import { Token } from "./../../auth/decorators/token.decorator";
-import { Role } from "./../../enum/role.enum";
+import { coreRoles } from "./../../enum/role.enum";
 import { get } from "../../external_api/case_management";
 
 @ApiTags("configuration")
@@ -19,13 +19,13 @@ export class ConfigurationController {
   private readonly logger = new Logger(ConfigurationController.name);
 
   @Get()
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   findAll() {
     return this.configurationService.findAll();
   }
 
   @Get(":configurationCode")
-  @Roles(Role.COS, Role.CEEB)
+  @Roles(coreRoles)
   async findOne(@Param("configurationCode") configurationCode: string, @Token() token) {
     try {
       const result = await this.configurationService.findOne(configurationCode);
@@ -59,11 +59,5 @@ export class ConfigurationController {
     } catch (err) {
       this.logger.error(`Error calling configurationCode ${configurationCode}`, err);
     }
-  }
-
-  @Patch(":id")
-  @Roles(Role.COS)
-  update(@Param("id") id: string, @Body() updateConfigurationDto: UpdateConfigurationDto) {
-    return this.configurationService.update(+id, updateConfigurationDto);
   }
 }

@@ -697,8 +697,8 @@ export const selectComplaintTypeDropdown = (state: RootState): Array<Option> => 
     codeTables: { "complaint-type": complaintTypes },
   } = state;
 
-  const data = complaintTypes.map(({ complaintType, longDescription }) => {
-    const item: Option = { label: longDescription, value: complaintType };
+  const data = complaintTypes.map(({ complaintType, longDescription, isActive }) => {
+    const item: Option = { label: longDescription, value: complaintType, isActive };
     return item;
   });
   return data;
@@ -709,61 +709,52 @@ export const selectCreatableComplaintTypeDropdown = (state: RootState): Array<Op
     codeTables: { "complaint-type": complaintTypes },
   } = state;
 
-  // Filter out complaintType is "GIR" since it should not appear as a createable type.
-  const filteredTypes = complaintTypes.filter((complaintType) => complaintType.complaintType !== "GIR");
-
-  const data = filteredTypes.map(({ complaintType, longDescription }) => {
+  const data = complaintTypes.map(({ complaintType, longDescription }) => {
     const item: Option = { label: longDescription, value: complaintType };
     return item;
   });
   return data;
 };
 
-export const selectAgencyDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { agency },
-  } = state;
-
-  const data = agency
-    .filter(({ agency }) => agency !== "PARKS") //hide PARKS option for now
-    .map(({ agency, longDescription }) => {
-      const item: Option = { label: longDescription, value: agency };
-      return item;
-    });
-  return data;
-};
+export const selectAgencyDropdown = createSelector(
+  (state: RootState) => state.codeTables.agency,
+  (agencyItems) =>
+    agencyItems.map(({ agency, longDescription, isActive }) => ({
+      label: longDescription,
+      value: agency,
+      isActive,
+    })),
+);
 
 export const selectLeadAgencyDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { "lead-agency": leadAgency },
   } = state;
 
-  const data = leadAgency.map(({ agency, longDescription }) => {
-    const item: Option = { label: longDescription, value: agency };
+  const data = leadAgency.map(({ agency, longDescription, isActive }) => {
+    const item: Option = { label: longDescription, value: agency, isActive };
     return item;
   });
   return data;
 };
 
-export const selectTeamDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { team },
-  } = state;
-
-  const data = team.map(({ team, longDescription }) => {
-    const item: Option = { label: longDescription, value: team };
-    return item;
-  });
-  return data;
-};
+export const selectTeamDropdown = createSelector(
+  (state: RootState) => state.codeTables.team,
+  (team) =>
+    team.map(({ team, longDescription, isActive }) => ({
+      label: longDescription,
+      value: team,
+      isActive,
+    })),
+);
 
 export const selectReportedByDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { "reported-by": reportedBy },
   } = state;
 
-  const data = reportedBy.map(({ reportedBy, longDescription }) => {
-    const item: Option = { label: longDescription, value: reportedBy };
+  const data = reportedBy.map(({ reportedBy, longDescription, isActive }) => {
+    const item: Option = { label: longDescription, value: reportedBy, isActive };
     return item;
   });
   return data;
@@ -778,8 +769,8 @@ export const selectComplaintStatusCodeDropdown = (state: RootState): Array<Optio
   // Filter out items where complaintStatus is "PENDREV" since it should only appear on the filter screen.
   const filteredStatus = complaintStatus.filter((status) => status.complaintStatus !== "PENDREV");
 
-  const data = filteredStatus.map(({ complaintStatus, longDescription }) => {
-    const item: Option = { label: longDescription, value: complaintStatus };
+  const data = filteredStatus.map(({ complaintStatus, longDescription, isActive }) => {
+    const item: Option = { label: longDescription, value: complaintStatus, isActive };
     return item;
   });
 
@@ -804,8 +795,8 @@ export const selectSpeciesCodeDropdown = (state: RootState): Array<Option> => {
     codeTables: { species },
   } = state;
 
-  const data = species.map(({ species, longDescription }) => {
-    const item: Option = { label: longDescription, value: species };
+  const data = species.map(({ species, longDescription, isActive }) => {
+    const item: Option = { label: longDescription, value: species, isActive };
     return item;
   });
   return data;
@@ -820,8 +811,8 @@ export const selectViolationCodeDropdown =
 
     const data = violation
       .filter(({ agencyCode }) => agencyCode === agency)
-      .map(({ violation, longDescription }) => {
-        const item: Option = { label: longDescription, value: violation };
+      .map(({ violation, longDescription, isActive }) => {
+        const item: Option = { label: longDescription, value: violation, isActive };
         return item;
       });
     return data;
@@ -832,8 +823,8 @@ export const selectGirTypeCodeDropdown = (state: RootState): Array<Option> => {
     codeTables: { "gir-type": girType },
   } = state;
 
-  const data = girType.map(({ girType, longDescription }) => {
-    const item: Option = { label: longDescription, value: girType };
+  const data = girType.map(({ girType, longDescription, isActive }) => {
+    const item: Option = { label: longDescription, value: girType, isActive };
     return item;
   });
   return data;
@@ -844,8 +835,8 @@ export const selectComplaintReceivedMethodDropdown = (state: RootState): Array<O
     codeTables: { "complaint-method-received-codes": complaintMethodReceivedType },
   } = state;
 
-  const data = complaintMethodReceivedType.map(({ complaintMethodReceivedCode, longDescription }) => {
-    const item: Option = { label: longDescription, value: complaintMethodReceivedCode };
+  const data = complaintMethodReceivedType.map(({ complaintMethodReceivedCode, longDescription, isActive }) => {
+    const item: Option = { label: longDescription, value: complaintMethodReceivedCode, isActive };
     return item;
   });
   return data;
@@ -856,8 +847,8 @@ export const selectJustificationCodeDropdown = (state: RootState): Array<Option>
     codeTables: { justification },
   } = state;
 
-  const data = justification.map(({ justification, longDescription }) => {
-    const item: Option = { label: longDescription, value: justification };
+  const data = justification.map(({ justification, longDescription, isActive }) => {
+    const item: Option = { label: longDescription, value: justification, isActive };
     return item;
   });
   return data;
@@ -868,8 +859,8 @@ export const selectAssessmentTypeCodeDropdown = (state: RootState): Array<Option
     codeTables: { "assessment-type": assessmentType },
   } = state;
 
-  const data = assessmentType.map(({ assessmentType, longDescription }) => {
-    const item: Option = { label: longDescription, value: assessmentType };
+  const data = assessmentType.map(({ assessmentType, longDescription, isActive }) => {
+    const item: Option = { label: longDescription, value: assessmentType, isActive };
     return item;
   });
   return data;
@@ -887,8 +878,8 @@ export const selectPreventionTypeCodeDropdown = (state: RootState): Array<Option
   const {
     codeTables: { "prevention-type": preventionType },
   } = state;
-  const data = preventionType.map(({ preventionType, longDescription }) => {
-    const item: Option = { label: longDescription, value: preventionType };
+  const data = preventionType.map(({ preventionType, longDescription, isActive }) => {
+    const item: Option = { label: longDescription, value: preventionType, isActive };
     return item;
   });
   return data;
@@ -924,8 +915,8 @@ export const selectAttractantCodeDropdown = (state: RootState): Array<Option> =>
     codeTables: { attractant },
   } = state;
 
-  const data = attractant.map(({ attractant, shortDescription }) => {
-    const item: Option = { label: shortDescription, value: attractant };
+  const data = attractant.map(({ attractant, shortDescription, isActive }) => {
+    const item: Option = { label: shortDescription, value: attractant, isActive };
     return item;
   });
 
@@ -1280,8 +1271,8 @@ export const selectSexDropdown = (state: RootState): Array<Option> => {
     codeTables: { sex: items },
   } = state;
 
-  const data = items.map(({ sex: value, shortDescription: label }) => {
-    const item: Option = { label, value };
+  const data = items.map(({ sex: value, shortDescription: label, isActive }) => {
+    const item: Option = { label, value, isActive };
     return item;
   });
 
@@ -1293,8 +1284,8 @@ export const selectAgeDropdown = (state: RootState): Array<Option> => {
     codeTables: { age: items },
   } = state;
 
-  const data = items.map(({ age: value, shortDescription: label }) => {
-    const item: Option = { label, value };
+  const data = items.map(({ age: value, shortDescription: label, isActive }) => {
+    const item: Option = { label, value, isActive };
     return item;
   });
 
@@ -1306,8 +1297,8 @@ export const selectThreatLevelDropdown = (state: RootState): Array<Option> => {
     codeTables: { "threat-level": items },
   } = state;
 
-  const data = items.map(({ threatLevel: value, shortDescription: label }) => {
-    const item: Option = { label, value };
+  const data = items.map(({ threatLevel: value, shortDescription: label, isActive }) => {
+    const item: Option = { label, value, isActive };
     return item;
   });
 
@@ -1319,8 +1310,8 @@ export const selectConflictHistoryDropdown = (state: RootState): Array<Option> =
     codeTables: { "conflict-history": items },
   } = state;
 
-  const data = items.map(({ conflictHistory: value, shortDescription: label }) => {
-    const item: Option = { label, value };
+  const data = items.map(({ conflictHistory: value, shortDescription: label, isActive }) => {
+    const item: Option = { label, value, isActive };
     return item;
   });
 
@@ -1332,8 +1323,8 @@ export const selectEarDropdown = (state: RootState): Array<Option> => {
     codeTables: { "ear-tag": items },
   } = state;
 
-  const data = items.map(({ earTag: value, shortDescription: label }) => {
-    const item: Option = { label, value };
+  const data = items.map(({ earTag: value, shortDescription: label, isActive }) => {
+    const item: Option = { label, value, isActive };
     return item;
   });
 
@@ -1348,6 +1339,8 @@ export const selectActiveWildlifeComplaintOutcome = (state: RootState): Array<Op
 
   let filteredItems = items.filter((item) => item.isActive === true); // Only items with active_ind = true
 
+  // isActive was left out of the options for this since the compselect component will display all options
+  // if they have no isActive field on them, so this prevents the list from getting checked twice.
   // Map the filtered and sorted items to the Option format
   const data = filteredItems.map(({ outcome: value, shortDescription: label }) => {
     const item: Option = { label, value };
@@ -1363,8 +1356,8 @@ export const selectAllWildlifeComplaintOutcome = (state: RootState): Array<Optio
     codeTables: { "wildlife-outcomes": items },
   } = state;
 
-  const data = items.map(({ outcome: value, shortDescription: label }) => {
-    const item: Option = { label, value };
+  const data = items.map(({ outcome: value, shortDescription: label, isActive }) => {
+    const item: Option = { label, value, isActive };
     return item;
   });
 
@@ -1376,8 +1369,8 @@ export const selectDrugs = (state: RootState): Array<Option> => {
     codeTables: { drugs: items },
   } = state;
 
-  const data = items.map(({ drug: value, shortDescription: label }) => {
-    const item: Option = { label, value };
+  const data = items.map(({ drug: value, shortDescription: label, isActive }) => {
+    const item: Option = { label, value, isActive };
     return item;
   });
 
@@ -1389,8 +1382,8 @@ export const selectDrugUseMethods = (state: RootState): Array<Option> => {
     codeTables: { "drug-methods": items },
   } = state;
 
-  const data = items.map(({ method: value, shortDescription: label }) => {
-    const item: Option = { label, value };
+  const data = items.map(({ method: value, shortDescription: label, isActive }) => {
+    const item: Option = { label, value, isActive };
     return item;
   });
 
@@ -1402,8 +1395,8 @@ export const selectRemainingDrugUse = (state: RootState): Array<Option> => {
     codeTables: { "drug-remaining-outcomes": items },
   } = state;
 
-  const data = items.map(({ outcome: value, shortDescription: label }) => {
-    const item: Option = { label, value };
+  const data = items.map(({ outcome: value, shortDescription: label, isActive }) => {
+    const item: Option = { label, value, isActive };
     return item;
   });
 
@@ -1427,9 +1420,10 @@ export const selectAllEquipmentDropdown = createSelector(
   (state: RootState) => state.codeTables.equipment,
   (items) => {
     // Map the filtered items to the Option format
-    return items.map(({ equipment: value, shortDescription: label }) => ({
+    return items.map(({ equipment: value, shortDescription: label, isActive }) => ({
       label,
       value,
+      isActive,
     }));
   },
 );
@@ -1439,8 +1433,8 @@ export const selectLocationDropdown = (state: RootState): Array<Option> => {
     codeTables: { "case-location-type": items },
   } = state;
 
-  const data = items.map(({ caseLocationType: value, shortDescription: label }) => {
-    const item: Option = { label, value };
+  const data = items.map(({ caseLocationType: value, shortDescription: label, isActive }) => {
+    const item: Option = { label, value, isActive };
     return item;
   });
 
@@ -1452,8 +1446,8 @@ export const selectAssessmentCat1Dropdown = (state: RootState): Array<Option> =>
     codeTables: { "assessment-cat1-type": items },
   } = state;
 
-  const data = items.map(({ assessmentType: value, shortDescription: label }) => {
-    const item: Option = { label, value };
+  const data = items.map(({ assessmentType: value, shortDescription: label, isActive }) => {
+    const item: Option = { label, value, isActive };
     return item;
   });
 

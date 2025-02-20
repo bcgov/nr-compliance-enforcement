@@ -70,9 +70,10 @@ export const caseFileQueryFields: string = `
       activeIndicator
     }
   }
-  note {
+  notes {
+    id
     note 
-    action { 
+    actions { 
       actor
       actionCode
       date,

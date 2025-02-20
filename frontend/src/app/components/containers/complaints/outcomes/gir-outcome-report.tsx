@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { SupplementalNote } from "./supplemental-note";
+import { Notes } from "./notes";
 
 export const GIROutcomeReport: FC = () => {
   return (
@@ -8,7 +8,7 @@ export const GIROutcomeReport: FC = () => {
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
-      <SupplementalNote />
+      <Notes />
     </section>
   );
 };

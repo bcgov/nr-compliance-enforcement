@@ -79,6 +79,8 @@ import { Attachment, AttachmentType } from "../../types/models/general/attachmen
 import { getFileType } from "../../common/methods";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
+import { Role } from "../../enum/role.enum";
+import { dtoAlias } from "src/types/models/complaints/dtoAlias-type";
 
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
@@ -249,11 +251,13 @@ export class ComplaintService {
           .createQueryBuilder("allegation")
           .leftJoinAndSelect("allegation.complaint_identifier", "complaint")
           .leftJoin("allegation.violation_code", "violation_code")
+          .leftJoin("violation_code.violationAgencyXrefs", "violation_agency_xref")
+          .leftJoin("violation_agency_xref.agency_code", "agency_code")
           .addSelect([
             "violation_code.violation_code",
             "violation_code.short_description",
             "violation_code.long_description",
-            "violation_code.agency_code",
+            "agency_code.agency_code",
           ]);
         break;
       case "GIR":
@@ -999,7 +1003,7 @@ export class ComplaintService {
   search = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintSearchParameters,
-    hasCEEBRole: boolean,
+    agencies: string[],
     token?: string,
   ): Promise<SearchResults> => {
     try {
@@ -1022,16 +1026,21 @@ export class ComplaintService {
       }
 
       // search for complaints based on the user's role
-      const agency = hasCEEBRole ? "EPO" : "COS";
-      builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency });
+      if (agencies.length > 0) {
+        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
+          agency_codes: agencies,
+        });
+      } else {
+        builder.andWhere("1 = 0"); // In case of no agency, no rows will be returned
+      }
 
       //-- return Waste and Pestivide complaints for CEEB users
-      if (hasCEEBRole && complaintType === "ERS") {
-        builder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+      if (agencies.includes("EPO") && complaintType === "ERS") {
+        builder.andWhere("agency_code.agency_code = :agency", { agency: "EPO" });
       }
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
-      if (hasCEEBRole && filters.actionTaken) {
+      if (agencies.includes("EPO") && filters.actionTaken) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
 
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
@@ -1040,14 +1049,16 @@ export class ComplaintService {
       }
 
       // -- filter by complaint identifiers returned by case management if outcome animal filter is present
-      if (agency === "COS" && (filters.outcomeAnimal || filters.outcomeAnimalStartDate)) {
+      if (
+        (agencies.includes("COS") || agencies.includes(Role.PARKS)) &&
+        (filters.outcomeAnimal || filters.outcomeAnimalStartDate)
+      ) {
         const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(
           token,
           filters.outcomeAnimal,
           filters.outcomeAnimalStartDate,
           filters.outcomeAnimalEndDate,
         );
-
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
         });
@@ -1106,7 +1117,7 @@ export class ComplaintService {
 
       return results;
     } catch (error) {
-      this.logger.error(error.response);
+      this.logger.error(error);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
   };
@@ -1126,7 +1137,7 @@ export class ComplaintService {
   _generateFilteredMapQueryBuilder = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintMapSearchClusteredParameters,
-    hasCEEBRole: boolean,
+    agencies: string[],
     token?: string,
     count: boolean = false,
   ): Promise<SelectQueryBuilder<complaintAlias>> => {
@@ -1149,16 +1160,19 @@ export class ComplaintService {
       }
 
       //-- only return complaints for the agency the user is associated with
-      const agency = hasCEEBRole ? "EPO" : (await this._getAgencyByUser()).agency_code;
-      agency && builder.andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency });
+      if (agencies.length > 0) {
+        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
+          agency_codes: agencies,
+        });
+      }
 
       //-- return Waste and Pestivide complaints for CEEB users
-      if (hasCEEBRole && complaintType === "ERS") {
-        builder.andWhere("violation_code.agency_code = :agency", { agency: "EPO" });
+      if (agencies.includes("EPO") && complaintType === "ERS") {
+        builder.andWhere("agency_code.agency_code = :agency", { agency: "EPO" });
       }
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
-      if (hasCEEBRole && filters.actionTaken) {
+      if (agencies.includes("EPO") && filters.actionTaken) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
@@ -1166,7 +1180,10 @@ export class ComplaintService {
       }
 
       // -- filter by complaint identifiers returned by case management if outcome animal filter is present
-      if (agency === "COS" && (filters.outcomeAnimal || filters.outcomeAnimalStartDate)) {
+      if (
+        (agencies.includes("COS") || agencies.includes("PARKS")) &&
+        (filters.outcomeAnimal || filters.outcomeAnimalStartDate)
+      ) {
         const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(
           token,
           filters.outcomeAnimal,
@@ -1187,11 +1204,11 @@ export class ComplaintService {
   _getUnmappedComplaintsCount = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintMapSearchClusteredParameters,
-    hasCEEBRole: boolean,
+    agencies: string[],
     token?: string,
   ): Promise<number> => {
     try {
-      const builder = await this._generateFilteredMapQueryBuilder(complaintType, model, hasCEEBRole, token, true);
+      const builder = await this._generateFilteredMapQueryBuilder(complaintType, model, agencies, token, true);
 
       //-- filter for locations without coordinates
       builder.andWhere("ST_X(complaint.location_geometry_point) = 0");
@@ -1207,11 +1224,11 @@ export class ComplaintService {
   _getClusteredComplaints = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintMapSearchClusteredParameters,
-    hasCEEBRole: boolean,
+    agencies: string[],
     token?: string,
   ): Promise<Array<PointFeature<GeoJsonProperties>>> => {
     try {
-      const complaintBuilder = await this._generateFilteredMapQueryBuilder(complaintType, model, hasCEEBRole, token);
+      const complaintBuilder = await this._generateFilteredMapQueryBuilder(complaintType, model, agencies, token);
 
       //-- filter locations without coordinates
       complaintBuilder.andWhere("complaint.location_geometry_point is not null");
@@ -1249,7 +1266,7 @@ export class ComplaintService {
   mapSearchClustered = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintMapSearchClusteredParameters,
-    hasCEEBRole: boolean,
+    agencies: string[],
     token?: string,
   ): Promise<MapSearchResults> => {
     try {
@@ -1257,12 +1274,12 @@ export class ComplaintService {
       // Get unmappable complaints if requested
       if (model.unmapped) {
         // run query and append to results
-        const unmappedCount = await this._getUnmappedComplaintsCount(complaintType, model, hasCEEBRole, token);
+        const unmappedCount = await this._getUnmappedComplaintsCount(complaintType, model, agencies, token);
         results = { ...results, unmappedCount };
       }
 
       if (model.clusters) {
-        const points = await this._getClusteredComplaints(complaintType, model, hasCEEBRole, token);
+        const points = await this._getClusteredComplaints(complaintType, model, agencies, token);
 
         results.mappedCount = points.length;
 
@@ -1389,8 +1406,8 @@ export class ComplaintService {
   updateComplaintById = async (
     id: string,
     complaintType: string,
-    model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
-  ): Promise<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> => {
+    model: ComplaintDto | dtoAlias,
+  ): Promise<dtoAlias> => {
     const agencyCode = model.ownedBy;
     const hasAssignees = (delegates: Array<DelegateDto>): boolean => {
       if (delegates && delegates.length > 0) {
@@ -1582,11 +1599,7 @@ export class ComplaintService {
     }
   };
 
-  create = async (
-    complaintType: COMPLAINT_TYPE,
-    model: WildlifeComplaintDto | AllegationComplaintDto,
-    webeocInd?: boolean,
-  ): Promise<WildlifeComplaintDto | AllegationComplaintDto> => {
+  create = async (complaintType: COMPLAINT_TYPE, model: dtoAlias, webeocInd?: boolean): Promise<dtoAlias> => {
     this.logger.debug("Creating new complaint");
     const generateComplaintId = async (queryRunner: QueryRunner): Promise<string> => {
       let sequence;
@@ -1688,6 +1701,22 @@ export class ComplaintService {
 
           const newAllegation = await this._allegationComplaintRepository.create(ers);
           await this._allegationComplaintRepository.save(newAllegation);
+          break;
+        }
+        case "GIR": {
+          const { girType } = model as GeneralIncidentComplaintDto;
+          const girId = randomUUID();
+
+          const gir = {
+            gir_complaint_guid: girId,
+            complaint_identifier: complaintId,
+            gir_type_code: girType,
+            create_user_id: idir,
+            update_user_id: idir,
+          } as any;
+
+          const newGir = await this._girComplaintRepository.create(gir);
+          await this._girComplaintRepository.save(newGir);
           break;
         }
         case "HWCR":
@@ -2049,14 +2078,18 @@ export class ComplaintService {
       return wildlife;
     };
 
-    const _applyNoteData = async (caseFile) => {
-      //-- Convert Officer Guid to Name
-      if (caseFile.note) {
-        const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(caseFile.note.action.actor))
+    const _applyNoteData = async (notes) => {
+      let noteCount = 1;
+      for (const note of notes) {
+        //-- Convert Officer Guid to Name
+        const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(note.actions[0].actor))
           .person_guid;
 
-        caseFile.note.action.actor = last_name + ", " + first_name;
-        caseFile.note.action.date = _applyTimezone(caseFile.note.action.date, tz, "date");
+        note.actions[0].actor = last_name + ", " + first_name;
+        note.actions[0].date = _applyTimezone(note.actions[0].date, tz, "datetime");
+        //give it a nice friendly number as nothing comes back from the GQL
+        note.order = noteCount;
+        noteCount++;
       }
     };
 
@@ -2112,6 +2145,8 @@ export class ComplaintService {
       const preventionActions = preventionDetails?.actions;
       const equipment = outcomeData.getCaseFileByLeadId.equipment;
       const wildlife = outcomeData.getCaseFileByLeadId.subject;
+      const notes = outcomeData.getCaseFileByLeadId.notes;
+
       let hasOutcome = false;
 
       if (assessmentDetails?.actionNotRequired !== null && assessmentDetails?.actionNotRequired !== undefined) {
@@ -2134,9 +2169,9 @@ export class ComplaintService {
         await _applyWildlifeData(wildlife);
       }
 
-      if (outcomeData.getCaseFileByLeadId.note) {
+      if (notes) {
         hasOutcome = true;
-        await _applyNoteData(outcomeData.getCaseFileByLeadId);
+        await _applyNoteData(notes);
       }
 
       if (outcomeData.getCaseFileByLeadId.isReviewRequired) {

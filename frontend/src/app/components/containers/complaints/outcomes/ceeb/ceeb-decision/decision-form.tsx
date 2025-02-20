@@ -284,6 +284,7 @@ export const DecisionForm: FC<props> = ({
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-schedule-sector"
+              showInactive={false}
               className="comp-details-input"
               classNamePrefix="comp-select"
               options={schedulesOptions}
@@ -310,6 +311,7 @@ export const DecisionForm: FC<props> = ({
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-sector-category"
+              showInactive={false}
               className="comp-details-input"
               classNamePrefix="comp-select"
               options={sectorList}
@@ -334,6 +336,7 @@ export const DecisionForm: FC<props> = ({
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-discharge"
+              showInactive={false}
               className="comp-details-input"
               classNamePrefix="comp-select"
               options={dischargesOptions}
@@ -357,6 +360,7 @@ export const DecisionForm: FC<props> = ({
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-action-taken"
+              showInactive={false}
               className="comp-details-input"
               classNamePrefix="comp-select"
               options={decisionTypeOptions}
@@ -381,6 +385,7 @@ export const DecisionForm: FC<props> = ({
             <div className="comp-details-input full-width">
               <CompSelect
                 id="outcome-decision-lead-agency"
+                showInactive={false}
                 className="comp-details-input"
                 classNamePrefix="comp-select"
                 options={leadAgencyOptions}
@@ -429,6 +434,7 @@ export const DecisionForm: FC<props> = ({
           <div className="comp-details-input full-width">
             <CompSelect
               id="outcome-decision-non-compliance"
+              showInactive={false}
               className="comp-details-input"
               classNamePrefix="comp-select"
               options={nonComplianceOptions}

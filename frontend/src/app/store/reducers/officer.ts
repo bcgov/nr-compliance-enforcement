@@ -23,7 +23,7 @@ import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complai
 import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
 import { OfficerDto } from "@apptypes/app/people/officer";
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
-import Roles from "@apptypes/app/roles";
+import { Roles } from "@apptypes/app/roles";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 
 const initialState: OfficerState = {
@@ -280,7 +280,7 @@ export const selectOfficers = (state: RootState): Officer[] | null => {
 };
 
 export const searchOfficers =
-  (input: string, agency: string) =>
+  (input: string, agency: string, complaintType: string) =>
   (state: RootState): Array<Officer> => {
     const {
       officers: { officers: items },
@@ -305,7 +305,10 @@ export const searchOfficers =
           firstName.toLocaleLowerCase().includes(searchInput) || lastName.toLocaleLowerCase().includes(searchInput);
         const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
 
-        if (agency === "COS") {
+        if (complaintType !== "HWCR" && user_roles.includes(Roles.HWCR_ONLY)) {
+          //Don't include HWCR_ONLY users if the complaint is not an HWCR
+          return false;
+        } else if (agency === "COS") {
           return !fromAdminOffice && nameMatch && roleMatch;
         } else if (agency === "EPO") {
           return roleMatch && nameMatch;
@@ -314,31 +317,6 @@ export const searchOfficers =
         }
       });
     }
-
-    return results;
-  };
-
-export const selectOfficersDropdown =
-  (includeAdminOffice: boolean) =>
-  (state: RootState): Array<Option> => {
-    const { officers: officerRoot } = state;
-    const { officers } = officerRoot;
-
-    const results = officers
-      ?.filter((officer) => {
-        const { office_guid } = officer;
-
-        // Safely handle office_guid and cos_geo_org_unit
-        const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? undefined; // Will be undefined if cos_geo_org_unit is null or undefined
-
-        return includeAdminOffice ? true : !fromAdminOffice;
-      })
-      .map((item) => {
-        const {
-          person_guid: { person_guid: id, first_name, last_name },
-        } = item;
-        return { value: id, label: `${last_name}, ${first_name}` };
-      });
 
     return results;
   };
@@ -368,6 +346,8 @@ const mapAgencyToRole = (agency: string): string => {
     role = "COS";
   } else if (agency === "EPO") {
     role = "CEEB";
+  } else if (agency === "PARKS") {
+    role = "PARKS";
   }
   return role;
 };
@@ -379,7 +359,6 @@ const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] =
 
     // Safely handle office_guid and cos_geo_org_unit
     const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? undefined; // Will be undefined if cos_geo_org_unit is null or undefined
-
     const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
     const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
 
@@ -401,6 +380,9 @@ const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] =
     } else if (agency === "EPO") {
       let result = officer.deactivate_ind === true ? agency === agencyCodeForDeactivatedOfficer : roleMatch;
       return result;
+    } else if (agency === "PARKS") {
+      //Cannot handle deactivated officers for parks... will be addressed once we understand if Parks users have offices
+      return roleMatch;
     } else {
       return false;
     }
@@ -408,14 +390,13 @@ const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] =
   return result;
 };
 
-export const selectOfficersByAgency =
-  (agency: string) =>
-  (state: RootState): Officer[] | null => {
-    const { officers: officerRoot } = state;
-    const { officers } = officerRoot;
-    const result = filterOfficerByAgency(agency, officers);
-    return result;
-  };
+export const selectOfficersByAgency = createSelector(
+  (state: RootState) => state.officers.officers,
+  (state: RootState, agency: string) => agency,
+  (officers, agency) => {
+    return filterOfficerByAgency(agency, officers);
+  },
+);
 
 export const selectOfficerListByAgency = createSelector(
   [selectOfficers, selectComplaint],
@@ -433,15 +414,19 @@ export const selectOfficerListByAgency = createSelector(
 );
 
 export const selectOfficersByAgencyDropdownUsingPersonGuid =
-  (agency: string) =>
+  (agency: string, complaintType: string) =>
   (state: RootState): Array<Option> => {
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
     const officerList = filterOfficerByAgency(agency, officers);
-    const officerDropdown = officerList.map((officer: Officer) => ({
-      value: officer.person_guid.person_guid,
-      label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-    }));
+    const officerDropdown = officerList
+      .filter(
+        (officer: Officer) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+      ) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR.
+      .map((officer: Officer) => ({
+        value: officer.person_guid.person_guid,
+        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+      }));
 
     return officerDropdown;
   };
@@ -475,12 +460,15 @@ export const selectOfficersByZoneAgencyAndRole =
           const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
           const fromAdminOffice = officer?.office_guid?.cos_geo_org_unit?.administrative_office_ind;
           const zoneAgencyMatch = zone === zoneCode && (agency === agencyCode || !agency);
-          const roleMatch = officer?.user_roles.includes(role) && !officer?.user_roles.includes(Roles.READ_ONLY);
+          const roleMatch =
+            officer?.user_roles.includes(role) &&
+            !officer?.user_roles.includes(Roles.READ_ONLY) &&
+            !officer?.user_roles.includes(Roles.HWCR_ONLY);
           result = !fromAdminOffice && zoneAgencyMatch && roleMatch;
           return result;
         });
       }
-    } else if (agency === "EPO") {
+    } else if (agency === "EPO" || agency === "PARKS") {
       return officers.filter((officer) => {
         result = officer?.user_roles.includes(role) && !officer?.user_roles.includes(Roles.READ_ONLY);
         return result;

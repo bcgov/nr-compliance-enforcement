@@ -3518,33 +3518,6 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
----------------
--- insert new BCPARK agency
----------------
-INSERT INTO
-  agency_code (
-    agency_code,
-    short_description,
-    long_description,
-    display_order,
-    active_ind,
-    create_user_id,
-    create_utc_timestamp,
-    update_user_id,
-    update_utc_timestamp
-  )
-SELECT
-  'PARKS',
-  'BC Parks',
-  'BC Parks',
-  1,
-  'Y',
-  user,
-  now(),
-  user,
-  now() ON CONFLICT
-DO NOTHING;
-
 ------------------------------
 -- update agency table with updated EPO -> CEEB short description and display order
 ------------------------------
@@ -4405,6 +4378,26 @@ INSERT INTO
     update_utc_timestamp
   )
 SELECT
+  'OUT_A_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
   'OUT_D_FLTR',
   'COS',
   'Y',
@@ -4413,6 +4406,27 @@ SELECT
   user,
   now() ON CONFLICT
 DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'OUT_D_FLTR',
+  'PARKS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
 
 INSERT INTO
   feature_agency_xref (
@@ -10214,14 +10228,11 @@ UPDATE geo_org_unit_structure set parent_geo_org_unit_code='GLDN' where child_ge
 -- Move complaints from  Birkenhead Estates - (Whistler) to Birkenhead Estates area and delete Birkenhead Estates - (Whistler) area
 ------------------------
 
-UPDATE complaint SET geo_organization_unit_code='BRKHES' WHERE geo_organization_unit_code='BRKHES-W' 
-AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
+UPDATE complaint SET geo_organization_unit_code='BRKHES' WHERE geo_organization_unit_code='BRKHES-W';
 
-DELETE FROM geo_org_unit_structure
-WHERE child_geo_org_unit_code='BRKHES-W' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+DELETE FROM geo_org_unit_structure WHERE child_geo_org_unit_code='BRKHES-W';
 
-DELETE FROM geo_organization_unit_code
-WHERE geo_organization_unit_code='BRKHES-W' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+DELETE FROM geo_organization_unit_code WHERE geo_organization_unit_code='BRKHES-W';
 
 
 ------------------------
@@ -10287,14 +10298,11 @@ values
   ) ON CONFLICT
 DO NOTHING;
 
-UPDATE complaint SET geo_organization_unit_code='WTSMTMRCTW' WHERE geo_organization_unit_code='MORICETN' 
-AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
+UPDATE complaint SET geo_organization_unit_code='WTSMTMRCTW' WHERE geo_organization_unit_code='MORICETN';
 
-DELETE FROM geo_org_unit_structure
-WHERE child_geo_org_unit_code='MORICETN' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+DELETE FROM geo_org_unit_structure WHERE child_geo_org_unit_code='MORICETN';
 
-DELETE FROM geo_organization_unit_code
-WHERE geo_organization_unit_code='MORICETN' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+DELETE FROM geo_organization_unit_code WHERE geo_organization_unit_code='MORICETN';
 
 ------------------------
 -- Rename Deep Creek to Deep Creek (Near Williams Lake)
@@ -10352,14 +10360,11 @@ values
   ) ON CONFLICT
 DO NOTHING;
 
-UPDATE complaint SET geo_organization_unit_code='DPCRKNRWLL' WHERE geo_organization_unit_code='DEEPCRK' 
-AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
+UPDATE complaint SET geo_organization_unit_code='DPCRKNRWLL' WHERE geo_organization_unit_code='DEEPCRK';
 
-DELETE FROM geo_org_unit_structure
-WHERE child_geo_org_unit_code='DEEPCRK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+DELETE FROM geo_org_unit_structure WHERE child_geo_org_unit_code='DEEPCRK';
 
-DELETE FROM geo_organization_unit_code
-WHERE geo_organization_unit_code='DEEPCRK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+DELETE FROM geo_organization_unit_code WHERE geo_organization_unit_code='DEEPCRK';
 
 
 ------------------------
@@ -10418,14 +10423,11 @@ values
   ) ON CONFLICT
 DO NOTHING;
 
-UPDATE complaint SET geo_organization_unit_code='RSLK150MLH' WHERE geo_organization_unit_code='ROSELAK' 
-AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
+UPDATE complaint SET geo_organization_unit_code='RSLK150MLH' WHERE geo_organization_unit_code='ROSELAK';
 
-DELETE FROM geo_org_unit_structure
-WHERE child_geo_org_unit_code='ROSELAK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+DELETE FROM geo_org_unit_structure WHERE child_geo_org_unit_code='ROSELAK';
 
-DELETE FROM geo_organization_unit_code
-WHERE geo_organization_unit_code='ROSELAK' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+DELETE FROM geo_organization_unit_code WHERE geo_organization_unit_code='ROSELAK';
 
 ------------------------
 -- Rename Daajing Giids (Queen Charlotte City) to Daajing Giids
@@ -10483,14 +10485,11 @@ values
   ) ON CONFLICT
 DO NOTHING;
 
-UPDATE complaint SET geo_organization_unit_code='DJNGGDS' WHERE geo_organization_unit_code='QUEENCHA' 
-AND incident_utc_datetime <= '2025-02-11 00:00:00.000';
+UPDATE complaint SET geo_organization_unit_code='DJNGGDS' WHERE geo_organization_unit_code='QUEENCHA';
 
-DELETE FROM geo_org_unit_structure
-WHERE child_geo_org_unit_code='QUEENCHA' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+DELETE FROM geo_org_unit_structure WHERE child_geo_org_unit_code='QUEENCHA';
 
-DELETE FROM geo_organization_unit_code
-WHERE geo_organization_unit_code='QUEENCHA' AND create_utc_timestamp <= '2025-02-11 00:00:00.000';
+DELETE FROM geo_organization_unit_code WHERE geo_organization_unit_code='QUEENCHA';
 
 
 -------------------------

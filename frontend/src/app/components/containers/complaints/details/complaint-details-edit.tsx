@@ -77,7 +77,8 @@ import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { ExternalFileReference } from "@components/containers/complaints/outcomes/external-file-reference";
 import { getCaseFile } from "@/app/store/reducers/case-thunks";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
-
+import { RootState } from "@/app/store/store";
+import { Roles } from "@/app/types/app/roles";
 
 export type ComplaintParams = {
   id: string;
@@ -146,14 +147,22 @@ export const ComplaintDetailsEdit: FC = () => {
   const violationTypeCodes = useSelector(selectViolationCodeDropdown(agency)) as Option[];
   const girTypeCodes = useSelector(selectGirTypeCodeDropdown) as Option[];
 
-  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
-  const officerList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
+  const officersInAgencyList = useSelector((state: RootState) =>
+    selectOfficersByAgency(state, ownedByAgencyCode?.agency),
+  );
+  const officerList = useSelector((state: RootState) => selectOfficersByAgency(state, ownedByAgencyCode?.agency));
+
   let assignableOfficers: Option[] =
     officersInAgencyList !== null
-      ? officersInAgencyList.map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-        }))
+      ? officersInAgencyList
+          .filter(
+            (officer: Officer) =>
+              complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+          ) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR
+          .map((officer: Officer) => ({
+            value: officer.person_guid.person_guid,
+            label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+          }))
       : [];
 
   assignableOfficers.unshift({ value: "Unassigned", label: "None" });
@@ -828,6 +837,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 <label id="officer-assigned-select-label-id">Officer assigned</label>
                 <CompSelect
                   id="officer-assigned-select-id"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   onChange={(e) => handleAssignedOfficerChange(e)}
                   className="comp-details-input full-width"
@@ -853,6 +863,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     </label>
                     <CompSelect
                       id="species-select-id"
+                      showInactive={false}
                       classNamePrefix="comp-select"
                       onChange={(e) => handleSpeciesChange(e)}
                       className="comp-details-input full-width"
@@ -872,11 +883,11 @@ export const ComplaintDetailsEdit: FC = () => {
                     </label>
                     <CompSelect
                       id="nature-of-complaint-select-id"
+                      showInactive={false}
                       classNamePrefix="comp-select"
                       onChange={(e) => handleNatureOfComplaintChange(e)}
                       className="comp-details-input full-width"
                       options={hwcrNatureOfComplaintCodes}
-                      showInactive={false}
                       defaultOption={selectedNatureOfComplaint}
                       placeholder="Select"
                       enableValidation={true}
@@ -1083,6 +1094,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="community-select-id"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     onChange={(e) => handleCommunityChange(e)}
                     className="comp-details-input"
@@ -1143,6 +1155,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="complaint-received-method-select-id"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     className="comp-details-input"
                     defaultOption={selectedComplaintMethodReceivedCode}
@@ -1325,6 +1338,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 <div className="comp-details-edit-input">
                   <CompSelect
                     id="reported-select-id"
+                    showInactive={false}
                     classNamePrefix="comp-select"
                     className="comp-details-input"
                     defaultOption={selectedReportedByCode}

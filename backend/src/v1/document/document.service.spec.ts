@@ -55,7 +55,6 @@ import { PersonComplaintXrefService } from "../person_complaint_xref/person_comp
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
-import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
@@ -78,6 +77,7 @@ import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref
 import { TeamService } from "../team/team.service";
 import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
 import { CacheModule } from "@nestjs/cache-manager";
+import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
 
 describe("DocumentService", () => {
   let service: DocumentService;
@@ -147,7 +147,7 @@ describe("DocumentService", () => {
           useFactory: MockSpeciesCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(ViolationCode),
+          provide: getRepositoryToken(ViolationAgencyXref),
           useFactory: MockViolationsCodeTableRepository,
         },
         {

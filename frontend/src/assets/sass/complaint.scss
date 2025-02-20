@@ -672,7 +672,7 @@
 .comp-details-section-header {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
 
   .btn {
@@ -1051,19 +1051,31 @@ p {
   .comp-complaint-update-item {
     display: flex;
     flex-direction: column;
-    gap: 8px;
     margin-top: 12px;
     border: 1px solid $green-90;
     background-color: $green-90-10;
     border-radius: 4px;
     padding: 24px;
+    word-break: break-word;
   }
 
   .comp-complaint-update-item-row {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 12px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .comp-complaint-update-label {
+    color: $gray-900;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    width: 175px;
+    box-sizing: border-box;
   }
 
   .comp-linked-complaint-item {
@@ -1110,25 +1122,21 @@ p {
   }
 
   .comp-complaint-update-count {
-    margin: 5px 0 -8px;
-  }
-
-  .comp-complaint-top-row {
-    margin-top: 24px;
+    margin: 5px 0 15px;
   }
 
   .first-row {
-    flex-direction: row;
-    gap: 10px;
+    flex-direction: column;
   }
 
   .first-row .update-number {
     box-sizing: border-box;
-    color: $gray-600;
+    color: $gray-900;
     font-size: 16px;
     font-style: normal;
     font-weight: 700;
     line-height: 150%;
+    width: 175px;
   }
 
   .first-row .received {
@@ -1136,6 +1144,12 @@ p {
     font-weight: 400;
     font-size: 16px;
     line-height: 150%;
+  }
+
+  .first-row .expand-collapse-button {
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 
   .received span {
@@ -1152,19 +1166,22 @@ p {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 12px;
+    margin-bottom: 8px;
     position: relative;
   }
 
-  .complaint-description-label {
-    color: $gray-600;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 150%;
+  @include media-breakpoint-up(lg) {
+    .complaint-description-section,
+    .comp-complaint-update-item-row,
+    .first-row {
+      display: flex;
+      flex-direction: row;
+    }
   }
 
   .complaint-description-text {
+    flex: 1;
     color: $gray-900;
     font-size: 16px;
     font-style: normal;

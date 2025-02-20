@@ -29,6 +29,8 @@ import { CompRadioGroup } from "@components/common/comp-radiogroup";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { CompInput } from "@/app/components/common/comp-input";
+import { RootState } from "@/app/store/store";
+import { useSelector } from "react-redux";
 
 export interface EquipmentFormProps {
   equipment?: EquipmentDetailsDto;
@@ -66,7 +68,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const { id = "" } = useParams<{ id: string }>();
   const complaintData = useAppSelector(selectComplaint);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
-  const officersInAgencyList = useAppSelector(selectOfficersByAgency(ownedByAgencyCode?.agency));
+  const officersInAgencyList = useSelector(
+    (state: RootState) => selectOfficersByAgency(state, ownedByAgencyCode?.agency), // Pass agency here
+  );
   const equipmentDropdownOptions = useAppSelector(selectActiveEquipmentDropdown);
   const trapEquipment = useAppSelector(selectTrapEquipment);
   const hasQuantityEquipment = useAppSelector(selectHasQuantityEquipment);
@@ -338,6 +342,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="equipment-type-select"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   className="comp-details-input"
                   placeholder="Select"
@@ -460,6 +465,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               <div className="comp-details-input full-width">
                 <CompSelect
                   id="equipment-officer-set-select"
+                  showInactive={false}
                   classNamePrefix="comp-select"
                   placeholder="Select"
                   options={assignableOfficers}
@@ -504,6 +510,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                   <div className="comp-details-input full-width">
                     <CompSelect
                       id="equipment-officer-removed-select"
+                      showInactive={false}
                       classNamePrefix="comp-select"
                       placeholder="Select"
                       options={assignableOfficers}
