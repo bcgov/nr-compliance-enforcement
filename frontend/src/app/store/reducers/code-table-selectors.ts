@@ -56,6 +56,18 @@ export const selectScheduleDropdown = (state: RootState): Array<Option> => {
   return data;
 };
 
+export const selectIPMAuthCategoryDropdown = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "ipm-auth-category": items },
+  } = state;
+
+  const data = items.map(({ ipmAuthCategoryCode: value, longDescription: label }) => {
+    return { label, value };
+  });
+
+  return data;
+};
+
 export const selectDecisionTypeDropdown = (state: RootState): Array<Option> => {
   const {
     codeTables: { "decision-type": items },
