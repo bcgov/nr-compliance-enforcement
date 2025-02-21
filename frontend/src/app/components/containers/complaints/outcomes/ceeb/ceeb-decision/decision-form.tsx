@@ -85,6 +85,7 @@ export const DecisionForm: FC<props> = ({
   const [actionTakenErrorMessage, setActionTakenErrorMessage] = useState("");
 
   //-- component data
+
   // eslint-disable-line no-console, max-len
   const [data, setData] = useState<Decision>({
     schedule,
@@ -100,8 +101,10 @@ export const DecisionForm: FC<props> = ({
   });
 
   const [sectorList, setSectorList] = useState<Array<Option>>();
+  const [isIPMSector, setIsIPMSector] = useState<boolean>(false);
 
   useEffect(() => {
+    setIsIPMSector(schedule === "IPM");
     if (sector && schedule) {
       let options = scheduleSectorType
         .filter((item) => item.schedule === schedule)
@@ -129,13 +132,22 @@ export const DecisionForm: FC<props> = ({
   };
 
   const handleScheduleChange = (schedule: string) => {
-    let options = scheduleSectorType
+    const options = scheduleSectorType
       .filter((item) => item.schedule === schedule)
-      .map((item) => {
-        const record: Option = { label: item.longDescription, value: item.sector };
-        return record;
-      });
-    const model = { ...data, sector: "", schedule: schedule };
+      .map((item) => ({
+        label: item.longDescription,
+        value: item.sector,
+      }));
+
+    setIsIPMSector(schedule === "IPM");
+
+    const model = {
+      ...data,
+      sector: "",
+      schedule,
+      discharge: schedule === "IPM" ? "PSTCD" : data.discharge,
+    };
+
     setData(model);
     setSectorList(options);
   };
@@ -306,7 +318,7 @@ export const DecisionForm: FC<props> = ({
           id="decision-sector-category"
         >
           <label htmlFor="outcome-decision-sector-category">
-            Sector/category<span className="required-ind">*</span>
+            Sector<span className="required-ind">*</span>
           </label>
           <div className="comp-details-input full-width">
             <CompSelect
@@ -334,21 +346,25 @@ export const DecisionForm: FC<props> = ({
             Discharge type<span className="required-ind">*</span>
           </label>
           <div className="comp-details-input full-width">
-            <CompSelect
-              id="outcome-decision-discharge"
-              showInactive={false}
-              className="comp-details-input"
-              classNamePrefix="comp-select"
-              options={dischargesOptions}
-              enableValidation={true}
-              errorMessage={dischargeErrorMessage}
-              placeholder="Select "
-              onChange={(evt) => {
-                updateModel("discharge", evt?.value);
-              }}
-              isDisabled={isReadOnly}
-              value={getDropdownOption(data.discharge, dischargesOptions)}
-            />
+            {isIPMSector ? (
+              <span>Pesticides</span>
+            ) : (
+              <CompSelect
+                id="outcome-decision-discharge"
+                showInactive={false}
+                className="comp-details-input"
+                classNamePrefix="comp-select"
+                options={dischargesOptions}
+                enableValidation={true}
+                errorMessage={dischargeErrorMessage}
+                placeholder="Select "
+                onChange={(evt) => {
+                  updateModel("discharge", evt?.value);
+                }}
+                isDisabled={isReadOnly}
+                value={getDropdownOption(data.discharge, dischargesOptions)}
+              />
+            )}
           </div>
         </div>
         <hr></hr>
