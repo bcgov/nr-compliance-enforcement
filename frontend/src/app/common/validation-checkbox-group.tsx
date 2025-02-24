@@ -32,10 +32,6 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
     onCheckboxChange(updatedCheckedItems);
   };
 
-  useEffect(() => {
-    setCheckedItems(checkedValues);
-  }, [checkedValues, checkedValues.length]);
-
   return (
     <div id="checkbox-div">
       {options.map((option, index) => (

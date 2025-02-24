@@ -788,14 +788,13 @@ export const selectComplaint = (
   return complaint;
 };
 
-export const selectComplaintLargeCarnivoreInd = (state: RootState): boolean => {
-  const {
-    complaints: { complaint },
-  } = state;
-  const complaintData = complaint as WildlifeComplaintDto;
-  if (complaintData) return complaintData.isLargeCarnivore;
-  return false;
-};
+export const selectComplaintLargeCarnivoreInd = createSelector(
+  (state: RootState) => state.complaints.complaint,
+  (complaint): boolean => {
+    const complaintData = complaint as WildlifeComplaintDto;
+    return complaintData ? complaintData.isLargeCarnivore : false;
+  },
+);
 
 export const selectComplaintDetails = createSelector(
   [
@@ -999,60 +998,58 @@ export const selectComplaintHeader =
     return result;
   };
 
-export const selectComplaintCallerInformation = (state: RootState): ComplaintCallerInformation => {
-  const {
-    complaints: { complaint },
-    codeTables: { agency: agencyCodes, "reported-by": reportedByCodes },
-  } = state;
-
-  const getAgencyByAgencyCode = (code: string, codes: Array<Agency>): Agency | null => {
-    if (codes && from(codes).any(({ agency }) => agency === code)) {
-      const selected = from(codes).first(({ agency }) => agency === code);
-
-      return selected;
-    }
-
-    return null;
-  };
-
-  const getReportedByReportedByCode = (code: string, codes: Array<ReportedBy>): ReportedBy | null => {
-    if (codes && from(codes).any(({ reportedBy }) => reportedBy === code)) {
-      const selected = from(codes).first(({ reportedBy }) => reportedBy === code);
-
-      return selected;
-    }
-
-    return null;
-  };
-
-  let results = {} as ComplaintCallerInformation;
-
-  if (complaint) {
-    const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy, isPrivacyRequested }: any = complaint;
-    const reportedByCode = getReportedByReportedByCode(reportedBy, reportedByCodes);
-    const ownedByAgencyCode = getAgencyByAgencyCode(ownedBy, agencyCodes);
-
-    results = {
-      ...results,
-      name,
-      primaryPhone: phone1,
-      secondaryPhone: phone2,
-      alternatePhone: phone3,
-      address,
-      email,
-      isPrivacyRequested,
+export const selectComplaintCallerInformation = createSelector(
+  [
+    (state: RootState) => state.complaints.complaint,
+    (state: RootState) => state.codeTables.agency,
+    (state: RootState) => state.codeTables["reported-by"],
+  ],
+  (complaint, agencyCodes, reportedByCodes): ComplaintCallerInformation => {
+    const getAgencyByAgencyCode = (code: string, codes: Array<Agency>): Agency | null => {
+      if (codes && from(codes).any(({ agency }) => agency === code)) {
+        const selected = from(codes).first(({ agency }) => agency === code);
+        return selected;
+      }
+      return null;
     };
 
-    if (reportedByCode) {
-      results = { ...results, reportedByCode };
-    }
+    const getReportedByReportedByCode = (code: string, codes: Array<ReportedBy>): ReportedBy | null => {
+      if (codes && from(codes).any(({ reportedBy }) => reportedBy === code)) {
+        const selected = from(codes).first(({ reportedBy }) => reportedBy === code);
+        return selected;
+      }
+      return null;
+    };
 
-    if (ownedByAgencyCode) {
-      results = { ...results, ownedByAgencyCode };
+    let results = {} as ComplaintCallerInformation;
+
+    if (complaint) {
+      const { name, phone1, phone2, phone3, address, email, reportedBy, ownedBy, isPrivacyRequested }: any = complaint;
+      const reportedByCode = getReportedByReportedByCode(reportedBy, reportedByCodes);
+      const ownedByAgencyCode = getAgencyByAgencyCode(ownedBy, agencyCodes);
+
+      results = {
+        ...results,
+        name,
+        primaryPhone: phone1,
+        secondaryPhone: phone2,
+        alternatePhone: phone3,
+        address,
+        email,
+        isPrivacyRequested,
+      };
+
+      if (reportedByCode) {
+        results = { ...results, reportedByCode };
+      }
+
+      if (ownedByAgencyCode) {
+        results = { ...results, ownedByAgencyCode };
+      }
     }
-  }
-  return results;
-};
+    return results;
+  },
+);
 
 export const selectComplaintSuspectWitnessDetails = (state: RootState): ComplaintSuspectWitness => {
   const {

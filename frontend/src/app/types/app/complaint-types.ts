@@ -1,5 +1,11 @@
 import { Roles } from "./roles";
 
+export const COMPLAINT_TYPE_AGENCY_MAPPING = {
+  HWCR: ["COS", "PARKS"],
+  GIR: ["COS", "PARKS", "EPO"],
+  ERS: ["COS", "PARKS", "EPO"],
+};
+
 export const COMPLAINT_TYPES = {
   HWCR: "HWCR",
   ERS: "ERS",

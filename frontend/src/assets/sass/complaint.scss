@@ -386,6 +386,20 @@
   }
 }
 
+.comp-details-section {
+  margin-bottom: 16px;
+  h6 {
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  &--grey {
+    @extend .comp-details-section;
+    h6 {
+      color: $gray-500;
+    }
+  }
+}
+
 .comp-nature-of-complaint {
   margin-top: 4px;
   max-width: 48ch;

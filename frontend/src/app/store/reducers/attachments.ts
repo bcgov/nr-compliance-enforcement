@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createSelector } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "@store/store";
 import { deleteMethod, generateApiParameters, get, patch, putFile } from "@common/api";
 import { from } from "linq-to-typescript";
@@ -278,19 +278,21 @@ const handleError = (attachment: File, error: any) => {
 };
 
 //-- selectors
-export const selectAttachments =
-  (attachmentType: AttachmentEnum) =>
-  (state: RootState): COMSObject[] => {
-    const { attachments: attachmentsRoot } = state;
-    const { complaintsAttachments, outcomeAttachments } = attachmentsRoot;
-
-    switch (attachmentType) {
-      case AttachmentEnum.COMPLAINT_ATTACHMENT:
-        return complaintsAttachments ?? [];
-      case AttachmentEnum.OUTCOME_ATTACHMENT:
-        return outcomeAttachments ?? [];
-    }
-  };
+export const selectAttachments = (attachmentType: AttachmentEnum) =>
+  createSelector(
+    [
+      (state: RootState) => state.attachments.complaintsAttachments,
+      (state: RootState) => state.attachments.outcomeAttachments,
+    ],
+    (complaintsAttachments, outcomeAttachments): COMSObject[] => {
+      switch (attachmentType) {
+        case AttachmentEnum.COMPLAINT_ATTACHMENT:
+          return complaintsAttachments ?? [];
+        case AttachmentEnum.OUTCOME_ATTACHMENT:
+          return outcomeAttachments ?? [];
+      }
+    },
+  );
 
 export const selectOutcomeAttachments =
   () =>

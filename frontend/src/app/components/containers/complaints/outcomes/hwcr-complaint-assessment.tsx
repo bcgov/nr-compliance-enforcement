@@ -77,10 +77,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [selectedAssessmentCat1Types, setSelectedAssessmentCat1Types] = useState<Option[]>([]);
   const [legacyAssessmentTypes, setLegacyAssessmentTypes] = useState<Option[] | undefined>([]);
 
-  const handleAssessmentTypesChange = (selectedItems: Option[]) => {
-    setSelectedAssessmentTypes(selectedItems);
-  };
-
   const [officerErrorMessage, setOfficerErrorMessage] = useState<string>("");
   const [assessmentDateErrorMessage, setAssessmentDateErrorMessage] = useState<string>("");
   const [actionRequiredErrorMessage, setActionRequiredErrorMessage] = useState<string>("");
@@ -756,7 +752,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   <ValidationCheckboxGroup
                     errMsg={isLargeCarnivore ? "" : assessmentRequiredErrorMessage}
                     options={assessmentTypeList}
-                    onCheckboxChange={handleAssessmentTypesChange}
+                    onCheckboxChange={(option: Option[]) => setSelectedAssessmentTypes(option)}
                     checkedValues={selectedAssessmentTypes}
                   ></ValidationCheckboxGroup>
                   {isLargeCarnivore && (

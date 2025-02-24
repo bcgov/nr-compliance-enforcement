@@ -8,7 +8,7 @@ import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@co
 import { Badge, Button, Dropdown } from "react-bootstrap";
 
 import { isFeatureActive, openModal } from "@store/reducers/app";
-import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "@apptypes/modal/modal-types";
+import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE, REFER_COMPLAINT } from "@apptypes/modal/modal-types";
 import { exportComplaint } from "@store/reducers/documents-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { setIsInEdit } from "@store/reducers/cases";
@@ -58,12 +58,28 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         modalSize: "md",
         modalType: CHANGE_STATUS,
         data: {
-          title: "Update status?",
+          title: "Update status",
           description: "Status",
           complaint_identifier: id,
           complaint_type: complaintType,
           complaint_status: statusCode,
           is_officer_assigned: officerAssigned !== "Not Assigned",
+        },
+      }),
+    );
+  };
+
+  const openReferModal = () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: REFER_COMPLAINT,
+        data: {
+          title: "Refer complaint",
+          description: "",
+          id: id,
+          complaint_type: complaintType,
         },
       }),
     );
@@ -200,6 +216,13 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       </Dropdown.Item>
                       <Dropdown.Item
                         as="button"
+                        onClick={openReferModal}
+                      >
+                        <i className="bi bi-send"></i>
+                        <span>Refer</span>
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        as="button"
                         onClick={() => exportComplaintToPdf()}
                       >
                         <i className="bi bi-file-earmark-pdf"></i>
@@ -239,6 +262,15 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                   >
                     <i className="bi bi-arrow-repeat"></i>
                     <span>Update status</span>
+                  </Button>
+                  <Button
+                    id="details-screen-refer-button"
+                    title="Refer"
+                    variant="outline-light"
+                    onClick={openReferModal}
+                  >
+                    <i className="bi bi-send"></i>
+                    <span>Refer</span>
                   </Button>
                   <Button
                     id="details-screen-export-complaint-button"

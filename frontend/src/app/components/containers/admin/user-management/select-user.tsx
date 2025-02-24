@@ -80,7 +80,6 @@ export const SelectUser: FC<SelectUserProps> = ({
                   classNames={{
                     menu: () => "top-layer-select",
                   }}
-                  //@ts-ignore
                   options={officerList}
                   placeholder="Search"
                   enableValidation={true}
