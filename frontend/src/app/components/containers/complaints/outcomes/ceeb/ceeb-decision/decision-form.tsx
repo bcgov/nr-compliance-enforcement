@@ -188,6 +188,7 @@ export const DecisionForm: FC<props> = ({
             //-- reset the form to its original state
             setData({
               schedule,
+              ipmAuthCategory,
               sector,
               discharge,
               nonCompliance,
@@ -385,7 +386,7 @@ export const DecisionForm: FC<props> = ({
           </div>
         </div>
         <div
-          className="comp-details-form-row"
+          className={`comp-details-form-row ${isIPMSector ? "align-flex-end" : ""}`}
           id="decision-discharge-type"
         >
           <label htmlFor="outcome-decision-discharge">
