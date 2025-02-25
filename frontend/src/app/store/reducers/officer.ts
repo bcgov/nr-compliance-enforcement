@@ -358,7 +358,7 @@ const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] =
     const { office_guid, user_roles } = officer;
 
     // Safely handle office_guid and cos_geo_org_unit
-    const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? undefined; // Will be undefined if cos_geo_org_unit is null or undefined
+    const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? false; // Assume false if cos_geo_org_unit is null or undefined
     const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
     const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
 
