@@ -92,8 +92,8 @@ const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySea
         ></CloseButton>
       )}
       <button
+        id="search-button"
         className="btn text-white"
-        style={{ backgroundColor: "#1F5C94" }}
         onClick={handleSearch}
         type="button"
         aria-label="Search"

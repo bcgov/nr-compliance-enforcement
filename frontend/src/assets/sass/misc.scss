@@ -313,11 +313,12 @@
 
 .search-input-group {
   flex-wrap: nowrap;
-
+  i {
+    margin: 0 !important;
+  }
   #complaint-search {
     border-right: none;
   }
-
   #clear-search {
     right: 4rem;
     z-index: 10;
@@ -326,9 +327,8 @@
       right: 4rem;
     }
   }
-
-  i {
-    margin: 0 !important;
+  #search-button {
+    background-color: $bc-gov-primary;
   }
 }
 
