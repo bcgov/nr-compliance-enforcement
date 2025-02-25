@@ -5,14 +5,18 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import UserService from "@service/user-service";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 
-export const AgencyBanner: FC = () => {
+type Props = {
+  agency?: string;
+};
+
+export const AgencyBanner: FC<Props> = ({ agency }) => {
   const defaultAgencyCode = "COS";
   const defaultDescription = "Conservation Officer Service";
 
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
-  const agency = UserService.getUserAgency();
+  const selectedAgency = agency || UserService.getUserAgency();
 
-  const selected = agencies.find((item) => item.agency === agency) || {
+  const selected = agencies.find((item) => item.agency === selectedAgency) || {
     agency: defaultAgencyCode,
     shortDescription: defaultDescription,
     longDescription: defaultDescription,

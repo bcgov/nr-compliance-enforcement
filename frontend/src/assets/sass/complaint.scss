@@ -400,6 +400,26 @@
   }
 }
 
+.refer-complaint-new-agency {
+  label {
+    font-weight: 700;
+    color: $black !important;
+  }
+  .comp-select__control {
+    padding: 8px;
+  }
+}
+
+.refer-complaint-previous-agency {
+  label {
+    font-weight: 700;
+    color: $gray-500 !important;
+  }
+  .comp-select__control {
+    padding: 8px;
+  }
+}
+
 .comp-nature-of-complaint {
   margin-top: 4px;
   max-width: 48ch;

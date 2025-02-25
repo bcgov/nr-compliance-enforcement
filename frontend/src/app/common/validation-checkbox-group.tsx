@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { FC, useState } from "react";
 import Option from "@apptypes/app/option";
 
 interface ValidationCheckboxGroupProps {

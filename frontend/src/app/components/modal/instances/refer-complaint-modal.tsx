@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Modal, Row, Col, Button, Alert } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
@@ -11,6 +11,7 @@ import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { selectComplaint } from "@store/reducers/complaints";
 import { COMPLAINT_TYPE_AGENCY_MAPPING } from "@apptypes/app/complaint-types";
+import Option from "@apptypes/app/option";
 
 type ReferComplaintModalProps = {
   close: () => void;
@@ -23,14 +24,10 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
   const modalData = useAppSelector(selectModalData);
   const assignableOfficers = useAppSelector(selectOfficerListByAgency);
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
-  const complaintTypes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_TYPE));
   const complaintData = useAppSelector(selectComplaint);
 
   const { title } = modalData;
   const currentDate = new Date();
-
-  console.log(agencies);
-  console.log(complaintTypes);
 
   const agencyOptions = agencies
     .filter(
@@ -43,8 +40,53 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
     )
     .map((agency) => ({
       label: agency.longDescription,
+      labelElement: <AgencyBanner agency={agency.agency} />,
       value: agency.agency,
     }));
+
+  const [selectedAgency, setSelectedAgency] = useState<Option | null>();
+  const [selectedAgencyError, setSelectedAgencyError] = useState<string>("");
+  const handleSelectedAgencyChange = (selectedOption: Option | null) => {
+    setSelectedAgency(selectedOption);
+    setSelectedAgencyError("");
+  };
+  const [selectedOfficer, setSelectedOfficer] = useState<Option | null>();
+  const [selectedOfficerError, setSelectedOfficerError] = useState<string>("");
+  const handleSelectedOfficerChange = (selectedOption: Option | null) => {
+    setSelectedOfficer(selectedOption);
+    setSelectedOfficerError("");
+  };
+  const [referralReason, setReferralReason] = useState<string>("");
+  const [referralReasonError, setReferralReasonError] = useState<string>("");
+  const handleReferralReasonChange = (reason: string) => {
+    setReferralReason(reason);
+    setReferralReasonError("");
+  };
+
+  const handleReferComplaint = () => {
+    let hasError = false;
+    if (!selectedAgency) {
+      setSelectedAgencyError("Please select a new lead agency");
+      hasError = true;
+    } else {
+      setSelectedAgencyError("");
+    }
+    if (!selectedOfficer) {
+      setSelectedOfficerError("Please select a referring officer");
+      hasError = true;
+    } else {
+      setSelectedOfficerError("");
+    }
+    if (!referralReason) {
+      setReferralReasonError("Please enter a reason for referral");
+      hasError = true;
+    } else {
+      setReferralReasonError("");
+    }
+    if (!hasError) {
+      submit();
+    }
+  };
 
   return (
     <>
@@ -54,35 +96,19 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
         </Modal.Header>
       )}
       <Modal.Body>
-        <Row>
-          <Col>
-            <Alert
-              variant="warning"
-              className="comp-complaint-details-alert"
-              id="comp-complaint-refer-alert"
-            >
-              <div>
-                <i className="bi bi-exclamation-triangle-fill"></i>
-                <span>{` Your organization will not have the ability to edit the complaint after it is referred.`}</span>
-              </div>
-            </Alert>
-          </Col>
-        </Row>
-        <Row>
-          <Col className="comp-details-section--grey">
-            <h6>Previous agency</h6>
-            <AgencyBanner />
-          </Col>
-        </Row>
-        <Row>
-          <Col className="comp-details-section">
-            <h6>New lead agency</h6>
-            <AgencyBanner />
-          </Col>
-        </Row>
+        <Alert
+          variant="warning"
+          className="comp-complaint-details-alert"
+          id="comp-complaint-refer-alert"
+        >
+          <div>
+            <i className="bi bi-exclamation-triangle-fill"></i>
+            <span>{` Your organization will not have the ability to edit the complaint after it is referred.`}</span>
+          </div>
+        </Alert>
 
         <div className="comp-details-form">
-          <div className="comp-details-form-row">
+          <div className="comp-details-form-row refer-complaint-previous-agency">
             <label htmlFor="refer-complaint-from">Previous agency</label>
             <div className="comp-details-input full-width">
               <CompSelect
@@ -92,11 +118,16 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
                 isDisabled={true}
                 enableValidation={false}
                 showInactive={true}
-                value={{ label: complaintData?.ownedBy, value: complaintData?.ownedBy }}
+                value={{
+                  label: complaintData?.ownedBy,
+                  labelElement: <AgencyBanner agency={complaintData?.ownedBy} />,
+                  value: complaintData?.ownedBy,
+                  isActive: true,
+                }}
               />
             </div>
           </div>
-          <div className="comp-details-form-row">
+          <div className="comp-details-form-row refer-complaint-new-agency">
             <label htmlFor="refer-complaint-to">
               New lead agency<span className="required-ind">*</span>
             </label>
@@ -109,6 +140,9 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
                 options={agencyOptions}
                 enableValidation={true}
                 placeholder="Select "
+                errorMessage={selectedAgencyError}
+                value={selectedAgency}
+                onChange={handleSelectedAgencyChange}
               />
             </div>
           </div>
@@ -153,11 +187,10 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
                 classNamePrefix="comp-select"
                 options={assignableOfficers}
                 enableValidation={true}
-                //errorMessage={officerErrorMessage}
-                //value={selectedOfficer}
+                errorMessage={selectedOfficerError}
+                value={selectedOfficer}
                 placeholder="Select "
-                //onChange={handleSelectedOfficerChange}
-                //isDisabled={isReadOnly}
+                onChange={handleSelectedOfficerChange}
               />
             </div>
           </div>
@@ -169,10 +202,9 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
               <ValidationTextArea
                 className="comp-form-control"
                 id="refer-complaint-reason"
-                //defaultValue={currentNote}
                 rows={4}
-                errMsg=""
-                onChange={() => {}}
+                errMsg={referralReasonError}
+                onChange={handleReferralReasonChange}
                 maxLength={500}
               />
             </div>
@@ -184,9 +216,9 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
           variant="outline-primary"
           onClick={close}
         >
-          Close
+          Cancel
         </Button>
-        <Button onClick={submit}>OK</Button>
+        <Button onClick={handleReferComplaint}>Refer</Button>
       </Modal.Footer>
     </>
   );
