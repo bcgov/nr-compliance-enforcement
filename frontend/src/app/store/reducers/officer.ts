@@ -376,7 +376,7 @@ const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] =
     if (agency === "COS") {
       if (officer.deactivate_ind) {
         return agency === agencyCodeForDeactivatedOfficer;
-      } else return agency === agencyCode && !fromAdminOffice && roleMatch;
+      } else return !fromAdminOffice && roleMatch;
     } else if (agency === "EPO") {
       let result = officer.deactivate_ind === true ? agency === agencyCodeForDeactivatedOfficer : roleMatch;
       return result;
