@@ -61,9 +61,11 @@ export const selectIPMAuthCategoryDropdown = (state: RootState): Array<Option> =
     codeTables: { "ipm-auth-category": items },
   } = state;
 
-  const data = items.map(({ ipmAuthCategoryCode: value, longDescription: label }) => {
-    return { label, value };
-  });
+  const data = items
+    .filter((item) => item.isActive === true)
+    .map(({ ipmAuthCategoryCode: value, longDescription: label }) => {
+      return { label, value };
+    });
 
   return data;
 };
