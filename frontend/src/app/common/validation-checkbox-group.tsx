@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { FC, useState } from "react";
 import Option from "@apptypes/app/option";
 
 interface ValidationCheckboxGroupProps {
@@ -31,10 +31,6 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
     setCheckedItems(updatedCheckedItems);
     onCheckboxChange(updatedCheckedItems);
   };
-
-  useEffect(() => {
-    setCheckedItems(checkedValues);
-  }, [checkedValues, checkedValues.length]);
 
   return (
     <div id="checkbox-div">
