@@ -120,7 +120,10 @@ export const ComplaintActionItems: FC<Props> = ({
           Assign complaint
         </Dropdown.Item>
         {complaint_type === "HWCR" && (
-          <Dropdown.Item onClick={openQuickCloseModal}>
+          <Dropdown.Item
+            onClick={openQuickCloseModal}
+            disabled={complaint_status === "CLOSED"}
+          >
             <i
               className="bi bi-journal-x"
               id="link-conplaint-icon"
