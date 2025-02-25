@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, KeyboardEvent, useContext, useState, useEffect } from "react";
-import { InputGroup } from "react-bootstrap";
+import { CloseButton, InputGroup } from "react-bootstrap";
 import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
 import { getComplaints } from "@store/reducers/complaints";
 import { generateComplaintRequestPayload } from "@components/containers/complaints/complaint-list";
@@ -47,6 +47,7 @@ const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySea
   };
 
   const handleClear = () => {
+    setInput("");
     applySearchQuery(undefined);
   };
 
@@ -71,17 +72,34 @@ const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySea
   };
 
   return (
-    <InputGroup>
+    <InputGroup className="search-input-group">
       <input
-        id="complaint-search"
+        // id="complaint-search"
         placeholder="Search..."
         aria-label="Search"
-        className="comp-form-control comp-search-input"
+        className="comp-form-control comp-search-input form-control"
         aria-describedby="basic-addon2"
         onChange={(evt) => handleInputChange(evt)}
         onKeyDown={(evt) => handleKeyPress(evt)}
         value={input}
       />
+      {input && (
+        <CloseButton
+          id="clear-search"
+          className="clear-search-button"
+          onClick={handleClear}
+          tabIndex={0}
+        ></CloseButton>
+      )}
+      <button
+        className="btn text-white"
+        style={{ backgroundColor: "#1F5C94" }}
+        onClick={handleSearch}
+        type="button"
+        aria-label="Search"
+      >
+        <i className="bi bi-search"></i>
+      </button>
     </InputGroup>
   );
 };
