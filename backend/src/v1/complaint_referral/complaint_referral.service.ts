@@ -1,20 +1,30 @@
 import { Repository } from "typeorm";
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { CreateComplaintReferralDto } from "./dto/create-complaint_referral.dto";
 import { ComplaintReferral } from "./entities/complaint_referral.entity";
+import { Complaint } from "./../complaint/entities/complaint.entity";
 
 @Injectable()
 export class ComplaintReferralService {
   @InjectRepository(ComplaintReferral)
   private readonly complaintReferralRepository: Repository<ComplaintReferral>;
+  @InjectRepository(Complaint)
+  private readonly complaintRepository: Repository<Complaint>;
 
   private readonly logger = new Logger(ComplaintReferralService.name);
 
-  async create(createComplaintReferralDto: CreateComplaintReferralDto): Promise<ComplaintReferral> {
+  async create(createComplaintReferralDto: any): Promise<ComplaintReferral> {
     const newComplaintReferral = this.complaintReferralRepository.create(createComplaintReferralDto);
-    await this.complaintReferralRepository.save(newComplaintReferral);
-    return newComplaintReferral;
+    const result: any = await this.complaintReferralRepository.save(newComplaintReferral);
+
+    //Update owned_by_agency_code in complaint table
+    if (result.complaint_referral_guid) {
+      await this.complaintRepository.update(
+        { complaint_identifier: createComplaintReferralDto.complaint_identifier },
+        { owned_by_agency_code: createComplaintReferralDto.referred_to_agency_code },
+      );
+    }
+    return result;
   }
 
   async findByComplaintId(id: string): Promise<ComplaintReferral[]> {

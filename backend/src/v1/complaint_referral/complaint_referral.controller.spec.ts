@@ -5,6 +5,7 @@ import { ComplaintReferral } from "./entities/complaint_referral.entity";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
+import { Complaint } from "../complaint/entities/complaint.entity";
 
 describe("ComplaintReferralController", () => {
   let controller: ComplaintReferralController;
@@ -16,6 +17,10 @@ describe("ComplaintReferralController", () => {
         ComplaintReferralService,
         {
           provide: getRepositoryToken(ComplaintReferral),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(Complaint),
           useValue: {},
         },
         {

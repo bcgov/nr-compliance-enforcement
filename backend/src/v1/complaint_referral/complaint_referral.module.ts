@@ -3,9 +3,10 @@ import { ComplaintReferralService } from "./complaint_referral.service";
 import { ComplaintReferralController } from "./complaint_referral.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ComplaintReferral } from "./entities/complaint_referral.entity";
+import { Complaint } from "../complaint/entities/complaint.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ComplaintReferral])],
+  imports: [TypeOrmModule.forFeature([ComplaintReferral, Complaint])],
   controllers: [ComplaintReferralController],
   providers: [ComplaintReferralService],
   exports: [ComplaintReferralService],
