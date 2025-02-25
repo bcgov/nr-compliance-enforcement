@@ -20,6 +20,7 @@ import { PreventionType } from "./prevention-type";
 import { Equipment } from "./equipment";
 import { GirType } from "./gir-type";
 import { TeamType } from "./team-type";
+import { IPMAuthCategory } from "./ipm-auth-category";
 import { ComplaintMethodReceivedType } from "./complaint-method-received-type";
 
 export const AvailableCodeTables = [
@@ -61,6 +62,7 @@ export const AvailableCodeTables = [
   "lead-agency",
   "assessment-cat1-type",
   "case-location-type",
+  "ipm-auth-category",
 ];
 
 export const AvailableAgencies = ["cos"];
@@ -79,6 +81,7 @@ export {
   OrganizationCodeTable,
   ComplaintType,
   Sector,
+  IPMAuthCategory,
   Zone,
   Community,
   ReportedBy,

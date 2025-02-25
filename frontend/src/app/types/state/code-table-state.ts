@@ -36,6 +36,7 @@ import { TeamType } from "@apptypes/app/code-tables/team";
 import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint-method-received-type";
 import { ScheduleSectorXref } from "@apptypes/app/code-tables/schedule-sector-xref";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
+import { IPMAuthCategoryType } from "../app/code-tables/ipm-auth-category";
 
 export interface CodeTableState {
   [key: string]:
@@ -76,6 +77,7 @@ export interface CodeTableState {
     | Array<ComplaintMethodReceivedType>
     | Array<DecisionType>
     | Array<TeamType>
+    | Array<IPMAuthCategoryType>
     | Array<CaseLocationType>;
 
   agency: Array<Agency>;
@@ -114,5 +116,6 @@ export interface CodeTableState {
   "complaint-method-received-codes": Array<ComplaintMethodReceivedType>;
   "lead-agency": Array<Agency>;
   "assessment-cat1-type": Array<AssessmentType>;
+  "ipm-auth-category": Array<IPMAuthCategoryType>;
   "case-location-type": Array<CaseLocationType>;
 }

@@ -4,6 +4,7 @@ export interface Decision {
   sector: string;
   discharge: string;
   nonCompliance: string;
+  ipmAuthCategory?: string;
   rationale: string;
   inspectionNumber?: string;
   leadAgency?: string;

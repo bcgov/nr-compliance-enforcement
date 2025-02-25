@@ -44,6 +44,7 @@ import {
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
+import { IPMAuthCategoryType } from "@/app/types/app/code-tables/ipm-auth-category";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -83,6 +84,7 @@ const initialState: CodeTableState = {
   "complaint-method-received-codes": [],
   "lead-agency": [],
   "assessment-cat1-type": [],
+  "ipm-auth-category": [],
   "case-location-type": [],
 };
 
@@ -146,6 +148,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "complaint-method-received-codes": complaintMethodReceived,
       "lead-agency": leadAgency,
       "assessment-cat1-type": assessmentCat1Type,
+      "ipm-auth-category": ipmAuthCategoryType,
       "case-location-type": caseLocationType,
     },
   } = state;
@@ -273,6 +276,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(assessmentCat1Type).any()) {
       dispatch(fetchAssessmentCat1Types());
     }
+    if (!from(ipmAuthCategoryType).any()) {
+      dispatch(fetchIPMAuthCategories());
+    }
   } catch (error) {}
 };
 
@@ -321,6 +327,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchLeadAgencies());
     dispatch(fetchAssessmentCat1Types());
     dispatch(fetchCaseLocationTypes());
+    dispatch(fetchIPMAuthCategories());
   } catch (error) {
     console.error(error);
   }
@@ -679,6 +686,18 @@ export const fetchCaseLocationTypes = (): AppThunk => async (dispatch) => {
   const response = await get<Array<CaseLocationType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.CASE_LOCATION_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchIPMAuthCategories = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.IPM_AUTH_CATEGORY_TYPE}`,
+  );
+
+  const response = await get<Array<IPMAuthCategoryType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.IPM_AUTH_CATEGORY_TYPE, data: response };
     dispatch(setCodeTable(payload));
   }
 };
