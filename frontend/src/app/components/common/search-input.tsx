@@ -74,7 +74,7 @@ const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySea
   return (
     <InputGroup className="search-input-group">
       <input
-        // id="complaint-search"
+        id="complaint-search"
         placeholder="Search..."
         aria-label="Search"
         className="comp-form-control comp-search-input form-control"
