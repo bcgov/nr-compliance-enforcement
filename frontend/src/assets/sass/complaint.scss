@@ -787,6 +787,10 @@
     min-width: 221px;
   }
 
+  &.align-flex-end {
+    align-items: flex-end;
+  }
+
   + .comp-details-form-row {
     margin-top: 16px;
   }

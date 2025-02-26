@@ -7,6 +7,7 @@ import {
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
   selectScheduleSectorXref,
+  selectIPMAuthCategoryDropdown,
 } from "@store/reducers/code-table-selectors";
 import { selectLeadAgencyDropdown } from "@store/reducers/code-table";
 import { Decision } from "@apptypes/app/case-files/ceeb/decision/decision";
@@ -31,6 +32,7 @@ type props = {
   //-- properties
   id?: string;
   schedule: string;
+  ipmAuthCategory?: string;
   sector: string;
   discharge: string;
   nonCompliance: string;
@@ -48,6 +50,7 @@ export const DecisionForm: FC<props> = ({
   //--
   id,
   schedule,
+  ipmAuthCategory,
   sector,
   discharge,
   nonCompliance,
@@ -69,6 +72,7 @@ export const DecisionForm: FC<props> = ({
   const nonComplianceOptions = useAppSelector(selectNonComplianceDropdown);
   const sectorsOptions = useAppSelector(selectSectorDropdown);
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
+  const ipmAuthCategoryOptions = useAppSelector(selectIPMAuthCategoryDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const leadAgencyOptions = useAppSelector(selectLeadAgencyDropdown);
   const scheduleSectorType = useAppSelector(selectScheduleSectorXref);
@@ -83,11 +87,14 @@ export const DecisionForm: FC<props> = ({
   const [leadAgencyErrorMessage, setLeadAgencyErrorMessage] = useState("");
   const [inspectionNumberErrorMessage, setInspectionNumberErrorMessage] = useState("");
   const [actionTakenErrorMessage, setActionTakenErrorMessage] = useState("");
+  const [ipmAuthCategoryErrorMessage, setIpmAuthCategoryErrorMessage] = useState("");
 
   //-- component data
+
   // eslint-disable-line no-console, max-len
   const [data, setData] = useState<Decision>({
     schedule,
+    ipmAuthCategory,
     sector,
     discharge,
     nonCompliance,
@@ -100,8 +107,10 @@ export const DecisionForm: FC<props> = ({
   });
 
   const [sectorList, setSectorList] = useState<Array<Option>>();
+  const [isIPMSector, setIsIPMSector] = useState<boolean>(false);
 
   useEffect(() => {
+    setIsIPMSector(schedule === "IPM");
     if (sector && schedule) {
       let options = scheduleSectorType
         .filter((item) => item.schedule === schedule)
@@ -124,18 +133,32 @@ export const DecisionForm: FC<props> = ({
     updateModel("rationale", value.trim());
   };
 
+  const handleIPMAuthCategoryChange = (value: string) => {
+    updateModel("ipmAuthCategory", value.trim());
+  };
+
   const handleDateChange = (date?: Date) => {
     updateModel("actionTakenDate", date);
   };
 
   const handleScheduleChange = (schedule: string) => {
-    let options = scheduleSectorType
+    const options = scheduleSectorType
       .filter((item) => item.schedule === schedule)
-      .map((item) => {
-        const record: Option = { label: item.longDescription, value: item.sector };
-        return record;
-      });
-    const model = { ...data, sector: "", schedule: schedule };
+      .map((item) => ({
+        label: item.longDescription,
+        value: item.sector,
+      }));
+
+    setIsIPMSector(schedule === "IPM");
+
+    const model = {
+      ...data,
+      sector: "",
+      ipmAuthCategory: "",
+      schedule,
+      discharge: schedule === "IPM" ? "PSTCD" : data.discharge,
+    };
+
     setData(model);
     setSectorList(options);
   };
@@ -165,6 +188,7 @@ export const DecisionForm: FC<props> = ({
             //-- reset the form to its original state
             setData({
               schedule,
+              ipmAuthCategory,
               sector,
               discharge,
               nonCompliance,
@@ -195,6 +219,7 @@ export const DecisionForm: FC<props> = ({
     setDateActionTakenErrorMessage("");
     setLeadAgencyErrorMessage("");
     setInspectionNumberErrorMessage("");
+    setIpmAuthCategoryErrorMessage("");
   };
 
   const handleSaveButtonClick = () => {
@@ -220,6 +245,11 @@ export const DecisionForm: FC<props> = ({
     const _isDecisionValid = (data: Decision, _isValid: boolean): boolean => {
       if (!data.schedule) {
         setScheduleErrorMessage("Required");
+        _isValid = false;
+      }
+
+      if (isIPMSector && !data.ipmAuthCategory) {
+        setIpmAuthCategoryErrorMessage("Required");
         _isValid = false;
       }
 
@@ -301,12 +331,41 @@ export const DecisionForm: FC<props> = ({
             />
           </div>
         </div>
+        {isIPMSector && (
+          <div
+            className="comp-details-form-row"
+            id="decision-ipm-auth-category"
+          >
+            <label htmlFor="outcome-decision-ipm-auth-category">
+              Authorization category<span className="required-ind">*</span>
+            </label>
+            <div className="comp-details-input full-width">
+              <CompSelect
+                id="outcome-decision-ipm-auth-category"
+                showInactive={false}
+                className="comp-details-input"
+                classNamePrefix="comp-select"
+                options={ipmAuthCategoryOptions}
+                enableValidation={true}
+                errorMessage={ipmAuthCategoryErrorMessage}
+                placeholder="Select "
+                onChange={(evt) => {
+                  if (evt?.value) {
+                    handleIPMAuthCategoryChange(evt.value);
+                  }
+                }}
+                isDisabled={isReadOnly}
+                value={getDropdownOption(data.ipmAuthCategory, ipmAuthCategoryOptions)}
+              />
+            </div>
+          </div>
+        )}
         <div
           className="comp-details-form-row"
           id="decision-sector-category"
         >
           <label htmlFor="outcome-decision-sector-category">
-            Sector/category<span className="required-ind">*</span>
+            Sector<span className="required-ind">*</span>
           </label>
           <div className="comp-details-input full-width">
             <CompSelect
@@ -327,28 +386,32 @@ export const DecisionForm: FC<props> = ({
           </div>
         </div>
         <div
-          className="comp-details-form-row"
+          className={`comp-details-form-row ${isIPMSector ? "align-flex-end" : ""}`}
           id="decision-discharge-type"
         >
           <label htmlFor="outcome-decision-discharge">
             Discharge type<span className="required-ind">*</span>
           </label>
           <div className="comp-details-input full-width">
-            <CompSelect
-              id="outcome-decision-discharge"
-              showInactive={false}
-              className="comp-details-input"
-              classNamePrefix="comp-select"
-              options={dischargesOptions}
-              enableValidation={true}
-              errorMessage={dischargeErrorMessage}
-              placeholder="Select "
-              onChange={(evt) => {
-                updateModel("discharge", evt?.value);
-              }}
-              isDisabled={isReadOnly}
-              value={getDropdownOption(data.discharge, dischargesOptions)}
-            />
+            {isIPMSector ? (
+              <span>Pesticides</span>
+            ) : (
+              <CompSelect
+                id="outcome-decision-discharge"
+                showInactive={false}
+                className="comp-details-input"
+                classNamePrefix="comp-select"
+                options={dischargesOptions}
+                enableValidation={true}
+                errorMessage={dischargeErrorMessage}
+                placeholder="Select "
+                onChange={(evt) => {
+                  updateModel("discharge", evt?.value);
+                }}
+                isDisabled={isReadOnly}
+                value={getDropdownOption(data.discharge, dischargesOptions)}
+              />
+            )}
           </div>
         </div>
         <hr></hr>

@@ -147,6 +147,8 @@ export const caseFileQueryFields: string = `
     sectorLongDescription
     discharge
     dischargeLongDescription
+    ipmAuthCategory
+    ipmAuthCategoryLongDescription
     nonCompliance
     nonComplianceLongDescription
     rationale

@@ -128,6 +128,7 @@ export const selectCaseDecision = (state: RootState): Decision => {
     sector: "",
     discharge: "",
     nonCompliance: "",
+    ipmAuthCategory: "",
     rationale: "",
     assignedTo: "",
     actionTaken: "",
