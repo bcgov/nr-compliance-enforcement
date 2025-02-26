@@ -204,8 +204,8 @@ export class PersonComplaintXrefService {
         unassignedPersonComplaintXref.active_ind = false;
         await queryRunner.manager.save(unassignedPersonComplaintXref);
       }
-      if (await this._complaintService.updateComplaintLastUpdatedDate(complaintIdentifier)) {
-      } else {
+      const returnValue = await this._complaintService.updateComplaintLastUpdatedDate(complaintIdentifier);
+      if (!returnValue) {
         throw new BadRequestException(`Unable to remove assignment person to complaint ${complaintIdentifier}`);
       }
       await queryRunner.commitTransaction();

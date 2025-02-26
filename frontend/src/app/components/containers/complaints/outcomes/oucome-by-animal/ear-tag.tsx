@@ -26,8 +26,12 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
   const leftEar = ears.find((ear) => ear.value === "L");
   const rightEar = ears.find((ear) => ear.value === "R");
 
-  let selectedEar = ear === "L" ? leftEar : ear === "R" ? rightEar : null;
-
+  let selectedEar = null;
+  if (ear === "L") {
+    selectedEar = leftEar;
+  } else if (ear === "R") {
+    selectedEar = rightEar;
+  }
   const updateModel = (property: string, value: string | undefined) => {
     const source = { id, ear, identifier, order };
     const updatedTag = { ...source, [property]: value };
