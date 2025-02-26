@@ -2313,6 +2313,9 @@ export class ComplaintService {
       if (data.outcome.assessmentDetails?.legacyActions) {
         data = { ...data, legacy: [{ actions: data.outcome.assessmentDetails.legacyActions }] };
       }
+      if (data.outcome.decision?.ipmAuthCategoryLongDescription) {
+        data = { ...data, authCat: [{ value: data.outcome.decision.ipmAuthCategoryLongDescription }] };
+      }
 
       //-- problems in the automapper mean dates need to be handled
       //-- seperatly
