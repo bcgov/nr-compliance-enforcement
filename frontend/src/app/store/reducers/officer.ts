@@ -522,16 +522,11 @@ export const selectOfficerByPersonGuid =
     return null;
   };
 
-export const selectCurrentOfficer =
-  () =>
-  (state: RootState): OfficerDto | null => {
-    const {
-      app: {
-        profile: { idir_username: idir },
-      },
-      officers: { officers: data },
-    } = state;
-    const selected = data.find(({ user_id }) => user_id === idir);
+export const selectCurrentOfficer = createSelector(
+  (state: RootState) => state.app.profile.idir_username,
+  (state: RootState) => state.officers.officers,
+  (idir, officers) => {
+    const selected = officers.find(({ user_id }) => user_id === idir);
 
     if (selected?.person_guid) {
       const { person_guid: person, office_guid: office, officer_guid, user_id, auth_user_guid } = selected;
@@ -561,6 +556,7 @@ export const selectCurrentOfficer =
     }
 
     return null;
-  };
+  },
+);
 
 export default officerSlice.reducer;

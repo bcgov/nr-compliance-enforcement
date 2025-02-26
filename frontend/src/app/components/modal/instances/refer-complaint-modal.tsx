@@ -1,10 +1,11 @@
-import { FC, useState } from "react";
-import { Modal, Row, Col, Button, Alert } from "react-bootstrap";
-import { useAppSelector } from "@hooks/hooks";
+import { FC, useState, useEffect } from "react";
+import { Modal, Button, Alert } from "react-bootstrap";
+import { shallowEqual } from "react-redux";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
 import { CompSelect } from "@components/common/comp-select";
 import DatePicker from "react-datepicker";
-import { selectOfficerListByAgency } from "@store/reducers/officer";
+import { selectOfficerListByAgency, selectOfficers, selectCurrentOfficer } from "@store/reducers/officer";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { AgencyBanner } from "@components/containers/layout/agency-banner";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
@@ -12,6 +13,8 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { selectComplaint } from "@store/reducers/complaints";
 import { COMPLAINT_TYPE_AGENCY_MAPPING } from "@apptypes/app/complaint-types";
 import Option from "@apptypes/app/option";
+import { getComplaintById, createComplaintReferral } from "@/app/store/reducers/complaints";
+import { Officer } from "@/app/types/person/person";
 
 type ReferComplaintModalProps = {
   close: () => void;
@@ -21,8 +24,12 @@ type ReferComplaintModalProps = {
 };
 
 export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submit, id, complaint_type }) => {
+  const dispatch = useAppDispatch();
+
   const modalData = useAppSelector(selectModalData);
+  const officers = useAppSelector(selectOfficers);
   const assignableOfficers = useAppSelector(selectOfficerListByAgency);
+  const currentOfficer = useAppSelector(selectCurrentOfficer);
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
   const complaintData = useAppSelector(selectComplaint);
 
@@ -63,8 +70,9 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
     setReferralReasonError("");
   };
 
-  const handleReferComplaint = () => {
+  const handleReferComplaint = async () => {
     let hasError = false;
+    const officer = officers?.find((officer: Officer) => officer.auth_user_guid === selectedOfficer?.value);
     if (!selectedAgency) {
       setSelectedAgencyError("Please select a new lead agency");
       hasError = true;
@@ -73,6 +81,9 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
     }
     if (!selectedOfficer) {
       setSelectedOfficerError("Please select a referring officer");
+      hasError = true;
+    } else if (!officer) {
+      setSelectedOfficerError("Officer invalid");
       hasError = true;
     } else {
       setSelectedOfficerError("");
@@ -84,9 +95,30 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
       setReferralReasonError("");
     }
     if (!hasError) {
+      await dispatch(
+        createComplaintReferral(
+          id,
+          currentDate,
+          complaintData?.ownedBy ?? "",
+          selectedAgency?.value ?? "",
+          officer?.officer_guid ?? "",
+          referralReason,
+        ),
+      );
+      await dispatch(getComplaintById(id, complaint_type));
       submit();
     }
   };
+
+  useEffect(() => {
+    console.log("assignableOfficers", assignableOfficers);
+    const assignableCurrentOfficer = assignableOfficers.find(
+      (officer) => officer.value === currentOfficer?.authorizedUserId,
+    );
+    if (assignableCurrentOfficer) {
+      setSelectedOfficer(assignableCurrentOfficer);
+    }
+  }, [assignableOfficers, currentOfficer]);
 
   return (
     <>
@@ -108,7 +140,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
         </Alert>
 
         <div className="comp-details-form">
-          <div className="comp-details-form-row refer-complaint-previous-agency">
+          <div className="comp-details-form-row refer-complaint-agency">
             <label htmlFor="refer-complaint-from">Previous agency</label>
             <div className="comp-details-input full-width">
               <CompSelect
@@ -127,7 +159,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
               />
             </div>
           </div>
-          <div className="comp-details-form-row refer-complaint-new-agency">
+          <div className="comp-details-form-row refer-complaint-agency--new">
             <label htmlFor="refer-complaint-to">
               New lead agency<span className="required-ind">*</span>
             </label>

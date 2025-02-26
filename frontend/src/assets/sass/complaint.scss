@@ -386,37 +386,16 @@
   }
 }
 
-.comp-details-section {
-  margin-bottom: 16px;
-  h6 {
-    font-weight: 700;
-    margin-bottom: 8px;
+.refer-complaint-agency {
+  .comp-select__control {
+    padding: 8px;
   }
-  &--grey {
-    @extend .comp-details-section;
-    h6 {
-      color: $gray-500;
+  &--new {
+    @extend .refer-complaint-agency;
+    label {
+      font-weight: 700;
+      color: $black !important;
     }
-  }
-}
-
-.refer-complaint-new-agency {
-  label {
-    font-weight: 700;
-    color: $black !important;
-  }
-  .comp-select__control {
-    padding: 8px;
-  }
-}
-
-.refer-complaint-previous-agency {
-  label {
-    font-weight: 700;
-    color: $gray-500 !important;
-  }
-  .comp-select__control {
-    padding: 8px;
   }
 }
 

@@ -565,6 +565,34 @@ export const updateComplaintById =
     }
   };
 
+export const createComplaintReferral =
+  (
+    complaint_identifier: string,
+    referral_date: Date,
+    referred_by_agency_code: string,
+    referred_to_agency_code: string,
+    officer_guid: string,
+    referral_reason: string,
+  ): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-referral`, {
+        complaint_identifier,
+        referral_date,
+        referred_by_agency_code,
+        referred_to_agency_code,
+        officer_guid,
+        referral_reason,
+      });
+
+      await post<any>(dispatch, parameters);
+
+      ToggleSuccess("Complaint has been referred");
+    } catch (error) {
+      ToggleError("Unable to refer complaint");
+    }
+  };
+
 //-- get complaint
 export const getComplaintById =
   (id: string, complaintType: string): AppThunk =>
