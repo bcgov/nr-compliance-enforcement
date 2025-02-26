@@ -49,6 +49,6 @@ export class ComplaintReferral {
   @Column("timestamp without time zone", { name: "referral_date" })
   referral_date: Date;
 
-  @Column("character varying", { name: "referral_reason", length: 1000 })
+  @Column("character varying", { name: "referral_reason", length: 500 })
   referral_reason: string;
 }

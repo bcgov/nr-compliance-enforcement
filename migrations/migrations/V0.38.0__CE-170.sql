@@ -6,7 +6,7 @@ CREATE TABLE
     referred_to_agency_code varchar(10) NOT NULL,
     officer_guid uuid NOT NULL,
     referral_date timestamp NOT NULL DEFAULT now (),
-    referral_reason varchar(1000) NOT NULL,
+    referral_reason varchar(500) NOT NULL,
     create_user_id varchar(32) NOT NULL,
     create_utc_timestamp timestamp NOT NULL DEFAULT now (),
     update_user_id varchar(32) NOT NULL,
