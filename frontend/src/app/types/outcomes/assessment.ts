@@ -15,8 +15,8 @@ export interface Assessment {
   contacted_complainant?: boolean;
   attended?: boolean;
   location_type?: KeyValuePair;
-  conflict_history?: KeyValuePair;
-  category_level?: KeyValuePair;
+  conflict_history?: KeyValuePair | null;
+  category_level?: KeyValuePair | null;
   assessment_cat1_type: KeyValuePair[];
   assessment_type_legacy?: KeyValuePair[];
 }

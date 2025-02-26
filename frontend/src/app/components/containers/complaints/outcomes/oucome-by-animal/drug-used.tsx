@@ -202,6 +202,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
                 handleDrugNameChange(evt);
               }}
               value={getDropdownOption(drug, drugs)}
+              isClearable={true}
             />
           </div>
         </div>
@@ -223,6 +224,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
                 handleInjectionMethodChange(evt);
               }}
               value={getDropdownOption(injectionMethod, drugUseMethods)}
+              isClearable={true}
             />
           </div>
         </div>
@@ -263,6 +265,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
                 handleRemainingUsed(evt?.value ?? "");
               }}
               value={getDropdownOption(remainingUse, remainingDrugUse)}
+              isClearable={true}
             />
           </div>
         </div>

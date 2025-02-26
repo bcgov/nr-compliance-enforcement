@@ -235,6 +235,13 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
         actionCode: CASE_ACTION_CODE.REMEQUIPMT,
       } as CaseActionDto);
     }
+    if (officerRemoved === null) {
+      // user wants to clear equipment removal info
+      actions.push({
+        activeIndicator: false,
+        actionCode: CASE_ACTION_CODE.REMEQUIPMT,
+      } as CaseActionDto);
+    }
 
     // Create an equipment object to persist
     if (type) {
@@ -352,6 +359,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                   onChange={(type: any) => handleSetType(type)}
                   defaultOption={type}
                   value={type}
+                  isClearable={true}
                 />
               </div>
             </div>
@@ -473,6 +481,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                   enableValidation={true}
                   errorMessage={officerSetErrorMsg}
                   onChange={(officer: any) => setOfficerSet(officer)}
+                  isClearable={true}
                 />
               </div>
             </div>
@@ -518,6 +527,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                       enableValidation={true}
                       errorMessage={officerRemovedErrorMsg}
                       onChange={(officer: any) => setOfficerRemoved(officer)}
+                      isClearable={true}
                     />
                   </div>
                 </div>

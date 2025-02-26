@@ -165,8 +165,6 @@ export const ComplaintDetailsEdit: FC = () => {
           }))
       : [];
 
-  assignableOfficers.unshift({ value: "Unassigned", label: "None" });
-
   const { details: complaint_witness_details } = useAppSelector(
     selectComplaintSuspectWitnessDetails,
   ) as ComplaintSuspectWitness;
@@ -192,6 +190,8 @@ export const ComplaintDetailsEdit: FC = () => {
   const [attractantsErrorMsg, setAttractantsErrorMsg] = useState<string>("");
   const [communityError, setCommunityError] = useState<string>("");
   const [coordinateErrorsInd, setCoordinateErrorsInd] = useState<boolean>(false);
+  const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
+  const [generalIncidentTypeErrorMsg, setGeneralIncidentTypeErrorMsg] = useState<string>("");
   const [emailMsg, setEmailMsg] = useState<string>("");
   const [primaryPhoneMsg, setPrimaryPhoneMsg] = useState<string>("");
   const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
@@ -343,7 +343,9 @@ export const ComplaintDetailsEdit: FC = () => {
       emailMsg === "" &&
       primaryPhoneMsg === "" &&
       secondaryPhoneMsg === "" &&
-      alternatePhoneMsg === ""
+      alternatePhoneMsg === "" &&
+      generalIncidentTypeErrorMsg === "" &&
+      violationTypeErrorMsg === ""
     ) {
       noErrors = true;
     }
@@ -404,52 +406,56 @@ export const ComplaintDetailsEdit: FC = () => {
 
   //-- general incident complaint updates
   const handleGirTypeChange = (selected: Option | null) => {
-    if (selected) {
-      const { value } = selected;
-      if (value) {
-        let updatedComplaint = { ...complaintUpdate, girType: value } as GeneralInformationComplaintDto;
-        applyComplaintUpdate(updatedComplaint);
-      }
+    let value: string = "";
+    if (selected?.value && selected?.value !== "") {
+      value = selected.value;
+      setGeneralIncidentTypeErrorMsg("");
+    } else {
+      setGeneralIncidentTypeErrorMsg("Required");
     }
+
+    let updatedComplaint = { ...complaintUpdate, girType: value } as GeneralInformationComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
   };
   //-- wildlife complaint updates
   const handleNatureOfComplaintChange = (selected: Option | null) => {
-    if (selected) {
-      const { value } = selected;
-      if (!value) {
-        setNatureOfComplaintError("Required");
-      } else {
-        setNatureOfComplaintError("");
-
-        let updatedComplaint = { ...complaintUpdate, natureOfComplaint: value } as WildlifeComplaintDto;
-        applyComplaintUpdate(updatedComplaint);
-      }
+    let value: string = "";
+    if (selected?.value && selected?.value !== "") {
+      value = selected.value;
+      setNatureOfComplaintError("");
+    } else {
+      setNatureOfComplaintError("Required");
     }
+
+    let updatedComplaint = { ...complaintUpdate, natureOfComplaint: value } as WildlifeComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
   };
 
   const handleSpeciesChange = (selected: Option | null) => {
-    if (selected) {
-      const { value } = selected;
-      if (!value) {
-        setSpeciesError("Required");
-      } else {
-        setSpeciesError("");
-
-        let updatedComplaint = { ...complaintUpdate, species: value } as WildlifeComplaintDto;
-        applyComplaintUpdate(updatedComplaint);
-      }
+    let value: string = "";
+    if (selected?.value && selected?.value !== "") {
+      value = selected.value;
+      setSpeciesError("");
+    } else {
+      setSpeciesError("Required");
     }
+
+    let updatedComplaint = { ...complaintUpdate, species: value } as WildlifeComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
   };
 
   //-- allegation complaint updates
   const handleViolationTypeChange = (selected: Option | null) => {
-    if (selected) {
-      const { value } = selected;
-      if (value) {
-        let updatedComplaint = { ...complaintUpdate, violation: value } as AllegationComplaintDto;
-        applyComplaintUpdate(updatedComplaint);
-      }
+    let value: string = "";
+    if (selected?.value && selected?.value !== "") {
+      value = selected.value;
+      setViolationTypeErrorMsg("");
+    } else {
+      setViolationTypeErrorMsg("Required");
     }
+
+    let updatedComplaint = { ...complaintUpdate, violation: value } as AllegationComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
   };
 
   const handleViolationInProgessChange = (selected: Option | null) => {
@@ -478,10 +484,9 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handleAssignedOfficerChange = (selected: Option | null) => {
+    let { delegates } = complaintUpdate as ComplaintDto;
     if (selected) {
       const { value } = selected;
-
-      let { delegates } = complaintUpdate as ComplaintDto;
       let existing = delegates.filter(({ type }) => type !== "ASSIGNEE");
       let updatedDelegates: Array<Delegate> = [];
 
@@ -529,6 +534,10 @@ export const ComplaintDetailsEdit: FC = () => {
         let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as ComplaintDto;
         applyComplaintUpdate(updatedComplaint);
       }
+    } else {
+      let updatedDelegates = delegates.filter(({ type }) => type !== "ASSIGNEE");
+      let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as ComplaintDto;
+      applyComplaintUpdate(updatedComplaint);
     }
   };
 
@@ -551,29 +560,31 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handleAttractantsChange = async (options: Option[] | null) => {
-    if (!options) {
-      return;
-    }
-
     const { attractants } = complaintUpdate as WildlifeComplaintDto;
     let updates: Array<AttractantXref> = [];
 
-    attractants.forEach((item) => {
-      const { attractant, xrefId } = item;
+    if (options && options.length > 0) {
+      attractants.forEach((item) => {
+        const { attractant, xrefId } = item;
 
-      if (from(options).any(({ value: selected }) => selected === attractant)) {
-        updates.push({ xrefId, attractant, isActive: true });
-      } else {
-        updates.push({ xrefId, attractant, isActive: false });
-      }
-    });
+        if (from(options).any(({ value: selected }) => selected === attractant)) {
+          updates.push({ xrefId, attractant, isActive: true });
+        } else {
+          updates.push({ xrefId, attractant, isActive: false });
+        }
+      });
 
-    options.forEach(({ value: selected }) => {
-      if (!from(attractants).any(({ attractant }) => attractant === selected)) {
-        const _item: AttractantXref = { attractant: selected as string, isActive: true };
-        updates.push(_item);
-      }
-    });
+      options.forEach(({ value: selected }) => {
+        if (!from(attractants).any(({ attractant }) => attractant === selected)) {
+          const _item: AttractantXref = { attractant: selected as string, isActive: true };
+          updates.push(_item);
+        }
+      });
+    } else {
+      updates = attractants.map((item) => {
+        return { attractant: item.attractant, xrefId: item.xrefId, isActive: false };
+      });
+    }
 
     const model = { ...complaintUpdate, attractants: updates } as WildlifeComplaintDto;
     applyComplaintUpdate(model);
@@ -590,24 +601,18 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handleCommunityChange = (selectedOption: Option | null) => {
-    if (!selectedOption) {
-      return;
-    }
-
-    if (selectedOption.value === "") {
-      setCommunityError("Required");
-    } else {
+    let value: string = "";
+    if (selectedOption?.value && selectedOption?.value !== "") {
+      value = selectedOption.value;
       setCommunityError("");
-
-      const { value } = selectedOption;
-      if (value) {
-        const { organization } = complaintUpdate as ComplaintDto;
-        const updatedOrganization = { ...organization, area: value };
-
-        const updatedComplaint = { ...complaintUpdate, organization: updatedOrganization } as ComplaintDto;
-        applyComplaintUpdate(updatedComplaint);
-      }
+    } else {
+      setCommunityError("Required");
     }
+    const { organization } = complaintUpdate as ComplaintDto;
+    const updatedOrganization = { ...organization, area: value };
+
+    const updatedComplaint = { ...complaintUpdate, organization: updatedOrganization } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
   };
 
   const handleNameChange = (value: string) => {
@@ -616,16 +621,15 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handlePrivacyRequestedChange = (selected: Option | null) => {
+    let value = null;
     if (selected) {
-      const { value } = selected;
-      if (value) {
-        let updatedComplaint = {
-          ...complaintUpdate,
-          isPrivacyRequested: value,
-        } as ComplaintDto;
-        applyComplaintUpdate(updatedComplaint);
-      }
+      value = selected.value;
     }
+    let updatedComplaint = {
+      ...complaintUpdate,
+      isPrivacyRequested: value,
+    } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
   };
 
   const handlePrimaryPhoneChange = (value: string) => {
@@ -685,21 +689,21 @@ export const ComplaintDetailsEdit: FC = () => {
   }
 
   const handleReportedByChange = (selected: Option | null) => {
+    let value = null;
     if (selected) {
-      const { value } = selected;
-
-      const updatedComplaint = { ...complaintUpdate, reportedBy: value } as ComplaintDto;
-      applyComplaintUpdate(updatedComplaint);
+      value = selected.value;
     }
+    const updatedComplaint = { ...complaintUpdate, reportedBy: value } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
   };
 
   const handleComplaintReceivedMethodChange = (selected: Option | null) => {
+    let value = null;
     if (selected) {
-      const { value } = selected;
-
-      const updatedComplaint = { ...complaintUpdate, complaintMethodReceivedCode: value } as ComplaintDto;
-      applyComplaintUpdate(updatedComplaint);
+      value = selected.value;
     }
+    const updatedComplaint = { ...complaintUpdate, complaintMethodReceivedCode: value } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
   };
 
   const maxDate = new Date();
@@ -844,7 +848,8 @@ export const ComplaintDetailsEdit: FC = () => {
                   options={assignableOfficers}
                   placeholder="Select"
                   enableValidation={false}
-                  value={hasAssignedOfficer() ? selectedAssignedOfficer : { value: "Unassigned", label: "None" }}
+                  value={hasAssignedOfficer() ? selectedAssignedOfficer : null}
+                  isClearable={true}
                 />
               </div>
             </fieldset>
@@ -872,6 +877,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       placeholder="Select"
                       enableValidation={true}
                       errorMessage={speciesError}
+                      isClearable={true}
                     />
                   </div>
                   <div
@@ -892,6 +898,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       placeholder="Select"
                       enableValidation={true}
                       errorMessage={natureOfComplaintError}
+                      isClearable={true}
                     />
                   </div>
                 </>
@@ -905,14 +912,18 @@ export const ComplaintDetailsEdit: FC = () => {
                   <label id="violation-label-id">
                     Violation type<span className="required-ind">*</span>
                   </label>
-                  <Select
+                  <CompSelect
+                    id="violation-type-select-id"
+                    showInactive={false}
+                    classNamePrefix="comp-select"
+                    onChange={(e) => handleViolationTypeChange(e)}
                     className="comp-details-input full-width"
                     options={violationTypeCodes}
-                    defaultValue={selectedViolationTypeCode}
+                    defaultOption={selectedViolationTypeCode}
                     placeholder="Select"
-                    id="violation-type-select-id"
-                    onChange={(e) => handleViolationTypeChange(e)}
-                    classNamePrefix="comp-select"
+                    enableValidation={true}
+                    errorMessage={violationTypeErrorMsg}
+                    isClearable={true}
                   />
                 </div>
               )}
@@ -925,14 +936,18 @@ export const ComplaintDetailsEdit: FC = () => {
                   <label id="general-incident-label-id">
                     General incident type<span className="required-ind">*</span>
                   </label>
-                  <Select
+                  <CompSelect
+                    id="gir-type-select-id"
+                    showInactive={false}
+                    classNamePrefix="comp-select"
+                    onChange={(e) => handleGirTypeChange(e)}
                     className="comp-details-input full-width"
                     options={girTypeCodes}
-                    defaultValue={selectedGirTypeCode}
+                    defaultOption={selectedGirTypeCode}
                     placeholder="Select"
-                    id="gir-type-select-id"
-                    onChange={(e) => handleGirTypeChange(e)}
-                    classNamePrefix="comp-select"
+                    enableValidation={true}
+                    errorMessage={generalIncidentTypeErrorMsg}
+                    isClearable={true}
                   />
                 </div>
               )}
@@ -996,6 +1011,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       classNamePrefix="comp-select"
                       onChange={handleAttractantsChange}
                       errMsg={attractantsErrorMsg}
+                      isClearable={true}
                     />
                   </div>
                 </div>
@@ -1015,6 +1031,7 @@ export const ComplaintDetailsEdit: FC = () => {
                         id="violation-in-progress-select-id"
                         classNamePrefix="comp-select"
                         onChange={(e) => handleViolationInProgessChange(e)}
+                        isClearable={true}
                       />
                     </div>
                   </div>
@@ -1031,6 +1048,7 @@ export const ComplaintDetailsEdit: FC = () => {
                         id="violation-observed-select-id"
                         classNamePrefix="comp-select"
                         onChange={(e) => handleViolationObservedChange(e)}
+                        isClearable={true}
                       />
                     </div>
                   </div>
@@ -1103,6 +1121,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     placeholder="Select"
                     enableValidation={true}
                     errorMessage={communityError}
+                    isClearable={true}
                   />
                 </div>
               </div>
@@ -1163,6 +1182,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     options={complaintMethodReceivedCodes}
                     enableValidation={false}
                     onChange={(e) => handleComplaintReceivedMethodChange(e)}
+                    isClearable={true}
                   />
                 </div>
               </div>
@@ -1192,6 +1212,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       id="caller-privacy-id"
                       classNamePrefix="comp-select"
                       onChange={(e) => handlePrivacyRequestedChange(e)}
+                      isClearable={true}
                     />
                   </div>
                 </div>
@@ -1346,6 +1367,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     options={reportedByCodes}
                     enableValidation={false}
                     onChange={(e) => handleReportedByChange(e)}
+                    isClearable={true}
                   />
                 </div>
               </div>

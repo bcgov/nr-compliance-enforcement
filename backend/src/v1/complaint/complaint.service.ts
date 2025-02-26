@@ -1500,7 +1500,7 @@ export class ComplaintService {
             converted.create_user_id = idir;
             converted.complaint_identifier = id;
 
-            this._personService.assignNewOfficer(id, converted as any);
+            await this._personService.assignNewOfficer(id, converted as any);
           } else {
             //-- the complaint has no assigned officer
             const unassigned = delegates.filter(({ isActive }) => !isActive);
@@ -1518,6 +1518,8 @@ export class ComplaintService {
               this._personService.assignNewOfficer(id, converted as any);
             });
           }
+        } else {
+          await this._personService.unAssignOfficer(id);
         }
 
         //-- apply complaint specific updates
@@ -1560,7 +1562,7 @@ export class ComplaintService {
             const { natureOfComplaint, species, otherAttractants, hwcrId } = model as WildlifeComplaintDto;
             const { attractant_hwcr_xref: attractants } = entity as HwcrComplaint;
 
-            this._attractantService.updateComplaintAttractants(entity as HwcrComplaint, attractants);
+            await this._attractantService.updateComplaintAttractants(entity as HwcrComplaint, attractants);
 
             await this._wildlifeComplaintRepository
               .createQueryBuilder()
