@@ -430,6 +430,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   onChange={handleSpeciesChange}
                   defaultOption={getDropdownOption(data.species, speciesList)}
                   errorMessage={speciesError}
+                  isClearable={true}
                 />
               </div>
               <div className="comp-details-form-row">

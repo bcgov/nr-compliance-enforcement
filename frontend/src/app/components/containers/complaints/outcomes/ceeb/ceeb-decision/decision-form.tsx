@@ -128,16 +128,21 @@ export const DecisionForm: FC<props> = ({
     updateModel("actionTakenDate", date);
   };
 
-  const handleScheduleChange = (schedule: string) => {
-    let options = scheduleSectorType
-      .filter((item) => item.schedule === schedule)
-      .map((item) => {
-        const record: Option = { label: item.longDescription, value: item.sector };
-        return record;
-      });
-    const model = { ...data, sector: "", schedule: schedule };
-    setData(model);
-    setSectorList(options);
+  const handleScheduleChange = (schedule: string | undefined) => {
+    if (schedule) {
+      let options = scheduleSectorType
+        .filter((item) => item.schedule === schedule)
+        .map((item) => {
+          const record: Option = { label: item.longDescription, value: item.sector };
+          return record;
+        });
+      const model = { ...data, sector: "", schedule: schedule };
+      setData(model);
+      setSectorList(options);
+    } else {
+      const model = { ...data, schedule: "" };
+      setData(model);
+    }
   };
 
   const handleActionTakenChange = (value: string) => {
@@ -292,12 +297,11 @@ export const DecisionForm: FC<props> = ({
               errorMessage={scheduleErrorMessage}
               placeholder="Select "
               onChange={(evt) => {
-                if (evt?.value) {
-                  handleScheduleChange(evt.value);
-                }
+                handleScheduleChange(evt?.value);
               }}
               isDisabled={isReadOnly}
-              value={getDropdownOption(data.schedule, schedulesOptions)}
+              value={getDropdownOption(data.schedule, schedulesOptions) || { value: "", label: "" }}
+              isClearable={true}
             />
           </div>
         </div>
@@ -323,6 +327,7 @@ export const DecisionForm: FC<props> = ({
               }}
               isDisabled={isReadOnly}
               value={getDropdownOption(data.sector, sectorsOptions) || { value: "", label: "" }}
+              isClearable={true}
             />
           </div>
         </div>
@@ -348,6 +353,7 @@ export const DecisionForm: FC<props> = ({
               }}
               isDisabled={isReadOnly}
               value={getDropdownOption(data.discharge, dischargesOptions)}
+              isClearable={true}
             />
           </div>
         </div>

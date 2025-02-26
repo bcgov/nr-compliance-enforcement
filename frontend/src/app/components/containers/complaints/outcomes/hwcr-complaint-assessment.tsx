@@ -631,6 +631,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       placeholder="Select"
                       onChange={(e) => handleActionRequiredChange(e)}
                       isDisabled={isReadOnly}
+                      isClearable={true}
                     />
                   )}
                 </div>
@@ -653,6 +654,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     value={selectedJustification}
                     placeholder="Select"
                     onChange={(e) => handleJustificationChange(e)}
+                    isClearable={true}
                   />
                 </div>
               </div>
@@ -796,6 +798,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       onChange={(e: any) => {
                         setSelectedLocation(e);
                       }}
+                      isClearable={true}
                     />
                   </div>
 
@@ -876,6 +879,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     placeholder="Select "
                     onChange={handleSelectedOfficerChange}
                     isDisabled={isReadOnly}
+                    isClearable={true}
                   />
                 </div>
               </div>

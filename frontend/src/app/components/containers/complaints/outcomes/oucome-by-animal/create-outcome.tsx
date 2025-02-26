@@ -402,6 +402,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                   onChange={handleSpeciesChange}
                   defaultOption={getDropdownOption(data.species, speciesList)}
                   errorMessage={speciesError}
+                  isClearable={true}
                 />
               </div>
             </div>

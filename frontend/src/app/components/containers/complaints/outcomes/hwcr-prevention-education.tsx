@@ -310,6 +310,7 @@ export const HWCRComplaintPrevention: FC = () => {
                       value={selectedOfficer}
                       placeholder="Select "
                       onChange={(officer: any) => setSelectedOfficer(officer)}
+                      isClearable={true}
                     />
                   </div>
                 </div>

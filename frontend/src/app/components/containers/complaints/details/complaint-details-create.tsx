@@ -233,7 +233,7 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleComplaintChange = (selected: Option | null) => {
-    if (selected?.value) {
+    if (selected?.value && selected?.value !== "") {
       const { value } = selected;
 
       setComplaintTypeMsg("");
@@ -258,22 +258,21 @@ export const CreateComplaint: FC = () => {
       applyComplaintData(rest);
     } else {
       setComplaintTypeMsg("Required");
+      setComplaintType("");
     }
   };
 
   const handleNatureOfComplaintChange = (selected: Option | null) => {
-    if (selected) {
-      const { value } = selected;
-
-      if (!value) {
-        setNatureOfComplaintErrorMsg("Required");
-      } else {
-        setNatureOfComplaintErrorMsg("");
-
-        const complaint = { ...complaintData, natureOfComplaint: value } as WildlifeComplaintDto;
-        applyComplaintData(complaint);
-      }
+    let value: string = "";
+    if (selected?.value && selected?.value !== "") {
+      value = selected.value;
+      setNatureOfComplaintErrorMsg("");
+    } else {
+      setNatureOfComplaintErrorMsg("Required");
     }
+
+    const complaint = { ...complaintData, natureOfComplaint: value } as WildlifeComplaintDto;
+    applyComplaintData(complaint);
   };
 
   const handleComplaintReceivedMethodChange = (selected: Option | null) => {
@@ -286,55 +285,49 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleSpeciesChange = (selected: Option | null) => {
-    if (selected) {
-      const { value } = selected;
-
-      if (!value) {
-        setSpeciesErrorMsg("Required");
-      } else {
-        setSpeciesErrorMsg("");
-
-        const complaint = { ...complaintData, species: value } as WildlifeComplaintDto;
-        applyComplaintData(complaint);
-      }
+    let value: string = "";
+    if (selected?.value && selected?.value !== "") {
+      value = selected.value;
+      setSpeciesErrorMsg("");
+    } else {
+      setSpeciesErrorMsg("Required");
     }
+
+    const complaint = { ...complaintData, species: value } as WildlifeComplaintDto;
+    applyComplaintData(complaint);
   };
 
   const handleViolationTypeChange = (selected: Option | null) => {
-    if (selected) {
-      const { value } = selected;
-
-      if (!value) {
-        setNatureOfComplaintErrorMsg("Required");
-      } else {
-        setNatureOfComplaintErrorMsg("");
-
-        const complaint = { ...complaintData, violation: value } as AllegationComplaintDto;
-        applyComplaintData(complaint);
-      }
+    let value: string = "";
+    if (selected?.value && selected?.value !== "") {
+      value = selected.value;
+      setViolationTypeErrorMsg("");
+    } else {
+      setViolationTypeErrorMsg("Required");
     }
+
+    const complaint = { ...complaintData, violation: value } as AllegationComplaintDto;
+    applyComplaintData(complaint);
   };
 
   const handleGeneralIncidentTypeChange = (selected: Option | null) => {
-    if (selected) {
-      const { value } = selected;
-
-      if (!value) {
-        setGeneralIncidentTypeErrorMsg("Required");
-      } else {
-        setGeneralIncidentTypeErrorMsg("");
-
-        const complaint = { ...complaintData, girType: value } as GeneralIncidentComplaintDto;
-        applyComplaintData(complaint);
-      }
+    let value: string = "";
+    if (selected?.value && selected?.value !== "") {
+      value = selected.value;
+      setGeneralIncidentTypeErrorMsg("");
+    } else {
+      setGeneralIncidentTypeErrorMsg("Required");
     }
+
+    const complaint = { ...complaintData, girType: value } as GeneralIncidentComplaintDto;
+    applyComplaintData(complaint);
   };
 
   const handleAssignedOfficerChange = (selected: Option | null) => {
+    const { delegates } = complaintData as ComplaintDto;
     if (selected) {
       const { value } = selected;
 
-      const { delegates } = complaintData as ComplaintDto;
       let existing = delegates.filter(({ type }) => type !== "ASSIGNEE");
       let updatedDelegates: Array<Delegate> = [];
 
@@ -381,6 +374,10 @@ export const CreateComplaint: FC = () => {
         const complaint = { ...complaintData, delegates: updatedDelegates } as ComplaintDto;
         applyComplaintData(complaint);
       }
+    } else {
+      let updatedDelegates = delegates.filter(({ type }) => type !== "ASSIGNEE");
+      const complaint = { ...complaintData, delegates: updatedDelegates } as ComplaintDto;
+      applyComplaintData(complaint);
     }
   };
 
@@ -401,29 +398,30 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleViolationInProgessChange = (selected: Option | null) => {
-    if (selected?.value) {
-      const { value } = selected;
-
-      const complaint = { ...complaintData, isInProgress: value === "Yes" } as AllegationComplaintDto;
-      applyComplaintData(complaint);
+    let value: string = "No";
+    if (selected?.value && selected?.value !== "") {
+      value = selected.value;
     }
+    const complaint = { ...complaintData, isInProgress: value === "Yes" } as AllegationComplaintDto;
+    applyComplaintData(complaint);
   };
 
   const handleViolationObservedChange = (selected: Option | null) => {
-    if (selected?.value) {
-      const { value } = selected;
-
-      const complaint = { ...complaintData, wasObserved: value === "Yes" } as AllegationComplaintDto;
-      applyComplaintData(complaint);
+    let value: string = "No";
+    if (selected?.value && selected?.value !== "") {
+      value = selected.value;
     }
+    const complaint = { ...complaintData, wasObserved: value === "Yes" } as AllegationComplaintDto;
+    applyComplaintData(complaint);
   };
 
   const handlePrivacyRequestedChange = (selected: Option | null) => {
-    if (selected) {
-      const { value } = selected;
-      const complaint = { ...complaintData, isPrivacyRequested: value } as ComplaintDto;
-      applyComplaintData(complaint);
+    let value: string = "U";
+    if (selected?.value && selected?.value !== "") {
+      value = selected.value;
     }
+    const complaint = { ...complaintData, isPrivacyRequested: value } as ComplaintDto;
+    applyComplaintData(complaint);
   };
 
   const handleLocationChange = (value: string) => {
@@ -445,23 +443,18 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleCommunityChange = (selected: Option | null) => {
-    if (!selected) {
-      return;
-    }
-
-    if (selected.value === "") {
-      setCommunityErrorMsg("Required");
-    } else {
+    let value: string = "";
+    if (selected?.value && selected?.value !== "") {
+      value = selected.value;
       setCommunityErrorMsg("");
-      if (selected.value) {
-        const { value } = selected;
-        const { organization } = complaintData as ComplaintDto;
-        const update = { ...organization, area: value };
-
-        const complaint = { ...complaintData, organization: update } as ComplaintDto;
-        applyComplaintData(complaint);
-      }
+    } else {
+      setCommunityErrorMsg("Required");
     }
+    const { organization } = complaintData as ComplaintDto;
+    const update = { ...organization, area: value };
+
+    const complaint = { ...complaintData, organization: update } as ComplaintDto;
+    applyComplaintData(complaint);
   };
 
   const syncCoordinates = (yCoordinate: string | undefined, xCoordinate: string | undefined) => {
@@ -741,6 +734,7 @@ export const CreateComplaint: FC = () => {
                   placeholder="Select"
                   enableValidation={true}
                   errorMessage={complaintTypeMsg}
+                  isClearable={true}
                 />
               </div>
             </div>
@@ -763,9 +757,9 @@ export const CreateComplaint: FC = () => {
                 onChange={(e) => handleAssignedOfficerChange(e)}
                 className="comp-details-input"
                 options={assignableOfficers}
-                defaultOption={{ label: "None", value: "Unassigned" }}
                 placeholder="Select"
                 enableValidation={false}
+                isClearable={true}
               />
             </div>
           </div>
@@ -795,6 +789,7 @@ export const CreateComplaint: FC = () => {
                     placeholder="Select"
                     enableValidation={true}
                     errorMessage={speciesErrorMsg}
+                    isClearable={true}
                   />
                 </div>
               </div>
@@ -819,6 +814,7 @@ export const CreateComplaint: FC = () => {
                     placeholder="Select"
                     enableValidation={true}
                     errorMessage={natureOfComplaintErrorMsg}
+                    isClearable={true}
                   />
                 </div>
               </div>
@@ -845,6 +841,7 @@ export const CreateComplaint: FC = () => {
                   placeholder="Select"
                   enableValidation={true}
                   errorMessage={violationTypeErrorMsg}
+                  isClearable={true}
                 />
               </div>
             </div>
@@ -872,6 +869,7 @@ export const CreateComplaint: FC = () => {
                   enableValidation={true}
                   errorMessage={generalIncidentTypeErrorMsg}
                   showInactive={false}
+                  isClearable={true}
                 />
               </div>
             </div>
@@ -937,6 +935,7 @@ export const CreateComplaint: FC = () => {
                   classNamePrefix="comp-select"
                   onChange={handleAttractantsChange}
                   errMsg={""}
+                  isClearable={true}
                 />
               </div>
             </div>
@@ -1043,6 +1042,7 @@ export const CreateComplaint: FC = () => {
                 placeholder="Select"
                 enableValidation={true}
                 errorMessage={communityErrorMsg}
+                isClearable={true}
               />
             </div>
           </div>
