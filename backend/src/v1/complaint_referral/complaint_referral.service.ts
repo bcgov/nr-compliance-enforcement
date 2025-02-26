@@ -3,7 +3,7 @@ import { Injectable, Logger, Inject, Scope } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ComplaintReferral } from "./entities/complaint_referral.entity";
 import { Complaint } from "./../complaint/entities/complaint.entity";
-import { getIdirFromRequest } from "src/common/get-idir-from-request";
+import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { REQUEST } from "@nestjs/core";
 
 @Injectable({ scope: Scope.REQUEST })
