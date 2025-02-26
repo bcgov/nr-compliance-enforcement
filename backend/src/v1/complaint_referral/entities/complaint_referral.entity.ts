@@ -1,4 +1,3 @@
-import { Complaint } from "../../complaint/entities/complaint.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { UUID } from "crypto";
 import { AgencyCode } from "../../agency_code/entities/agency_code.entity";

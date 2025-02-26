@@ -1,6 +1,5 @@
 import { FC, useState, useEffect } from "react";
 import { Modal, Button, Alert } from "react-bootstrap";
-import { shallowEqual } from "react-redux";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
 import { CompSelect } from "@components/common/comp-select";
@@ -111,7 +110,6 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
   };
 
   useEffect(() => {
-    console.log("assignableOfficers", assignableOfficers);
     const assignableCurrentOfficer = assignableOfficers.find(
       (officer) => officer.value === currentOfficer?.authorizedUserId,
     );

@@ -862,7 +862,6 @@ export const selectJustificationCodeDropdown = createSelector(
 export const selectAssessmentTypeCodeDropdown = createSelector(
   (state: RootState) => state.codeTables["assessment-type"],
   (assessmentType) => {
-    console.log("here");
     return assessmentType.map(({ assessmentType, longDescription, isActive }) => ({
       label: longDescription,
       value: assessmentType,
