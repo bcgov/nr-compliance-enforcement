@@ -107,6 +107,7 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
               enableValidation={true}
               value={getDropdownOption(officer, officers)}
               errorMessage={officerError}
+              isClearable={true}
             />
           </div>
         </div>

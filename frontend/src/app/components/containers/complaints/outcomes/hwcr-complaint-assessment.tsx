@@ -375,14 +375,14 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 key: selectedConflictHistory?.label,
                 value: selectedConflictHistory?.value,
               }
-            : undefined,
+            : null,
         category_level:
           selectedCategoryLevel && isLargeCarnivore
             ? {
                 key: selectedCategoryLevel?.label,
                 value: selectedCategoryLevel?.value,
               }
-            : undefined,
+            : null,
         assessment_cat1_type:
           selectedActionRequired?.label === OptionLabels.OPTION_NO || !isLargeCarnivore
             ? []
@@ -631,6 +631,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       placeholder="Select"
                       onChange={(e) => handleActionRequiredChange(e)}
                       isDisabled={isReadOnly}
+                      isClearable={true}
                     />
                   )}
                 </div>
@@ -653,6 +654,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     value={selectedJustification}
                     placeholder="Select"
                     onChange={(e) => handleJustificationChange(e)}
+                    isClearable={true}
                   />
                 </div>
               </div>
@@ -796,6 +798,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       onChange={(e: any) => {
                         setSelectedLocation(e);
                       }}
+                      isClearable={true}
                     />
                   </div>
 
@@ -822,6 +825,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       onChange={(e: any) => {
                         setSelectedConflictHistory(e);
                       }}
+                      isClearable={true}
                     />
                   </div>
 
@@ -848,6 +852,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       onChange={(e: any) => {
                         setSelectedCategoryLevel(e);
                       }}
+                      isClearable={true}
                     />
                   </div>
                 </>
@@ -874,6 +879,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     placeholder="Select "
                     onChange={handleSelectedOfficerChange}
                     isDisabled={isReadOnly}
+                    isClearable={true}
                   />
                 </div>
               </div>

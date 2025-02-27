@@ -17,7 +17,7 @@ type props = {
   schedule: string;
   sector: string;
   discharge: string;
-  nonCompliance: string;
+  nonCompliance?: string;
   ipmAuthCategory?: string;
   rationale: string;
   inspectionNumber?: string;
