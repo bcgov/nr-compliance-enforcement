@@ -2,8 +2,9 @@ import { BadRequestException, forwardRef, Inject, Injectable, Logger } from "@ne
 import { CreatePersonComplaintXrefDto } from "./dto/create-person_complaint_xref.dto";
 import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, QueryRunner, Repository } from "typeorm";
+import { DataSource, QueryRunner, Repository, Equal } from "typeorm";
 import { ComplaintService } from "../complaint/complaint.service";
+import { PersonComplaintXrefCodeEnum } from "src/enum/person_complaint_xref_code.enum";
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -65,6 +66,19 @@ export class PersonComplaintXrefService {
         active_ind: true,
       })
       .getOne();
+  }
+
+  async findAssignedByComplaint(complaint_identifier: any): Promise<PersonComplaintXref> {
+    return this.personComplaintXrefRepository.findOne({
+      where: {
+        complaint_identifier: complaint_identifier,
+        active_ind: true,
+      },
+      relations: {
+        person_guid: true,
+        complaint_identifier: true,
+      },
+    });
   }
 
   async update(person_complaint_xref_guid: any, updatePersonComplaintXrefDto): Promise<PersonComplaintXref> {
@@ -165,7 +179,7 @@ export class PersonComplaintXrefService {
       unassignedPersonComplaintXref = await this.findByComplaint(complaintIdentifier);
       if (unassignedPersonComplaintXref) {
         this.logger.debug(
-          `Unassigning existing person from complaint ${unassignedPersonComplaintXref?.complaint_identifier?.complaint_identifier}`,
+          `Unassigning existing person ${unassignedPersonComplaintXref.person_guid.person_guid} from complaint ${unassignedPersonComplaintXref?.complaint_identifier?.complaint_identifier}`,
         );
         unassignedPersonComplaintXref.active_ind = false;
         await queryRunner.manager.save(unassignedPersonComplaintXref);
@@ -186,6 +200,25 @@ export class PersonComplaintXrefService {
       }
     }
     return newPersonComplaintXref;
+  }
+
+  async clearAssignedOfficer(complaintIdentifier: string): Promise<void> {
+    try {
+      const unassignedPersonComplaintXref = await this.findAssignedByComplaint(complaintIdentifier);
+      if (unassignedPersonComplaintXref) {
+        this.logger.debug(
+          `Unassigning person xref ${unassignedPersonComplaintXref.personComplaintXrefGuid} existing person ${unassignedPersonComplaintXref.person_guid.person_guid} from complaint ${unassignedPersonComplaintXref?.complaint_identifier?.complaint_identifier}`,
+        );
+        await this.personComplaintXrefRepository.update(unassignedPersonComplaintXref.personComplaintXrefGuid, {
+          active_ind: false,
+        });
+        // Update the complaint last updated date on the parent record
+        await this._complaintService.updateComplaintLastUpdatedDate(complaintIdentifier);
+      }
+    } catch (err) {
+      this.logger.error(err);
+      throw new BadRequestException(err);
+    }
   }
 
   remove(id: string) {

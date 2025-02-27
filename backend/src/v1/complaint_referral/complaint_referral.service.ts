@@ -5,6 +5,7 @@ import { ComplaintReferral } from "./entities/complaint_referral.entity";
 import { Complaint } from "./../complaint/entities/complaint.entity";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { REQUEST } from "@nestjs/core";
+import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintReferralService {
@@ -16,6 +17,7 @@ export class ComplaintReferralService {
   constructor(
     @Inject(REQUEST)
     private readonly request: Request,
+    private readonly _personService: PersonComplaintXrefService,
   ) {}
 
   private readonly logger = new Logger(ComplaintReferralService.name);
@@ -35,6 +37,10 @@ export class ComplaintReferralService {
         { owned_by_agency_code: createComplaintReferralDto.referred_to_agency_code },
       );
     }
+
+    // Clear the officer assigend to the complaint
+    this._personService.clearAssignedOfficer(createComplaintReferralDto.complaint_identifier);
+
     return result;
   }
 

@@ -84,8 +84,10 @@ export const CompSelect: FC<Props> = ({
 
   //-- pass through the onChange event
   const handleChange = (s: any) => {
+    // find the original item from the options array based on the value
+    const selectedOption = options?.find((o) => o.value === s.value);
     if (onChange) {
-      onChange(s);
+      onChange(selectedOption || null);
     }
   };
 
