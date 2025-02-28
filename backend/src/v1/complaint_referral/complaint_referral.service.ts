@@ -1,5 +1,5 @@
 import { Repository } from "typeorm";
-import { Injectable, Logger, Inject, Scope } from "@nestjs/common";
+import { Injectable, Logger, Inject, Scope, forwardRef } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ComplaintReferral } from "./entities/complaint_referral.entity";
 import { Complaint } from "./../complaint/entities/complaint.entity";
@@ -17,6 +17,7 @@ export class ComplaintReferralService {
   constructor(
     @Inject(REQUEST)
     private readonly request: Request,
+    @Inject(forwardRef(() => PersonComplaintXrefService))
     private readonly _personService: PersonComplaintXrefService,
   ) {}
 
