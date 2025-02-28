@@ -1,14 +1,5 @@
 import { map } from "lodash";
-import {
-  forwardRef,
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-  Scope,
-} from "@nestjs/common";
+import { HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException, Scope } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
@@ -125,7 +116,7 @@ export class ComplaintService {
     @InjectMapper() mapper,
     private readonly _codeTableService: CodeTableService,
     private readonly _compliantUpdatesService: ComplaintUpdatesService,
-    // BLACK MAGIC There is a circular dependency on PersonComplaintXrefService, so we should use forwardRef BUT this breaks the repository injection on the
+    // BLACK MAGIC: There is a circular dependency on PersonComplaintXrefService, so we should use forwardRef BUT this breaks the repository injection on the
     // complaint service for unknown reasons. Injecting REQUEST instead of using forwardRef was suggested on a random stack overflow page, and it does resovle the
     // issue for our tests but also for unknown reasons.
     @Inject(REQUEST)
