@@ -1166,11 +1166,6 @@ export class ComplaintService {
         });
       }
 
-      //-- return Waste and Pestivide complaints for CEEB users
-      if (agencies.includes("EPO") && complaintType === "ERS") {
-        builder.andWhere("agency_code.agency_code = :agency", { agency: "EPO" });
-      }
-
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (agencies.includes("EPO") && filters.actionTaken) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
@@ -1270,6 +1265,7 @@ export class ComplaintService {
     token?: string,
   ): Promise<MapSearchResults> => {
     try {
+      console.log(agencies);
       let results: MapSearchResults = {};
       // Get unmappable complaints if requested
       if (model.unmapped) {
