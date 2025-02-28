@@ -125,7 +125,10 @@ export class ComplaintService {
     @InjectMapper() mapper,
     private readonly _codeTableService: CodeTableService,
     private readonly _compliantUpdatesService: ComplaintUpdatesService,
-    @Inject(forwardRef(() => PersonComplaintXrefService))
+    // BLACK MAGIC There is a circular dependency on PersonComplaintXrefService, so we should use forwardRef BUT this breaks the repository injection on the
+    // complaint service for unknown reasons. Injecting REQUEST instead of using forwardRef was suggested on a random stack overflow page, and it does resovle the
+    // issue for our tests but also for unknown reasons.
+    @Inject(REQUEST)
     private readonly _personService: PersonComplaintXrefService,
     private readonly _attractantService: AttractantHwcrXrefService,
     private readonly _compMthdRecvCdAgcyCdXrefService: CompMthdRecvCdAgcyCdXrefService,
