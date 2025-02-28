@@ -9,7 +9,7 @@ import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { AgencyBanner } from "@components/containers/layout/agency-banner";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { selectCodeTable } from "@store/reducers/code-table";
-import { selectComplaint } from "@store/reducers/complaints";
+import { getRelatedData, selectComplaint } from "@store/reducers/complaints";
 import { COMPLAINT_TYPE_AGENCY_MAPPING } from "@apptypes/app/complaint-types";
 import Option from "@apptypes/app/option";
 import { getComplaintById, createComplaintReferral } from "@/app/store/reducers/complaints";
@@ -105,6 +105,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
         ),
       );
       await dispatch(getComplaintById(id, complaint_type));
+      await dispatch(getRelatedData(id));
       submit();
     }
   };

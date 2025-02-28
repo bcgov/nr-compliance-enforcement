@@ -5,8 +5,9 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { ComplaintUpdate } from "./entities/complaint_updates.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
+import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 
-describe("ConfigurationController", () => {
+describe("ComplaintUpdatesController", () => {
   let controller: ComplaintUpdatesController;
 
   beforeEach(async () => {
@@ -24,6 +25,10 @@ describe("ConfigurationController", () => {
         },
         {
           provide: getRepositoryToken(ActionTaken),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(ComplaintReferral),
           useValue: {},
         },
       ],

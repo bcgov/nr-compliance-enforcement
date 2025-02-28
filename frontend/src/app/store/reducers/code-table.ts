@@ -44,7 +44,7 @@ import {
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
-import { IPMAuthCategoryType } from "@/app/types/app/code-tables/ipm-auth-category";
+import { IPMAuthCategoryType } from "@apptypes/app/code-tables/ipm-auth-category";
 
 const initialState: CodeTableState = {
   agency: [],

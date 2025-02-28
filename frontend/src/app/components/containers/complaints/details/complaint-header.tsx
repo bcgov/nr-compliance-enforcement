@@ -13,6 +13,7 @@ import { exportComplaint } from "@store/reducers/documents-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { setIsInEdit } from "@store/reducers/cases";
 import useValidateComplaint from "@hooks/validate-complaint";
+import { getUserAgency } from "@/app/service/user-service";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -47,6 +48,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   } = useAppSelector(selectComplaintHeader(complaintType));
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   const isReadOnly = useAppSelector(selectComplaintViewMode);
+  const userAgency = getUserAgency();
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
@@ -319,6 +321,14 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           </div>
         </div>
       </div>
+
+      {complaintAgency !== userAgency && (
+        <div className="comp-referral-banner">
+          <div className="referral-content">
+            This complaint has been referred to another agency. To request access, contact the lead agency.
+          </div>
+        </div>
+      )}
 
       {/* <!-- complaint status details start --> */}
       {readOnly && (

@@ -16,12 +16,6 @@ export class ComplaintReferralController {
   constructor(private readonly complaintReferralService: ComplaintReferralService) {}
   private readonly logger = new Logger(ComplaintReferralController.name);
 
-  @Get("/:complaintId")
-  @Roles(coreRoles)
-  async findByComplaintId(@Param("complaintId") id: string) {
-    return await this.complaintReferralService.findByComplaintId(id);
-  }
-
   @Post()
   @Roles(coreRoles)
   create(@Body() createComplaintReferralDto: CreateComplaintReferralDto) {

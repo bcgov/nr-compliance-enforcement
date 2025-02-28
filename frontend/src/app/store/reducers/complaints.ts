@@ -64,6 +64,7 @@ const initialState: ComplaintState = {
 
   webeocUpdates: [],
   actions: [],
+  referrals: [],
 
   webeocChangeCount: 0,
   linkedComplaints: [],
@@ -235,9 +236,9 @@ export const complaintSlice = createSlice({
     },
     setRelatedData: (state, action) => {
       const {
-        payload: { updates: webeocUpdates, actions },
+        payload: { updates: webeocUpdates, actions, referrals },
       } = action;
-      return { ...state, webeocUpdates, actions };
+      return { ...state, webeocUpdates, actions, referrals };
     },
     setActions: (state, action: PayloadAction<ActionTaken[]>) => {
       state.actions = action.payload;
@@ -1141,9 +1142,9 @@ export const selectWebEOCComplaintUpdates = (state: RootState): WebEOCComplaintU
 };
 export const selectRelatedData = (state: RootState): RelatedData | null => {
   const {
-    complaints: { webeocUpdates, actions },
+    complaints: { webeocUpdates, actions, referrals },
   } = state;
-  return { updates: webeocUpdates, actions };
+  return { updates: webeocUpdates, actions, referrals };
 };
 export const selectActions = (state: RootState): ActionTaken[] | null => {
   const {
