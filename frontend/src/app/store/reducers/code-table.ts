@@ -767,17 +767,15 @@ export const selectTeamDropdown = createSelector(
     })),
 );
 
-export const selectReportedByDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { "reported-by": reportedBy },
-  } = state;
-
-  const data = reportedBy.map(({ reportedBy, longDescription, isActive }) => {
-    const item: Option = { label: longDescription, value: reportedBy, isActive };
-    return item;
-  });
-  return data;
-};
+export const selectReportedByDropdown = createSelector(
+  (state: RootState) => state.codeTables["reported-by"],
+  (reportedBy) =>
+    reportedBy.map(({ reportedBy, longDescription, isActive }) => ({
+      label: longDescription,
+      value: reportedBy,
+      isActive,
+    })),
+);
 
 // This returns the complaint status codes, without the pending status.
 export const selectComplaintStatusCodeDropdown = (state: RootState): Array<Option> => {
@@ -878,104 +876,74 @@ const yesNoOptions: Option[] = [
 export const selectYesNoCodeDropdown = (): Array<Option> => {
   return yesNoOptions;
 };
+export const selectPreventionTypeCodeDropdown = createSelector(
+  (state: RootState) => state.codeTables["prevention-type"],
+  (preventionType) =>
+    preventionType.map(({ preventionType, longDescription, isActive }) => ({
+      label: longDescription,
+      value: preventionType,
+      isActive,
+    })),
+);
 
-export const selectPreventionTypeCodeDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { "prevention-type": preventionType },
-  } = state;
-  const data = preventionType.map(({ preventionType, longDescription, isActive }) => {
-    const item: Option = { label: longDescription, value: preventionType, isActive };
-    return item;
-  });
-  return data;
-};
+export const selectHwcrNatureOfComplaintCodeDropdown = createSelector(
+  (state: RootState) => state.codeTables["nature-of-complaint"],
+  (natureOfComplaints) =>
+    natureOfComplaints.map(({ natureOfComplaint, longDescription, isActive }) => ({
+      label: longDescription,
+      value: natureOfComplaint,
+      isActive,
+    })),
+);
 
-export const selectHwcrNatureOfComplaintCodeDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { "nature-of-complaint": natureOfComplaints },
-  } = state;
+export const selectAreaCodeDropdown = createSelector(
+  (state: RootState) => state.codeTables["area-codes"],
+  (areaCodes) =>
+    areaCodes.map(({ area, areaName }) => ({
+      value: area,
+      label: areaName,
+    })),
+);
 
-  const data = natureOfComplaints.map(({ natureOfComplaint, longDescription, isActive }) => {
-    const item: Option = { label: longDescription, value: natureOfComplaint, isActive };
-    return item;
-  });
-  return data;
-};
+export const selectAttractantCodeDropdown = createSelector(
+  (state: RootState) => state.codeTables.attractant,
+  (attractant) =>
+    attractant.map(({ attractant, shortDescription, isActive }) => ({
+      label: shortDescription,
+      value: attractant,
+      isActive,
+    })),
+);
 
-export const selectAreaCodeDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { "area-codes": areaCodes },
-  } = state;
-
-  const data = areaCodes.map(({ area, areaName }) => {
-    const option: Option = { value: area, label: areaName };
-    return option;
-  });
-
-  return data;
-};
-
-export const selectAttractantCodeDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { attractant },
-  } = state;
-
-  const data = attractant.map(({ attractant, shortDescription, isActive }) => {
-    const item: Option = { label: shortDescription, value: attractant, isActive };
-    return item;
-  });
-
-  return data;
-};
-
-export const selectZoneCodeDropdown = (state: RootState): Array<DropdownOption> => {
-  const {
-    codeTables: { zones },
-  } = state;
-
-  const data = zones.map(({ code, name }) => {
-    const item: DropdownOption = {
+export const selectZoneCodeDropdown = createSelector(
+  (state: RootState) => state.codeTables.zones,
+  (zones) =>
+    zones.map(({ code, name }) => ({
       label: name,
       value: code,
       description: name,
-    };
-    return item;
-  });
-  return data;
-};
+    })),
+);
 
-export const selectRegionCodeDropdown = (state: RootState): Array<DropdownOption> => {
-  const {
-    codeTables: { regions },
-  } = state;
-
-  const data = regions.map(({ code, name }) => {
-    const item: DropdownOption = {
+export const selectRegionCodeDropdown = createSelector(
+  (state: RootState) => state.codeTables.regions,
+  (regions) =>
+    regions.map(({ code, name }) => ({
       label: name,
       value: code,
       description: name,
-    };
-    return item;
-  });
-  return data;
-};
+    })),
+);
 
-export const selectCommunityCodeDropdown = (state: RootState): Array<DropdownOption> => {
-  const {
-    codeTables: { communities },
-  } = state;
-
-  const data = communities.map(({ code, name }) => {
-    const item: DropdownOption = {
+export const selectCommunityCodeDropdown = createSelector(
+  (state: RootState) => state.codeTables.communities,
+  (communities) =>
+    communities.map(({ code, name }) => ({
       label: name,
       value: code,
       description: name,
-    };
-    return item;
-  });
-
-  return data;
-};
+    })),
+);
 
 export const selectCascadedFilter =
   (type: string, value?: string) =>
@@ -1463,12 +1431,10 @@ export const selectHasQuantityEquipment = (state: RootState): Array<string> => {
   return data;
 };
 
-export const selectPrivacyDropdown = (): Array<Option> => {
-  const data: Option[] = [
-    { value: "Y", label: "Yes" },
-    { value: "N", label: "No" },
-  ];
-  return data;
-};
+const privacyDropdownOptions: Option[] = [
+  { value: "Y", label: "Yes" },
+  { value: "N", label: "No" },
+];
+export const selectPrivacyDropdown = (): Array<Option> => privacyDropdownOptions;
 
 export default codeTableSlice.reducer;

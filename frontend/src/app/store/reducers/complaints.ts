@@ -1080,21 +1080,17 @@ export const selectComplaintCallerInformation = createSelector(
   },
 );
 
-export const selectComplaintSuspectWitnessDetails = (state: RootState): ComplaintSuspectWitness => {
-  const {
-    complaints: { complaint },
-  } = state;
-
-  let results = {} as ComplaintSuspectWitness;
-
-  if (complaint) {
-    const { violationDetails: details } = complaint as AllegationComplaintDto;
-
-    results = { ...results, details };
-  }
-
-  return results;
-};
+export const selectComplaintSuspectWitnessDetails = createSelector(
+  (state: RootState) => state.complaints.complaint,
+  (complaint): ComplaintSuspectWitness => {
+    let results = {} as ComplaintSuspectWitness;
+    if (complaint) {
+      const { violationDetails: details } = complaint as AllegationComplaintDto;
+      results = { ...results, details };
+    }
+    return results;
+  },
+);
 
 export const selectComplaintAssignedBy = createSelector([selectComplaint], (complaint): string | null => {
   if (complaint?.delegates) {
@@ -1133,39 +1129,31 @@ export const assignedOfficerAuthId = (state: RootState): string | null => {
   if (result?.auth_user_guid) return result.auth_user_guid;
   return null;
 };
+export const selectWebEOCComplaintUpdates = createSelector(
+  (state: RootState) => state.complaints.webeocUpdates,
+  (webeocUpdates) => webeocUpdates,
+);
 
-export const selectWebEOCComplaintUpdates = (state: RootState): WebEOCComplaintUpdateDTO[] | null => {
-  const {
-    complaints: { webeocUpdates },
-  } = state;
-  return webeocUpdates;
-};
-export const selectRelatedData = (state: RootState): RelatedData | null => {
-  const {
-    complaints: { webeocUpdates, actions, referrals },
-  } = state;
-  return { updates: webeocUpdates, actions, referrals };
-};
-export const selectActions = (state: RootState): ActionTaken[] | null => {
-  const {
-    complaints: { actions },
-  } = state;
-  return actions;
-};
-export const selectWebEOCChangeCount = (state: RootState): number | null => {
-  const {
-    complaints: { webeocChangeCount },
-  } = state;
-  return webeocChangeCount;
-};
+export const selectRelatedData = createSelector(
+  (state: RootState) => state.complaints.webeocUpdates,
+  (state: RootState) => state.complaints.actions,
+  (state: RootState) => state.complaints.referrals,
+  (updates, actions, referrals) => ({ updates, actions, referrals }),
+);
 
-export const selectComplaintViewMode = (state: RootState): boolean | undefined => {
-  const {
-    complaints: {
-      complaintView: { isReadOnly },
-    },
-  } = state;
-  return isReadOnly;
-};
+export const selectActions = createSelector(
+  (state: RootState) => state.complaints.actions,
+  (actions) => actions,
+);
+
+export const selectWebEOCChangeCount = createSelector(
+  (state: RootState) => state.complaints.webeocChangeCount,
+  (webeocChangeCount) => webeocChangeCount,
+);
+
+export const selectComplaintViewMode = createSelector(
+  (state: RootState) => state.complaints.complaintView.isReadOnly,
+  (isReadOnly) => isReadOnly,
+);
 
 export default complaintSlice.reducer;
