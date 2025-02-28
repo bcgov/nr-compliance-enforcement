@@ -1,5 +1,14 @@
 import { map } from "lodash";
-import { HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException, Scope } from "@nestjs/common";
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+  Scope,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
@@ -116,6 +125,7 @@ export class ComplaintService {
     @InjectMapper() mapper,
     private readonly _codeTableService: CodeTableService,
     private readonly _compliantUpdatesService: ComplaintUpdatesService,
+    @Inject(forwardRef(() => PersonComplaintXrefService))
     private readonly _personService: PersonComplaintXrefService,
     private readonly _attractantService: AttractantHwcrXrefService,
     private readonly _compMthdRecvCdAgcyCdXrefService: CompMthdRecvCdAgcyCdXrefService,
