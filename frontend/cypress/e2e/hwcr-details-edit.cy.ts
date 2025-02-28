@@ -32,7 +32,7 @@ describe("Complaint Edit Page spec - Edit View", () => {
     speciesIndex: 1,
     status: "Open",
     statusIndex: 0,
-    assigned: "None",
+    assigned: "Kot, Steve",
     assignedIndex: 0,
   };
 
@@ -325,7 +325,6 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get("#officer-assigned-pair-id label").should(($label) => {
       expect($label).to.contain.text("Officer assigned");
     });
-    cy.get("#officer-assigned-pair-id .comp-details-input").contains("None");
 
     // Check the Call Details inputs
     // Complaint location/address

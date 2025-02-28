@@ -20,24 +20,34 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
 
   const { id, ear, identifier, order, update, remove } = props;
 
-  const [error, setError] = useState("");
+  const [sideError, setSideError] = useState("");
+  const [identifierError, setIdentifierError] = useState("");
 
   const leftEar = ears.find((ear) => ear.value === "L");
   const rightEar = ears.find((ear) => ear.value === "R");
 
-  let selectedEar = ear === "L" ? leftEar : rightEar;
-
+  let selectedEar = null;
+  if (ear === "L") {
+    selectedEar = leftEar;
+  } else if (ear === "R") {
+    selectedEar = rightEar;
+  }
   const updateModel = (property: string, value: string | undefined) => {
     const source = { id, ear, identifier, order };
     const updatedTag = { ...source, [property]: value };
     update(updatedTag, property);
+    if (property === "identifier") {
+      const identifierErrorText = value ? "" : REQUIRED;
+      setIdentifierError(identifierErrorText);
+    }
+    if (property === "ear") {
+      const sideErrorText = value ? "" : REQUIRED;
+      setSideError(sideErrorText);
+    }
   };
 
   const isValid = (): boolean => {
-    let error = !identifier ? REQUIRED : "";
-    setError(error);
-
-    return identifier !== "";
+    return identifierError === "" && sideError === "";
   };
   useImperativeHandle(ref, () => {
     return {
@@ -58,7 +68,7 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
           type="input"
           inputClass="comp-form-control comp-ear-tag-id-input"
           value={identifier}
-          error={error}
+          error={identifierError}
           maxLength={7}
           onChange={(evt: any) => {
             const {
@@ -81,12 +91,14 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
           classNamePrefix="comp-select"
           className="comp-details-input comp-ear-tag-side-input"
           options={ears}
-          enableValidation={false}
-          placeholder={"Ear side"}
+          enableValidation={true}
+          placeholder={"Select"}
           onChange={(evt) => {
             updateModel("ear", evt?.value);
           }}
           value={selectedEar}
+          isClearable={true}
+          errorMessage={sideError}
         />
       </div>
 

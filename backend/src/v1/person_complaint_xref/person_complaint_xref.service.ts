@@ -223,4 +223,29 @@ export class PersonComplaintXrefService {
   remove(id: string) {
     return `This action removes a #${id} personComplaintXref`;
   }
+
+  async unAssignOfficer(complaintIdentifier: string) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let unassignedPersonComplaintXref: PersonComplaintXref;
+
+    try {
+      unassignedPersonComplaintXref = await this.findByComplaint(complaintIdentifier);
+      if (unassignedPersonComplaintXref) {
+        unassignedPersonComplaintXref.active_ind = false;
+        await queryRunner.manager.save(unassignedPersonComplaintXref);
+      }
+      const returnValue = await this._complaintService.updateComplaintLastUpdatedDate(complaintIdentifier);
+      if (!returnValue) {
+        throw new BadRequestException(`Unable to remove assignment person to complaint ${complaintIdentifier}`);
+      }
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      this.logger.error(err);
+      throw new BadRequestException(err);
+    } finally {
+      await queryRunner.release();
+    }
+  }
 }
