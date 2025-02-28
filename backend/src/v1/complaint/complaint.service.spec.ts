@@ -87,6 +87,7 @@ import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.s
 import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
 import { CacheModule } from "@nestjs/cache-manager";
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
+import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 
 describe("Testing: Complaint Service", () => {
   let service: ComplaintService;
@@ -253,6 +254,10 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
           useFactory: MockCompMthdRecvCdAgcyCdXrefRepository,
+        },
+        {
+          provide: getRepositoryToken(ComplaintReferral),
+          useValue: {},
         },
       ],
     }).compile();
@@ -552,6 +557,10 @@ describe("Testing: Complaint Service", () => {
           useValue: {
             user: { idir_username: "TEST" },
           },
+        },
+        {
+          provide: getRepositoryToken(ComplaintReferral),
+          useValue: {},
         },
       ],
     }).compile();

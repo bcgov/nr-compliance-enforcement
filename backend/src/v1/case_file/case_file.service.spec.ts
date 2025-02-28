@@ -77,6 +77,7 @@ import { Team } from "../team/entities/team.entity";
 import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
 import { CacheModule } from "@nestjs/cache-manager";
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
+import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 
 describe("Testing: Case File Service", () => {
   let service: CaseFileService;
@@ -236,6 +237,10 @@ describe("Testing: Case File Service", () => {
         CompMthdRecvCdAgcyCdXrefService,
         TeamService,
         OfficerTeamXrefService,
+        {
+          provide: getRepositoryToken(ComplaintReferral),
+          useValue: {},
+        },
         {
           provide: REQUEST,
           useValue: {
