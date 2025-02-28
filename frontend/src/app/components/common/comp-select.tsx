@@ -59,27 +59,6 @@ export const CompSelect: FC<Props> = ({
       ...provided,
       color: state.label === "None" || state.label === "Unassigned" ? "#a1a1a1" : "black",
     }),
-    //custom style for clear btn to match with DatePicker's clear btn
-    clearIndicator: (defaultStyles: any) => {
-      return {
-        ...defaultStyles,
-        background: "#216ba5",
-        borderRadius: "50%",
-        color: "#fff",
-        cursor: "pointer",
-        maxHeight: "20px",
-        maxWidth: "20px",
-        padding: "2px",
-        marginRight: "6px",
-        svg: {
-          width: "12px",
-          height: "12px",
-        },
-        "&:hover": {
-          color: "#fff",
-        },
-      };
-    },
   };
 
   //-- pass through the onChange event
