@@ -711,29 +711,24 @@ export const selectCodeTable =
     return selected;
   };
 
-export const selectComplaintTypeDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { "complaint-type": complaintTypes },
-  } = state;
+export const selectComplaintTypeDropdown = createSelector(
+  (state: RootState) => state.codeTables["complaint-type"],
+  (complaintTypes) =>
+    complaintTypes.map(({ complaintType, longDescription, isActive }) => ({
+      label: longDescription,
+      value: complaintType,
+      isActive,
+    })),
+);
 
-  const data = complaintTypes.map(({ complaintType, longDescription, isActive }) => {
-    const item: Option = { label: longDescription, value: complaintType, isActive };
-    return item;
-  });
-  return data;
-};
-
-export const selectCreatableComplaintTypeDropdown = (state: RootState): Array<Option> => {
-  const {
-    codeTables: { "complaint-type": complaintTypes },
-  } = state;
-
-  const data = complaintTypes.map(({ complaintType, longDescription }) => {
-    const item: Option = { label: longDescription, value: complaintType };
-    return item;
-  });
-  return data;
-};
+export const selectCreatableComplaintTypeDropdown = createSelector(
+  (state: RootState) => state.codeTables["complaint-type"],
+  (complaintTypes) =>
+    complaintTypes.map(({ complaintType, longDescription }) => ({
+      label: longDescription,
+      value: complaintType,
+    })),
+);
 
 export const selectAgencyDropdown = createSelector(
   (state: RootState) => state.codeTables.agency,

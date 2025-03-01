@@ -63,10 +63,8 @@ export const CompSelect: FC<Props> = ({
 
   //-- pass through the onChange event
   const handleChange = (s: any) => {
-    // find the original item from the options array based on the value
-    const selectedOption = options?.find((o) => o.value === s.value);
     if (onChange) {
-      onChange(selectedOption || null);
+      onChange(s);
     }
   };
 
@@ -80,7 +78,7 @@ export const CompSelect: FC<Props> = ({
         placeholder={placeholder}
         options={items}
         // if labelElement is present, use it instead of the string label (used for displaying a custom element)
-        value={{ label: value?.labelElement || value?.label, value: value?.value }}
+        value={value?.labelElement ? { label: value?.labelElement || value?.label, value: value?.value } : value}
         onChange={handleChange}
         classNamePrefix={classNamePrefix}
         defaultValue={defaultOption}
