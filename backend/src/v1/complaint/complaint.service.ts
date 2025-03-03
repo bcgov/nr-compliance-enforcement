@@ -1265,7 +1265,6 @@ export class ComplaintService {
     token?: string,
   ): Promise<MapSearchResults> => {
     try {
-      console.log(agencies);
       let results: MapSearchResults = {};
       // Get unmappable complaints if requested
       if (model.unmapped) {
