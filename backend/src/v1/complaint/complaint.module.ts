@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { ComplaintController } from "./complaint.controller";
 import { ComplaintService } from "./complaint.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -61,7 +61,7 @@ import { OfficerModule } from "../officer/officer.module";
     TypeOrmModule.forFeature([ComplaintMethodReceivedCode]),
     TypeOrmModule.forFeature([CompMthdRecvCdAgcyCdXref]),
     CodeTableModule,
-    PersonComplaintXrefModule,
+    forwardRef(() => PersonComplaintXrefModule),
     AttractantHwcrXrefModule,
     AutomapperModule,
     ComplaintUpdatesModule,

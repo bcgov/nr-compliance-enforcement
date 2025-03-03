@@ -57,7 +57,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   }, [storedComplaintViewType, dispatch]);
   const [viewType, setViewType] = useState<"map" | "list">(storedComplaintViewType ?? "list");
 
-  const currentOfficer = useAppSelector(selectCurrentOfficer(), shallowEqual);
+  const currentOfficer = useAppSelector(selectCurrentOfficer);
 
   const defaultZone = useAppSelector(selectDefaultZone);
   const defaultRegion = useAppSelector(selectDefaultRegion);
@@ -185,7 +185,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
   const defaultZone = useAppSelector(selectDefaultZone, shallowEqual);
   const defaultRegion = useAppSelector(selectDefaultRegion);
-  const currentOfficer = useAppSelector(selectCurrentOfficer(), shallowEqual);
+  const currentOfficer = useAppSelector(selectCurrentOfficer);
   const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
   // If the search is fresh, there are only 2 default parameters set. If more than 2 exist,
   // this is not a fresh search as the search funtion itself sets more filters, even if blank.

@@ -34,6 +34,7 @@ export class Complaint {
     description: "The organization code of the organization that currently owns the complaint",
   })
   @ManyToOne(() => AgencyCode)
+  @ApiProperty({ type: () => AgencyCode })
   @JoinColumn({ name: "owned_by_agency_code" })
   owned_by_agency_code: AgencyCode;
 

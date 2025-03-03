@@ -4,6 +4,7 @@ import { ComplaintUpdatesService } from "./complaint_updates.service";
 import { ComplaintUpdate } from "./entities/complaint_updates.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
+import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 
 describe("ConfigurationService", () => {
   let service: ComplaintUpdatesService;
@@ -22,6 +23,10 @@ describe("ConfigurationService", () => {
         },
         {
           provide: getRepositoryToken(ActionTaken),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(ComplaintReferral),
           useValue: {},
         },
       ],

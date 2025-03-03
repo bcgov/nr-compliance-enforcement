@@ -67,7 +67,7 @@ export const CreateComplaint: FC = () => {
   const [assignableOfficers, setAssignableOfficers] = useState<Option[]>([]);
   const speciesCodes = useAppSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
-  const complaintTypeCodes = useAppSelector(selectCreatableComplaintTypeDropdown) as Option[];
+  const complaintTypeCodes = useAppSelector(selectCreatableComplaintTypeDropdown);
   const areaCodes = useAppSelector(selectCommunityCodeDropdown);
   const attractantCodes = useAppSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useAppSelector(selectReportedByDropdown) as Option[];

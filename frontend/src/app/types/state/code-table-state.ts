@@ -36,7 +36,7 @@ import { TeamType } from "@apptypes/app/code-tables/team";
 import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint-method-received-type";
 import { ScheduleSectorXref } from "@apptypes/app/code-tables/schedule-sector-xref";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
-import { IPMAuthCategoryType } from "../app/code-tables/ipm-auth-category";
+import { IPMAuthCategoryType } from "@apptypes/app/code-tables/ipm-auth-category";
 
 export interface CodeTableState {
   [key: string]:
