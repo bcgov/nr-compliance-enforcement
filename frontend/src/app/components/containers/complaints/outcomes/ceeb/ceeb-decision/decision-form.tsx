@@ -351,7 +351,7 @@ export const DecisionForm: FC<props> = ({
                 errorMessage={ipmAuthCategoryErrorMessage}
                 placeholder="Select "
                 onChange={(evt) => {
-                  handleIPMAuthCategoryChange(evt && evt.value ? evt.value.trim() : null);
+                  handleIPMAuthCategoryChange(evt?.value ? evt.value.trim() : null);
                 }}
                 isDisabled={isReadOnly}
                 value={getDropdownOption(data.ipmAuthCategory, ipmAuthCategoryOptions)}
