@@ -202,7 +202,10 @@ describe("ComplaintReferralService", () => {
         ConfigurationService,
         CssService,
         LinkedComplaintXrefService,
-        ComplaintService,
+        {
+          provide: ComplaintService,
+          useValue: {},
+        },
         ComplaintReferralService,
         {
           provide: getRepositoryToken(ComplaintReferral),

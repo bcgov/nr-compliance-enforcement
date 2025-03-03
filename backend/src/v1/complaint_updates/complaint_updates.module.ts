@@ -5,7 +5,7 @@ import { ComplaintUpdatesController } from "./complaint_updates.controller";
 import { ComplaintUpdate } from "./entities/complaint_updates.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
-import { ComplaintReferral } from "src/v1/complaint_referral/entities/complaint_referral.entity";
+import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 
 @Module({
   imports: [

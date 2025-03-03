@@ -73,7 +73,10 @@ describe("ComplaintReferralController", () => {
         },
         CodeTableService,
         ComplaintUpdatesService,
-        PersonComplaintXrefService,
+        {
+          provide: PersonComplaintXrefService,
+          useValue: {},
+        },
         {
           provide: getRepositoryToken(ComplaintUpdate),
           useValue: {},
@@ -204,7 +207,10 @@ describe("ComplaintReferralController", () => {
         ConfigurationService,
         CssService,
         LinkedComplaintXrefService,
-        ComplaintService,
+        {
+          provide: ComplaintService,
+          useValue: {},
+        },
         ComplaintReferralService,
         {
           provide: getRepositoryToken(ComplaintReferral),
