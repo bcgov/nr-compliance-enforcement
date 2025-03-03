@@ -7,6 +7,9 @@ digraph "oneDegreeRelationshipsDiagram" {
   "complaint":"geo_organization_unit_code":w -> "geo_organization_unit_code":"geo_organization_unit_code":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint":"owned_by_agency_code":w -> "agency_code":"agency_code":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint":"reported_by_code":w -> "reported_by_code":"reported_by_code":e [arrowhead=none dir=back arrowtail=crowodot];
+  "complaint_referral":"complaint_identifier":w -> "complaint":"complaint_identifier.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "complaint_referral":"referred_by_agency_code":w -> "agency_code":"agency_code":e [arrowhead=none dir=back arrowtail=crowodot];
+  "complaint_referral":"referred_to_agency_code":w -> "agency_code":"agency_code":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint_update":"complaint_identifier":w -> "complaint":"complaint_identifier.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "gir_complaint":"complaint_identifier":w -> "complaint":"complaint_identifier.type":e [arrowhead=none dir=back arrowtail=teeodot];
   "hwcr_complaint":"complaint_identifier":w -> "complaint":"complaint_identifier.type":e [arrowhead=none dir=back arrowtail=teeodot];
@@ -19,7 +22,7 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="75" HEIGHT="16"><B>agency_code</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="agency_code" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="137" HEIGHT="16">agency_code</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">7 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">9 &gt;</TD></TR>
     </TABLE>>
     URL="agency_code.html"
     target="_top"
@@ -84,11 +87,27 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="is_privacy_requested" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="230" HEIGHT="16">is_privacy_requested</TD></TR></TABLE></TD><TD PORT="is_privacy_requested.type" ALIGN="LEFT">bpchar[1]</TD></TR>
       <TR><TD PORT="reference_number" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="230" HEIGHT="16">reference_number</TD></TR></TABLE></TD><TD PORT="reference_number.type" ALIGN="LEFT">varchar[20]</TD></TR>
       <TR><TD PORT="comp_last_upd_utc_timestamp" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="230" HEIGHT="16">comp_last_upd_utc_timestamp</TD></TR></TABLE></TD><TD PORT="comp_last_upd_utc_timestamp.type" ALIGN="LEFT">timestamp[29,6]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">7 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">8 &gt;</TD></TR>
     </TABLE>>
     URL="complaint.html"
     target="_top"
     tooltip="complaint"
+  ];
+  "complaint_referral" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="111" HEIGHT="16"><B>complaint_referral</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="complaint_referral_guid" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="149" HEIGHT="16">complaint_referral_guid</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="complaint_identifier" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="149" HEIGHT="16">complaint_identifier</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="referred_by_agency_code" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="149" HEIGHT="16">referred_by_agency_code</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="referred_to_agency_code" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="149" HEIGHT="16">referred_to_agency_code</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="officer_guid" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="149" HEIGHT="16">officer_guid</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+    </TABLE>>
+    URL="complaint_referral.html"
+    target="_top"
+    tooltip="complaint_referral"
   ];
   "complaint_status_code" [
    label=<

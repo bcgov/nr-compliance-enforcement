@@ -20,8 +20,8 @@ geo_organization_unit_code
 comp_mthd_recv_cd_agcy_cd_xref
 complaint
 office
-complaint_update
 officer
+complaint_update
 team
 hwcr_complaint
 complaint_type_code
@@ -37,6 +37,7 @@ violation_agency_xref
 geo_org_unit_structure
 person_complaint_xref
 staging_complaint
+complaint_referral
 action_taken_h
 allegation_complaint_h
 attractant_hwcr_xref_h
