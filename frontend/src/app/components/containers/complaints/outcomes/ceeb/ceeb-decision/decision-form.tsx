@@ -31,9 +31,9 @@ type props = {
   toggleEdit: Function;
   //-- properties
   id?: string;
-  schedule: string;
+  schedule?: string;
   ipmAuthCategory?: string;
-  sector: string;
+  sector?: string;
   discharge: string;
   nonCompliance?: string;
   rationale: string;
@@ -133,8 +133,8 @@ export const DecisionForm: FC<props> = ({
     updateModel("rationale", value.trim());
   };
 
-  const handleIPMAuthCategoryChange = (value: string) => {
-    updateModel("ipmAuthCategory", value.trim());
+  const handleIPMAuthCategoryChange = (value: string | null) => {
+    updateModel("ipmAuthCategory", value);
   };
 
   const handleDateChange = (date?: Date) => {
@@ -327,7 +327,7 @@ export const DecisionForm: FC<props> = ({
                 handleScheduleChange(evt?.value);
               }}
               isDisabled={isReadOnly}
-              value={getDropdownOption(data.schedule, schedulesOptions) || { value: "", label: "" }}
+              value={getDropdownOption(data.schedule, schedulesOptions)}
               isClearable={true}
             />
           </div>
@@ -351,12 +351,11 @@ export const DecisionForm: FC<props> = ({
                 errorMessage={ipmAuthCategoryErrorMessage}
                 placeholder="Select "
                 onChange={(evt) => {
-                  if (evt?.value) {
-                    handleIPMAuthCategoryChange(evt.value);
-                  }
+                  handleIPMAuthCategoryChange(evt && evt.value ? evt.value.trim() : null);
                 }}
                 isDisabled={isReadOnly}
                 value={getDropdownOption(data.ipmAuthCategory, ipmAuthCategoryOptions)}
+                isClearable={true}
               />
             </div>
           </div>
@@ -382,7 +381,7 @@ export const DecisionForm: FC<props> = ({
                 updateModel("sector", evt?.value);
               }}
               isDisabled={isReadOnly}
-              value={getDropdownOption(data.sector, sectorsOptions) || { value: "", label: "" }}
+              value={getDropdownOption(data.sector, sectorsOptions)}
               isClearable={true}
             />
           </div>
@@ -463,6 +462,7 @@ export const DecisionForm: FC<props> = ({
                   updateModel("leadAgency", evt?.value);
                 }}
                 value={getDropdownOption(data.leadAgency, leadAgencyOptions)}
+                isClearable={true}
               />
             </div>
           </div>

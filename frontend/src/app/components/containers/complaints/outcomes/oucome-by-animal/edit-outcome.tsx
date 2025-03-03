@@ -588,6 +588,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   }}
                   defaultOption={getDropdownOption(data.officer, officers)}
                   errorMessage={officerError}
+                  isClearable={true}
                 />
               </div>
               <div
