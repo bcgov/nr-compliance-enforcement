@@ -121,7 +121,7 @@ export class ComplaintService {
     private readonly _compMthdRecvCdAgcyCdXrefService: CompMthdRecvCdAgcyCdXrefService,
     private readonly _officerService: OfficerService,
     private readonly _linkedComplaintsXrefService: LinkedComplaintXrefService,
-    private dataSource: DataSource,
+    private readonly dataSource: DataSource,
   ) {
     this.mapper = mapper;
 

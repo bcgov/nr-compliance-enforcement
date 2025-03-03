@@ -37,7 +37,7 @@ export const CompSelect: FC<Props> = ({
 }) => {
   let styles: StylesConfig = {};
 
-  let items: Option[] = [];
+  let items: any[] = [];
 
   if (options) {
     // If the options do not have the field isActive, then show all options
@@ -49,6 +49,7 @@ export const CompSelect: FC<Props> = ({
     if (value && !items.find((o) => o.value === value.value)) {
       items.push(value);
     }
+    items = items.map((o) => ({ label: o.labelElement || o.label, value: o.value }));
   }
 
   // If "none" is an option, lighten the colour a bit so that it doesn't appear the same as the other selectable options
@@ -76,7 +77,8 @@ export const CompSelect: FC<Props> = ({
         styles={styles}
         placeholder={placeholder}
         options={items}
-        value={value}
+        // if labelElement is present, use it instead of the string label (used for displaying a custom element)
+        value={value?.labelElement ? { label: value?.labelElement || value?.label, value: value?.value } : value}
         onChange={handleChange}
         classNamePrefix={classNamePrefix}
         defaultValue={defaultOption}

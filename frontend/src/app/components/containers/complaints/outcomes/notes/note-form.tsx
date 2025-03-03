@@ -110,7 +110,7 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
               id="officer-supporting-notes-pair-id"
               htmlFor="officer-supporting-notes-select-id"
             >
-              Created by
+              {mode === "create" ? "Created by" : "Updated by"}
             </label>
             <div className="comp-details-input full-width">
               <CompSelect

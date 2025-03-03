@@ -16,7 +16,7 @@ type props = {
 
 export const Note: FC<props> = ({ id = "", complaintType = "", note }) => {
   const dispatch = useAppDispatch();
-  const officer = useAppSelector(selectCurrentOfficer());
+  const officer = useAppSelector(selectCurrentOfficer);
 
   const [showInput, setShowInput] = useState(!note);
 

@@ -17,6 +17,7 @@ export class Officer {
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
     description: "The person for this officer",
+    type: () => Person,
   })
   @OneToOne(() => Person)
   @JoinColumn({ name: "person_guid" })
