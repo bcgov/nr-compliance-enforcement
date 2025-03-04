@@ -14,8 +14,8 @@ import { CASE_ACTION_CODE } from "@constants/case_actions";
 
 type props = {
   id?: string;
-  schedule: string;
-  sector: string;
+  schedule?: string;
+  sector?: string;
   discharge: string;
   nonCompliance?: string;
   ipmAuthCategory?: string;

@@ -560,6 +560,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                     }}
                     value={getDropdownOption(data.officer, officers)}
                     errorMessage={officerError}
+                    isClearable={true}
                   />
                 </div>
               </div>
