@@ -47,6 +47,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     girType,
   } = useAppSelector(selectComplaintHeader(complaintType));
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+  const showComplaintReferrals = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_REFERRALS));
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const userAgency = getUserAgency();
 
@@ -216,13 +217,15 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                         <i className="bi bi-arrow-repeat"></i>
                         <span>Update Status</span>
                       </Dropdown.Item>
-                      <Dropdown.Item
-                        as="button"
-                        onClick={openReferModal}
-                      >
-                        <i className="bi bi-send"></i>
-                        <span>Refer</span>
-                      </Dropdown.Item>
+                      {showComplaintReferrals && (
+                        <Dropdown.Item
+                          as="button"
+                          onClick={openReferModal}
+                        >
+                          <i className="bi bi-send"></i>
+                          <span>Refer</span>
+                        </Dropdown.Item>
+                      )}
                       <Dropdown.Item
                         as="button"
                         onClick={() => exportComplaintToPdf()}
@@ -265,15 +268,17 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     <i className="bi bi-arrow-repeat"></i>
                     <span>Update status</span>
                   </Button>
-                  <Button
-                    id="details-screen-refer-button"
-                    title="Refer"
-                    variant="outline-light"
-                    onClick={openReferModal}
-                  >
-                    <i className="bi bi-send"></i>
-                    <span>Refer</span>
-                  </Button>
+                  {showComplaintReferrals && (
+                    <Button
+                      id="details-screen-refer-button"
+                      title="Refer"
+                      variant="outline-light"
+                      onClick={openReferModal}
+                    >
+                      <i className="bi bi-send"></i>
+                      <span>Refer</span>
+                    </Button>
+                  )}
                   <Button
                     id="details-screen-export-complaint-button"
                     title="Export"
