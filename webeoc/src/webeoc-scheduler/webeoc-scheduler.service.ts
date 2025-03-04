@@ -20,6 +20,7 @@ export class WebEocScheduler {
   private cookie: string;
   private cronJob: CronJob;
   private readonly logger = new Logger(WebEocScheduler.name);
+  private readonly retentionDays = 7;
 
   constructor(
     private readonly complaintsPublisherService: ComplaintsPublisherService,
@@ -82,9 +83,35 @@ export class WebEocScheduler {
 
     try {
       await fs.promises.appendFile(filePath, message + "\n", "utf8");
+      // await this.cleanupOldLogs(filePathEnv);
     } catch (err) {
       this.logger.error(`Error writing to file ${filePath}: ${err.message}`);
       throw new Error("Failed to write data to file");
+    }
+  }
+
+  private async cleanupOldLogs(logDir: string): Promise<void> {
+    try {
+      const files = await fs.promises.readdir(logDir);
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - this.retentionDays);
+
+      for (const file of files) {
+        if (file.endsWith(".log")) {
+          const filePath = path.join(logDir, file);
+          const datePart = file.match(/(\d{4}-\d{2}-\d{2})\.log$/);
+          if (datePart) {
+            const fileDate = new Date(datePart[1]);
+            if (fileDate < cutoffDate) {
+              // Compare with cutoffDate
+              await fs.promises.unlink(filePath);
+              this.logger.debug(`Deleted old log file: ${filePath}`);
+            }
+          }
+        }
+      }
+    } catch (err) {
+      this.logger.error(`Error during log cleanup in ${logDir}: ${err.message}`);
     }
   }
 
@@ -239,11 +266,13 @@ export class WebEocScheduler {
   private _filterComplaints(complaints: any[], flagName: string) {
     return complaints.filter((complaint: any) => {
       if (flagName === WEBEOC_FLAGS.COMPLAINTS) {
-        return ((
+        return (
           complaint.flag_COS === "Yes" ||
           complaint.violation_type === "Waste" ||
-          complaint.violation_type === "Pesticide"
-        ) || (complaint.flag_COS !== "Yes" && Date.parse(`${complaint.created_by_datetime} PST`) > Date.parse(process.env.WEBEOC_DATE_FILTER))); // 2025-01-01T08:00:00Z is midnight PST
+          complaint.violation_type === "Pesticide" ||
+          (complaint.flag_COS !== "Yes" &&
+            Date.parse(`${complaint.created_by_datetime} PST`) > Date.parse(process.env.WEBEOC_DATE_FILTER))
+        ); // 2025-01-01T08:00:00Z is midnight PST
       } else {
         return true;
       }
