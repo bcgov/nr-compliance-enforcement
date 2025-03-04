@@ -367,7 +367,8 @@ main() {
         exit 1
     fi
     deployment_list=$(echo -e "$workload_list" | grep "deployment")
-    pod_list=$(echo -e "$workload_list" | grep "pod")
+    # Do not select pods with a status of Succeeded, Failed or Unknown; only select Running and Pending pods.
+    pod_list=$(oc get pods --field-selector=status.phase!=Succeeded,status.phase=!=Failed,status.phase=!=Unknown -n $OC_NAMESPACE -l $label_selector -oname)
     start_time=$(date +%s)
     echo_yellow "Polling deployments:"
     echo "---"
