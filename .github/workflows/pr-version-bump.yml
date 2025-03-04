@@ -17,41 +17,25 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Fetch all tags
-        run: git fetch --tags --force
-
-      - name: Fetch tags from main
-        id: get_latest_tag
-        run: |
-          git fetch origin main --tags --force
-          latest_tag=$(git tag --list --sort=-v:refname --merged | head -n 1)
-          echo "::set-output name=latest_tag::$latest_tag"
-          echo "Latest tag: $latest_tag"
-
-      - name: Increment Patch Version
-        id: increment_version
-        run: |
-          latest_tag=${{ steps.get_latest_tag.outputs.latest_tag }}
-          version_array=(${latest_tag//./ })
-          patch_version=${version_array[2]}
-          new_patch_version=$((patch_version + 1))
-          new_version="${version_array[0]}.${version_array[1]}.${new_patch_version}"
-          echo "::set-output name=new_version::$new_version"
-          echo "New version: $new_version"
-
       - name: Update package.json versions
+        id: increment_version
+        # The old and new versions are currently being read from the frontend package.json
+        # since all three packages are being kept in sync.
         run: |
           cd frontend
-          npm version ${{ steps.increment_version.outputs.new_version }} --no-git-tag-version
-          echo "Frontend package.json version updated to ${{ steps.increment_version.outputs.new_version }}"
+          echo "::set-output name=old_version::$(npm pkg get version | tr -d '"')"
+          npm version patch --no-git-tag-version
+          echo "::set-output name=new_version::$(npm pkg get version | tr -d '"')"
+          new_v=$(npm pkg get version | tr -d '"')
+          echo "Frontend package.json version updated to $new_v"
 
           cd ../backend
-          npm version ${{ steps.increment_version.outputs.new_version }} --no-git-tag-version
-          echo "Backend package.json version updated to ${{ steps.increment_version.outputs.new_version }}"
+          npm version $new_v --no-git-tag-version
+          echo "Backend package.json version updated to $new_v"
 
           cd ../webeoc
-          npm version ${{ steps.increment_version.outputs.new_version }} --no-git-tag-version
-          echo "WebEOC package.json version updated to ${{ steps.increment_version.outputs.new_version }}"
+          npm version $new_v --no-git-tag-version
+          echo "WebEOC package.json version updated to $new_v"
 
           cd ..
 
@@ -61,9 +45,10 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git add frontend/package.json backend/package.json webeoc/package.json
           git commit -m "chore: bump version to ${{ steps.increment_version.outputs.new_version }}"
-          git push origin HEAD:refs/heads/${{ github.head_ref }}
+          git push origin HEAD:${{ github.ref }}
 
-      - name: Create Git Tag
+      - name: Create Git Tag and Delete Old Tag
         run: |
-          git tag "${{ steps.increment_version.outputs.new_version }}"
-          git push origin "${{ steps.increment_version.outputs.new_version }}"
+          git push --delete origin "v${{ steps.increment_version.outputs.old_version }}"
+          git tag "v${{ steps.increment_version.outputs.new_version }}"
+          git push origin v${{ steps.increment_version.outputs.new_version }}
