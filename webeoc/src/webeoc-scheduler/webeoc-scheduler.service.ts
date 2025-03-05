@@ -29,6 +29,10 @@ export class WebEocScheduler {
 
   onModuleInit() {
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
+      //-- clean up old logs
+      const logDir = process.env.WEBEOC_LOG_PATH || "/mnt/data";
+      await this.cleanupOldLogs(logDir);
+
       //-- don't remove these items, these control complaints and complaint updates
       await this.fetchAndPublishComplaints(
         OPERATIONS.COMPLAINT,
@@ -84,7 +88,6 @@ export class WebEocScheduler {
 
     try {
       await fs.promises.appendFile(filePath, message + "\n", "utf8");
-      // await this.cleanupOldLogs(filePath);
     } catch (err) {
       this.logger.error(`Error writing to file ${filePath}: ${err.message}`);
       throw new Error("Failed to write data to file");
@@ -96,8 +99,10 @@ export class WebEocScheduler {
       const files = await fs.promises.readdir(logDir);
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - this.retentionDays);
+      this.logger.debug(`Files: ${files}`);
 
       for (const file of files) {
+        this.logger.debug(`File: ${file}`);
         if (file.endsWith(".log")) {
           const filePath = path.join(logDir, file);
           const datePart = file.match(/(\d{4}-\d{2}-\d{2})\.log$/);
