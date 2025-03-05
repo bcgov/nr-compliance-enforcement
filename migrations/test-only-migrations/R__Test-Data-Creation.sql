@@ -1930,3 +1930,11 @@ AND owned_by_agency_code = 'COS';
 UPDATE public.complaint
 SET owned_by_agency_code = 'COS'
 WHERE complaint_identifier IN ('23-031744', '23-006888', '23-032456');
+
+---------------------
+-- Enable referrals in dev/test for all users
+---------------------
+
+UPDATE public.feature_agency_xref
+SET active_ind = 'Y'
+WHERE feature_code = 'COMPREF';
