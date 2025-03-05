@@ -20,7 +20,7 @@ export class WebEocScheduler {
   private cookie: string;
   private cronJob: CronJob;
   private readonly logger = new Logger(WebEocScheduler.name);
-  private readonly retentionDays = 0;
+  private readonly retentionDays = 1;
 
   constructor(
     private readonly complaintsPublisherService: ComplaintsPublisherService,
@@ -81,7 +81,6 @@ export class WebEocScheduler {
     // Get the file path
     const filePathEnv = process.env.WEBEOC_LOG_PATH || "/mnt/data"; // Default to '/mnt/data' if the env variable is not set
     const filePath = path.join(filePathEnv, fileName);
-    this.logger.debug(filePath);
 
     // Set the message
     const message = `${timeStamp}: Logged ${counter} ${operationType}`;
