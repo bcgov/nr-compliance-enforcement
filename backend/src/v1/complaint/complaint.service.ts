@@ -1034,11 +1034,6 @@ export class ComplaintService {
         builder.andWhere("1 = 0"); // In case of no agency, no rows will be returned
       }
 
-      //-- return Waste and Pestivide complaints for CEEB users
-      if (agencies.includes("EPO") && complaintType === "ERS") {
-        builder.andWhere("agency_code.agency_code = :agency", { agency: "EPO" });
-      }
-
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (agencies.includes("EPO") && filters.actionTaken) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
