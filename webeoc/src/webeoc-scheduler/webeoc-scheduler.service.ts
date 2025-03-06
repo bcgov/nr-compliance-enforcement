@@ -20,7 +20,7 @@ export class WebEocScheduler {
   private cookie: string;
   private cronJob: CronJob;
   private readonly logger = new Logger(WebEocScheduler.name);
-  private readonly retentionDays = 1;
+  private readonly retentionDays = parseInt(process.env.WEBEOC_LOG_RETENTION_DAYS || "1");
 
   constructor(
     private readonly complaintsPublisherService: ComplaintsPublisherService,
