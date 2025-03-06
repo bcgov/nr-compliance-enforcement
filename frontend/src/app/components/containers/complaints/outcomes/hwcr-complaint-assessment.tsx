@@ -77,10 +77,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const [selectedAssessmentCat1Types, setSelectedAssessmentCat1Types] = useState<Option[]>([]);
   const [legacyAssessmentTypes, setLegacyAssessmentTypes] = useState<Option[] | undefined>([]);
 
-  const handleAssessmentTypesChange = (selectedItems: Option[]) => {
-    setSelectedAssessmentTypes(selectedItems);
-  };
-
   const [officerErrorMessage, setOfficerErrorMessage] = useState<string>("");
   const [assessmentDateErrorMessage, setAssessmentDateErrorMessage] = useState<string>("");
   const [actionRequiredErrorMessage, setActionRequiredErrorMessage] = useState<string>("");
@@ -375,14 +371,14 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                 key: selectedConflictHistory?.label,
                 value: selectedConflictHistory?.value,
               }
-            : undefined,
+            : null,
         category_level:
           selectedCategoryLevel && isLargeCarnivore
             ? {
                 key: selectedCategoryLevel?.label,
                 value: selectedCategoryLevel?.value,
               }
-            : undefined,
+            : null,
         assessment_cat1_type:
           selectedActionRequired?.label === OptionLabels.OPTION_NO || !isLargeCarnivore
             ? []
@@ -631,6 +627,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       placeholder="Select"
                       onChange={(e) => handleActionRequiredChange(e)}
                       isDisabled={isReadOnly}
+                      isClearable={true}
                     />
                   )}
                 </div>
@@ -653,6 +650,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     value={selectedJustification}
                     placeholder="Select"
                     onChange={(e) => handleJustificationChange(e)}
+                    isClearable={true}
                   />
                 </div>
               </div>
@@ -756,7 +754,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                   <ValidationCheckboxGroup
                     errMsg={isLargeCarnivore ? "" : assessmentRequiredErrorMessage}
                     options={assessmentTypeList}
-                    onCheckboxChange={handleAssessmentTypesChange}
+                    onCheckboxChange={(option: Option[]) => setSelectedAssessmentTypes(option)}
                     checkedValues={selectedAssessmentTypes}
                   ></ValidationCheckboxGroup>
                   {isLargeCarnivore && (
@@ -796,6 +794,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       onChange={(e: any) => {
                         setSelectedLocation(e);
                       }}
+                      isClearable={true}
                     />
                   </div>
 
@@ -822,6 +821,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       onChange={(e: any) => {
                         setSelectedConflictHistory(e);
                       }}
+                      isClearable={true}
                     />
                   </div>
 
@@ -848,6 +848,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                       onChange={(e: any) => {
                         setSelectedCategoryLevel(e);
                       }}
+                      isClearable={true}
                     />
                   </div>
                 </>
@@ -874,6 +875,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
                     placeholder="Select "
                     onChange={handleSelectedOfficerChange}
                     isDisabled={isReadOnly}
+                    isClearable={true}
                   />
                 </div>
               </div>

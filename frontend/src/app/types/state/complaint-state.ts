@@ -7,6 +7,7 @@ import { GeneralIncidentComplaint as GeneralInformationComplaintDto } from "@app
 import { WebEOCComplaintUpdateDTO } from "@apptypes/app/complaints/webeoc-complaint-update";
 import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 import { ComplaintFilters } from "@apptypes/complaints/complaint-filters";
+import { ComplaintReferral } from "@/app/types/app/complaints/complaint-referral";
 
 export interface ComplaintState {
   complaintSearchParameters: ComplaintFilters;
@@ -18,6 +19,7 @@ export interface ComplaintState {
   mappedComplaintsCount: MappedComplaintsCountState;
   webeocUpdates: WebEOCComplaintUpdateDTO[];
   actions: ActionTaken[];
+  referrals: ComplaintReferral[];
   webeocChangeCount: number;
   linkedComplaints: [];
   complaintView: ComplaintView;

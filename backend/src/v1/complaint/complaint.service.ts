@@ -121,7 +121,7 @@ export class ComplaintService {
     private readonly _compMthdRecvCdAgcyCdXrefService: CompMthdRecvCdAgcyCdXrefService,
     private readonly _officerService: OfficerService,
     private readonly _linkedComplaintsXrefService: LinkedComplaintXrefService,
-    private dataSource: DataSource,
+    private readonly dataSource: DataSource,
   ) {
     this.mapper = mapper;
 
@@ -1034,11 +1034,6 @@ export class ComplaintService {
         builder.andWhere("1 = 0"); // In case of no agency, no rows will be returned
       }
 
-      //-- return Waste and Pestivide complaints for CEEB users
-      if (agencies.includes("EPO") && complaintType === "ERS") {
-        builder.andWhere("agency_code.agency_code = :agency", { agency: "EPO" });
-      }
-
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (agencies.includes("EPO") && filters.actionTaken) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
@@ -1164,11 +1159,6 @@ export class ComplaintService {
         builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
           agency_codes: agencies,
         });
-      }
-
-      //-- return Waste and Pestivide complaints for CEEB users
-      if (agencies.includes("EPO") && complaintType === "ERS") {
-        builder.andWhere("agency_code.agency_code = :agency", { agency: "EPO" });
       }
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
@@ -1500,7 +1490,7 @@ export class ComplaintService {
             converted.create_user_id = idir;
             converted.complaint_identifier = id;
 
-            this._personService.assignNewOfficer(id, converted as any);
+            await this._personService.assignNewOfficer(id, converted as any);
           } else {
             //-- the complaint has no assigned officer
             const unassigned = delegates.filter(({ isActive }) => !isActive);
@@ -1518,6 +1508,8 @@ export class ComplaintService {
               this._personService.assignNewOfficer(id, converted as any);
             });
           }
+        } else {
+          await this._personService.unAssignOfficer(id);
         }
 
         //-- apply complaint specific updates
@@ -1560,7 +1552,7 @@ export class ComplaintService {
             const { natureOfComplaint, species, otherAttractants, hwcrId } = model as WildlifeComplaintDto;
             const { attractant_hwcr_xref: attractants } = entity as HwcrComplaint;
 
-            this._attractantService.updateComplaintAttractants(entity as HwcrComplaint, attractants);
+            await this._attractantService.updateComplaintAttractants(entity as HwcrComplaint, attractants);
 
             await this._wildlifeComplaintRepository
               .createQueryBuilder()
@@ -2310,6 +2302,9 @@ export class ComplaintService {
       }
       if (data.outcome.assessmentDetails?.legacyActions) {
         data = { ...data, legacy: [{ actions: data.outcome.assessmentDetails.legacyActions }] };
+      }
+      if (data.outcome.decision?.ipmAuthCategoryLongDescription) {
+        data = { ...data, authCat: [{ value: data.outcome.decision.ipmAuthCategoryLongDescription }] };
       }
 
       //-- problems in the automapper mean dates need to be handled

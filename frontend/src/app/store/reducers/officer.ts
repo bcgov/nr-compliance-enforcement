@@ -358,9 +358,8 @@ const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] =
     const { office_guid, user_roles } = officer;
 
     // Safely handle office_guid and cos_geo_org_unit
-    const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? undefined; // Will be undefined if cos_geo_org_unit is null or undefined
+    const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? false; // Assume false if cos_geo_org_unit is null or undefined
     const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
-    const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
 
     //Deactivated officers has empty roles,
     //so the only way to  determine agency is based on whether office_guid null/not null for now
@@ -376,7 +375,7 @@ const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] =
     if (agency === "COS") {
       if (officer.deactivate_ind) {
         return agency === agencyCodeForDeactivatedOfficer;
-      } else return agency === agencyCode && !fromAdminOffice && roleMatch;
+      } else return !fromAdminOffice && roleMatch;
     } else if (agency === "EPO") {
       let result = officer.deactivate_ind === true ? agency === agencyCodeForDeactivatedOfficer : roleMatch;
       return result;
@@ -523,16 +522,11 @@ export const selectOfficerByPersonGuid =
     return null;
   };
 
-export const selectCurrentOfficer =
-  () =>
-  (state: RootState): OfficerDto | null => {
-    const {
-      app: {
-        profile: { idir_username: idir },
-      },
-      officers: { officers: data },
-    } = state;
-    const selected = data.find(({ user_id }) => user_id === idir);
+export const selectCurrentOfficer = createSelector(
+  (state: RootState) => state.app.profile.idir_username,
+  (state: RootState) => state.officers.officers,
+  (idir, officers) => {
+    const selected = officers.find(({ user_id }) => user_id === idir);
 
     if (selected?.person_guid) {
       const { person_guid: person, office_guid: office, officer_guid, user_id, auth_user_guid } = selected;
@@ -562,6 +556,7 @@ export const selectCurrentOfficer =
     }
 
     return null;
-  };
+  },
+);
 
 export default officerSlice.reducer;

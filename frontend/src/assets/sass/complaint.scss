@@ -386,6 +386,19 @@
   }
 }
 
+.refer-complaint-agency {
+  .comp-select__control {
+    padding: 8px;
+  }
+  &--new {
+    @extend .refer-complaint-agency;
+    label {
+      font-weight: 700;
+      color: $black !important;
+    }
+  }
+}
+
 .comp-nature-of-complaint {
   margin-top: 4px;
   max-width: 48ch;
@@ -553,6 +566,17 @@
 .comp-details-body + section {
   .comp-details-body-spacer {
     display: block;
+  }
+}
+
+.comp-referral-banner {
+  background-color: $bc-gov-warning;
+  min-height: 40px;
+  color: $gray-900;
+  .referral-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 8px 24px;
   }
 }
 
@@ -772,6 +796,10 @@
 
   .comp-select__control {
     min-width: 221px;
+  }
+
+  &.align-flex-end {
+    align-items: flex-end;
   }
 
   + .comp-details-form-row {
@@ -1052,11 +1080,19 @@ p {
     display: flex;
     flex-direction: column;
     margin-top: 12px;
-    border: 1px solid $green-90;
-    background-color: $green-90-10;
     border-radius: 4px;
     padding: 24px;
     word-break: break-word;
+  }
+
+  .webeoc-update {
+    border: 1px solid $green-90;
+    background-color: $green-90-10;
+  }
+
+  .referral-update {
+    border: 1px solid #c1836f;
+    background-color: #fdf4f1;
   }
 
   .comp-complaint-update-item-row {

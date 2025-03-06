@@ -67,6 +67,19 @@ export class PersonComplaintXrefService {
       .getOne();
   }
 
+  async findAssignedByComplaint(complaint_identifier: any): Promise<PersonComplaintXref> {
+    return this.personComplaintXrefRepository.findOne({
+      where: {
+        complaint_identifier: complaint_identifier,
+        active_ind: true,
+      },
+      relations: {
+        person_guid: true,
+        complaint_identifier: true,
+      },
+    });
+  }
+
   async update(person_complaint_xref_guid: any, updatePersonComplaintXrefDto): Promise<PersonComplaintXref> {
     const updatedValue = await this.personComplaintXrefRepository.update(
       person_complaint_xref_guid,
@@ -165,7 +178,7 @@ export class PersonComplaintXrefService {
       unassignedPersonComplaintXref = await this.findByComplaint(complaintIdentifier);
       if (unassignedPersonComplaintXref) {
         this.logger.debug(
-          `Unassigning existing person from complaint ${unassignedPersonComplaintXref?.complaint_identifier?.complaint_identifier}`,
+          `Unassigning existing person ${unassignedPersonComplaintXref.person_guid.person_guid} from complaint ${unassignedPersonComplaintXref?.complaint_identifier?.complaint_identifier}`,
         );
         unassignedPersonComplaintXref.active_ind = false;
         await queryRunner.manager.save(unassignedPersonComplaintXref);
@@ -188,7 +201,51 @@ export class PersonComplaintXrefService {
     return newPersonComplaintXref;
   }
 
+  async clearAssignedOfficer(complaintIdentifier: string): Promise<void> {
+    try {
+      const unassignedPersonComplaintXref = await this.findAssignedByComplaint(complaintIdentifier);
+      if (unassignedPersonComplaintXref) {
+        this.logger.debug(
+          `Unassigning person xref ${unassignedPersonComplaintXref.personComplaintXrefGuid} existing person ${unassignedPersonComplaintXref.person_guid.person_guid} from complaint ${unassignedPersonComplaintXref?.complaint_identifier?.complaint_identifier}`,
+        );
+        await this.personComplaintXrefRepository.update(unassignedPersonComplaintXref.personComplaintXrefGuid, {
+          active_ind: false,
+        });
+        // Update the complaint last updated date on the parent record
+        await this._complaintService.updateComplaintLastUpdatedDate(complaintIdentifier);
+      }
+    } catch (err) {
+      this.logger.error(err);
+      throw new BadRequestException(err);
+    }
+  }
+
   remove(id: string) {
     return `This action removes a #${id} personComplaintXref`;
+  }
+
+  async unAssignOfficer(complaintIdentifier: string) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let unassignedPersonComplaintXref: PersonComplaintXref;
+
+    try {
+      unassignedPersonComplaintXref = await this.findByComplaint(complaintIdentifier);
+      if (unassignedPersonComplaintXref) {
+        unassignedPersonComplaintXref.active_ind = false;
+        await queryRunner.manager.save(unassignedPersonComplaintXref);
+      }
+      const returnValue = await this._complaintService.updateComplaintLastUpdatedDate(complaintIdentifier);
+      if (!returnValue) {
+        throw new BadRequestException(`Unable to remove assignment person to complaint ${complaintIdentifier}`);
+      }
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      this.logger.error(err);
+      throw new BadRequestException(err);
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

@@ -36,6 +36,7 @@ export const CODE_TABLE_TYPES = {
   SCHEDULE_SECTOR: "schedule-sector",
   SCHEDULE_SECTOR_TYPE: "schedule-sector-type",
   ASSESSMENT_CAT1_TYPE: "assessment-cat1-type",
+  IPM_AUTH_CATEGORY_TYPE: "ipm-auth-category",
   CASE_LOCATION_TYPE: "case-location-type",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",

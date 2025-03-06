@@ -135,7 +135,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
               variant="info"
               className="comp-complaint-details-alert"
             >
-              <i className="bi bi-info-circle-fill"></i>
+              <i className="bi bi-exclamation-triangle-fill"></i>
               <span>
                 {" "}
                 Without an officer assigned to this complaint the selected officer will be assigned as part of the quick

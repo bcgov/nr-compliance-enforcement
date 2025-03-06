@@ -9897,6 +9897,94 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
+--
+-- create new feature for Complaint Referrals
+--
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COMPREF',
+  'Enable Complaint Referrals',
+  'Enables the ability to refer the complaint to other agencies.',
+  150,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COMPREF',
+  'COS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COMPREF',
+  'PARKS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COMPREF',
+  'EPO',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
 ------------------------
 -- New Template: CEEB
 ------------------------

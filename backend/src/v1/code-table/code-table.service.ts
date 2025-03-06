@@ -20,6 +20,7 @@ import BaseCodeTable, {
   ReportedBy,
   Equipment,
   GirType,
+  IPMAuthCategory,
 } from "../../types/models/code-tables";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -663,6 +664,25 @@ export class CodeTableService {
           },
         );
         return results;
+      }
+      case "ipm-auth-category": {
+        const { data } = await get(token, {
+          query:
+            "{ipmAuthCategoryCodes{ipmAuthCategoryCode displayOrder activeIndicator shortDescription longDescription}}",
+        });
+        const ipmAuthCategoryCodes = data.ipmAuthCategoryCodes.map(
+          ({ ipmAuthCategoryCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: IPMAuthCategory = {
+              ipmAuthCategoryCode: ipmAuthCategoryCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return ipmAuthCategoryCodes;
       }
       case "decision-type": {
         const { data } = await get(token, {

@@ -54,6 +54,8 @@ export const DrugItem: FC<props> = ({
       if (selected?.label) {
         setRemaining(selected.label);
       }
+    } else {
+      setRemaining("");
     }
   }, [remainingDrugUse, remainingUse]);
 

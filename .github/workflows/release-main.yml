@@ -48,7 +48,8 @@ jobs:
         id: tag
         run: |
           git fetch --tags
-          latest_tag=$(git describe --tags --abbrev=0 --match "v*.*.*")
+          git fetch origin ${{ github.event.inputs.release_branch }}:${{ github.event.inputs.release_branch }}
+          latest_tag=$(git tag --points-at ${{ github.event.inputs.release_branch }} "v*.*.*")
           echo "::set-output name=latest_tag::$latest_tag"
           echo "Latest tag: $latest_tag"
 

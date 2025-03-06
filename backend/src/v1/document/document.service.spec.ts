@@ -78,6 +78,7 @@ import { TeamService } from "../team/team.service";
 import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
 import { CacheModule } from "@nestjs/cache-manager";
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
+import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 
 describe("DocumentService", () => {
   let service: DocumentService;
@@ -242,6 +243,10 @@ describe("DocumentService", () => {
         ConfigurationService,
         {
           provide: getRepositoryToken(Configuration),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(ComplaintReferral),
           useValue: {},
         },
       ],

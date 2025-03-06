@@ -8,15 +8,17 @@ import {
   selectSectorDropdown,
   selectScheduleDropdown,
   selectDecisionTypeDropdown,
+  selectIPMAuthCategoryDropdown,
 } from "@store/reducers/code-table-selectors";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
 
 type props = {
   id?: string;
-  schedule: string;
-  sector: string;
+  schedule?: string;
+  sector?: string;
   discharge: string;
-  nonCompliance: string;
+  nonCompliance?: string;
+  ipmAuthCategory?: string;
   rationale: string;
   inspectionNumber?: string;
   leadAgency?: string;
@@ -30,6 +32,7 @@ export const DecisionItem: FC<props> = ({
   sector,
   discharge,
   nonCompliance,
+  ipmAuthCategory,
   rationale,
   leadAgency,
   inspectionNumber,
@@ -43,6 +46,7 @@ export const DecisionItem: FC<props> = ({
   const schedulesOptions = useAppSelector(selectScheduleDropdown);
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
   const agencyOptions = useAppSelector(selectLeadAgencyDropdown);
+  const ipmAuthCategoryOptions = useAppSelector(selectIPMAuthCategoryDropdown);
 
   return (
     <dl>
@@ -50,8 +54,14 @@ export const DecisionItem: FC<props> = ({
         <dt>WDR schedule/IPM sector type</dt>
         <dd>{getDropdownOption(schedule, schedulesOptions)?.label}</dd>
       </div>
+      {schedule === "IPM" && (
+        <div>
+          <dt>Authorization category</dt>
+          <dd>{getDropdownOption(ipmAuthCategory, ipmAuthCategoryOptions)?.label}</dd>
+        </div>
+      )}
       <div>
-        <dt>Sector/category</dt>
+        <dt>Sector</dt>
         <dd>{getDropdownOption(sector, sectorsOptions)?.label}</dd>
       </div>
       <div>

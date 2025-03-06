@@ -23,6 +23,8 @@ import { AssessmentTypeUpdates } from "./migrations/migration-23";
 import { AddComsEnrolledInd } from "./migrations/migration-24";
 import { UpdateMapLogicForClustering } from "./migrations/migration-25";
 import { ComplaintReadOnlyIndicator } from "./migrations/migration-26";
+import { AddIPMAuthCategoryCode } from "./migrations/migration-27";
+import { AddComplaintReferral } from "./migrations/migration-28";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -60,6 +62,8 @@ migration = {
   ...AddComsEnrolledInd,
   ...UpdateMapLogicForClustering,
   ...ComplaintReadOnlyIndicator,
+  ...AddIPMAuthCategoryCode,
+  ...AddComplaintReferral,
 };
 
 export default migration;

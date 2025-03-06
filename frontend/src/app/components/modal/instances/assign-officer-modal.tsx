@@ -205,6 +205,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
               />
               {searchInput && (
                 <CloseButton
+                  className="clear-search-button"
                   onClick={() => setSearchInput("")}
                   tabIndex={0}
                 ></CloseButton>

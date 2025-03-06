@@ -9,6 +9,7 @@ import { RootState } from "@store/store";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
 import { Decision } from "@apptypes/app/case-files/ceeb/decision/decision";
 import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
+import { createSelector } from "@reduxjs/toolkit";
 
 //-- Case file selectors
 export const selectCaseId = (state: RootState): string => {
@@ -42,18 +43,15 @@ export const selectIsReviewRequired = (state: RootState): boolean => state.cases
 export const selectReviewComplete = (state: RootState): any => state.cases.reviewComplete;
 
 export const selectNotes = (state: RootState): Note[] => state.cases.notes;
+export const selectSubjects = (state: RootState) => state.cases.subject;
 
-export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcome> => {
-  const {
-    cases: { subject: subjects },
-  } = state;
-
+export const selectAnimalOutcomes = createSelector([selectSubjects], (subjects) => {
   if (subjects && from(subjects).any()) {
-    //-- this will filter out all animal-outcome-subjets from the subject collection
+    // Filter out all animal-outcome subjects from the subject collection
     const animals = subjects.filter((subject): subject is AnimalOutcomeSubject => "species" in subject);
 
-    //-- map the animals to an animal-outcome-v2 collection
-    const results = animals.map((item) => {
+    // Map the animals to an animal-outcome-v2 collection
+    return animals.map((item) => {
       const {
         id,
         species,
@@ -68,7 +66,7 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcome> => 
         order,
       } = item;
 
-      //-- map or emtpy out the drugs-used and ear-tags collections
+      // Map or empty out the tags and drugs collections
       const _tags = tags ?? [];
       const _drugs = drugs ?? [];
 
@@ -85,40 +83,38 @@ export const selectAnimalOutcomes = (state: RootState): Array<AnimalOutcome> => 
         order,
       };
 
-      //-- pull the drug-authroized-by and officer/date from the actions
+      // Extract drug authorized by and officer/date from the actions
       if (actions) {
-        //-- drug-authorized-by
+        // drug-authorized-by
         if (from(actions).any((r) => r.actionCode === CASE_ACTION_CODE.ADMNSTRDRG)) {
-          const item = actions.find(({ actionCode }) => actionCode === CASE_ACTION_CODE.ADMNSTRDRG);
+          const actionItem = actions.find(({ actionCode }) => actionCode === CASE_ACTION_CODE.ADMNSTRDRG);
           const drugAuthorization = {
-            officer: item?.actor ?? "",
-            date: new Date(item?.date ?? ""),
+            officer: actionItem?.actor ?? "",
+            date: new Date(actionItem?.date ?? ""),
           };
 
           record = { ...record, drugAuthorization };
         }
 
-        //-- officer / date outcome added
+        // officer / date outcome added
         if (from(actions).any((r) => r.actionCode === CASE_ACTION_CODE.RECOUTCOME)) {
-          const item = actions.find(({ actionCode }) => actionCode === CASE_ACTION_CODE.RECOUTCOME);
+          const actionItem = actions.find(({ actionCode }) => actionCode === CASE_ACTION_CODE.RECOUTCOME);
 
-          if (item?.actor) {
-            record = { ...record, officer: item?.actor };
+          if (actionItem?.actor) {
+            record = { ...record, officer: actionItem.actor };
           }
-          if (item?.date) {
-            record = { ...record, date: new Date(item?.date ?? "") };
+          if (actionItem?.date) {
+            record = { ...record, date: new Date(actionItem.date ?? "") };
           }
         }
       }
 
       return record;
     });
-
-    return results;
   }
 
   return [];
-};
+});
 
 export const selectCaseDecision = (state: RootState): Decision => {
   const { cases } = state;
@@ -128,6 +124,7 @@ export const selectCaseDecision = (state: RootState): Decision => {
     sector: "",
     discharge: "",
     nonCompliance: "",
+    ipmAuthCategory: "",
     rationale: "",
     assignedTo: "",
     actionTaken: "",
