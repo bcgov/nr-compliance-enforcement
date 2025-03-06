@@ -39,6 +39,7 @@ global:
     webeocUrl: ~
     webeocCronExpression: ~
     webeocLogPath: ~
+    webeocLogRetentionDays: ~
     backupDir: ~
     backupStrategy: ~
     numBackups: ~

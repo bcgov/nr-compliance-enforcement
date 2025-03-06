@@ -98,6 +98,7 @@ export class WebEocScheduler {
       const files = await fs.promises.readdir(logDir);
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - this.retentionDays);
+      this.logger.debug(`Retention days: ${this.retentionDays}`);
       this.logger.debug(`Files: ${files}`);
 
       for (const file of files) {
