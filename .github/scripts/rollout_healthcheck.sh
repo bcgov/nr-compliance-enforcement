@@ -386,6 +386,8 @@ main() {
         sleep $POLL_INTERVAL_SECONDS
     done
     echo_yellow "Polling finished..."
+    workload_list=$(get_workload_list $LABEL_SELECTOR)
+    pod_list=$(oc get pods --field-selector=status.phase!=Succeeded,status.phase!=Failed,status.phase!=Unknown -n $OC_NAMESPACE -l $LABEL_SELECTOR -oname)
     replicaset_list=$(echo -e "$workload_list" | grep "replicaset")
     statefulset_list=$(echo -e "$workload_list" | grep "statefulset")
     triage_rollout "$deployment_list" "$pod_list" "$replicaset_list" "$statefulset_list"
