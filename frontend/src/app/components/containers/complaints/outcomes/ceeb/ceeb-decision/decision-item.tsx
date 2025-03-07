@@ -52,26 +52,26 @@ export const DecisionItem: FC<props> = ({
     <dl>
       <div>
         <dt>WDR schedule/IPM sector type</dt>
-        <dd>{getDropdownOption(schedule, schedulesOptions)?.label}</dd>
+        <dd id="decision-schedule">{getDropdownOption(schedule, schedulesOptions)?.label}</dd>
       </div>
       {schedule === "IPM" && (
         <div>
           <dt>Authorization category</dt>
-          <dd>{getDropdownOption(ipmAuthCategory, ipmAuthCategoryOptions)?.label}</dd>
+          <dd id="decision-authorization">{getDropdownOption(ipmAuthCategory, ipmAuthCategoryOptions)?.label}</dd>
         </div>
       )}
       <div>
         <dt>Sector</dt>
-        <dd>{getDropdownOption(sector, sectorsOptions)?.label}</dd>
+        <dd id="decision-sector">{getDropdownOption(sector, sectorsOptions)?.label}</dd>
       </div>
       <div>
         <dt>Discharge type</dt>
-        <dd>{getDropdownOption(discharge, dischargesOptions)?.label}</dd>
+        <dd id="decision-discharge">{getDropdownOption(discharge, dischargesOptions)?.label}</dd>
       </div>
       <hr className="my-0"></hr>
       <div>
         <dt>Action taken</dt>
-        <dd>{getDropdownOption(actionTaken, decisionTypeOptions)?.label}</dd>
+        <dd id="decision-action">{getDropdownOption(actionTaken, decisionTypeOptions)?.label}</dd>
       </div>
       {actionTaken === CASE_ACTION_CODE.FWDLEADAGN && (
         <div>
@@ -95,7 +95,7 @@ export const DecisionItem: FC<props> = ({
       </div>
       <div>
         <dt>Date action taken</dt>
-        <dd>{actionTakenDate !== null && formatDate(new Date(actionTakenDate).toString())}</dd>
+        <dd id="decision-date">{actionTakenDate !== null && formatDate(new Date(actionTakenDate).toString())}</dd>
       </div>
     </dl>
   );
