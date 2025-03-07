@@ -203,7 +203,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
         </Button>
         <Button
           variant="primary"
-          id="outcome-decision-save-button"
+          id="outcome-authorization-save-button"
           title="Save Decision"
           onClick={() => handleSaveButtonClick()}
           disabled={isReadOnly}
