@@ -259,6 +259,62 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                     </div>
                   </div>
                 )}
+                {(update.content as WebEOCComplaintUpdateDTO).updCallerName && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Name:</div>
+                    <div className="complaint-description-text">
+                      {(update.content as WebEOCComplaintUpdateDTO).updCallerName}
+                    </div>
+                  </div>
+                )}
+                {(update.content as WebEOCComplaintUpdateDTO).updCallerPhone1 && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Primary Phone:</div>
+                    <div className="complaint-description-text">
+                      {(update.content as WebEOCComplaintUpdateDTO).updCallerPhone1}
+                    </div>
+                  </div>
+                )}
+                {(update.content as WebEOCComplaintUpdateDTO).updCallerPhone2 && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Alternative phone 1:</div>
+                    <div className="complaint-description-text">
+                      {(update.content as WebEOCComplaintUpdateDTO).updCallerPhone2}
+                    </div>
+                  </div>
+                )}
+                {(update.content as WebEOCComplaintUpdateDTO).updCallerPhone3 && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Alternative phone 2:</div>
+                    <div className="complaint-description-text">
+                      {(update.content as WebEOCComplaintUpdateDTO).updCallerPhone3}
+                    </div>
+                  </div>
+                )}
+                {(update.content as WebEOCComplaintUpdateDTO).updCallerAddress && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Address:</div>
+                    <div className="complaint-description-text">
+                      {(update.content as WebEOCComplaintUpdateDTO).updCallerAddress}
+                    </div>
+                  </div>
+                )}
+                {(update.content as WebEOCComplaintUpdateDTO).updCallerEmail && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Email:</div>
+                    <div className="complaint-description-text">
+                      {(update.content as WebEOCComplaintUpdateDTO).updCallerEmail}
+                    </div>
+                  </div>
+                )}
+                {(update.content as WebEOCComplaintUpdateDTO).updReportedByCode && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Organization reporting the complaint:</div>
+                    <div className="complaint-description-text">
+                      {(update.content as WebEOCComplaintUpdateDTO).updReportedByCode}
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
