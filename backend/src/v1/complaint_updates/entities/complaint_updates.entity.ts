@@ -110,6 +110,63 @@ export class ComplaintUpdate {
   @Column({ length: 20 })
   webeoc_identifier: string;
 
+  @ApiProperty({
+    example: "Homer Simpson",
+    description: "The name provided by the caller to the call centre or entered onto the web form.",
+  })
+  @Column("text", { name: "upd_caller_name", nullable: true })
+  updCallerName: string | null;
+
+  @ApiProperty({
+    example: "+2501234567",
+    description: "The primary phone number provided by the caller to the call centre or entered onto the web form.",
+  })
+  @Column("text", { name: "upd_caller_phone_1", nullable: true })
+  updCallerPhone1: string | null;
+
+  @ApiProperty({
+    example: "+2507654321",
+    description: "An alternate phone number provided by the caller to the call centre or entered onto the web form.",
+  })
+  @Column("text", { name: "upd_caller_phone_2", nullable: true })
+  updCallerPhone2: string | null;
+
+  @ApiProperty({
+    example: "+2508675309",
+    description: "An alternate phone number provided by the caller to the call centre or entered onto the web form.",
+  })
+  @Column("text", { name: "upd_caller_phone_3", nullable: true })
+  updCallerPhone3: string | null;
+
+  @ApiProperty({
+    example: "123 Main Street",
+    description: "The address provided by the caller to the call centre or entered onto the web form.",
+  })
+  @Column("text", { name: "upd_caller_address", nullable: true })
+  updCallerAddress: string | null;
+
+  @ApiProperty({
+    example: "example@email.com",
+    description: "The email address provided by the caller to the call centre or entered onto the web form.",
+  })
+  @Column("text", { name: "upd_caller_email", nullable: true })
+  updCallerEmail: string | null;
+
+  @ApiProperty({
+    example: "BCWF",
+    description:
+      "A human readable code used to identify an agency.  The agency that originally referred the updated complaint.",
+  })
+  @Column("text", { name: "upd_reported_by_code", nullable: true })
+  updReportedByCode: string | null;
+
+  @ApiProperty({
+    example: "Ministry of Silly Walks",
+    description: "Provides a more detailed description when the referred by Agency is of type 'OTHER'",
+  })
+  @Column("text", { name: "upd_reported_by_other_text", nullable: true })
+  updReportedByOtherText: string | null;
+
   @ManyToOne(() => Complaint, (complaint) => complaint.complaint_update)
   @JoinColumn([
     {
