@@ -51,7 +51,7 @@ describe("CEEB Complaints can be created and outcome decisions set ", () => {
   let complaintId = null;
 
   it("can create a complaint with a violation type of Waste", function () {
-    //Access dropdown from create screen
+    //start create changes
     cy.navigateToCreateScreen();
 
     cy.selectItemById("violation-type-select-id", "Waste");
@@ -91,9 +91,11 @@ describe("CEEB Complaints can be created and outcome decisions set ", () => {
   it("can edit a complaint with a violation type of Waste", function () {
     cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, complaintId, true);
 
-    cy.get("#caller-primary-phone-id").click({ force: true });
-    cy.get("#caller-primary-phone-id").clear();
-    cy.get("#caller-primary-phone-id").typeAndTriggerChange(createCallerInformation.phoneInput);
+    cy.get("#complaint-description-textarea-id").click({ force: true });
+    cy.get("#complaint-description-textarea-id")
+      .clear()
+      .type(createCallDetails.description + " EDITED", { delay: 0 });
+    cy.get("#complaint-description-textarea-id").click({ force: true });
 
     cy.get("#details-screen-cancel-save-button-top").click({ force: true });
     //end edit
@@ -101,7 +103,7 @@ describe("CEEB Complaints can be created and outcome decisions set ", () => {
     //start checking edit changes saved
     cy.waitForSpinner();
 
-    cy.get('dd[id="comp-details-phone"]').contains(createCallerInformation.phone);
+    cy.get('pre[id="comp-details-description"]').should("have.text", createCallDetails.description + " EDITED");
 
     //end verifying edit changes are saved
   });
