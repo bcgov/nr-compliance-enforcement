@@ -1,7 +1,7 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, Point } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
 import { Complaint } from "../../../v1/complaint/entities/complaint.entity";
-import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
+import { ReportedByCode } from "../../reported_by_code/entities/reported_by_code.entity";
 
 @Index("complaint_update_pk", ["complaintUpdateGuid"], { unique: true })
 @Entity("complaint_update", { schema: "public" })

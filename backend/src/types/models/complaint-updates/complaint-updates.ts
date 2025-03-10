@@ -1,4 +1,4 @@
-import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
+import { ReportedByCode } from "../../../v1/reported_by_code/entities/reported_by_code.entity";
 import { Point } from "typeorm";
 
 export class ComplaintUpdatesDto {
