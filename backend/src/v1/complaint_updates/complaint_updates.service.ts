@@ -7,6 +7,7 @@ import { ComplaintChangeCount } from "./entities/complaint_change_count";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
+import { trimEnd } from "lodash";
 
 @Injectable()
 export class ComplaintUpdatesService {
@@ -27,6 +28,9 @@ export class ComplaintUpdatesService {
         complaintIdentifier: {
           complaint_identifier: id,
         },
+      },
+      relations: {
+        reported_by_code: true,
       },
       order: {
         updateSeqNumber: "DESC",
