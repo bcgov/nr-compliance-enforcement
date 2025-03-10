@@ -92,7 +92,6 @@ export class ComplaintUpdatesService {
 
   findRelatedDataById = async (id: string): Promise<RelatedDataDto> => {
     const updates = await this.findByComplaintId(id);
-    console.log(updates);
     const actions = await this.findActionsByComplaintId(id);
     const referrals = await this.findReferralUpdatesByComplaintId(id);
 
