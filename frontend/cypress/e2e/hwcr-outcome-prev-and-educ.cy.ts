@@ -98,7 +98,7 @@ describe("HWCR Outcome Prevention and Education", () => {
 
         cy.get("#prev-educ-checkbox-div").should(($div) => {
           expect($div).to.contain.text("Provided safety information to the public");
-          expect($div).to.contain.text("Contacted bylaw to assist with managing attractants");
+          expect($div).to.contain.text("Contacted/referred to bylaw to assist with managing attractants");
         });
 
         cy.get("#prev-educ-checkbox-div").should(($div) => {
