@@ -16,7 +16,10 @@ export interface WebEOCComplaintUpdateDTO {
   updCallerPhone3: string | null;
   updCallerAddress: string | null;
   updCallerEmail: string | null;
-  updReportedByCode: string | null;
+  reported_by_code?: {
+    reported_by_code: string;
+    short_description: string;
+  };
   updReportedByOtherText: string | null;
   createUserId: string;
   createUtcTimestamp: string;

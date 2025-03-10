@@ -1,4 +1,4 @@
-import { StringNullableChain } from "lodash";
+import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
 import { Point } from "typeorm";
 
 export class ComplaintUpdatesDto {
@@ -15,7 +15,7 @@ export class ComplaintUpdatesDto {
   updCallerPhone3?: string;
   updCallerAddress?: string;
   updCallerEmail?: string;
-  updReportedByCode?: string;
+  updReportedByCode?: ReportedByCode;
   updReportedByOtherText?: string;
   createUserId: string;
   createUtcTimestamp: Date;

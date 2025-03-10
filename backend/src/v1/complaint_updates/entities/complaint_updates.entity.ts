@@ -1,6 +1,7 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, Point } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
 import { Complaint } from "../../../v1/complaint/entities/complaint.entity";
+import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
 
 @Index("complaint_update_pk", ["complaintUpdateGuid"], { unique: true })
 @Entity("complaint_update", { schema: "public" })
@@ -152,13 +153,14 @@ export class ComplaintUpdate {
   @Column("text", { name: "upd_caller_email", nullable: true })
   updCallerEmail: string | null;
 
-  @ApiProperty({
-    example: "BCWF",
-    description:
-      "A human readable code used to identify an agency.  The agency that originally referred the updated complaint.",
-  })
-  @Column("text", { name: "upd_reported_by_code", nullable: true })
-  updReportedByCode: string | null;
+  @ManyToOne(() => ReportedByCode, (reported_by_code) => reported_by_code.reported_by_code)
+  @JoinColumn([
+    {
+      name: "upd_reported_by_code",
+      referencedColumnName: "reported_by_code",
+    },
+  ])
+  reported_by_code: ReportedByCode;
 
   @ApiProperty({
     example: "Ministry of Silly Walks",

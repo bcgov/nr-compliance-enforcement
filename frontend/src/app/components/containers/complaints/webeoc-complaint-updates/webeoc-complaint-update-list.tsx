@@ -307,11 +307,11 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                     </div>
                   </div>
                 )}
-                {(update.content as WebEOCComplaintUpdateDTO).updReportedByCode && (
+                {(update.content as WebEOCComplaintUpdateDTO).reported_by_code && (
                   <div className="complaint-description-section">
                     <div className="comp-complaint-update-label">Organization reporting the complaint:</div>
                     <div className="complaint-description-text">
-                      {(update.content as WebEOCComplaintUpdateDTO).updReportedByCode}
+                      {(update.content as WebEOCComplaintUpdateDTO).reported_by_code?.short_description}
                     </div>
                   </div>
                 )}
