@@ -67,7 +67,7 @@ describe("HWCR Outcome Prevention and Education", () => {
           //expand checkboxes for validating in view state
           params.checkboxes = [
             "Provided safety information to the public",
-            "Contacted bylaw to assist with managing attractants",
+            "Contacted/referred to bylaw to assist with managing attractants",
           ];
 
           cy.validateHWCSection(params);
@@ -134,8 +134,8 @@ describe("HWCR Outcome Prevention and Education", () => {
           //expand checkboxes for validating in view state
           params.checkboxes = [
             "Provided safety information to the public",
-            "Contacted bylaw to assist with managing attractants",
-            "Contacted biologist and/or veterinarian",
+            "Contacted/referred to bylaw to assist with managing attractants",
+            "Contacted/referred to biologist and/or veterinarian",
           ];
 
           cy.validateHWCSection(params);
