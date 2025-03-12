@@ -18,7 +18,7 @@ export const AttachmentUpload: FC<Props> = ({ onFileSelect, disabled }) => {
     [onFileSelect],
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     disabled: disabled ?? false,
   });
