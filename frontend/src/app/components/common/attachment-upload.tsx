@@ -1,6 +1,5 @@
 import { FC, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { BsPlus } from "react-icons/bs";
 
 type Props = {
   onFileSelect: (selectedFile: FileList) => void;
@@ -32,9 +31,9 @@ export const AttachmentUpload: FC<Props> = ({ onFileSelect, disabled }) => {
     >
       <input {...getInputProps()} />
       <div className="upload-icon">
-        <BsPlus />
+        <i className="bi bi-upload"></i>
       </div>
-      <div className="upload-text">{isDragActive ? "Drop files here" : "Upload"}</div>
+      <div className="upload-text">Drop files here or click to browse</div>
     </div>
   );
 };
