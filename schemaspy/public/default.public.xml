@@ -338,6 +338,16 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_id" nullable="false" remarks="The id of the user that updated the complaint update record." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the complaint_update record was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="webeoc_identifier" nullable="true" remarks="Unique Identifier from the webEOC source system to identify a complaint update.   This is required as the natural key is not available in all webEOC APIs" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="upd_caller_name" nullable="true" remarks="The name provided by the caller to the call centre or entered onto the web form." size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="upd_caller_phone_1" nullable="true" remarks="The primary phone number provided by the caller to the call centre or entered onto the web form." size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="upd_caller_phone_2" nullable="true" remarks="An alternate phone number provided by the caller to the call centre or entered onto the web form." size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="upd_caller_phone_3" nullable="true" remarks="An alternate phone number provided by the caller to the call centre or entered onto the web form." size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="upd_caller_address" nullable="true" remarks="The address provided by the caller to the call centre or entered onto the web form." size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="upd_caller_email" nullable="true" remarks="The email address provided by the caller to the call centre or entered onto the web form." size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="upd_reported_by_code" nullable="true" remarks="A human readable code used to identify an agency.  The agency that originally referred the updated complaint." size="10" type="varchar" typeCode="12">
+            <parent column="reported_by_code" foreignKey="fk_reported_by_code" implied="false" onDeleteCascade="false" schema="public" table="reported_by_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="upd_reported_by_other_text" nullable="true" remarks="Provides a more detailed description when the referred by Agency is of type &quot;OTHER&quot;" size="120" type="varchar" typeCode="12"/>
          <primaryKey column="complaint_update_guid" sequenceNumberInPK="1"/>
          <index name="complaint_update_pk" unique="true">
             <column ascending="true" name="complaint_update_guid"/>
@@ -880,6 +890,7 @@
       <table name="reported_by_code" remarks="" schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="reported_by_code" nullable="false" remarks="" size="10" type="varchar" typeCode="12">
             <child column="reported_by_code" foreignKey="FK_complaint_reported_by_code" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
+            <child column="upd_reported_by_code" foreignKey="fk_reported_by_code" implied="false" onDeleteCascade="false" schema="public" table="complaint_update"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="" size="250" type="varchar" typeCode="12"/>
@@ -4573,6 +4584,14 @@ END;]]></definition>
     _update_address_coordinates_lat VARCHAR(200);
     _update_address_coordinates_long VARCHAR(200);
     _upd_location_geometry_point GEOMETRY;
+    _upd_caller_name VARCHAR(120);
+    _upd_caller_phone_1 VARCHAR(15);
+    _upd_caller_phone_2 VARCHAR(15);
+    _upd_caller_phone_3 VARCHAR(15);
+    _upd_caller_address VARCHAR(120);
+    _upd_caller_email VARCHAR(120);
+    _upd_reported_by_code VARCHAR(10);
+    _upd_reported_by_other_text VARCHAR(120);
     _create_utc_timestamp TIMESTAMP := (NOW() AT TIME ZONE 'UTC');
     _update_utc_timestamp TIMESTAMP := (NOW() AT TIME ZONE 'UTC');
     _create_userid VARCHAR(200);
@@ -4585,6 +4604,14 @@ END;]]></definition>
     insert_upd_location_summary_text VARCHAR(120);
     insert_upd_location_detailed_text VARCHAR(4000);
     insert_upd_location_geometry_point GEOMETRY;
+    insert_upd_caller_name VARCHAR(120);
+    insert_upd_caller_phone_1 VARCHAR(15);
+    insert_upd_caller_phone_2 VARCHAR(15);
+    insert_upd_caller_phone_3 VARCHAR(15);
+    insert_upd_caller_address VARCHAR(120);
+    insert_upd_caller_email VARCHAR(120);
+    insert_upd_reported_by_code VARCHAR(10);
+    insert_upd_reported_by_other_text VARCHAR(120);
     
     -- Flag to indicate if there's any difference
     has_difference BOOLEAN := FALSE;
@@ -4620,9 +4647,27 @@ BEGIN
     _upd_location_detailed_text := update_complaint_data ->> 'update_location_description';
     _update_address_coordinates_lat := update_complaint_data ->> 'update_address_coordinates_lat';
     _update_address_coordinates_long := update_complaint_data ->> 'update_address_coordinates_long';
+    _upd_caller_name := update_complaint_data ->> 'update_caller_name';
+    _upd_caller_phone_1 := update_complaint_data ->> 'update_primary_phone';
+    _upd_caller_phone_2 := update_complaint_data ->> 'update_alt_phone';
+    _upd_caller_phone_3 := update_complaint_data ->> 'update_alt_phone_2';
+    _upd_caller_address := update_complaint_data ->> 'update_caller_address';
+    _upd_caller_email := update_complaint_data ->> 'update_caller_email';
+    _upd_reported_by_code := update_complaint_data ->> 'update_reffered_by_lst';
+    _upd_reported_by_other_text := update_complaint_data ->> 'update_reffered_by_txt';
     _create_userid := substring(update_complaint_data ->> USERNAME_TXT from 1 for 32);
     _update_userid := substring(update_complaint_data ->> USERNAME_TXT from 1 for 32);
 	_webeoc_identifier := update_complaint_data ->> 'dataid'; 
+
+    -- Get the codes from our application (inserting if necessary) for the codes retrieved from WebEOC
+    SELECT *
+    INTO   _upd_reported_by_code
+    FROM   PUBLIC.insert_and_return_code(_upd_reported_by_code, 'reprtdbycd');
+
+    -- Format Phone Numbers
+    _upd_caller_phone_1 := format_phone_number(_upd_caller_phone_1);
+    _upd_caller_phone_2 := format_phone_number(_upd_caller_phone_2);
+    _upd_caller_phone_3 := format_phone_number(_upd_caller_phone_3);
 
     -- Create a geometry point based on the latitude and longitude
     IF _update_address_coordinates_lat IS NOT NULL AND _update_address_coordinates_lat <> '' AND
@@ -4673,6 +4718,78 @@ BEGIN
         insert_upd_location_geometry_point := NULL;
     END IF;
 
+    IF (_upd_caller_name IS NOT NULL AND _upd_caller_name <> '' AND
+        (_upd_caller_name IS DISTINCT FROM prev_complaint_update_record.upd_caller_name OR prev_complaint_update_record.upd_caller_name IS NULL) AND
+        (_upd_caller_name IS DISTINCT FROM current_complaint_record.caller_name OR current_complaint_record.caller_name IS NULL)) THEN
+        insert_upd_caller_name := _upd_caller_name;
+        has_difference := TRUE;
+    ELSE
+        insert_upd_caller_name := NULL;
+    END IF;
+
+    IF (_upd_caller_phone_1 IS NOT NULL AND _upd_caller_phone_1 <> '' AND
+        (_upd_caller_phone_1 IS DISTINCT FROM prev_complaint_update_record.upd_caller_phone_1 OR prev_complaint_update_record.upd_caller_phone_1 IS NULL) AND
+        (_upd_caller_phone_1 IS DISTINCT FROM current_complaint_record.caller_phone_1 OR current_complaint_record.caller_phone_1 IS NULL)) THEN
+        insert_upd_caller_phone_1 := _upd_caller_phone_1;
+        has_difference := TRUE;
+    ELSE
+        insert_upd_caller_phone_1 := NULL;
+    END IF;
+
+    IF (_upd_caller_phone_2 IS NOT NULL AND _upd_caller_phone_2 <> '' AND
+        (_upd_caller_phone_2 IS DISTINCT FROM prev_complaint_update_record.upd_caller_phone_2 OR prev_complaint_update_record.upd_caller_phone_2 IS NULL) AND
+        (_upd_caller_phone_2 IS DISTINCT FROM current_complaint_record.caller_phone_2 OR current_complaint_record.caller_phone_2 IS NULL)) THEN
+        insert_upd_caller_phone_2 := _upd_caller_phone_2;
+        has_difference := TRUE;
+    ELSE
+        insert_upd_caller_phone_2 := NULL;
+    END IF;
+
+    IF (_upd_caller_phone_3 IS NOT NULL AND _upd_caller_phone_3 <> '' AND
+        (_upd_caller_phone_3 IS DISTINCT FROM prev_complaint_update_record.upd_caller_phone_3 OR prev_complaint_update_record.upd_caller_phone_3 IS NULL) AND
+        (_upd_caller_phone_3 IS DISTINCT FROM current_complaint_record.caller_phone_3 OR current_complaint_record.caller_phone_3 IS NULL)) THEN
+        insert_upd_caller_phone_3 := _upd_caller_phone_3;
+        has_difference := TRUE;
+    ELSE
+        insert_upd_caller_phone_3 := NULL;
+    END IF;
+
+    IF (_upd_caller_address IS NOT NULL AND _upd_caller_address <> '' AND
+        (_upd_caller_address IS DISTINCT FROM prev_complaint_update_record.upd_caller_address OR prev_complaint_update_record.upd_caller_address IS NULL) AND
+        (_upd_caller_address IS DISTINCT FROM current_complaint_record.caller_address OR current_complaint_record.caller_address IS NULL)) THEN
+        insert_upd_caller_address := _upd_caller_address;
+        has_difference := TRUE;
+    ELSE
+        insert_upd_caller_address := NULL;
+    END IF;
+
+    IF (_upd_caller_email IS NOT NULL AND _upd_caller_email <> '' AND
+        (_upd_caller_email IS DISTINCT FROM prev_complaint_update_record.upd_caller_email OR prev_complaint_update_record.upd_caller_email IS NULL) AND
+        (_upd_caller_email IS DISTINCT FROM current_complaint_record.caller_email OR current_complaint_record.caller_email IS NULL)) THEN
+        insert_upd_caller_email := _upd_caller_email;
+        has_difference := TRUE;
+    ELSE
+        insert_upd_caller_email := NULL;
+    END IF;
+
+    IF (_upd_reported_by_code IS NOT NULL AND _upd_reported_by_code <> '' AND
+        (_upd_reported_by_code IS DISTINCT FROM prev_complaint_update_record.upd_reported_by_code OR prev_complaint_update_record.upd_reported_by_code IS NULL) AND
+        (_upd_reported_by_code IS DISTINCT FROM current_complaint_record.reported_by_code OR current_complaint_record.reported_by_code IS NULL)) THEN
+        insert_upd_reported_by_code := _upd_reported_by_code;
+        has_difference := TRUE;
+    ELSE
+        insert_upd_reported_by_code := NULL;
+    END IF;
+
+    IF (_upd_reported_by_other_text IS NOT NULL AND _upd_reported_by_other_text <> '' AND
+        (_upd_reported_by_other_text IS DISTINCT FROM prev_complaint_update_record.upd_reported_by_other_text OR prev_complaint_update_record.upd_reported_by_other_text IS NULL) AND
+        (_upd_reported_by_other_text IS DISTINCT FROM current_complaint_record.reported_by_other_text OR current_complaint_record.reported_by_other_text IS NULL)) THEN
+        insert_upd_reported_by_other_text := _upd_reported_by_other_text;
+        has_difference := TRUE;
+    ELSE
+        insert_upd_reported_by_other_text := NULL;
+    END IF;
+
     -- Insert the record if there are any differences, either log the complaint or update the previously existing complaint
     IF has_difference then
     	if _update_number_exists then
@@ -4681,6 +4798,14 @@ BEGIN
 		            upd_location_summary_text = insert_upd_location_summary_text,
 		            upd_location_detailed_text = insert_upd_location_detailed_text,
 		            upd_location_geometry_point = insert_upd_location_geometry_point,
+                    upd_caller_name = insert_upd_caller_name,	
+                    upd_caller_phone_1 = insert_upd_caller_phone_1,
+                    upd_caller_phone_2 = insert_upd_caller_phone_2,
+                    upd_caller_phone_3 = insert_upd_caller_phone_3,
+                    upd_caller_address = insert_upd_caller_address,
+                    upd_caller_email = insert_upd_caller_email,
+                    upd_reported_by_code = insert_upd_reported_by_code,
+                    upd_reported_by_other_text = insert_upd_reported_by_other_text,
 		            update_user_id = _update_userid,
 		            update_utc_timestamp = _update_utc_timestamp
 		   where complaint_identifier = _complaint_identifier and update_seq_number = _update_number;
@@ -4693,6 +4818,14 @@ BEGIN
 	            upd_location_summary_text,
 	            upd_location_detailed_text,
 	            upd_location_geometry_point,
+                upd_caller_name,
+                upd_caller_phone_1,
+                upd_caller_phone_2,
+                upd_caller_phone_3,
+                upd_caller_address,
+                upd_caller_email,
+                upd_reported_by_code,
+                upd_reported_by_other_text,
 	            create_user_id,
 	            create_utc_timestamp,
 	            update_user_id,
@@ -4705,6 +4838,14 @@ BEGIN
 	            insert_upd_location_summary_text,
 	            insert_upd_location_detailed_text,
 	            insert_upd_location_geometry_point,
+                insert_upd_caller_name,
+                insert_upd_caller_phone_1,
+                insert_upd_caller_phone_2,
+                insert_upd_caller_phone_3,
+                insert_upd_caller_address,
+                insert_upd_caller_email,
+                insert_upd_reported_by_code,
+                insert_upd_reported_by_other_text,
 	            _create_userid,
 	            _create_utc_timestamp,
 	            _update_userid,
@@ -10350,15 +10491,6 @@ END;]]></definition>
     -- means that WebEOC will not be able to update a value to the original value, but that's something the project
     -- team has decided to risk.
     original_complaint_record JSONB;
-    _update_caller_name VARCHAR(120);
-    _update_caller_phone_1 VARCHAR(15);
-    _update_caller_phone_2 VARCHAR(15);
-    _update_caller_phone_3 VARCHAR(15);
-    _update_caller_email VARCHAR(120);
-    _update_caller_address VARCHAR(120);
-    _update_reported_by_code VARCHAR(10);
-    _update_webeoc_reported_by_code VARCHAR(200);
-    _update_reported_by_other_text VARCHAR(120);
     _update_webeoc_species VARCHAR(200); -- species code from WebEOC
     _update_species_code VARCHAR(10); -- our species code, based on the code from WebEOC
     _parent_report_type VARCHAR(10); -- used to differentiate between HWCR and ERS complaints.  ignore anything else
@@ -10369,46 +10501,20 @@ END;]]></definition>
     _update_utc_timestamp TIMESTAMP := (NOW() AT TIME ZONE 'UTC');
     
     -- Original complaint values, used to compare against incoming changes
-    _original_caller_name VARCHAR(120);
-    _original_caller_phone_1 VARCHAR(15);
-    _original_caller_phone_2 VARCHAR(15);
-    _original_caller_phone_3 VARCHAR(15);
-    _original_caller_email VARCHAR(120);
-    _original_caller_address VARCHAR(120);
-    _original_reported_by_code VARCHAR(10);
-    _original_reported_by_other_text VARCHAR(120);
     _original_species_code VARCHAR(10);
     _original_violation_type_code VARCHAR(10);
    
    _current_species_code VARCHAR(10);
    _current_violation_type_code VARCHAR(10);
    
-    -- used to indicate if the update causes an edit to the complaint record
-    update_edit_ind boolean = false;
-   
     USERNAME_TXT CONSTANT varchar(8) = 'username';
    
 BEGIN
     -- These fields are retrieved to potentially update an existing complaint record
-    _update_caller_name := update_complaint_data ->> 'update_caller_name';
-    _update_caller_phone_1 := format_phone_number(update_complaint_data ->> 'update_primary_phone');
-    _update_caller_phone_2 := format_phone_number(update_complaint_data ->> 'update_alt_phone');
-    _update_caller_phone_3 := format_phone_number(update_complaint_data ->> 'update_alt_phone_2');
-    _update_caller_email := update_complaint_data ->> 'update_caller_email';
-    _update_caller_address := update_complaint_data ->> 'update_caller_address';
-    _update_webeoc_reported_by_code := update_complaint_data ->> 'update_reffered_by_lst';
-    _update_reported_by_other_text := update_complaint_data ->> 'update_reffered_by_txt';
     _update_webeoc_species := update_complaint_data ->> 'update_species';
     _parent_report_type := update_complaint_data ->> 'parent_report_type';
     _create_userid := substring(update_complaint_data ->> USERNAME_TXT from 1 for 32);
     _update_userid := substring(update_complaint_data ->> USERNAME_TXT from 1 for 32);
-
-
-    -- Get the codes from our application (inserting if necessary) for the codes retrieved from WebEOC
-    SELECT *
-    INTO   _update_reported_by_code
-    FROM   PUBLIC.insert_and_return_code(_update_webeoc_reported_by_code, 'reprtdbycd');
-
    
     -- Get the current state of the complaint
     SELECT *
@@ -10422,98 +10528,6 @@ BEGIN
     from PUBLIC.complaint_h ch 
     where ch.target_row_id = _complaint_identifier
     and ch.operation_type = 'I';
-   
-   -- Parse the variables out of the original complaint history record
-    _original_caller_name := original_complaint_record ->> 'caller_name';
-    _original_caller_phone_1 := format_phone_number(original_complaint_record ->> 'caller_phone_1');
-    _original_caller_phone_2 := format_phone_number(original_complaint_record ->> 'caller_phone_2');
-    _original_caller_phone_3 := format_phone_number(original_complaint_record ->> 'caller_phone_3');
-    _original_caller_email := original_complaint_record ->> 'caller_email';
-    _original_caller_address := original_complaint_record ->> 'caller_address';
-    -- need to get from hrc/allegation history table
-    _original_reported_by_code := original_complaint_record ->> 'referred_by_agency_code';
-    _original_reported_by_other_text := original_complaint_record ->> 'referred_by_agency_other_text';
-   
-   -- update the complaint data, if the incoming webeoc contains applicable updates
-   if ((COALESCE(_update_caller_name, '') <> COALESCE(_original_caller_name, '')) and 
-    (COALESCE(_update_caller_name, '') <> COALESCE(current_complaint_record.caller_name, ''))) then
-	    UPDATE complaint
-	    SET caller_name = _update_caller_name
-	    WHERE complaint_identifier = _complaint_identifier;
-	
-	    update_edit_ind = true;
-  end if;
-  
-  _update_caller_phone_1 := format_phone_number(_update_caller_phone_1);
-  if ((COALESCE(_update_caller_phone_1, '') <> COALESCE(_original_caller_phone_1, '')) and 
-    (COALESCE(_update_caller_phone_1, '') <> COALESCE(current_complaint_record.caller_phone_1, ''))) then
-        
-	    UPDATE complaint
-	    SET caller_phone_1 = _update_caller_phone_1
-	    WHERE complaint_identifier = _complaint_identifier;
-	
-	    update_edit_ind = true;
-  end if;
-  
-  _update_caller_phone_2 := format_phone_number(_update_caller_phone_2);
-  if ((COALESCE(_update_caller_phone_2, '') <> COALESCE(_original_caller_phone_2, '')) and 
-    (COALESCE(_update_caller_phone_2, '') <> COALESCE(current_complaint_record.caller_phone_2, ''))) then
-    	
-	    UPDATE complaint
-	    SET caller_phone_2 = _update_caller_phone_2
-	    WHERE complaint_identifier = _complaint_identifier;
-	
-	    update_edit_ind = true;
-  end if;
-  
-  _update_caller_phone_3 := format_phone_number(_update_caller_phone_3);
-  if ((COALESCE(_update_caller_phone_3, '') <> COALESCE(_original_caller_phone_3, '')) and 
-    (COALESCE(_update_caller_phone_3, '') <> COALESCE(current_complaint_record.caller_phone_3, ''))) then
-    	
-	    UPDATE complaint
-	    SET caller_phone_3 = _update_caller_phone_3
-	    WHERE complaint_identifier = _complaint_identifier;
-	    update_edit_ind = true;
-  end if;
-  
-  if ((COALESCE(_update_caller_email, '') <> COALESCE(_original_caller_email, '')) and 
-    (COALESCE(_update_caller_email, '') <> COALESCE(current_complaint_record.caller_email, ''))) then 
-		UPDATE complaint
-		SET caller_email = _update_caller_email
-		WHERE complaint_identifier = _complaint_identifier;
-		update_edit_ind = true;
-  end if;
-  
-  if ((COALESCE(_update_caller_address, '') <> COALESCE(_original_caller_address, '')) and 
-    (COALESCE(_update_caller_address, '') <> COALESCE(current_complaint_record.caller_address, ''))) then 
-	    UPDATE complaint
-	    SET caller_address = _update_caller_address
-	    WHERE complaint_identifier = _complaint_identifier;
-	    update_edit_ind = true;
-  end if;
-  
-  if ((COALESCE(_update_reported_by_code, '') <> COALESCE(_original_reported_by_code, '')) and 
-    (COALESCE(_update_reported_by_code, '') <> COALESCE(current_complaint_record.reported_by_code, ''))) then 
-	    UPDATE complaint
-	    SET reported_by_code = _update_reported_by_code
-	    WHERE complaint_identifier = _complaint_identifier;
-	    update_edit_ind = true;
-  end if;
-   
-  if ((COALESCE(_update_reported_by_other_text, '') <> COALESCE(_original_reported_by_other_text, '')) and 
-    (COALESCE(_update_reported_by_other_text, '') <> COALESCE(current_complaint_record.reported_by_other_text, ''))) then 
-	    UPDATE complaint
-	    SET reported_by_other_text = _update_reported_by_other_text
-	    WHERE complaint_identifier = _complaint_identifier;
-	    update_edit_ind = true;
-  end if;
-   
-  -- the update caused an edit, set the audit fields
-  if (update_edit_ind) then
-	  update complaint
-	  set update_user_id = _update_userid, update_utc_timestamp = _update_utc_timestamp, comp_last_upd_utc_timestamp = _update_utc_timestamp
-	  where complaint_identifier = _complaint_identifier;
-  end if;
   
   if (_parent_report_type = 'HWCR') then
     -- get the code based on the update from WebEOC

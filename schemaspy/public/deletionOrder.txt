@@ -41,7 +41,6 @@ team_code
 staging_status_code
 staging_activity_code
 species_code
-reported_by_code
 person_complaint_xref_code
 hwcr_complaint_nature_code
 gir_type_code
@@ -53,5 +52,6 @@ complaint_method_received_code
 attractant_code
 violation_code
 spatial_ref_sys
+reported_by_code
 person
 agency_code
