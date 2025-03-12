@@ -1,3 +1,4 @@
+import { ReportedByCode } from "../../../v1/reported_by_code/entities/reported_by_code.entity";
 import { Point } from "typeorm";
 
 export class ComplaintUpdatesDto {
@@ -8,6 +9,14 @@ export class ComplaintUpdatesDto {
   updLocationSummaryText?: string;
   updLocationDetailedText?: string;
   updLocationGeometryPoint?: Point;
+  updCallerName?: string;
+  updCallerPhone1?: string;
+  updCallerPhone2?: string;
+  updCallerPhone3?: string;
+  updCallerAddress?: string;
+  updCallerEmail?: string;
+  updReportedByCode?: ReportedByCode;
+  updReportedByOtherText?: string;
   createUserId: string;
   createUtcTimestamp: Date;
   updateUserId: string;

@@ -1799,6 +1799,8 @@ export class ComplaintService {
             complaint_identifier: id,
           },
         })
+        .leftJoin("updates.reported_by_code", "reported_by")
+        .addSelect("reported_by.long_description")
         .orderBy({
           update_seq_number: "DESC",
         });
@@ -1825,6 +1827,15 @@ export class ComplaintService {
             details: item.updLocationDetailedText,
             latitude,
             longitude,
+          },
+          caller: {
+            name: item.updCallerName,
+            primaryPhone: item.updCallerPhone1,
+            alternativePhone1: item.updCallerPhone2,
+            alternativePhone2: item.updCallerPhone3,
+            address: item.updCallerAddress,
+            email: item.updCallerEmail,
+            organizationReportingComplaint: item.reported_by_code?.long_description,
           },
         };
         return record;
