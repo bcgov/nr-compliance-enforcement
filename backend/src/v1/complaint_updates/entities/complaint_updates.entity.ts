@@ -1,6 +1,7 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, Point } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
 import { Complaint } from "../../../v1/complaint/entities/complaint.entity";
+import { ReportedByCode } from "../../reported_by_code/entities/reported_by_code.entity";
 
 @Index("complaint_update_pk", ["complaintUpdateGuid"], { unique: true })
 @Entity("complaint_update", { schema: "public" })
@@ -109,6 +110,64 @@ export class ComplaintUpdate {
   })
   @Column({ length: 20 })
   webeoc_identifier: string;
+
+  @ApiProperty({
+    example: "Homer Simpson",
+    description: "The name provided by the caller to the call centre or entered onto the web form.",
+  })
+  @Column("text", { name: "upd_caller_name", nullable: true })
+  updCallerName: string | null;
+
+  @ApiProperty({
+    example: "+2501234567",
+    description: "The primary phone number provided by the caller to the call centre or entered onto the web form.",
+  })
+  @Column("text", { name: "upd_caller_phone_1", nullable: true })
+  updCallerPhone1: string | null;
+
+  @ApiProperty({
+    example: "+2507654321",
+    description: "An alternate phone number provided by the caller to the call centre or entered onto the web form.",
+  })
+  @Column("text", { name: "upd_caller_phone_2", nullable: true })
+  updCallerPhone2: string | null;
+
+  @ApiProperty({
+    example: "+2508675309",
+    description: "An alternate phone number provided by the caller to the call centre or entered onto the web form.",
+  })
+  @Column("text", { name: "upd_caller_phone_3", nullable: true })
+  updCallerPhone3: string | null;
+
+  @ApiProperty({
+    example: "123 Main Street",
+    description: "The address provided by the caller to the call centre or entered onto the web form.",
+  })
+  @Column("text", { name: "upd_caller_address", nullable: true })
+  updCallerAddress: string | null;
+
+  @ApiProperty({
+    example: "example@email.com",
+    description: "The email address provided by the caller to the call centre or entered onto the web form.",
+  })
+  @Column("text", { name: "upd_caller_email", nullable: true })
+  updCallerEmail: string | null;
+
+  @ManyToOne(() => ReportedByCode, (reported_by_code) => reported_by_code.reported_by_code)
+  @JoinColumn([
+    {
+      name: "upd_reported_by_code",
+      referencedColumnName: "reported_by_code",
+    },
+  ])
+  reported_by_code: ReportedByCode;
+
+  @ApiProperty({
+    example: "Ministry of Silly Walks",
+    description: "Provides a more detailed description when the referred by Agency is of type 'OTHER'",
+  })
+  @Column("text", { name: "upd_reported_by_other_text", nullable: true })
+  updReportedByOtherText: string | null;
 
   @ManyToOne(() => Complaint, (complaint) => complaint.complaint_update)
   @JoinColumn([

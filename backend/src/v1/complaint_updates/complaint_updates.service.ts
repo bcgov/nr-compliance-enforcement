@@ -28,6 +28,9 @@ export class ComplaintUpdatesService {
           complaint_identifier: id,
         },
       },
+      relations: {
+        reported_by_code: true,
+      },
       order: {
         updateSeqNumber: "DESC",
       },
