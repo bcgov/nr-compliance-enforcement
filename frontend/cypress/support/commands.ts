@@ -138,8 +138,7 @@ Cypress.Commands.add("hasErrorMessage", (inputs: Array<string>, toastText?: stri
   });
 
   //validate the toast
-  if(toastText)
-  {
+  if (toastText) {
     cy.get(".Toastify__toast-body").then(($toast) => {
       expect($toast).to.contain.text(toastText);
     });
@@ -200,7 +199,7 @@ Cypress.Commands.add("verifyAttachmentsCarousel", (uploadable: boolean, divId: s
     cy.get("div.comp-carousel").should("exist");
 
     if (!uploadable) {
-      cy.get("button.comp-attachment-upload-btn").should("not.exist");
+      cy.get(".comp-attachment-upload-btn").should("not.exist");
 
       cy.get(".comp-attachment-slide-actions").first().invoke("attr", "style", "display: block");
 
@@ -448,9 +447,7 @@ Cypress.Commands.add(
   },
 );
 
-Cypress.Commands.add(
-  "assignSelfToComplaint",
-  () => {
+Cypress.Commands.add("assignSelfToComplaint", () => {
   cy.get("#details-screen-assign-button").click();
   cy.get("#self_assign_button").click();
   cy.waitForSpinner();
