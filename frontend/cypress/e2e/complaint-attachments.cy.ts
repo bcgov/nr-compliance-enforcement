@@ -32,12 +32,12 @@ describe("Complaint Attachments", () => {
       }
 
       // should be able to upload on details view
-      cy.get("button.comp-attachment-upload-btn").should("exist");
+      cy.get(".comp-attachment-upload-btn").should("exist");
     });
   });
 
   it("Verifies that upload option exists on the create page", () => {
     cy.navigateToCreateScreen();
-    cy.get("button.comp-attachment-upload-btn").should("exist");
+    cy.get(".comp-attachment-upload-btn").should("exist");
   });
 });
