@@ -335,147 +335,6 @@
                                     </td>
                                     <td><p>Unique Identifier from the webEOC source system to identify a complaint update.   This is required as the natural key is not available in all webEOC APIs</p></td>
                                 </tr>
-                                <tr>
-                                    <td><span id="upd_caller_name">upd_caller_name</span></td>
-                                    <td>varchar</td>
-                                    <td>120</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The name provided by the caller to the call centre or entered onto the web form.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="upd_caller_phone_1">upd_caller_phone_1</span></td>
-                                    <td>varchar</td>
-                                    <td>15</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The primary phone number provided by the caller to the call centre or entered onto the web form.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="upd_caller_phone_2">upd_caller_phone_2</span></td>
-                                    <td>varchar</td>
-                                    <td>15</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>An alternate phone number provided by the caller to the call centre or entered onto the web form.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="upd_caller_phone_3">upd_caller_phone_3</span></td>
-                                    <td>varchar</td>
-                                    <td>15</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>An alternate phone number provided by the caller to the call centre or entered onto the web form.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="upd_caller_address">upd_caller_address</span></td>
-                                    <td>varchar</td>
-                                    <td>120</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The address provided by the caller to the call centre or entered onto the web form.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="upd_caller_email">upd_caller_email</span></td>
-                                    <td>varchar</td>
-                                    <td>120</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The email address provided by the caller to the call centre or entered onto the web form.</p></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="upd_reported_by_code">upd_reported_by_code</span></td>
-                                    <td>varchar</td>
-                                    <td>10</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="complaint_update.upd_reported_by_code references reported_by_code.reported_by_code via fk_reported_by_code"><a href='reported_by_code.html'>reported_by_code</a><span class='relatedKey'>.reported_by_code</span></td>
-                                                <td class="constraint detail">fk_reported_by_code</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td><p>A human readable code used to identify an agency.  The agency that originally referred the updated complaint.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="upd_reported_by_other_text">upd_reported_by_other_text</span></td>
-                                    <td>varchar</td>
-                                    <td>120</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Provides a more detailed description when the referred by Agency is of type &ldquo;OTHER&rdquo;</p></td>
-                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -537,56 +396,54 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="281,151,637,444">
-<area shape="rect" id="node2" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="5,329,237,447">
-<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="681,5,1135,661">
+<area shape="rect" id="node1" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="405,5,859,427">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="5,37,361,331">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/complaint_update.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="926,111,1173,199">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="619,324,779,412">
-<area shape="rect" id="node3" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="229,164,575,252">
-<area shape="rect" id="node4" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,40,185,128">
-<area shape="rect" id="node5" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="271,316,533,404">
-<area shape="rect" id="node6" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="253,421,551,509">
-<area shape="rect" id="node7" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="292,687,512,775">
-<area shape="rect" id="node8" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="935,5,1163,93">
-<area shape="rect" id="node9" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="823,637,1276,1293">
-<area shape="rect" id="node10" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="955,216,1143,304">
-<area shape="rect" id="node11" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="946,321,1153,409">
-<area shape="rect" id="node12" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="922,427,1177,515">
-<area shape="rect" id="node13" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="919,532,1180,620">
+<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="1122,5,1369,93">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="619,652,975,945">
+<area shape="rect" id="node3" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="229,924,575,1012">
+<area shape="rect" id="node4" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,963,185,1051">
+<area shape="rect" id="node5" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="271,713,533,801">
+<area shape="rect" id="node6" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="253,819,551,907">
+<area shape="rect" id="node7" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="292,572,512,660">
+<area shape="rect" id="node8" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="1131,1000,1359,1088">
+<area shape="rect" id="node9" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="1019,111,1472,532">
+<area shape="rect" id="node10" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="1151,549,1339,637">
+<area shape="rect" id="node11" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="1142,655,1349,743">
+<area shape="rect" id="node12" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="1118,760,1373,848">
+<area shape="rect" id="node13" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="1115,865,1376,953">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/complaint_update.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="1179,5,1413,181">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="281,117,637,411">
-<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="681,85,1135,741">
-<area shape="rect" id="node4" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="5,324,237,441">
+<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="903,5,1137,181">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="5,64,361,357">
+<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="405,85,859,507">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/complaint_update.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="1320,432,1503,520">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="619,360,779,448">
-<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="823,779,1276,1435">
-<area shape="rect" id="node5" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="229,180,575,268">
-<area shape="rect" id="node6" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,45,185,133">
-<area shape="rect" id="node7" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="271,349,533,437">
-<area shape="rect" id="node8" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="253,455,551,543">
-<area shape="rect" id="node9" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="292,747,512,835">
-<area shape="rect" id="node4" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="926,147,1173,235">
-<area shape="rect" id="node10" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="935,5,1163,93">
-<area shape="rect" id="node11" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="955,252,1143,340">
-<area shape="rect" id="node12" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="946,357,1153,445">
-<area shape="rect" id="node13" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="922,463,1177,551">
-<area shape="rect" id="node14" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="919,568,1180,656">
-<area shape="rect" id="node15" href="staging_complaint.html" target="_top" title="staging_complaint" alt="" coords="937,673,1162,761">
+<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="1320,55,1503,143">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="619,843,779,931">
+<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="823,85,1276,507">
+<area shape="rect" id="node5" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="229,728,575,816">
+<area shape="rect" id="node6" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,976,185,1064">
+<area shape="rect" id="node7" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="271,869,533,957">
+<area shape="rect" id="node8" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="253,975,551,1063">
+<area shape="rect" id="node9" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="292,1080,512,1168">
+<area shape="rect" id="node4" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="926,524,1173,612">
+<area shape="rect" id="node10" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="935,1156,1163,1244">
+<area shape="rect" id="node11" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="955,629,1143,717">
+<area shape="rect" id="node12" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="946,735,1153,823">
+<area shape="rect" id="node13" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="922,840,1177,928">
+<area shape="rect" id="node14" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="919,945,1180,1033">
+<area shape="rect" id="node15" href="staging_complaint.html" target="_top" title="staging_complaint" alt="" coords="937,1051,1162,1139">
 </map>
                                         <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/complaint_update.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>

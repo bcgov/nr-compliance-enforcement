@@ -1,6 +1,5 @@
 agency_code
 person
-reported_by_code
 spatial_ref_sys
 violation_code
 attractant_code
@@ -12,6 +11,7 @@ geo_org_unit_type_code
 gir_type_code
 hwcr_complaint_nature_code
 person_complaint_xref_code
+reported_by_code
 species_code
 staging_activity_code
 staging_status_code
