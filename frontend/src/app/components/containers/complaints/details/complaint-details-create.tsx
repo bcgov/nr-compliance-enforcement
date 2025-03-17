@@ -81,18 +81,6 @@ export const CreateComplaint: FC = () => {
     setComplaintAttachmentCount(count);
   };
 
-  // Initialize the assignableOfficers when the page first loads
-  useEffect(() => {
-    if (officerList) {
-      const initialAssignableOfficers = officerList.map((officer: Officer) => ({
-        value: officer.person_guid.person_guid,
-        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-      }));
-
-      setAssignableOfficers(initialAssignableOfficers);
-    }
-  }, [officerList]);
-
   //Only remove all options but HWCR for HWCR only
   let selectableComplaintTypeCodes = complaintTypeCodes;
   if (UserService.hasRole(Roles.HWCR_ONLY)) {
@@ -131,7 +119,6 @@ export const CreateComplaint: FC = () => {
   }
 
   const [complaintType, setComplaintType] = useState<string>(initialComplaintType);
-
   const [complaintTypeMsg, setComplaintTypeMsg] = useState<string>("");
   const [natureOfComplaintErrorMsg, setNatureOfComplaintErrorMsg] = useState<string>("");
   const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
@@ -155,6 +142,22 @@ export const CreateComplaint: FC = () => {
 
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
+
+  // Initialize the assignableOfficers when the page first loads
+  useEffect(() => {
+    if (officerList) {
+      const initialAssignableOfficers = officerList
+        .filter(
+          (officer: Officer) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+        ) // Filter out officers with the specified role
+        .map((officer: Officer) => ({
+          value: officer.person_guid.person_guid,
+          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+        }));
+
+      setAssignableOfficers(initialAssignableOfficers);
+    }
+  }, [officerList, complaintType]);
 
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
