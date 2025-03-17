@@ -33,6 +33,8 @@ export class WebEocScheduler {
       const logDir = process.env.WEBEOC_LOG_PATH || "/mnt/data";
       await this.cleanupOldLogs(logDir);
 
+      await this.alterWebEOCSession("POST");
+
       //-- don't remove these items, these control complaints and complaint updates
       await this.fetchAndPublishComplaints(
         OPERATIONS.COMPLAINT,
@@ -61,6 +63,8 @@ export class WebEocScheduler {
         WEBEOC_FLAGS.ACTIONS_TAKEN_UPDATES,
         this._publishActionUpdate.bind(this),
       );
+
+      await this.alterWebEOCSession("DELETE");
     });
 
     this.cronJob.start();
@@ -216,8 +220,6 @@ export class WebEocScheduler {
       //This is the timestamp that will be written to the log.   Going to start without any padding but we might need to subtract some time from this value if we find that we are losing complaints.
       const timeStamp = this.formatDate(new Date());
 
-      await this.authenticateWithWebEOC();
-
       const data = await this.fetchDataFromWebEOC(urlPath, flagName, operationType);
 
       this.logger.debug(`Found ${data?.length} ${operationType} from WebEOC`);
@@ -240,8 +242,9 @@ export class WebEocScheduler {
     }
   }
 
-  private async authenticateWithWebEOC(): Promise<string> {
-    this.logger.debug(`Authenticating with webEOC from ${process.env.WEBEOC_URL}`);
+  //used to either login in or logout of webEOC session.
+  private async alterWebEOCSession(action: "POST" | "DELETE"): Promise<string> {
+    this.logger.debug(`${action}ing webEOC session from ${process.env.WEBEOC_URL}`);
     const authUrl = `${process.env.WEBEOC_URL}/sessions`;
 
     const credentials = {
@@ -253,14 +256,23 @@ export class WebEocScheduler {
 
     const config: AxiosRequestConfig = {
       withCredentials: true,
+      headers: {
+        Cookie: this.cookie,
+      },
     };
 
     try {
-      const response = await axios.post(authUrl, credentials, config);
-      this.cookie = response.headers["set-cookie"][0];
+      let response;
+      if (action === "POST") {
+        response = await axios.post(authUrl, credentials, config);
+      } else {
+        response = await axios.delete(authUrl, config);
+      }
+
+      this.cookie = response.headers["set-cookie"]?.[0] || "";
       return this.cookie;
     } catch (error) {
-      this.logger.error("Error authenticating with WebEOC:", error);
+      this.logger.error(`Error ${action}ing WebEOC session:`, error);
       throw error;
     }
   }
