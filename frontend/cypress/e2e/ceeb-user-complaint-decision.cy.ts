@@ -110,14 +110,36 @@ describe("CEEB Complaints can be created and outcome decisions set ", () => {
 
   it("can save a authorization id on a complaint with a violation type of Waste", function () {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, complaintId, true);
+    //delete authorization if it exists
+    cy.get("#ceeb-authorization").then(function ($authorization) {
+      const deleteBtn = $authorization.find("#ceeb-authorization-delete-btn");
+      // Check if the button was found
+      if (deleteBtn.length) {
+        cy.get("#ceeb-authorization-delete-btn").click();
+        cy.get(".modal-footer > .btn-primary").click();
+      } else {
+        cy.log("The delete button is not visible, skipping the click actions.");
+      }
+    });
     cy.get("#outcome-authroization-authroized-site").click({ force: true }).clear().type("0000001");
     cy.get("#outcome-authorization-save-button").click({ force: true });
     cy.waitForSpinner();
     cy.get('dd[id="authorization-id"]').contains("0000001");
   });
 
-  it("can save a decision on a complaint with a violation type of Waste", function () {
+  it("can save or edit a decision on a complaint with a violation type of Waste", function () {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, complaintId, true);
+
+    //Determine if we need to save or edit
+    cy.get("#ceeb-decision").then(function ($decision) {
+      const editBtn = $decision.find("#decision-edit-button");
+      // Check if the button was found
+      if (editBtn.length) {
+        cy.get("#decision-edit-button").click();
+      } else {
+        cy.log("The edit button is not visible, skipping the click actions.");
+      }
+    });
 
     // Verify that IPM Sector Type rules are applied when not selected
     cy.selectItemById("outcome-decision-schedule-sector", "WDR schedule 1");
