@@ -42,6 +42,10 @@ export const formatDateTime = (input: string | undefined): string => {
 //-- if the number can't be formatted return the value provided
 //--
 export const formatPhonenumber = (input: string): string => {
+  //Exit early if nothing passed in
+  if (!input) {
+    return;
+  }
   //-- check the incoming phone number to see if its been formatted
   //-- correctly. Expecting input to be formatted as: +12505551234
   //-- if this is correct format the number and return it
