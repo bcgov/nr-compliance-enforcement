@@ -65,6 +65,7 @@ export const CreateComplaint: FC = () => {
   const agency = getUserAgency();
   const officerList = useSelector((state: RootState) => selectOfficersByAgency(state, agency));
   const [assignableOfficers, setAssignableOfficers] = useState<Option[]>([]);
+  const [assignedOfficer, setAssignedOfficer] = useState<Option | null>(null);
   const speciesCodes = useAppSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
   const complaintTypeCodes = useAppSelector(selectCreatableComplaintTypeDropdown);
@@ -74,7 +75,6 @@ export const CreateComplaint: FC = () => {
   const violationTypeCodes = useAppSelector(selectViolationCodeDropdown(agency)) as Option[];
   const generalIncidentTypeCodes = useAppSelector(selectGirTypeCodeDropdown) as Option[];
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
-
   const activeTab = useAppSelector(selectActiveTab);
 
   const handleSlideCountChange = (count: number) => {
@@ -241,6 +241,14 @@ export const CreateComplaint: FC = () => {
         ...rest
       } = complaintData as any;
       applyComplaintData(rest);
+
+      //-- clear the assigned officer (remove the ASSIGNEE delegate)
+      const { delegates } = complaintData as ComplaintDto;
+      let updatedDelegates = delegates.filter(({ type }) => type !== "ASSIGNEE");
+
+      const complaint = { ...complaintData, delegates: updatedDelegates } as ComplaintDto;
+      applyComplaintData(complaint);
+      handleAssignedOfficerChange(null);
     } else {
       setComplaintTypeMsg("Required");
       setComplaintType("");
@@ -350,6 +358,7 @@ export const CreateComplaint: FC = () => {
 
         const complaint = { ...complaintData, delegates: updatedDelegates } as ComplaintDto;
         applyComplaintData(complaint);
+        setAssignedOfficer(selected);
       } else if (from(delegates).any() && from(delegates).any((item) => item.type === "ASSIGNEE")) {
         let delegate = delegates.find((item) => item.type === "ASSIGNEE");
         let updatedDelegate = { ...delegate, isActive: false } as Delegate;
@@ -358,11 +367,13 @@ export const CreateComplaint: FC = () => {
 
         const complaint = { ...complaintData, delegates: updatedDelegates } as ComplaintDto;
         applyComplaintData(complaint);
+        setAssignedOfficer(null);
       }
     } else {
       let updatedDelegates = delegates.filter(({ type }) => type !== "ASSIGNEE");
       const complaint = { ...complaintData, delegates: updatedDelegates } as ComplaintDto;
       applyComplaintData(complaint);
+      setAssignedOfficer(null);
     }
   };
 
@@ -745,6 +756,7 @@ export const CreateComplaint: FC = () => {
                 placeholder="Select"
                 enableValidation={false}
                 isClearable={true}
+                value={assignedOfficer}
               />
             </div>
           </div>
