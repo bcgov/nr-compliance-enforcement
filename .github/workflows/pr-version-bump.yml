@@ -17,6 +17,7 @@ jobs:
     if: github.event.pull_request.merged == true
     steps:
       - name: Validate Inputs
+        id: input-setup
         shell: bash
         run: |
           echo "Checking for mandatory inputs"
@@ -28,12 +29,13 @@ jobs:
             echo "Secret TEAM_WOLVERINE_GITHUB_APP_PRIVATE_KEY not found"
             exit 1
           fi
+          echo "::set-output name=app-private-key::$(echo -n "${{ secrets.TEAM_WOLVERINE_GITHUB_APP_PRIVATE_KEY }}" | base64 --decode)"
 
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
           app-id: ${{ vars.TEAM_WOLVERINE_GITHUB_APP_ID }}
-          private-key: ${{ secrets.TEAM_WOLVERINE_GITHUB_APP_PRIVATE_KEY }}
+          private-key: ${{ steps.input-setup.outputs.app-private-key }}
 
       - uses: actions/checkout@v4
         with:
