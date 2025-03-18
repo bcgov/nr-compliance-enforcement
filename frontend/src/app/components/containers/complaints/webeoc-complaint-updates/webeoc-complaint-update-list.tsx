@@ -6,6 +6,7 @@ import { formatDate, formatTime } from "@common/methods";
 import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 import { ComplaintReferral } from "@/app/types/app/complaints/complaint-referral";
 import { UUID } from "crypto";
+import { formatPhoneNumber } from "react-phone-number-input/input";
 
 type Props = {
   complaintIdentifier: string;
@@ -271,7 +272,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                   <div className="complaint-description-section">
                     <div className="comp-complaint-update-label">Primary Phone:</div>
                     <div className="complaint-description-text">
-                      {(update.content as WebEOCComplaintUpdateDTO).updCallerPhone1}
+                      {formatPhoneNumber((update.content as WebEOCComplaintUpdateDTO).updCallerPhone1 ?? "")}
                     </div>
                   </div>
                 )}
@@ -279,7 +280,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                   <div className="complaint-description-section">
                     <div className="comp-complaint-update-label">Alternative phone 1:</div>
                     <div className="complaint-description-text">
-                      {(update.content as WebEOCComplaintUpdateDTO).updCallerPhone2}
+                      {formatPhoneNumber((update.content as WebEOCComplaintUpdateDTO).updCallerPhone2 ?? "")}
                     </div>
                   </div>
                 )}
@@ -287,7 +288,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                   <div className="complaint-description-section">
                     <div className="comp-complaint-update-label">Alternative phone 2:</div>
                     <div className="complaint-description-text">
-                      {(update.content as WebEOCComplaintUpdateDTO).updCallerPhone3}
+                      {formatPhoneNumber((update.content as WebEOCComplaintUpdateDTO).updCallerPhone3 ?? "")}
                     </div>
                   </div>
                 )}
