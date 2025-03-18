@@ -219,30 +219,12 @@ export const CreateComplaint: FC = () => {
     handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
   };
 
-  const refreshOfficers = (complaintType: string) => {
-    const filteredOfficers = officerList
-      ? officerList
-          .filter(
-            (officer: Officer) =>
-              complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
-          ) // Filter out officers with the specified role
-          .map((officer: Officer) => ({
-            value: officer.person_guid.person_guid,
-            label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-          }))
-      : [];
-
-    setAssignableOfficers(filteredOfficers); // Set the filtered officers as options
-  };
-
   const handleComplaintChange = (selected: Option | null) => {
     if (selected?.value && selected?.value !== "") {
       const { value } = selected;
 
       setComplaintTypeMsg("");
       setComplaintType(value);
-
-      refreshOfficers(value);
 
       //-- remove all of the properties associated with a wildlife or allegation complaint
       const {
