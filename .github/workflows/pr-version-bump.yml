@@ -24,8 +24,8 @@ jobs:
             echo "Variable TEAM_WOLVERINE_GITHUB_APP_ID not found"
             exit 1
           fi
-          if [ ! "${{ vars.TEAM_WOLVERINE_GITHUB_APP_PRIVATE_KEY }}" ]; then
-            echo "Variable TEAM_WOLVERINE_GITHUB_APP_PRIVATE_KEY not found"
+          if [ ! "${{ secrets.TEAM_WOLVERINE_GITHUB_APP_PRIVATE_KEY }}" ]; then
+            echo "Secret TEAM_WOLVERINE_GITHUB_APP_PRIVATE_KEY not found"
             exit 1
           fi
 
