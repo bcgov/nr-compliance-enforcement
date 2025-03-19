@@ -65,6 +65,7 @@ export const CreateComplaint: FC = () => {
   const agency = getUserAgency();
   const officerList = useSelector((state: RootState) => selectOfficersByAgency(state, agency));
   const [assignableOfficers, setAssignableOfficers] = useState<Option[]>([]);
+  const [assignedOfficer, setAssignedOfficer] = useState<Option | null>(null);
   const speciesCodes = useAppSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
   const complaintTypeCodes = useAppSelector(selectCreatableComplaintTypeDropdown);
@@ -74,24 +75,11 @@ export const CreateComplaint: FC = () => {
   const violationTypeCodes = useAppSelector(selectViolationCodeDropdown(agency)) as Option[];
   const generalIncidentTypeCodes = useAppSelector(selectGirTypeCodeDropdown) as Option[];
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
-
   const activeTab = useAppSelector(selectActiveTab);
 
   const handleSlideCountChange = (count: number) => {
     setComplaintAttachmentCount(count);
   };
-
-  // Initialize the assignableOfficers when the page first loads
-  useEffect(() => {
-    if (officerList) {
-      const initialAssignableOfficers = officerList.map((officer: Officer) => ({
-        value: officer.person_guid.person_guid,
-        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-      }));
-
-      setAssignableOfficers(initialAssignableOfficers);
-    }
-  }, [officerList]);
 
   //Only remove all options but HWCR for HWCR only
   let selectableComplaintTypeCodes = complaintTypeCodes;
@@ -131,7 +119,6 @@ export const CreateComplaint: FC = () => {
   }
 
   const [complaintType, setComplaintType] = useState<string>(initialComplaintType);
-
   const [complaintTypeMsg, setComplaintTypeMsg] = useState<string>("");
   const [natureOfComplaintErrorMsg, setNatureOfComplaintErrorMsg] = useState<string>("");
   const [violationTypeErrorMsg, setViolationTypeErrorMsg] = useState<string>("");
@@ -155,6 +142,22 @@ export const CreateComplaint: FC = () => {
 
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
+
+  // Initialize the assignableOfficers when the page first loads
+  useEffect(() => {
+    if (officerList) {
+      const initialAssignableOfficers = officerList
+        .filter(
+          (officer: Officer) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+        ) // Filter out officers with the specified role
+        .map((officer: Officer) => ({
+          value: officer.person_guid.person_guid,
+          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+        }));
+
+      setAssignableOfficers(initialAssignableOfficers);
+    }
+  }, [officerList, complaintType]);
 
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
@@ -216,30 +219,12 @@ export const CreateComplaint: FC = () => {
     handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
   };
 
-  const refreshOfficers = (complaintType: string) => {
-    const filteredOfficers = officerList
-      ? officerList
-          .filter(
-            (officer: Officer) =>
-              complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
-          ) // Filter out officers with the specified role
-          .map((officer: Officer) => ({
-            value: officer.person_guid.person_guid,
-            label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
-          }))
-      : [];
-
-    setAssignableOfficers(filteredOfficers); // Set the filtered officers as options
-  };
-
   const handleComplaintChange = (selected: Option | null) => {
     if (selected?.value && selected?.value !== "") {
       const { value } = selected;
 
       setComplaintTypeMsg("");
       setComplaintType(value);
-
-      refreshOfficers(value);
 
       //-- remove all of the properties associated with a wildlife or allegation complaint
       const {
@@ -256,6 +241,14 @@ export const CreateComplaint: FC = () => {
         ...rest
       } = complaintData as any;
       applyComplaintData(rest);
+
+      //-- clear the assigned officer (remove the ASSIGNEE delegate)
+      const { delegates } = complaintData as ComplaintDto;
+      let updatedDelegates = delegates.filter(({ type }) => type !== "ASSIGNEE");
+
+      const complaint = { ...complaintData, delegates: updatedDelegates } as ComplaintDto;
+      applyComplaintData(complaint);
+      handleAssignedOfficerChange(null);
     } else {
       setComplaintTypeMsg("Required");
       setComplaintType("");
@@ -365,6 +358,7 @@ export const CreateComplaint: FC = () => {
 
         const complaint = { ...complaintData, delegates: updatedDelegates } as ComplaintDto;
         applyComplaintData(complaint);
+        setAssignedOfficer(selected);
       } else if (from(delegates).any() && from(delegates).any((item) => item.type === "ASSIGNEE")) {
         let delegate = delegates.find((item) => item.type === "ASSIGNEE");
         let updatedDelegate = { ...delegate, isActive: false } as Delegate;
@@ -373,11 +367,13 @@ export const CreateComplaint: FC = () => {
 
         const complaint = { ...complaintData, delegates: updatedDelegates } as ComplaintDto;
         applyComplaintData(complaint);
+        setAssignedOfficer(null);
       }
     } else {
       let updatedDelegates = delegates.filter(({ type }) => type !== "ASSIGNEE");
       const complaint = { ...complaintData, delegates: updatedDelegates } as ComplaintDto;
       applyComplaintData(complaint);
+      setAssignedOfficer(null);
     }
   };
 
@@ -760,6 +756,7 @@ export const CreateComplaint: FC = () => {
                 placeholder="Select"
                 enableValidation={false}
                 isClearable={true}
+                value={assignedOfficer}
               />
             </div>
           </div>
