@@ -45,7 +45,28 @@ jobs:
           git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
           git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
 
-      - name: Update package.json versions
+      # - name: Update package.json versions
+      #   id: increment_version
+      #   # The old and new versions are currently being read from the frontend package.json
+      #   # since all three packages are being kept in sync.
+      #   run: |
+      #     cd frontend
+      #     echo "::set-output name=old_version::$(npm pkg get version | tr -d '"')"
+      #     npm version patch --no-git-tag-version
+      #     echo "::set-output name=new_version::$(npm pkg get version | tr -d '"')"
+      #     new_v=$(npm pkg get version | tr -d '"')
+      #     echo "Frontend package.json version updated to $new_v"
+
+      #     cd ../backend
+      #     npm version $new_v --no-git-tag-version
+      #     echo "Backend package.json version updated to $new_v"
+
+      #     cd ../webeoc
+      #     npm version $new_v --no-git-tag-version
+      #     echo "WebEOC package.json version updated to $new_v"
+
+      #     cd ..
+      - name: Temporary new version setter
         id: increment_version
         # The old and new versions are currently being read from the frontend package.json
         # since all three packages are being kept in sync.
@@ -54,26 +75,15 @@ jobs:
           echo "::set-output name=old_version::$(npm pkg get version | tr -d '"')"
           npm version patch --no-git-tag-version
           echo "::set-output name=new_version::$(npm pkg get version | tr -d '"')"
-          new_v=$(npm pkg get version | tr -d '"')
-          echo "Frontend package.json version updated to $new_v"
+          git restore .
 
-          cd ../backend
-          npm version $new_v --no-git-tag-version
-          echo "Backend package.json version updated to $new_v"
-
-          cd ../webeoc
-          npm version $new_v --no-git-tag-version
-          echo "WebEOC package.json version updated to $new_v"
-
-          cd ..
-
-      - name: Commit and Push Version Update
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: |
-          git add frontend/package.json backend/package.json webeoc/package.json
-          git commit -m "chore: bump version to ${{ steps.increment_version.outputs.new_version }}"
-          git push origin HEAD:${{ github.ref }}
+      # - name: Commit and Push Version Update
+      #   env:
+      #     GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      #   run: |
+      #     git add frontend/package.json backend/package.json webeoc/package.json
+      #     git commit -m "chore: bump version to ${{ steps.increment_version.outputs.new_version }}"
+      #     git push origin HEAD:${{ github.ref }}
 
       - name: Create Git Tag and Delete Old Tag
         env:
