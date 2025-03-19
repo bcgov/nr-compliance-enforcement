@@ -66,16 +66,6 @@ jobs:
       #     echo "WebEOC package.json version updated to $new_v"
 
       #     cd ..
-      - name: Temporary new version setter
-        id: increment_version
-        # The old and new versions are currently being read from the frontend package.json
-        # since all three packages are being kept in sync.
-        run: |
-          cd frontend
-          echo "::set-output name=old_version::$(npm pkg get version | tr -d '"')"
-          npm version patch --no-git-tag-version
-          echo "::set-output name=new_version::$(npm pkg get version | tr -d '"')"
-          git restore .
 
       # - name: Commit and Push Version Update
       #   env:
@@ -85,10 +75,10 @@ jobs:
       #     git commit -m "chore: bump version to ${{ steps.increment_version.outputs.new_version }}"
       #     git push origin HEAD:${{ github.ref }}
 
-      - name: Create Git Tag and Delete Old Tag
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: |
-          git tag "v${{ steps.increment_version.outputs.new_version }}"
-          git push origin v${{ steps.increment_version.outputs.new_version }}
-          git push --delete origin "v${{ steps.increment_version.outputs.old_version }}"
+      # - name: Create Git Tag and Delete Old Tag
+      #   env:
+      #     GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      #   run: |
+      #     git tag "v${{ steps.increment_version.outputs.new_version }}"
+      #     git push origin v${{ steps.increment_version.outputs.new_version }}
+      #     git push --delete origin "v${{ steps.increment_version.outputs.old_version }}"
