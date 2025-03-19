@@ -16,11 +16,18 @@ jobs:
       actions: "read"
     if: github.event.pull_request.merged == true
     steps:
+      - name: Decode the GitHub App Private Key
+        id: decode-app-private-key
+        run: |
+          private_key=$(echo "${{ secrets.TEAM_WOLVERINE_GITHUB_APP_PRIVATE_KEY }}" | base64 -d | awk 'BEGIN {ORS="\\n"} {print}' | head -c -2) &> /dev/null
+          echo "::add-mask::$private_key"
+          echo "app-private-key=$private_key" >> "$GITHUB_OUTPUT"
+
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
-          app-id: ${{ vars.VERSION_BUMPER_APPID }}
-          private-key: ${{ secrets.VERSION_BUMPER_SECRET }}
+          app-id: ${{ vars.TEAM_WOLVERINE_GITHUB_APP_ID }}
+          private-key: ${{ steps.decode-app-private-key.outputs.app-private-key }}
 
       - uses: actions/checkout@v4
         with:
@@ -28,6 +35,7 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
           token: ${{ steps.app-token.outputs.token }}
+
       - name: Get GitHub App User ID
         id: get-user-id
         run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
@@ -71,6 +79,6 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          git push --delete origin "v${{ steps.increment_version.outputs.old_version }}"
           git tag "v${{ steps.increment_version.outputs.new_version }}"
           git push origin v${{ steps.increment_version.outputs.new_version }}
+          git push --delete origin "v${{ steps.increment_version.outputs.old_version }}"
