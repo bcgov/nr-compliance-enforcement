@@ -274,7 +274,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       title="Refer"
                       variant="outline-light"
                       onClick={openReferModal}
-                      disabled={isReadOnly}
+                      disabled={status !== "Open"}
                     >
                       <i className="bi bi-send"></i>
                       <span>Refer</span>
