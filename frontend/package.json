@@ -1,6 +1,6 @@
 {
   "name": "nr-sample-natcomplaints",
-  "version": "1.4.9",
+  "version": "1.5.12",
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
@@ -79,6 +79,7 @@
     "react-collapsible": "^2.10.0",
     "react-datepicker": "^4.14.0",
     "react-dom": "^18.2.0",
+    "react-dropzone": "^14.3.8",
     "react-icons": "^4.2.0",
     "react-is": "^16.13.1",
     "react-leaflet": "^4.2.1",

@@ -6,6 +6,7 @@ import { formatDate, formatTime } from "@common/methods";
 import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 import { ComplaintReferral } from "@/app/types/app/complaints/complaint-referral";
 import { UUID } from "crypto";
+import { formatPhoneNumber } from "react-phone-number-input/input";
 
 type Props = {
   complaintIdentifier: string;
@@ -256,6 +257,62 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                     <div className="complaint-description-text">
                       {(update.content as WebEOCComplaintUpdateDTO).updLocationGeometryPoint?.coordinates[1]} ,{" "}
                       {(update.content as WebEOCComplaintUpdateDTO).updLocationGeometryPoint?.coordinates[0]}
+                    </div>
+                  </div>
+                )}
+                {(update.content as WebEOCComplaintUpdateDTO).updCallerName && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Name:</div>
+                    <div className="complaint-description-text">
+                      {(update.content as WebEOCComplaintUpdateDTO).updCallerName}
+                    </div>
+                  </div>
+                )}
+                {(update.content as WebEOCComplaintUpdateDTO).updCallerPhone1 && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Primary Phone:</div>
+                    <div className="complaint-description-text">
+                      {formatPhoneNumber((update.content as WebEOCComplaintUpdateDTO).updCallerPhone1 ?? "")}
+                    </div>
+                  </div>
+                )}
+                {(update.content as WebEOCComplaintUpdateDTO).updCallerPhone2 && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Alternative phone 1:</div>
+                    <div className="complaint-description-text">
+                      {formatPhoneNumber((update.content as WebEOCComplaintUpdateDTO).updCallerPhone2 ?? "")}
+                    </div>
+                  </div>
+                )}
+                {(update.content as WebEOCComplaintUpdateDTO).updCallerPhone3 && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Alternative phone 2:</div>
+                    <div className="complaint-description-text">
+                      {formatPhoneNumber((update.content as WebEOCComplaintUpdateDTO).updCallerPhone3 ?? "")}
+                    </div>
+                  </div>
+                )}
+                {(update.content as WebEOCComplaintUpdateDTO).updCallerAddress && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Address:</div>
+                    <div className="complaint-description-text">
+                      {(update.content as WebEOCComplaintUpdateDTO).updCallerAddress}
+                    </div>
+                  </div>
+                )}
+                {(update.content as WebEOCComplaintUpdateDTO).updCallerEmail && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Email:</div>
+                    <div className="complaint-description-text">
+                      {(update.content as WebEOCComplaintUpdateDTO).updCallerEmail}
+                    </div>
+                  </div>
+                )}
+                {(update.content as WebEOCComplaintUpdateDTO).reported_by_code && (
+                  <div className="complaint-description-section">
+                    <div className="comp-complaint-update-label">Organization reporting the complaint:</div>
+                    <div className="complaint-description-text">
+                      {(update.content as WebEOCComplaintUpdateDTO).reported_by_code?.short_description}
                     </div>
                   </div>
                 )}

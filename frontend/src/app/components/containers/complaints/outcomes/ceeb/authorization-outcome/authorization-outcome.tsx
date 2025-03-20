@@ -77,6 +77,7 @@ export const AuthoizationOutcome: FC = () => {
         {!editable && (
           <div className="comp-details-section-header-actions">
             <Button
+              id="ceeb-authorization-edit-btn"
               variant="outline-primary"
               size="sm"
               onClick={() => {
@@ -89,6 +90,7 @@ export const AuthoizationOutcome: FC = () => {
             </Button>
 
             <Button
+              id="ceeb-authorization-delete-btn"
               variant="outline-primary"
               size="sm"
               onClick={handleDeleteButtonClick}

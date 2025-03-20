@@ -9,16 +9,18 @@ describe("HWCR Outcome Equipment", () => {
 
   function deleteAllEquipments() {
     cy.get(".comp-equipment-items").then(function ($equipment) {
-      const isVisible = $equipment.find("#equipment-delete-button").is(":visible");
-      if (isVisible) {
+      const deleteBtn = $equipment.find("#equipment-delete-button");
+
+      if (deleteBtn.length) {
         cy.get("#equipment-delete-button").click();
         cy.get(".modal-footer > .btn-primary").click();
+        cy.waitForSpinner();
         deleteAllEquipments();
+      } else {
+        cy.get(".comp-outcome-equipment").then(function ($equipment) {
+          cy.get("#outcome-report-add-equipment").click();
+        });
       }
-    });
-
-    cy.get(".comp-outcome-equipment").then(function ($equipment) {
-      cy.get("#outcome-report-add-equipment").click();
     });
   }
 

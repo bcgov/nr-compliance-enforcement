@@ -76,7 +76,7 @@ import { OfficerService } from "../officer/officer.service";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 import { Attachment, AttachmentType } from "../../types/models/general/attachment";
-import { getFileType } from "../../common/methods";
+import { formatPhonenumber, getFileType } from "../../common/methods";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
 import { Role } from "../../enum/role.enum";
@@ -1799,6 +1799,8 @@ export class ComplaintService {
             complaint_identifier: id,
           },
         })
+        .leftJoin("updates.reported_by_code", "reported_by")
+        .addSelect("reported_by.long_description")
         .orderBy({
           update_seq_number: "DESC",
         });
@@ -1825,6 +1827,15 @@ export class ComplaintService {
             details: item.updLocationDetailedText,
             latitude,
             longitude,
+          },
+          caller: {
+            name: item.updCallerName,
+            primaryPhone: formatPhonenumber(item.updCallerPhone1),
+            alternativePhone1: formatPhonenumber(item.updCallerPhone2),
+            alternativePhone2: formatPhonenumber(item.updCallerPhone3),
+            address: item.updCallerAddress,
+            email: item.updCallerEmail,
+            organizationReportingComplaint: item.reported_by_code?.long_description,
           },
         };
         return record;
