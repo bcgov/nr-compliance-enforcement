@@ -75,10 +75,15 @@ jobs:
       #     git commit -m "chore: bump version to ${{ steps.increment_version.outputs.new_version }}"
       #     git push origin HEAD:${{ github.ref }}
 
-      # - name: Create Git Tag and Delete Old Tag
-      #   env:
-      #     GH_TOKEN: ${{ steps.app-token.outputs.token }}
-      #   run: |
-      #     git tag "v${{ steps.increment_version.outputs.new_version }}"
-      #     git push origin v${{ steps.increment_version.outputs.new_version }}
-      #     git push --delete origin "v${{ steps.increment_version.outputs.old_version }}"
+      - name: Create Git Tag and Delete Old Tag
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          cd frontend
+          npm version patch --no-git-tag-version
+          new_v=$(npm pkg get version | tr -d '"')
+          git restore package.json
+          cd ..
+          git tag "v${{ steps.increment_version.outputs.new_version }}"
+          git push origin v${{ steps.increment_version.outputs.new_version }}
+          git push --delete origin "v${{ steps.increment_version.outputs.old_version }}"

@@ -7,6 +7,7 @@ type Props = {
 };
 
 export const AttachmentUpload: FC<Props> = ({ onFileSelect, disabled }) => {
+  // Function to handle files being dropped onto the component
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const dataTransfer = new DataTransfer();
