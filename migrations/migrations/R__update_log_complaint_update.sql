@@ -119,7 +119,7 @@ BEGIN
         insert_upd_detail_text := _upd_detail_text;
         has_difference := TRUE;
     ELSE
-        insert_upd_detail_text := NULL;
+        insert_upd_detail_text := prev_complaint_update_record.upd_detail_text;
     END IF;
 
     IF (_upd_location_summary_text IS NOT NULL AND _upd_location_summary_text <> '' AND
@@ -128,7 +128,7 @@ BEGIN
         insert_upd_location_summary_text := _upd_location_summary_text;
         has_difference := TRUE;
     ELSE
-        insert_upd_location_summary_text := NULL;
+        insert_upd_location_summary_text := prev_complaint_update_record.upd_location_summary_text;
     END IF;
 
     IF (_upd_location_detailed_text IS NOT NULL AND _upd_location_detailed_text <> '' AND
@@ -137,7 +137,7 @@ BEGIN
         insert_upd_location_detailed_text := _upd_location_detailed_text;
         has_difference := TRUE;
     ELSE
-        insert_upd_location_detailed_text := NULL;
+        insert_upd_location_detailed_text := prev_complaint_update_record.upd_location_detailed_text;
     END IF;
 
     IF (_upd_location_geometry_point IS NOT NULL AND
@@ -146,7 +146,7 @@ BEGIN
         insert_upd_location_geometry_point := _upd_location_geometry_point;
         has_difference := TRUE;
     ELSE
-        insert_upd_location_geometry_point := NULL;
+        insert_upd_location_geometry_point := prev_complaint_update_record.upd_location_geometry_point;
     END IF;
 
     IF (_upd_caller_name IS NOT NULL AND _upd_caller_name <> '' AND
@@ -155,7 +155,7 @@ BEGIN
         insert_upd_caller_name := _upd_caller_name;
         has_difference := TRUE;
     ELSE
-        insert_upd_caller_name := NULL;
+        insert_upd_caller_name := prev_complaint_update_record.upd_caller_name;
     END IF;
 
     IF (_upd_caller_phone_1 IS NOT NULL AND _upd_caller_phone_1 <> '' AND
@@ -164,7 +164,7 @@ BEGIN
         insert_upd_caller_phone_1 := _upd_caller_phone_1;
         has_difference := TRUE;
     ELSE
-        insert_upd_caller_phone_1 := NULL;
+        insert_upd_caller_phone_1 := prev_complaint_update_record.upd_caller_phone_1;
     END IF;
 
     IF (_upd_caller_phone_2 IS NOT NULL AND _upd_caller_phone_2 <> '' AND
@@ -173,7 +173,7 @@ BEGIN
         insert_upd_caller_phone_2 := _upd_caller_phone_2;
         has_difference := TRUE;
     ELSE
-        insert_upd_caller_phone_2 := NULL;
+        insert_upd_caller_phone_2 := prev_complaint_update_record.upd_caller_phone_2;
     END IF;
 
     IF (_upd_caller_phone_3 IS NOT NULL AND _upd_caller_phone_3 <> '' AND
@@ -182,7 +182,7 @@ BEGIN
         insert_upd_caller_phone_3 := _upd_caller_phone_3;
         has_difference := TRUE;
     ELSE
-        insert_upd_caller_phone_3 := NULL;
+        insert_upd_caller_phone_3 := prev_complaint_update_record.upd_caller_phone_3;
     END IF;
 
     IF (_upd_caller_address IS NOT NULL AND _upd_caller_address <> '' AND
@@ -191,7 +191,7 @@ BEGIN
         insert_upd_caller_address := _upd_caller_address;
         has_difference := TRUE;
     ELSE
-        insert_upd_caller_address := NULL;
+        insert_upd_caller_address := prev_complaint_update_record.upd_caller_address;
     END IF;
 
     IF (_upd_caller_email IS NOT NULL AND _upd_caller_email <> '' AND
@@ -200,7 +200,7 @@ BEGIN
         insert_upd_caller_email := _upd_caller_email;
         has_difference := TRUE;
     ELSE
-        insert_upd_caller_email := NULL;
+        insert_upd_caller_email := prev_complaint_update_record.upd_caller_email;
     END IF;
 
     IF (_upd_reported_by_code IS NOT NULL AND _upd_reported_by_code <> '' AND
@@ -209,7 +209,7 @@ BEGIN
         insert_upd_reported_by_code := _upd_reported_by_code;
         has_difference := TRUE;
     ELSE
-        insert_upd_reported_by_code := NULL;
+        insert_upd_reported_by_code := prev_complaint_update_record.upd_reported_by_code;
     END IF;
 
     IF (_upd_reported_by_other_text IS NOT NULL AND _upd_reported_by_other_text <> '' AND
@@ -218,7 +218,7 @@ BEGIN
         insert_upd_reported_by_other_text := _upd_reported_by_other_text;
         has_difference := TRUE;
     ELSE
-        insert_upd_reported_by_other_text := NULL;
+        insert_upd_reported_by_other_text := prev_complaint_update_record.upd_reported_by_other_text;
     END IF;
 
     -- Insert the record if there are any differences, either log the complaint or update the previously existing complaint
