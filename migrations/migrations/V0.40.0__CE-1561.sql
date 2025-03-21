@@ -1,4 +1,6 @@
- CREATE OR REPLACE MATERIALIZED VIEW public.cos_geo_org_unit_flat_mvw
+ DROP MATERIALIZED VIEW IF EXISTS public.cos_geo_org_unit_flat_mvw;
+ 
+ CREATE MATERIALIZED VIEW public.cos_geo_org_unit_flat_mvw
 AS SELECT DISTINCT gou.geo_organization_unit_code AS region_code,
     gou.short_description AS region_name,
     gou2.geo_organization_unit_code AS zone_code,
