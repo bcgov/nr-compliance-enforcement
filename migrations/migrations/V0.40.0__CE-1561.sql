@@ -1,8 +1,4 @@
--- As the repeatable scripts are always run after the DDL changes, update this script whenever the view definition changes
-
-DROP MATERIALIZED VIEW IF EXISTS public.cos_geo_org_unit_flat_mvw;
-
-CREATE MATERIALIZED VIEW public.cos_geo_org_unit_flat_mvw
+ CREATE MATERIALIZED VIEW public.cos_geo_org_unit_flat_mvw
 AS SELECT DISTINCT gou.geo_organization_unit_code AS region_code,
     gou.short_description AS region_name,
     gou2.geo_organization_unit_code AS zone_code,
@@ -28,3 +24,22 @@ AS SELECT DISTINCT gou.geo_organization_unit_code AS region_code,
   
  CREATE INDEX  IF NOT EXISTS area_code
   ON cos_geo_org_unit_flat_mvw (area_code);
+	
+ CREATE OR REPLACE FUNCTION cos_geo_org_unit_flat_mvw_refresh()
+ RETURNS TRIGGER AS $$
+ BEGIN 
+ 	REFRESH MATERIALIZED VIEW cos_geo_org_unit_flat_mvw;
+	RETURN NULL;
+ END;
+$$ LANGUAGE plpgsql;
+ 
+  
+CREATE OR REPLACE TRIGGER geo_org_unit_structure_insert_update_refresh_mvw 
+AFTER INSERT OR UPDATE OR DELETE
+ON geo_org_unit_structure
+EXECUTE FUNCTION cos_geo_org_unit_flat_mvw_refresh();
+
+CREATE OR REPLACE TRIGGER geo_organization_unit_code_insert_update_refresh_mvw 
+AFTER INSERT OR UPDATE OR DELETE
+ON geo_organization_unit_code
+EXECUTE FUNCTION cos_geo_org_unit_flat_mvw_refresh();
