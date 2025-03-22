@@ -41,6 +41,7 @@ import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
 import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint-method-received-type";
 import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
+import { getUserAgency } from "@/app/service/user-service";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
@@ -112,7 +113,18 @@ export const complaintSlice = createSlice({
       let currentComplaint: ComplaintDto = complaint as ComplaintDto;
       let isReadOnly = false;
       if (currentComplaint) {
-        isReadOnly = ["CLOSED"].includes(currentComplaint.status);
+        if (["CLOSED"].includes(currentComplaint.status)) {
+          isReadOnly = true;
+        }
+        //if complaint has open status, check if complaint is within the user's agency
+        //if complaint does not belong to the user's agency, enable read-only mode
+        else {
+          const complaintAgency = complaint.ownedBy;
+          const userAgency = getUserAgency();
+          if (complaintAgency !== userAgency) {
+            isReadOnly = true;
+          }
+        }
       }
       return { ...state, complaint, complaintView: { isReadOnly } };
     },
