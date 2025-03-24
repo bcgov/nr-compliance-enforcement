@@ -10607,7 +10607,7 @@ BEGIN
         DELETE FROM geo_org_unit_structure WHERE child_geo_org_unit_code = 'CLCZLKBW';
         DELETE FROM geo_organization_unit_code WHERE geo_organization_unit_code = 'CLCZLKBW';
     END IF;
-END $$;
+END $$; -- Comment to trigger this to run again in test
 
 
 --------------------------
