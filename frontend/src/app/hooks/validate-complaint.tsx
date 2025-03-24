@@ -119,7 +119,7 @@ const useValidateComplaint = () => {
       // check External file reference exists if required required
       const referenceNumberCriteria =
         complaintType === COMPLAINT_TYPES.ERS && complaint && ["COS", "PARKS"].includes(complaint.ownedBy)
-          ? complaint.referenceNumber !== null
+          ? !!complaint.referenceNumber
           : true;
 
       const scrollToErrorSection = (
