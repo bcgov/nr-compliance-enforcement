@@ -14,8 +14,7 @@ import {
 import { getComplaintType } from "@common/methods";
 import getOfficerAssigned from "@common/get-officer-assigned";
 import COMPLAINT_TYPES from "@/app/types/app/complaint-types";
-import useValidateComplaint from "@/app/hooks/validate-complaint";
-import { AllegationComplaint } from "@/app/types/app/complaints/allegation-complaint";
+import { AgencyType } from "@/app/types/app/agency-types";
 
 export const ExternalFileReference: FC = () => {
   const dispatch = useAppDispatch();
@@ -87,20 +86,6 @@ export const ExternalFileReference: FC = () => {
     return true;
   };
 
-  const validationResults = useValidateComplaint();
-  const closeComplaint = async () => {
-    if (complaintType === COMPLAINT_TYPES.ERS && validationResults.canCloseComplaint && complaintData) {
-      try {
-        const allegationComplaintData = complaintData as AllegationComplaint;
-        dispatch(updateAllegationComplaintStatus(allegationComplaintData.id, "CLOSED"));
-        dispatch(getComplaintById(complaintData.id, complaintType));
-      } catch (error) {
-        // Handle any errors that occurred during the dispatch
-        console.error("Error updating complaint status:", error);
-      }
-    }
-  };
-
   // function for handling the save button
   const handleExternalFileReferenceSave = async () => {
     if (complaintData && isValid()) {
@@ -108,8 +93,8 @@ export const ExternalFileReference: FC = () => {
       let complaintType = getComplaintType(complaintData);
       //since the updateComplaintById thunk has an asynchronous operation inside it we need to make sure it finishes before moving on
       await dispatch(updateComplaintById(data, complaintType));
-      if (complaintType === COMPLAINT_TYPES.ERS) {
-        await closeComplaint();
+      if (complaintType === COMPLAINT_TYPES.ERS && [AgencyType.COS, AgencyType.PARKS].includes(complaintData.ownedBy)) {
+        await dispatch(updateAllegationComplaintStatus(complaintData.id, "CLOSED"));
       }
       dispatch(getComplaintById(complaintData.id, complaintType));
     }
