@@ -58,7 +58,7 @@ describe("External File Reference", () => {
       enterReferenceNumber("111111", true);
 
       //validate the number
-      expect(cy.get("#external-file-reference-number")).to.contain.text("111111");
+      cy.get("#external-file-reference-number").should("have.text", "111111");
     });
 
     it(`Can edit an external reference number: ${complaintTypes[index]}`, () => {
@@ -72,7 +72,7 @@ describe("External File Reference", () => {
       enterReferenceNumber("222222", true);
 
       //validate the number
-      expect(cy.get("#external-file-reference-number")).to.contain.text("222222");
+      cy.get("#external-file-reference-number").should("have.text", "222222");
     });
 
     it(`Can delete an external reference number: ${complaintTypes[index]}`, () => {
