@@ -317,6 +317,8 @@ export const applyStatusClass = (state: string): string => {
       return "comp-status-badge-open";
     case "closed":
       return "comp-status-badge-closed";
+    case "referred":
+      return "comp-status-badge-closed";
     case "pendrev":
     case "pending review":
       return "comp-status-badge-pending-review";
