@@ -60,7 +60,12 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   }
   const natureOfComplaintTypes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown);
   const speciesTypes = useAppSelector(selectSpeciesCodeDropdown);
-  const statusTypes = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
+  // For the complaint search, inject a status type of REFERRED. This is a derived status used only on the search page.
+  const statusTypes = [
+    ...useAppSelector(selectComplaintStatusWithPendingCodeDropdown),
+    { value: "REFERRED", label: "Referred" },
+  ];
+
   const violationTypes = useAppSelector(selectViolationCodeDropdown(agency));
   const girTypes = useAppSelector(selectGirTypeCodeDropdown);
   const outcomeAnimalTypes = useAppSelector(selectAllWildlifeComplaintOutcome); //want to see inactive items in the filter

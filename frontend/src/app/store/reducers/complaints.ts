@@ -872,9 +872,10 @@ export const selectComplaintDetails = createSelector(
         incidentDateTime,
         location: { coordinates },
         organization: { area: areaCode, region, zone, officeLocation },
+        ownedBy,
       } = complaint as ComplaintDto;
 
-      result = { ...result, details, location, locationDescription, incidentDateTime, coordinates };
+      result = { ...result, details, location, locationDescription, incidentDateTime, coordinates, ownedBy };
 
       if (complaintType === "HWCR") {
         const { attractants } = complaint as WildlifeComplaintDto;

@@ -375,6 +375,7 @@ export class ComplaintService {
         IncidentReportedEnd: incidentReportedEnd,
       });
     }
+    this.logger.error("Status is:" + status);
 
     if (status) {
       builder.andWhere("complaint.complaint_status_code = :Status", {
@@ -1025,11 +1026,31 @@ export class ComplaintService {
         builder = this._applyFilters(builder, filters as ComplaintFilterParameters, complaintType);
       }
 
+      // Special handling for referral status
+      const status = filters?.status;
+      if (status === "REFERRED") {
+        this.logger.error("Inner join referral");
+        builder.innerJoin("complaint.complaint_referral", "complaint_referral");
+      } else {
+        this.logger.error("Left join referral");
+        builder.leftJoinAndSelect("complaint.complaint_referral", "complaint_referral");
+      }
+
       // search for complaints based on the user's role
       if (agencies.length > 0) {
-        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
-          agency_codes: agencies,
-        });
+        if (!filters?.status || filters?.status === "REFERRED") {
+          this.logger.error("Referral filter applied");
+          builder.andWhere(
+            "(complaint.owned_by_agency_code.agency_code IN (:...agency_codes) OR (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
+            {
+              agency_codes: agencies,
+            },
+          );
+        } else {
+          builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
+            agency_codes: agencies,
+          });
+        }
       } else {
         builder.andWhere("1 = 0"); // In case of no agency, no rows will be returned
       }
@@ -1154,11 +1175,33 @@ export class ComplaintService {
         builder = await this._applySearch(builder, complaintType, query, token);
       }
 
-      //-- only return complaints for the agency the user is associated with
+      // Special handling for referral status
+      const status = filters?.status;
+      if (status === "REFERRED") {
+        this.logger.error("Inner join referral");
+        builder.innerJoin("complaint.complaint_referral", "complaint_referral");
+      } else {
+        this.logger.error("Left join referral");
+        builder.leftJoin("complaint.complaint_referral", "complaint_referral");
+      }
+
+      // search for complaints based on the user's role
       if (agencies.length > 0) {
-        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
-          agency_codes: agencies,
-        });
+        if (!filters?.status || filters?.status === "REFERRED") {
+          this.logger.error("Referral filter applied");
+          builder.andWhere(
+            "(complaint.owned_by_agency_code.agency_code IN (:...agency_codes) OR (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
+            {
+              agency_codes: agencies,
+            },
+          );
+        } else {
+          builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
+            agency_codes: agencies,
+          });
+        }
+      } else {
+        builder.andWhere("1 = 0"); // In case of no agency, no rows will be returned
       }
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present

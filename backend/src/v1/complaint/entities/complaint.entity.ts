@@ -11,6 +11,7 @@ import { CompMthdRecvCdAgcyCdXref } from "../../comp_mthd_recv_cd_agcy_cd_xref/e
 import { LinkedComplaintXref } from "../../linked_complaint_xref/entities/linked_complaint_xref.entity";
 import { ComplaintUpdate } from "../../complaint_updates/entities/complaint_updates.entity";
 import { ActionTaken } from "./action_taken.entity";
+import { ComplaintReferral } from "../../complaint_referral/entities/complaint_referral.entity";
 
 @Entity()
 export class Complaint {
@@ -246,6 +247,13 @@ export class Complaint {
   @Column({ nullable: true })
   comp_last_upd_utc_timestamp: Date;
 
+  @ApiProperty({
+    example: "Referred from COS to CEEB",
+    description: "Complaint referrals",
+  })
+  @OneToMany(() => ComplaintReferral, (complaint_referral) => complaint_referral.complaint_identifier)
+  complaint_referral: ComplaintReferral[];
+
   constructor(
     detail_text?: string,
     caller_name?: string,
@@ -279,6 +287,7 @@ export class Complaint {
     complaint_update?: ComplaintUpdate[],
     action_taken?: ActionTaken[],
     comp_last_upd_utc_timestamp?: Date,
+    complaint_referral?: ComplaintReferral[],
   ) {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -312,5 +321,6 @@ export class Complaint {
     this.complaint_update = complaint_update;
     this.action_taken = action_taken;
     this.comp_last_upd_utc_timestamp = comp_last_upd_utc_timestamp;
+    this.complaint_referral = complaint_referral;
   }
 }

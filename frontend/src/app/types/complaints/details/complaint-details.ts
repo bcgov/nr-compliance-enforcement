@@ -21,4 +21,5 @@ export interface ComplaintDetails {
   girType?: string;
   girTypeCode?: string;
   complaintMethodReceivedCode?: ComplaintMethodReceivedType;
+  ownedBy?: string;
 }

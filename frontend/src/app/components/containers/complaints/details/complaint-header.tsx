@@ -53,6 +53,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
+  const derivedStatus = complaintAgency !== userAgency ? "Referred" : status;
 
   const openStatusChangeModal = () => {
     document.body.click();
@@ -172,9 +173,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
             <div className="comp-details-badge-container">
               <Badge
                 id="comp-details-status-text-id"
-                className={`badge ${applyStatusClass(status)}`}
+                className={`badge ${applyStatusClass(derivedStatus)}`}
               >
-                {status}
+                {derivedStatus}
               </Badge>
             </div>
 
