@@ -375,7 +375,6 @@ export class ComplaintService {
         IncidentReportedEnd: incidentReportedEnd,
       });
     }
-    this.logger.error("Status is:" + status);
 
     if (status) {
       builder.andWhere("complaint.complaint_status_code = :Status", {
@@ -1029,17 +1028,14 @@ export class ComplaintService {
       // Special handling for referral status
       const status = filters?.status;
       if (status === "REFERRED") {
-        this.logger.error("Inner join referral");
         builder.innerJoin("complaint.complaint_referral", "complaint_referral");
       } else {
-        this.logger.error("Left join referral");
         builder.leftJoinAndSelect("complaint.complaint_referral", "complaint_referral");
       }
 
       // search for complaints based on the user's role
       if (agencies.length > 0) {
         if (!filters?.status || filters?.status === "REFERRED") {
-          this.logger.error("Referral filter applied");
           builder.andWhere(
             "(complaint.owned_by_agency_code.agency_code IN (:...agency_codes) OR (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
             {
@@ -1178,17 +1174,14 @@ export class ComplaintService {
       // Special handling for referral status
       const status = filters?.status;
       if (status === "REFERRED") {
-        this.logger.error("Inner join referral");
         builder.innerJoin("complaint.complaint_referral", "complaint_referral");
       } else {
-        this.logger.error("Left join referral");
         builder.leftJoin("complaint.complaint_referral", "complaint_referral");
       }
 
       // search for complaints based on the user's role
       if (agencies.length > 0) {
         if (!filters?.status || filters?.status === "REFERRED") {
-          this.logger.error("Referral filter applied");
           builder.andWhere(
             "(complaint.owned_by_agency_code.agency_code IN (:...agency_codes) OR (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
             {
