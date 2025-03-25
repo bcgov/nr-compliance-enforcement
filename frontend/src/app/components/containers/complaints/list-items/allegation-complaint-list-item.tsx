@@ -41,7 +41,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
   } = complaint;
 
   const userAgency = getUserAgency();
-  const derivedStatus = ownedBy !== userAgency ? "Referred" : status;
+  const derivedAllegationStatus = ownedBy !== userAgency ? "Referred" : status;
 
   const getStatusDescription = (input: string): string => {
     if (input === "Referred") {
@@ -71,7 +71,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
   const reportedOnDateTime = formatDateTime(reportedOn.toString());
   const updatedOnDateTime = formatDateTime(updatedOn?.toString());
 
-  const statusButtonClass = `badge ${applyStatusClass(derivedStatus)}`;
+  const statusButtonClass = `badge ${applyStatusClass(derivedAllegationStatus)}`;
 
   const inProgressFlag = isInProgress ? "In Progress" : "";
 
@@ -160,7 +160,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
           className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <div className={statusButtonClass}>{getStatusDescription(derivedStatus)}</div>
+          <div className={statusButtonClass}>{getStatusDescription(derivedAllegationStatus)}</div>
         </td>
         <td
           className={`${isExpandedClass}`}
@@ -179,7 +179,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
             complaint_type={type}
             zone={zone ?? ""}
             agency_code={ownedBy}
-            complaint_status={derivedStatus}
+            complaint_status={derivedAllegationStatus}
           />
         </td>
       </tr>
