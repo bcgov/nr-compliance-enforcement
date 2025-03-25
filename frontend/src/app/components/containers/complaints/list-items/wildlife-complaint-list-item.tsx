@@ -42,11 +42,8 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
   const derivedStatus = ownedBy !== userAgency ? "Referred" : status;
 
   const getStatusDescription = (input: string): string => {
-    if (input === "Referred") {
-      return "Referred";
-    }
     const code = statusCodes.find((item) => item.complaintStatus === input);
-    return code.longDescription;
+    return input === "Referred" ? "Referred" : code.longDescription;
   };
 
   const getNatureOfComplaint = (input: string): string => {

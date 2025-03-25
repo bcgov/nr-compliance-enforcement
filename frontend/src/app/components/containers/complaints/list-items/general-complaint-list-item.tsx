@@ -45,11 +45,8 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
   };
 
   const getStatusDescription = (input: string): string => {
-    if (input === "Referred") {
-      return "Referred";
-    }
     const code = statusCodes.find((item) => item.complaintStatus === input);
-    return code.longDescription;
+    return input === "Referred" ? "Referred" : code.longDescription;
   };
 
   const getGirTypeDescription = (input: string): string => {
