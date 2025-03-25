@@ -8,6 +8,7 @@ import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { Badge } from "react-bootstrap";
 import getOfficerAssigned from "@common/get-officer-assigned";
+import { getUserAgency } from "@/app/service/user-service";
 
 type Props = {
   type: string;
@@ -37,7 +38,13 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
     organization: { areaName: location, zone },
   } = complaint;
 
+  const userAgency = getUserAgency();
+  const derivedWildlifeStatus = ownedBy !== userAgency ? "Referred" : status;
+
   const getStatusDescription = (input: string): string => {
+    if (input === "Referred") {
+      return "Referred";
+    }
     const code = statusCodes.find((item) => item.complaintStatus === input);
     return code.longDescription;
   };
@@ -58,7 +65,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
   const natureCode = getNatureOfComplaint(natureOfComplaint);
   const species = getSpecies(speciesCode);
 
-  const statusButtonClass = `badge ${applyStatusClass(status)}`;
+  const statusButtonClass = `badge ${applyStatusClass(derivedWildlifeStatus)}`;
 
   const toggleExpand = () => {
     if (isExpanded) {
@@ -130,7 +137,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           className={`comp-cell-width-75 ${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <div className={statusButtonClass}>{getStatusDescription(status)}</div>
+          <div className={statusButtonClass}>{getStatusDescription(derivedWildlifeStatus)}</div>
         </td>
         <td
           className={`${isExpandedClass}`}
@@ -149,7 +156,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
             complaint_type={type}
             zone={zone ?? ""}
             agency_code={ownedBy}
-            complaint_status={status}
+            complaint_status={derivedWildlifeStatus}
           />
         </td>
       </tr>

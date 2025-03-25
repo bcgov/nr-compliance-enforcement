@@ -7,6 +7,7 @@ import { useAppSelector } from "@hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import getOfficerAssigned from "@common/get-officer-assigned";
+import { getUserAgency } from "@/app/service/user-service";
 
 type Props = {
   type: string;
@@ -35,12 +36,18 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
     organization: { area: locationCode, zone },
   } = complaint;
 
+  const userAgency = getUserAgency();
+  const derivedGeneralStatus = ownedBy !== userAgency ? "Referred" : status;
+
   const getLocationName = (input: string): string => {
     const code = areaCodes.find((item) => item.area === input);
     return code.areaName;
   };
 
   const getStatusDescription = (input: string): string => {
+    if (input === "Referred") {
+      return "Referred";
+    }
     const code = statusCodes.find((item) => item.complaintStatus === input);
     return code.longDescription;
   };
@@ -55,7 +62,7 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
 
   const location = getLocationName(locationCode);
 
-  const statusButtonClass = `badge ${applyStatusClass(status)}`;
+  const statusButtonClass = `badge ${applyStatusClass(derivedGeneralStatus)}`;
 
   const toggleExpand = () => {
     if (isExpanded) {
@@ -121,7 +128,7 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
           className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          <div className={statusButtonClass}>{getStatusDescription(status)}</div>
+          <div className={statusButtonClass}>{getStatusDescription(derivedGeneralStatus)}</div>
         </td>
         <td
           className={`${isExpandedClass}`}
@@ -140,7 +147,7 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
             complaint_type={type}
             zone={zone ?? ""}
             agency_code={ownedBy}
-            complaint_status={status}
+            complaint_status={derivedGeneralStatus}
           />
         </td>
       </tr>

@@ -376,7 +376,7 @@ export class ComplaintService {
       });
     }
 
-    if (status) {
+    if (status && status !== "REFERRED") {
       builder.andWhere("complaint.complaint_status_code = :Status", {
         Status: status,
       });
@@ -1000,6 +1000,39 @@ export class ComplaintService {
     }
   };
 
+  private readonly _applyReferralFilters = (
+    builder: SelectQueryBuilder<complaintAlias>,
+    status?: string,
+    agencies?: string[],
+  ): SelectQueryBuilder<complaintAlias> => {
+    // Special handling for referral status
+    if (status === "REFERRED") {
+      builder.innerJoin("complaint.complaint_referral", "complaint_referral");
+    } else {
+      builder.leftJoin("complaint.complaint_referral", "complaint_referral");
+    }
+
+    // search for complaints based on the user's role
+    if (agencies.length > 0) {
+      if (!status || status === "REFERRED") {
+        builder.andWhere(
+          "(complaint.owned_by_agency_code.agency_code IN (:...agency_codes) OR (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
+          {
+            agency_codes: agencies,
+          },
+        );
+      } else {
+        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
+          agency_codes: agencies,
+        });
+      }
+    } else {
+      builder.andWhere("1 = 0"); // In case of no agency, no rows will be returned
+    }
+
+    return builder;
+  };
+
   search = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintSearchParameters,
@@ -1024,15 +1057,7 @@ export class ComplaintService {
       if (Object.keys(filters).length !== 0) {
         builder = this._applyFilters(builder, filters as ComplaintFilterParameters, complaintType);
       }
-
-      // search for complaints based on the user's role
-      if (agencies.length > 0) {
-        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
-          agency_codes: agencies,
-        });
-      } else {
-        builder.andWhere("1 = 0"); // In case of no agency, no rows will be returned
-      }
+      builder = this._applyReferralFilters(builder, filters?.status, agencies);
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (agencies.includes("EPO") && filters.actionTaken) {
@@ -1153,13 +1178,7 @@ export class ComplaintService {
       if (query) {
         builder = await this._applySearch(builder, complaintType, query, token);
       }
-
-      //-- only return complaints for the agency the user is associated with
-      if (agencies.length > 0) {
-        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
-          agency_codes: agencies,
-        });
-      }
+      builder = this._applyReferralFilters(builder, filters?.status, agencies);
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (agencies.includes("EPO") && filters.actionTaken) {
