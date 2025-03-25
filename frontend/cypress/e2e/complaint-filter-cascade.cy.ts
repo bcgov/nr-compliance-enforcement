@@ -47,7 +47,7 @@ describe("Complaint Filter Cascading spec", () => {
   const complaintTypes = ["#hwcr-tab", "#ers-tab"];
   const maxRegions = 8;
   const maxZones = 22;
-  const maxCommunities = 974;
+  const maxCommunities = 973;
 
   beforeEach(function () {
     cy.viewport(1700, 960);
@@ -116,7 +116,7 @@ describe("Complaint Filter Cascading spec", () => {
 
     const _totalRegions = 1;
     const _totalZones = 1;
-    const _totalCommunities = 974;
+    const _totalCommunities = 973;
 
     //-- load the page and remove existing default filters
     cy.visit("/");
