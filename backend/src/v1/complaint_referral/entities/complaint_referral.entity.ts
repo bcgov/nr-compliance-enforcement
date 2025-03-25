@@ -2,7 +2,7 @@ import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { UUID } from "crypto";
 import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { Officer } from "../../officer/entities/officer.entity";
-import { Complaint } from "src/v1/complaint/entities/complaint.entity";
+import { Complaint } from "../../complaint/entities/complaint.entity";
 
 @Index("PK_cmplreferral", ["complaint_referral_guid"], {
   unique: true,

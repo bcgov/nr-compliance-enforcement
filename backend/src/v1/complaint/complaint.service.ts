@@ -1007,17 +1007,14 @@ export class ComplaintService {
   ): SelectQueryBuilder<complaintAlias> => {
     // Special handling for referral status
     if (status === "REFERRED") {
-      this.logger.error("Referral Filter");
       builder.innerJoin("complaint.complaint_referral", "complaint_referral");
     } else {
-      this.logger.error("Not Referral Filter");
       builder.leftJoin("complaint.complaint_referral", "complaint_referral");
     }
 
     // search for complaints based on the user's role
     if (agencies.length > 0) {
       if (!status || status === "REFERRED") {
-        this.logger.error("No Status or Referred");
         builder.andWhere(
           "(complaint.owned_by_agency_code.agency_code IN (:...agency_codes) OR (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
           {
@@ -1025,7 +1022,6 @@ export class ComplaintService {
           },
         );
       } else {
-        this.logger.error("Status and Not Referred");
         builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
           agency_codes: agencies,
         });

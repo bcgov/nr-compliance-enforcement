@@ -44,8 +44,11 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
   const derivedStatus = ownedBy !== userAgency ? "Referred" : status;
 
   const getStatusDescription = (input: string): string => {
+    if (input === "Referred") {
+      return "Referred";
+    }
     const code = statusCodes.find((item) => item.complaintStatus === input);
-    return input === "Referred" ? "Referred" : code.longDescription;
+    return code.longDescription;
   };
 
   const getViolationDescription = (input: string): string => {
