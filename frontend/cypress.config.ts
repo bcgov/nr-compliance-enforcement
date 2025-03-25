@@ -25,6 +25,7 @@ export default defineConfig({
       on("task", { removeDirectory });
     },
     experimentalWebKitSupport: true,
+    experimentalRunAllSpecs: true,
     env: {
       auth_base_url: process.env.REACT_APP_KEYCLOAK_URL,
       auth_realm: process.env.REACT_APP_KEYCLOAK_REALM,
