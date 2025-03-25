@@ -214,6 +214,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       <Dropdown.Item
                         as="button"
                         onClick={openStatusChangeModal}
+                        disabled={complaintAgency !== userAgency}
                       >
                         <i className="bi bi-arrow-repeat"></i>
                         <span>Update Status</span>
@@ -222,6 +223,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                         <Dropdown.Item
                           as="button"
                           onClick={openReferModal}
+                          disabled={status !== " Open" || complaintAgency !== userAgency}
                         >
                           <i className="bi bi-send"></i>
                           <span>Refer</span>
@@ -230,6 +232,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       <Dropdown.Item
                         as="button"
                         onClick={() => exportComplaintToPdf()}
+                        disabled={complaintAgency !== userAgency}
                       >
                         <i className="bi bi-file-earmark-pdf"></i>
                         <span>Export</span>
@@ -265,6 +268,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     title="Update status"
                     variant="outline-light"
                     onClick={openStatusChangeModal}
+                    disabled={complaintAgency !== userAgency}
                   >
                     <i className="bi bi-arrow-repeat"></i>
                     <span>Update status</span>
@@ -275,7 +279,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       title="Refer"
                       variant="outline-light"
                       onClick={openReferModal}
-                      disabled={status !== "Open"}
+                      disabled={status !== "Open" || complaintAgency !== userAgency}
                     >
                       <i className="bi bi-send"></i>
                       <span>Refer</span>
@@ -286,6 +290,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     title="Export"
                     variant="outline-light"
                     onClick={() => exportComplaintToPdf()}
+                    disabled={complaintAgency !== userAgency}
                   >
                     <i className="bi bi-file-earmark-pdf"></i>
                     <span>Export</span>

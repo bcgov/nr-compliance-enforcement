@@ -34,7 +34,7 @@ describe("Validate CEEB method complaint received options", () => {
 
   it("only has CEEB values on edit", function () {
     //Access dropdown from create screen
-    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
+    cy.navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-030990", true);
 
     cy.get("#complaint-received-method-select-id").find("div").first().click({ force: true });
 
