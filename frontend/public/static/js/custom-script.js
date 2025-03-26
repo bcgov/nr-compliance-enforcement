@@ -5,7 +5,6 @@ if (window.location.href.indexOf("localhost") > -1 && date.getMonth() === 3 && d
     // eslint-disable-next-line no-restricted-globals
     self.crypto.getRandomValues(array);
     const random = array[1] % 10 + 1;
-    alert(random);
     if (random === 1) {
         setTimeout(function () {
             const text = new SpeechSynthesisUtterance(atob('ZGlkIHlvdSByZW1lbWJlciB0byBhZGQgdW5pdCB0ZXN0cz8='));
