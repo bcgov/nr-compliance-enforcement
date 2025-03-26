@@ -4,12 +4,13 @@ if (window.location.href.indexOf("localhost") > -1 && date.getMonth() === 3 && d
     const array = new Uint32Array(10);
     // eslint-disable-next-line no-restricted-globals
     self.crypto.getRandomValues(array);
-    const random = array[1] % 10 + 1;
+    const random = Number(array[1].toString()[1]);
+    console.log(random);
     if (random === 1) {
         setTimeout(function () {
             const text = new SpeechSynthesisUtterance(atob('ZGlkIHlvdSByZW1lbWJlciB0byBhZGQgdW5pdCB0ZXN0cz8='));
             speechSynthesis.speak(text);
-        }, 15000);
+        }, 1000);
     }
     else if (random === 2) {
       window.onload = function() {
