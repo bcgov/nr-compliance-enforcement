@@ -19,8 +19,6 @@ describe("Complaint Assign Popover spec", { scrollBehavior: false }, () => {
 
       cy.get(complaintTypes[index]).click({ force: true });
 
-      cy.waitForSpinner();
-
       cy.get("#comp-zone-filter").click({ force: true }); //clear zone filter so we have some complaint is in the list view
 
       cy.waitForSpinner();
