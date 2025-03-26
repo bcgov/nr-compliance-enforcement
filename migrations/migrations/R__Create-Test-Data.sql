@@ -4344,6 +4344,54 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EQUIPMENT_STATUS_FLTR',
+  'Equipment Status Filter',
+  'Equipment Status Filter',
+  200,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'EQUIPMENT_TYPE_FLTR',
+  'Equipment Type Filter',
+  'Equipment Type Filter',
+  210,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
 -------------------------
 -- Insert Feature / Agency XREF
 -------------------------

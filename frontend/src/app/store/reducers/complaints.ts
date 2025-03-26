@@ -46,7 +46,12 @@ import { getUserAgency } from "@/app/service/user-service";
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
 const initialState: ComplaintState = {
-  complaintSearchParameters: { sortColumn: "", sortOrder: "" },
+  complaintSearchParameters: {
+    sortColumn: "",
+    sortOrder: "",
+    equipmentStatusFilter: undefined,
+    equipmentTypeFilter: undefined,
+  },
   complaintItems: {
     wildlife: [],
     allegations: [],
@@ -331,10 +336,14 @@ export const getComplaints =
       outcomeAnimalFilter,
       outcomeAnimalStartDateFilter,
       outcomeAnimalEndDateFilter,
+      equipmentStatusFilter,
+      equipmentTypeFilter,
       page,
       pageSize,
       query,
     } = payload;
+
+    console.log(equipmentTypeFilter);
 
     try {
       dispatch(setComplaint(null));
@@ -359,6 +368,8 @@ export const getComplaints =
         outcomeAnimal: outcomeAnimalFilter?.value,
         outcomeAnimalStartDate: outcomeAnimalStartDateFilter,
         outcomeAnimalEndDate: outcomeAnimalEndDateFilter,
+        equipmentStatus: equipmentStatusFilter?.value,
+        equipmentType: equipmentTypeFilter?.value,
         page: page,
         pageSize: pageSize,
         query: query,

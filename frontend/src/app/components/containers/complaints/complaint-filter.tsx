@@ -13,6 +13,7 @@ import {
   selectGirTypeCodeDropdown,
   selectComplaintReceivedMethodDropdown,
   selectAllWildlifeComplaintOutcome,
+  selectAllEquipmentDropdown,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
 import { selectDecisionTypeDropdown } from "@store/reducers/code-table-selectors";
@@ -49,6 +50,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       outcomeAnimal,
       outcomeAnimalStartDate,
       outcomeAnimalEndDate,
+      equipmentStatus,
+      equipmentType,
     },
     dispatch,
   } = useContext(ComplaintFilterContext);
@@ -69,6 +72,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const violationTypes = useAppSelector(selectViolationCodeDropdown(agency));
   const girTypes = useAppSelector(selectGirTypeCodeDropdown);
   const outcomeAnimalTypes = useAppSelector(selectAllWildlifeComplaintOutcome); //want to see inactive items in the filter
+  const equipmentTypes = useAppSelector(selectAllEquipmentDropdown);
 
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
@@ -79,10 +83,15 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
 
   const activeFilters = useAppSelector(listActiveFilters());
 
+  const equipmentStatusTypes = [
+    { value: "ACTEQUIP", label: "Active equipment" },
+    { value: "INACTEQUIP", label: "Inactive equipment" },
+    { value: "ALLEQUIP", label: "All equipment" },
+  ];
+
   const setFilter = useCallback(
     (name: string, value?: Option | Date | null) => {
       let payload: ComplaintFilterPayload = { filter: name, value };
-
       dispatch(updateFilter(payload));
     },
     [dispatch],
@@ -342,6 +351,54 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             endDate={outcomeAnimalEndDate}
             handleDateChange={handleOutcomeDateRangeChange}
           />
+        )}
+
+        {COMPLAINT_TYPES.HWCR === type && (
+          <div id="comp-filter-status-id">
+            <label htmlFor="status-select-id">Equipment Status</label>
+            <div className="filter-select-padding">
+              <CompSelect
+                id="status-select-id"
+                showInactive={true}
+                classNamePrefix="comp-select"
+                onChange={(option) => {
+                  setFilter("equipmentStatus", option);
+                }}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={equipmentStatusTypes}
+                placeholder="Select"
+                enableValidation={false}
+                value={equipmentStatus}
+                isClearable={true}
+              />
+            </div>
+          </div>
+        )}
+
+        {COMPLAINT_TYPES.HWCR === type && (
+          <div id="comp-filter-status-id">
+            <label htmlFor="status-select-id">Equipment type(s)</label>
+            <div className="filter-select-padding">
+              <CompSelect
+                id="status-select-id"
+                showInactive={true}
+                classNamePrefix="comp-select"
+                onChange={(option) => {
+                  setFilter("equipmentType", option);
+                }}
+                classNames={{
+                  menu: () => "top-layer-select outcome-animal-select",
+                }}
+                options={equipmentTypes}
+                placeholder="Select"
+                enableValidation={false}
+                value={equipmentType}
+                isClearable={true}
+              />
+            </div>
+          </div>
         )}
       </div>
     );

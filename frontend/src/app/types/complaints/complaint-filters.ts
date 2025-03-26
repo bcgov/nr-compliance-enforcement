@@ -19,6 +19,8 @@ export interface ComplaintFilters {
   outcomeAnimalFilter?: Option;
   outcomeAnimalStartDateFilter?: Date;
   outcomeAnimalEndDateFilter?: Date;
+  equipmentStatusFilter?: Option;
+  equipmentTypeFilter?: Option;
   page?: number;
   pageSize?: number;
   query?: string;

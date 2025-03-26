@@ -45,6 +45,8 @@ export const ComplaintFilterBar: FC<Props> = ({
     outcomeAnimal,
     outcomeAnimalStartDate,
     outcomeAnimalEndDate,
+    equipmentStatus,
+    equipmentType,
   } = state;
 
   const dateRangeLabel = (startDate: Date | undefined | null, endDate: Date | undefined | null): string | undefined => {
@@ -252,6 +254,24 @@ export const ComplaintFilterBar: FC<Props> = ({
             id="comp-complaint-method-filter"
             label={dateRangeLabel(outcomeAnimalStartDate, outcomeAnimalEndDate)}
             name="outcomeAnimalDateRange"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("equipmentStatus") && (
+          <FilterButton
+            id="comp-complaint-method-filter"
+            label={equipmentStatus?.label}
+            name="equipmentStatus"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("equipmentType") && (
+          <FilterButton
+            id="comp-complaint-method-filter"
+            label={equipmentType?.label}
+            name="equipmentType"
             clear={removeFilter}
           />
         )}
