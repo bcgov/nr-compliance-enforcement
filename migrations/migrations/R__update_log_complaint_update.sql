@@ -118,8 +118,10 @@ BEGIN
         (_upd_detail_text IS DISTINCT FROM current_complaint_record.detail_text OR current_complaint_record.detail_text IS NULL)) THEN
         insert_upd_detail_text := _upd_detail_text;
         has_difference := TRUE;
-    ELSE
+    ELSE IF _update_number_exists THEN
         insert_upd_detail_text := prev_complaint_update_record.upd_detail_text;
+    ELSE
+        insert_upd_detail_text := NULL;
     END IF;
 
     IF (_upd_location_summary_text IS NOT NULL AND _upd_location_summary_text <> '' AND
@@ -127,8 +129,10 @@ BEGIN
         (_upd_location_summary_text IS DISTINCT FROM current_complaint_record.location_summary_text OR current_complaint_record.location_summary_text IS NULL)) THEN
         insert_upd_location_summary_text := _upd_location_summary_text;
         has_difference := TRUE;
-    ELSE
+    ELSE IF _update_number_exists THEN
         insert_upd_location_summary_text := prev_complaint_update_record.upd_location_summary_text;
+    ELSE
+        insert_upd_location_summary_text := NULL;
     END IF;
 
     IF (_upd_location_detailed_text IS NOT NULL AND _upd_location_detailed_text <> '' AND
@@ -136,8 +140,10 @@ BEGIN
         (_upd_location_detailed_text IS DISTINCT FROM current_complaint_record.location_detailed_text OR current_complaint_record.location_detailed_text IS NULL)) THEN
         insert_upd_location_detailed_text := _upd_location_detailed_text;
         has_difference := TRUE;
-    ELSE
+    ELSE IF _update_number_exists THEN
         insert_upd_location_detailed_text := prev_complaint_update_record.upd_location_detailed_text;
+    ELSE
+        insert_upd_location_detailed_text := NULL;
     END IF;
 
     IF (_upd_location_geometry_point IS NOT NULL AND
@@ -145,8 +151,10 @@ BEGIN
         (_upd_location_geometry_point IS DISTINCT FROM current_complaint_record.location_geometry_point OR current_complaint_record.location_geometry_point IS NULL)) THEN
         insert_upd_location_geometry_point := _upd_location_geometry_point;
         has_difference := TRUE;
-    ELSE
+    ELSE IF _update_number_exists THEN
         insert_upd_location_geometry_point := prev_complaint_update_record.upd_location_geometry_point;
+    ELSE
+        insert_upd_location_geometry_point := NULL;
     END IF;
 
     IF (_upd_caller_name IS NOT NULL AND _upd_caller_name <> '' AND
@@ -154,8 +162,10 @@ BEGIN
         (_upd_caller_name IS DISTINCT FROM current_complaint_record.caller_name OR current_complaint_record.caller_name IS NULL)) THEN
         insert_upd_caller_name := _upd_caller_name;
         has_difference := TRUE;
-    ELSE
+    ELSE IF _update_number_exists THEN
         insert_upd_caller_name := prev_complaint_update_record.upd_caller_name;
+    ELSE
+        insert_upd_caller_name := NULL;
     END IF;
 
     IF (_upd_caller_phone_1 IS NOT NULL AND _upd_caller_phone_1 <> '' AND
@@ -163,8 +173,10 @@ BEGIN
         (_upd_caller_phone_1 IS DISTINCT FROM current_complaint_record.caller_phone_1 OR current_complaint_record.caller_phone_1 IS NULL)) THEN
         insert_upd_caller_phone_1 := _upd_caller_phone_1;
         has_difference := TRUE;
-    ELSE
+    ELSE IF _update_number_exists THEN
         insert_upd_caller_phone_1 := prev_complaint_update_record.upd_caller_phone_1;
+    ELSE
+        insert_upd_caller_phone_1 := NULL;
     END IF;
 
     IF (_upd_caller_phone_2 IS NOT NULL AND _upd_caller_phone_2 <> '' AND
@@ -172,8 +184,10 @@ BEGIN
         (_upd_caller_phone_2 IS DISTINCT FROM current_complaint_record.caller_phone_2 OR current_complaint_record.caller_phone_2 IS NULL)) THEN
         insert_upd_caller_phone_2 := _upd_caller_phone_2;
         has_difference := TRUE;
-    ELSE
+    ELSE IF _update_number_exists THEN
         insert_upd_caller_phone_2 := prev_complaint_update_record.upd_caller_phone_2;
+    ELSE
+        insert_upd_caller_phone_2 := NULL;
     END IF;
 
     IF (_upd_caller_phone_3 IS NOT NULL AND _upd_caller_phone_3 <> '' AND
@@ -181,8 +195,10 @@ BEGIN
         (_upd_caller_phone_3 IS DISTINCT FROM current_complaint_record.caller_phone_3 OR current_complaint_record.caller_phone_3 IS NULL)) THEN
         insert_upd_caller_phone_3 := _upd_caller_phone_3;
         has_difference := TRUE;
-    ELSE
+    ELSE IF _update_number_exists THEN
         insert_upd_caller_phone_3 := prev_complaint_update_record.upd_caller_phone_3;
+    ELSE
+        insert_upd_caller_phone_3 := NULL;
     END IF;
 
     IF (_upd_caller_address IS NOT NULL AND _upd_caller_address <> '' AND
@@ -190,8 +206,10 @@ BEGIN
         (_upd_caller_address IS DISTINCT FROM current_complaint_record.caller_address OR current_complaint_record.caller_address IS NULL)) THEN
         insert_upd_caller_address := _upd_caller_address;
         has_difference := TRUE;
-    ELSE
+    ELSE IF _update_number_exists THEN
         insert_upd_caller_address := prev_complaint_update_record.upd_caller_address;
+    ELSE
+        insert_upd_caller_address := NULL;
     END IF;
 
     IF (_upd_caller_email IS NOT NULL AND _upd_caller_email <> '' AND
@@ -199,8 +217,10 @@ BEGIN
         (_upd_caller_email IS DISTINCT FROM current_complaint_record.caller_email OR current_complaint_record.caller_email IS NULL)) THEN
         insert_upd_caller_email := _upd_caller_email;
         has_difference := TRUE;
-    ELSE
+    ELSE IF _update_number_exists THEN
         insert_upd_caller_email := prev_complaint_update_record.upd_caller_email;
+    ELSE
+        insert_upd_caller_email := NULL;
     END IF;
 
     IF (_upd_reported_by_code IS NOT NULL AND _upd_reported_by_code <> '' AND
@@ -208,8 +228,10 @@ BEGIN
         (_upd_reported_by_code IS DISTINCT FROM current_complaint_record.reported_by_code OR current_complaint_record.reported_by_code IS NULL)) THEN
         insert_upd_reported_by_code := _upd_reported_by_code;
         has_difference := TRUE;
-    ELSE
+    ELSE IF _update_number_exists THEN
         insert_upd_reported_by_code := prev_complaint_update_record.upd_reported_by_code;
+    ELSE
+        insert_upd_reported_by_code := NULL;
     END IF;
 
     IF (_upd_reported_by_other_text IS NOT NULL AND _upd_reported_by_other_text <> '' AND
@@ -217,8 +239,10 @@ BEGIN
         (_upd_reported_by_other_text IS DISTINCT FROM current_complaint_record.reported_by_other_text OR current_complaint_record.reported_by_other_text IS NULL)) THEN
         insert_upd_reported_by_other_text := _upd_reported_by_other_text;
         has_difference := TRUE;
-    ELSE
+    ELSE IF _update_number_exists THEN
         insert_upd_reported_by_other_text := prev_complaint_update_record.upd_reported_by_other_text;
+    ELSE
+        insert_upd_reported_by_other_text := NULL;
     END IF;
 
     -- Insert the record if there are any differences, either log the complaint or update the previously existing complaint
