@@ -49,8 +49,8 @@ const initialState: ComplaintState = {
   complaintSearchParameters: {
     sortColumn: "",
     sortOrder: "",
-    equipmentStatusFilter: undefined,
-    equipmentTypeFilter: undefined,
+    // equipmentStatusFilter: undefined,
+    // equipmentTypeFilter: undefined,
   },
   complaintItems: {
     wildlife: [],
