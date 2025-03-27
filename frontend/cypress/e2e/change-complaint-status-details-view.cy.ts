@@ -37,17 +37,6 @@ describe("Complaint Change Status spec - Details View", () => {
    * needs to be reopened after adding the external file reference to test
    * the status modal fuctionality.
    */
-  function addExternalFileNumber() {
-    cy.get("#external-file-reference-number-input").click({ force: true });
-    cy.get("#external-file-reference-number-input").clear().type("1111111", { delay: 0 });
-    cy.get("#external-file-reference-save-button").click();
-    cy.get("#details-screen-update-status-button").filter(":visible").click({ force: true });
-    cy.get("#complaint_status_dropdown").click();
-    cy.get(".comp-select__option").contains("Open").click();
-    cy.get("#update_complaint_status_button").click();
-    cy.waitForSpinner();
-  }
-
   Cypress._.times(complaintTypes.length, (index) => {
     it("Changes status of closeable complaint to open, closed, and back to open", () => {
       if ("#hwcr-tab".includes(complaintTypes[index])) {
@@ -56,8 +45,19 @@ describe("Complaint Change Status spec - Details View", () => {
         fillInAssessmentSection();
       } else {
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
+        if ((cy.get("#external-file-reference-delete-button"), {})) {
+          cy.get("#external-file-reference-delete-button").click({ force: true });
+          cy.get(".btn-primary").click({ force: true });
+        }
         cy.assignSelfToComplaint();
-        addExternalFileNumber();
+        cy.get("#external-file-reference-number-input").click({ force: true });
+        cy.get("#external-file-reference-number-input").clear().type("1111111", { delay: 0 });
+        cy.get("#external-file-reference-save-button").click();
+        cy.get("#details-screen-update-status-button").filter(":visible").click({ force: true });
+        cy.get("#complaint_status_dropdown").click();
+        cy.get(".comp-select__option").contains("Open").click();
+        cy.get("#update_complaint_status_button").click();
+        cy.waitForSpinner();
       }
 
       cy.get("#details-screen-update-status-button").click({ force: true });
