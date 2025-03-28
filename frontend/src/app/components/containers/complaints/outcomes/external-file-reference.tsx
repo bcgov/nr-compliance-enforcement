@@ -182,7 +182,7 @@ export const ExternalFileReference: FC = () => {
                 <>
                   {complaintType === COMPLAINT_TYPES.ERS && (
                     <p className="mb-4">
-                      Once a COORS number is entered, this enforcement complaint will close automatically
+                      Once a COORS number is entered below, this enforcement complaint will close automatically.
                     </p>
                   )}
                   <div className="comp-details-form-row">
