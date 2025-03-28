@@ -115,7 +115,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
             </Col>
           </Row>
         )}
-        {!is_officer_assigned && selectedStatus === "CLOSED" && (
+        {!is_officer_assigned && selectedStatus === "CLOSED" ? (
           <Row className="status-change-subtext">
             <Col
               xs="auto"
@@ -127,6 +127,21 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
               <div>An officer must be assigned to the complaint before it can be closed.</div>
             </Col>
           </Row>
+        ) : (
+          !validationResults.validationDetails.referenceNumberCriteria &&
+          selectedStatus === "CLOSED" && (
+            <Row className="status-change-subtext">
+              <Col
+                xs="auto"
+                className="change_status_modal_icon"
+              >
+                <i className="bi bi-exclamation-circle"></i>
+              </Col>
+              <Col>
+                <div>COORS number is required before the complaint can be closed.</div>
+              </Col>
+            </Row>
+          )
         )}
         <label style={{ marginBottom: "8px" }}>{description}</label>
         <ComplaintStatusSelect
@@ -148,7 +163,10 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
           className={
             !statusChangeDisabledInd && (is_officer_assigned || selectedStatus === "OPEN") ? "" : "inactive-button"
           }
-          disabled={!is_officer_assigned && selectedStatus === "CLOSED"}
+          disabled={
+            (!is_officer_assigned || !validationResults.validationDetails.referenceNumberCriteria) &&
+            selectedStatus === "CLOSED"
+          }
         >
           Update
         </Button>

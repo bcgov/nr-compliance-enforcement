@@ -10,6 +10,7 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
+import getOfficerAssigned from "@common/get-officer-assigned";
 import { getUserAgency } from "@/app/service/user-service";
 
 type Props = {
@@ -36,7 +37,6 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
     isInProgress,
     locationDetail,
     locationSummary,
-    delegates,
     organization: { areaName: location, zone },
   } = complaint;
 
@@ -54,18 +54,6 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
   const getViolationDescription = (input: string): string => {
     const code = violationCodes.find((item) => item.violation === input);
     return code.longDescription;
-  };
-
-  const getOfficerAssigned = (): string => {
-    const officer = delegates.find((item) => item.type === "ASSIGNEE");
-    if (officer) {
-      const {
-        person: { firstName, lastName },
-      } = officer;
-      return `${lastName}, ${firstName}`;
-    }
-
-    return "";
   };
 
   const reportedOnDateTime = formatDateTime(reportedOn.toString());
@@ -166,7 +154,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
           className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          {getOfficerAssigned()}
+          {getOfficerAssigned(complaint)}
         </td>
         <td className={`comp-cell-width-160 comp-cell-min-width-160 ac-table-date-cell ${isExpandedClass}`}>
           {updatedOnDateTime}
