@@ -1014,9 +1014,16 @@ export class ComplaintService {
 
     // search for complaints based on the user's role
     if (agencies.length > 0) {
-      if (!status || status === "REFERRED") {
+      if (!status) {
         builder.andWhere(
           "(complaint.owned_by_agency_code.agency_code IN (:...agency_codes) OR (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
+          {
+            agency_codes: agencies,
+          },
+        );
+      } else if (status === "REFERRED") {
+        builder.andWhere(
+          "(complaint.owned_by_agency_code.agency_code NOT IN (:...agency_codes) AND (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
           {
             agency_codes: agencies,
           },
