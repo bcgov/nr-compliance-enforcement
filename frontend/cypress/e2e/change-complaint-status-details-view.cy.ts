@@ -45,10 +45,6 @@ describe("Complaint Change Status spec - Details View", () => {
         fillInAssessmentSection();
       } else {
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
-        if ((cy.get("#external-file-reference-delete-button"), {})) {
-          cy.get("#external-file-reference-delete-button").click({ force: true });
-          cy.get(".btn-primary").click({ force: true });
-        }
         cy.assignSelfToComplaint();
         cy.get("#external-file-reference-number-input").click({ force: true });
         cy.get("#external-file-reference-number-input").clear().type("1111111", { delay: 0 });
@@ -85,6 +81,12 @@ describe("Complaint Change Status spec - Details View", () => {
       cy.waitForSpinner();
 
       cy.get("#comp-details-status-text-id").contains("Open").should("exist");
+
+      // Delete the external file reference for future tests
+      if ("#ers-tab".includes(complaintTypes[index])) {
+        cy.get("#external-file-reference-delete-button").click({ force: true });
+        cy.get(".btn-primary").click({ force: true });
+      }
     });
   });
 
