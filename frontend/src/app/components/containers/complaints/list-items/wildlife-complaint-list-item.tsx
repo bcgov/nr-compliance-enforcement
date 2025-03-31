@@ -7,6 +7,7 @@ import { useAppSelector } from "@hooks/hooks";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { Badge } from "react-bootstrap";
+import getOfficerAssigned from "@common/get-officer-assigned";
 import { getUserAgency } from "@/app/service/user-service";
 
 type Props = {
@@ -34,7 +35,6 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
     species: speciesCode,
     locationDetail,
     locationSummary,
-    delegates,
     organization: { areaName: location, zone },
   } = complaint;
 
@@ -57,18 +57,6 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
   const getSpecies = (input: string): string => {
     const code = speciesCodes.find((item) => item.species === input);
     return code.longDescription;
-  };
-
-  const getOfficerAssigned = (): string => {
-    const officer = delegates.find((item) => item.type === "ASSIGNEE");
-    if (officer) {
-      const {
-        person: { firstName, lastName },
-      } = officer;
-      return `${lastName}, ${firstName}`;
-    }
-
-    return "";
   };
 
   const reportedOnDateTime = formatDateTime(reportedOn.toString());
@@ -155,7 +143,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          {getOfficerAssigned()}
+          {getOfficerAssigned(complaint)}
         </td>
         <td className={`comp-cell-width-160 comp-cell-min-width-160 hwc-table-date-cell ${isExpandedClass}`}>
           {updatedOnDateTime}

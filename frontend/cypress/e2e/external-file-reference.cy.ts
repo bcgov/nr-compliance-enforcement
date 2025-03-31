@@ -44,12 +44,26 @@ describe("External File Reference", () => {
     });
   }
 
+  function setStatusOpen() {
+    cy.get("#details-screen-update-status-button").filter(":visible").click({ force: true });
+    cy.get("#complaint_status_dropdown").click();
+    cy.get(".comp-select__option").contains("Open").click();
+    cy.get("#update_complaint_status_button").click();
+    cy.waitForSpinner();
+  }
+
   //Core tests - try these on both complaint types
 
   Cypress._.times(complaintTypes.length, (index) => {
     it(`Can enter an external reference number: ${complaintTypes[index]}`, () => {
       //navigatetoComplaint
       navigateToComplaint(index);
+
+      // ERS for COS need to be assigned before a COORS number can be saved
+      if (complaintTypes[index] === COMPLAINT_TYPES.ERS) {
+        setStatusOpen();
+        cy.assignSelfToComplaint();
+      }
 
       //make sure that there isn't an old one there from a failed run
       deleteReferenceNumber();
@@ -58,9 +72,12 @@ describe("External File Reference", () => {
       enterReferenceNumber("111111", true);
 
       //validate the number
-      cy.get("#external-file-reference-number-div").should(($div) => {
-        expect($div).to.contain.text("111111");
-      });
+      cy.get("#external-file-reference-number").should("have.text", "111111");
+
+      // ERS for COS close when saved, so needs to be reopened for the next tests tests
+      if (complaintTypes[index] === COMPLAINT_TYPES.ERS) {
+        setStatusOpen();
+      }
     });
 
     it(`Can edit an external reference number: ${complaintTypes[index]}`, () => {
@@ -74,9 +91,12 @@ describe("External File Reference", () => {
       enterReferenceNumber("222222", true);
 
       //validate the number
-      cy.get("#external-file-reference-number-div").should(($div) => {
-        expect($div).to.contain.text("222222");
-      });
+      cy.get("#external-file-reference-number").should("have.text", "222222");
+
+      // ERS for COS close when saved, so needs to be reopened for the next tests tests
+      if (complaintTypes[index] === COMPLAINT_TYPES.ERS) {
+        setStatusOpen();
+      }
     });
 
     it(`Can delete an external reference number: ${complaintTypes[index]}`, () => {
