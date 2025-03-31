@@ -72,6 +72,7 @@ export const ComplaintFilterBar: FC<Props> = ({
 
   const hasFilter = (filter: string) => {
     const selected = state[filter as keyof ComplaintFilters];
+    //Check if the filter is Equipment types
     if (Array.isArray(selected)) {
       return selected.length > 0 && !!selected;
     }
@@ -88,6 +89,10 @@ export const ComplaintFilterBar: FC<Props> = ({
         case "outcomeAnimalDateRange":
           dispatch(clearFilter("outcomeAnimalStartDate"));
           dispatch(clearFilter("outcomeAnimalEndDate"));
+          break;
+        case "equipmentStatus":
+          dispatch(clearFilter("equipmentStatus"));
+          dispatch(clearFilter("equipmentTypes"));
           break;
         default:
           dispatch(clearFilter(name));

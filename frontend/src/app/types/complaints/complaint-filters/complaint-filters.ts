@@ -28,7 +28,7 @@ export type ComplaintFilters = {
   outcomeAnimalEndDate?: Date;
 
   equipmentStatus?: DropdownOption | null;
-  equipmentTypes?: Option[] | undefined;
+  equipmentTypes?: Option[];
 
   filters: Array<any>;
 };

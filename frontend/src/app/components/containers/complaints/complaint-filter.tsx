@@ -20,7 +20,7 @@ import { selectDecisionTypeDropdown, selectEquipmentStatusDropdown } from "@stor
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { CompSelect } from "@components/common/comp-select";
 import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
-import { ComplaintFilterPayload, updateFilter } from "@store/reducers/complaint-filters";
+import { ComplaintFilterPayload, clearFilter, updateFilter } from "@store/reducers/complaint-filters";
 import Option from "@apptypes/app/option";
 import { listActiveFilters } from "@store/reducers/app";
 import UserService from "@service/user-service";
@@ -359,6 +359,10 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 classNamePrefix="comp-select"
                 onChange={(option) => {
                   setFilter("equipmentStatus", option);
+                  //when filter equimentStatus removed -> remove filter equipmentTypes too
+                  if (option === null) {
+                    dispatch(clearFilter("equipmentTypes"));
+                  }
                 }}
                 classNames={{
                   menu: () => "top-layer-select",
@@ -372,31 +376,6 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             </div>
           </div>
         )}
-
-        {/* {COMPLAINT_TYPES.HWCR === type && (
-          <div id="comp-filter-status-id">
-            <label htmlFor="status-select-id">Equipment type</label>
-            <div className="filter-select-padding">
-              <CompSelect
-                id="status-select-id"
-                showInactive={true}
-                classNamePrefix="comp-select"
-                onChange={(option) => {
-                  setFilter("equipmentType", option);
-                }}
-                classNames={{
-                  menu: () => "top-layer-select outcome-animal-select",
-                }}
-                options={equipmentTypesDropdown}
-                placeholder="Select"
-                enableValidation={false}
-                value={equipmentType}
-                isClearable={true}
-                isDisabled={equipmentStatus === null}
-              />
-            </div>
-          </div>
-        )} */}
 
         {COMPLAINT_TYPES.HWCR === type && (
           <div id="comp-filter-status-id">
@@ -414,6 +393,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 errMsg={""}
                 values={equipmentTypes}
                 isDisabled={equipmentStatus === null}
+                isClearable={true}
               />
             </div>
           </div>

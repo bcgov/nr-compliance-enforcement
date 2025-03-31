@@ -898,14 +898,16 @@ export class ComplaintService {
     return complaintIdentifiers;
   };
 
-  private _getComplaintsByEquipment = async (
+  private readonly _getComplaintsByEquipment = async (
     token: string,
     equipmentStatus: string,
     equipmentCodes: string[] | null,
   ): Promise<string[]> => {
-    const equipmentCodeParam = equipmentCodes
-      ? `equipmentCodes: [${equipmentCodes.map((code) => `"${code}"`).join(", ")}]`
-      : "";
+    let equipmentCodeParam = "";
+    if (equipmentCodes) {
+      const formattedCodes = equipmentCodes.map((code) => `"${code}"`).join(", ");
+      equipmentCodeParam = `equipmentCodes: [${formattedCodes}]`;
+    }
 
     const { data, errors } = await get(token, {
       query: `{getLeadsByEquipment(equipmentStatus: "${equipmentStatus}"${
