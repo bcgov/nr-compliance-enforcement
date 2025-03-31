@@ -46,7 +46,7 @@ export const generateMapComplaintRequestPayload = (
     outcomeAnimalStartDate,
     outcomeAnimalEndDate,
     equipmentStatus,
-    equipmentType,
+    equipmentTypes,
   } = filters;
 
   let common = {
@@ -82,7 +82,7 @@ export const generateMapComplaintRequestPayload = (
         natureOfComplaintFilter: natureOfComplaint,
         outcomeAnimalFilter: outcomeAnimal,
         equipmentStatusFilter: equipmentStatus,
-        equipmentTypeFilter: equipmentType,
+        equipmentTypesFilter: equipmentTypes,
       } as ComplaintRequestPayload;
   }
 };
@@ -147,7 +147,7 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
         outcomeAnimalStartDate: payload.outcomeAnimalStartDateFilter,
         outcomeAnimalEndDate: payload.outcomeAnimalEndDateFilter,
         equipmentStatus: payload.equipmentStatusFilter?.value,
-        equipmentType: payload.equipmentTypeFilter?.value,
+        equipmentTypes: payload.equipmentTypesFilter?.map((type) => type.value),
         query: searchQuery,
       };
 

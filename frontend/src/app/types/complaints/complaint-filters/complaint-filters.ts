@@ -1,4 +1,6 @@
 import { DropdownOption } from "@apptypes/app/drop-down-option";
+import Option from "@apptypes/app/option";
+
 export type ComplaintFilters = {
   [key: string]: any;
 
@@ -25,8 +27,8 @@ export type ComplaintFilters = {
   outcomeAnimalStartDate?: Date;
   outcomeAnimalEndDate?: Date;
 
-  equipmentStatus: DropdownOption | null;
-  equipmentType: DropdownOption | null;
+  equipmentStatus?: DropdownOption | null;
+  equipmentTypes?: Option[] | undefined;
 
   filters: Array<any>;
 };

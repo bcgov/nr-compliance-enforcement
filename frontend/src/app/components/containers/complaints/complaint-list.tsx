@@ -58,7 +58,7 @@ export const generateComplaintRequestPayload = (
     outcomeAnimalStartDate,
     outcomeAnimalEndDate,
     equipmentStatus,
-    equipmentType,
+    equipmentTypes,
   } = filters;
 
   const common = {
@@ -99,7 +99,7 @@ export const generateComplaintRequestPayload = (
         outcomeAnimalStartDateFilter: outcomeAnimalStartDate,
         outcomeAnimalEndDateFilter: outcomeAnimalEndDate,
         equipmentStatusFilter: equipmentStatus,
-        equipmentTypeFilter: equipmentType,
+        equipmentTypesFilter: equipmentTypes,
       } as ComplaintRequestPayload;
   }
 };

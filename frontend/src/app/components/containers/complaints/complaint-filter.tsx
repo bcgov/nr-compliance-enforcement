@@ -16,7 +16,7 @@ import {
   selectAllEquipmentDropdown,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
-import { selectDecisionTypeDropdown } from "@store/reducers/code-table-selectors";
+import { selectDecisionTypeDropdown, selectEquipmentStatusDropdown } from "@store/reducers/code-table-selectors";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { CompSelect } from "@components/common/comp-select";
 import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
@@ -26,6 +26,7 @@ import { listActiveFilters } from "@store/reducers/app";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
 import { FilterDate } from "@components/common/filter-date";
+import { ValidationMultiSelect } from "@common/validation-multiselect";
 
 type Props = {
   type: string;
@@ -51,7 +52,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       outcomeAnimalStartDate,
       outcomeAnimalEndDate,
       equipmentStatus,
-      equipmentType,
+      equipmentTypes,
     },
     dispatch,
   } = useContext(ComplaintFilterContext);
@@ -72,7 +73,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const violationTypes = useAppSelector(selectViolationCodeDropdown(agency));
   const girTypes = useAppSelector(selectGirTypeCodeDropdown);
   const outcomeAnimalTypes = useAppSelector(selectAllWildlifeComplaintOutcome); //want to see inactive items in the filter
-  const equipmentTypes = useAppSelector(selectAllEquipmentDropdown);
+  const equipmentStatusTypes = useAppSelector(selectEquipmentStatusDropdown);
+  const equipmentTypesDropdown = useAppSelector(selectAllEquipmentDropdown).filter((item) => item.isActive === true); //only display active equipment_code
 
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
@@ -82,12 +84,6 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
 
   const activeFilters = useAppSelector(listActiveFilters());
-
-  const equipmentStatusTypes = [
-    { value: "ACTEQUIP", label: "Active equipment" },
-    { value: "INACTEQUIP", label: "Inactive equipment" },
-    { value: "ALLEQUIP", label: "All equipment" },
-  ];
 
   const setFilter = useCallback(
     (name: string, value?: Option | Date | null) => {
@@ -377,9 +373,9 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {COMPLAINT_TYPES.HWCR === type && (
+        {/* {COMPLAINT_TYPES.HWCR === type && (
           <div id="comp-filter-status-id">
-            <label htmlFor="status-select-id">Equipment type(s)</label>
+            <label htmlFor="status-select-id">Equipment type</label>
             <div className="filter-select-padding">
               <CompSelect
                 id="status-select-id"
@@ -391,11 +387,33 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 classNames={{
                   menu: () => "top-layer-select outcome-animal-select",
                 }}
-                options={equipmentTypes}
+                options={equipmentTypesDropdown}
                 placeholder="Select"
                 enableValidation={false}
                 value={equipmentType}
                 isClearable={true}
+                isDisabled={equipmentStatus === null}
+              />
+            </div>
+          </div>
+        )} */}
+
+        {COMPLAINT_TYPES.HWCR === type && (
+          <div id="comp-filter-status-id">
+            <label htmlFor="status-select-id">Equipment type(s)</label>
+            <div className="filter-select-padding">
+              <ValidationMultiSelect
+                className="comp-details-input"
+                options={equipmentTypesDropdown}
+                placeholder="Select"
+                id="equipment-types-id"
+                classNamePrefix="comp-select"
+                onChange={(option: Option) => {
+                  setFilter("equipmentTypes", option);
+                }}
+                errMsg={""}
+                values={equipmentTypes}
+                isDisabled={equipmentStatus === null}
               />
             </div>
           </div>

@@ -16,5 +16,5 @@ export interface ComplaintFilterParameters {
   outcomeAnimalStartDate?: Date;
   outcomeAnimalEndDate?: Date;
   equipmentStatus?: string;
-  equipmentType?: string;
+  equipmentTypes?: string[];
 }

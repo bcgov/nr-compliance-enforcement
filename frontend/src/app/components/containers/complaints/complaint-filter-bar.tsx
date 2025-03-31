@@ -46,7 +46,7 @@ export const ComplaintFilterBar: FC<Props> = ({
     outcomeAnimalStartDate,
     outcomeAnimalEndDate,
     equipmentStatus,
-    equipmentType,
+    equipmentTypes,
   } = state;
 
   const dateRangeLabel = (startDate: Date | undefined | null, endDate: Date | undefined | null): string | undefined => {
@@ -72,6 +72,9 @@ export const ComplaintFilterBar: FC<Props> = ({
 
   const hasFilter = (filter: string) => {
     const selected = state[filter as keyof ComplaintFilters];
+    if (Array.isArray(selected)) {
+      return selected.length > 0 && !!selected;
+    }
     return !!selected;
   };
 
@@ -267,11 +270,11 @@ export const ComplaintFilterBar: FC<Props> = ({
           />
         )}
 
-        {hasFilter("equipmentType") && (
+        {hasFilter("equipmentTypes") && (
           <FilterButton
             id="comp-complaint-method-filter"
-            label={equipmentType?.label}
-            name="equipmentType"
+            label={equipmentTypes?.map((type) => type.label).join(", ")}
+            name="equipmentTypes"
             clear={removeFilter}
           />
         )}

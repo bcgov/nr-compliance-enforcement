@@ -31,7 +31,7 @@ let initialState: ComplaintFilters = {
   outcomeAnimalStartDate: undefined,
   outcomeAnimalEndDate: undefined,
   equipmentStatus: null,
-  equipmentType: null,
+  equipmentTypes: [],
 };
 
 const convertFilterNames = (complaintFilters: Partial<ComplaintFilters>) => {
@@ -58,9 +58,8 @@ const convertFilterNames = (complaintFilters: Partial<ComplaintFilters>) => {
     outcomeAnimalStartDateFilter,
     outcomeAnimalEndDateFilter,
     equipmentStatusFilter,
-    equipmentTypeFilter,
+    equipmentTypesFilter,
   } = complaintFilters;
-  console.log(startDateFilter);
 
   // Parse the start and end date filters into Date objects if they exist.
   const parsedStartDate = startDateFilter ? new Date(startDateFilter) : undefined;
@@ -101,7 +100,7 @@ const convertFilterNames = (complaintFilters: Partial<ComplaintFilters>) => {
     outcomeAnimalStartDate: parsedOutcomeAnimalStartDate,
     outcomeAnimalEndDate: parsedOutcomeAnimalEndDate,
     equipmentStatus: equipmentStatusFilter,
-    equipmentType: equipmentTypeFilter,
+    equipmentTypes: equipmentTypesFilter,
   };
 
   // Only return filters that have a value set
@@ -124,10 +123,6 @@ const ComplaintFilterContext = createContext<ComplaintFilterContextType>({
 });
 
 const ComplaintFilterProvider: FC<ProviderProps> = ({ children, freshSearch, complaintFilters }) => {
-  console.log("complaint filters");
-  console.log(complaintFilters);
-  console.log("initialState");
-  console.log(initialState);
   let startingState = { ...initialState };
   if (freshSearch) {
     startingState = { ...startingState, ...complaintFilters, status: { value: "OPEN", label: "Open" } };

@@ -187,11 +187,10 @@ export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
   const defaultRegion = useAppSelector(selectDefaultRegion);
   const currentOfficer = useAppSelector(selectCurrentOfficer);
   const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
-  console.log(storedSearchParams);
+
   // If the search is fresh, there are only 2 default parameters set. If more than 2 exist,
   // this is not a fresh search as the search funtion itself sets more filters, even if blank.
   const freshSearch = Object.keys(storedSearchParams).length === 2;
-  console.log(freshSearch);
   const complaintFilters = freshSearch ? getFilters(currentOfficer, defaultZone, defaultRegion) : storedSearchParams;
   return (
     <>

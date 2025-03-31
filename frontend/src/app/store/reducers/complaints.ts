@@ -49,8 +49,6 @@ const initialState: ComplaintState = {
   complaintSearchParameters: {
     sortColumn: "",
     sortOrder: "",
-    // equipmentStatusFilter: undefined,
-    // equipmentTypeFilter: undefined,
   },
   complaintItems: {
     wildlife: [],
@@ -337,13 +335,11 @@ export const getComplaints =
       outcomeAnimalStartDateFilter,
       outcomeAnimalEndDateFilter,
       equipmentStatusFilter,
-      equipmentTypeFilter,
+      equipmentTypesFilter,
       page,
       pageSize,
       query,
     } = payload;
-
-    console.log(equipmentTypeFilter);
 
     try {
       dispatch(setComplaint(null));
@@ -369,7 +365,7 @@ export const getComplaints =
         outcomeAnimalStartDate: outcomeAnimalStartDateFilter,
         outcomeAnimalEndDate: outcomeAnimalEndDateFilter,
         equipmentStatus: equipmentStatusFilter?.value,
-        equipmentType: equipmentTypeFilter?.value,
+        equipmentTypes: equipmentTypesFilter?.map((type) => type.value) ?? [],
         page: page,
         pageSize: pageSize,
         query: query,
