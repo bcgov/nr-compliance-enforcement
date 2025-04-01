@@ -187,11 +187,11 @@ export const get = (token, params?: {}) => {
     })
     .catch((error: AxiosError) => {
       if (error.response) {
-        throw new Error(`Case Management Request Failed: ${error.response.data}`);
+        throw new Error(`Shared Data Request Failed: ${error.response.data}`);
       } else if (error.request) {
-        throw new Error(`No response received from the Case Management server: ${caseManagementlURL}`);
+        throw new Error(`No response received from the Shared Data server: ${caseManagementlURL}`);
       } else {
-        throw new Error(`Request setup error to Case Management: ${error.message}`);
+        throw new Error(`Request setup error to Shared Data: ${error.message}`);
       }
     });
 };

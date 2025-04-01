@@ -1,32 +1,32 @@
 import { Inject, Injectable, Logger, Scope } from "@nestjs/common";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { caseFileQueryFields, get, post } from "../../external_api/case_management";
+import { caseFileQueryFields, get, post } from "../../../external_api/shared_data";
 import { CaseFileDto } from "src/types/models/case-files/case-file";
 import { REQUEST } from "@nestjs/core";
 import { AxiosResponse, AxiosError } from "axios";
-import { CreateNoteInput } from "../../types/models/case-files/notes/create-note-input";
-import { UpdateNoteInput } from "../../types/models/case-files/notes/update-note-input";
-import { DeleteNoteInput } from "../../types/models/case-files/notes/delete-note-input";
-import { ComplaintService } from "../complaint/complaint.service";
-import { ComplaintStatusCodeEnum } from "../../enum/complaint_status_code.enum";
-import { DeleteEquipmentDto } from "../../types/models/case-files/equipment/delete-equipment-dto";
-import { CreateWildlifeInput } from "../../types/models/case-files/wildlife/create-wildlife-input";
-import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/delete-wildlife-outcome";
-import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
+import { CreateNoteInput } from "../../../types/models/case-files/notes/create-note-input";
+import { UpdateNoteInput } from "../../../types/models/case-files/notes/update-note-input";
+import { DeleteNoteInput } from "../../../types/models/case-files/notes/delete-note-input";
+import { ComplaintService } from "../../complaint/complaint.service";
+import { ComplaintStatusCodeEnum } from "../../../enum/complaint_status_code.enum";
+import { DeleteEquipmentDto } from "../../../types/models/case-files/equipment/delete-equipment-dto";
+import { CreateWildlifeInput } from "../../../types/models/case-files/wildlife/create-wildlife-input";
+import { DeleteWildlifeInput } from "../../../types/models/case-files/wildlife/delete-wildlife-outcome";
+import { UpdateWildlifeInput } from "../../../types/models/case-files/wildlife/update-wildlife-input";
 import { CreateDecisionInput } from "src/types/models/case-files/ceeb/decision/create-decision-input";
 import { UpdateDecisionInput } from "src/types/models/case-files/ceeb/decision/update-decison-input";
 import { CreateAuthorizationOutcomeInput } from "src/types/models/case-files/ceeb/site/create-authorization-outcome-input";
 import { UpdateAuthorizationOutcomeInput } from "src/types/models/case-files/ceeb/site/update-authorization-outcome-input";
 import { DeleteAuthorizationOutcomeInput } from "src/types/models/case-files/ceeb/site/delete-authorization-outcome-input";
 import { DataSource, Repository } from "typeorm";
-import { LinkedComplaintXref } from "../linked_complaint_xref/entities/linked_complaint_xref.entity";
+import { LinkedComplaintXref } from "../../linked_complaint_xref/entities/linked_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { getIdirFromRequest } from "../../common/get-idir-from-request";
-import { CodeTableService } from "../code-table/code-table.service";
-import { Complaint } from "../complaint/entities/complaint.entity";
-import { CreateLinkedComplaintXrefDto } from "../linked_complaint_xref/dto/create-linked_complaint_xref.dto";
-import { CaseManagementError } from "../../enum/case_management_error.enum";
+import { getIdirFromRequest } from "../../../common/get-idir-from-request";
+import { CodeTableService } from "../../code-table/code-table.service";
+import { Complaint } from "../../complaint/entities/complaint.entity";
+import { CreateLinkedComplaintXrefDto } from "../../linked_complaint_xref/dto/create-linked_complaint_xref.dto";
+import { CaseManagementError } from "../../../enum/case_management_error.enum";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {

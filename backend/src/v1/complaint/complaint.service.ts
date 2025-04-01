@@ -4,7 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { caseFileQueryFields, get } from "../../external_api/case_management";
+import { caseFileQueryFields, get } from "../../external_api/shared_data";
 import Supercluster, { PointFeature } from "supercluster";
 import { GeoJsonProperties } from "geojson";
 
