@@ -1,6 +1,8 @@
 name: Handle Version Bump
 
-on: issue_comment
+on:
+  issue_comment:
+    types: [created, edited]
 
 jobs:
   bump_and_merge:
@@ -10,7 +12,7 @@ jobs:
       contents: "write"
       packages: "write"
       actions: "read"
-    if: ${{ github.event.issue.pull_request }} && contains(github.event.comment.body, '/version')
+    if: ${{ github.event.issue.pull_request }} && ${{ contains(github.event.comment.body, '/version') }}
     steps:
       - name: Get PR Details
         id: pr_details
