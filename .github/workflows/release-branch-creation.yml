@@ -14,34 +14,12 @@ jobs:
     # Only trigger for main release branches
     if: startsWith(github.ref, 'refs/heads/release/')
     steps:
-      - name: Decode the GitHub App Private Key
-        id: decode-app-private-key
-        run: |
-          private_key=$(echo "${{ secrets.TEAM_WOLVERINE_GITHUB_APP_PRIVATE_KEY }}" | base64 -d | awk 'BEGIN {ORS="\\n"} {print}' | head -c -2) &> /dev/null
-          echo "::add-mask::$private_key"
-          echo "app-private-key=$private_key" >> "$GITHUB_OUTPUT"
-
-      - uses: actions/create-github-app-token@v1
-        id: app-token
+      - name: Authenticate GitHub App and Get Token
+        id: get_gh_app_token
+        uses: ./.github/actions/get-gh-app-token
         with:
-          app-id: ${{ vars.TEAM_WOLVERINE_GITHUB_APP_ID }}
-          private-key: ${{ steps.decode-app-private-key.outputs.app-private-key }}
-
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
-          fetch-depth: 0
-          fetch-tags: true
-          token: ${{ steps.app-token.outputs.token }}
-
-      - name: Get GitHub App User ID
-        id: get-user-id
-        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-      - run: |
-          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
-          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+          github_app_id: ${{ vars.TEAM_WOLVERINE_GITHUB_APP_ID }}
+          github_app_private_key: ${{ secrets.TEAM_WOLVERINE_GITHUB_APP_PRIVATE_KEY }}
 
       - name: Install npm
         run: sudo apt-get install -y npm
@@ -68,7 +46,7 @@ jobs:
 
       - name: Commit and Push Version Update
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ steps.get_gh_app_token.outputs.token }}
         run: |
           git add frontend/package.json backend/package.json webeoc/package.json
           git commit -m 'chore: bump version to ${{ steps.bump_version.outputs.new_version }}'
@@ -77,7 +55,7 @@ jobs:
       # Create a new tag with the bumped minor version
       - name: Create and push the new tag
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ steps.get_gh_app_token.outputs.token }}
         run: |
           git tag "v${{ steps.bump_version.outputs.new_version }}"
           git push origin "v${{ steps.bump_version.outputs.new_version }}"
