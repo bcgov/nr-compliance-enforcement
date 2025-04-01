@@ -5,7 +5,8 @@ name: Handle Version Bump
 #     types: [created, edited]
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - "CE-1476-tagging-actions"
 
@@ -17,7 +18,7 @@ jobs:
       contents: "write"
       packages: "write"
       actions: "read"
-    # if: ${{ github.event.issue.pull_request }} && ${{ contains(github.event.comment.body, '/version') }}
+    if: github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v4
       - name: Get PR Details
