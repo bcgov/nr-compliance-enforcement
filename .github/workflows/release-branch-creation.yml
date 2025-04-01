@@ -20,6 +20,7 @@ jobs:
         with:
           github_app_id: ${{ vars.TEAM_WOLVERINE_GITHUB_APP_ID }}
           github_app_private_key: ${{ secrets.TEAM_WOLVERINE_GITHUB_APP_PRIVATE_KEY }}
+          ref: ${{ github.ref }}
 
       - name: Install npm
         run: sudo apt-get install -y npm
