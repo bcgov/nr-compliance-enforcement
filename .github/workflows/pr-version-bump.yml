@@ -45,44 +45,39 @@ jobs:
           git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
           git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
 
-      # - name: Update package.json versions
-      #   id: increment_version
-      #   # The old and new versions are currently being read from the frontend package.json
-      #   # since all three packages are being kept in sync.
-      #   run: |
-      #     cd frontend
-      #     echo "::set-output name=old_version::$(npm pkg get version | tr -d '"')"
-      #     npm version patch --no-git-tag-version
-      #     echo "::set-output name=new_version::$(npm pkg get version | tr -d '"')"
-      #     new_v=$(npm pkg get version | tr -d '"')
-      #     echo "Frontend package.json version updated to $new_v"
-      #     cd ../backend
-      #     npm version $new_v --no-git-tag-version
-      #     echo "Backend package.json version updated to $new_v"
-      #     cd ../webeoc
-      #     npm version $new_v --no-git-tag-version
-      #     echo "WebEOC package.json version updated to $new_v"
-      #     cd ..
-      # - name: Commit and Push Version Update
-      #   env:
-      #     GH_TOKEN: ${{ steps.app-token.outputs.token }}
-      #   run: |
-      #     git add frontend/package.json backend/package.json webeoc/package.json
-      #     git commit -m "chore: bump version to ${{ steps.increment_version.outputs.new_version }}"
-      #     git push origin HEAD:${{ github.ref }}
+      - name: Update package.json versions
+        id: increment_version
+        # The old and new versions are currently being read from the frontend package.json
+        # since all three packages are being kept in sync.
+        run: |
+          cd frontend
+          echo "::set-output name=old_version::$(npm pkg get version | tr -d '"')"
+          npm version patch --no-git-tag-version
+          echo "::set-output name=new_version::$(npm pkg get version | tr -d '"')"
+          new_v=$(npm pkg get version | tr -d '"')
+          echo "Frontend package.json version updated to $new_v"
+          cd ../backend
+          npm version $new_v --no-git-tag-version
+          echo "Backend package.json version updated to $new_v"
+          cd ../webeoc
+          npm version $new_v --no-git-tag-version
+          echo "WebEOC package.json version updated to $new_v"
+          cd ..
+      - name: Update helm chart version and appVersion in Chart.yaml
+        run: |
+          sed -i'' -e 's/^version:.*$/version: ${{ steps.increment_version.outputs.new_version }}/' charts/app/Chart.yaml
+          sed -i'' 's/^appVersion:.*$/appVersion: ${{ steps.increment_version.outputs.new_version }}/' charts/app/Chart.yaml
+      - name: Commit and Push Version Update
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          git add frontend/package.json backend/package.json webeoc/package.json
+          git commit -m "chore: bump version to ${{ steps.increment_version.outputs.new_version }}"
+          git push origin HEAD:${{ github.ref }}
       - name: Create Git Tag and Delete Old Tag
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          cd frontend
-          OLD_V=$(npm pkg get version | tr -d '"')
-          npm version patch --no-git-tag-version
-          NEW_V=$(npm pkg get version | tr -d '"')
-          git restore package.json
-          cd ..
-          git tag "v$NEW_V"
-          git push origin v$NEW_V
-          git push --delete origin "v$OLD_V"
-        # git tag "v${{ steps.increment_version.outputs.new_version }}"
-        # git push origin v${{ steps.increment_version.outputs.new_version }}
-        # git push --delete origin "v${{ steps.increment_version.outputs.old_version }}"
+          git tag "v${{ steps.increment_version.outputs.new_version }}"
+          git push origin v${{ steps.increment_version.outputs.new_version }}
+          git push --delete origin "v${{ steps.increment_version.outputs.old_version }}"
