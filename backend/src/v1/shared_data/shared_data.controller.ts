@@ -6,7 +6,7 @@ import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { Token } from "../../auth/decorators/token.decorator";
 
-//@UseGuards(JwtRoleGuard)
+@UseGuards(JwtRoleGuard)
 @ApiTags("shared-data")
 @Controller({
   path: "shared-data",
@@ -17,7 +17,7 @@ export class SharedDataController {
   private readonly logger = new Logger(SharedDataController.name);
 
   @Get("/park")
-  //@Roles(coreRoles)
+  @Roles(coreRoles)
   findParks(
     @Token() token,
     @Query("search") search?: string,
@@ -28,7 +28,7 @@ export class SharedDataController {
   }
 
   @Get("/park/:id")
-  //@Roles(coreRoles)
+  @Roles(coreRoles)
   findOnePark(@Param("id") id: string, @Token() token) {
     return this.service.findOnePark(token, id);
   }
