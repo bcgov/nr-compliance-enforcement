@@ -1,6 +1,6 @@
 import { FC } from "react";
 import Option from "@apptypes/app/option";
-import Select from "react-select";
+import { default as Select, components } from "react-select";
 
 interface ValidationMultiSelectProps {
   className: string;
@@ -15,6 +15,30 @@ interface ValidationMultiSelectProps {
   isDisabled?: boolean;
   isClearable?: boolean;
 }
+
+const CustomOption = (props: any) => {
+  return (
+    <components.Option {...props}>
+      <input
+        type="checkbox"
+        checked={props.isSelected}
+        onChange={() => null} // Prevent direct checkbox toggle; react-select handles selection
+        style={{ marginRight: "8px" }}
+      />
+      {props.label}
+    </components.Option>
+  );
+};
+
+const customStyles = {
+  option: (provided: any, state: any) => ({
+    ...provided,
+    backgroundColor: state.isSelected ? "#ffffff" : provided.backgroundColor,
+    color: state.isSelected ? "#000000" : provided.color,
+    display: "flex",
+    alignItems: "center",
+  }),
+};
 
 export const ValidationMultiSelect: FC<ValidationMultiSelectProps> = ({
   className,
@@ -40,6 +64,11 @@ export const ValidationMultiSelect: FC<ValidationMultiSelectProps> = ({
           onChange={(values) => {
             onChange(values);
           }}
+          components={{ Option: CustomOption }}
+          styles={customStyles}
+          menuPlacement="auto"
+          closeMenuOnSelect={false}
+          hideSelectedOptions={false}
           placeholder={placeholder}
           classNamePrefix={classNamePrefix}
           className={calulatedClass}

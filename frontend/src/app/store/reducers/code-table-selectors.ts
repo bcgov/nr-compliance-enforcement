@@ -40,3 +40,8 @@ export const selectDecisionTypeDropdown = createSelector([selectCodeTables], (co
   const { "decision-type": items } = codeTables;
   return items.map(({ decisionType: value, longDescription: label }) => ({ label, value }));
 });
+
+export const selectEquipmentStatusDropdown = createSelector([selectCodeTables], (codeTables) => {
+  const { "equipment-status": items } = codeTables;
+  return items.map(({ equipmentStatus: value, longDescription: label }) => ({ label, value }));
+});

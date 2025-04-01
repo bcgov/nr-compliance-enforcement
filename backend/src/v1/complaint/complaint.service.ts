@@ -898,6 +898,30 @@ export class ComplaintService {
     return complaintIdentifiers;
   };
 
+  private readonly _getComplaintsByEquipment = async (
+    token: string,
+    equipmentStatus: string,
+    equipmentCodes: string[] | null,
+  ): Promise<string[]> => {
+    let equipmentCodeParam = "";
+    if (equipmentCodes) {
+      const formattedCodes = equipmentCodes.map((code) => `"${code}"`).join(", ");
+      equipmentCodeParam = `equipmentCodes: [${formattedCodes}]`;
+    }
+
+    const { data, errors } = await get(token, {
+      query: `{getLeadsByEquipment(equipmentStatus: "${equipmentStatus}"${
+        equipmentCodeParam ? ", " + equipmentCodeParam : ""
+      })}`,
+    });
+    if (errors) {
+      this.logger.error("GraphQL errors:", errors);
+      throw new Error("GraphQL errors occurred");
+    }
+    const complaintIdentifiers = data.getLeadsByEquipment.length > 0 ? data.getLeadsByEquipment : ["-1"];
+    return complaintIdentifiers;
+  };
+
   findAllByType = async (
     complaintType: COMPLAINT_TYPE,
   ): Promise<Array<WildlifeComplaintDto> | Array<AllegationComplaintDto>> => {
@@ -1090,6 +1114,18 @@ export class ComplaintService {
           complaint_identifiers: complaintIdentifiers,
         });
       }
+      // -- filter by complaint identifiers returned by case management if equipment status or equipment type(equipmentCode) filter is present
+      if ((agencies.includes("COS") || agencies.includes(Role.PARKS)) && filters.equipmentStatus) {
+        const complaintIdentifiers = await this._getComplaintsByEquipment(
+          token,
+          filters.equipmentStatus,
+          filters.equipmentTypes,
+        );
+
+        builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
 
       //-- apply search
       if (query) {
@@ -1205,6 +1241,18 @@ export class ComplaintService {
           filters.outcomeAnimal,
           filters.outcomeAnimalStartDate,
           filters.outcomeAnimalEndDate,
+        );
+        builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
+      // -- filter by complaint identifiers returned by case management if equipment type filter is present
+      if ((agencies.includes("COS") || agencies.includes("PARKS")) && filters.equipmentStatus) {
+        const complaintIdentifiers = await this._getComplaintsByEquipment(
+          token,
+          filters.equipmentStatus,
+          filters.equipmentTypes,
         );
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
