@@ -64,7 +64,7 @@ jobs:
         run: |
           git add frontend/package.json backend/package.json webeoc/package.json charts/app/Chart.yaml
           git commit -m "chore: bump version to ${{ steps.increment_version.outputs.new_version }}"
-          git push origin HEAD:refs/pull/${{ github.event.issue.number }}/head
+          git push origin HEAD:refs/pull/1002/head
       - name: Create Git Tag and Delete Old Tag
         env:
           GH_TOKEN: ${{ steps.get_gh_app_token.outputs.token }}
