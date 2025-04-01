@@ -29,6 +29,7 @@ runs:
   steps:
     - name: Decode the GitHub App Private Key
       id: decode_app_private_key
+      shell: bash
       run: |
         private_key=$(echo "${{ inputs.github_app_private_key }}" | base64 -d | awk 'BEGIN {ORS="\\n"} {print}' | head -c -2) &> /dev/null
         echo "::add-mask::$private_key"
