@@ -1,8 +1,13 @@
 name: Handle Version Bump
 
+# on:
+#   issue_comment:
+#     types: [created, edited]
+
 on:
-  issue_comment:
-    types: [created, edited]
+  push:
+    branches:
+      - "CE-1476-tagging-actions"
 
 jobs:
   bump_and_merge:
