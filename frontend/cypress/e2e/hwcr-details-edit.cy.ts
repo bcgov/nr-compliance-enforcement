@@ -145,9 +145,14 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get(".comp-select__multi-value__remove").first().click({ force: true });
     cy.get(".comp-select__multi-value__remove").first().click({ force: true });
 
-    cy.selectItemById("attractants-select-id", editCallDetails.attractants[0]);
-    cy.selectItemById("attractants-select-id", editCallDetails.attractants[1]);
-    cy.selectItemById("attractants-select-id", editCallDetails.attractants[2]);
+    cy.get("#attractants-select-id").find("div").first().click({ force: true });
+    cy.get("#attractants-pair-id")
+      .find(".comp-details-edit-input")
+      .within(() => {
+        cy.get(".comp-select__option").contains(editCallDetails.attractants[0]).click();
+        cy.get(".comp-select__option").contains(editCallDetails.attractants[1]).click();
+        cy.get(".comp-select__option").contains(editCallDetails.attractants[2]).click();
+      });
 
     cy.get("#complaint-description-textarea-id").click({ force: true });
 
@@ -245,9 +250,14 @@ describe("Complaint Edit Page spec - Edit View", () => {
     cy.get(".comp-select__multi-value__remove").first().click({ force: true });
     cy.get(".comp-select__multi-value__remove").first().click({ force: true });
 
-    cy.selectItemById("attractants-select-id", originalCallDetails.attractants[0]);
-    cy.selectItemById("attractants-select-id", originalCallDetails.attractants[1]);
-    cy.selectItemById("attractants-select-id", originalCallDetails.attractants[2]);
+    cy.get("#attractants-select-id").find("div").first().click({ force: true });
+    cy.get("#attractants-pair-id")
+      .find(".comp-details-edit-input")
+      .within(() => {
+        cy.get(".comp-select__option").contains(originalCallDetails.attractants[0]).click();
+        cy.get(".comp-select__option").contains(originalCallDetails.attractants[1]).click();
+        cy.get(".comp-select__option").contains(originalCallDetails.attractants[2]).click();
+      });
 
     cy.selectItemById("community-select-id", originalCallDetails.community);
 
