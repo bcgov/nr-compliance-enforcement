@@ -9,8 +9,6 @@ inputs:
     description: Provide the id of the GitHub app
   github_app_private_key:
     description: Provide the base-64 encoded private key for the GitHub app specified in github_app_id
-  ref:
-    description: Provide the ref to checkout to
 
 outputs:
   token:
@@ -36,22 +34,3 @@ runs:
       with:
         app-id: ${{ inputs.github_app_id }}
         private-key: ${{ steps.decode_app_private_key.outputs.app_private_key }}
-
-    - uses: actions/checkout@v4
-      with:
-        ref: ${{ inputs.ref }}
-        fetch-depth: 0
-        fetch-tags: true
-        token: ${{ steps.app_token.outputs.token }}
-
-    - name: Get GitHub App User ID
-      id: get_user_id
-      shell: bash
-      run: echo "user_id=$(gh api "/users/${{ steps.app_token.outputs.app_slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
-      env:
-        GH_TOKEN: ${{ steps.app_token.outputs.token }}
-    - name: Set Git Config Name and Email
-      shell: bash
-      run: |
-        git config --global user.name '${{ steps.app_token.outputs.app_slug }}[bot]'
-        git config --global user.email '${{ steps.get_user_id.outputs.user_id }}+${{ steps.app_token.outputs.app_slug }}[bot]@users.noreply.github.com'

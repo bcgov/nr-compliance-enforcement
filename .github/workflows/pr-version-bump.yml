@@ -35,8 +35,24 @@ jobs:
         with:
           github_app_id: ${{ vars.TEAM_WOLVERINE_GITHUB_APP_ID }}
           github_app_private_key: ${{ secrets.TEAM_WOLVERINE_GITHUB_APP_PRIVATE_KEY }}
-          ref: ${{ steps.pr_details.outputs.ref }}
 
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr_details.outputs.ref }}
+          fetch-depth: 0
+          fetch-tags: true
+          token: ${{ steps.get_gh_app_token.outputs.token }}
+      - name: Get GitHub App User ID
+        id: get_user_id
+        shell: bash
+        run: echo "user_id=$(gh api "/users/${{ steps.get_gh_app_token.outputs.app_slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.get_gh_app_token.outputs.token }}
+      - name: Set Git Config Name and Email
+        shell: bash
+        run: |
+          git config --global user.name '${{ steps.get_gh_app_token.outputs.app_slug }}[bot]'
+          git config --global user.email '${{ steps.get_user_id.outputs.user_id }}+${{ steps.get_gh_app_token.outputs.app_slug }}[bot]@users.noreply.github.com'
       - name: Update package.json versions
         id: increment_version
         # The old and new versions are currently being read from the frontend package.json
