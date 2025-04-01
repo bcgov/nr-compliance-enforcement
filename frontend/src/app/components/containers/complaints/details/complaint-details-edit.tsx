@@ -758,7 +758,7 @@ export const ComplaintDetailsEdit: FC = () => {
         <div className="comp-details-section-header">
           <h2>Complaint details</h2>
           {readOnly && (
-            <div className="comp-details-section-header-actions">
+            <div className="comp-details-section-header-actions no-margin">
               <Button
                 variant="outline-primary"
                 size="sm"
