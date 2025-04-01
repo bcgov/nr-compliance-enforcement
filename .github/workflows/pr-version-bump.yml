@@ -19,6 +19,7 @@ jobs:
       actions: "read"
     # if: ${{ github.event.issue.pull_request }} && ${{ contains(github.event.comment.body, '/version') }}
     steps:
+      - uses: actions/checkout@v4
       - name: Get PR Details
         id: pr_details
         env:
