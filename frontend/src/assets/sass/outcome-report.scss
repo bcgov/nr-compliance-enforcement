@@ -117,16 +117,6 @@
     }
   }
 
-  .comp-outcome-notes {
-    margin-bottom: 24px;
-    border: 1px solid $gray-300;
-    padding: 12px;
-  }
-
-  .comp-outcome-notes-fade {
-    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0) 100%);
-  }
-
   .comp-outcome-report-actions {
     display: flex;
     justify-content: flex-end;
@@ -458,7 +448,6 @@
 .comp-outcome-notes {
   margin-bottom: 24px;
   border: 1px solid $gray-300;
-  padding: 12px;
 }
 
 .comp-outcome-notes-fade {

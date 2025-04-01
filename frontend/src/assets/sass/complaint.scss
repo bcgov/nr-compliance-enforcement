@@ -705,14 +705,9 @@
 }
 
 .comp-details-section-header-actions {
-  margin-top: -1.5rem;
   button + button {
     margin-left: 8px;
   }
-}
-
-.comp-details-section-header-actions.no-margin {
-  margin-top: 0;
 }
 
 .comp-complaint-details {
