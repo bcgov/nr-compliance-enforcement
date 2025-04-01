@@ -22,10 +22,6 @@ outputs:
 
 runs:
   using: composite
-  permissions:
-    contents: "write"
-    packages: "write"
-    actions: "read"
   steps:
     - name: Decode the GitHub App Private Key
       id: decode_app_private_key
@@ -50,9 +46,12 @@ runs:
 
     - name: Get GitHub App User ID
       id: get_user_id
+      shell: bash
       run: echo "user_id=$(gh api "/users/${{ steps.app_token.outputs.app_slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
       env:
         GH_TOKEN: ${{ steps.app_token.outputs.token }}
-    - run: |
+    - name: Set Git Config Name and Email
+      shell: bash
+      run: |
         git config --global user.name '${{ steps.app_token.outputs.app_slug }}[bot]'
         git config --global user.email '${{ steps.get_user_id.outputs.user_id }}+${{ steps.app_token.outputs.app_slug }}[bot]@users.noreply.github.com'
