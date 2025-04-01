@@ -34,3 +34,5 @@ runs:
       with:
         app-id: ${{ inputs.github_app_id }}
         private-key: ${{ steps.decode_app_private_key.outputs.app_private_key }}
+      run: |
+        echo "app_slug=${{ steps.app_token.outputs.app-slug }}" >> "$GITHUB_OUTPUT"
