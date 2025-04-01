@@ -1,0 +1,1 @@
+ALTER TABLE "complaint" ADD COLUMN "park_guid" UUID DEFAULT NULL;
