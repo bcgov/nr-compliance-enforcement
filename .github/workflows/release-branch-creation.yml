@@ -65,12 +65,15 @@ jobs:
           echo "WebEOC package.json version updated to $new_v"
 
           cd ..
-
+      - name: Update helm chart version and appVersion in Chart.yaml
+        run: |
+          sed -i'' -e 's/^version:.*$/version: ${{ steps.increment_version.outputs.new_version }}/' charts/app/Chart.yaml
+          sed -i'' 's/^appVersion:.*$/appVersion: ${{ steps.increment_version.outputs.new_version }}/' charts/app/Chart.yaml
       - name: Commit and Push Version Update
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          git add frontend/package.json backend/package.json webeoc/package.json
+          git add frontend/package.json backend/package.json webeoc/package.json charts/app/Chart.yaml
           git commit -m 'chore: bump version to ${{ steps.bump_version.outputs.new_version }}'
           git push origin HEAD:${{ github.ref }}
 
