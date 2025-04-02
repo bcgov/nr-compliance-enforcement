@@ -11,7 +11,7 @@ jobs:
       contents: "write"
       packages: "write"
       actions: "read"
-    if: ${{ github.event.issue.pull_request }} && ${{ contains(github.event.comment.body, '/patch_version') }}
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '/patch_version') }}
     steps:
       - name: Decode the GitHub App Private Key
         id: decode-app-private-key
