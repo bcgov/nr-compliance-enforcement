@@ -199,6 +199,7 @@ export const CreateComplaint: FC = () => {
         updatedBy: userid,
         complaintMethodReceivedCode: "",
         isPrivacyRequested: "U",
+        parkGuid: "",
       };
 
       applyComplaintData(model);

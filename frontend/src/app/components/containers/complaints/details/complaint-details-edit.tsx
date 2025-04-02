@@ -79,6 +79,7 @@ import { getCaseFile } from "@/app/store/reducers/case-thunks";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
 import { RootState } from "@/app/store/store";
 import { Roles } from "@/app/types/app/roles";
+import { ComplaintDetailsParkSearch } from "./complaint-details-park-search";
 
 export type ComplaintParams = {
   id: string;
@@ -600,6 +601,11 @@ export const ComplaintDetailsEdit: FC = () => {
     applyComplaintUpdate(updatedComplaint);
   };
 
+  const handleParkChange = (value?: string) => {
+    const updatedComplaint = { ...complaintUpdate, parkGuid: value } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
+  };
+
   const handleCommunityChange = (selectedOption: Option | null) => {
     let value: string = "";
     if (selectedOption?.value && selectedOption?.value !== "") {
@@ -1102,6 +1108,22 @@ export const ComplaintDetailsEdit: FC = () => {
                 enableCopyCoordinates={false}
                 validationRequired={false}
               />
+
+              <div
+                className="comp-details-form-row"
+                id="park"
+              >
+                <label>Park</label>
+                <div className="comp-details-edit-input">
+                  <ComplaintDetailsParkSearch
+                    id="linkedComplaint"
+                    onChange={(e) => handleParkChange(e?.value)}
+                    //errorMessage={linkedComplaintErrorMessage}
+                    //value={selectedLinkedComplaint}
+                  />
+                </div>
+              </div>
+
               <div
                 className="comp-details-form-row"
                 id="area-community-pair-id"

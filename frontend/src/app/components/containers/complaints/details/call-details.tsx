@@ -28,6 +28,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
     violationInProgress,
     violationObserved,
     complaintMethodReceivedCode,
+    parkGuid,
   } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
   return (
@@ -117,6 +118,14 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
               yCoordinate={coordinates?.[1] === 0 ? "" : coordinates?.[1].toString() ?? ""}
             />
             <br />
+          </dl>
+
+          {/* Park Information */}
+          <dl className="comp-call-details-group">
+            <div>
+              <dt>Park</dt>
+              <dd id="comp-details-park">{parkGuid}</dd>
+            </div>
           </dl>
 
           {/* Other Location Details */}

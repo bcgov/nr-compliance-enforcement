@@ -924,6 +924,7 @@ export const selectComplaintDetails = createSelector(
         const { complaintMethodReceivedCode }: any = complaint;
         result.complaintMethodReceivedCode =
           getComplaintMethodReceivedCode(complaintMethodReceivedCode, complaintMethodReceivedCodes) ?? undefined;
+        result.parkGuid = complaint.parkGuid;
       }
     }
     return result;
