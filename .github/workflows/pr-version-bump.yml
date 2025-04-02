@@ -1,10 +1,7 @@
 name: Handle PR Merge and Version Update
-
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - chore/commit-version-updates
+  issue_comment:
+    types: [created, edited]
 
 jobs:
   handle_pr:
@@ -14,7 +11,7 @@ jobs:
       contents: "write"
       packages: "write"
       actions: "read"
-    if: github.event.pull_request.merged == true
+    if: ${{ github.event.issue.pull_request }} && ${{ contains(github.event.comment.body, '/patch_version') }}
     steps:
       - name: Decode the GitHub App Private Key
         id: decode-app-private-key
@@ -29,9 +26,17 @@ jobs:
           app-id: ${{ vars.TEAM_WOLVERINE_GITHUB_APP_ID }}
           private-key: ${{ steps.decode-app-private-key.outputs.app-private-key }}
 
+      - name: Get PR Details
+        id: pr-details
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          PR_DATA=$(gh api /repos/${{ github.repository }}/pulls/${{ github.event.issue.number }})
+          echo "ref=$(echo $PR_DATA | jq -r .head.ref)" >> $GITHUB_OUTPUT
+
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ steps.pr-details.outputs.ref }}
           fetch-depth: 0
           fetch-tags: true
           token: ${{ steps.app-token.outputs.token }}
@@ -73,7 +78,7 @@ jobs:
         run: |
           git add frontend/package.json backend/package.json webeoc/package.json charts/app/Chart.yaml
           git commit -m "chore: bump version to ${{ steps.increment_version.outputs.new_version }}"
-          git push origin HEAD:${{ github.ref }}
+          git push origin HEAD:${{ steps.pr-details.outputs.ref }}
       - name: Create Git Tag and Delete Old Tag
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
