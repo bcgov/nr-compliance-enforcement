@@ -127,8 +127,8 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove, ou
       className="comp-animal-card comp-outcome-report-block"
       border={showSectionErrors ? "danger" : "default"}
     >
-      <Card.Body>
-        {showSectionErrors && (
+      {showSectionErrors && (
+        <Card.Body>
           <div className="section-error-message">
             <BsExclamationCircleFill />
             <span>
@@ -137,8 +137,8 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove, ou
                 : "Complete or delete section before closing the complaint."}
             </span>
           </div>
-        )}
-      </Card.Body>
+        </Card.Body>
+      )}
       <Card.Header className="comp-card-header">
         <div className="comp-card-header-title">
           <h4>Animal {pad(animalNumber.toString(), 2)}</h4>
