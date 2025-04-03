@@ -45,6 +45,8 @@ export const ComplaintFilterBar: FC<Props> = ({
     outcomeAnimal,
     outcomeAnimalStartDate,
     outcomeAnimalEndDate,
+    equipmentStatus,
+    equipmentTypes,
   } = state;
 
   const dateRangeLabel = (startDate: Date | undefined | null, endDate: Date | undefined | null): string | undefined => {
@@ -70,6 +72,10 @@ export const ComplaintFilterBar: FC<Props> = ({
 
   const hasFilter = (filter: string) => {
     const selected = state[filter as keyof ComplaintFilters];
+    //Check if the filter is Equipment types
+    if (Array.isArray(selected)) {
+      return selected.length > 0 && !!selected;
+    }
     return !!selected;
   };
 
@@ -83,6 +89,10 @@ export const ComplaintFilterBar: FC<Props> = ({
         case "outcomeAnimalDateRange":
           dispatch(clearFilter("outcomeAnimalStartDate"));
           dispatch(clearFilter("outcomeAnimalEndDate"));
+          break;
+        case "equipmentStatus":
+          dispatch(clearFilter("equipmentStatus"));
+          dispatch(clearFilter("equipmentTypes"));
           break;
         default:
           dispatch(clearFilter(name));
@@ -252,6 +262,24 @@ export const ComplaintFilterBar: FC<Props> = ({
             id="comp-complaint-method-filter"
             label={dateRangeLabel(outcomeAnimalStartDate, outcomeAnimalEndDate)}
             name="outcomeAnimalDateRange"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("equipmentStatus") && (
+          <FilterButton
+            id="comp-complaint-method-filter"
+            label={equipmentStatus?.label}
+            name="equipmentStatus"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("equipmentTypes") && (
+          <FilterButton
+            id="comp-complaint-method-filter"
+            label={equipmentTypes?.map((type) => type.label).join(", ")}
+            name="equipmentTypes"
             clear={removeFilter}
           />
         )}

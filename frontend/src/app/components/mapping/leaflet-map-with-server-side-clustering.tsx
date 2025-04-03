@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { MapContainer, TileLayer, Marker, useMapEvents, WMSTileLayer, LayersControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReactDOMServer from "react-dom/server";
@@ -122,6 +122,9 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
   };
 
   const showInfoBar = unmappedCount >= 1 || !from(clusters).any();
+  const parkLayerParams = useMemo(() => {
+    return { format: "image/png", layers: "pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW", transparent: true };
+  }, []);
 
   return (
     <div className="comp-map-container">
@@ -147,6 +150,14 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+        <LayersControl position="topleft">
+          <LayersControl.Overlay name="Provincial Parks, Ecological Reserves, and Protected Areas">
+            <WMSTileLayer
+              url="https://openmaps.gov.bc.ca/geo/pub/WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW/ows"
+              params={parkLayerParams}
+            />
+          </LayersControl.Overlay>
+        </LayersControl>
         <Spiderfy
           handlePopupOpen={handlePopupOpen}
           handlePopupClose={handlePopupClose}

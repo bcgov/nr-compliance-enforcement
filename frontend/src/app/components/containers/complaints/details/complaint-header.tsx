@@ -53,6 +53,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
+  const derivedStatus = complaintAgency !== userAgency ? "Referred" : status;
 
   const openStatusChangeModal = () => {
     document.body.click();
@@ -172,9 +173,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
             <div className="comp-details-badge-container">
               <Badge
                 id="comp-details-status-text-id"
-                className={`badge ${applyStatusClass(status)}`}
+                className={`badge ${applyStatusClass(derivedStatus)}`}
               >
-                {status}
+                {derivedStatus}
               </Badge>
             </div>
 
@@ -213,6 +214,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       <Dropdown.Item
                         as="button"
                         onClick={openStatusChangeModal}
+                        disabled={complaintAgency !== userAgency}
                       >
                         <i className="bi bi-arrow-repeat"></i>
                         <span>Update Status</span>
@@ -221,6 +223,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                         <Dropdown.Item
                           as="button"
                           onClick={openReferModal}
+                          disabled={status !== " Open" || complaintAgency !== userAgency}
                         >
                           <i className="bi bi-send"></i>
                           <span>Refer</span>
@@ -229,6 +232,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       <Dropdown.Item
                         as="button"
                         onClick={() => exportComplaintToPdf()}
+                        disabled={complaintAgency !== userAgency}
                       >
                         <i className="bi bi-file-earmark-pdf"></i>
                         <span>Export</span>
@@ -264,6 +268,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     title="Update status"
                     variant="outline-light"
                     onClick={openStatusChangeModal}
+                    disabled={complaintAgency !== userAgency}
                   >
                     <i className="bi bi-arrow-repeat"></i>
                     <span>Update status</span>
@@ -274,6 +279,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       title="Refer"
                       variant="outline-light"
                       onClick={openReferModal}
+                      disabled={status !== "Open" || complaintAgency !== userAgency}
                     >
                       <i className="bi bi-send"></i>
                       <span>Refer</span>
@@ -284,6 +290,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     title="Export"
                     variant="outline-light"
                     onClick={() => exportComplaintToPdf()}
+                    disabled={complaintAgency !== userAgency}
                   >
                     <i className="bi bi-file-earmark-pdf"></i>
                     <span>Export</span>

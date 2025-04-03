@@ -13,18 +13,20 @@ import {
   selectGirTypeCodeDropdown,
   selectComplaintReceivedMethodDropdown,
   selectAllWildlifeComplaintOutcome,
+  selectAllEquipmentDropdown,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
-import { selectDecisionTypeDropdown } from "@store/reducers/code-table-selectors";
+import { selectDecisionTypeDropdown, selectEquipmentStatusDropdown } from "@store/reducers/code-table-selectors";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { CompSelect } from "@components/common/comp-select";
 import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
-import { ComplaintFilterPayload, updateFilter } from "@store/reducers/complaint-filters";
+import { ComplaintFilterPayload, clearFilter, updateFilter } from "@store/reducers/complaint-filters";
 import Option from "@apptypes/app/option";
 import { listActiveFilters } from "@store/reducers/app";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
 import { FilterDate } from "@components/common/filter-date";
+import { ValidationMultiSelect } from "@common/validation-multiselect";
 
 type Props = {
   type: string;
@@ -49,6 +51,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       outcomeAnimal,
       outcomeAnimalStartDate,
       outcomeAnimalEndDate,
+      equipmentStatus,
+      equipmentTypes,
     },
     dispatch,
   } = useContext(ComplaintFilterContext);
@@ -60,10 +64,17 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   }
   const natureOfComplaintTypes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown);
   const speciesTypes = useAppSelector(selectSpeciesCodeDropdown);
-  const statusTypes = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
+  // For the complaint search, inject a status type of REFERRED. This is a derived status used only on the search page.
+  const statusTypes = [
+    ...useAppSelector(selectComplaintStatusWithPendingCodeDropdown),
+    { value: "REFERRED", label: "Referred" },
+  ];
+
   const violationTypes = useAppSelector(selectViolationCodeDropdown(agency));
   const girTypes = useAppSelector(selectGirTypeCodeDropdown);
   const outcomeAnimalTypes = useAppSelector(selectAllWildlifeComplaintOutcome); //want to see inactive items in the filter
+  const equipmentStatusTypes = useAppSelector(selectEquipmentStatusDropdown);
+  const equipmentTypesDropdown = useAppSelector(selectAllEquipmentDropdown).filter((item) => item.isActive === true); //only display active equipment_code
 
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
@@ -77,7 +88,6 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const setFilter = useCallback(
     (name: string, value?: Option | Date | null) => {
       let payload: ComplaintFilterPayload = { filter: name, value };
-
       dispatch(updateFilter(payload));
     },
     [dispatch],
@@ -337,6 +347,56 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             endDate={outcomeAnimalEndDate}
             handleDateChange={handleOutcomeDateRangeChange}
           />
+        )}
+
+        {COMPLAINT_TYPES.HWCR === type && (
+          <div id="comp-filter-status-id">
+            <label htmlFor="status-select-id">Equipment Status</label>
+            <div className="filter-select-padding">
+              <CompSelect
+                id="status-select-id"
+                showInactive={true}
+                classNamePrefix="comp-select"
+                onChange={(option) => {
+                  setFilter("equipmentStatus", option);
+                  //when filter equimentStatus removed -> remove filter equipmentTypes too
+                  if (option === null) {
+                    dispatch(clearFilter("equipmentTypes"));
+                  }
+                }}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={equipmentStatusTypes}
+                placeholder="Select"
+                enableValidation={false}
+                value={equipmentStatus}
+                isClearable={true}
+              />
+            </div>
+          </div>
+        )}
+
+        {COMPLAINT_TYPES.HWCR === type && (
+          <div id="comp-filter-status-id">
+            <label htmlFor="status-select-id">Equipment type(s)</label>
+            <div className="filter-select-padding">
+              <ValidationMultiSelect
+                className="comp-details-input"
+                options={equipmentTypesDropdown}
+                placeholder="Select"
+                id="equipment-types-id"
+                classNamePrefix="comp-select"
+                onChange={(option: Option) => {
+                  setFilter("equipmentTypes", option);
+                }}
+                errMsg={""}
+                values={equipmentTypes}
+                isDisabled={equipmentStatus === null}
+                isClearable={true}
+              />
+            </div>
+          </div>
         )}
       </div>
     );

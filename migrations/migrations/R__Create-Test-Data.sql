@@ -10593,6 +10593,21 @@ UPDATE geo_org_unit_structure set parent_geo_org_unit_code='FRTSTJN' where child
 
 UPDATE geo_org_unit_structure set parent_geo_org_unit_code='FRTSTJN' where child_geo_org_unit_code='FARRELLC';
 
+------------------------
+-- Move Cluculz Lake in Location Hierachy
+-- Delete Clucluz Lake - Brookside Resort West.
+------------------------
+
+UPDATE geo_org_unit_structure set parent_geo_org_unit_code='VNDHF' where child_geo_org_unit_code='CLUCLZLK';
+DO $$
+BEGIN
+    -- Check if no record exists with complaint.geo_organization_unit_code = 'CLCZLKBW' 
+    IF NOT EXISTS (SELECT 1 FROM complaint WHERE geo_organization_unit_code = 'CLCZLKBW') THEN
+        -- Perform delete operations if the record does not exist
+        DELETE FROM geo_org_unit_structure WHERE child_geo_org_unit_code = 'CLCZLKBW';
+        DELETE FROM geo_organization_unit_code WHERE geo_organization_unit_code = 'CLCZLKBW';
+    END IF;
+END $$; -- Comment to trigger this to run again in test
 
 
 --------------------------

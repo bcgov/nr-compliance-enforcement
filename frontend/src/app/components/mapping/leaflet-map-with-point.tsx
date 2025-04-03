@@ -1,5 +1,5 @@
-import { FC, useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
+import { FC, useEffect, useMemo, useState } from "react";
+import { MapContainer, TileLayer, Marker, useMap, LayersControl, WMSTileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css"; // Import Leaflet CSS
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -68,6 +68,10 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove, 
     return null;
   };
 
+  const parkLayerParams = useMemo(() => {
+    return { format: "image/png", layers: "pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW", transparent: true };
+  }, []);
+
   return (
     <Card className="comp-map-container">
       {hideMarker && <NonDismissibleAlert />}
@@ -82,6 +86,15 @@ const LeafletMapWithPoint: FC<Props> = ({ coordinates, draggable, onMarkerMove, 
         <MapGestureHandler />
         <Centerer />
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+        <LayersControl position="topleft">
+          <LayersControl.Overlay name="Provincial Parks, Ecological Reserves, and Protected Areas">
+            <WMSTileLayer
+              url="https://openmaps.gov.bc.ca/geo/pub/WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW/ows"
+              params={parkLayerParams}
+            />
+          </LayersControl.Overlay>
+        </LayersControl>
         {!hideMarker && (
           <Marker
             data-testid="complaint-location-marker"

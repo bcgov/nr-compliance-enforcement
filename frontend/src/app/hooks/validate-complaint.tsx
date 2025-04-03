@@ -29,6 +29,7 @@ type validationResults = {
     equipmentCriteria: boolean;
     animalCriteria: boolean;
     fileReviewCriteria: boolean;
+    referenceNumberCriteria: boolean;
   };
 };
 
@@ -59,6 +60,7 @@ const useValidateComplaint = () => {
       equipmentCriteria: false,
       animalCriteria: false,
       fileReviewCriteria: false,
+      referenceNumberCriteria: false,
     },
   });
 
@@ -114,6 +116,12 @@ const useValidateComplaint = () => {
       //check if file review is required, review must be completed
       const fileReviewCriteria = (isReviewRequired && reviewComplete !== null) || !isReviewRequired;
 
+      // check External file reference exists if required required
+      const referenceNumberCriteria =
+        complaintType === COMPLAINT_TYPES.ERS && complaint && ["COS", "PARKS"].includes(complaint.ownedBy)
+          ? !!complaint.referenceNumber
+          : true;
+
       const scrollToErrorSection = (
         assessmentCriteria: boolean,
         preventionCriteria: boolean,
@@ -121,6 +129,7 @@ const useValidateComplaint = () => {
         animalCriteria: boolean,
         fileReviewCriteria: boolean,
         animalCapturedCriteria: boolean,
+        referenceNumberCriteria: boolean,
       ) => {
         const { assessment, prevention, equipment, animal, note, attachments, fileReview } = isInEdit;
         if (!preventionCriteria || prevention) {
@@ -139,6 +148,8 @@ const useValidateComplaint = () => {
           document.getElementById("outcome-file-review")?.scrollIntoView({ block: "end" });
         } else if (!assessmentCriteria || assessment) {
           document.getElementById("outcome-assessment")?.scrollIntoView({ block: "end" });
+        } else if (!referenceNumberCriteria || complaint?.referenceNumber) {
+          document.getElementById("external-file-reference")?.scrollIntoView({ block: "end" });
         }
       };
 
@@ -150,6 +161,7 @@ const useValidateComplaint = () => {
           animalCriteria,
           fileReviewCriteria,
           animalCapturedCriteria,
+          referenceNumberCriteria,
         );
       };
 
@@ -160,7 +172,8 @@ const useValidateComplaint = () => {
           equipmentCriteria &&
           animalCriteria &&
           animalCapturedCriteria &&
-          fileReviewCriteria,
+          fileReviewCriteria &&
+          referenceNumberCriteria,
         canQuickCloseComplaint:
           (noEditSections || onlyAssessmentInEdit) &&
           equipmentCriteria &&
@@ -177,12 +190,24 @@ const useValidateComplaint = () => {
           equipmentCriteria: equipmentCriteria,
           animalCriteria: animalCriteria,
           fileReviewCriteria: fileReviewCriteria,
+          referenceNumberCriteria: referenceNumberCriteria,
         },
       });
     };
 
     validateComplaint();
-  }, [assessment, equipment, isInEdit, isReviewRequired, prevention, reviewComplete, subject, complaintType, outcomes]);
+  }, [
+    assessment,
+    equipment,
+    isInEdit,
+    isReviewRequired,
+    prevention,
+    reviewComplete,
+    subject,
+    complaintType,
+    outcomes,
+    complaint,
+  ]);
 
   return validationResults;
 };

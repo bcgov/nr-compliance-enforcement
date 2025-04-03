@@ -85,9 +85,14 @@ describe("Complaint Create Page spec - Enter Coordinates - Create View", () => {
 
     cy.enterDateTimeInDatePicker("complaint-incident-time", "01", "13", "45");
 
-    cy.selectItemById("attractants-select-id", createCallDetails.attractants[0]);
-    cy.selectItemById("attractants-select-id", createCallDetails.attractants[1]);
-    cy.selectItemById("attractants-select-id", createCallDetails.attractants[2]);
+    cy.get("#attractants-select-id").find("div").first().click({ force: true });
+    cy.get("#attractants-pair-id")
+      .find(".comp-details-edit-input")
+      .within(() => {
+        cy.get(".comp-select__option").contains(createCallDetails.attractants[0]).click();
+        cy.get(".comp-select__option").contains(createCallDetails.attractants[1]).click();
+        cy.get(".comp-select__option").contains(createCallDetails.attractants[2]).click();
+      });
 
     cy.selectItemById("community-select-id", createCallDetails.community);
 

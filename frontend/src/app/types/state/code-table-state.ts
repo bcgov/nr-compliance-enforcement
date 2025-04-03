@@ -37,6 +37,7 @@ import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint
 import { ScheduleSectorXref } from "@apptypes/app/code-tables/schedule-sector-xref";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
 import { IPMAuthCategoryType } from "@apptypes/app/code-tables/ipm-auth-category";
+import { EquipmentStatus } from "@/app/types/app/code-tables/equipment-status";
 
 export interface CodeTableState {
   [key: string]:
@@ -78,7 +79,8 @@ export interface CodeTableState {
     | Array<DecisionType>
     | Array<TeamType>
     | Array<IPMAuthCategoryType>
-    | Array<CaseLocationType>;
+    | Array<CaseLocationType>
+    | Array<EquipmentStatus>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -118,4 +120,5 @@ export interface CodeTableState {
   "assessment-cat1-type": Array<AssessmentType>;
   "ipm-auth-category": Array<IPMAuthCategoryType>;
   "case-location-type": Array<CaseLocationType>;
+  "equipment-status": Array<EquipmentStatus>;
 }

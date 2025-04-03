@@ -25,6 +25,7 @@ import { UpdateMapLogicForClustering } from "./migrations/migration-25";
 import { ComplaintReadOnlyIndicator } from "./migrations/migration-26";
 import { AddIPMAuthCategoryCode } from "./migrations/migration-27";
 import { AddComplaintReferral } from "./migrations/migration-28";
+import { AddEquipmentStatusCode } from "./migrations/migration-29";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -64,6 +65,7 @@ migration = {
   ...ComplaintReadOnlyIndicator,
   ...AddIPMAuthCategoryCode,
   ...AddComplaintReferral,
+  ...AddEquipmentStatusCode,
 };
 
 export default migration;

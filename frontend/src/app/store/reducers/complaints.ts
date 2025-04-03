@@ -41,11 +41,15 @@ import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
 import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint-method-received-type";
 import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
+import { getUserAgency } from "@/app/service/user-service";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
 const initialState: ComplaintState = {
-  complaintSearchParameters: { sortColumn: "", sortOrder: "" },
+  complaintSearchParameters: {
+    sortColumn: "",
+    sortOrder: "",
+  },
   complaintItems: {
     wildlife: [],
     allegations: [],
@@ -112,7 +116,18 @@ export const complaintSlice = createSlice({
       let currentComplaint: ComplaintDto = complaint as ComplaintDto;
       let isReadOnly = false;
       if (currentComplaint) {
-        isReadOnly = ["CLOSED"].includes(currentComplaint.status);
+        if (["CLOSED"].includes(currentComplaint.status)) {
+          isReadOnly = true;
+        }
+        //if complaint has open status, check if complaint is within the user's agency
+        //if complaint does not belong to the user's agency, enable read-only mode
+        else {
+          const complaintAgency = complaint.ownedBy;
+          const userAgency = getUserAgency();
+          if (complaintAgency !== userAgency) {
+            isReadOnly = true;
+          }
+        }
       }
       return { ...state, complaint, complaintView: { isReadOnly } };
     },
@@ -319,6 +334,8 @@ export const getComplaints =
       outcomeAnimalFilter,
       outcomeAnimalStartDateFilter,
       outcomeAnimalEndDateFilter,
+      equipmentStatusFilter,
+      equipmentTypesFilter,
       page,
       pageSize,
       query,
@@ -347,6 +364,8 @@ export const getComplaints =
         outcomeAnimal: outcomeAnimalFilter?.value,
         outcomeAnimalStartDate: outcomeAnimalStartDateFilter,
         outcomeAnimalEndDate: outcomeAnimalEndDateFilter,
+        equipmentStatus: equipmentStatusFilter?.value,
+        equipmentTypes: equipmentTypesFilter?.map((type) => type.value) ?? [],
         page: page,
         pageSize: pageSize,
         query: query,
@@ -872,9 +891,10 @@ export const selectComplaintDetails = createSelector(
         incidentDateTime,
         location: { coordinates },
         organization: { area: areaCode, region, zone, officeLocation },
+        ownedBy,
       } = complaint as ComplaintDto;
 
-      result = { ...result, details, location, locationDescription, incidentDateTime, coordinates };
+      result = { ...result, details, location, locationDescription, incidentDateTime, coordinates, ownedBy };
 
       if (complaintType === "HWCR") {
         const { attractants } = complaint as WildlifeComplaintDto;

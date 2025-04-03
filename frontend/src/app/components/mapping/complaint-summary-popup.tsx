@@ -5,6 +5,7 @@ import { applyStatusClass, formatDate } from "@common/methods";
 import { Badge, Button } from "react-bootstrap";
 import { Popup } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
+import { getUserAgency } from "@/app/service/user-service";
 
 interface Props {
   complaint_identifier: string;
@@ -17,11 +18,14 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
     selectComplaintHeader(complaintType),
   );
 
-  const { violationInProgress, location, area } = useAppSelector((state) =>
+  const { violationInProgress, location, area, ownedBy } = useAppSelector((state) =>
     selectComplaintDetails(state, complaintType),
   );
 
   const inProgressInd = violationInProgress ? "In Progress" : "";
+
+  const userAgency = getUserAgency();
+  const derivedStatus = ownedBy !== userAgency ? "Referred" : status;
 
   return (
     <Popup
@@ -34,9 +38,9 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             <h2>{complaint_identifier}</h2>
             <Badge
               id="comp-details-status-text-id"
-              className={`badge ${applyStatusClass(status)}`}
+              className={`badge ${applyStatusClass(derivedStatus)}`}
             >
-              {status}
+              {derivedStatus}
             </Badge>
           </div>
           <div className="comp-map-popup-header-meta">

@@ -8,15 +8,20 @@ import {
   getComplaintById,
   selectComplaint,
   selectComplaintViewMode,
+  updateAllegationComplaintStatus,
   updateComplaintById,
 } from "@store/reducers/complaints";
 import { getComplaintType } from "@common/methods";
+import getOfficerAssigned from "@common/get-officer-assigned";
+import COMPLAINT_TYPES from "@/app/types/app/complaint-types";
+import { AgencyType } from "@/app/types/app/agency-types";
 
 export const ExternalFileReference: FC = () => {
   const dispatch = useAppDispatch();
 
   const complaintData = useAppSelector(selectComplaint);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
+  const complaintType = getComplaintType(complaintData);
 
   const [isEditable, setIsEditable] = useState<boolean>(true);
   const [referenceNumber, setReferenceNumber] = useState<string>("");
@@ -73,6 +78,11 @@ export const ExternalFileReference: FC = () => {
       return false;
     }
 
+    if (complaintType !== COMPLAINT_TYPES.HWCR && complaintData && !getOfficerAssigned(complaintData)) {
+      setReferenceNumberError("An officer must be assigned before a COORS file number can be added");
+      return false;
+    }
+
     return true;
   };
 
@@ -83,6 +93,9 @@ export const ExternalFileReference: FC = () => {
       let complaintType = getComplaintType(complaintData);
       //since the updateComplaintById thunk has an asynchronous operation inside it we need to make sure it finishes before moving on
       await dispatch(updateComplaintById(data, complaintType));
+      if (complaintType === COMPLAINT_TYPES.ERS && [AgencyType.COS, AgencyType.PARKS].includes(complaintData.ownedBy)) {
+        await dispatch(updateAllegationComplaintStatus(complaintData.id, "CLOSED"));
+      }
       dispatch(getComplaintById(complaintData.id, complaintType));
     }
   };
@@ -125,7 +138,10 @@ export const ExternalFileReference: FC = () => {
   };
 
   return (
-    <section className="comp-details-body comp-container">
+    <section
+      className="comp-details-body comp-container"
+      id="external-file-reference"
+    >
       <hr className="comp-details-body-spacer"></hr>
       <section
         className="comp-details-section comp-external-file-reference"
@@ -164,6 +180,11 @@ export const ExternalFileReference: FC = () => {
             <div className="comp-details-form">
               {isEditable && (
                 <>
+                  {complaintType === COMPLAINT_TYPES.ERS && (
+                    <p className="mb-4">
+                      Once a COORS number is entered below, this enforcement complaint will close automatically.
+                    </p>
+                  )}
                   <div className="comp-details-form-row">
                     <label htmlFor="external-file-reference-number-input">COORS number</label>
                     <CompInput
@@ -200,7 +221,7 @@ export const ExternalFileReference: FC = () => {
                       onClick={handleExternalFileReferenceSave}
                       disabled={isReadOnly}
                     >
-                      Save
+                      {complaintType === COMPLAINT_TYPES.ERS ? "Save and close" : "Save"}
                     </Button>
                   </div>
                 </>

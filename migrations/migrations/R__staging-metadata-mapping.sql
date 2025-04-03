@@ -24748,6 +24748,18 @@ DELETE FROM public.staging_metadata_mapping WHERE live_data_value='QUEENCHA';
 
 DELETE FROM public.staging_metadata_mapping WHERE live_data_value='BRKHES-W';
 
+-----------------------
+-- Rename Mount Robson
+-----------------------
+
+UPDATE public.geo_organization_unit_code
+SET short_description = 'Mount Robson', 
+    long_description = 'Mount Robson'
+WHERE geo_organization_unit_code = 'MOUNTROB';
+
+UPDATE public.staging_metadata_mapping 
+SET staged_data_value = 'Mount Robson' 
+WHERE live_data_value = 'MOUNTROB';
 
 
 --------------------------

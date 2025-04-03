@@ -10,6 +10,7 @@ import { AppThunk } from "@store/store";
 import { setCodeTable } from "./code-table";
 import { DecisionType } from "@apptypes/app/code-tables/decision-type";
 import { ScheduleSectorXref } from "@apptypes/app/code-tables/schedule-sector-xref";
+import { EquipmentStatus } from "@apptypes/app/code-tables/equipment-status";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
@@ -67,6 +68,16 @@ export const fetchCEEBDecisionTypes = (): AppThunk => async (dispatch) => {
   const response = await get<Array<DecisionType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.DECISION_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchEquipmentStatus = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.EQUIPMENT_STATUS}`);
+
+  const response = await get<Array<EquipmentStatus>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.EQUIPMENT_STATUS, data: response };
     dispatch(setCodeTable(payload));
   }
 };

@@ -38,6 +38,7 @@ export const CODE_TABLE_TYPES = {
   ASSESSMENT_CAT1_TYPE: "assessment-cat1-type",
   IPM_AUTH_CATEGORY_TYPE: "ipm-auth-category",
   CASE_LOCATION_TYPE: "case-location-type",
+  EQUIPMENT_STATUS: "equipment-status",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",

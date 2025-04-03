@@ -92,6 +92,7 @@ export const ComplaintActionItems: FC<Props> = ({
         id={`tt-${complaint_identifier}`}
         size="sm"
         variant="outline-primary"
+        disabled={complaint_status === "Referred"}
       >
         Actions
       </Dropdown.Toggle>

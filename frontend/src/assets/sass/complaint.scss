@@ -548,6 +548,7 @@
   h3 {
     margin-bottom: 1rem;
     font-size: 1.25rem;
+    margin-top: 0.25rem;
   }
 
   h4 {
@@ -705,7 +706,6 @@
 }
 
 .comp-details-section-header-actions {
-  margin-top: -1.5rem;
   button + button {
     margin-left: 8px;
   }
@@ -774,6 +774,10 @@
   .section-legend-no-mb {
     color: $gray-500;
     font-size: 14px;
+  }
+
+  #external-file-reference-number-div {
+    width: 100%;
   }
 }
 

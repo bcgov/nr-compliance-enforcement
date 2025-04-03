@@ -376,7 +376,7 @@ export class ComplaintService {
       });
     }
 
-    if (status) {
+    if (status && status !== "REFERRED") {
       builder.andWhere("complaint.complaint_status_code = :Status", {
         Status: status,
       });
@@ -898,6 +898,30 @@ export class ComplaintService {
     return complaintIdentifiers;
   };
 
+  private readonly _getComplaintsByEquipment = async (
+    token: string,
+    equipmentStatus: string,
+    equipmentCodes: string[] | null,
+  ): Promise<string[]> => {
+    let equipmentCodeParam = "";
+    if (equipmentCodes) {
+      const formattedCodes = equipmentCodes.map((code) => `"${code}"`).join(", ");
+      equipmentCodeParam = `equipmentCodes: [${formattedCodes}]`;
+    }
+
+    const { data, errors } = await get(token, {
+      query: `{getLeadsByEquipment(equipmentStatus: "${equipmentStatus}"${
+        equipmentCodeParam ? ", " + equipmentCodeParam : ""
+      })}`,
+    });
+    if (errors) {
+      this.logger.error("GraphQL errors:", errors);
+      throw new Error("GraphQL errors occurred");
+    }
+    const complaintIdentifiers = data.getLeadsByEquipment.length > 0 ? data.getLeadsByEquipment : ["-1"];
+    return complaintIdentifiers;
+  };
+
   findAllByType = async (
     complaintType: COMPLAINT_TYPE,
   ): Promise<Array<WildlifeComplaintDto> | Array<AllegationComplaintDto>> => {
@@ -1000,6 +1024,46 @@ export class ComplaintService {
     }
   };
 
+  private readonly _applyReferralFilters = (
+    builder: SelectQueryBuilder<complaintAlias>,
+    status?: string,
+    agencies?: string[],
+  ): SelectQueryBuilder<complaintAlias> => {
+    // Special handling for referral status
+    if (status === "REFERRED") {
+      builder.innerJoin("complaint.complaint_referral", "complaint_referral");
+    } else {
+      builder.leftJoin("complaint.complaint_referral", "complaint_referral");
+    }
+
+    // search for complaints based on the user's role
+    if (agencies.length > 0) {
+      if (!status) {
+        builder.andWhere(
+          "(complaint.owned_by_agency_code.agency_code IN (:...agency_codes) OR (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
+          {
+            agency_codes: agencies,
+          },
+        );
+      } else if (status === "REFERRED") {
+        builder.andWhere(
+          "(complaint.owned_by_agency_code.agency_code NOT IN (:...agency_codes) AND (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
+          {
+            agency_codes: agencies,
+          },
+        );
+      } else {
+        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
+          agency_codes: agencies,
+        });
+      }
+    } else {
+      builder.andWhere("1 = 0"); // In case of no agency, no rows will be returned
+    }
+
+    return builder;
+  };
+
   search = async (
     complaintType: COMPLAINT_TYPE,
     model: ComplaintSearchParameters,
@@ -1024,15 +1088,7 @@ export class ComplaintService {
       if (Object.keys(filters).length !== 0) {
         builder = this._applyFilters(builder, filters as ComplaintFilterParameters, complaintType);
       }
-
-      // search for complaints based on the user's role
-      if (agencies.length > 0) {
-        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
-          agency_codes: agencies,
-        });
-      } else {
-        builder.andWhere("1 = 0"); // In case of no agency, no rows will be returned
-      }
+      builder = this._applyReferralFilters(builder, filters?.status, agencies);
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (agencies.includes("EPO") && filters.actionTaken) {
@@ -1054,6 +1110,18 @@ export class ComplaintService {
           filters.outcomeAnimalStartDate,
           filters.outcomeAnimalEndDate,
         );
+        builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+      // -- filter by complaint identifiers returned by case management if equipment status or equipment type(equipmentCode) filter is present
+      if ((agencies.includes("COS") || agencies.includes(Role.PARKS)) && filters.equipmentStatus) {
+        const complaintIdentifiers = await this._getComplaintsByEquipment(
+          token,
+          filters.equipmentStatus,
+          filters.equipmentTypes,
+        );
+
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
         });
@@ -1153,13 +1221,7 @@ export class ComplaintService {
       if (query) {
         builder = await this._applySearch(builder, complaintType, query, token);
       }
-
-      //-- only return complaints for the agency the user is associated with
-      if (agencies.length > 0) {
-        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
-          agency_codes: agencies,
-        });
-      }
+      builder = this._applyReferralFilters(builder, filters?.status, agencies);
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (agencies.includes("EPO") && filters.actionTaken) {
@@ -1179,6 +1241,18 @@ export class ComplaintService {
           filters.outcomeAnimal,
           filters.outcomeAnimalStartDate,
           filters.outcomeAnimalEndDate,
+        );
+        builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+          complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
+      // -- filter by complaint identifiers returned by case management if equipment type filter is present
+      if ((agencies.includes("COS") || agencies.includes("PARKS")) && filters.equipmentStatus) {
+        const complaintIdentifiers = await this._getComplaintsByEquipment(
+          token,
+          filters.equipmentStatus,
+          filters.equipmentTypes,
         );
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
