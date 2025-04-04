@@ -79,6 +79,7 @@ import { getCaseFile } from "@/app/store/reducers/case-thunks";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
 import { RootState } from "@/app/store/store";
 import { Roles } from "@/app/types/app/roles";
+import { ComplaintDetailsPark } from "./complaint-details-park";
 
 export type ComplaintParams = {
   id: string;
@@ -115,6 +116,7 @@ export const ComplaintDetailsEdit: FC = () => {
     violationObserved,
     girType,
     complaintMethodReceivedCode,
+    parkGuid,
   } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
   const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
@@ -597,6 +599,11 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const handleLocationDescriptionChange = (value: string) => {
     const updatedComplaint = { ...complaintUpdate, locationDetail: value } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
+  };
+
+  const handleParkChange = (value?: string) => {
+    const updatedComplaint = { ...complaintUpdate, parkGuid: value } as ComplaintDto;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -1102,6 +1109,22 @@ export const ComplaintDetailsEdit: FC = () => {
                 enableCopyCoordinates={false}
                 validationRequired={false}
               />
+
+              <div
+                className="comp-details-form-row"
+                id="park"
+              >
+                <label htmlFor="complaint-park">Park</label>
+                <div className="comp-details-edit-input">
+                  <ComplaintDetailsPark
+                    id="complaint-park"
+                    initialParkGuid={parkGuid}
+                    onChange={(e) => handleParkChange(e?.value)}
+                    isInEdit={true}
+                  />
+                </div>
+              </div>
+
               <div
                 className="comp-details-form-row"
                 id="area-community-pair-id"

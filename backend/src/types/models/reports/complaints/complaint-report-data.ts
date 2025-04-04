@@ -25,6 +25,7 @@ export interface ComplaintReportData {
   webeocId: string;
   referenceNumber: string;
   complaintMethodReceivedCode: string;
+  parkGuid: string;
 
   //-- caller information
   privacyRequested: string;

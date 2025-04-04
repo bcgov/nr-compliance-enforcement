@@ -4,7 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { caseFileQueryFields, get } from "../../external_api/case_management";
+import { caseFileQueryFields, get } from "../../external_api/shared_data";
 import Supercluster, { PointFeature } from "supercluster";
 import { GeoJsonProperties } from "geojson";
 
@@ -1472,6 +1472,7 @@ export class ComplaintService {
     complaintType: string,
     model: ComplaintDto | dtoAlias,
   ): Promise<dtoAlias> => {
+    this.logger.error(model);
     const agencyCode = model.ownedBy;
     const hasAssignees = (delegates: Array<DelegateDto>): boolean => {
       if (delegates && delegates.length > 0) {
@@ -1521,7 +1522,7 @@ export class ComplaintService {
           break;
         }
       }
-
+      this.logger.error(entity);
       //-- unlike a typical ORM typeORM can't update an entity and each entity type needs to be updated
       //-- becuase of this we need to transform the entity into a type and that is then used to update
       //-- the original entity

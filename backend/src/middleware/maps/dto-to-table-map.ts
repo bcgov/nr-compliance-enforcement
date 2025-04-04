@@ -118,6 +118,12 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
         return src.updatedOn;
       }),
     ),
+    forMember(
+      (dest) => dest.park_guid,
+      mapFrom((src) => {
+        return src.parkGuid;
+      }),
+    ),
   );
 };
 

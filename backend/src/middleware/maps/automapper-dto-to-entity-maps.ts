@@ -157,6 +157,10 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
       (dest) => dest.comp_last_upd_utc_timestamp,
       mapFrom((src) => src.updatedOn),
     ),
+    forMember(
+      (dest) => dest.park_guid,
+      mapFrom((src) => src.parkGuid),
+    ),
   );
 };
 
@@ -349,6 +353,10 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
       (dest) => dest.complaint_identifier.comp_last_upd_utc_timestamp,
       mapFrom((src) => src.updatedOn),
     ),
+    forMember(
+      (dest) => dest.complaint_identifier.park_guid,
+      mapFrom((src) => src.parkGuid),
+    ),
   );
 };
 
@@ -514,6 +522,10 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (mapper: Mapper) =
       (dest) => dest.complaint_identifier.comp_last_upd_utc_timestamp,
       mapFrom((src) => src.updatedOn),
     ),
+    forMember(
+      (dest) => dest.complaint_identifier.park_guid,
+      mapFrom((src) => src.parkGuid),
+    ),
   );
 };
 
@@ -624,6 +636,10 @@ export const mapGirComplaintDtoToGirComplaint = (mapper: Mapper) => {
     forMember(
       (dest) => dest.complaint_identifier.comp_last_upd_utc_timestamp,
       mapFrom((src) => src.updatedOn),
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.park_guid,
+      mapFrom((src) => src.parkGuid),
     ),
   );
 };

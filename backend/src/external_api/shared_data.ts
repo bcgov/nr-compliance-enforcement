@@ -4,7 +4,7 @@ const caseManagementlURL = process.env.CASE_MANAGEMENT_API_URL;
 
 axios.interceptors.response.use(undefined, (error: AxiosError) => {
   console.error(error.response);
-  return Promise.reject(error);
+  return Promise.reject(error as Error);
 });
 
 export const caseFileQueryFields: string = `
@@ -187,11 +187,12 @@ export const get = (token, params?: {}) => {
     })
     .catch((error: AxiosError) => {
       if (error.response) {
-        throw new Error(`Case Management Request Failed: ${error.response.data}`);
+        const data = error.response?.data as any;
+        throw new Error(`Shared Data Request Failed: ${JSON.stringify(data?.errors)}`);
       } else if (error.request) {
-        throw new Error(`No response received from the Case Management server: ${caseManagementlURL}`);
+        throw new Error(`No response received from the Shared Data server: ${caseManagementlURL}`);
       } else {
-        throw new Error(`Request setup error to Case Management: ${error.message}`);
+        throw new Error(`Request setup error to Shared Data: ${error.message}`);
       }
     });
 };

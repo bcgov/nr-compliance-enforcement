@@ -46,7 +46,7 @@ import { Drug } from "src/types/models/code-tables/drug";
 import { DrugMethod } from "src/types/models/code-tables/drug-method";
 import { DrugRemainingOutcome } from "src/types/models/code-tables/drug-remaining-outcome";
 import { WildlifeComplaintOutcome } from "src/types/models/code-tables/wildlfe-complaint-outcome";
-import { get } from "../../external_api/case_management";
+import { get } from "../../external_api/shared_data";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 import { Schedule } from "src/types/models/code-tables/schedule";
 import { SectorCode } from "src/types/models/code-tables/sector-code";

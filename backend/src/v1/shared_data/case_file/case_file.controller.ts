@@ -13,24 +13,24 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import { CaseFileService } from "./case_file.service";
-import { Role, coreRoles } from "../../enum/role.enum";
-import { Roles } from "../../auth/decorators/roles.decorator";
-import { JwtRoleGuard } from "../../auth/jwtrole.guard";
+import { Role, coreRoles } from "../../../enum/role.enum";
+import { Roles } from "../../../auth/decorators/roles.decorator";
+import { JwtRoleGuard } from "../../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
-import { CaseFileDto } from "../../types/models/case-files/case-file";
-import { Token } from "../../auth/decorators/token.decorator";
-import { CreateNoteInput } from "../../types/models/case-files/notes/create-note-input";
-import { UpdateNoteInput } from "../../types/models/case-files/notes/update-note-input";
-import { DeleteNoteInput } from "../../types/models/case-files/notes/delete-note-input";
-import { FileReviewInput } from "../../types/models/case-files/file-review-input";
-import { CreateWildlifeInput } from "../../types/models/case-files/wildlife/create-wildlife-input";
-import { DeleteWildlifeInput } from "../../types/models/case-files/wildlife/delete-wildlife-outcome";
-import { UpdateWildlifeInput } from "../../types/models/case-files/wildlife/update-wildlife-input";
-import { CreateDecisionInput } from "../../types/models/case-files/ceeb/decision/create-decision-input";
-import { UpdateDecisionInput } from "../../types/models/case-files/ceeb/decision/update-decison-input";
-import { CreateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/create-authorization-outcome-input";
-import { UpdateAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/update-authorization-outcome-input";
-import { DeleteAuthorizationOutcomeInput } from "../../types/models/case-files/ceeb/site/delete-authorization-outcome-input";
+import { CaseFileDto } from "../../../types/models/case-files/case-file";
+import { Token } from "../../../auth/decorators/token.decorator";
+import { CreateNoteInput } from "../../../types/models/case-files/notes/create-note-input";
+import { UpdateNoteInput } from "../../../types/models/case-files/notes/update-note-input";
+import { DeleteNoteInput } from "../../../types/models/case-files/notes/delete-note-input";
+import { FileReviewInput } from "../../../types/models/case-files/file-review-input";
+import { CreateWildlifeInput } from "../../../types/models/case-files/wildlife/create-wildlife-input";
+import { DeleteWildlifeInput } from "../../../types/models/case-files/wildlife/delete-wildlife-outcome";
+import { UpdateWildlifeInput } from "../../../types/models/case-files/wildlife/update-wildlife-input";
+import { CreateDecisionInput } from "../../../types/models/case-files/ceeb/decision/create-decision-input";
+import { UpdateDecisionInput } from "../../../types/models/case-files/ceeb/decision/update-decison-input";
+import { CreateAuthorizationOutcomeInput } from "../../../types/models/case-files/ceeb/site/create-authorization-outcome-input";
+import { UpdateAuthorizationOutcomeInput } from "../../../types/models/case-files/ceeb/site/update-authorization-outcome-input";
+import { DeleteAuthorizationOutcomeInput } from "../../../types/models/case-files/ceeb/site/delete-authorization-outcome-input";
 import { CaseManagementError } from "src/enum/case_management_error.enum";
 
 @UseGuards(JwtRoleGuard)

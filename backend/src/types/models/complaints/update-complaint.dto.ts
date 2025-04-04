@@ -186,4 +186,10 @@ export class UpdateComplaintDto {
       "The time the complaint was last updated, or null if the complaint has never been touched.  This value might also be updated by business logic that touches sub-tables to indicate that the business object complaint has been updated.",
   })
   comp_last_upd_utc_timestamp: Date;
+
+  @ApiProperty({
+    example: "true",
+    description: "The ID of the park that the complaint belongs to.",
+  })
+  park_guid: string;
 }

@@ -102,6 +102,7 @@ export const createComplaintMetaData = () => {
     update_utc_timestamp: Date,
     cos_geo_org_unit: Object,
     person_complaint_xref: Object,
+    park_guid: String,
   });
 
   PojosMetadataMap.create<ComplaintDto>("ComplaintDto", {
@@ -125,6 +126,7 @@ export const createComplaintMetaData = () => {
     updatedOn: Date,
     organization: Object,
     delegates: Array<DelegateDto>,
+    parkGuid: String,
   });
 };
 
