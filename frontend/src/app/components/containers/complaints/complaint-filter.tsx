@@ -351,7 +351,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
 
         {COMPLAINT_TYPES.HWCR === type && (
           <div id="comp-filter-status-id">
-            <label htmlFor="status-select-id">Equipment Status</label>
+            <label htmlFor="status-select-id">Equipment status</label>
             <div className="filter-select-padding">
               <CompSelect
                 id="status-select-id"
