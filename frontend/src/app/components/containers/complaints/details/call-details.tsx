@@ -8,6 +8,7 @@ import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { FeatureFlag } from "@components/common/feature-flag";
 import { CompLocationInfo } from "@components/common/comp-location-info";
+import { ComplaintDetailsPark } from "./complaint-details-park";
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -124,7 +125,13 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
           <dl className="comp-call-details-group">
             <div>
               <dt>Park</dt>
-              <dd id="comp-details-park">{parkGuid}</dd>
+              <dd id="comp-details-park">
+                <ComplaintDetailsPark
+                  id="linkedComplaint"
+                  initialParkGuid={parkGuid}
+                  isInEdit={false}
+                />
+              </dd>
             </div>
           </dl>
 

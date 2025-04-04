@@ -187,7 +187,8 @@ export const get = (token, params?: {}) => {
     })
     .catch((error: AxiosError) => {
       if (error.response) {
-        throw new Error(`Shared Data Request Failed: ${error.response.data}`);
+        const data = error.response?.data as any;
+        throw new Error(`Shared Data Request Failed: ${JSON.stringify(data?.errors)}`);
       } else if (error.request) {
         throw new Error(`No response received from the Shared Data server: ${caseManagementlURL}`);
       } else {

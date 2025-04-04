@@ -79,7 +79,7 @@ import { getCaseFile } from "@/app/store/reducers/case-thunks";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
 import { RootState } from "@/app/store/store";
 import { Roles } from "@/app/types/app/roles";
-import { ComplaintDetailsParkSearch } from "./complaint-details-park-search";
+import { ComplaintDetailsPark } from "./complaint-details-park";
 
 export type ComplaintParams = {
   id: string;
@@ -116,6 +116,7 @@ export const ComplaintDetailsEdit: FC = () => {
     violationObserved,
     girType,
     complaintMethodReceivedCode,
+    parkGuid,
   } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
   const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
@@ -1115,11 +1116,11 @@ export const ComplaintDetailsEdit: FC = () => {
               >
                 <label>Park</label>
                 <div className="comp-details-edit-input">
-                  <ComplaintDetailsParkSearch
+                  <ComplaintDetailsPark
                     id="linkedComplaint"
+                    initialParkGuid={parkGuid}
                     onChange={(e) => handleParkChange(e?.value)}
-                    //errorMessage={linkedComplaintErrorMessage}
-                    //value={selectedLinkedComplaint}
+                    isInEdit={true}
                   />
                 </div>
               </div>

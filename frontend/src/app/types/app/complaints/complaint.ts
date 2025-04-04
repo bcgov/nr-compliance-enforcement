@@ -10,5 +10,4 @@ export interface Complaint extends BaseComplaint {
     officeLocation?: string;
   };
   delegates: Array<Delegate>;
-  parkGuid?: string;
 }

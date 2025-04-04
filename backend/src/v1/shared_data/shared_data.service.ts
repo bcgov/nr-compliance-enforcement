@@ -51,7 +51,7 @@ export class SharedDataService {
 
   findOnePark = async (token: string, parkGuid: string): Promise<ParkDto> => {
     const { data, errors } = await get(token, {
-      query: `{park (parkGuid: "${parkGuid}") {
+      query: `{park (parkGuid: "${parkGuid}")
         ${parkQueryFields}
       }`,
     });

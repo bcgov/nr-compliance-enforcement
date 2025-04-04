@@ -1,7 +1,7 @@
 import { AsyncTypeahead, Highlighter, useHint } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
-import { FC, useState, ReactNode } from "react";
+import { FC, useState, ReactNode, useEffect } from "react";
 import Option from "@apptypes/app/option";
 import { useAppDispatch } from "@hooks/hooks";
 import { generateApiParameters, get } from "@common/api";
@@ -9,29 +9,46 @@ import config from "@/config";
 
 type Props = {
   id?: string;
-  onChange?: (selected: Option | null, status: string | null) => void;
+  initialParkGuid?: string;
+  onChange?: (value: Option | undefined) => void;
   errorMessage?: string;
-  value?: Option | null;
+  isInEdit?: boolean;
 };
 
-export const ComplaintDetailsParkSearch: FC<Props> = ({
+export const ComplaintDetailsPark: FC<Props> = ({
   id = "parks",
   onChange = () => {},
   errorMessage = "",
-  value = null,
+  initialParkGuid = null,
+  isInEdit = false,
 }) => {
   const dispatch = useAppDispatch();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [parkOption, setParkOption] = useState<Option | undefined>(undefined);
   const [parks, setParks] = useState<any[]>([]);
 
+  useEffect(() => {
+    setIsLoading(true);
+    if (initialParkGuid) {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${initialParkGuid}`);
+      get(dispatch, parameters, {}, false).then((response: any) => {
+        if (response) {
+          setParkOption({ label: response.name, value: response.parkGuid } as Option);
+        }
+      });
+    }
+    setIsLoading(false);
+  }, [initialParkGuid, dispatch]);
+
   const handleChange = (selected: any[]) => {
-    onChange(
-      selected.length > 0
-        ? ({ label: selected[0].name as string, value: selected[0].parkGuid as string } as Option)
-        : null,
-      selected[0]?.status,
-    );
+    if (selected.length > 0) {
+      setParkOption(selected[0]);
+      onChange(selected[0]);
+    } else {
+      setParkOption(undefined);
+      onChange(undefined);
+    }
   };
 
   const handleSearch = async (query: string) => {
@@ -41,23 +58,30 @@ export const ComplaintDetailsParkSearch: FC<Props> = ({
     );
     const response: any = await get(dispatch, parameters, {}, false);
     if (response) {
-      setParks(response);
+      const parkSearchOptions = response.map(
+        (park: any) =>
+          ({
+            label: park.name,
+            value: park.parkGuid,
+          }) as Option,
+      );
+      setParks(parkSearchOptions);
     }
     setIsLoading(false);
   };
 
-  return (
+  return isInEdit ? (
     <div>
       <AsyncTypeahead
         clearButton
         id={id}
-        labelKey="name"
+        selected={parkOption ? [parkOption] : undefined}
+        labelKey="label"
         minLength={0}
         isLoading={isLoading}
         onSearch={handleSearch}
         onChange={handleChange}
         onFocus={() => handleSearch("")}
-        selected={value ? [{ id: value.value }] : undefined}
         options={parks}
         placeholder="Search for a park"
         isInvalid={errorMessage.length > 0}
@@ -66,5 +90,7 @@ export const ComplaintDetailsParkSearch: FC<Props> = ({
       />
       <div className="error-message">{errorMessage}</div>
     </div>
+  ) : (
+    <span>{parkOption?.label}</span>
   );
 };
