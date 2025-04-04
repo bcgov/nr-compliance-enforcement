@@ -46,7 +46,10 @@ import { getUserAgency } from "@/app/service/user-service";
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
 const initialState: ComplaintState = {
-  complaintSearchParameters: { sortColumn: "", sortOrder: "" },
+  complaintSearchParameters: {
+    sortColumn: "",
+    sortOrder: "",
+  },
   complaintItems: {
     wildlife: [],
     allegations: [],
@@ -331,6 +334,8 @@ export const getComplaints =
       outcomeAnimalFilter,
       outcomeAnimalStartDateFilter,
       outcomeAnimalEndDateFilter,
+      equipmentStatusFilter,
+      equipmentTypesFilter,
       page,
       pageSize,
       query,
@@ -359,6 +364,8 @@ export const getComplaints =
         outcomeAnimal: outcomeAnimalFilter?.value,
         outcomeAnimalStartDate: outcomeAnimalStartDateFilter,
         outcomeAnimalEndDate: outcomeAnimalEndDateFilter,
+        equipmentStatus: equipmentStatusFilter?.value,
+        equipmentTypes: equipmentTypesFilter?.map((type) => type.value) ?? [],
         page: page,
         pageSize: pageSize,
         query: query,

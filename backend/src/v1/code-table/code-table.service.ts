@@ -60,6 +60,7 @@ import { ComplaintMethodReceivedType } from "src/types/models/code-tables/compla
 import { ScheduleSectorXref } from "src/types/models/code-tables/schedule-sector-xref";
 import { CaseLocationCode } from "src/types/models/code-tables/case-location-code";
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
+import { EquipmentStatus } from "src/types/models/code-tables/equipment-status";
 
 @Injectable()
 export class CodeTableService {
@@ -553,6 +554,25 @@ export class CodeTableService {
               isActive: activeIndicator,
               isTrapIndicator: isTrapIndicator,
               hasQuantityIndicator: hasQuantityIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "equipment-status": {
+        const { data } = await get(token, {
+          query:
+            "{equipmentStatusCodes{equipmentStatusCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.equipmentStatusCodes.map(
+          ({ equipmentStatusCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: EquipmentStatus = {
+              equipmentStatus: equipmentStatusCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
             };
             return table;
           },
