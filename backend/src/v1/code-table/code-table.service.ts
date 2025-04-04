@@ -264,7 +264,13 @@ export class CodeTableService {
         return results;
       }
       case "violation": {
-        const data = await this._violationAgencyXrefRepository.find();
+        const data = await this._violationAgencyXrefRepository.find({
+          order: {
+            violation_code: {
+              display_order: "ASC",
+            },
+          },
+        });
         let results = data.map(({ violation_code, agency_code, active_ind }) => {
           let table: Violation = {
             violation: violation_code.violation_code,
