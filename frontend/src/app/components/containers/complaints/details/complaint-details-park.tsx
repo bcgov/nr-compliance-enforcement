@@ -1,7 +1,7 @@
-import { AsyncTypeahead, Highlighter, useHint } from "react-bootstrap-typeahead";
+import { AsyncTypeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
-import { FC, useState, ReactNode, useEffect } from "react";
+import { FC, useState, useEffect } from "react";
 import Option from "@apptypes/app/option";
 import { useAppDispatch } from "@hooks/hooks";
 import { generateApiParameters, get } from "@common/api";

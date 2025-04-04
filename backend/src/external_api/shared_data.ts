@@ -4,7 +4,7 @@ const caseManagementlURL = process.env.CASE_MANAGEMENT_API_URL;
 
 axios.interceptors.response.use(undefined, (error: AxiosError) => {
   console.error(error.response);
-  return Promise.reject(error);
+  return Promise.reject(error as Error);
 });
 
 export const caseFileQueryFields: string = `

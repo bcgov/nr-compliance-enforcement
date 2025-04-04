@@ -31,10 +31,10 @@ import { CaseManagementError } from "../../../enum/case_management_error.enum";
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
   private readonly logger = new Logger(CaseFileService.name);
-  private mapper: Mapper;
+  private readonly mapper: Mapper;
 
   constructor(
-    @Inject(REQUEST) private request: Request,
+    @Inject(REQUEST) private readonly request: Request,
     @InjectMapper() mapper,
     private readonly complaintService: ComplaintService,
     private readonly _codeTableService: CodeTableService,

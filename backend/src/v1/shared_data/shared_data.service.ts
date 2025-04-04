@@ -4,7 +4,7 @@ import { Mapper } from "@automapper/core";
 import { get } from "../../external_api/shared_data";
 import { ParkDto } from "./dto/park.dto";
 import { REQUEST } from "@nestjs/core";
-import { DataSource, Repository } from "typeorm";
+import { DataSource } from "typeorm";
 
 const parkQueryFields: string = `
 {
@@ -19,10 +19,10 @@ const parkQueryFields: string = `
 @Injectable({ scope: Scope.REQUEST })
 export class SharedDataService {
   private readonly logger = new Logger(SharedDataService.name);
-  private mapper: Mapper;
+  private readonly mapper: Mapper;
 
   constructor(
-    @Inject(REQUEST) private request: Request,
+    @Inject(REQUEST) private readonly request: Request,
     @InjectMapper() mapper,
     private readonly dataSource: DataSource,
   ) {

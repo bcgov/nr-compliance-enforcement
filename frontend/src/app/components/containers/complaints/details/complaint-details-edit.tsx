@@ -1114,10 +1114,10 @@ export const ComplaintDetailsEdit: FC = () => {
                 className="comp-details-form-row"
                 id="park"
               >
-                <label>Park</label>
+                <label htmlFor="complaint-park">Park</label>
                 <div className="comp-details-edit-input">
                   <ComplaintDetailsPark
-                    id="linkedComplaint"
+                    id="complaint-park"
                     initialParkGuid={parkGuid}
                     onChange={(e) => handleParkChange(e?.value)}
                     isInEdit={true}
