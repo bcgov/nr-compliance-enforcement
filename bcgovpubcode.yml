@@ -3,9 +3,14 @@ data_management_roles:
   data_custodian: Stephen Kot
   product_owner: Stephen Kot
 product_external_dependencies:
+  common_components:
+    - BC-Address-Geocoder
+    - Common-Document-Generation-Service
+    - Common-Object-Management-Service
   identity_authorization:
     - BCGov-SSO-Keycloak
   notification_standard: []
+  other_dependencies: WebEOC
 product_information:
   api_specifications: []
   business_capabilities_standard:
@@ -13,20 +18,23 @@ product_information:
   ministry:
     - Environment and Climate Change Strategy
     - Water, Land and Resource Stewardship
-  product_acronym: TBD
+  product_acronym: NatCom, NatInv
   product_description: >-
     Manages public complaints as well as investigative case files for multiple
     Compliance and Enforcement divisions across the natural resource sector.
-  product_name: TBD
+  product_name: NatComplaints, NatInvestigations
   product_status: maturing
   product_urls:
     - >-
       https://nr-compliance-enforcement-test-frontend.apps.silver.devops.gov.bc.ca/
+    - https://natcomplaints.nrs.gov.bc.ca/
   program_area: Conservation and Recreation Division
 product_technology_information:
   backend_frameworks:
     - name: NestJS
-      version: 9.2.1
+      version: 10.4.4
+    - name: Other
+      version: typeorm-0.3.14
   backend_languages_version:
     - name: TypeScript
       version: 4.9.4
@@ -39,9 +47,16 @@ product_technology_information:
   frontend_frameworks:
     - name: React
       version: 18.2.0
+    - name: Other
+      version: cypress-13.6.1
+    - name: Other
+      version: bootstrap-5.2.3
   frontend_languages:
     - name: TypeScript
-      version: 4.9.4
+      version: 5.0.4
   hosting_platforms:
     - Private-Cloud-Openshift
+  other_tools: Jira, Mural, Figma, Sysdig, Terraform
+  spatial_mapping_technologies:
+    - Leaflet
 version: 1
