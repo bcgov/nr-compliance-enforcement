@@ -27,6 +27,8 @@ product_information:
   product_urls:
     - >-
       https://nr-compliance-enforcement-test-frontend.apps.silver.devops.gov.bc.ca/
+    - >-
+      https://nr-compliance-enforcement-prod-frontend.apps.silver.devops.gov.bc.ca/
     - https://natcomplaints.nrs.gov.bc.ca/
   program_area: Conservation and Recreation Division
 product_technology_information:
@@ -35,15 +37,24 @@ product_technology_information:
       version: 10.4.4
     - name: Other
       version: typeorm-0.3.14
+    - name: Other
+      version: flyway-9.22.3
+    - name: Other
+      version: nats-2.29.1
   backend_languages_version:
     - name: TypeScript
       version: 4.9.4
   ci_cd_tools:
     - GitHub-Actions
+    - Helm
     - OpenShift-Templates
+    - Terraform
+    - ArgoCD
   data_storage_platforms:
     - Postgis
     - Postgresql
+    - Other
+  data_storage_platforms_custom: Crunchy
   frontend_frameworks:
     - name: React
       version: 18.2.0
@@ -56,7 +67,7 @@ product_technology_information:
       version: 5.0.4
   hosting_platforms:
     - Private-Cloud-Openshift
-  other_tools: Jira, Mural, Figma, Sysdig, Terraform
+  other_tools: Jira, Mural, Figma, Sysdig, Schemaspy, Metabase,
   spatial_mapping_technologies:
     - Leaflet
 version: 1
