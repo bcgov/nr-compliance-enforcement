@@ -32,4 +32,5 @@ export const COS_ROLE_OPTIONS: Array<Option> = [
 export const PARKS_ROLE_OPTIONS: Array<Option> = [
   { value: "PARKS", label: "PARKS" },
   { value: "READ ONLY", label: "Read Only" },
+  { value: "Province-wide", label: "Province-wide" },
 ];
