@@ -2188,6 +2188,32 @@ export class ComplaintService {
       }
     };
 
+    const _getParkData = async (id: string, token: string, tz: string) => {
+      const { data, errors } = await get(token, {
+        query: `{park (parkGuid: "${id}")
+        {
+          parkGuid,
+          externalId,
+          name,
+          legalName,
+          geoOrganizationUnitCode,
+        }
+      }`,
+      });
+
+      if (errors) {
+        this.logger.error("GraphQL errors:", errors);
+        throw new Error("GraphQL errors occurred");
+      }
+
+      if (data?.park?.parkGuid) {
+        return data.park;
+      } else {
+        this.logger.debug(`No results.`);
+        return null;
+      }
+    };
+
     const _getCaseData = async (id: string, token: string, tz: string) => {
       //-- Get the Outcome Data, this is done via a GQL call to prevent
       //-- a circular dependency between the complaint and case_file modules
@@ -2351,6 +2377,14 @@ export class ComplaintService {
 
       //-- get case data
       data.outcome = await _getCaseData(id, token, tz);
+
+      //-- get park data
+      if (data.parkGuid) {
+        const park = await _getParkData(data.parkGuid, token, tz);
+        if (park.name) {
+          data.park = park.name;
+        }
+      }
 
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);
