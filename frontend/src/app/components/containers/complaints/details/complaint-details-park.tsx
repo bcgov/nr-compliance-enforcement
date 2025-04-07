@@ -86,7 +86,7 @@ export const ComplaintDetailsPark: FC<Props> = ({
         placeholder="Search for a park"
         isInvalid={errorMessage.length > 0}
         useCache={true}
-        className="comp-select comp-details-input full-width"
+        className="comp-select comp-details-input full-width comp-park-select"
       />
       <div className="error-message">{errorMessage}</div>
     </div>

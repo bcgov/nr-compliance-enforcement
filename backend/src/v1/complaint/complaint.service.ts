@@ -2189,6 +2189,10 @@ export class ComplaintService {
     };
 
     const _getParkData = async (id: string, token: string, tz: string) => {
+      if (!id) {
+        return "";
+      }
+
       const { data, errors } = await get(token, {
         query: `{park (parkGuid: "${id}")
         {
@@ -2210,7 +2214,7 @@ export class ComplaintService {
         return data.park;
       } else {
         this.logger.debug(`No results.`);
-        return null;
+        return "";
       }
     };
 
@@ -2379,12 +2383,7 @@ export class ComplaintService {
       data.outcome = await _getCaseData(id, token, tz);
 
       //-- get park data
-      if (data.parkGuid) {
-        const park = await _getParkData(data.parkGuid, token, tz);
-        if (park.name) {
-          data.park = park.name;
-        }
-      }
+      data.park = await _getParkData(data.parkGuid, token, tz);
 
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);
