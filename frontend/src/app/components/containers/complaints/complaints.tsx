@@ -228,7 +228,7 @@ const getFilters = (currentOfficer: any, defaultZone: DropdownOption | null, def
 
   // If user has both Parks and Province-wide roles, default filter are "Open" and "Unassigned"
   if (UserService.hasRole(Roles.PROVINCE_WIDE) && UserService.hasRole(Roles.PARKS)) {
-    return (filters = { ...filters, officer: { value: "Unassigned", label: "Unassigned" } });
+    return { officer: { value: "Unassigned", label: "Unassigned" } };
   }
 
   // Province-wide, HWCR only and Parks role defaults to only "Open" so skip the other checks
