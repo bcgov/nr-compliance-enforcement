@@ -126,11 +126,13 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
             <div>
               <dt>Park</dt>
               <dd id="comp-details-park">
-                <ComplaintDetailsPark
-                  id="linkedComplaint"
-                  initialParkGuid={parkGuid}
-                  isInEdit={false}
-                />
+                {parkGuid && (
+                  <ComplaintDetailsPark
+                    id={`comp-details-park-${parkGuid}`}
+                    initialParkGuid={parkGuid}
+                    isInEdit={false}
+                  />
+                )}
               </dd>
             </div>
           </dl>

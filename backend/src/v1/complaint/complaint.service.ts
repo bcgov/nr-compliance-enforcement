@@ -1530,6 +1530,10 @@ export class ComplaintService {
         "UpdateComplaintDto",
       );
 
+      if (!model.parkGuid) {
+        complaintTable.park_guid = null;
+      }
+
       const xref = await this._compMthdRecvCdAgcyCdXrefService.findByComplaintMethodReceivedCodeAndAgencyCode(
         model.complaintMethodReceivedCode,
         agencyCode,
@@ -2209,7 +2213,7 @@ export class ComplaintService {
       }
 
       if (data?.park?.parkGuid) {
-        return data.park;
+        return data.park.name;
       } else {
         this.logger.debug(`No results.`);
         return "";

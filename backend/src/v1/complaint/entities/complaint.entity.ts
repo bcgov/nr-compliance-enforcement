@@ -258,7 +258,7 @@ export class Complaint {
     example: "ad23357b-1f47-4561-beff-63ae1c9c3d8f",
     description: "The id of the park that this complaint is associated with",
   })
-  @Column({ length: 32 })
+  @Column({ length: 32, nullable: true })
   park_guid: string;
 
   constructor(
