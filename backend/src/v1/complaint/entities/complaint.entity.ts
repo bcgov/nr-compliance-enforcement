@@ -254,6 +254,13 @@ export class Complaint {
   @OneToMany(() => ComplaintReferral, (complaint_referral) => complaint_referral.complaint_identifier)
   complaint_referral: ComplaintReferral[];
 
+  @ApiProperty({
+    example: "ad23357b-1f47-4561-beff-63ae1c9c3d8f",
+    description: "The id of the park that this complaint is associated with",
+  })
+  @Column({ length: 32, nullable: true })
+  park_guid: string;
+
   constructor(
     detail_text?: string,
     caller_name?: string,
@@ -288,6 +295,7 @@ export class Complaint {
     action_taken?: ActionTaken[],
     comp_last_upd_utc_timestamp?: Date,
     complaint_referral?: ComplaintReferral[],
+    park_guid?: string,
   ) {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -322,5 +330,6 @@ export class Complaint {
     this.action_taken = action_taken;
     this.comp_last_upd_utc_timestamp = comp_last_upd_utc_timestamp;
     this.complaint_referral = complaint_referral;
+    this.park_guid = park_guid;
   }
 }

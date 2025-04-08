@@ -4,7 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { caseFileQueryFields, get } from "../../external_api/case_management";
+import { caseFileQueryFields, get } from "../../external_api/shared_data";
 import Supercluster, { PointFeature } from "supercluster";
 import { GeoJsonProperties } from "geojson";
 
@@ -1521,7 +1521,6 @@ export class ComplaintService {
           break;
         }
       }
-
       //-- unlike a typical ORM typeORM can't update an entity and each entity type needs to be updated
       //-- becuase of this we need to transform the entity into a type and that is then used to update
       //-- the original entity
@@ -1530,6 +1529,10 @@ export class ComplaintService {
         "ComplaintDto",
         "UpdateComplaintDto",
       );
+
+      if (!model.parkGuid) {
+        complaintTable.park_guid = null;
+      }
 
       const xref = await this._compMthdRecvCdAgcyCdXrefService.findByComplaintMethodReceivedCodeAndAgencyCode(
         model.complaintMethodReceivedCode,
@@ -2187,6 +2190,36 @@ export class ComplaintService {
       }
     };
 
+    const _getParkData = async (id: string, token: string, tz: string) => {
+      if (!id) {
+        return "";
+      }
+
+      const { data, errors } = await get(token, {
+        query: `{park (parkGuid: "${id}")
+        {
+          parkGuid,
+          externalId,
+          name,
+          legalName,
+          geoOrganizationUnitCode,
+        }
+      }`,
+      });
+
+      if (errors) {
+        this.logger.error("GraphQL errors:", errors);
+        throw new Error("GraphQL errors occurred");
+      }
+
+      if (data?.park?.parkGuid) {
+        return data.park.name;
+      } else {
+        this.logger.debug(`No results.`);
+        return "";
+      }
+    };
+
     const _getCaseData = async (id: string, token: string, tz: string) => {
       //-- Get the Outcome Data, this is done via a GQL call to prevent
       //-- a circular dependency between the complaint and case_file modules
@@ -2350,6 +2383,9 @@ export class ComplaintService {
 
       //-- get case data
       data.outcome = await _getCaseData(id, token, tz);
+
+      //-- get park data
+      data.park = await _getParkData(data.parkGuid, token, tz);
 
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);
