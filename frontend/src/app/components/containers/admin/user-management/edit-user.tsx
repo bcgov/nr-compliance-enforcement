@@ -101,6 +101,7 @@ export const EditUser: FC<EditUserProps> = ({
         //map current user's agency based on roles
         let currentAgency;
         const hasCEEBRole = officerData.user_roles.some((role: any) => role.includes("CEEB"));
+        const hasCOSRole = officerData.user_roles.some((role: any) => role.includes("COS"));
         if (hasCEEBRole) {
           currentAgency = mapAgencyDropDown(AgencyType.CEEB, agency);
           const currentTeam = await getUserCurrentTeam(officerData.officer_guid);
@@ -108,13 +109,15 @@ export const EditUser: FC<EditUserProps> = ({
             const currentTeamMapped = mapAgencyDropDown(currentTeam.team_guid.team_code.team_code, teams);
             setSelectedTeam(currentTeamMapped);
           }
-        } else {
+        } else if (hasCOSRole) {
           currentAgency = mapAgencyDropDown(AgencyType.COS, agency);
           //map current user's office if agency is COS
           if (officerData.office_guid) {
             const currentOffice = mapAgencyDropDown(officerData.office_guid.office_guid, offices);
             setSelectedOffice(currentOffice);
           }
+        } else {
+          currentAgency = mapAgencyDropDown(AgencyType.PARKS, agency);
         }
         setCurrentAgency(currentAgency);
       }
