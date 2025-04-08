@@ -56,6 +56,7 @@ import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { FeatureFlag } from "@components/common/feature-flag";
 import { Roles } from "@/app/types/app/roles";
 import { RootState } from "@/app/store/store";
+import { ComplaintDetailsPark } from "./complaint-details-park";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -391,6 +392,11 @@ export const CreateComplaint: FC = () => {
   const handleLocationDescriptionChange = (value: string) => {
     const complaint = { ...complaintData, locationDetail: value?.trim() } as ComplaintDto;
     applyComplaintData(complaint);
+  };
+
+  const handleParkChange = (value?: string) => {
+    const updatedComplaint = { ...complaintData, parkGuid: value } as ComplaintDto;
+    applyComplaintData(updatedComplaint);
   };
 
   const handleViolationInProgessChange = (selected: Option | null) => {
@@ -1020,6 +1026,20 @@ export const CreateComplaint: FC = () => {
             enableCopyCoordinates={false}
             validationRequired={false}
           />
+
+          <div
+            className="comp-details-form-row"
+            id="park"
+          >
+            <label htmlFor="complaint-park">Park</label>
+            <div className="comp-details-edit-input">
+              <ComplaintDetailsPark
+                id="complaint-park"
+                onChange={(e) => handleParkChange(e?.value)}
+                isInEdit={true}
+              />
+            </div>
+          </div>
 
           <div
             className="comp-details-form-row"
