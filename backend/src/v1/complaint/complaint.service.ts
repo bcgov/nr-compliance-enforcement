@@ -335,6 +335,7 @@ export class ComplaintService {
       community,
       zone,
       region,
+      park,
       incidentReportedStart,
       incidentReportedEnd,
       status,
@@ -362,6 +363,12 @@ export class ComplaintService {
     if (region) {
       builder.andWhere("cos_organization.region_code = :Region", {
         Region: region,
+      });
+    }
+
+    if (park) {
+      builder.andWhere("complaint.park_guid = :Park", {
+        Park: park,
       });
     }
 
