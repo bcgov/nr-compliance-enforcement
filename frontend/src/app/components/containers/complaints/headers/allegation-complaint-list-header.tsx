@@ -2,6 +2,8 @@ import { FC } from "react";
 import { SortableHeader } from "@components/common/sortable-header";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 type Props = {
   handleSort: Function;
@@ -58,9 +60,22 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
           currentSort={sortKey}
           sortDirection={sortDirection}
         />
-        <th className="unsortable">
-          <div className="comp-header-label">Location/address</div>
-        </th>
+
+        <FeatureFlag feature={FEATURE_TYPES.PARK_COLUMN}>
+          <SortableHeader
+            title="Park"
+            sortFnc={handleSort}
+            sortKey="park"
+            currentSort={sortKey}
+            sortDirection={sortDirection}
+          />
+        </FeatureFlag>
+
+        <FeatureFlag feature={FEATURE_TYPES.LOCATION_COLUMN}>
+          <th className="unsortable-header">
+            <div className="header-label">Location/address</div>
+          </th>
+        </FeatureFlag>
 
         <SortableHeader
           title="Status"

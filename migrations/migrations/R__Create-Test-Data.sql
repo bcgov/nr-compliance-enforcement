@@ -4344,6 +4344,55 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'PARKCOL',
+  'Park Column',
+  'Displays the Park column in the list view',
+  250,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'LCTNCOL',
+  'Location/address Column',
+  'Displays the Location/address column in the list view',
+  260,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+
 -------------------------
 -- Insert Feature / Agency XREF
 -------------------------
@@ -5330,6 +5379,129 @@ SELECT
   user,
   now() ON CONFLICT
 DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'PARKCOL',
+  'COS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'PARKCOL',
+  'EPO',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'PARKCOL',
+  'PARKS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'LCTNCOL',
+  'COS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'LCTNCOL',
+  'EPO',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'LCTNCOL',
+  'PARKS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+
+
 
 -------------------------
 -- Insert Team Codes
