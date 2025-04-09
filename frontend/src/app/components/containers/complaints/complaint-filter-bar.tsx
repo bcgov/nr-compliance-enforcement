@@ -32,6 +32,7 @@ export const ComplaintFilterBar: FC<Props> = ({
     region,
     zone,
     community,
+    park,
     officer,
     startDate,
     endDate,
@@ -199,6 +200,15 @@ export const ComplaintFilterBar: FC<Props> = ({
             id="comp-community-filter"
             label={community?.label}
             name="community"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("park") && (
+          <FilterButton
+            id="comp-park-filter"
+            label={park?.label}
+            name="park"
             clear={removeFilter}
           />
         )}
