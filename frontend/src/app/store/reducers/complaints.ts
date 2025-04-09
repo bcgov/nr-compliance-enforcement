@@ -42,6 +42,7 @@ import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptyp
 import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint-method-received-type";
 import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
 import { getUserAgency } from "@/app/service/user-service";
+import { valueContainerCSS } from "react-select/dist/declarations/src/components/containers";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
@@ -320,6 +321,7 @@ export const getComplaints =
       sortOrder,
       regionCodeFilter,
       areaCodeFilter,
+      parkFilter,
       zoneCodeFilter,
       officerFilter,
       natureOfComplaintFilter,
@@ -351,6 +353,7 @@ export const getComplaints =
         region: regionCodeFilter?.value,
         zone: zoneCodeFilter?.value,
         community: areaCodeFilter?.value,
+        park: parkFilter?.value,
         officerAssigned: officerFilter?.value,
         natureOfComplaint: natureOfComplaintFilter?.value,
         speciesCode: speciesCodeFilter?.value,
