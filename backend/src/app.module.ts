@@ -38,7 +38,7 @@ import { StagingMetaDataMappingModule } from "./v1/staging_meta_data_mapping/sta
 import { StagingStatusCodeModule } from "./v1/staging_status_code/staging_status_code.module";
 import { StagingActivityCodeModule } from "./v1/staging_activity_code/staging_activity_code.module";
 import { RequestTokenMiddleware } from "./middleware/req.token";
-import { CaseFileModule } from "./v1/case_file/case_file.module";
+import { CaseFileModule } from "./v1/shared_data/case_file/case_file.module";
 import { ComplaintUpdatesModule } from "./v1/complaint_updates/complaint_updates.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ComplaintSequenceResetScheduler } from "./v1/complaint/complaint-sequence-reset.service";
@@ -56,6 +56,7 @@ import { CompMthdRecvCdAgcyCdXrefModule } from "./v1/comp_mthd_recv_cd_agcy_cd_x
 import { LinkedComplaintXrefModule } from "./v1/linked_complaint_xref/linked_complaint_xref.module";
 import { ViolationAgencyXrefModule } from "./v1/violation_agency_xref/violation_agency_xref.module";
 import { ComplaintReferralModule } from "./v1/complaint_referral/complaint_referral.module";
+import { SharedDataModule } from "./v1/shared_data/shared_data.module";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -134,6 +135,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     LinkedComplaintXrefModule,
     ViolationAgencyXrefModule,
     ComplaintReferralModule,
+    SharedDataModule,
   ],
   controllers: [AppController],
   providers: [AppService, ComplaintSequenceResetScheduler],
@@ -147,6 +149,7 @@ export class AppModule {
       .forRoutes(
         "v1/code-table",
         "v1/case",
+        "v1/shared-data",
         "v1/configuration",
         "v1/complaint/search",
         "v1/complaint/map/search",

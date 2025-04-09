@@ -114,7 +114,7 @@ export const HWCRComplaintAssessmentLinkComplaintSearch: FC<Props> = ({
   };
 
   return (
-    <div>
+    <div className="complaint-search-container">
       <AsyncTypeahead
         clearButton
         id={id}
