@@ -10,11 +10,11 @@ export class GirTypeCode {
   @PrimaryColumn({ length: 10 })
   gir_type_code: string;
 
-  @ApiProperty({ example: "CO Contact", description: "The short description of the gir type code" })
+  @ApiProperty({ example: "Contact", description: "The short description of the gir type code" })
   @Column({ length: 50 })
   short_description: string;
 
-  @ApiProperty({ example: "CO Contact", description: "The long description of the gir type code" })
+  @ApiProperty({ example: "Contact", description: "The long description of the gir type code" })
   @Column({ length: 250, nullable: true })
   long_description: string;
 
