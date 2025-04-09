@@ -37,6 +37,8 @@ export const ComplaintDetailsPark: FC<Props> = ({
           setParkOption({ label: response.name, value: response.parkGuid } as Option);
         }
       });
+    } else {
+      setParkOption(undefined);
     }
     setIsLoading(false);
   }, [initialParkGuid, dispatch]);
@@ -75,7 +77,7 @@ export const ComplaintDetailsPark: FC<Props> = ({
       <AsyncTypeahead
         clearButton
         id={id}
-        selected={parkOption ? [parkOption] : undefined}
+        selected={parkOption ? [parkOption] : []}
         labelKey="label"
         minLength={0}
         isLoading={isLoading}
