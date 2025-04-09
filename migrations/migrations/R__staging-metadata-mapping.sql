@@ -24761,13 +24761,6 @@ UPDATE public.staging_metadata_mapping
 SET staged_data_value = 'Mount Robson' 
 WHERE live_data_value = 'MOUNTROB';
 
--------------------------
--- Update GIR type code
--------------------------
-
-UPDATE public.staging_metadata_mapping SET staged_data_value = 'Contact' WHERE live_data_value = 'COCNT';
-UPDATE public.staging_metadata_mapping SET staged_data_value = 'Disposition' WHERE live_data_value = 'CODSP';
-
 --------------------------
 -- New Changes above this line
 -------------------------
