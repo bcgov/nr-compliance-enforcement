@@ -8,6 +8,8 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import getOfficerAssigned from "@common/get-officer-assigned";
 import { getUserAgency } from "@/app/service/user-service";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 type Props = {
   type: string;
@@ -33,6 +35,7 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
     girType,
     locationDetail,
     locationSummary,
+    parkGuid,
     organization: { area: locationCode, zone },
   } = complaint;
 
@@ -118,12 +121,22 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
         >
           {location}
         </td>
-        <td
-          className={`sortableHeader ${isExpandedClass}`}
-          onClick={toggleExpand}
-        >
-          {locationSummary}
-        </td>
+        <FeatureFlag feature={FEATURE_TYPES.PARK_COLUMN}>
+          <td
+            className={`${isExpandedClass}`}
+            onClick={toggleExpand}
+          >
+            {parkGuid}
+          </td>
+        </FeatureFlag>
+        <FeatureFlag feature={FEATURE_TYPES.LOCATION_COLUMN}>
+          <td
+            className={`${isExpandedClass}`}
+            onClick={toggleExpand}
+          >
+            {locationSummary}
+          </td>
+        </FeatureFlag>
         <td
           className={`${isExpandedClass}`}
           onClick={toggleExpand}

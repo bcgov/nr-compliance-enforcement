@@ -9,6 +9,8 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { Badge } from "react-bootstrap";
 import getOfficerAssigned from "@common/get-officer-assigned";
 import { getUserAgency } from "@/app/service/user-service";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 type Props = {
   type: string;
@@ -35,6 +37,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
     species: speciesCode,
     locationDetail,
     locationSummary,
+    parkGuid,
     organization: { areaName: location, zone },
   } = complaint;
 
@@ -127,12 +130,22 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
         >
           {location}
         </td>
-        <td
-          className={`${isExpandedClass}`}
-          onClick={toggleExpand}
-        >
-          {locationSummary}
-        </td>
+        <FeatureFlag feature={FEATURE_TYPES.PARK_COLUMN}>
+          <td
+            className={`${isExpandedClass}`}
+            onClick={toggleExpand}
+          >
+            {parkGuid}
+          </td>
+        </FeatureFlag>
+        <FeatureFlag feature={FEATURE_TYPES.LOCATION_COLUMN}>
+          <td
+            className={`${isExpandedClass}`}
+            onClick={toggleExpand}
+          >
+            {locationSummary}
+          </td>
+        </FeatureFlag>
         <td
           className={`comp-cell-width-75 ${isExpandedClass}`}
           onClick={toggleExpand}
