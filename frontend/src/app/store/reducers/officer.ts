@@ -352,7 +352,7 @@ const mapAgencyToRole = (agency: string): string => {
   return role;
 };
 
-const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] => {
+export const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] => {
   const role = mapAgencyToRole(agency);
   const result = officers.filter((officer) => {
     const { office_guid, user_roles } = officer;

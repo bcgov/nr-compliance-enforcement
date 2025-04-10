@@ -9,6 +9,7 @@ import {
   QUICK_CLOSE,
   TOGGLE_DEACTIVATE,
   REFER_COMPLAINT,
+  MANAGE_COLLABORATORS,
 } from "@apptypes/modal/modal-types";
 
 import {
@@ -21,6 +22,7 @@ import {
   QuickCloseModal,
   ToggleDeactivateModal,
   ReferComplaintModal,
+  ManageCollaboratorsModal,
 } from "./instances";
 import { CancelConfirmModal } from "./instances/cancel-confirm-modal";
 
@@ -35,4 +37,5 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [QUICK_CLOSE]: QuickCloseModal,
   [TOGGLE_DEACTIVATE]: ToggleDeactivateModal,
   [REFER_COMPLAINT]: ReferComplaintModal,
+  [MANAGE_COLLABORATORS]: ManageCollaboratorsModal,
 };

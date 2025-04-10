@@ -14,6 +14,7 @@ export interface ComplaintState {
   complaintItems: ComplaintCollection;
   totalCount: number;
   complaint: WildlifeComplaintDto | AllegationComplaintDto | GeneralInformationComplaintDto | null;
+  complaintCollaborators: [];
   zoneAtGlance: ZoneAtAGlanceState;
   complaintLocation: Feature | null;
   mappedComplaintsCount: MappedComplaintsCountState;

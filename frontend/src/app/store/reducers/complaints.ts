@@ -42,6 +42,7 @@ import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptyp
 import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint-method-received-type";
 import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
 import { getUserAgency } from "@/app/service/user-service";
+import { Collaborator } from "@apptypes/app/complaints/collaborator";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
@@ -58,6 +59,7 @@ const initialState: ComplaintState = {
   totalCount: 0,
   complaint: null,
   complaintLocation: null,
+  complaintCollaborators: [],
 
   zoneAtGlance: {
     hwcr: { assigned: 0, unassigned: 0, total: 0, offices: [] },
@@ -134,6 +136,13 @@ export const complaintSlice = createSlice({
 
     clearComplaint: (state) => {
       return { ...state, complaint: null };
+    },
+
+    setComplaintCollaborators: (state, action) => {
+      return {
+        ...state,
+        complaintCollaborators: action.payload,
+      };
     },
 
     setGeocodedComplaintCoordinates: (state, action) => {
@@ -289,6 +298,7 @@ export const {
   setComplaints,
   setTotalCount,
   setComplaint,
+  setComplaintCollaborators,
   setGeocodedComplaintCoordinates,
   setZoneAtAGlance,
   updateWildlifeComplaintByRow,
@@ -649,6 +659,49 @@ export const getComplaintStatusById =
     }
   };
 
+export const getComplaintCollaboratorsByComplaintId =
+  (complaintId: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/${complaintId}/collaborators`);
+      const response = await get(dispatch, parameters);
+
+      if (response) {
+        dispatch(setComplaintCollaborators(response));
+      }
+    } catch (error) {
+      console.error(`Unable to retrieve collaborators for complaint ${complaintId}: ${error}`);
+    }
+  };
+
+export const addCollaboratorToComplaint =
+  (complaintId: string, personGuid: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/${complaintId}/add-collaborator/${personGuid}`,
+      );
+      await post(dispatch, parameters);
+      dispatch(getComplaintCollaboratorsByComplaintId(complaintId));
+    } catch (error) {
+      console.error(`Unable to add collaborator to complaint ${complaintId}: ${error}`);
+    }
+  };
+
+export const removeCollaboratorFromComplaint =
+  (complaintId: string, personComplaintXrefGuid: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/${complaintId}/remove-collaborator/${personComplaintXrefGuid}`,
+      );
+      await patch(dispatch, parameters);
+      dispatch(getComplaintCollaboratorsByComplaintId(complaintId));
+    } catch (error) {
+      console.error(`Unable to remove collaborator from complaint ${complaintId}: ${error}`);
+    }
+  };
+
 export const getLinkedComplaints =
   (complaintIdentifier: string): AppThunk =>
   async (dispatch) => {
@@ -834,6 +887,13 @@ export const selectComplaint = (
     complaints: { complaint },
   } = state;
   return complaint;
+};
+
+export const selectComplaintCollaborators = (state: RootState): Collaborator[] => {
+  const {
+    complaints: { complaintCollaborators },
+  } = state;
+  return complaintCollaborators;
 };
 
 export const selectComplaintLargeCarnivoreInd = createSelector(

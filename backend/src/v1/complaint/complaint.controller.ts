@@ -25,6 +25,8 @@ import { RelatedDataDto } from "../../types/models/complaints/related-data";
 import { ACTION_TAKEN_ACTION_TYPES } from "../../types/constants";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 import { getAgenciesFromRoles } from "../../common/methods";
+import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
+import { UUID } from "crypto";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -37,6 +39,7 @@ export class ComplaintController {
     private readonly service: ComplaintService,
     private readonly stagingService: StagingComplaintService,
     private readonly linkedComplaintXrefService: LinkedComplaintXrefService,
+    private readonly personComplaintXrefService: PersonComplaintXrefService,
   ) {}
   private readonly logger = new Logger(ComplaintController.name);
 
@@ -152,6 +155,29 @@ export class ComplaintController {
       return parentComplaint;
     }
   }
+
+  // Collaborator routes
+  @Post("/:complaint_id/add-collaborator/:person_guid")
+  @Roles(coreRoles)
+  async addCollaborator(@Param("complaint_id") complaintId: string, @Param("person_guid") personGuid: string) {
+    return await this.personComplaintXrefService.addCollaboratorToComplaint(complaintId, personGuid);
+  }
+
+  @Patch("/:complaint_id/remove-collaborator/:person_complaint_xref_guid")
+  @Roles(coreRoles)
+  async removeCollaborator(
+    @Param("complaint_id") complaintId: string,
+    @Param("person_complaint_xref_guid") personComplaintXrefGuid: UUID,
+  ) {
+    return await this.personComplaintXrefService.removeCollaboratorFromComplaint(complaintId, personComplaintXrefGuid);
+  }
+
+  @Get("/:complaint_id/collaborators")
+  @Roles(coreRoles) // Might want to expose this to others in the future instead of just making it coupled to HWCRs
+  async getComplaintCollaborators(@Param("complaint_id") complaintId: string) {
+    return await this.personComplaintXrefService.getCollaborators(complaintId);
+  }
+  // End of Collaborator routes
 
   @Public()
   @Post("/staging/action-taken")

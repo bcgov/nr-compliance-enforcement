@@ -1,14 +1,25 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Link } from "react-router-dom";
 import COMPLAINT_TYPES, { complaintTypeToName } from "@apptypes/app/complaint-types";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectComplaintHeader, selectComplaintViewMode } from "@store/reducers/complaints";
+import {
+  getComplaintCollaboratorsByComplaintId,
+  selectComplaintCollaborators,
+  selectComplaintHeader,
+  selectComplaintViewMode,
+} from "@store/reducers/complaints";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
 
-import { Badge, Button, Dropdown } from "react-bootstrap";
+import { Badge, Button, Dropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 import { isFeatureActive, openModal } from "@store/reducers/app";
-import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE, REFER_COMPLAINT } from "@apptypes/modal/modal-types";
+import {
+  ASSIGN_OFFICER,
+  CHANGE_STATUS,
+  MANAGE_COLLABORATORS,
+  QUICK_CLOSE,
+  REFER_COMPLAINT,
+} from "@apptypes/modal/modal-types";
 import { exportComplaint } from "@store/reducers/documents-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { setIsInEdit } from "@store/reducers/cases";
@@ -49,11 +60,16 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   const showComplaintReferrals = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_REFERRALS));
   const isReadOnly = useAppSelector(selectComplaintViewMode);
+  const collaborators = useAppSelector(selectComplaintCollaborators);
   const userAgency = getUserAgency();
 
   const dispatch = useAppDispatch();
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
   const derivedStatus = complaintAgency !== userAgency ? "Referred" : status;
+
+  useEffect(() => {
+    dispatch(getComplaintCollaboratorsByComplaintId(id));
+  }, [id, dispatch]);
 
   const openStatusChangeModal = () => {
     document.body.click();
@@ -130,9 +146,50 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     }
   };
 
+  const openManageCollaboratorsModal = () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: MANAGE_COLLABORATORS,
+        data: {
+          title: "Manage collaborators",
+          description: "Suggested officers",
+          complaintId: id,
+          complaintType: complaintType,
+          zone: zone,
+          agencyCode: complaintAgency,
+        },
+      }),
+    );
+  };
+
   const exportComplaintToPdf = () => {
     dispatch(exportComplaint(complaintType, id, new Date(loggedDate)));
   };
+
+  const collaboratorsTooltipOverlay = () => (
+    <OverlayTrigger
+      key={`${id}-collab-tooltip`}
+      placement="right"
+      overlay={
+        <Tooltip
+          id={`tt-${id}`}
+          className="comp-tooltip comp-tooltip-bottom"
+        >
+          {collaborators.map((c) => {
+            return (
+              <div className="d-flex justify-content-start">
+                {c.firstName} {c.lastName[0]}. | <span className="fw-bold">{c.collaboratorAgency}</span>
+              </div>
+            );
+          })}
+        </Tooltip>
+      }
+    >
+      <span>+{collaborators.length}</span>
+    </OverlayTrigger>
+  );
 
   return (
     <>
@@ -286,6 +343,16 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     </Button>
                   )}
                   <Button
+                    id="details-screen-manage-collaborators-button"
+                    title="Manage collaborators"
+                    variant="outline-light"
+                    onClick={() => openManageCollaboratorsModal()}
+                    disabled={complaintAgency !== userAgency}
+                  >
+                    <i className="bi bi-people"></i>
+                    <span>Manage collaborators</span>
+                  </Button>
+                  <Button
                     id="details-screen-export-complaint-button"
                     title="Export"
                     variant="outline-light"
@@ -388,6 +455,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     className="comp-avatar comp-avatar-sm comp-avatar-orange"
                   >
                     <span id="comp-details-assigned-officer-name-text-id">{officerAssigned}</span>
+                    {collaborators.length > 0 && collaboratorsTooltipOverlay()}
                   </div>
                 </dd>
               </dl>

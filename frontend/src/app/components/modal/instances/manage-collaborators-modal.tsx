@@ -1,0 +1,210 @@
+import { FC, useEffect, useState } from "react";
+import { Modal, Button, ListGroup, ListGroupItem } from "react-bootstrap";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { selectModalData } from "@store/reducers/app";
+import { CompSelect } from "@components/common/comp-select";
+import { AgencyBanner } from "@components/containers/layout/agency-banner";
+import { CODE_TABLE_TYPES } from "@constants/code-table-types";
+import { selectCodeTable } from "@store/reducers/code-table";
+import { filterOfficerByAgency, selectOfficers } from "@store/reducers/officer";
+import Option from "@apptypes/app/option";
+import { Officer } from "@/app/types/person/person";
+import { Roles } from "@/app/types/app/roles";
+import COMPLAINT_TYPES from "@/app/types/app/complaint-types";
+import {
+  addCollaboratorToComplaint,
+  getComplaintCollaboratorsByComplaintId,
+  removeCollaboratorFromComplaint,
+  selectComplaint,
+  selectComplaintCollaborators,
+} from "@/app/store/reducers/complaints";
+import { getAvatarInitials } from "@/app/common/methods";
+
+type ManageCollaboratorsModalProps = {
+  close: () => void;
+  submit: () => void;
+  complaintId: string;
+  complaintType: string;
+};
+
+export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
+  close,
+  submit,
+  complaintId,
+  complaintType,
+}) => {
+  const dispatch = useAppDispatch();
+  const modalData = useAppSelector(selectModalData);
+  const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
+  const complaintData = useAppSelector(selectComplaint);
+
+  const { title } = modalData;
+
+  const [selectedAgency, setSelectedAgency] = useState<Option | null>();
+  const [selectedAgencyError, setSelectedAgencyError] = useState<string>("");
+  const [selectedPerson, setSelectedPerson] = useState<Option | null>();
+  const [selectedPersonError, setSelectedPersonError] = useState<string>("");
+  const [officerDropdownList, setOfficerDropdownList] = useState<{ value: string; label: string }[]>([]);
+
+  useEffect(() => {
+    dispatch(getComplaintCollaboratorsByComplaintId(complaintId));
+  }, [complaintId, dispatch]);
+  const collaborators = useAppSelector(selectComplaintCollaborators);
+
+  const allOfficers = useAppSelector(selectOfficers);
+  // Get officers for the selected agency
+  useEffect(() => {
+    if (selectedAgency && allOfficers) {
+      const filteredOfficers = filterOfficerByAgency(selectedAgency.value as string, allOfficers);
+      const officerDropdown = filteredOfficers
+        .filter(
+          (officer: Officer) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+        ) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR.
+        .map((officer: Officer) => ({
+          value: officer.person_guid.person_guid,
+          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+        }));
+      setOfficerDropdownList(officerDropdown);
+    }
+  }, [selectedAgency, complaintType, allOfficers]);
+
+  const agencyOptions = agencies
+    .filter((agency) => agency.agency !== complaintData?.ownedBy)
+    .map((agency) => ({
+      label: agency.longDescription,
+      labelElement: <AgencyBanner agency={agency.agency} />,
+      value: agency.agency,
+    }));
+
+  const handleSelectedAgencyChange = (selectedOption: Option | null) => {
+    setSelectedAgency(selectedOption);
+    setSelectedAgencyError("");
+    // Reset officer selection when agency changes
+    setSelectedPerson(null);
+  };
+
+  const handleSelectedPersonChange = (selectedOption: Option | null) => {
+    setSelectedPerson(selectedOption);
+    setSelectedPersonError("");
+  };
+
+  const handleSaveCollaborator = () => {
+    let hasError = false;
+
+    if (!selectedAgency) {
+      setSelectedAgencyError("Please select an agency");
+      hasError = true;
+    }
+    if (!selectedPerson) {
+      setSelectedPersonError("Please select an officer");
+      hasError = true;
+    }
+
+    if (!hasError && selectedPerson?.value) {
+      // TODO: Dispatch action to add collaborator
+      dispatch(addCollaboratorToComplaint(complaintId, selectedPerson.value));
+      // Reset selections after successful add
+      setSelectedAgency(null);
+      setSelectedPerson(null);
+      submit();
+    }
+  };
+
+  const handleRemoveCollaborator = (personComplaintXrefGuid: string) => {
+    dispatch(removeCollaboratorFromComplaint(complaintId, personComplaintXrefGuid));
+  };
+
+  return (
+    <>
+      {title && (
+        <Modal.Header closeButton={true}>
+          <Modal.Title as="h3">{`${title}`}</Modal.Title>
+        </Modal.Header>
+      )}
+      <Modal.Body>
+        <div className="comp-details-form">
+          <div className="comp-details-form-row">
+            <label htmlFor="select-agency">
+              Select agency<span className="required-ind">*</span>
+            </label>
+            <div className="comp-details-input full-width">
+              <CompSelect
+                id="select-agency"
+                showInactive={false}
+                className="comp-details-input"
+                classNamePrefix="comp-select"
+                options={agencyOptions}
+                enableValidation={true}
+                placeholder="Select agency"
+                errorMessage={selectedAgencyError}
+                value={selectedAgency}
+                onChange={handleSelectedAgencyChange}
+              />
+            </div>
+          </div>
+
+          <div className="comp-details-form-row pb-2">
+            <label htmlFor="select-officer">
+              Select user<span className="required-ind">*</span>
+            </label>
+            <div className="comp-details-input full-width">
+              <CompSelect
+                id="select-officer"
+                showInactive={false}
+                className="comp-details-input"
+                classNamePrefix="comp-select"
+                options={officerDropdownList}
+                enableValidation={true}
+                placeholder="Select user"
+                errorMessage={selectedPersonError}
+                value={selectedPerson}
+                onChange={handleSelectedPersonChange}
+                isDisabled={!selectedAgency}
+              />
+            </div>
+          </div>
+
+          <div className="comp-details-form-actions d-flex justify-content-end gap-1">
+            <Button
+              variant="outline-primary"
+              onClick={close}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleSaveCollaborator}>Save and close</Button>
+          </div>
+
+          <div className="collaborators-section">
+            <h4>Current collaborators</h4>
+            <ListGroup>
+              {collaborators &&
+                collaborators.map((collaborator) => (
+                  <ListGroupItem
+                    key={collaborator.personGuid}
+                    className="collaborator-item d-flex flex-row justify-content-between"
+                  >
+                    <div className="collaborator-info">
+                      <div
+                        className="collaborator-name comp-avatar comp-avatar-sm comp-avatar-orange"
+                        data-initials-sm={getAvatarInitials(`${collaborator.firstName} ${collaborator.lastName}`)}
+                      >
+                        {collaborator.firstName} {collaborator.lastName} |{" "}
+                        <span className="fw-bold">{collaborator.collaboratorAgency}</span>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => handleRemoveCollaborator(collaborator.personComplaintXrefGuid)}
+                    >
+                      Remove user
+                    </Button>
+                  </ListGroupItem>
+                ))}
+            </ListGroup>
+          </div>
+        </div>
+      </Modal.Body>
+    </>
+  );
+};
