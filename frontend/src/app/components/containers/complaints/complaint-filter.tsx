@@ -27,7 +27,7 @@ import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
 import { FilterDate } from "@components/common/filter-date";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
-import { Park } from "../../common/park";
+import { Park } from "@/app/components/common/park";
 
 type Props = {
   type: string;

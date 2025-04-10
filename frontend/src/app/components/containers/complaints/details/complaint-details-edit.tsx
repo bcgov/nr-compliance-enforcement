@@ -79,7 +79,7 @@ import { getCaseFile } from "@/app/store/reducers/case-thunks";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
 import { RootState } from "@/app/store/store";
 import { Roles } from "@/app/types/app/roles";
-import { Park } from "../../../common/park";
+import { Park } from "@/app/components/common/park";
 
 export type ComplaintParams = {
   id: string;

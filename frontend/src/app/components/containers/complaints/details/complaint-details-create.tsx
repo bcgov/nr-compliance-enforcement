@@ -56,7 +56,7 @@ import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { FeatureFlag } from "@components/common/feature-flag";
 import { Roles } from "@/app/types/app/roles";
 import { RootState } from "@/app/store/store";
-import { Park } from "../../../common/park";
+import { Park } from "@/app/components/common/park";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();

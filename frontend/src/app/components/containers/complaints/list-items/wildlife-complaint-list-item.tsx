@@ -11,7 +11,7 @@ import getOfficerAssigned from "@common/get-officer-assigned";
 import { getUserAgency } from "@/app/service/user-service";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
-import { Park } from "../../../common/park";
+import { Park } from "@/app/components/common/park";
 
 type Props = {
   type: string;

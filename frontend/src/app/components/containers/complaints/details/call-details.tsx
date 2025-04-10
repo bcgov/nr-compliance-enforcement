@@ -8,7 +8,7 @@ import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { FeatureFlag } from "@components/common/feature-flag";
 import { CompLocationInfo } from "@components/common/comp-location-info";
-import { Park } from "../../../common/park";
+import { Park } from "@/app/components/common/park";
 
 interface ComplaintHeaderProps {
   complaintType: string;
