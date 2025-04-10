@@ -1938,3 +1938,16 @@ WHERE complaint_identifier IN ('23-031744', '23-006888', '23-032456');
 UPDATE public.feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'COMPREF';
+
+---------------------
+-- Assign officers agency by office
+-- While this is done in V0.41.0, the test data is added in an R script which are applied
+-- after V scripts, so it was added here for dev
+---------------------
+
+UPDATE public.officer o
+SET agency_code = (
+  SELECT office.agency_code
+  FROM public.office
+  WHERE office.office_guid = o.office_guid
+);
