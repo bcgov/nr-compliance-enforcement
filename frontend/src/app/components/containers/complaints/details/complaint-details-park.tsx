@@ -6,6 +6,7 @@ import Option from "@apptypes/app/option";
 import { useAppDispatch } from "@hooks/hooks";
 import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
+import { getCachedParkName, setCachedParkName } from "@common/cache/park-name-cache";
 
 type Props = {
   id?: string;
@@ -14,8 +15,6 @@ type Props = {
   errorMessage?: string;
   isInEdit?: boolean;
 };
-
-const parkNameCache: Record<string, string> = {};
 
 export const ComplaintDetailsPark: FC<Props> = ({
   id = "parks",
@@ -36,13 +35,17 @@ export const ComplaintDetailsPark: FC<Props> = ({
       typeof initialParkGuid === "object" && initialParkGuid !== null ? initialParkGuid?.value : initialParkGuid;
 
     if (guid) {
-      if (parkNameCache[guid]) {
-        setParkOption({ label: parkNameCache[guid], value: guid });
+      const cachedName = getCachedParkName(guid);
+
+      if (cachedName) {
+        console.log("CACHE");
+        setParkOption({ label: cachedName, value: guid });
       } else {
+        console.log("SERVER");
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${guid}`);
         get(dispatch, parameters, {}, false).then((response: any) => {
           if (response) {
-            parkNameCache[guid] = response.name;
+            setCachedParkName(guid, response.name);
             setParkOption({ label: response.name, value: response.parkGuid } as Option);
           } else {
             setParkOption(undefined);
