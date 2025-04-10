@@ -42,7 +42,6 @@ import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptyp
 import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint-method-received-type";
 import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
 import { getUserAgency } from "@/app/service/user-service";
-import { valueContainerCSS } from "react-select/dist/declarations/src/components/containers";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
