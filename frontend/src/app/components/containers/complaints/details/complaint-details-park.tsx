@@ -9,11 +9,13 @@ import config from "@/config";
 
 type Props = {
   id?: string;
-  initialParkGuid?: string;
+  initialParkGuid?: string | Option; //this component is used as a filter which stores it as an Option.
   onChange?: (value: Option | undefined) => void;
   errorMessage?: string;
   isInEdit?: boolean;
 };
+
+const parkNameCache: Record<string, string> = {};
 
 export const ComplaintDetailsPark: FC<Props> = ({
   id = "parks",
@@ -30,13 +32,23 @@ export const ComplaintDetailsPark: FC<Props> = ({
 
   useEffect(() => {
     setIsLoading(true);
-    if (initialParkGuid) {
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${initialParkGuid}`);
-      get(dispatch, parameters, {}, false).then((response: any) => {
-        if (response) {
-          setParkOption({ label: response.name, value: response.parkGuid } as Option);
-        }
-      });
+    const guid =
+      typeof initialParkGuid === "object" && initialParkGuid !== null ? initialParkGuid?.value : initialParkGuid;
+
+    if (guid) {
+      if (parkNameCache[guid]) {
+        setParkOption({ label: parkNameCache[guid], value: guid });
+      } else {
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${guid}`);
+        get(dispatch, parameters, {}, false).then((response: any) => {
+          if (response) {
+            parkNameCache[guid] = response.name;
+            setParkOption({ label: response.name, value: response.parkGuid } as Option);
+          } else {
+            setParkOption(undefined);
+          }
+        });
+      }
     } else {
       setParkOption(undefined);
     }
