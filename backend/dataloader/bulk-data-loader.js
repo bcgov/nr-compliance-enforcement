@@ -149,7 +149,7 @@ const generateGIRData = (complaint_identifier) => {
 return {
   ...commonFields,
   report_type: 'GIR',
-  call_type_gir: faker.random.arrayElement(['CO Contact', 'CO Disposition', 'General Advice', 'Media', 'Query']),
+  call_type_gir: faker.random.arrayElement(['Contact', 'Disposition', 'General Advice', 'Media', 'Query']),
 };
 };
 
