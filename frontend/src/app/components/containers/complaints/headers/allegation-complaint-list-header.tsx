@@ -62,13 +62,9 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
         />
 
         <FeatureFlag feature={FEATURE_TYPES.PARK_COLUMN}>
-          <SortableHeader
-            title="Park"
-            sortFnc={handleSort}
-            sortKey="park"
-            currentSort={sortKey}
-            sortDirection={sortDirection}
-          />
+          <th className="unsortable-header">
+            <div className="header-label">Park</div>
+          </th>
         </FeatureFlag>
 
         <FeatureFlag feature={FEATURE_TYPES.LOCATION_COLUMN}>
