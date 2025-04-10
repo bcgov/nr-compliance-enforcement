@@ -24761,7 +24761,6 @@ UPDATE public.staging_metadata_mapping
 SET staged_data_value = 'Mount Robson' 
 WHERE live_data_value = 'MOUNTROB';
 
-
 --------------------------
 -- New Changes above this line
 -------------------------
