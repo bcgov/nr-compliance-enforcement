@@ -38,10 +38,8 @@ export const ComplaintDetailsPark: FC<Props> = ({
       const cachedName = getCachedParkName(guid);
 
       if (cachedName) {
-        console.log("CACHE");
         setParkOption({ label: cachedName, value: guid });
       } else {
-        console.log("SERVER");
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${guid}`);
         get(dispatch, parameters, {}, false).then((response: any) => {
           if (response) {
