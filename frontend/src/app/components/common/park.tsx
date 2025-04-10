@@ -16,7 +16,7 @@ type Props = {
   isInEdit?: boolean;
 };
 
-export const ComplaintDetailsPark: FC<Props> = ({
+export const Park: FC<Props> = ({
   id = "parks",
   onChange = () => {},
   errorMessage = "",

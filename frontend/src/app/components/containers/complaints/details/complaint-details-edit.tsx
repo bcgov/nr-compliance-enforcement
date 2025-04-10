@@ -79,7 +79,7 @@ import { getCaseFile } from "@/app/store/reducers/case-thunks";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
 import { RootState } from "@/app/store/store";
 import { Roles } from "@/app/types/app/roles";
-import { ComplaintDetailsPark } from "./complaint-details-park";
+import { Park } from "../../../common/park";
 
 export type ComplaintParams = {
   id: string;
@@ -1116,7 +1116,7 @@ export const ComplaintDetailsEdit: FC = () => {
               >
                 <label htmlFor="complaint-park">Park</label>
                 <div className="comp-details-edit-input">
-                  <ComplaintDetailsPark
+                  <Park
                     id="complaint-park"
                     initialParkGuid={parkGuid}
                     onChange={(e) => handleParkChange(e?.value)}

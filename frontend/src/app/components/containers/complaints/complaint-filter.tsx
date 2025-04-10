@@ -27,7 +27,7 @@ import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
 import { FilterDate } from "@components/common/filter-date";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
-import { ComplaintDetailsPark } from "./details/complaint-details-park";
+import { Park } from "../../common/park";
 
 type Props = {
   type: string;
@@ -486,7 +486,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             <div id="comp-filter-park-id">
               <label htmlFor="park-select-id">Park</label>
               <div className="filter-select-padding">
-                <ComplaintDetailsPark
+                <Park
                   id={`comp-details-park-${park}`}
                   initialParkGuid={park}
                   isInEdit={true}
