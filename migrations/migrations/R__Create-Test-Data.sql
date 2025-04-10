@@ -3835,6 +3835,14 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
+-------------------------
+-- Update GIR type code
+-------------------------
+
+UPDATE gir_type_code SET short_description = 'Contact', long_description = 'Contact' WHERE gir_type_code = 'COCNT';
+UPDATE gir_type_code SET short_description = 'Disposition', long_description = 'Disposition' WHERE gir_type_code = 'CODSP';
+
+
 UPDATE complaint_type_code
 SET
   display_order = 10
