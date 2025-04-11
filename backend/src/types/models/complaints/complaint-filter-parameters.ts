@@ -2,6 +2,7 @@ export interface ComplaintFilterParameters {
   community?: string;
   zone?: string;
   region?: string;
+  park?: string;
   officerAssigned?: string;
   natureOfComplaint?: string;
   speciesCode?: string;

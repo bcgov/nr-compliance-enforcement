@@ -6,6 +6,7 @@ export interface ComplaintFilters {
   regionCodeFilter?: Option;
   zoneCodeFilter?: Option;
   areaCodeFilter?: Option;
+  parkFilter?: Option;
   officerFilter?: Option;
   natureOfComplaintFilter?: Option;
   speciesCodeFilter?: Option;

@@ -6,16 +6,17 @@ import Option from "@apptypes/app/option";
 import { useAppDispatch } from "@hooks/hooks";
 import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
+import { getCachedParkName, setCachedParkName } from "@common/cache/park-name-cache";
 
 type Props = {
   id?: string;
-  initialParkGuid?: string;
+  initialParkGuid?: string | Option; //this component is used as a filter which stores it as an Option.
   onChange?: (value: Option | undefined) => void;
   errorMessage?: string;
   isInEdit?: boolean;
 };
 
-export const ComplaintDetailsPark: FC<Props> = ({
+export const Park: FC<Props> = ({
   id = "parks",
   onChange = () => {},
   errorMessage = "",
@@ -30,13 +31,27 @@ export const ComplaintDetailsPark: FC<Props> = ({
 
   useEffect(() => {
     setIsLoading(true);
-    if (initialParkGuid) {
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${initialParkGuid}`);
-      get(dispatch, parameters, {}, false).then((response: any) => {
-        if (response) {
-          setParkOption({ label: response.name, value: response.parkGuid } as Option);
-        }
-      });
+    const guid =
+      typeof initialParkGuid === "object" && initialParkGuid !== null ? initialParkGuid?.value : initialParkGuid;
+
+    if (guid) {
+      const cachedName = getCachedParkName(guid);
+
+      if (cachedName) {
+        setParkOption({ label: cachedName, value: guid });
+      } else {
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${guid}`);
+        get(dispatch, parameters, {}, false).then((response: any) => {
+          if (response) {
+            setCachedParkName(guid, response.name);
+            setParkOption({ label: response.name, value: response.parkGuid } as Option);
+          } else {
+            setParkOption(undefined);
+          }
+        });
+      }
+    } else {
+      setParkOption(undefined);
     }
     setIsLoading(false);
   }, [initialParkGuid, dispatch]);
@@ -71,11 +86,11 @@ export const ComplaintDetailsPark: FC<Props> = ({
   };
 
   return isInEdit ? (
-    <div>
+    <div id="park-select-id">
       <AsyncTypeahead
         clearButton
         id={id}
-        selected={parkOption ? [parkOption] : undefined}
+        selected={parkOption ? [parkOption] : []}
         labelKey="label"
         minLength={0}
         isLoading={isLoading}
