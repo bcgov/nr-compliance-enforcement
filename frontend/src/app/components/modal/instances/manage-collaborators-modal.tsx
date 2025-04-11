@@ -59,14 +59,19 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
       const officerDropdown = filteredOfficers
         .filter(
           (officer: Officer) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
-        ) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR.
+        )
+        .filter((officer) => !collaborators.some((c) => c.personGuid === officer.person_guid.person_guid)) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR.
         .map((officer: Officer) => ({
           value: officer.person_guid.person_guid,
           label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
         }));
+      // const officersWithoutCollaborators = officerDropdown.filter(
+      //   (officer) => !collaborators.some((c) => c.personGuid === officer.value),
+      // );
       setOfficerDropdownList(officerDropdown);
+      debugger;
     }
-  }, [selectedAgency, complaintType, allOfficers]);
+  }, [selectedAgency, complaintType, allOfficers, collaborators]);
 
   const agencyOptions = agencies
     .filter((agency) => agency.agency !== complaintData?.ownedBy)

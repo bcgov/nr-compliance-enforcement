@@ -152,6 +152,11 @@ export const userGuid = (state: RootState) => {
   return profile.idir;
 };
 
+export const personGuid = (state: RootState) => {
+  const { profile } = state.app;
+  return profile.personGuid;
+};
+
 export const userId = (state: RootState) => {
   const {
     profile: { idir_username },

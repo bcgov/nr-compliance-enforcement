@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import COMPLAINT_TYPES, { complaintTypeToName } from "@apptypes/app/complaint-types";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
@@ -12,7 +12,7 @@ import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@co
 
 import { Badge, Button, Dropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 
-import { isFeatureActive, openModal } from "@store/reducers/app";
+import { isFeatureActive, openModal, personGuid } from "@store/reducers/app";
 import {
   ASSIGN_OFFICER,
   CHANGE_STATUS,
@@ -59,6 +59,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   } = useAppSelector(selectComplaintHeader(complaintType));
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   const showComplaintReferrals = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_REFERRALS));
+  const userPersonGuid = useAppSelector(personGuid);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const collaborators = useAppSelector(selectComplaintCollaborators);
   const userAgency = getUserAgency();
@@ -67,6 +68,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
   const derivedStatus = complaintAgency !== userAgency ? "Referred" : status;
 
+  const [userIsCollaborator, setUserIsCollaborator] = useState<boolean>(false);
+  useEffect(() => {
+    setUserIsCollaborator(collaborators.some((c) => c.personGuid === userPersonGuid));
+  }, [collaborators, userPersonGuid]);
   useEffect(() => {
     dispatch(getComplaintCollaboratorsByComplaintId(id));
   }, [id, dispatch]);
@@ -402,9 +407,21 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
       </div>
 
       {complaintAgency !== userAgency && (
-        <div className="comp-referral-banner">
-          <div className="referral-content">
+        <div className="comp-contex-banner">
+          <div className="banner-content">
             This complaint has been referred to another agency. To request access, contact the lead agency.
+          </div>
+        </div>
+      )}
+      {userIsCollaborator && (
+        <div className="comp-contex-banner">
+          <div className="banner-content">
+            {/* 
+              Once there are three agencies passing complaints between each other, this logic for complaintAgency
+              will need to be updated to pull the agency off of the collaborator person_complaint_xref records
+              creator, but for now the owning agency is sufficient.
+            */}
+            <span className="fw-bold">{complaintAgency}</span> added you to this complaint as a collaborator.
           </div>
         </div>
       )}
