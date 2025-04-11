@@ -2031,7 +2031,19 @@ p {
   min-width: auto;
 }
 
-.comp-park-select {
+.comp-async-text {
+  .rbt-aux {
+    right: 0px;
+  }
+}
+
+.comp-async-select {
+  .rbt-aux {
+    right: 36px;
+  }
+}
+
+.comp-async {
   .form-control {
     display: block;
     width: 100%;
@@ -2053,7 +2065,6 @@ p {
     opacity: 0.2;
   }
   .rbt-aux {
-    right: 36px;
     .btn-close {
       vertical-align: middle;
       height: 15px;
@@ -2069,6 +2080,8 @@ p {
   }
   .rbt-highlight-text {
     background-color: inherit;
+  }
+  .rbt-input-text {
   }
   .rbt-input-main {
     background-image: linear-gradient(90deg, #000 1px, #000 1px, transparent 1px, transparent 100%),
