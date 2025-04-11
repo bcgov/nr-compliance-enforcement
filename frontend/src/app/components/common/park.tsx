@@ -101,7 +101,7 @@ export const Park: FC<Props> = ({
         placeholder="Search for a park"
         isInvalid={errorMessage.length > 0}
         useCache={true}
-        className="comp-select comp-details-input full-width comp-park-select"
+        className="comp-select comp-details-input full-width comp-async comp-async-select"
       />
       <div className="error-message">{errorMessage}</div>
     </div>
