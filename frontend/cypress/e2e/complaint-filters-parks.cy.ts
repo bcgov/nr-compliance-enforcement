@@ -5,9 +5,26 @@ import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
  * Test that PARKS specific search filters work
  */
 describe("Verify Parks specific search filters work", () => {
+  const complaintTypes = ["#hwcr-tab", "#ers-tab", "#gir-tab"];
+
   beforeEach(function () {
     cy.viewport("macbook-16");
     cy.kcLogout().kcLogin(Roles.PARKS);
+  });
+
+  Cypress._.times(complaintTypes.length, (index) => {
+    it("Park filter exists for {index}", function () {
+      cy.visit("/");
+
+      //Need to make sure the filters are loaded before switching tabs.
+      cy.waitForSpinner();
+
+      cy.get(complaintTypes[index]).click({ force: true });
+      cy.waitForSpinner();
+
+      cy.get("#comp-filter-btn").should("exist").click({ force: true });
+      cy.get("#comp-filter-park-id").should("exist");
+    });
   });
 
   it("can filter based on Park", function () {
