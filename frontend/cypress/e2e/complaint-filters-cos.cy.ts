@@ -28,6 +28,7 @@ describe("COS Filter Logic", () => {
       cy.get("#comp-filter-region-id").should("exist");
       cy.get("#comp-filter-zone-id").should("exist");
       cy.get("#comp-filter-community-id").should("exist");
+      cy.get("#comp-park-filter").should("not.exist");
       cy.get("#comp-filter-officer-id").should("exist");
       if ("#hwcr-tab" === complaintTypes[index]) {
         cy.get("#comp-filter-nature-of-complaint-id").should("exist"); //only hwrc

@@ -13,7 +13,7 @@ describe("Verify Parks specific search filters work", () => {
   });
 
   Cypress._.times(complaintTypes.length, (index) => {
-    it("Park filter exists for {index}", function () {
+    it("Park filter exists", function () {
       cy.visit("/");
 
       //Need to make sure the filters are loaded before switching tabs.
