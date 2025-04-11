@@ -185,7 +185,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           {collaborators.map((c) => {
             return (
               <div className="d-flex justify-content-start">
-                {c.firstName} {c.lastName[0]}. | <span className="fw-bold">{c.collaboratorAgency}</span>
+                {c.lastName} {c.firstName[0]}. | <span className="fw-bold">{c.collaboratorAgency}</span>
               </div>
             );
           })}

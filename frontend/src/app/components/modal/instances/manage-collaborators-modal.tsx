@@ -111,7 +111,6 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
       // Reset selections after successful add
       setSelectedAgency(null);
       setSelectedPerson(null);
-      submit();
     }
   };
 
@@ -123,7 +122,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
     <>
       {title && (
         <Modal.Header closeButton={true}>
-          <Modal.Title as="h3">{`${title}`}</Modal.Title>
+          <Modal.Title as="h1">{`${title}`}</Modal.Title>
         </Modal.Header>
       )}
       <Modal.Body>
@@ -148,7 +147,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
             </div>
           </div>
 
-          <div className="comp-details-form-row pb-2">
+          <div className="comp-details-form-row pb-3">
             <label htmlFor="select-officer">
               Select user<span className="required-ind">*</span>
             </label>
@@ -170,18 +169,12 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
           </div>
 
           <div className="comp-details-form-actions d-flex justify-content-end gap-1">
-            <Button
-              variant="outline-primary"
-              onClick={close}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleSaveCollaborator}>Save and close</Button>
+            <Button onClick={handleSaveCollaborator}>Add collaborator</Button>
           </div>
 
           <div className="collaborators-section">
-            <h4>Current collaborators</h4>
-            <ListGroup>
+            <span className="fw-bold">Current collaborators</span>
+            <ListGroup className="pb-3">
               {collaborators &&
                 collaborators.map((collaborator) => (
                   <ListGroupItem
@@ -207,6 +200,14 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
                   </ListGroupItem>
                 ))}
             </ListGroup>
+          </div>
+          <div className="comp-details-form-actions d-flex justify-content-end">
+            <Button
+              variant="outline-primary"
+              onClick={close}
+            >
+              Cancel
+            </Button>
           </div>
         </div>
       </Modal.Body>
