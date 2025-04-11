@@ -2797,6 +2797,13 @@ SET
 where
   species_code = 'BOBCAT';
 
+-- CE-1594 update display order in species_code
+UPDATE species_code
+SET
+  display_order = 25
+where
+  species_code = 'WOLVERN';
+
 --------------------------
 -- Staging Activities for webEOC load
 -------------------------
