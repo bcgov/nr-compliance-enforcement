@@ -20,8 +20,6 @@ describe("Verify Parks specific search filters work", () => {
       cy.waitForSpinner();
 
       cy.get(complaintTypes[index]).click({ force: true });
-      cy.waitForSpinner();
-
       cy.get("#comp-filter-btn").should("exist").click({ force: true });
       cy.get("#comp-filter-park-id").should("exist");
     });
