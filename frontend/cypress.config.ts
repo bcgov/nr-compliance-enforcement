@@ -32,6 +32,7 @@ export default defineConfig({
       auth_client_id: process.env.REACT_APP_KEYCLOAK_CLIENT_ID,
       keycloak_user: process.env.CYPRESS_KEYCLOAK_USER,
       keycloak_user_02: process.env.CYPRESS_KEYCLOAK_USER_02,
+      keycloak_user_03: process.env.CYPRESS_KEYCLOAK_USER_03,
       keycloak_password: process.env.CYPRESS_KEYCLOAK_PASSWORD,
       keycloak_login_url: "https://logontest7.gov.bc.ca",
       //-- CSS fields use for updating test account roles

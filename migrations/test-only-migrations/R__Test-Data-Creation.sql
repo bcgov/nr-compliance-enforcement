@@ -241,6 +241,10 @@ VALUES('375bac7f-390a-4b32-91da-1ed9da71c1e3'::uuid, 'ENV', NULL, NULL, 'TestAcc
 ON CONFLICT DO NOTHING;
 INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('7e49b515-48c5-4fc2-9b70-a0ea8653f4aa'::uuid, 'ENV', NULL, NULL, 'TestAcct 3', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('5a724b5e-aa64-439d-a76d-3aa7320409a0'::uuid, 'Scarlett', NULL, NULL, 'Truong', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.person
@@ -339,6 +343,10 @@ ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, auth_user_guid)
 VALUES('ac64c6e6-8233-4cee-807b-5bb2b4ddb15b'::uuid, 'ENCETST2', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186', '375bac7f-390a-4b32-91da-1ed9da71c1e3'::uuid, '6d1bb908-0f03-4873-af49-916713583c7e'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, auth_user_guid)
+VALUES('1c28a7a0-fd7e-4d39-9e8f-50f34e1b3e59'::uuid, 'ENCETST3', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186', '7e49b515-48c5-4fc2-9b70-a0ea8653f4aa'::uuid, '45b33bda-6d2c-4947-9ba2-1f611655047a'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)

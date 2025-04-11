@@ -330,6 +330,7 @@ export const getComplaints =
       sortOrder,
       regionCodeFilter,
       areaCodeFilter,
+      parkFilter,
       zoneCodeFilter,
       officerFilter,
       natureOfComplaintFilter,
@@ -361,6 +362,7 @@ export const getComplaints =
         region: regionCodeFilter?.value,
         zone: zoneCodeFilter?.value,
         community: areaCodeFilter?.value,
+        park: parkFilter?.value,
         officerAssigned: officerFilter?.value,
         natureOfComplaint: natureOfComplaintFilter?.value,
         speciesCode: speciesCodeFilter?.value,
@@ -991,6 +993,7 @@ export const selectComplaintDetails = createSelector(
         const { complaintMethodReceivedCode }: any = complaint;
         result.complaintMethodReceivedCode =
           getComplaintMethodReceivedCode(complaintMethodReceivedCode, complaintMethodReceivedCodes) ?? undefined;
+        result.parkGuid = complaint.parkGuid;
       }
     }
     return result;

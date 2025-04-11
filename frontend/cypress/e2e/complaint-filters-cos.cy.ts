@@ -1,8 +1,7 @@
 /*
-Test to verify that the user is able to change the status both the
-HWLC and Enforcement details screens
+Tests to verify COS Filter logic
 */
-describe("Complaint Change Status spec - Details View", () => {
+describe("COS Filter Logic", () => {
   const complaintTypes = ["#hwcr-tab", "#ers-tab"];
 
   beforeEach(function () {
@@ -29,6 +28,7 @@ describe("Complaint Change Status spec - Details View", () => {
       cy.get("#comp-filter-region-id").should("exist");
       cy.get("#comp-filter-zone-id").should("exist");
       cy.get("#comp-filter-community-id").should("exist");
+      cy.get("#comp-park-filter").should("not.exist");
       cy.get("#comp-filter-officer-id").should("exist");
       if ("#hwcr-tab" === complaintTypes[index]) {
         cy.get("#comp-filter-nature-of-complaint-id").should("exist"); //only hwrc
