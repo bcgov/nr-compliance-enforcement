@@ -1,8 +1,7 @@
 /*
-Test to verify that the user is able to change the status both the
-HWLC and Enforcement details screens
+Tests to verify COS Filter logic
 */
-describe("Complaint Change Status spec - Details View", () => {
+describe("COS Filter Logic", () => {
   const complaintTypes = ["#hwcr-tab", "#ers-tab"];
 
   beforeEach(function () {

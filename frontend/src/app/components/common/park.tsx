@@ -86,7 +86,7 @@ export const Park: FC<Props> = ({
   };
 
   return isInEdit ? (
-    <div>
+    <div id="park-select-id">
       <AsyncTypeahead
         clearButton
         id={id}
