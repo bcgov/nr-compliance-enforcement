@@ -205,8 +205,9 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
             <Button
               variant="outline-primary"
               onClick={close}
+              id="close-collaborator-modal-button"
             >
-              Cancel
+              Close
             </Button>
           </div>
         </div>
