@@ -219,7 +219,6 @@
          <column autoUpdated="false" defaultValue="'U'::bpchar" digits="0" id="24" name="is_privacy_requested" nullable="true" remarks="flag to represent that the caller has asked for special care when handling their personal information" size="1" type="bpchar" typeCode="1"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="25" name="reference_number" nullable="true" remarks="Allows users to link complaints to files in external systems.   Currently labeled in the system as COORS reference number and initially only used for COORS linkages." size="20" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="26" name="comp_last_upd_utc_timestamp" nullable="true" remarks="The time the complaint was last updated, or null if the complaint has never been touched.  This value might also be updated by business logic that touches sub-tables to indicate that the business object complaint has been updated." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="27" name="park_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <primaryKey column="complaint_identifier" sequenceNumberInPK="1"/>
          <index name="PK_complaint" unique="true">
             <column ascending="true" name="complaint_identifier"/>
