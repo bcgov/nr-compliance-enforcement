@@ -1372,6 +1372,32 @@ values('CARIBOU', 'Caribou', 'Caribou', 3, true, null, user, now(), user, now())
 UPDATE species_code SET display_order = 4 where species_code = 'CARIBOU';
 UPDATE species_code SET display_order = 3 where species_code = 'BOBCAT';
 
+-- CE-1594 update display order in species_code
+UPDATE species_code SET display_order = 10 WHERE species_code = 'BISON';
+UPDATE species_code SET display_order = 20 WHERE species_code = 'BLKBEAR';
+UPDATE species_code SET display_order = 30 WHERE species_code = 'BOBCAT';
+UPDATE species_code SET display_order = 40 WHERE species_code = 'CARIBOU';
+UPDATE species_code SET display_order = 50 WHERE species_code = 'COUGAR';
+UPDATE species_code SET display_order = 60 WHERE species_code = 'COYOTE';
+UPDATE species_code SET display_order = 70 WHERE species_code = 'DEER';
+UPDATE species_code SET display_order = 80 WHERE species_code = 'ELK';
+UPDATE species_code SET display_order = 90 WHERE species_code = 'FOX';
+UPDATE species_code SET display_order = 100 WHERE species_code = 'GRZBEAR';
+UPDATE species_code SET display_order = 110 WHERE species_code = 'FERALHOG';
+UPDATE species_code SET display_order = 120 WHERE species_code = 'LYNX';
+UPDATE species_code SET display_order = 130 WHERE species_code = 'MOOSE';
+UPDATE species_code SET display_order = 140 WHERE species_code = 'MTNGOAT';
+UPDATE species_code SET display_order = 150 WHERE species_code = 'OTHER';
+UPDATE species_code SET display_order = 160 WHERE species_code = 'RACCOON';
+UPDATE species_code SET display_order = 170 WHERE species_code = 'RAPTOR';
+UPDATE species_code SET display_order = 180 WHERE species_code = 'RATTLER';
+UPDATE species_code SET display_order = 190 WHERE species_code = 'RVROTTER';
+UPDATE species_code SET display_order = 200 WHERE species_code = 'SKUNK';
+UPDATE species_code SET display_order = 210 WHERE species_code = 'UNKNOWN';
+UPDATE species_code SET display_order = 220 WHERE species_code = 'WLDSHEEP';
+UPDATE species_code SET display_order = 230 WHERE species_code = 'WOLF';
+UPDATE species_code SET display_order = 240 WHERE species_code = 'WOLVERN';
+
 -- CE-771
 INSERT INTO public.complaint
 (complaint_identifier, detail_text, caller_name, caller_address, caller_email, caller_phone_1, caller_phone_2, caller_phone_3, location_summary_text, location_detailed_text, incident_utc_datetime, incident_reported_utc_timestmp, reported_by_other_text, create_user_id,  create_utc_timestamp, update_user_id,  update_utc_timestamp, reported_by_code, owned_by_agency_code, complaint_status_code, geo_organization_unit_code, location_geometry_point)
