@@ -98,7 +98,7 @@ export const Park: FC<Props> = ({
         onChange={handleChange}
         onFocus={() => handleSearch("")}
         options={parks}
-        placeholder="Search for a park"
+        placeholder="Select"
         isInvalid={errorMessage.length > 0}
         useCache={true}
         className="comp-select comp-details-input full-width comp-async comp-async-select"
