@@ -762,9 +762,10 @@ export const ComplaintDetailsEdit: FC = () => {
       let equipmentMapElements: MapElement[] = equipmentList
         .filter((equipment) => equipment.activeIndicator === true)
         .map((equipment) => {
+          let equipmentItem: any = equipment;
           return {
             objectType: MapObjectType.Equipment,
-            name: (equipment as any).typeDescription,
+            name: equipmentItem.typeDescription,
             description: "",
             isActive: equipment.actions?.filter((action) => action.actionCode === "REMEQUIPMT")?.length === 0,
             location: {

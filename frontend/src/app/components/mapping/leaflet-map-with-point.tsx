@@ -74,7 +74,7 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
   };
 
   const areCoordinatesValid = (location: { lat: number; lng: number } | undefined): boolean => {
-    if (location && location.lat && location.lng && +location.lat !== 0 && +location.lng !== 0) {
+    if (location?.lat && location?.lng && +location.lat !== 0 && +location.lng !== 0) {
       return true;
     } else {
       return false;
@@ -97,6 +97,14 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
   const parkLayerParams = useMemo(() => {
     return { format: "image/png", layers: "pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW", transparent: true };
   }, []);
+
+  const getEquipmentStatus = (locationItem: MapElement): string => {
+    if (locationItem.objectType === MapObjectType.Complaint) {
+      return "";
+    } else {
+      return locationItem.isActive ? "Active" : "Inactive";
+    }
+  };
 
   return (
     <Card className="comp-map-container">
@@ -137,9 +145,7 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
                   <p className="leaflet-popup-object-coordinates">
                     {item.location.lat} , {item.location.lng}
                   </p>
-                  <p className="leaflet-popup-object-description">
-                    {item.objectType === MapObjectType.Complaint ? "" : item.isActive ? "Active" : "Inactive"}
-                  </p>
+                  <p className="leaflet-popup-object-description">{getEquipmentStatus(item)}</p>
                 </Popup>
               </Marker>
             );
