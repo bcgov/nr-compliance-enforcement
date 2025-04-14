@@ -10014,6 +10014,7 @@ DO NOTHING;
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'COS';
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'PARKS';
 UPDATE feature_agency_xref SET active_ind = true WHERE feature_code = 'METH_FLTR' AND agency_code = 'EPO';
+UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'ENBL_OFF' AND agency_code = 'PARKS';
 
 --
 -- create new feature for External Reference
