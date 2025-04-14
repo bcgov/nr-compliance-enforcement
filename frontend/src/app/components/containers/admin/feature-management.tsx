@@ -48,7 +48,7 @@ export const FeatureManagement: FC = () => {
   return (
     <>
       <ToastContainer />
-      <div className="comp-page-container comp-page-container--noscroll">
+      <div className="comp-page-container">
         <div className="comp-page-header">
           <div className="comp-page-title-container">
             <h1>Feature Management</h1>
