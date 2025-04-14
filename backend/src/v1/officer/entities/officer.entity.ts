@@ -3,7 +3,7 @@ import { UUID } from "crypto";
 import { Office } from "../../office/entities/office.entity";
 import { Person } from "../../person/entities/person.entity";
 import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn, ManyToOne, AfterLoad } from "typeorm";
-import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
+import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 
 @Entity()
 @Unique(["person_guid"])
