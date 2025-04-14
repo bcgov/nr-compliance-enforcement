@@ -69,7 +69,6 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
       //   (officer) => !collaborators.some((c) => c.personGuid === officer.value),
       // );
       setOfficerDropdownList(officerDropdown);
-      debugger;
     }
   }, [selectedAgency, complaintType, allOfficers, collaborators]);
 

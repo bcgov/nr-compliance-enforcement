@@ -192,7 +192,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         </Tooltip>
       }
     >
-      <span>+{collaborators.length}</span>
+      <span id="comp-header-collaborator-count">+{collaborators.length}</span>
     </OverlayTrigger>
   );
 

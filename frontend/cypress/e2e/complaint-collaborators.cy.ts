@@ -21,12 +21,13 @@ describe("Complaint collaborators", () => {
     cy.selectItemById("select-officer", "TestAcct 3, ENV");
     cy.contains("button", "Add collaborator").click({ force: true });
     cy.contains("button", "Close").click({ force: true });
-    cy.get("#comp-header-collaborator-cout").should("contain", "+1");
+    cy.get("#comp-header-collaborator-count").should("contain", "+1");
   });
 });
 describe("Complaint collaborators have the correct permissions", () => {
   before(function () {
     cy.viewport("macbook-16");
+    cy.clearAllSessionStorage().clearLocalStorage().clearAllCookies();
     cy.kcLogout().kcLogin(Roles.PARKS);
   });
   it("Verifies collaborators have the correct permissions", function () {
