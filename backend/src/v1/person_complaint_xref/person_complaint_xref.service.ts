@@ -69,9 +69,7 @@ export class PersonComplaintXrefService {
     return this.personComplaintXrefRepository.findOne({
       where: {
         complaint_identifier: complaint_identifier,
-        person_complaint_xref_code: {
-          person_complaint_xref_code: "ASSIGNEE",
-        },
+        person_complaint_xref_code: "ASSIGNEE" as any,
         active_ind: true,
       },
       relations: {
