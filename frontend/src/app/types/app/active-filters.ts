@@ -1,6 +1,7 @@
 export interface ActiveFilters {
   showActionTakenFilter: boolean;
   showCommunityFilter: boolean;
+  showParkFilter: boolean;
   showDateFilter: boolean;
   showGirTypeFilter: boolean;
   showMethodFilter: boolean;

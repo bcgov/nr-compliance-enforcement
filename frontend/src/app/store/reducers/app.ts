@@ -310,6 +310,9 @@ export const listActiveFilters =
       showCommunityFilter: features.some(
         (feature: any) => feature.featureCode === FEATURE_TYPES.COMMUNITY_FILTER && feature.isActive === true,
       ),
+      showParkFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.PARK_COLUMN && feature.isActive === true,
+      ),
       showDateFilter: features.some(
         (feature: any) => feature.featureCode === FEATURE_TYPES.DATE_LOGGED_FILTER && feature.isActive === true,
       ),
