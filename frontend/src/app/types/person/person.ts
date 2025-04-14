@@ -17,6 +17,7 @@ export interface Person {
 export interface Officer {
   officer_guid: string;
   user_id: string;
+  agency_code: string;
   create_user_id: string;
   create_utc_timestamp: Date;
   update_user_id: string;

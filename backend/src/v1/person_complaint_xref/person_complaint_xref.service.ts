@@ -8,7 +8,6 @@ import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { REQUEST } from "@nestjs/core";
 import { PersonComplaintXrefCodeEnum } from "../../enum/person_complaint_xref_code.enum";
 import { Officer } from "../officer/entities/officer.entity";
-import { Office } from "../office/entities/office.entity";
 import { UUID } from "crypto";
 
 @Injectable()
