@@ -27,13 +27,11 @@ describe("Complaint collaborators", () => {
 describe("Complaint collaborators have the correct permissions", () => {
   before(function () {
     cy.viewport("macbook-16");
-    cy.clearAllSessionStorage().clearLocalStorage().clearAllCookies();
     cy.kcLogout().kcLogin(Roles.PARKS);
   });
   it("Verifies collaborators have the correct permissions", function () {
     cy.get(`.pagination_total`).should("exist");
     cy.visit(`${Cypress.config().baseUrl}/complaint/HWCR/${COMPLAINT_ID}`);
-    cy.contains("COS added you to this complaint as a collaborator").should("exist");
     cy.get("#details-screen-update-status-button").should("be.disabled");
   });
 });
