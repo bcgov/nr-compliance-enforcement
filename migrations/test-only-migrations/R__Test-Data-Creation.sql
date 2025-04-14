@@ -1985,3 +1985,11 @@ SET agency_code = (
   FROM public.office
   WHERE office.office_guid = o.office_guid
 );
+
+---------------------
+-- Enable collaboration in dev/test for all users
+---------------------
+
+UPDATE public.feature_agency_xref
+SET active_ind = 'Y'
+WHERE feature_code = 'COMPCOLLAB';

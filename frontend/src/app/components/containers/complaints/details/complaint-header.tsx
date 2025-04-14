@@ -59,6 +59,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   } = useAppSelector(selectComplaintHeader(complaintType));
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   const showComplaintReferrals = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_REFERRALS));
+  const showComplaintCollaboration = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_COLLABORATION));
   const userPersonGuid = useAppSelector(personGuid);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const collaborators = useAppSelector(selectComplaintCollaborators);
@@ -335,6 +336,8 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     <i className="bi bi-arrow-repeat"></i>
                     <span>Update status</span>
                   </Button>
+
+                  {/* Refer button */}
                   {showComplaintReferrals && (
                     <Button
                       id="details-screen-refer-button"
@@ -347,16 +350,21 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       <span>Refer</span>
                     </Button>
                   )}
-                  <Button
-                    id="details-screen-manage-collaborators-button"
-                    title="Manage collaborators"
-                    variant="outline-light"
-                    onClick={() => openManageCollaboratorsModal()}
-                    disabled={complaintAgency !== userAgency}
-                  >
-                    <i className="bi bi-people"></i>
-                    <span>Manage collaborators</span>
-                  </Button>
+
+                  {/* Collaboration button  */}
+                  {showComplaintCollaboration && (
+                    <Button
+                      id="details-screen-manage-collaborators-button"
+                      title="Manage collaborators"
+                      variant="outline-light"
+                      onClick={() => openManageCollaboratorsModal()}
+                      disabled={complaintAgency !== userAgency}
+                    >
+                      <i className="bi bi-people"></i>
+                      <span>Manage collaborators</span>
+                    </Button>
+                  )}
+
                   <Button
                     id="details-screen-export-complaint-button"
                     title="Export"
