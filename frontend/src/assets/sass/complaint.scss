@@ -571,7 +571,7 @@
 }
 
 .comp-contex-banner {
-  background-color: #eac448;
+  background-color: tint-color(#eac448, 30%);
   min-height: 40px;
   color: $gray-900;
   .banner-content {

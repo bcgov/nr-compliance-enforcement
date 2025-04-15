@@ -158,12 +158,14 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
           </div>
 
           <div className="comp-details-form-actions d-flex justify-content-end gap-1">
-            <Button onClick={handleSaveCollaborator}>Add collaborator</Button>
+            <Button onClick={handleSaveCollaborator}>Add as a collaborator</Button>
           </div>
 
           <div className="collaborators-section">
             <div>
-              <h5 id="current-collaborators-title">Current collaborators</h5>
+              <h5 id="current-collaborators-title">
+                {collaborators && collaborators.length ? "Current collaborators" : "No current collaborators"}
+              </h5>
               {collaborators && collaborators.length > 0 && (
                 <ListGroup className="pb-3">
                   {collaborators.map((collaborator) => (
