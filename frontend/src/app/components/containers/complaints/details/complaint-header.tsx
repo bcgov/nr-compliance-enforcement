@@ -7,6 +7,7 @@ import {
   selectComplaintCollaborators,
   selectComplaintHeader,
   selectComplaintViewMode,
+  selectRelatedData,
 } from "@store/reducers/complaints";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
 
@@ -65,6 +66,8 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const collaborators = useAppSelector(selectComplaintCollaborators);
   const userAgency = getUserAgency();
+  const relatedData = useAppSelector(selectRelatedData);
+  let referrals = relatedData.referrals ?? [];
 
   const dispatch = useAppDispatch();
 
@@ -77,7 +80,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   }, [id, dispatch]);
 
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
-  const derivedStatus = complaintAgency !== userAgency && !userIsCollaborator ? "Referred" : status;
+  const complaintWasReferred =
+    referrals.length > 0 ? referrals[0].referred_to_agency_code.agency_code === complaintAgency : false;
+  const derivedStatus = complaintWasReferred && !userIsCollaborator ? "Referred" : status;
 
   const openStatusChangeModal = () => {
     document.body.click();
@@ -425,7 +430,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         </div>
       </div>
 
-      {complaintAgency !== userAgency && (
+      {complaintWasReferred && (
         <div className="comp-contex-banner">
           <div className="banner-content">
             This complaint has been referred to another agency. To request access, contact the lead agency.
