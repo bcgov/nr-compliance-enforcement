@@ -22,7 +22,6 @@ import { getAvatarInitials } from "@/app/common/methods";
 
 type ManageCollaboratorsModalProps = {
   close: () => void;
-  submit: () => void;
   complaintId: string;
   complaintType: string;
 };
