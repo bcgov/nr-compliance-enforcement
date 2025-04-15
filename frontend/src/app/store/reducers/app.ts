@@ -388,7 +388,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       let agency = response.agency_code;
       let personGuid = response.person_guid.person_guid;
       let comsEnrolledInd = response.coms_enrolled_ind;
-      debugger;
+
       if (response.office_guid !== null) {
         const {
           office_guid: { cos_geo_org_unit: unit },

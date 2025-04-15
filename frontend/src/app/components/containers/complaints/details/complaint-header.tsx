@@ -415,7 +415,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         </div>
       </div>
 
-      {complaintAgency !== userAgency && !userIsCollaborator && (
+      {complaintAgency !== userAgency && (
         <div className="comp-contex-banner">
           <div className="banner-content">
             This complaint has been referred to another agency. To request access, contact the lead agency.
@@ -423,7 +423,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         </div>
       )}
       {userIsCollaborator && (
-        <div className="comp-contex-banner">
+        <div className="comp-contex-banner comp-collaborator-banner">
           <div className="banner-content">
             {/* 
               Once there are three agencies passing complaints between each other, this logic for complaintAgency

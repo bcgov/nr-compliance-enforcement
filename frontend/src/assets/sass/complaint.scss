@@ -571,7 +571,7 @@
 }
 
 .comp-contex-banner {
-  background-color: $bc-gov-warning;
+  background-color: #eac448;
   min-height: 40px;
   color: $gray-900;
   .banner-content {
@@ -579,6 +579,10 @@
     margin: 0 auto;
     padding: 8px 24px;
   }
+}
+
+.comp-collaborator-banner {
+  background-color: $green-100-80;
 }
 
 .comp-details-body-spacer {
