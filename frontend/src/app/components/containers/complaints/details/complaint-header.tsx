@@ -26,7 +26,6 @@ import { setIsInEdit } from "@store/reducers/cases";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { getUserAgency } from "@/app/service/user-service";
 import { AgencyNames } from "@/app/types/app/agency-types";
-import { AgencyCode } from "@/app/types/code-tables/agency-code";
 
 interface ComplaintHeaderProps {
   id: string;
