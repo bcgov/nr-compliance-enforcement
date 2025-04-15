@@ -8,14 +8,15 @@ import {
 import LeafletMapWithPoint from "@components/mapping/leaflet-map-with-point";
 import { isWithinBC } from "@common/methods";
 import { Coordinates } from "@apptypes/app/coordinate-type";
+import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
 
 type Props = {
   parentCoordinates?: { lat: number; lng: number };
   complaintType: string;
   draggable: boolean;
   onMarkerMove?: (lat: number, lng: number) => void;
-  hideMarker?: boolean;
   editComponent: boolean;
+  mapElements: MapElement[];
 };
 
 /**
@@ -23,21 +24,14 @@ type Props = {
  *
  */
 export const ComplaintLocation: FC<Props> = ({
-  parentCoordinates,
   complaintType,
   draggable,
   onMarkerMove,
-  hideMarker,
   editComponent,
+  mapElements,
 }) => {
   const dispatch = useAppDispatch();
   const { area, coordinates } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
-
-  const [markerPosition, setMarkerPosition] = useState<{
-    lat: number;
-    lng: number;
-  }>({ lat: 0, lng: 0 });
-
   const geocodedComplaintCoordinates = useAppSelector(selectGeocodedComplaintCoordinates);
 
   useEffect(() => {
@@ -54,21 +48,29 @@ export const ComplaintLocation: FC<Props> = ({
   }, [area, dispatch, editComponent, coordinates]);
 
   useEffect(() => {
-    if (parentCoordinates && isWithinBC([parentCoordinates.lng, parentCoordinates.lat])) {
-      setMarkerPosition(parentCoordinates);
-    } else if (geocodedComplaintCoordinates?.features) {
-      const lat =
-        geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude] !== undefined
-          ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude]
-          : 0;
-      const lng =
-        geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude] !== undefined
-          ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude]
-          : 0;
-
-      setMarkerPosition({ lat: lat, lng: lng });
+    let complaintMapElement = mapElements.find((item) => item.objectType === MapObjectType.Complaint);
+    const complaintMapElementLocation = complaintMapElement?.location;
+    if (complaintMapElement) {
+      if (
+        !(
+          complaintMapElementLocation && isWithinBC([complaintMapElementLocation.lng, complaintMapElementLocation.lat])
+        ) &&
+        geocodedComplaintCoordinates?.features
+      ) {
+        const lat =
+          geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude] !== undefined
+            ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude]
+            : 0;
+        const lng =
+          geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude] !== undefined
+            ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude]
+            : 0;
+        setGeocodedLocation({ lat: lat, lng: lng });
+      }
     }
-  }, [parentCoordinates, geocodedComplaintCoordinates?.features]);
+  }, [mapElements, geocodedComplaintCoordinates?.features]);
+
+  const [geocodedLocation, setGeocodedLocation] = useState({ lat: 0, lng: 0 });
 
   const calculatedClass = editComponent ? "comp-complaint-details-location-block" : "display-none";
 
@@ -76,10 +78,10 @@ export const ComplaintLocation: FC<Props> = ({
     <section className={"comp-details-section" + calculatedClass}>
       <h3>Complaint location</h3>
       <LeafletMapWithPoint
-        coordinates={markerPosition && { lat: markerPosition.lat, lng: markerPosition.lng }}
+        mapElements={mapElements}
         draggable={draggable}
         onMarkerMove={onMarkerMove}
-        hideMarker={hideMarker}
+        geocodedLocation={geocodedLocation}
       />
     </section>
   );
