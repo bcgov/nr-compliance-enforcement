@@ -66,8 +66,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const userAgency = getUserAgency();
 
   const dispatch = useAppDispatch();
-  const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
-  const derivedStatus = complaintAgency !== userAgency ? "Referred" : status;
 
   const [userIsCollaborator, setUserIsCollaborator] = useState<boolean>(false);
   useEffect(() => {
@@ -76,6 +74,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   useEffect(() => {
     dispatch(getComplaintCollaboratorsByComplaintId(id));
   }, [id, dispatch]);
+
+  const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
+  const derivedStatus = complaintAgency !== userAgency && !userIsCollaborator ? "Referred" : status;
 
   const openStatusChangeModal = () => {
     document.body.click();
@@ -414,7 +415,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         </div>
       </div>
 
-      {complaintAgency !== userAgency && (
+      {complaintAgency !== userAgency && !userIsCollaborator && (
         <div className="comp-contex-banner">
           <div className="banner-content">
             This complaint has been referred to another agency. To request access, contact the lead agency.
