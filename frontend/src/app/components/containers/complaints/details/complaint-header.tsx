@@ -308,6 +308,17 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                           <span>Refer</span>
                         </Dropdown.Item>
                       )}
+                      {/* Collaboration button  */}
+                      {showComplaintCollaboration && (
+                        <Dropdown.Item
+                          as="button"
+                          onClick={openManageCollaboratorsModal}
+                          disabled={complaintAgency !== userAgency}
+                        >
+                          <i className="bi bi-people"></i>
+                          <span>Manage collaborators</span>
+                        </Dropdown.Item>
+                      )}
                       <Dropdown.Item
                         as="button"
                         onClick={() => exportComplaintToPdf()}
