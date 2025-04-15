@@ -195,7 +195,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               >
                 {c.lastName} {c.firstName[0]}. |{" "}
                 <span className="fw-bold">
-                  {c.collaboratorAgency ? AgencyNames[c.collaboratorAgency as keyof typeof AgencyNames].short : ""}
+                  {c.collaboratorAgency && Object.keys(AgencyNames).includes(c.collaboratorAgency)
+                    ? AgencyNames[c.collaboratorAgency as keyof typeof AgencyNames].short
+                    : ""}
                 </span>
               </div>
             );
@@ -439,8 +441,12 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               will need to be updated to pull the agency off of the collaborator person_complaint_xref records
               creator, but for now the owning agency is sufficient.
             */}
-            <span className="fw-bold">{AgencyNames[complaintAgency as keyof typeof AgencyNames].short}</span> added you
-            to this complaint as a collaborator.
+            {complaintAgency && Object.keys(AgencyNames).includes(complaintAgency) && (
+              <>
+                <span className="fw-bold">{AgencyNames[complaintAgency as keyof typeof AgencyNames].short}</span>
+                {" added you to this complaint as a collaborator."}
+              </>
+            )}
           </div>
         </div>
       )}

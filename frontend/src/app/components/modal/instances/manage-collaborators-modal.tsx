@@ -181,7 +181,10 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
                         >
                           {collaborator.firstName} {collaborator.lastName} |{" "}
                           <span className="fw-bold">
-                            {AgencyNames[collaborator.collaboratorAgency as keyof typeof AgencyNames].short}
+                            {collaborator.collaboratorAgency &&
+                            Object.keys(AgencyNames).includes(collaborator.collaboratorAgency)
+                              ? AgencyNames[collaborator.collaboratorAgency as keyof typeof AgencyNames].short
+                              : ""}
                           </span>
                         </div>
                       </div>
