@@ -25,6 +25,8 @@ import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { setIsInEdit } from "@store/reducers/cases";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { getUserAgency } from "@/app/service/user-service";
+import { AgencyNames } from "@/app/types/app/agency-types";
+import { AgencyCode } from "@/app/types/code-tables/agency-code";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -191,7 +193,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                 className="d-flex justify-content-start"
                 key={`${c.personComplaintXrefGuid}`}
               >
-                {c.lastName} {c.firstName[0]}. | <span className="fw-bold">{c.collaboratorAgency}</span>
+                {c.lastName} {c.firstName[0]}. |{" "}
+                <span className="fw-bold">
+                  {c.collaboratorAgency ? AgencyNames[c.collaboratorAgency as keyof typeof AgencyNames].short : ""}
+                </span>
               </div>
             );
           })}
@@ -434,7 +439,8 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               will need to be updated to pull the agency off of the collaborator person_complaint_xref records
               creator, but for now the owning agency is sufficient.
             */}
-            <span className="fw-bold">{complaintAgency}</span> added you to this complaint as a collaborator.
+            <span className="fw-bold">{AgencyNames[complaintAgency as keyof typeof AgencyNames].short}</span> added you
+            to this complaint as a collaborator.
           </div>
         </div>
       )}

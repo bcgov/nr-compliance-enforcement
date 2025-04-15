@@ -19,6 +19,7 @@ import {
   selectComplaintCollaborators,
 } from "@/app/store/reducers/complaints";
 import { getAvatarInitials } from "@/app/common/methods";
+import { AgencyNames } from "@/app/types/app/agency-types";
 
 type ManageCollaboratorsModalProps = {
   close: () => void;
@@ -164,9 +165,9 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
           <div className="collaborators-section">
             <div>
               <h5 id="current-collaborators-title">
-                {collaborators && collaborators.length ? "Current collaborators" : "No current collaborators"}
+                {collaborators.length > 0 ? "Current collaborators" : "No current collaborators"}
               </h5>
-              {collaborators && collaborators.length > 0 && (
+              {collaborators.length > 0 && (
                 <ListGroup className="pb-3">
                   {collaborators.map((collaborator) => (
                     <div
@@ -179,7 +180,9 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
                           data-initials-sm={getAvatarInitials(`${collaborator.firstName} ${collaborator.lastName}`)}
                         >
                           {collaborator.firstName} {collaborator.lastName} |{" "}
-                          <span className="fw-bold">{collaborator.collaboratorAgency}</span>
+                          <span className="fw-bold">
+                            {AgencyNames[collaborator.collaboratorAgency as keyof typeof AgencyNames].short}
+                          </span>
                         </div>
                       </div>
                       <Button
