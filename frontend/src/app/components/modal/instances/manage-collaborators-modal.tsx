@@ -125,7 +125,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
         </Modal.Header>
       )}
       <Modal.Body>
-        <div className="comp-details-form">
+        <div className="manage-collaborators-modal comp-details-form">
           <div className="comp-details-form-row">
             <label htmlFor="select-agency">
               Select agency<span className="required-ind">*</span>
@@ -172,33 +172,36 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
           </div>
 
           <div className="collaborators-section">
-            <span className="fw-bold">Current collaborators</span>
-            <ListGroup className="pb-3">
-              {collaborators &&
-                collaborators.map((collaborator) => (
-                  <ListGroupItem
-                    key={collaborator.personGuid}
-                    className="collaborator-item d-flex flex-row justify-content-between"
-                  >
-                    <div className="collaborator-info">
-                      <div
-                        className="collaborator-name comp-avatar comp-avatar-sm comp-avatar-orange"
-                        data-initials-sm={getAvatarInitials(`${collaborator.firstName} ${collaborator.lastName}`)}
-                      >
-                        {collaborator.firstName} {collaborator.lastName} |{" "}
-                        <span className="fw-bold">{collaborator.collaboratorAgency}</span>
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      onClick={() => handleRemoveCollaborator(collaborator.personComplaintXrefGuid)}
+            <div>
+              <h5 id="current-collaborators-title">Current collaborators</h5>
+              {collaborators && collaborators.length > 0 && (
+                <ListGroup className="pb-3">
+                  {collaborators.map((collaborator) => (
+                    <div
+                      key={collaborator.personGuid}
+                      className="collaborator-item d-flex flex-row justify-content-between pb-3"
                     >
-                      Remove user
-                    </Button>
-                  </ListGroupItem>
-                ))}
-            </ListGroup>
+                      <div className="collaborator-info">
+                        <div
+                          className="collaborator-name comp-avatar comp-avatar-sm comp-avatar-orange"
+                          data-initials-sm={getAvatarInitials(`${collaborator.firstName} ${collaborator.lastName}`)}
+                        >
+                          {collaborator.firstName} {collaborator.lastName} |{" "}
+                          <span className="fw-bold">{collaborator.collaboratorAgency}</span>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleRemoveCollaborator(collaborator.personComplaintXrefGuid)}
+                      >
+                        Remove user
+                      </Button>
+                    </div>
+                  ))}
+                </ListGroup>
+              )}
+            </div>
           </div>
           <div className="comp-details-form-actions d-flex justify-content-end">
             <Button

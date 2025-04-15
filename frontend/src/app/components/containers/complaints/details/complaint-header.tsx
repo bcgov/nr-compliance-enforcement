@@ -179,6 +179,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     <OverlayTrigger
       key={`${id}-collab-tooltip`}
       placement="right"
+      trigger={["hover", "click"]}
       overlay={
         <Tooltip
           id={`tt-${id}`}
@@ -480,8 +481,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     data-initials-sm={getAvatarInitials(officerAssigned)}
                     className="comp-avatar comp-avatar-sm comp-avatar-orange"
                   >
-                    <span id="comp-details-assigned-officer-name-text-id">{officerAssigned}</span>
-                    {collaborators.length > 0 && collaboratorsTooltipOverlay()}
+                    <div>
+                      <span id="comp-details-assigned-officer-name-text-id">{officerAssigned}</span>
+                      {collaborators.length > 0 && collaboratorsTooltipOverlay()}
+                    </div>
                   </div>
                 </dd>
               </dl>
