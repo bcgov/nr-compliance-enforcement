@@ -187,7 +187,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         >
           {collaborators.map((c) => {
             return (
-              <div className="d-flex justify-content-start">
+              <div
+                className="d-flex justify-content-start"
+                key={`${c.personComplaintXrefGuid}`}
+              >
                 {c.lastName} {c.firstName[0]}. | <span className="fw-bold">{c.collaboratorAgency}</span>
               </div>
             );

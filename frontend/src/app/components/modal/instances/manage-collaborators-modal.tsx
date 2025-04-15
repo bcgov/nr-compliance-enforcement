@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Modal, Button, ListGroup, ListGroupItem } from "react-bootstrap";
+import { Modal, Button, ListGroup } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
 import { CompSelect } from "@components/common/comp-select";
@@ -27,12 +27,7 @@ type ManageCollaboratorsModalProps = {
   complaintType: string;
 };
 
-export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
-  close,
-  submit,
-  complaintId,
-  complaintType,
-}) => {
+export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ close, complaintId, complaintType }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
@@ -65,9 +60,6 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
           value: officer.person_guid.person_guid,
           label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
         }));
-      // const officersWithoutCollaborators = officerDropdown.filter(
-      //   (officer) => !collaborators.some((c) => c.personGuid === officer.value),
-      // );
       setOfficerDropdownList(officerDropdown);
     }
   }, [selectedAgency, complaintType, allOfficers, collaborators]);
@@ -105,7 +97,6 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
     }
 
     if (!hasError && selectedPerson?.value) {
-      // TODO: Dispatch action to add collaborator
       dispatch(addCollaboratorToComplaint(complaintId, selectedPerson.value));
       // Reset selections after successful add
       setSelectedAgency(null);

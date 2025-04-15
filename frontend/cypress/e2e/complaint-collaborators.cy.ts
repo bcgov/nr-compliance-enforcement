@@ -1,4 +1,3 @@
-// cy.kcLogout().kcLogin(Roles.CEEB);
 import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 import { Roles } from "../../src/app/types/app/roles";
 
