@@ -80,6 +80,8 @@ import { GIROutcomeReport } from "@/app/components/containers/complaints/outcome
 import { RootState } from "@/app/store/store";
 import { Roles } from "@/app/types/app/roles";
 import { Park } from "@/app/components/common/park";
+import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
+import { selectEquipment } from "@/app/store/reducers/case-selectors";
 
 export type ComplaintParams = {
   id: string;
@@ -172,6 +174,8 @@ export const ComplaintDetailsEdit: FC = () => {
   ) as ComplaintSuspectWitness;
 
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
+
+  const equipmentList = useAppSelector(selectEquipment);
 
   //-- state
   const [readOnly, setReadOnly] = useState(true);
@@ -742,6 +746,38 @@ export const ComplaintDetailsEdit: FC = () => {
     setCoordinateErrorsInd(hasError);
   };
 
+  const getMapElements = (includeEquipment: boolean): MapElement[] => {
+    let mapElements: MapElement[] = [];
+    mapElements.push({
+      objectType: MapObjectType.Complaint,
+      name: "Complaint",
+      description: "",
+      isActive: true,
+      location: {
+        lat: parentCoordinates.lat,
+        lng: parentCoordinates.lng,
+      },
+    } as MapElement);
+    if (includeEquipment && equipmentList && equipmentList.length > 0) {
+      let equipmentMapElements: MapElement[] = equipmentList
+        .filter((equipment) => equipment.activeIndicator === true)
+        .map((equipment) => {
+          let equipmentItem: any = equipment;
+          return {
+            objectType: MapObjectType.Equipment,
+            name: equipmentItem.typeDescription,
+            description: "",
+            isActive: equipment.actions?.filter((action) => action.actionCode === "REMEQUIPMT")?.length === 0,
+            location: {
+              lat: +equipment.yCoordinate,
+              lng: +equipment.xCoordinate,
+            },
+          } as MapElement;
+        });
+      mapElements = [...mapElements, ...equipmentMapElements];
+    }
+    return mapElements;
+  };
   return (
     <div className="comp-complaint-details">
       <ToastContainer />
@@ -812,11 +848,10 @@ export const ComplaintDetailsEdit: FC = () => {
           {/* Map */}
           {readOnly && (
             <ComplaintLocation
-              parentCoordinates={parentCoordinates}
               complaintType={complaintType}
               draggable={false}
-              hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
               editComponent={true}
+              mapElements={getMapElements(true)}
             />
           )}
         </div>
@@ -1441,12 +1476,22 @@ export const ComplaintDetailsEdit: FC = () => {
 
             {/* Location Map */}
             <ComplaintLocation
-              parentCoordinates={parentCoordinates}
               complaintType={complaintType}
               draggable={true}
               onMarkerMove={handleMarkerMove}
-              hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
               editComponent={true}
+              mapElements={[
+                {
+                  objectType: MapObjectType.Complaint,
+                  name: "Complaint",
+                  description: "Complaint Description",
+                  isActive: true,
+                  location: {
+                    lat: parentCoordinates.lat,
+                    lng: parentCoordinates.lng,
+                  },
+                } as MapElement,
+              ]}
             />
           </div>
         )}
