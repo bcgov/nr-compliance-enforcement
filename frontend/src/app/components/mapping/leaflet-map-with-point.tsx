@@ -137,7 +137,7 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
           {mapElements.map((item, index) => {
             return (
               <Marker
-                key={index}
+                key={nanoid()}
                 data-testid="complaint-location-marker"
                 position={item.location}
                 icon={getMarkerIcon(item.objectType, item.isActive)}
