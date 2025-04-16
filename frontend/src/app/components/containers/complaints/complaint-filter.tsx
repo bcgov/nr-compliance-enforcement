@@ -213,7 +213,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         {COMPLAINT_TYPES.GIR === type &&
           activeFilters.showGirTypeFilter && ( // GIR only filter
             <div id="comp-filter-gir-id">
-              <label htmlFor="gir-type-select-id">Gir type</label>
+              <label htmlFor="gir-type-select-id">GIR type</label>
               <div className="filter-select-padding">
                 <CompSelect
                   id="gir-type-select-id"
