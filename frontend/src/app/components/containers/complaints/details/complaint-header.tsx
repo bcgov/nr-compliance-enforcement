@@ -191,7 +191,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
       overlay={
         <Tooltip
           id={`tt-${id}`}
-          className="comp-tooltip comp-tooltip-bottom"
+          className="comp-tooltip comp-tooltip-bottom collaborators-tooltip"
         >
           {collaborators.map((c) => {
             return (
@@ -199,7 +199,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                 className="d-flex justify-content-start"
                 key={`${c.personComplaintXrefGuid}`}
               >
-                {c.lastName} {c.firstName[0]}. |{" "}
+                {c.lastName}, {c.firstName}. |{" "}
                 <span className="fw-bold">
                   {c.collaboratorAgency && Object.keys(AgencyNames).includes(c.collaboratorAgency)
                     ? AgencyNames[c.collaboratorAgency as keyof typeof AgencyNames].short
@@ -211,7 +211,12 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         </Tooltip>
       }
     >
-      <span id="comp-header-collaborator-count">+{collaborators.length}</span>
+      <span
+        id="comp-header-collaborator-count"
+        className="fw-bold"
+      >
+        +{collaborators.length}
+      </span>
     </OverlayTrigger>
   );
 

@@ -177,7 +177,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
                       <div className="collaborator-info">
                         <div
                           className="collaborator-name comp-avatar comp-avatar-sm comp-avatar-orange"
-                          data-initials-sm={getAvatarInitials(`${collaborator.firstName} ${collaborator.lastName}`)}
+                          data-initials-sm={getAvatarInitials(`${collaborator.lastName}, ${collaborator.firstName}`)}
                         >
                           {collaborator.firstName} {collaborator.lastName} |{" "}
                           <span className="fw-bold">

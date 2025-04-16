@@ -1966,25 +1966,21 @@ SET owned_by_agency_code = 'COS'
 WHERE complaint_identifier IN ('23-031744', '23-006888', '23-032456');
 
 ---------------------
+-- Assign offiers with no office or agency to CEEB
+---------------------
+UPDATE public.officer
+SET agency_code = 'EPO'
+WHERE office_guid is null
+AND agency_code is null;
+
+
+---------------------
 -- Enable referrals in dev/test for all users
 ---------------------
 
 UPDATE public.feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'COMPREF';
-
----------------------
--- Assign officers agency by office
--- While this is done in V0.41.0, the test data is added in an R script which are applied
--- after V scripts, so it was added here for dev
----------------------
-
-UPDATE public.officer o
-SET agency_code = (
-  SELECT office.agency_code
-  FROM public.office
-  WHERE office.office_guid = o.office_guid
-);
 
 ---------------------
 -- Enable collaboration in dev/test for all users
