@@ -199,7 +199,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                 className="d-flex justify-content-start"
                 key={`${c.personComplaintXrefGuid}`}
               >
-                {c.lastName}, {c.firstName}. |{" "}
+                {c.lastName}, {c.firstName} |{" "}
                 <span className="fw-bold">
                   {c.collaboratorAgency && Object.keys(AgencyNames).includes(c.collaboratorAgency)
                     ? AgencyNames[c.collaboratorAgency as keyof typeof AgencyNames].short
