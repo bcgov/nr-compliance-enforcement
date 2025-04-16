@@ -18,7 +18,7 @@ describe("Complaint collaborators", () => {
     cy.get("#details-screen-manage-collaborators-button").click({ force: true });
     cy.selectItemById("select-agency", "Parks");
     cy.selectItemById("select-officer", "TestAcct 3, ENV");
-    cy.contains("button", "Add collaborator").click({ force: true });
+    cy.contains("button", "Add as a collaborator").click({ force: true });
     cy.contains("button", "Close").click({ force: true });
     cy.get("#comp-header-collaborator-count").should("contain", "+1");
   });
