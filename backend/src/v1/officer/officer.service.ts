@@ -58,6 +58,7 @@ export class OfficerService {
           person_guid: officer.person_guid,
           office_guid: officer.office_guid,
           user_id: officer.user_id,
+          agency_code: officer.agency_code,
           create_user_id: officer.create_user_id,
           create_utc_timestamp: officer.create_utc_timestamp,
           update_user_id: officer.update_user_id,

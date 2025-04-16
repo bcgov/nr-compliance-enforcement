@@ -4,6 +4,11 @@ import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, QueryRunner, Repository } from "typeorm";
 import { ComplaintService } from "../complaint/complaint.service";
+import { getIdirFromRequest } from "../../common/get-idir-from-request";
+import { REQUEST } from "@nestjs/core";
+import { PersonComplaintXrefCodeEnum } from "../../enum/person_complaint_xref_code.enum";
+import { Officer } from "../officer/entities/officer.entity";
+import { UUID } from "crypto";
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -15,6 +20,8 @@ export class PersonComplaintXrefService {
   constructor(
     private readonly dataSource: DataSource,
     @Inject(forwardRef(() => ComplaintService)) private readonly _complaintService: ComplaintService,
+    @Inject(REQUEST)
+    private readonly request: Request,
   ) {}
 
   async create(createPersonComplaintXrefDto: CreatePersonComplaintXrefDto): Promise<PersonComplaintXref> {
@@ -34,16 +41,6 @@ export class PersonComplaintXrefService {
   async findOne(person_complaint_xref_guid: any): Promise<PersonComplaintXref> {
     return this.personComplaintXrefRepository.findOne({
       where: { personComplaintXrefGuid: person_complaint_xref_guid },
-      relations: {
-        person_guid: true,
-        complaint_identifier: true,
-      },
-    });
-  }
-
-  async findByComplaint(complaint_identifier: any): Promise<PersonComplaintXref> {
-    return this.personComplaintXrefRepository.findOne({
-      where: { complaint_identifier: complaint_identifier, active_ind: true },
       relations: {
         person_guid: true,
         complaint_identifier: true,
@@ -71,6 +68,7 @@ export class PersonComplaintXrefService {
     return this.personComplaintXrefRepository.findOne({
       where: {
         complaint_identifier: complaint_identifier,
+        person_complaint_xref_code: "ASSIGNEE" as any,
         active_ind: true,
       },
       relations: {
@@ -128,7 +126,7 @@ export class PersonComplaintXrefService {
 
     try {
       // unassign complaint if it's already assigned to an officer
-      unassignedPersonComplaintXref = await this.findByComplaint(complaintIdentifier);
+      unassignedPersonComplaintXref = await this.findAssignedByComplaint(complaintIdentifier);
       if (unassignedPersonComplaintXref) {
         this.logger.debug(
           `Unassigning existing person from complaint ${unassignedPersonComplaintXref?.complaint_identifier?.complaint_identifier}`,
@@ -175,7 +173,7 @@ export class PersonComplaintXrefService {
 
     try {
       // unassign complaint if it's already assigned to an officer
-      unassignedPersonComplaintXref = await this.findByComplaint(complaintIdentifier);
+      unassignedPersonComplaintXref = await this.findAssignedByComplaint(complaintIdentifier);
       if (unassignedPersonComplaintXref) {
         this.logger.debug(
           `Unassigning existing person ${unassignedPersonComplaintXref.person_guid.person_guid} from complaint ${unassignedPersonComplaintXref?.complaint_identifier?.complaint_identifier}`,
@@ -231,7 +229,7 @@ export class PersonComplaintXrefService {
     let unassignedPersonComplaintXref: PersonComplaintXref;
 
     try {
-      unassignedPersonComplaintXref = await this.findByComplaint(complaintIdentifier);
+      unassignedPersonComplaintXref = await this.findAssignedByComplaint(complaintIdentifier);
       if (unassignedPersonComplaintXref) {
         unassignedPersonComplaintXref.active_ind = false;
         await queryRunner.manager.save(unassignedPersonComplaintXref);
@@ -247,5 +245,109 @@ export class PersonComplaintXrefService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async addCollaboratorToComplaint(complaintIdentifier: string, personGuid: string): Promise<PersonComplaintXref> {
+    this.logger.debug(`Adding collaborator ${personGuid} Complaint ${complaintIdentifier}`);
+    let newPersonComplaintXref: PersonComplaintXref;
+    const currentUserId = getIdirFromRequest(this.request);
+    const createPersonComplaintXrefDto = {
+      active_ind: true,
+      person_guid: {
+        person_guid: personGuid,
+      },
+      complaint_identifier: complaintIdentifier,
+      person_complaint_xref_code: "COLLABORAT",
+      create_user_id: currentUserId,
+    } as any; // When typed as CreatePersonComplaintXrefDto complaint_identifier is expecting a conplaint, not a string.
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // create a new record representing the collaboration
+      newPersonComplaintXref = await this.create(createPersonComplaintXrefDto);
+      this.logger.debug(`Adding collaborator ${personGuid} to complaint ${complaintIdentifier}`);
+
+      // Update the complaint last updated date on the parent record
+      await this.updateComplaintLastUpdatedDate(complaintIdentifier, newPersonComplaintXref, queryRunner);
+      await queryRunner.commitTransaction();
+      this.logger.debug(`Succesfully added collaborator ${personGuid} to complaint ${complaintIdentifier}`);
+    } catch (err) {
+      this.logger.error(err);
+      this.logger.error(`Rolling back collaborator assignment of ${personGuid} on complaint ${complaintIdentifier}`);
+      throw new BadRequestException(err);
+    } finally {
+      await queryRunner.release();
+    }
+    return newPersonComplaintXref;
+  }
+
+  async removeCollaboratorFromComplaint(complaintIdentifier: string, personComplaintXrefGuid: UUID) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let removedCollaborator: PersonComplaintXref;
+
+    try {
+      this.logger.debug(`Removing collaborator from complaint ${complaintIdentifier}`);
+
+      // Find and update the collaboration record
+      removedCollaborator = await this.personComplaintXrefRepository.findOne({
+        where: {
+          personComplaintXrefGuid: personComplaintXrefGuid,
+        },
+      });
+
+      if (!removedCollaborator) {
+        throw new BadRequestException(`Could not find collaboration record ${personComplaintXrefGuid}`);
+      }
+
+      removedCollaborator.active_ind = false;
+      await queryRunner.manager.save(removedCollaborator);
+
+      // Update the complaint last updated date
+      await this.updateComplaintLastUpdatedDate(complaintIdentifier, removedCollaborator, queryRunner);
+
+      await queryRunner.commitTransaction();
+
+      return removedCollaborator;
+    } catch (err) {
+      this.logger.error(`Error removing collaborator record ${personComplaintXrefGuid} `);
+      this.logger.error(`Error details: ${err.message}`);
+      this.logger.error(err.stack);
+      await queryRunner.rollbackTransaction();
+      throw new BadRequestException(err);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async getCollaborators(complaintIdentifier: string): Promise<PersonComplaintXref[]> {
+    const res = await this.personComplaintXrefRepository
+      .createQueryBuilder("person_complaint_xref")
+      .leftJoinAndSelect("person_complaint_xref.person_guid", "person")
+      .innerJoin(Officer, "officer", "person.person_guid=officer.person_guid")
+      .where("person_complaint_xref.complaint_identifier = :complaintId", { complaintId: complaintIdentifier })
+      .andWhere("person_complaint_xref.person_complaint_xref_code = :code", {
+        code: PersonComplaintXrefCodeEnum.COLLABORATOR,
+      })
+      .andWhere("person_complaint_xref.active_ind = true")
+      .andWhere("officer.person_guid = person.person_guid")
+      .addSelect("officer.agency_code")
+      .execute();
+
+    const collaborators = res.map((row) => {
+      return {
+        personComplaintXrefGuid: row.person_complaint_xref_person_complaint_xref_guid,
+        complaintId: row.person_complaint_xref_complaint_identifier,
+        personGuid: row.person_complaint_xref_person_guid,
+        collaboratorAgency: row.officer_agency_code,
+        firstName: row.person_first_name,
+        lastName: row.person_last_name,
+        middleName1: row.person_middle_name_1,
+        middleName2: row.person_middle_name_2,
+      };
+    });
+    return collaborators;
   }
 }

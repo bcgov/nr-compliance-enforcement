@@ -72,3 +72,14 @@ $modal-md: 508px !default;
 
 //body > div.fade.modal.show > div > div > div.border-0.modal-header > button
 //body > div.fade.modal.show > div > div > div.border-0.modal-header > button
+
+// Collaborators modal
+.manage-collaborators-modal {
+  .collaborators-section {
+    padding-top: 0.5rem;
+  }
+  #current-collaborators-title {
+    font-size: 1.09rem;
+    padding-bottom: 0.5rem;
+  }
+}

@@ -152,6 +152,11 @@ export const userGuid = (state: RootState) => {
   return profile.idir;
 };
 
+export const personGuid = (state: RootState) => {
+  const { profile } = state.app;
+  return profile.personGuid;
+};
+
 export const userId = (state: RootState) => {
   const {
     profile: { idir_username },
@@ -380,14 +385,13 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       let regionDescription = "";
       let zone = "";
       let zoneDescription = "";
-      let agency = "";
-      let personGuid = "";
+      let agency = response.agency_code;
+      let personGuid = response.person_guid.person_guid;
       let comsEnrolledInd = response.coms_enrolled_ind;
 
       if (response.office_guid !== null) {
         const {
-          office_guid: { cos_geo_org_unit: unit, agency_code: agencyCode },
-          person_guid: { person_guid },
+          office_guid: { cos_geo_org_unit: unit },
         } = response;
 
         office = unit.office_location_code;
@@ -395,8 +399,6 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         regionDescription = unit.region_name;
         zone = unit.zone_code;
         zoneDescription = unit.zone_name;
-        agency = agencyCode.agency_code;
-        personGuid = person_guid;
       }
 
       if (!comsEnrolledInd) {

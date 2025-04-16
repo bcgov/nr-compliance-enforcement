@@ -7,6 +7,7 @@ import { DeleteConfirmModalV2 } from "./delete-confirm-modal-v2";
 import { QuickCloseModal } from "./quick-close-modal";
 import { ToggleDeactivateModal } from "@/app/components/modal/instances/toggle-deactivate-modal";
 import { ReferComplaintModal } from "@/app/components/modal/instances/refer-complaint-modal";
+import { ManageCollaboratorsModal } from "./manage-collaborators-modal";
 
 export {
   SampleModal,
@@ -18,4 +19,5 @@ export {
   QuickCloseModal,
   ToggleDeactivateModal,
   ReferComplaintModal,
+  ManageCollaboratorsModal,
 };
