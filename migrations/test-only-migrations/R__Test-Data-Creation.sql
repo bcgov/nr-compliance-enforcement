@@ -1966,6 +1966,15 @@ SET owned_by_agency_code = 'COS'
 WHERE complaint_identifier IN ('23-031744', '23-006888', '23-032456');
 
 ---------------------
+-- Assign offiers with no office or agency to CEEB
+---------------------
+UPDATE public.officer
+SET agency_code = 'EPO'
+WHERE office_guid is null
+AND agency_code is null;
+
+
+---------------------
 -- Enable referrals in dev/test for all users
 ---------------------
 
