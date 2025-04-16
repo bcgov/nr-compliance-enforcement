@@ -754,6 +754,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="auth_user_guid" nullable="true" remarks="The SiteMinder guid returned to the application from KeyCloak.   Used to uniquely identify a user over the course of their lifecycle." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="false" digits="0" id="9" name="coms_enrolled_ind" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="false" digits="0" id="10" name="deactivate_ind" nullable="true" remarks="A boolean indicator representing if an officer has been deactivated" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="agency_code" nullable="true" remarks="" size="6" type="varchar" typeCode="12"/>
          <primaryKey column="officer_guid" sequenceNumberInPK="1"/>
          <index name="PK_officer" unique="true">
             <column ascending="true" name="officer_guid"/>
@@ -842,8 +843,15 @@
          <index name="PK_person_complaint_xref_guid" unique="true">
             <column ascending="true" name="person_complaint_xref_guid"/>
          </index>
-         <index name="person_complaint_xref_complaint_identifier_active_ind_idx" unique="true">
+         <index name="person_complaint_xref_complaint_identifier_person_complaint_idx" unique="true">
             <column ascending="true" name="complaint_identifier"/>
+            <column ascending="true" name="person_complaint_xref_code"/>
+            <column ascending="true" name="active_ind"/>
+         </index>
+         <index name="person_complaint_xref_complaint_identifier_person_guid_pers_idx" unique="true">
+            <column ascending="true" name="complaint_identifier"/>
+            <column ascending="true" name="person_guid"/>
+            <column ascending="true" name="person_complaint_xref_code"/>
             <column ascending="true" name="active_ind"/>
          </index>
       </table>

@@ -326,10 +326,16 @@
                                     <td>person_complaint_xref_guid</td>
                                 </tr>
                                 <tr>
-                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> person_complaint_xref_complaint_identifier_active_ind_idx</td>
+                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> person_complaint_xref_complaint_identifier_person_complaint_idx</td>
                                     <td>Must be unique</td>
-                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
-                                    <td>complaint_identifier + active_ind</td>
+                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
+                                    <td>complaint_identifier + person_complaint_xref_code + active_ind</td>
+                                </tr>
+                                <tr>
+                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> person_complaint_xref_complaint_identifier_person_guid_pers_idx</td>
+                                    <td>Must be unique</td>
+                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
+                                    <td>complaint_identifier + person_guid + person_complaint_xref_code + active_ind</td>
                                 </tr>
                                 </tbody>
                             </table>
