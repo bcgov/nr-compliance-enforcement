@@ -211,7 +211,12 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         </Tooltip>
       }
     >
-      <span id="comp-header-collaborator-count fw-b">+{collaborators.length}</span>
+      <span
+        id="comp-header-collaborator-count"
+        className="fw-bold"
+      >
+        +{collaborators.length}
+      </span>
     </OverlayTrigger>
   );
 
