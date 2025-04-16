@@ -208,6 +208,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const parentCoordinates = useMemo(() => ({ lat: +latitude, lng: +longitude }), [latitude, longitude]);
 
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
+  const [mapElements, setMapElements] = useState<MapElement[]>([]);
 
   const handleSlideCountChange = useCallback(
     (count: number) => {
@@ -746,7 +747,7 @@ export const ComplaintDetailsEdit: FC = () => {
     setCoordinateErrorsInd(hasError);
   };
 
-  const getMapElements = (includeEquipment: boolean): MapElement[] => {
+  useEffect(() => {
     let mapElements: MapElement[] = [];
     mapElements.push({
       objectType: MapObjectType.Complaint,
@@ -758,7 +759,7 @@ export const ComplaintDetailsEdit: FC = () => {
         lng: parentCoordinates.lng,
       },
     } as MapElement);
-    if (includeEquipment && equipmentList && equipmentList.length > 0) {
+    if (equipmentList && equipmentList.length > 0) {
       let equipmentMapElements: MapElement[] = equipmentList
         .filter((equipment) => equipment.activeIndicator === true)
         .map((equipment) => {
@@ -767,7 +768,9 @@ export const ComplaintDetailsEdit: FC = () => {
             objectType: MapObjectType.Equipment,
             name: equipmentItem.typeDescription,
             description: "",
-            isActive: equipment.actions?.filter((action) => action.actionCode === "REMEQUIPMT")?.length === 0,
+            isActive:
+              equipment.actions?.filter((action) => action.actionCode === "REMEQUIPMT")?.length === 0 &&
+              !["K9UNT", "LLTHL"].includes(equipmentItem.typeCode),
             location: {
               lat: +equipment.yCoordinate,
               lng: +equipment.xCoordinate,
@@ -776,8 +779,8 @@ export const ComplaintDetailsEdit: FC = () => {
         });
       mapElements = [...mapElements, ...equipmentMapElements];
     }
-    return mapElements;
-  };
+    setMapElements(mapElements);
+  }, [equipmentList, parentCoordinates]);
   return (
     <div className="comp-complaint-details">
       <ToastContainer />
@@ -851,7 +854,7 @@ export const ComplaintDetailsEdit: FC = () => {
               complaintType={complaintType}
               draggable={false}
               editComponent={true}
-              mapElements={getMapElements(true)}
+              mapElements={mapElements}
             />
           )}
         </div>

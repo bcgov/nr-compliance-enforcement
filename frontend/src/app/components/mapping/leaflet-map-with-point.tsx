@@ -13,6 +13,7 @@ import NonDismissibleAlert from "@components/common/non-dismissible-alert";
 import { MapGestureHandler } from "./map-gesture-handler";
 import { Card } from "react-bootstrap";
 import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
+import { nanoid } from "nanoid";
 
 type Props = {
   coordinates?: { lat: number; lng: number };
@@ -99,7 +100,10 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
   }, []);
 
   const getEquipmentStatus = (locationItem: MapElement): string => {
-    if (locationItem.objectType === MapObjectType.Complaint) {
+    if (
+      locationItem.objectType === MapObjectType.Complaint ||
+      (locationItem.objectType === MapObjectType.Equipment && ["Less lethal", "K9 unit"].includes(locationItem.name))
+    ) {
       return "";
     } else {
       return locationItem.isActive ? "Active" : "Inactive";
@@ -129,11 +133,11 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
             />
           </LayersControl.Overlay>
         </LayersControl>
-        <MarkerClusterGroup>
+        <MarkerClusterGroup key={nanoid()}>
           {mapElements.map((item, index) => {
             return (
               <Marker
-                key={item.name}
+                key={index}
                 data-testid="complaint-location-marker"
                 position={item.location}
                 icon={getMarkerIcon(item.objectType, item.isActive)}
