@@ -191,7 +191,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
       overlay={
         <Tooltip
           id={`tt-${id}`}
-          className="comp-tooltip comp-tooltip-bottom"
+          className="comp-tooltip comp-tooltip-bottom collaborators-tooltip"
         >
           {collaborators.map((c) => {
             return (
