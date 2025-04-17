@@ -1,19 +1,32 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import COMPLAINT_TYPES, { complaintTypeToName } from "@apptypes/app/complaint-types";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectComplaintHeader, selectComplaintViewMode } from "@store/reducers/complaints";
+import {
+  getComplaintCollaboratorsByComplaintId,
+  selectComplaintCollaborators,
+  selectComplaintHeader,
+  selectComplaintViewMode,
+  selectRelatedData,
+} from "@store/reducers/complaints";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
 
-import { Badge, Button, Dropdown } from "react-bootstrap";
+import { Badge, Button, Dropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 
-import { isFeatureActive, openModal } from "@store/reducers/app";
-import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE, REFER_COMPLAINT } from "@apptypes/modal/modal-types";
+import { isFeatureActive, openModal, personGuid } from "@store/reducers/app";
+import {
+  ASSIGN_OFFICER,
+  CHANGE_STATUS,
+  MANAGE_COLLABORATORS,
+  QUICK_CLOSE,
+  REFER_COMPLAINT,
+} from "@apptypes/modal/modal-types";
 import { exportComplaint } from "@store/reducers/documents-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { setIsInEdit } from "@store/reducers/cases";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { getUserAgency } from "@/app/service/user-service";
+import { AgencyNames } from "@/app/types/app/agency-types";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -48,12 +61,30 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   } = useAppSelector(selectComplaintHeader(complaintType));
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   const showComplaintReferrals = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_REFERRALS));
+  const showComplaintCollaboration = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_COLLABORATION));
+  const userPersonGuid = useAppSelector(personGuid);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
+  const collaborators = useAppSelector(selectComplaintCollaborators);
   const userAgency = getUserAgency();
+  const relatedData = useAppSelector(selectRelatedData);
+  let referrals = relatedData.referrals ?? [];
 
   const dispatch = useAppDispatch();
+
+  const [userIsCollaborator, setUserIsCollaborator] = useState<boolean>(false);
+  useEffect(() => {
+    setUserIsCollaborator(collaborators.some((c) => c.personGuid === userPersonGuid));
+  }, [collaborators, userPersonGuid]);
+  useEffect(() => {
+    dispatch(getComplaintCollaboratorsByComplaintId(id));
+  }, [id, dispatch]);
+
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
-  const derivedStatus = complaintAgency !== userAgency ? "Referred" : status;
+  const complaintWasReferred =
+    complaintAgency !== userAgency && referrals.length > 0
+      ? referrals[0].referred_to_agency_code.agency_code !== userAgency
+      : false;
+  const derivedStatus = complaintWasReferred && !userIsCollaborator ? "Referred" : status;
 
   const openStatusChangeModal = () => {
     document.body.click();
@@ -130,9 +161,64 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     }
   };
 
+  const openManageCollaboratorsModal = () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: MANAGE_COLLABORATORS,
+        data: {
+          title: "Manage collaborators",
+          description: "Suggested officers",
+          complaintId: id,
+          complaintType: complaintType,
+          zone: zone,
+          agencyCode: complaintAgency,
+        },
+      }),
+    );
+  };
+
   const exportComplaintToPdf = () => {
     dispatch(exportComplaint(complaintType, id, new Date(loggedDate)));
   };
+
+  const collaboratorsTooltipOverlay = () => (
+    <OverlayTrigger
+      key={`${id}-collab-tooltip`}
+      placement="right"
+      trigger={["hover", "click"]}
+      overlay={
+        <Tooltip
+          id={`tt-${id}`}
+          className="comp-tooltip comp-tooltip-bottom collaborators-tooltip"
+        >
+          {collaborators.map((c) => {
+            return (
+              <div
+                className="d-flex justify-content-start"
+                key={`${c.personComplaintXrefGuid}`}
+              >
+                {c.lastName}, {c.firstName} |{" "}
+                <span className="fw-bold">
+                  {c.collaboratorAgency && Object.keys(AgencyNames).includes(c.collaboratorAgency)
+                    ? AgencyNames[c.collaboratorAgency as keyof typeof AgencyNames].short
+                    : ""}
+                </span>
+              </div>
+            );
+          })}
+        </Tooltip>
+      }
+    >
+      <span
+        id="comp-header-collaborator-count"
+        className="fw-bold"
+      >
+        +{collaborators.length}
+      </span>
+    </OverlayTrigger>
+  );
 
   return (
     <>
@@ -229,6 +315,17 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                           <span>Refer</span>
                         </Dropdown.Item>
                       )}
+                      {/* Collaboration button  */}
+                      {showComplaintCollaboration && (
+                        <Dropdown.Item
+                          as="button"
+                          onClick={openManageCollaboratorsModal}
+                          disabled={complaintAgency !== userAgency}
+                        >
+                          <i className="bi bi-people"></i>
+                          <span>Manage collaborators</span>
+                        </Dropdown.Item>
+                      )}
                       <Dropdown.Item
                         as="button"
                         onClick={() => exportComplaintToPdf()}
@@ -273,6 +370,8 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     <i className="bi bi-arrow-repeat"></i>
                     <span>Update status</span>
                   </Button>
+
+                  {/* Refer button */}
                   {showComplaintReferrals && (
                     <Button
                       id="details-screen-refer-button"
@@ -285,6 +384,21 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       <span>Refer</span>
                     </Button>
                   )}
+
+                  {/* Collaboration button  */}
+                  {showComplaintCollaboration && (
+                    <Button
+                      id="details-screen-manage-collaborators-button"
+                      title="Manage collaborators"
+                      variant="outline-light"
+                      onClick={() => openManageCollaboratorsModal()}
+                      disabled={complaintAgency !== userAgency}
+                    >
+                      <i className="bi bi-people"></i>
+                      <span>Manage collaborators</span>
+                    </Button>
+                  )}
+
                   <Button
                     id="details-screen-export-complaint-button"
                     title="Export"
@@ -334,10 +448,27 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         </div>
       </div>
 
-      {complaintAgency !== userAgency && (
-        <div className="comp-referral-banner">
-          <div className="referral-content">
+      {complaintWasReferred && (
+        <div className="comp-contex-banner">
+          <div className="banner-content">
             This complaint has been referred to another agency. To request access, contact the lead agency.
+          </div>
+        </div>
+      )}
+      {userIsCollaborator && (
+        <div className="comp-contex-banner comp-collaborator-banner">
+          <div className="banner-content">
+            {/* 
+              Once there are three agencies passing complaints between each other, this logic for complaintAgency
+              will need to be updated to pull the agency off of the collaborator person_complaint_xref records
+              creator, but for now the owning agency is sufficient.
+            */}
+            {complaintAgency && Object.keys(AgencyNames).includes(complaintAgency) && (
+              <>
+                <span className="fw-bold">{AgencyNames[complaintAgency as keyof typeof AgencyNames].short}</span>
+                {" added you to this complaint as a collaborator."}
+              </>
+            )}
           </div>
         </div>
       )}
@@ -387,7 +518,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     data-initials-sm={getAvatarInitials(officerAssigned)}
                     className="comp-avatar comp-avatar-sm comp-avatar-orange"
                   >
-                    <span id="comp-details-assigned-officer-name-text-id">{officerAssigned}</span>
+                    <div>
+                      <span id="comp-details-assigned-officer-name-text-id">{officerAssigned}</span>
+                      {collaborators.length > 0 && collaboratorsTooltipOverlay()}
+                    </div>
                   </div>
                 </dd>
               </dl>

@@ -2797,6 +2797,32 @@ SET
 where
   species_code = 'BOBCAT';
 
+-- CE-1594 update display order in species_code
+UPDATE species_code SET display_order = 10 WHERE species_code = 'BISON';
+UPDATE species_code SET display_order = 20 WHERE species_code = 'BLKBEAR';
+UPDATE species_code SET display_order = 30 WHERE species_code = 'BOBCAT';
+UPDATE species_code SET display_order = 40 WHERE species_code = 'CARIBOU';
+UPDATE species_code SET display_order = 50 WHERE species_code = 'COUGAR';
+UPDATE species_code SET display_order = 60 WHERE species_code = 'COYOTE';
+UPDATE species_code SET display_order = 70 WHERE species_code = 'DEER';
+UPDATE species_code SET display_order = 80 WHERE species_code = 'ELK';
+UPDATE species_code SET display_order = 90 WHERE species_code = 'FOX';
+UPDATE species_code SET display_order = 100 WHERE species_code = 'GRZBEAR';
+UPDATE species_code SET display_order = 110 WHERE species_code = 'FERALHOG';
+UPDATE species_code SET display_order = 120 WHERE species_code = 'LYNX';
+UPDATE species_code SET display_order = 130 WHERE species_code = 'MOOSE';
+UPDATE species_code SET display_order = 140 WHERE species_code = 'MTNGOAT';
+UPDATE species_code SET display_order = 150 WHERE species_code = 'OTHER';
+UPDATE species_code SET display_order = 160 WHERE species_code = 'RACCOON';
+UPDATE species_code SET display_order = 170 WHERE species_code = 'RAPTOR';
+UPDATE species_code SET display_order = 180 WHERE species_code = 'RATTLER';
+UPDATE species_code SET display_order = 190 WHERE species_code = 'RVROTTER';
+UPDATE species_code SET display_order = 200 WHERE species_code = 'SKUNK';
+UPDATE species_code SET display_order = 210 WHERE species_code = 'UNKNOWN';
+UPDATE species_code SET display_order = 220 WHERE species_code = 'WLDSHEEP';
+UPDATE species_code SET display_order = 230 WHERE species_code = 'WOLF';
+UPDATE species_code SET display_order = 240 WHERE species_code = 'WOLVERN';
+
 --------------------------
 -- Staging Activities for webEOC load
 -------------------------
@@ -3835,6 +3861,14 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
+-------------------------
+-- Update GIR type code
+-------------------------
+
+UPDATE gir_type_code SET short_description = 'Contact', long_description = 'Contact' WHERE gir_type_code = 'COCNT';
+UPDATE gir_type_code SET short_description = 'Disposition', long_description = 'Disposition' WHERE gir_type_code = 'CODSP';
+
+
 UPDATE complaint_type_code
 SET
   display_order = 10
@@ -4343,6 +4377,55 @@ SELECT
   user,
   now() ON CONFLICT
 DO NOTHING;
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'PARKCOL',
+  'Park Column',
+  'Displays the Park column in the list view',
+  250,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'LCTNCOL',
+  'Location/address Column',
+  'Displays the Location/address column in the list view',
+  260,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
 
 -------------------------
 -- Insert Feature / Agency XREF
@@ -5330,6 +5413,129 @@ SELECT
   user,
   now() ON CONFLICT
 DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'PARKCOL',
+  'COS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'PARKCOL',
+  'EPO',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'PARKCOL',
+  'PARKS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'LCTNCOL',
+  'COS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'LCTNCOL',
+  'EPO',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'LCTNCOL',
+  'PARKS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+
+
 
 -------------------------
 -- Insert Team Codes
@@ -9808,6 +10014,7 @@ DO NOTHING;
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'COS';
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'PARKS';
 UPDATE feature_agency_xref SET active_ind = true WHERE feature_code = 'METH_FLTR' AND agency_code = 'EPO';
+UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'ENBL_OFF' AND agency_code = 'PARKS';
 
 --
 -- create new feature for External Reference
@@ -10608,6 +10815,95 @@ BEGIN
         DELETE FROM geo_organization_unit_code WHERE geo_organization_unit_code = 'CLCZLKBW';
     END IF;
 END $$; -- Comment to trigger this to run again in test
+
+
+-------------------------
+-- Create new feature for Complaint Collaboration
+-------------------------
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COMPCOLLAB',
+  'Enable Complaint Collaboration',
+  'Enables the ability to add collaborators from other agencies.',
+  270,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COMPCOLLAB',
+  'COS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COMPCOLLAB',
+  'PARKS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COMPCOLLAB',
+  'EPO',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
 
 
 --------------------------

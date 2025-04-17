@@ -79,6 +79,9 @@ import { getCaseFile } from "@/app/store/reducers/case-thunks";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
 import { RootState } from "@/app/store/store";
 import { Roles } from "@/app/types/app/roles";
+import { Park } from "@/app/components/common/park";
+import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
+import { selectEquipment } from "@/app/store/reducers/case-selectors";
 
 export type ComplaintParams = {
   id: string;
@@ -115,6 +118,7 @@ export const ComplaintDetailsEdit: FC = () => {
     violationObserved,
     girType,
     complaintMethodReceivedCode,
+    parkGuid,
   } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
   const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
@@ -171,6 +175,8 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
 
+  const equipmentList = useAppSelector(selectEquipment);
+
   //-- state
   const [readOnly, setReadOnly] = useState(true);
 
@@ -202,6 +208,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const parentCoordinates = useMemo(() => ({ lat: +latitude, lng: +longitude }), [latitude, longitude]);
 
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
+  const [mapElements, setMapElements] = useState<MapElement[]>([]);
 
   const handleSlideCountChange = useCallback(
     (count: number) => {
@@ -600,6 +607,11 @@ export const ComplaintDetailsEdit: FC = () => {
     applyComplaintUpdate(updatedComplaint);
   };
 
+  const handleParkChange = (value?: string) => {
+    const updatedComplaint = { ...complaintUpdate, parkGuid: value } as ComplaintDto;
+    applyComplaintUpdate(updatedComplaint);
+  };
+
   const handleCommunityChange = (selectedOption: Option | null) => {
     let value: string = "";
     if (selectedOption?.value && selectedOption?.value !== "") {
@@ -735,6 +747,40 @@ export const ComplaintDetailsEdit: FC = () => {
     setCoordinateErrorsInd(hasError);
   };
 
+  useEffect(() => {
+    let mapElements: MapElement[] = [];
+    mapElements.push({
+      objectType: MapObjectType.Complaint,
+      name: "Complaint",
+      description: "",
+      isActive: true,
+      location: {
+        lat: parentCoordinates.lat,
+        lng: parentCoordinates.lng,
+      },
+    } as MapElement);
+    if (equipmentList && equipmentList.length > 0) {
+      let equipmentMapElements: MapElement[] = equipmentList
+        .filter((equipment) => equipment.activeIndicator === true)
+        .map((equipment) => {
+          let equipmentItem: any = equipment;
+          return {
+            objectType: MapObjectType.Equipment,
+            name: equipmentItem.typeDescription,
+            description: "",
+            isActive:
+              equipment.actions?.filter((action) => action.actionCode === "REMEQUIPMT")?.length === 0 &&
+              !["K9UNT", "LLTHL"].includes(equipmentItem.typeCode),
+            location: {
+              lat: +equipment.yCoordinate,
+              lng: +equipment.xCoordinate,
+            },
+          } as MapElement;
+        });
+      mapElements = [...mapElements, ...equipmentMapElements];
+    }
+    setMapElements(mapElements);
+  }, [equipmentList, parentCoordinates]);
   return (
     <div className="comp-complaint-details">
       <ToastContainer />
@@ -805,11 +851,10 @@ export const ComplaintDetailsEdit: FC = () => {
           {/* Map */}
           {readOnly && (
             <ComplaintLocation
-              parentCoordinates={parentCoordinates}
               complaintType={complaintType}
               draggable={false}
-              hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
               editComponent={true}
+              mapElements={mapElements}
             />
           )}
         </div>
@@ -1102,6 +1147,22 @@ export const ComplaintDetailsEdit: FC = () => {
                 enableCopyCoordinates={false}
                 validationRequired={false}
               />
+
+              <div
+                className="comp-details-form-row"
+                id="park"
+              >
+                <label htmlFor="complaint-park">Park</label>
+                <div className="comp-details-edit-input">
+                  <Park
+                    id="complaint-park"
+                    initialParkGuid={parkGuid}
+                    onChange={(e) => handleParkChange(e?.value)}
+                    isInEdit={true}
+                  />
+                </div>
+              </div>
+
               <div
                 className="comp-details-form-row"
                 id="area-community-pair-id"
@@ -1418,12 +1479,22 @@ export const ComplaintDetailsEdit: FC = () => {
 
             {/* Location Map */}
             <ComplaintLocation
-              parentCoordinates={parentCoordinates}
               complaintType={complaintType}
               draggable={true}
               onMarkerMove={handleMarkerMove}
-              hideMarker={!latitude || !longitude || +latitude === 0 || +longitude === 0}
               editComponent={true}
+              mapElements={[
+                {
+                  objectType: MapObjectType.Complaint,
+                  name: "Complaint",
+                  description: "Complaint Description",
+                  isActive: true,
+                  location: {
+                    lat: parentCoordinates.lat,
+                    lng: parentCoordinates.lng,
+                  },
+                } as MapElement,
+              ]}
             />
           </div>
         )}

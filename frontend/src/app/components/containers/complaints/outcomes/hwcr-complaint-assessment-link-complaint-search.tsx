@@ -114,7 +114,7 @@ export const HWCRComplaintAssessmentLinkComplaintSearch: FC<Props> = ({
   };
 
   return (
-    <div>
+    <div className="complaint-search-container">
       <AsyncTypeahead
         clearButton
         id={id}
@@ -130,6 +130,7 @@ export const HWCRComplaintAssessmentLinkComplaintSearch: FC<Props> = ({
         options={complaintData}
         placeholder="Search for a complaint"
         isInvalid={errorMessage.length > 0}
+        className="comp-select comp-details-input full-width comp-async comp-async-text"
         renderInput={({ inputRef, referenceElementRef, ...inputProps }: any) => (
           <CustomHint hintText={hintText}>
             <Form.Control
@@ -139,6 +140,7 @@ export const HWCRComplaintAssessmentLinkComplaintSearch: FC<Props> = ({
                 referenceElementRef(node);
               }}
               type="text"
+              className="rbt-input-text"
             />
           </CustomHint>
         )}

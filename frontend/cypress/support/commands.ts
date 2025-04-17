@@ -38,8 +38,13 @@ Cypress.Commands.add("kcLogin", (role?: string) => {
   let account = "keycloak_user";
 
   // Convert this to a switch in the future as more roles are added to the tests
-  if (role === Cypress.env("roles").CEEB) {
-    account = "keycloak_user_02";
+  switch (role) {
+    case Cypress.env("roles").CEEB:
+      account = "keycloak_user_02";
+      break;
+    case Cypress.env("roles").PARKS:
+      account = "keycloak_user_03";
+      break;
   }
 
   cy.log("Keyloak Login").then(async () => {
@@ -238,6 +243,11 @@ Cypress.Commands.add("selectItemById", (selectId: string, optionText: string) =>
   cy.get(`#${selectId}`).find("div").first().click({ force: true });
   cy.get(".comp-select__menu-list").should("exist"); //Wait for the options to show
   cy.contains(`.comp-select__option`, optionText).click({ force: true });
+});
+
+Cypress.Commands.add("selectTypeAheadItemByText", (selectId: string, optionText: string) => {
+  cy.get(`#${selectId}`).find("input").first().click({ force: true });
+  cy.get(`#${selectId}`).find("input").first().clear().type(optionText).type("{downarrow}").type("{enter}");
 });
 
 Cypress.Commands.add(

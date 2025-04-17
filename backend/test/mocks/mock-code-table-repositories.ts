@@ -579,15 +579,15 @@ const complaintTypes = [
 const girTypeCodes = [
   {
     gir_type_code: "COCNT",
-    short_description: "CO Contact",
-    long_description: "CO Contact",
+    short_description: "Contact",
+    long_description: "Contact",
     display_order: 10,
     active_ind: true,
   },
   {
     gir_type_code: "CODSP",
-    short_description: "CO Disposition",
-    long_description: "CO Disposition",
+    short_description: "Disposition",
+    long_description: "Disposition",
     display_order: 20,
     active_ind: true,
   },

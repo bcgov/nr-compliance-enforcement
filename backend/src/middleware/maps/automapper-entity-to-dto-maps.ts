@@ -269,6 +269,10 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
       (destination) => destination.updatedOn,
       mapFrom((source) => source.comp_last_upd_utc_timestamp),
     ),
+    forMember(
+      (destination) => destination.parkGuid,
+      mapFrom((source) => source.park_guid),
+    ),
   );
 };
 
@@ -731,6 +735,10 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       (destination) => destination.updatedOn,
       mapFrom((source) => source.complaint_identifier.comp_last_upd_utc_timestamp),
     ),
+    forMember(
+      (destination) => destination.parkGuid,
+      mapFrom((source) => source.complaint_identifier.park_guid),
+    ),
   );
 };
 
@@ -962,6 +970,10 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
       (destination) => destination.updatedOn,
       mapFrom((source) => source.complaint_identifier.comp_last_upd_utc_timestamp),
     ),
+    forMember(
+      (destination) => destination.parkGuid,
+      mapFrom((source) => source.complaint_identifier.park_guid),
+    ),
   );
 };
 export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
@@ -1168,6 +1180,10 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.updatedOn,
       mapFrom((source) => source.complaint_identifier.comp_last_upd_utc_timestamp),
+    ),
+    forMember(
+      (destination) => destination.parkGuid,
+      mapFrom((source) => source.complaint_identifier.park_guid),
     ),
   );
 };
@@ -1496,6 +1512,10 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
         return null;
       }),
     ),
+    forMember(
+      (destination) => destination.parkGuid,
+      mapFrom((source) => source.complaint_identifier.park_guid),
+    ),
   );
 };
 
@@ -1794,6 +1814,10 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
         return null;
       }),
     ),
+    forMember(
+      (destination) => destination.parkGuid,
+      mapFrom((source) => source.complaint_identifier.park_guid),
+    ),
   );
 };
 
@@ -2073,6 +2097,10 @@ export const mapGeneralIncidentReport = (mapper: Mapper, tz: string = "America/V
     forMember(
       (destination) => destination.id,
       mapFrom((source) => source.complaint_identifier.complaint_identifier),
+    ),
+    forMember(
+      (destination) => destination.parkGuid,
+      mapFrom((source) => source.complaint_identifier.park_guid),
     ),
   );
 };

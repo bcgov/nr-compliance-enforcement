@@ -27,6 +27,7 @@ import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
 import { FilterDate } from "@components/common/filter-date";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
+import { Park } from "@/app/components/common/park";
 
 type Props = {
   type: string;
@@ -38,6 +39,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       region,
       zone,
       community,
+      park,
       officer,
       species,
       natureOfComplaint,
@@ -211,7 +213,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         {COMPLAINT_TYPES.GIR === type &&
           activeFilters.showGirTypeFilter && ( // GIR only filter
             <div id="comp-filter-gir-id">
-              <label htmlFor="gir-type-select-id">Gir type</label>
+              <label htmlFor="gir-type-select-id">GIR type</label>
               <div className="filter-select-padding">
                 <CompSelect
                   id="gir-type-select-id"
@@ -351,7 +353,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
 
         {COMPLAINT_TYPES.HWCR === type && (
           <div id="comp-filter-status-id">
-            <label htmlFor="status-select-id">Equipment Status</label>
+            <label htmlFor="status-select-id">Equipment status</label>
             <div className="filter-select-padding">
               <CompSelect
                 id="status-select-id"
@@ -479,6 +481,23 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               </div>
             </div>
           )}
+
+          {activeFilters.showParkFilter && (
+            <div id="comp-filter-park-id">
+              <label htmlFor="park-select-id">Park</label>
+              <div className="filter-select-padding">
+                <Park
+                  id={`comp-details-park-${park}`}
+                  initialParkGuid={park}
+                  isInEdit={true}
+                  onChange={(option) => {
+                    setFilter("park", option);
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
           {activeFilters.showOfficerFilter && (
             <div id="comp-filter-officer-id">
               <label htmlFor="officer-select-id">Officer assigned</label>

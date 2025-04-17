@@ -1,5 +1,7 @@
 import { FC } from "react";
 import { SortableHeader } from "@components/common/sortable-header";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 type Props = {
   handleSort: Function;
@@ -44,9 +46,17 @@ export const GeneralComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sor
           sortDirection={sortDirection}
         />
 
-        <th className="unsortable">
-          <div className="comp-header-label">Location/address</div>
-        </th>
+        <FeatureFlag feature={FEATURE_TYPES.PARK_COLUMN}>
+          <th className="unsortable-header">
+            <div className="header-label">Park</div>
+          </th>
+        </FeatureFlag>
+
+        <FeatureFlag feature={FEATURE_TYPES.LOCATION_COLUMN}>
+          <th className="unsortable-header">
+            <div className="header-label">Location/address</div>
+          </th>
+        </FeatureFlag>
 
         <SortableHeader
           title="Status"

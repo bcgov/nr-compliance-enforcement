@@ -241,6 +241,10 @@ VALUES('375bac7f-390a-4b32-91da-1ed9da71c1e3'::uuid, 'ENV', NULL, NULL, 'TestAcc
 ON CONFLICT DO NOTHING;
 INSERT INTO public.person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('7e49b515-48c5-4fc2-9b70-a0ea8653f4aa'::uuid, 'ENV', NULL, NULL, 'TestAcct 3', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754')
+ON CONFLICT DO NOTHING;
+INSERT INTO public.person
+(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('5a724b5e-aa64-439d-a76d-3aa7320409a0'::uuid, 'Scarlett', NULL, NULL, 'Truong', 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO public.person
@@ -333,12 +337,16 @@ INSERT INTO public.officer
 VALUES('9d171865-aab6-43d1-bbf2-93b4d4c5ba02'::uuid, 'AWILCOX', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '666c0f30-d707-4ade-b67f-9b888fe234e6'::uuid, '9fc7327b-b206-4a5c-88f1-2875a456eb49'::uuid, '287d4e72-8409-4dd1-991a-8b1117b8eb2a'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('fc91b041-7f1b-46e9-8c07-0813bb656a7f'::uuid, 'ENCETST1', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186', '16dc87d5-2034-4d9a-bbf4-3ec0f927d3e8'::uuid, '79fe321b-7716-413f-b878-c5fd6100317d'::uuid, '0cf857a2-28a3-4867-af0f-d59449243057'::uuid)
+(officer_guid, user_id, agency_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
+VALUES('fc91b041-7f1b-46e9-8c07-0813bb656a7f'::uuid, 'ENCETST1', 'COS', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186', '16dc87d5-2034-4d9a-bbf4-3ec0f927d3e8'::uuid, '79fe321b-7716-413f-b878-c5fd6100317d'::uuid, '0cf857a2-28a3-4867-af0f-d59449243057'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, auth_user_guid)
-VALUES('ac64c6e6-8233-4cee-807b-5bb2b4ddb15b'::uuid, 'ENCETST2', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186', '375bac7f-390a-4b32-91da-1ed9da71c1e3'::uuid, '6d1bb908-0f03-4873-af49-916713583c7e'::uuid)
+(officer_guid, user_id, agency_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, auth_user_guid)
+VALUES('ac64c6e6-8233-4cee-807b-5bb2b4ddb15b'::uuid, 'ENCETST2', 'EPO', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186', '375bac7f-390a-4b32-91da-1ed9da71c1e3'::uuid, '6d1bb908-0f03-4873-af49-916713583c7e'::uuid)
+ON CONFLICT DO NOTHING;
+INSERT INTO public.officer
+(officer_guid, user_id, agency_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, auth_user_guid)
+VALUES('1c28a7a0-fd7e-4d39-9e8f-50f34e1b3e59'::uuid, 'ENCETST3', 'PARKS', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186', '7e49b515-48c5-4fc2-9b70-a0ea8653f4aa'::uuid, '45b33bda-6d2c-4947-9ba2-1f611655047a'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO public.officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid)
@@ -1364,6 +1372,32 @@ values('CARIBOU', 'Caribou', 'Caribou', 3, true, null, user, now(), user, now())
 UPDATE species_code SET display_order = 4 where species_code = 'CARIBOU';
 UPDATE species_code SET display_order = 3 where species_code = 'BOBCAT';
 
+-- CE-1594 update display order in species_code
+UPDATE species_code SET display_order = 10 WHERE species_code = 'BISON';
+UPDATE species_code SET display_order = 20 WHERE species_code = 'BLKBEAR';
+UPDATE species_code SET display_order = 30 WHERE species_code = 'BOBCAT';
+UPDATE species_code SET display_order = 40 WHERE species_code = 'CARIBOU';
+UPDATE species_code SET display_order = 50 WHERE species_code = 'COUGAR';
+UPDATE species_code SET display_order = 60 WHERE species_code = 'COYOTE';
+UPDATE species_code SET display_order = 70 WHERE species_code = 'DEER';
+UPDATE species_code SET display_order = 80 WHERE species_code = 'ELK';
+UPDATE species_code SET display_order = 90 WHERE species_code = 'FOX';
+UPDATE species_code SET display_order = 100 WHERE species_code = 'GRZBEAR';
+UPDATE species_code SET display_order = 110 WHERE species_code = 'FERALHOG';
+UPDATE species_code SET display_order = 120 WHERE species_code = 'LYNX';
+UPDATE species_code SET display_order = 130 WHERE species_code = 'MOOSE';
+UPDATE species_code SET display_order = 140 WHERE species_code = 'MTNGOAT';
+UPDATE species_code SET display_order = 150 WHERE species_code = 'OTHER';
+UPDATE species_code SET display_order = 160 WHERE species_code = 'RACCOON';
+UPDATE species_code SET display_order = 170 WHERE species_code = 'RAPTOR';
+UPDATE species_code SET display_order = 180 WHERE species_code = 'RATTLER';
+UPDATE species_code SET display_order = 190 WHERE species_code = 'RVROTTER';
+UPDATE species_code SET display_order = 200 WHERE species_code = 'SKUNK';
+UPDATE species_code SET display_order = 210 WHERE species_code = 'UNKNOWN';
+UPDATE species_code SET display_order = 220 WHERE species_code = 'WLDSHEEP';
+UPDATE species_code SET display_order = 230 WHERE species_code = 'WOLF';
+UPDATE species_code SET display_order = 240 WHERE species_code = 'WOLVERN';
+
 -- CE-771
 INSERT INTO public.complaint
 (complaint_identifier, detail_text, caller_name, caller_address, caller_email, caller_phone_1, caller_phone_2, caller_phone_3, location_summary_text, location_detailed_text, incident_utc_datetime, incident_reported_utc_timestmp, reported_by_other_text, create_user_id,  create_utc_timestamp, update_user_id,  update_utc_timestamp, reported_by_code, owned_by_agency_code, complaint_status_code, geo_organization_unit_code, location_geometry_point)
@@ -1932,9 +1966,26 @@ SET owned_by_agency_code = 'COS'
 WHERE complaint_identifier IN ('23-031744', '23-006888', '23-032456');
 
 ---------------------
+-- Assign offiers with no office or agency to CEEB
+---------------------
+UPDATE public.officer
+SET agency_code = 'EPO'
+WHERE office_guid is null
+AND agency_code is null;
+
+
+---------------------
 -- Enable referrals in dev/test for all users
 ---------------------
 
 UPDATE public.feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'COMPREF';
+
+---------------------
+-- Enable collaboration in dev/test for all users
+---------------------
+
+UPDATE public.feature_agency_xref
+SET active_ind = 'Y'
+WHERE feature_code = 'COMPCOLLAB';

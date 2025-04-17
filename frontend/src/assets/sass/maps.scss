@@ -5,6 +5,15 @@
   line-height: 20px;
 }
 
+.map-marker-equipment-active {
+  @extend .map-marker;
+  color: rgb(16, 124, 65);
+}
+.map-marker-equipment-inactive {
+  @extend .map-marker;
+  color: gray;
+}
+
 .map-container {
   z-index: 1;
 }
@@ -121,13 +130,25 @@
 }
 
 .leaflet-popup-content-wrapper {
-  width: 360px;
+  width: max-content;
 }
 
 .leaflet-popup-content {
   width: auto !important;
   margin: 12px;
   font-size: 1rem;
+}
+
+.leaflet-popup-object-description {
+  color: gray;
+  margin: 5px !important;
+}
+
+.leaflet-popup-object-coordinates {
+  margin: 5px !important;
+}
+.markercluster-map {
+  height: 90vh;
 }
 
 .comp-map-popup-header {

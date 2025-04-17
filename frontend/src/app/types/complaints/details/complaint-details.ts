@@ -22,4 +22,5 @@ export interface ComplaintDetails {
   girTypeCode?: string;
   complaintMethodReceivedCode?: ComplaintMethodReceivedType;
   ownedBy?: string;
+  parkGuid?: string;
 }
