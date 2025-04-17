@@ -1,0 +1,13 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: f208ae-nr-compliance-enforcement
+spec:
+  project: f208ae
+  source:
+    repoURL: https://github.com/bcgov-c/tenant-gitops-f208ae.git
+    path: argoapps/
+    targetRevision: HEAD
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: f208ae-tools
