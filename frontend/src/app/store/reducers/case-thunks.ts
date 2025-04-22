@@ -508,7 +508,7 @@ const updatePrevention =
       },
     } = updatePreventionInput;
 
-    for (let item of preventionType.filter((record) => record.isActive)) {
+    for (let item of preventionType.filter((record) => record.isActive && record.agencyCode === agencyCode)) {
       if (
         !actions
           .map((action) => {
