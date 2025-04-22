@@ -139,3 +139,6 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Scratch folder
+.scratch
