@@ -878,14 +878,18 @@ const yesNoOptions: Option[] = [
 export const selectYesNoCodeDropdown = (): Array<Option> => {
   return yesNoOptions;
 };
+
 export const selectPreventionTypeCodeDropdown = createSelector(
   (state: RootState) => state.codeTables["prevention-type"],
-  (preventionType) =>
-    preventionType.map(({ preventionType, longDescription, isActive }) => ({
-      label: longDescription,
-      value: preventionType,
-      isActive,
-    })),
+  (_state: RootState, agencyCode: string) => agencyCode,
+  (preventionType, agencyCode) =>
+    preventionType
+      .filter(({ agencyCode: itemAgencyCode }) => itemAgencyCode === agencyCode)
+      .map(({ preventionType, longDescription, isActive }) => ({
+        label: longDescription,
+        value: preventionType,
+        isActive,
+      })),
 );
 
 export const selectHwcrNatureOfComplaintCodeDropdown = createSelector(
