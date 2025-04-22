@@ -30,6 +30,7 @@ import { selectPrevention } from "@store/reducers/case-selectors";
 import { upsertPrevention } from "@store/reducers/case-thunks";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
+import UserService from "@/app/service/user-service";
 
 export const HWCRComplaintPrevention: FC = () => {
   const dispatch = useAppDispatch();
@@ -71,7 +72,9 @@ export const HWCRComplaintPrevention: FC = () => {
     setEditable(true);
   };
 
-  const preventionTypeList = useAppSelector(selectPreventionTypeCodeDropdown);
+  const preventionTypeList = useAppSelector((state) =>
+    selectPreventionTypeCodeDropdown(state, UserService.getUserAgency()),
+  );
   const { personGuid } = useAppSelector(selectComplaintHeader(complaintType));
   const assigned = useAppSelector(selectComplaintAssignedBy);
   const cases = useAppSelector((state) => state.cases);
@@ -186,7 +189,7 @@ export const HWCRComplaintPrevention: FC = () => {
         }),
       };
 
-      dispatch(upsertPrevention(id, updatedPreventionData));
+      dispatch(upsertPrevention(id, ownedByAgencyCode.agency, updatedPreventionData));
       setEditable(false);
     } else {
       handleFormErrors();

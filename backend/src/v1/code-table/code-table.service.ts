@@ -360,8 +360,9 @@ export class CodeTableService {
             "{HWCRPreventionActions{actionTypeCode actionCode displayOrder activeIndicator shortDescription longDescription}}",
         });
         const preventionTypeCodes = data.HWCRPreventionActions.map(
-          ({ actionCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+          ({ actionTypeCode, actionCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
             const table: PreventionType = {
+              agencyCode: actionTypeCode === "COSPRV&EDU" ? "COS" : "PARKS", //Might need to be converted to a switch in the future
               preventionType: actionCode,
               shortDescription: shortDescription,
               longDescription: longDescription,
