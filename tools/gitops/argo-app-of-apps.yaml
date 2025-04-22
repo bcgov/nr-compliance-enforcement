@@ -7,7 +7,7 @@ spec:
   source:
     repoURL: https://github.com/bcgov-c/tenant-gitops-f208ae.git
     path: argoapps/
-    targetRevision: HEAD
+    targetRevision: main
   destination:
     server: https://kubernetes.default.svc
     namespace: f208ae-tools
