@@ -189,7 +189,7 @@ export const HWCRComplaintPrevention: FC = () => {
         }),
       };
 
-      dispatch(upsertPrevention(id, updatedPreventionData));
+      dispatch(upsertPrevention(id, ownedByAgencyCode.agency, updatedPreventionData));
       setEditable(false);
     } else {
       handleFormErrors();
