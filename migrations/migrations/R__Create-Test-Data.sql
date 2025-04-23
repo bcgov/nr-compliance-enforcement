@@ -5671,6 +5671,33 @@ values
 DO NOTHING;
 
 insert into
+  public.team_code (
+    team_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+values
+  (
+    'EPD',
+    'Environmental Protection Division',
+    'Environmental Protection Division',
+    5,
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT
+DO NOTHING;
+
+
+insert into
   public.team (
     team_code,
     agency_code,
@@ -5771,6 +5798,28 @@ insert into
 values
   (
     'RIPM',
+    'EPO',
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT
+DO NOTHING;
+
+insert into
+  public.team (
+    team_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+values
+  (
+    'EPD',
     'EPO',
     true,
     'FLYWAY',
