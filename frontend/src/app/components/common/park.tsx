@@ -1,4 +1,4 @@
-import { AsyncTypeahead } from "react-bootstrap-typeahead";
+import { AsyncTypeahead, Highlighter } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
 import { FC, useState, useEffect } from "react";
@@ -7,6 +7,7 @@ import { useAppDispatch } from "@hooks/hooks";
 import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
 import { getCachedParkName, setCachedParkName } from "@common/cache/park-name-cache";
+import { Badge } from "react-bootstrap";
 
 type Props = {
   id?: string;
@@ -28,6 +29,8 @@ export const Park: FC<Props> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [parkOption, setParkOption] = useState<Option | undefined>(undefined);
   const [parks, setParks] = useState<any[]>([]);
+  const [lastQuery, setLastQuery] = useState<string>("");
+  const [lastSkip, setLastSkip] = useState<number>(0);
 
   useEffect(() => {
     setIsLoading(true);
@@ -63,13 +66,15 @@ export const Park: FC<Props> = ({
     } else {
       setParkOption(undefined);
       onChange(undefined);
+      setLastSkip(0);
+      setLastQuery("");
     }
   };
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = async (query: string, skip: number) => {
     setIsLoading(true);
     const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/v1/shared-data/park?search=${query}&take=50&skip=0`,
+      `${config.API_BASE_URL}/v1/shared-data/park?search=${query}&take=50&skip=${skip}`,
     );
     const response: any = await get(dispatch, parameters, {}, false);
     if (response) {
@@ -78,11 +83,32 @@ export const Park: FC<Props> = ({
           ({
             label: park.name,
             value: park.parkGuid,
+            labelElement: (
+              <>
+                {park.parkAreas.map((area: any) => (
+                  <>
+                    <span> </span>
+                    <Badge
+                      className="comp-status-badge-closed"
+                      key={area.name}
+                    >
+                      {area.name}
+                    </Badge>
+                  </>
+                ))}
+              </>
+            ),
           }) as Option,
       );
-      setParks(parkSearchOptions);
+      if (skip === 0) {
+        setParks(parkSearchOptions);
+      } else if (parks.length > 0) {
+        setParks((parks) => [...parks, ...parkSearchOptions]);
+      }
     }
     setIsLoading(false);
+    setLastQuery(query);
+    setLastSkip(skip);
   };
 
   return isInEdit ? (
@@ -94,14 +120,28 @@ export const Park: FC<Props> = ({
         labelKey="label"
         minLength={0}
         isLoading={isLoading}
-        onSearch={handleSearch}
+        onSearch={(query) => handleSearch(query, 0)}
         onChange={handleChange}
-        onFocus={() => handleSearch("")}
+        onFocus={() => {
+          handleSearch(lastQuery, 0);
+        }}
         options={parks}
         placeholder="Select"
         isInvalid={errorMessage.length > 0}
         useCache={true}
         className="comp-select comp-details-input full-width comp-async comp-async-select"
+        renderMenuItemChildren={(option: any, props: any) => (
+          <>
+            <Highlighter search={props.text}>{option.label}</Highlighter>
+            {option.labelElement}
+          </>
+        )}
+        paginate={true}
+        paginationText="Click here to load more parks, or type to search"
+        onPaginate={(event) => {
+          handleSearch(lastQuery, lastSkip + 50);
+        }}
+        maxResults={lastSkip + 49}
       />
       <div className="error-message">{errorMessage}</div>
     </div>
