@@ -136,7 +136,7 @@ export const Park: FC<Props> = ({
             {option.labelElement}
           </>
         )}
-        paginate={true}
+        paginate={parks.length > 49}
         paginationText="Click here to load more parks, or type to search"
         onPaginate={(event) => {
           handleSearch(lastQuery, lastSkip + 50);
