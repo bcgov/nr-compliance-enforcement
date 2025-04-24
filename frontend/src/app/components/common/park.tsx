@@ -128,7 +128,7 @@ export const Park: FC<Props> = ({
         options={parks}
         placeholder="Select"
         isInvalid={errorMessage.length > 0}
-        useCache={true}
+        useCache={false}
         className="comp-select comp-details-input full-width comp-async comp-async-select"
         renderMenuItemChildren={(option: any, props: any) => (
           <>
@@ -141,7 +141,7 @@ export const Park: FC<Props> = ({
         onPaginate={(event) => {
           handleSearch(lastQuery, lastSkip + 50);
         }}
-        maxResults={lastSkip + 49}
+        maxResults={0}
       />
       <div className="error-message">{errorMessage}</div>
     </div>
