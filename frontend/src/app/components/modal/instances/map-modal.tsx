@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 import { Modal, Button } from "react-bootstrap";
-import { useAppSelector, useAppDispatch } from "@hooks/hooks";
+import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
 import { MapContainer, TileLayer, Marker, useMapEvents, Popup } from "react-leaflet";
 import { selectGeocodedComplaintCoordinates } from "@store/reducers/complaints";
@@ -68,18 +68,16 @@ export const MapModal: FC<MapModalProps> = ({
   useEffect(() => {
     if (complaintCoords) {
       setMapCenterPosition({ lat: complaintCoords[1], lng: complaintCoords[0] });
-    } else {
-      if (geocodedComplaintCoordinates?.features) {
-        const lat =
-          geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude] !== undefined
-            ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude]
-            : 0;
-        const lng =
-          geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude] !== undefined
-            ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude]
-            : 0;
-        setMapCenterPosition({ lat: lat, lng: lng });
-      }
+    } else if (geocodedComplaintCoordinates?.features) {
+      const lat =
+        geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude] !== undefined
+          ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude]
+          : 0;
+      const lng =
+        geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude] !== undefined
+          ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude]
+          : 0;
+      setMapCenterPosition({ lat: lat, lng: lng });
     }
   }, [complaintCoords]);
 
@@ -93,7 +91,7 @@ export const MapModal: FC<MapModalProps> = ({
     submit();
   };
 
-  const MapClickHandler: React.FC = () => {
+  const MapClickHandler = () => {
     useMapEvents({
       click(e) {
         setTempCoordinates([e.latlng.lat, e.latlng.lng]);
