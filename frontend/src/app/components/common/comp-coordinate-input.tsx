@@ -390,7 +390,6 @@ export const CompCoordinateInput: FC<Props> = ({
                   className={`
                   comp-form-control
                   ${xCoordinateErrorMsg ? "error-border" : ""}
-                  ${validationRequired ? "validation-group-input" : ""}
                 `}
                   onChange={(evt: any) => handleGeoPointChange(yCoordinate ?? "", evt.target.value)}
                   value={xCoordinate ?? ""}
@@ -406,7 +405,7 @@ export const CompCoordinateInput: FC<Props> = ({
               </div>
             </div>
           )}
-          {selectFromMap && (
+          {selectFromMap && coordinateType === COORDINATE_TYPES.LatLong && (
             <Button
               variant="outline-primary"
               onClick={openMapModal}
@@ -429,7 +428,7 @@ export const CompCoordinateInput: FC<Props> = ({
           )}
         </div>
         {coordinateType === COORDINATE_TYPES.UTM && (
-          <div className="comp-lat-long-utm-input">
+          <div className="comp-lat-long-utm-input validation-group-input">
             <input
               placeholder="Easting"
               aria-label="Easting"
