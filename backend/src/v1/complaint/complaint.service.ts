@@ -2413,7 +2413,7 @@ export class ComplaintService {
 
       //-- get park data
       data.park = await _getParkData(data.parkGuid, token, tz);
-      data.parkAreasFormatted = (data.park.parkAreas || [])
+      data.parkAreasFormatted = (data.park.parkAreas ?? [])
         .map((area) => area?.name)
         .filter((name) => name && name.trim() !== "")
         .join(", ");
