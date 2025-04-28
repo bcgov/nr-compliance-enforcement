@@ -134,7 +134,7 @@ export const MapModal: FC<MapModalProps> = ({
           <MapContainer
             center={mapCenterPosition} // Center on complaint coordinates
             zoom={complaintCoords ? 17 : 12} //Zoom in more details if has complaint coords
-            style={{ height: "50vh", width: "100%" }}
+            style={{ height: "50vh", width: "100%", cursor: "default" }}
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             <MapClickHandler />
