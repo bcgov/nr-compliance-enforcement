@@ -67,7 +67,7 @@ import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates
 import { toDate, toZonedTime, format } from "date-fns-tz";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
-import { ComplaintUpdateDto, ComplaintUpdateType } from "src/types/models/complaint-updates/complaint-update-dto";
+import { ComplaintUpdateDto, ComplaintUpdateType } from "../../types/models/complaint-updates/complaint-update-dto";
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
