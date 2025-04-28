@@ -13,6 +13,7 @@ import {
   updateGeneralComplaintByRow,
   getComplaintById,
   selectComplaint,
+  selectComplaintCollaborators,
 } from "./complaints";
 import { generateApiParameters, get, patch, post } from "@common/api";
 import { from } from "linq-to-typescript";
@@ -21,10 +22,10 @@ import Option from "@apptypes/app/option";
 import { toggleNotification } from "./app";
 import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
-import { OfficerDto } from "@apptypes/app/people/officer";
 import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
 import { Roles } from "@apptypes/app/roles";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { Collaborator } from "@/app/types/app/complaints/collaborator";
 
 const initialState: OfficerState = {
   officers: [],
@@ -397,6 +398,15 @@ export const selectOfficersByAgency = createSelector(
   },
 );
 
+export const selectOfficersAndCollaboratorsByAgency = createSelector(
+  (state: RootState) => state.officers.officers,
+  (state: RootState) => state.complaints.complaintCollaborators,
+  (state: RootState, agency: string) => agency,
+  (officers, complaintCollaborators, agency) => {
+    return [...filterOfficerByAgency(agency, officers), ...complaintCollaborators];
+  },
+);
+
 export const selectOfficerListByAgency = createSelector(
   [selectOfficers, selectComplaint],
   (officers, complaint): Array<Option> => {
@@ -407,6 +417,28 @@ export const selectOfficerListByAgency = createSelector(
         label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
       }));
       return officerDropdown;
+    }
+    return [];
+  },
+);
+
+export const selectOfficerAndCollaboratorListByAgency = createSelector(
+  [selectOfficers, selectComplaint, selectComplaintCollaborators],
+  (officers, complaint, collaborators): Array<Option> => {
+    if (complaint?.ownedBy) {
+      const officerList = filterOfficerByAgency(complaint.ownedBy, officers || []);
+
+      const officerOptions = officerList.map((officer: Officer) => ({
+        value: officer.auth_user_guid,
+        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+      }));
+
+      const collaboratorOptions = collaborators.map((collaborator: Collaborator) => ({
+        value: collaborator.authUserGuid,
+        label: `${collaborator.lastName}, ${collaborator.firstName}`,
+      }));
+
+      return [...officerOptions, ...collaboratorOptions];
     }
     return [];
   },
