@@ -355,76 +355,79 @@ export const CompCoordinateInput: FC<Props> = ({
             />
           }
         </div>
-        {coordinateType === COORDINATE_TYPES.LatLong && (
-          <div className="comp-lat-long-input">
-            <div>
-              <input
-                placeholder="Latitude"
-                aria-label="Latitude"
-                type="text"
-                id="input-y-coordinate"
-                className={`
+        <div className="coordinates-group-input">
+          {coordinateType === COORDINATE_TYPES.LatLong && (
+            <div className="comp-lat-long-input">
+              <div>
+                <input
+                  placeholder="Latitude"
+                  aria-label="Latitude"
+                  type="text"
+                  id="input-y-coordinate"
+                  className={`
                   comp-form-control
                   ${yCoordinateErrorMsg ? "error-border" : ""}
                   ${validationRequired ? "validation-group-input" : ""}
                 `}
-                onChange={(evt: any) => handleGeoPointChange(evt.target.value, xCoordinate ?? "")}
-                value={yCoordinate ?? ""}
-                maxLength={120}
-              />
-              <label
-                className="comp-form-label-below"
-                htmlFor="input-y-coordinate"
-                hidden
-              >
-                Latitude
-              </label>
-            </div>
-            <div>
-              <input
-                placeholder="Longitude"
-                aria-label="Longitude"
-                type="text"
-                id="input-x-coordinate"
-                className={`
+                  onChange={(evt: any) => handleGeoPointChange(evt.target.value, xCoordinate ?? "")}
+                  value={yCoordinate ?? ""}
+                  maxLength={120}
+                />
+                <label
+                  className="comp-form-label-below"
+                  htmlFor="input-y-coordinate"
+                  hidden
+                >
+                  Latitude
+                </label>
+              </div>
+              <div>
+                <input
+                  placeholder="Longitude"
+                  aria-label="Longitude"
+                  type="text"
+                  id="input-x-coordinate"
+                  className={`
                   comp-form-control
                   ${xCoordinateErrorMsg ? "error-border" : ""}
                   ${validationRequired ? "validation-group-input" : ""}
                 `}
-                onChange={(evt: any) => handleGeoPointChange(yCoordinate ?? "", evt.target.value)}
-                value={xCoordinate ?? ""}
-                maxLength={120}
-              />
-              <label
-                className="comp-form-label-below"
-                htmlFor="input-x-coordinate"
-                hidden
-              >
-                Longitude
-              </label>
-            </div>
-            {selectFromMap && (
-              <Button
-                variant="outline-primary"
-                onClick={openMapModal}
-              >
-                <span>Select from map</span>
-                <span></span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-crosshair"
-                  viewBox="0 0 16 16"
-                  style={{ marginLeft: "5px", marginTop: "-2px" }}
+                  onChange={(evt: any) => handleGeoPointChange(yCoordinate ?? "", evt.target.value)}
+                  value={xCoordinate ?? ""}
+                  maxLength={120}
+                />
+                <label
+                  className="comp-form-label-below"
+                  htmlFor="input-x-coordinate"
+                  hidden
                 >
-                  <path d="M8.5.5a.5.5 0 0 0-1 0v.518A7 7 0 0 0 1.018 7.5H.5a.5.5 0 0 0 0 1h.518A7 7 0 0 0 7.5 14.982v.518a.5.5 0 0 0 1 0v-.518A7 7 0 0 0 14.982 8.5h.518a.5.5 0 0 0 0-1h-.518A7 7 0 0 0 8.5 1.018zm-6.48 7A6 6 0 0 1 7.5 2.02v.48a.5.5 0 0 0 1 0v-.48a6 6 0 0 1 5.48 5.48h-.48a.5.5 0 0 0 0 1h.48a6 6 0 0 1-5.48 5.48v-.48a.5.5 0 0 0-1 0v.48A6 6 0 0 1 2.02 8.5h.48a.5.5 0 0 0 0-1zM8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
-                </svg>
-              </Button>
-            )}
-          </div>
-        )}
+                  Longitude
+                </label>
+              </div>
+            </div>
+          )}
+          {selectFromMap && (
+            <Button
+              variant="outline-primary"
+              onClick={openMapModal}
+              className="comp-select-from-map-btn"
+            >
+              <span>Select from map</span>
+              <span></span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-crosshair"
+                viewBox="0 0 16 16"
+                style={{ marginLeft: "5px", marginTop: "-2px" }}
+              >
+                <path d="M8.5.5a.5.5 0 0 0-1 0v.518A7 7 0 0 0 1.018 7.5H.5a.5.5 0 0 0 0 1h.518A7 7 0 0 0 7.5 14.982v.518a.5.5 0 0 0 1 0v-.518A7 7 0 0 0 14.982 8.5h.518a.5.5 0 0 0 0-1h-.518A7 7 0 0 0 8.5 1.018zm-6.48 7A6 6 0 0 1 7.5 2.02v.48a.5.5 0 0 0 1 0v-.48a6 6 0 0 1 5.48 5.48h-.48a.5.5 0 0 0 0 1h.48a6 6 0 0 1-5.48 5.48v-.48a.5.5 0 0 0-1 0v.48A6 6 0 0 1 2.02 8.5h.48a.5.5 0 0 0 0-1zM8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
+              </svg>
+            </Button>
+          )}
+        </div>
         {coordinateType === COORDINATE_TYPES.UTM && (
           <div className="comp-lat-long-utm-input">
             <input
