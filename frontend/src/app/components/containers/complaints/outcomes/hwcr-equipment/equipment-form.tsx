@@ -461,6 +461,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               sourceYCoordinate={complaintData?.location?.coordinates[1].toString() ?? ""}
               enableCopyCoordinates={true}
               validationRequired={true}
+              selectFromMap={true}
+              equipmentType={type?.label}
             />
             {/* SET BY */}
             <div
