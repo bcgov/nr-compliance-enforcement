@@ -1,11 +1,13 @@
 export interface ComplaintUpdateDto {
   sequenceId: number;
-  description: string;
-  updatedOn: string;
-  updatedAt: string;
+  description?: string;
+  updatedOn?: string;
+  updatedAt?: string;
   updateOn: string;
-  location: ComplaintUpdateLocation;
-  caller: ComplaintUpdateCaller;
+  location?: ComplaintUpdateLocation;
+  caller?: ComplaintUpdateCaller;
+  referral?: ComplaintReferralDetail;
+  updateType: ComplaintUpdateType;
 }
 
 export interface ComplaintUpdateLocation {
@@ -23,4 +25,20 @@ export interface ComplaintUpdateCaller {
   address: string;
   email: string;
   organizationReportingComplaint: string;
+}
+
+export interface ComplaintReferralDetail {
+  previousAgency: string;
+  newAgency: string;
+  referredBy: {
+    officerGuid: string;
+    lastName: string;
+    firstName: string;
+  };
+  referralReason: string;
+}
+
+export enum ComplaintUpdateType {
+  UPDATE = "UPDATE",
+  REFERRAL = "REFERRAL",
 }
