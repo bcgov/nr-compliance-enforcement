@@ -426,7 +426,7 @@ export const selectOfficerAndCollaboratorListByAgency = createSelector(
   [selectOfficers, selectComplaint, selectComplaintCollaborators],
   (officers, complaint, collaborators): Array<Option> => {
     if (complaint?.ownedBy) {
-      const officerList = filterOfficerByAgency(complaint.ownedBy, officers || []);
+      const officerList = filterOfficerByAgency(complaint.ownedBy, officers ?? []);
 
       const officerOptions = officerList.map((officer: Officer) => ({
         value: officer.auth_user_guid,
