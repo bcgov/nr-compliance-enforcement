@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { ComplaintReferralService } from "./complaint_referral.service";
 import { ComplaintReferralController } from "./complaint_referral.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -8,7 +8,11 @@ import { PersonComplaintXrefModule } from "../person_complaint_xref/person_compl
 import { ComplaintModule } from "../complaint/complaint.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ComplaintReferral, Complaint]), PersonComplaintXrefModule, ComplaintModule],
+  imports: [
+    TypeOrmModule.forFeature([ComplaintReferral, Complaint]),
+    PersonComplaintXrefModule,
+    forwardRef(() => ComplaintModule),
+  ],
   controllers: [ComplaintReferralController],
   providers: [ComplaintReferralService],
   exports: [ComplaintReferralService],
