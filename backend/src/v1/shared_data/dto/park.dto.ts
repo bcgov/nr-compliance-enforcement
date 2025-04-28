@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
+import { ParkAreaDto } from "./park_area.dto";
 
 export class ParkDto {
   @ApiProperty({
@@ -30,5 +31,5 @@ export class ParkDto {
     example: "DCC",
     description: "The geo organization code for the park",
   })
-  geo_organization_unit_code: string;
+  parkAreas: Array<ParkAreaDto>;
 }
