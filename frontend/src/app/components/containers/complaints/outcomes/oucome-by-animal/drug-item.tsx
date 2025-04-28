@@ -3,7 +3,7 @@ import { Row, Col, ListGroup } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "@store/reducers/code-table";
 import { formatDate } from "@common/methods";
-import { selectOfficerListByAgency } from "@store/reducers/officer";
+import { selectOfficerAndCollaboratorListByAgency } from "@store/reducers/officer";
 import { from } from "linq-to-typescript";
 
 type props = {
@@ -33,7 +33,7 @@ export const DrugItem: FC<props> = ({
   const drugs = useAppSelector(selectDrugs);
   const drugUseMethods = useAppSelector(selectDrugUseMethods);
   const remainingDrugUse = useAppSelector(selectRemainingDrugUse);
-  const officers = useAppSelector(selectOfficerListByAgency);
+  const officers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
 
   const [injectedMethod, setInjectedMethod] = useState("");
   const [remaining, setRemaining] = useState("");
