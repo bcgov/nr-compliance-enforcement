@@ -1960,9 +1960,9 @@ export class ComplaintService {
       });
 
       const referrals = referralsResult?.map((item) => {
-        const utcReferralDate = toDate(item.referral_date, { timeZone: "UTC" });
-        const zonedReferralDate = toZonedTime(utcReferralDate, tz);
-        const updateOn = format(zonedReferralDate, "yyyy-MM-dd HH:mm", { timeZone: tz });
+        const standardTz = "America/Vancouver";
+        const zonedReferralDate = toZonedTime(item.referral_date, standardTz);
+        const updateOn = format(zonedReferralDate, "yyyy-MM-dd HH:mm");
         const record: ComplaintUpdateDto = {
           sequenceId: null,
           updateOn,
