@@ -1,13 +1,13 @@
 import { AssessmentActionDto } from "./assessment-action";
-import KeyValuePair from "../key-value-pair";
-export interface AssessmentDetailsDto {
+import KeyValuePair from "../../key-value-pair";
+export interface AssessmentDto {
   actionNotRequired: boolean;
   actionCloseComplaint: boolean;
   actionLinkedComplaintIdentifier: string;
   actionJustificationCode: string;
-  actionJustificationShortDescription: string;
-  actionJustificationLongDescription: string;
-  actionJustificationActiveIndicator: boolean;
+  actionJustificationShortDescription?: string;
+  actionJustificationLongDescription?: string;
+  actionJustificationActiveIndicator?: boolean;
   actions: Array<AssessmentActionDto>;
   contactedComplainant: boolean;
   attended: boolean;

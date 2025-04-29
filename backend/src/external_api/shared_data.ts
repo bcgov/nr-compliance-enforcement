@@ -11,7 +11,8 @@ export const caseFileQueryFields: string = `
 {
   caseIdentifier
   leadIdentifier
-  assessmentDetails {
+  assessment {
+    id,
     actionNotRequired
     actionJustificationCode
     actionJustificationShortDescription
