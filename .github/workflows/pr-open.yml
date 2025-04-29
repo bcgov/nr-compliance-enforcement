@@ -15,6 +15,12 @@ concurrency:
   group: ${{ github.event.number }}
   cancel-in-progress: true
 
+env:
+  GITOPS_REPO_BRANCH: main
+  GITOPS_REPO: bcgov-c/tenant-gitops-f208ae
+  GITOPS_REPO_VALUES_PATH: ./charts/apps/values
+  GITOPS_REPO_OUTPUTS_PATH: ./charts/apps/values/.outputs
+
 jobs:
   # https://github.com/bcgov/action-builder-ghcr
   builds:
@@ -32,64 +38,125 @@ jobs:
           tag_fallback: latest
           triggers: ('${{ matrix.package }}/')
 
-  # https://github.com/bcgov/quickstart-openshift
-  crunchy:
-    name: Deploy Crunchy
+  # TODO: uncomment, just speeding up testing for now
+  # # https://github.com/bcgov/quickstart-openshift
+  # crunchy:
+  #   name: Deploy Crunchy
+  #   needs: [builds]
+  #   uses: ./.github/workflows/.dbdeployer.yml
+  #   with:
+  #     s3_enabled: false # no backups in dev
+  #     params: --set global.environment=dev
+  #     cluster_environment: dev
+  #   secrets:
+  #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+  #     oc_token: ${{ secrets.OC_TOKEN }}
+
+  # # https://github.com/bcgov/quickstart-openshift-helpers
+  # deploys:
+  #   name: Deploys
+  #   needs: [builds, crunchy]
+  #   uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.5.0
+  #   secrets:
+  #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+  #     oc_token: ${{ secrets.OC_TOKEN }}
+  #   with:
+  #     params: --set global.useCrunchy=true --set global.crunchyClusterEnvironment=dev
+
+  # healthcheck:
+  #   name: Healthcheck Deployment
+  #   runs-on: ubuntu-22.04
+  #   needs: [builds, crunchy]
+  #   environment:
+  #   timeout-minutes: 15
+  #   if: (! github.event.pull_request.draft)
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - run: |
+  #         sleep 120 # wait for helm release to startup
+  #         ./.github/scripts/rollout_healthcheck.sh
+  #       env:
+  #         TIMEOUT_SECONDS: 420 # 7m
+  #         POLL_INTERVAL_SECONDS: 15
+  #         LABEL_SELECTOR: "app.kubernetes.io/instance=nr-compliance-enforcement-${{ github.event.number }}"
+  #         OC_NAMESPACE: ${{ vars.OC_NAMESPACE }}
+  #         OC_SERVER: ${{ vars.OC_SERVER }}
+  #         OC_TOKEN: ${{ secrets.OC_TOKEN }}
+
+  # tests:
+  #   name: Tests
+  #   if: needs.deploys.outputs.triggered == 'true' && (! github.event.pull_request.draft)
+  #   needs: [deploys]
+  #   uses: ./.github/workflows/.tests.yml
+
+  #   with:
+  #     target: ${{ github.event.number }}
+  #   secrets: inherit # so that the tests github action can use the secrests that this action has access to
+
+  # results:
+  #   name: PR Results
+  #   needs: [builds, deploys, tests, healthcheck]
+  #   if: always() && (!failure()) && (!cancelled())
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - run: echo "Success!"
+  
+  ### Emerald Jobs ###
+  deploy-emerald:
+    name: Deploy Workloads To Emerald
     needs: [builds]
-    uses: ./.github/workflows/.dbdeployer.yml
-    with:
-      s3_enabled: false # no backups in dev
-      params: --set global.environment=dev
-      cluster_environment: dev
-    secrets:
-      oc_namespace: ${{ secrets.OC_NAMESPACE }}
-      oc_token: ${{ secrets.OC_TOKEN }}
-
-  # https://github.com/bcgov/quickstart-openshift-helpers
-  deploys:
-    name: Deploys
-    needs: [builds, crunchy]
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.deployer.yml@v0.5.0
-    secrets:
-      oc_namespace: ${{ secrets.OC_NAMESPACE }}
-      oc_token: ${{ secrets.OC_TOKEN }}
-    with:
-      params: --set global.useCrunchy=true --set global.crunchyClusterEnvironment=dev
-
-  healthcheck:
-    name: Healthcheck Deployment
-    runs-on: ubuntu-22.04
-    needs: [builds, crunchy]
-    environment:
-    timeout-minutes: 15
-    if: (! github.event.pull_request.draft)
-    steps:
-      - uses: actions/checkout@v4
-      - run: |
-          sleep 120 # wait for helm release to startup
-          ./.github/scripts/rollout_healthcheck.sh
-        env:
-          TIMEOUT_SECONDS: 420 # 7m
-          POLL_INTERVAL_SECONDS: 15
-          LABEL_SELECTOR: "app.kubernetes.io/instance=nr-compliance-enforcement-${{ github.event.number }}"
-          OC_NAMESPACE: ${{ vars.OC_NAMESPACE }}
-          OC_SERVER: ${{ vars.OC_SERVER }}
-          OC_TOKEN: ${{ secrets.OC_TOKEN }}
-
-  tests:
-    name: Tests
-    if: needs.deploys.outputs.triggered == 'true' && (! github.event.pull_request.draft)
-    needs: [deploys]
-    uses: ./.github/workflows/.tests.yml
-
-    with:
-      target: ${{ github.event.number }}
-    secrets: inherit # so that the tests github action can use the secrests that this action has access to
-
-  results:
-    name: PR Results
-    needs: [builds, deploys, tests, healthcheck]
-    if: always() && (!failure()) && (!cancelled())
     runs-on: ubuntu-22.04
     steps:
-      - run: echo "Success!"
+      - name: Checkout CD repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.GITOPS_REPO }}
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          ref: ${{ env.GITOPS_REPO_BRANCH }}
+
+      - name: Calculate Deployment Number
+        id: get-deployment-number
+        shell: bash
+        run: |
+          PR_NUMBER=$(echo ${{ github.event.number }})
+          PR_NUMBER_MOD_TEN=$(($PR_NUMBER % 10))
+          echo "DEPLOYMENT_NUMBER=$(($PR_NUMBER_MOD_TEN))" >> $GITHUB_OUTPUT
+
+      - name: Configure git
+        # From https://github.com/orgs/community/discussions/26560#discussioncomment-3531273
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Update dev environment tag and enable it for deployment
+        run: |
+          DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
+          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
+          ./.github/scripts/gitops.sh tag dev-$DEPLOYMENT_NUMBER ${{ needs.builds.outputs.sha }}
+          
+          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
+          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
+          ./.github/scripts/gitops.sh enable dev-$DEPLOYMENT_NUMBER
+
+      # TODO: uncomment once crunchy is provisioned in f208ae
+      # We always run this to avoid deleting developer databases on commit pushes after a PR is opened
+      # there is a small edge case where a cleanup could be interrupted by this if 2 PRs open closely together
+      # - name: Unset / No-op Crunchy development DB cleanup
+      #   run: |
+      #     ./.github/scripts/crunchy.sh u
+
+      # On a newly opened PR we drop the old database and crunchy will standup a fresh db
+      # - name: Refresh developer database for newly opened PR
+      #   if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
+      #   run: |
+      #     DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+      #     ./.github/scripts/crunchy.sh s $DEPLOYMENT_NUMBER
+
+      - name: Commit and push update
+        shell: bash
+        run: |
+          DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+          ./.github/scripts/gitops.sh commitall "Updating dev-$DEPLOYMENT_NUMBER for PR ${{ github.event.number }}"
+          git push origin ${{ env.GITOPS_REPO_BRANCH }}
