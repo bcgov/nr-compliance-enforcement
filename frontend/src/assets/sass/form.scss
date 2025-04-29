@@ -88,12 +88,57 @@
 }
 
 // LAT/LONG INPUTS
+.coordinates-group-input {
+  display: flex;
+}
+
 .comp-lat-long-input {
   display: grid;
   grid-template-columns: auto auto;
   gap: 8px;
   max-width: 500px;
-  margin-top: 0.8rem;
+  margin-top: 0.3rem;
+}
+
+// Select-from-map button
+.comp-select-from-map-btn {
+  margin-left: 8px;
+  margin-top: 0.3rem;
+  height: 38px;
+  width: 180px;
+}
+
+@media screen and (max-width: 1100px) {
+  .coordinates-group-input {
+    flex-direction: column;
+  }
+  .comp-select-from-map-btn {
+    margin-left: 0px;
+  }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1024px) {
+  .comp-select-from-map-btn {
+    margin-left: 25px;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .coordinates-group-input {
+    flex-direction: row;
+  }
+  .comp-select-from-map-btn {
+    margin-left: 8px;
+  }
+}
+
+@media screen and (max-width: 833px) {
+  .coordinates-group-input {
+    flex-direction: column;
+  }
+  .comp-select-from-map-btn {
+    margin-left: 25px;
+  }
 }
 
 // LAT/LONG UTM INPUTS
@@ -102,7 +147,7 @@
   grid-template-columns: auto auto auto;
   gap: 8px;
   max-width: 500px;
-  margin-top: 0.8rem;
+  margin-top: 0.3rem;
 }
 
 @media screen and (max-width: 768px) {

@@ -428,7 +428,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                   <Button
                     variant="outline-primary"
                     size="sm"
-                    className="btn-txt svg-icon mt-2"
+                    className="btn-txt svg-icon mt-2 validation-group-input"
                     id="equipment-copy-address-button"
                     onClick={() => (complaintData ? setAddress(complaintData.locationSummary) : "")}
                   >
@@ -464,6 +464,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               sourceYCoordinate={complaintData?.location?.coordinates[1].toString() ?? ""}
               enableCopyCoordinates={true}
               validationRequired={true}
+              selectFromMap={true}
+              equipmentType={type?.label}
             />
             {/* SET BY */}
             <div
