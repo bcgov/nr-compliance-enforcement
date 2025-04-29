@@ -2274,7 +2274,6 @@ export class ComplaintService {
       }
 
       const { data, errors } = await get(token, {
-        // TODO: Update with GQL after CE-1541 merged in
         query: `{park (parkGuid: "${id}")
         {
           parkGuid,
@@ -2301,7 +2300,7 @@ export class ComplaintService {
           externalId: data.park.externalId,
           name: data.park.name,
           legalName: data.park.legalName,
-          parkAreas: [], //TODO: Replace with object from GQL
+          parkAreas: data.park.parkAreas?.map((area) => area.name) ?? [],
         };
       } else {
         this.logger.debug(`No park found for id: ${id}.`);
@@ -2481,10 +2480,7 @@ export class ComplaintService {
 
       //-- get park data
       data.park = await _getParkData(data.parkGuid, token, tz);
-      data.parkAreasFormatted = (data.park.parkAreas ?? [])
-        .map((area) => area?.name)
-        .filter((name) => name && name.trim() !== "")
-        .join(", ");
+      data.parkAreasFormatted = (data.park.parkAreas ?? []).filter((name) => name && name.trim() !== "").join(", ");
 
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);
