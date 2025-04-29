@@ -28,6 +28,51 @@ const redMarkerIcon = new Leaflet.DivIcon({
   iconAnchor: [20, 40],
 });
 
+type MapClickHandlerProps = {
+  complaintCoords: [number, number] | null;
+  tempCoordinates: [number, number] | null;
+  equipmentType: string;
+  setTempCoordinates: (coords: [number, number]) => void;
+};
+
+const MapClickHandler: FC<MapClickHandlerProps> = ({
+  complaintCoords,
+  tempCoordinates,
+  equipmentType,
+  setTempCoordinates,
+}) => {
+  useMapEvents({
+    click(e) {
+      setTempCoordinates([e.latlng.lat, e.latlng.lng]);
+    },
+  });
+  return (
+    <>
+      {/* Complaint marker (red) */}
+      {complaintCoords && (
+        <Marker
+          position={[complaintCoords[1], complaintCoords[0]]}
+          icon={redMarkerIcon}
+        />
+      )}
+      {/* Equipment marker (blue), shown only if tempCoordinates exists */}
+      {tempCoordinates && (
+        <Marker
+          position={tempCoordinates}
+          icon={blueMarkerIcon}
+        >
+          <Popup>
+            <p className="leaflet-popup-object-description">{equipmentType} coordinates</p>
+            <p className="leaflet-popup-object-coordinates">
+              {tempCoordinates[0]} , {tempCoordinates[1]}
+            </p>
+          </Popup>
+        </Marker>
+      )}
+    </>
+  );
+};
+
 type MapModalProps = {
   close: () => void;
   submit: () => void;
@@ -91,39 +136,6 @@ export const MapModal: FC<MapModalProps> = ({
     submit();
   };
 
-  const MapClickHandler = () => {
-    useMapEvents({
-      click(e) {
-        setTempCoordinates([e.latlng.lat, e.latlng.lng]);
-      },
-    });
-    return (
-      <>
-        {/* Complaint marker (red) */}
-        {complaintCoords && (
-          <Marker
-            position={[complaintCoords[1], complaintCoords[0]]}
-            icon={redMarkerIcon}
-          />
-        )}
-        {/* Equipment marker (blue), shown only if tempCoordinates exists */}
-        {tempCoordinates && (
-          <Marker
-            position={tempCoordinates}
-            icon={blueMarkerIcon}
-          >
-            <Popup>
-              <p className="leaflet-popup-object-description">{equipmentType} coordinates</p>
-              <p className="leaflet-popup-object-coordinates">
-                {tempCoordinates[0]} , {tempCoordinates[1]}
-              </p>
-            </Popup>
-          </Marker>
-        )}
-      </>
-    );
-  };
-
   return (
     <>
       <Modal.Header closeButton={true}>
@@ -137,7 +149,12 @@ export const MapModal: FC<MapModalProps> = ({
             style={{ height: "50vh", width: "100%", cursor: "default" }}
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <MapClickHandler />
+            <MapClickHandler
+              complaintCoords={complaintCoords}
+              tempCoordinates={tempCoordinates}
+              equipmentType={equipmentType}
+              setTempCoordinates={setTempCoordinates}
+            />
           </MapContainer>
         )}
       </Modal.Body>
