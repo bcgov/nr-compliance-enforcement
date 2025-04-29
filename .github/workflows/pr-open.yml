@@ -26,6 +26,9 @@ jobs:
   builds:
     name: Builds
     runs-on: ubuntu-22.04
+    outputs:
+      digest: ${{ steps.builds.outputs.digest }}
+      sha: ${{ github.sha }}
     strategy:
       matrix:
         package: [backend, frontend, migrations, webeoc]
@@ -135,7 +138,7 @@ jobs:
           VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
           ./.github/scripts/gitops.sh tag dev-$DEPLOYMENT_NUMBER ${{ needs.builds.outputs.sha }}
-          
+
           VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
           ./.github/scripts/gitops.sh enable dev-$DEPLOYMENT_NUMBER
