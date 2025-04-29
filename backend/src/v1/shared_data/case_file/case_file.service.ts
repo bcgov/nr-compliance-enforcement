@@ -204,32 +204,34 @@ export class CaseFileService {
     return returnValue;
   };
 
-  async createAssessment(token: string, assessmentInput: CreateAssessmentInput): Promise<CaseFileDto> {
+  async createAssessment(token: string, model: CreateAssessmentInput): Promise<CaseFileDto> {
     let returnValue;
 
-    const query = `mutation CreateAssessment($createAssessmentInput: CreateAssessmentInput!) {
-          createAssessment(createAssessmentInput: $createAssessmentInput)
+    this.logger.debug("createAssessment", model);
+
+    const query = `mutation CreateAssessment($input: CreateAssessmentInput!) {
+          createAssessment(input: $input)
           ${caseFileQueryFields}
         }`;
 
     // If changes need to be made in both databases (i.e. we need to create a link or change the status of a complaint)
     // then the transactional approach is taken.
-    if (assessmentInput.assessment.actionLinkedComplaintIdentifier || assessmentInput.assessment.actionCloseComplaint) {
-      returnValue = await this.linkComplaintsAndRunQuery(token, assessmentInput, query);
+    if (model.assessment.actionLinkedComplaintIdentifier || model.assessment.actionCloseComplaint) {
+      returnValue = await this.linkComplaintsAndRunQuery(token, model, query);
     } else {
       // If the assessment is not linking two complaints then simply create the new assessment in CM.
       const result = await post(token, {
         query: query,
-        variables: assessmentInput.assessment,
+        variables: { input: model },
       });
 
-      returnValue = await this.handleAPIResponse(result, assessmentInput.leadIdentifier);
+      returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     }
 
     return returnValue?.createAssessment;
   }
 
-  updateAssessment = async (token: string, assessmentInput: UpdateAssessmentInput): Promise<CaseFileDto> => {
+  updateAssessment = async (token: string, model: UpdateAssessmentInput): Promise<CaseFileDto> => {
     let returnValue;
 
     const query = `mutation UpdateAssessment($updateAssessmentInput: UpdateAssessmentInput!) {
@@ -240,14 +242,13 @@ export class CaseFileService {
     // If the assessment being updated has no action required or the justification is not duplicate, then check if there
     // was previously a link to another complaint. If there is, remove it.
     if (
-      !assessmentInput.assessment.actionNotRequired ||
-      (assessmentInput.assessment.actionJustificationCode &&
-        assessmentInput.assessment.actionJustificationCode !== "DUPLICATE")
+      !model.assessment.actionNotRequired ||
+      (model.assessment.actionJustificationCode && model.assessment.actionJustificationCode !== "DUPLICATE")
     ) {
       const existingLink = await this._linkedComplaintXrefRepository.findOne({
         relations: { linked_complaint_identifier: true, complaint_identifier: true },
         where: {
-          linked_complaint_identifier: { complaint_identifier: assessmentInput.leadIdentifier },
+          linked_complaint_identifier: { complaint_identifier: model.leadIdentifier },
           active_ind: true,
         },
       });
@@ -259,15 +260,15 @@ export class CaseFileService {
     }
     // If changes need to be made in both databases (i.e. we need to create a link or change the status of a complaint)
     // then the transactional approach is taken.
-    if (assessmentInput.assessment.actionLinkedComplaintIdentifier || assessmentInput.assessment.actionCloseComplaint) {
-      returnValue = await this.linkComplaintsAndRunQuery(token, assessmentInput, query);
+    if (model.assessment.actionLinkedComplaintIdentifier || model.assessment.actionCloseComplaint) {
+      returnValue = await this.linkComplaintsAndRunQuery(token, model, query);
     } else {
       // If the assessment is not linking two complaints then simply update the assessment in CM.
       const result = await post(token, {
         query: query,
-        variables: assessmentInput.assessment,
+        variables: { input: model },
       });
-      returnValue = await this.handleAPIResponse(result, assessmentInput.leadIdentifier);
+      returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     }
     return returnValue?.updateAssessment;
   };

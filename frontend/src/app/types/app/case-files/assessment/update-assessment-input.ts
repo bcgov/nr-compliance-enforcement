@@ -1,4 +1,3 @@
-import { UUID } from "crypto";
 import { AssessmentDto } from "./assessment";
 export interface UpdateAssessmentInput {
   leadIdentifier: string;
