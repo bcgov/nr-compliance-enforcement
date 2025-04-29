@@ -26,7 +26,6 @@ import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptyp
 import { Roles } from "@apptypes/app/roles";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { Collaborator } from "@/app/types/app/complaints/collaborator";
-import { createElement } from "react";
 import { renderLabelElement } from "@/app/components/common/collaborator-badge";
 
 const initialState: OfficerState = {
