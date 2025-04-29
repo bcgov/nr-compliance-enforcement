@@ -26,6 +26,8 @@ import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptyp
 import { Roles } from "@apptypes/app/roles";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { Collaborator } from "@/app/types/app/complaints/collaborator";
+import { createElement } from "react";
+import { renderLabelElement } from "@/app/components/common/collaborator-badge";
 
 const initialState: OfficerState = {
   officers: [],
@@ -436,9 +438,10 @@ export const selectOfficerAndCollaboratorListByAgency = createSelector(
       const collaboratorOptions = collaborators.map((collaborator: Collaborator) => ({
         value: collaborator.authUserGuid,
         label: `${collaborator.lastName}, ${collaborator.firstName}`,
+        labelElement: renderLabelElement(collaborator),
       }));
 
-      return [...officerOptions, ...collaboratorOptions];
+      return [...collaboratorOptions, ...officerOptions];
     }
     return [];
   },
