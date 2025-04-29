@@ -2281,7 +2281,11 @@ export class ComplaintService {
           externalId,
           name,
           legalName,
-          geoOrganizationUnitCode, 
+          parkAreas {
+            parkAreaGuid
+            name
+            regionName
+          }
         }
       }`,
       });
