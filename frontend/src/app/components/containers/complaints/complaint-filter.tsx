@@ -29,6 +29,7 @@ import { Roles } from "@apptypes/app/roles";
 import { FilterDate } from "@components/common/filter-date";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
 import { Park } from "@/app/components/common/park";
+import { OUTCOMES_REQUIRING_ACTIONED_BY } from "@/app/constants/outcomes-requiring-actioned-by";
 
 type Props = {
   type: string;
@@ -347,7 +348,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         {COMPLAINT_TYPES.HWCR === type &&
           activeFilters.showOutcomeActionedByFilter &&
           outcomeAnimal &&
-          ["EUTHNIZD", "DISPTCHD"].includes(outcomeAnimal.value) && (
+          OUTCOMES_REQUIRING_ACTIONED_BY.includes(outcomeAnimal.value) && (
             <div id="comp-filter-status-id">
               <label htmlFor="outcome-actioned-by-id">Outcome actioned by</label>
               <div className="filter-select-padding">

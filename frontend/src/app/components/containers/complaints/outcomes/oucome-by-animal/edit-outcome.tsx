@@ -30,6 +30,7 @@ import { ToggleError } from "@common/toast";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { selectComplaintLargeCarnivoreInd } from "@store/reducers/complaints";
 import { getDropdownOption } from "@/app/common/methods";
+import { OUTCOMES_REQUIRING_ACTIONED_BY } from "@/app/constants/outcomes-requiring-actioned-by";
 
 type props = {
   index: number;
@@ -101,7 +102,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
     value: string | Date | Array<AnimalTagV2 | DrugUsedData> | DrugAuthorization | null | undefined,
   ) => {
     let model = { ...data, [property]: value };
-    const OUTCOMES_REQUIRING_ACTIONED_BY = ["EUTHNIZD", "DISPTCHD"];
 
     if (property === "outcome" && (!value || !OUTCOMES_REQUIRING_ACTIONED_BY.includes(value as string))) {
       model = { ...model, outcomeActionedBy: undefined };
@@ -320,7 +320,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   // Determine if the actioned by field should be shown
   const [showActionedBy, setShowActionedBy] = useState(false);
   useEffect(() => {
-    const OUTCOMES_REQUIRING_ACTIONED_BY = ["EUTHNIZD", "DISPTCHD"];
     if (data.outcome && OUTCOMES_REQUIRING_ACTIONED_BY.includes(data.outcome)) {
       setShowActionedBy(true);
     } else {

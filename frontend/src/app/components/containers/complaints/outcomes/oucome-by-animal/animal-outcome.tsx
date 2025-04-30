@@ -17,6 +17,7 @@ import { selectOfficerAndCollaboratorListByAgency } from "@store/reducers/office
 import { DrugItem } from "./drug-item";
 import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
 import { selectComplaintLargeCarnivoreInd, selectComplaintViewMode } from "@/app/store/reducers/complaints";
+import { OUTCOMES_REQUIRING_ACTIONED_BY } from "@/app/constants/outcomes-requiring-actioned-by";
 
 type props = {
   index: number;
@@ -251,7 +252,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove, ou
               <dt>Outcome</dt>
               <dd>{data?.outcome ? animalOutcome : "Outcome pending"}</dd>
             </Col>
-            {(data?.outcomeActionedBy || (data?.outcome && ["EUTHNIZD", "DISPTCHD"].includes(data?.outcome))) && (
+            {(data?.outcomeActionedBy || (data?.outcome && OUTCOMES_REQUIRING_ACTIONED_BY.includes(data?.outcome))) && (
               <Col
                 xs={12}
                 md={6}
