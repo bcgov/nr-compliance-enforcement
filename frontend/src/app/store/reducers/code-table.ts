@@ -1331,6 +1331,20 @@ export const selectActiveWildlifeComplaintOutcome = (state: RootState): Array<Op
   return data;
 };
 
+//Used for drop downs on Create / Edit
+export const selectOutcomeActionedByOptions = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "hwcr-outcome-actioned-by-codes": items },
+  } = state;
+
+  const data = items.map(({ actionedBy: value, shortDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
 //Used for filter dropdown and View State (could be legacy data)
 export const selectAllWildlifeComplaintOutcome = (state: RootState): Array<Option> => {
   const {

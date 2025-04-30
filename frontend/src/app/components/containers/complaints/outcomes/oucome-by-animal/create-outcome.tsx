@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { ValidationDatePicker } from "@common/validation-date-picker";
 import { CompSelect } from "@components/common/comp-select";
@@ -10,6 +10,7 @@ import {
   selectSpeciesCodeDropdown,
   selectThreatLevelDropdown,
   selectActiveWildlifeComplaintOutcome,
+  selectOutcomeActionedByOptions,
 } from "@store/reducers/code-table";
 import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
 import { AnimalTagV2 } from "@apptypes/app/complaints/outcomes/wildlife/animal-tag";
@@ -76,6 +77,7 @@ export const CreateAnimalOutcome: FC<props> = ({
   const ages = useAppSelector(selectAgeDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
   const outcomes = useAppSelector(selectActiveWildlifeComplaintOutcome);
+  const outcomeActionedByOptions = useAppSelector(selectOutcomeActionedByOptions);
   const officers = useAppSelector(selectOfficerListByAgency);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
@@ -90,6 +92,17 @@ export const CreateAnimalOutcome: FC<props> = ({
   // eslint-disable-line no-console, max-len
   const [data, applyData] = useState<AnimalOutcome>({ ...defaultOutcome, species });
 
+  // Determine if the actioned by field should be shown
+  const [showActionedBy, setShowActionedBy] = useState(false);
+  useEffect(() => {
+    const OUTCOMES_REQUIRING_ACTIONED_BY = ["EUTHNIZD", "DISPTCHD"];
+    if (data.outcomeActionedBy || (data.outcome && OUTCOMES_REQUIRING_ACTIONED_BY.includes(data.outcome))) {
+      setShowActionedBy(true);
+    } else {
+      setShowActionedBy(false);
+    }
+  }, [data.outcome, data.outcomeActionedBy]);
+
   //-- refs
   // eslint-disable-next-line @typescript-eslint/no-array-constructor
   const earTagRefs = useRef(Array(0));
@@ -101,7 +114,12 @@ export const CreateAnimalOutcome: FC<props> = ({
     property: string,
     value: string | Date | Array<AnimalTagV2 | DrugUsedData> | DrugAuthorization | null | undefined,
   ) => {
-    const model = { ...data, [property]: value };
+    let model = { ...data, [property]: value };
+    const OUTCOMES_REQUIRING_ACTIONED_BY = ["EUTHNIZD", "DISPTCHD"];
+
+    if (property === "outcome" && (!value || !OUTCOMES_REQUIRING_ACTIONED_BY.includes(value as string))) {
+      model = { ...model, outcomeActionedBy: undefined };
+    }
     applyData(model);
   };
 
@@ -536,6 +554,25 @@ export const CreateAnimalOutcome: FC<props> = ({
                   />
                 </div>
               </div>
+              {showActionedBy && (
+                <div className="comp-details-form-row">
+                  <label htmlFor="select-actioned-by">Outcome actioned by</label>
+                  <div className="comp-details-input full-width">
+                    <CompSelect
+                      id="select-actioned-by"
+                      showInactive={false}
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={outcomeActionedByOptions}
+                      enableValidation={false}
+                      onChange={(evt) => {
+                        updateModel("outcomeActionedBy", evt?.value);
+                      }}
+                      isClearable={true}
+                    />
+                  </div>
+                </div>
+              )}
               <div
                 className="comp-details-form-row"
                 id="officer-assigned-pair-id"

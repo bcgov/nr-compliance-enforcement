@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
 import { useAppSelector } from "@hooks/hooks";
 import {
@@ -7,6 +7,7 @@ import {
   selectAgeDropdown,
   selectThreatLevelDropdown,
   selectActiveWildlifeComplaintOutcome,
+  selectOutcomeActionedByOptions,
 } from "@store/reducers/code-table";
 import { selectOfficerListByAgency } from "@store/reducers/officer";
 import { Button, Card, ListGroup } from "react-bootstrap";
@@ -64,6 +65,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const officers = useAppSelector(selectOfficerListByAgency);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
+  const outcomeActionedByOptions = useAppSelector(selectOutcomeActionedByOptions);
   const showSectionErrors = isInEdit.showSectionErrors;
 
   const [showModal, setShowModal] = useState(false);
@@ -82,7 +84,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
   //-- new input data
   const [data, applyData] = useState<AnimalOutcome>({ ...outcome });
-
   //-- refs
   // eslint-disable-next-line @typescript-eslint/no-array-constructor
   const earTagRefs = useRef(Array(0));
@@ -99,7 +100,12 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
     property: string,
     value: string | Date | Array<AnimalTagV2 | DrugUsedData> | DrugAuthorization | null | undefined,
   ) => {
-    const model = { ...data, [property]: value };
+    let model = { ...data, [property]: value };
+    const OUTCOMES_REQUIRING_ACTIONED_BY = ["EUTHNIZD", "DISPTCHD"];
+
+    if (property === "outcome" && (!value || !OUTCOMES_REQUIRING_ACTIONED_BY.includes(value as string))) {
+      model = { ...model, outcomeActionedBy: undefined };
+    }
     applyData(model);
   };
 
@@ -308,6 +314,17 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
     }
     return _isValid;
   };
+
+  // Determine if the actioned by field should be shown
+  const [showActionedBy, setShowActionedBy] = useState(false);
+  useEffect(() => {
+    const OUTCOMES_REQUIRING_ACTIONED_BY = ["EUTHNIZD", "DISPTCHD"];
+    if (data.outcome && OUTCOMES_REQUIRING_ACTIONED_BY.includes(data.outcome)) {
+      setShowActionedBy(true);
+    } else {
+      setShowActionedBy(false);
+    }
+  }, [data.outcome, data.outcomeActionedBy]);
 
   //-- events
   const handleSpeciesChange = (input: Option | null) => {
@@ -565,6 +582,26 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   />
                 </div>
               </div>
+              {showActionedBy && (
+                <div className="comp-details-form-row">
+                  <label htmlFor="select-actioned-by">Outcome actioned by</label>
+                  <div className="comp-details-input full-width">
+                    <CompSelect
+                      id="select-actioned-by"
+                      showInactive={false}
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={outcomeActionedByOptions}
+                      enableValidation={false}
+                      defaultOption={getDropdownOption(data.outcomeActionedBy, outcomeActionedByOptions)}
+                      onChange={(evt) => {
+                        updateModel("outcomeActionedBy", evt?.value);
+                      }}
+                      isClearable={true}
+                    />
+                  </div>
+                </div>
+              )}
               <div
                 className="comp-details-form-row"
                 id="officer-assigned-pair-id"
