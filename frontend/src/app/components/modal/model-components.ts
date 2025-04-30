@@ -10,6 +10,7 @@ import {
   TOGGLE_DEACTIVATE,
   REFER_COMPLAINT,
   MANAGE_COLLABORATORS,
+  MAP_MODAL,
 } from "@apptypes/modal/modal-types";
 
 import {
@@ -25,6 +26,7 @@ import {
   ManageCollaboratorsModal,
 } from "./instances";
 import { CancelConfirmModal } from "./instances/cancel-confirm-modal";
+import { MapModal } from "@/app/components/modal/instances/map-modal";
 
 export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [Sample]: SampleModal,
@@ -38,4 +40,5 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [TOGGLE_DEACTIVATE]: ToggleDeactivateModal,
   [REFER_COMPLAINT]: ReferComplaintModal,
   [MANAGE_COLLABORATORS]: ManageCollaboratorsModal,
+  [MAP_MODAL]: MapModal,
 };

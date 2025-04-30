@@ -4,7 +4,10 @@ import { Button, Card } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
+import {
+  selectOfficerAndCollaboratorListByAgency,
+  selectOfficersAndCollaboratorsByAgency,
+} from "@store/reducers/officer";
 import {
   selectActiveEquipmentDropdown,
   selectTrapEquipment,
@@ -69,12 +72,12 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const complaintData = useAppSelector(selectComplaint);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useSelector(
-    (state: RootState) => selectOfficersByAgency(state, ownedByAgencyCode?.agency), // Pass agency here
+    (state: RootState) => selectOfficersAndCollaboratorsByAgency(state, ownedByAgencyCode?.agency), // Pass agency here
   );
   const equipmentDropdownOptions = useAppSelector(selectActiveEquipmentDropdown);
   const trapEquipment = useAppSelector(selectTrapEquipment);
   const hasQuantityEquipment = useAppSelector(selectHasQuantityEquipment);
-  const assignableOfficers = useAppSelector(selectOfficerListByAgency);
+  const assignableOfficers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
 
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
@@ -425,7 +428,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                   <Button
                     variant="outline-primary"
                     size="sm"
-                    className="btn-txt svg-icon mt-2"
+                    className="btn-txt svg-icon mt-2 validation-group-input"
                     id="equipment-copy-address-button"
                     onClick={() => (complaintData ? setAddress(complaintData.locationSummary) : "")}
                   >
@@ -461,6 +464,8 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               sourceYCoordinate={complaintData?.location?.coordinates[1].toString() ?? ""}
               enableCopyCoordinates={true}
               validationRequired={true}
+              selectFromMap={true}
+              equipmentType={type?.label}
             />
             {/* SET BY */}
             <div
