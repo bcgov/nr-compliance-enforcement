@@ -142,13 +142,13 @@ export const HWCRComplaintPrevention: FC = () => {
       // or `personGuid` for Collaborators
       const officerAssigned = officersInAgencyList
         .filter((person: any) => {
-          const personGuid = person.person_guid?.person_guid || person.personGuid;
+          const personGuid = person.person_guid?.person_guid ?? person.personGuid;
           return personGuid === assigned;
         })
         .map((item: any) => {
-          const firstName = item.person_guid?.first_name || item.firstName;
-          const lastName = item.person_guid?.last_name || item.lastName;
-          const authUserGuid = item.auth_user_guid || item.authUserGuid;
+          const firstName = item.person_guid?.first_name ?? item.firstName;
+          const lastName = item.person_guid?.last_name ?? item.lastName;
+          const authUserGuid = item.auth_user_guid ?? item.authUserGuid;
 
           return {
             label: `${lastName}, ${firstName}`,
