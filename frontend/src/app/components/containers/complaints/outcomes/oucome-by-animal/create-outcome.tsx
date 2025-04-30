@@ -565,6 +565,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                       className="comp-details-input"
                       options={outcomeActionedByOptions}
                       enableValidation={false}
+                      defaultOption={getDropdownOption(agency, outcomeActionedByOptions)}
                       onChange={(evt) => {
                         updateModel("outcomeActionedBy", evt?.value);
                       }}
