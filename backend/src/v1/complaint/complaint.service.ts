@@ -81,6 +81,7 @@ import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
 import { Role } from "../../enum/role.enum";
 import { dtoAlias } from "src/types/models/complaints/dtoAlias-type";
+import { ParkDto } from "../shared_data/dto/park.dto";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
@@ -2261,9 +2262,15 @@ export class ComplaintService {
       }
     };
 
-    const _getParkData = async (id: string, token: string, tz: string) => {
+    const _getParkData = async (id: string, token: string, tz: string): Promise<ParkDto> => {
       if (!id) {
-        return "";
+        return {
+          parkGuid: null,
+          externalId: "",
+          name: "",
+          legalName: "",
+          parkAreas: [],
+        };
       }
 
       const { data, errors } = await get(token, {
@@ -2288,10 +2295,22 @@ export class ComplaintService {
       }
 
       if (data?.park?.parkGuid) {
-        return data.park.name;
+        return {
+          parkGuid: data.park.parkGuid,
+          externalId: data.park.externalId,
+          name: data.park.name,
+          legalName: data.park.legalName,
+          parkAreas: data.park.parkAreas?.map((area) => area.name) ?? [],
+        };
       } else {
-        this.logger.debug(`No results.`);
-        return "";
+        this.logger.debug(`No park found for id: ${id}.`);
+        return {
+          parkGuid: null,
+          externalId: "",
+          name: "",
+          legalName: "",
+          parkAreas: [],
+        };
       }
     };
 
@@ -2461,6 +2480,7 @@ export class ComplaintService {
 
       //-- get park data
       data.park = await _getParkData(data.parkGuid, token, tz);
+      data.parkAreasFormatted = (data.park.parkAreas ?? []).filter((name) => name && name.trim() !== "").join(", ");
 
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);
