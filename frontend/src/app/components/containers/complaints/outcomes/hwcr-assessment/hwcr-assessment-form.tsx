@@ -1,6 +1,6 @@
 import { FC, useEffect, useState, useCallback } from "react";
 import { Button, Card, Alert } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficerListByAgency, selectOfficersByAgency, assignComplaintToOfficer } from "@store/reducers/officer";
@@ -34,7 +34,6 @@ import { ValidationDatePicker } from "@common/validation-date-picker";
 import { BsExclamationCircleFill } from "react-icons/bs";
 
 import "@assets/sass/hwcr-assessment.scss";
-import { selectAssessment } from "@store/reducers/case-selectors";
 import { upsertAssessment } from "@store/reducers/case-thunks";
 import { OptionLabels } from "@constants/option-labels";
 import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
@@ -43,28 +42,35 @@ import useValidateComplaint from "@hooks/validate-complaint";
 import { Officer } from "@/app/types/person/person";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
+import { HWCRAssessmentItem } from "./hwcr-assessment-item";
 
 type Props = {
-  id: string;
+  mode: "create" | "update";
+  handleCancel: Function;
+  assessment?: Assessment;
   handleSave?: () => void;
   handleClose?: () => void;
-  showHeader?: boolean;
   quickClose?: boolean;
 };
 
-export const HWCRComplaintAssessment: FC<Props> = ({
-  id,
+export const HWCRAssessmentForm: FC<Props> = ({
+  mode = "create",
+  handleCancel,
+  assessment,
   handleSave = () => {},
   handleClose = () => {},
-  showHeader = true,
   quickClose = false,
 }) => {
+  const { id = "" } = useParams();
+
   const dispatch = useAppDispatch();
   const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
   const [selectedJustification, setSelectedJustification] = useState<Option | null>();
   const [selectedLinkedComplaint, setSelectedLinkedComplaint] = useState<Option | null>();
+
   const [selectedDate, setSelectedDate] = useState<Date | null | undefined>();
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>();
+
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
   const [editable, setEditable] = useState<boolean>(true);
   const [validateOnChange, setValidateOnChange] = useState<boolean>(false);
@@ -87,7 +93,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
 
   const complaintData = useAppSelector(selectComplaint);
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
-  const assessmentState = useAppSelector(selectAssessment);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const cases = useAppSelector((state) => state.cases);
   const officersInAgencyList = useSelector((state: RootState) =>
@@ -102,18 +107,22 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const validationResults = useValidateComplaint();
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
-  const hasAssessment = Object.keys(cases.assessment).length > 0;
+  const hasAssessments = Boolean(assessment);
   const showSectionErrors =
-    (!hasAssessment || editable) && cases.isInEdit.showSectionErrors && !cases.isInEdit.hideAssessmentErrors;
+    (!hasAssessments || editable) && cases.isInEdit.showSectionErrors && !cases.isInEdit.hideAssessmentErrors;
+
+  const [assessmentState, setAssessmentState] = useState<Assessment>(assessment ?? ({} as Assessment));
+
+  console.log("render", "HWCRAssessmentForm", { assessment, showSectionErrors, quickClose });
 
   useEffect(() => {
-    if (!hasAssessment && editable) {
+    if (!hasAssessments && editable) {
       dispatch(setIsInEdit({ assessment: false }));
     } else dispatch(setIsInEdit({ assessment: editable }));
     return () => {
       dispatch(setIsInEdit({ assessment: false }));
     };
-  }, [dispatch, editable, hasAssessment]);
+  }, [dispatch, editable, hasAssessments]);
 
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
@@ -176,6 +185,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const noYesOptions = [...actionRequiredList].reverse();
 
   const populateAssessmentUI = useCallback(() => {
+    console.log("populateAssessmentUI");
     const selectedOfficer = (
       assessmentState.officer
         ? {
@@ -305,7 +315,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
     populateAssessmentUI();
   }, [assessmentState, populateAssessmentUI]);
 
-  const justificationLabelClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
   const justificationEditClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
   const showDuplicateOptions = selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
 
@@ -331,6 +340,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const saveButtonClick = async () => {
     if (!hasErrors()) {
       const updatedAssessmentData: Assessment = {
+        id: assessment?.id,
         date: selectedDate,
         officer: {
           key: selectedOfficer?.label,
@@ -509,14 +519,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
       }
     }
     return false;
-  }, [
-    dispatch,
-    id,
-    selectedJustification,
-    selectedLinkedComplaint,
-    validationResults,
-    cases.isInEdit.showSectionErrors,
-  ]);
+  }, [dispatch, selectedJustification, selectedLinkedComplaint, validationResults, cases.isInEdit.showSectionErrors]);
 
   // Validates the assessment
   const hasErrors = useCallback((): boolean => {
@@ -567,25 +570,6 @@ export const HWCRComplaintAssessment: FC<Props> = ({
 
   return (
     <section className="comp-details-section comp-outcome-report-complaint-assessment">
-      {showHeader && (
-        <div className="comp-details-section-header">
-          <h3>Complaint assessment</h3>
-          {!editable && (
-            <div className="comp-details-section-header-actions">
-              <Button
-                id="assessment-edit-button"
-                variant="outline-primary"
-                size="sm"
-                onClick={toggleEdit}
-                disabled={isReadOnly}
-              >
-                <i className="bi bi-pencil"></i>
-                <span>Edit</span>
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
       <Card
         id="outcome-assessment"
         border={determineBorder()}
@@ -594,7 +578,7 @@ export const HWCRComplaintAssessment: FC<Props> = ({
           {showSectionErrors && (
             <div className="section-error-message">
               <BsExclamationCircleFill />
-              {hasAssessment ? (
+              {hasAssessments ? (
                 <span>Save section before closing the complaint.</span>
               ) : (
                 <span>Complete section before closing the complaint.</span>
@@ -602,497 +586,324 @@ export const HWCRComplaintAssessment: FC<Props> = ({
             </div>
           )}
 
-          {editable ? (
-            <div className="comp-details-form">
-              <div
-                className="comp-details-form-row"
-                id="action-required-div"
-              >
-                <label htmlFor="action-required">
-                  Action required? {!quickClose && <span className="required-ind">*</span>}
-                </label>
-                <div className="comp-details-input full-width">
-                  {quickClose ? (
-                    <span>{selectedActionRequired?.value}</span>
-                  ) : (
-                    <CompSelect
-                      id="action-required"
-                      showInactive={false}
-                      className="comp-details-input"
-                      classNamePrefix="comp-select"
-                      options={actionRequiredList}
-                      enableValidation={true}
-                      errorMessage={actionRequiredErrorMessage}
-                      value={selectedActionRequired}
-                      placeholder="Select"
-                      onChange={(e) => handleActionRequiredChange(e)}
-                      isDisabled={isReadOnly}
-                      isClearable={true}
-                    />
-                  )}
-                </div>
-              </div>
-              <div
-                className={`comp-details-form-row ${justificationEditClass}`}
-                id="justification-div"
-              >
-                <label htmlFor="justification">
-                  Justification<span className="required-ind">*</span>
-                </label>
-                <div className="comp-details-input full-width">
+          <div className="comp-details-form">
+            <div
+              className="comp-details-form-row"
+              id="action-required-div"
+            >
+              <label htmlFor="action-required">
+                Action required? {!quickClose && <span className="required-ind">*</span>}
+              </label>
+              <div className="comp-details-input full-width">
+                {quickClose ? (
+                  <span>{selectedActionRequired?.value}</span>
+                ) : (
                   <CompSelect
-                    id="justification"
-                    showInactive={false}
-                    classNamePrefix="comp-select"
-                    options={justificationList}
-                    enableValidation={true}
-                    errorMessage={justificationRequiredErrorMessage}
-                    value={selectedJustification}
-                    placeholder="Select"
-                    onChange={(e) => handleJustificationChange(e)}
-                    isClearable={true}
-                  />
-                </div>
-              </div>
-              {showDuplicateOptions && !quickClose && (
-                <div className="comp-details-form-row">
-                  <label
-                    htmlFor="duplicate-warning"
-                    aria-label="warning"
-                  />
-                  <div className="comp-details-input full-width">
-                    <Alert
-                      id="duplicate-warning"
-                      variant="warning"
-                      className="comp-complaint-details-alert"
-                    >
-                      <i className="bi bi-info-circle-fill" /> Note that assessing a complaint as duplicate will close
-                      the complaint and link it to the selected complaint.
-                    </Alert>
-                  </div>
-                </div>
-              )}
-              {showDuplicateOptions && (
-                <div
-                  className="comp-details-form-row"
-                  id="linked-complaint-div"
-                >
-                  <label htmlFor="linkedComplaint">
-                    Link current complaint to:<span className="required-ind">*</span>
-                  </label>
-                  <div className="comp-details-input full-width">
-                    <HWCRComplaintAssessmentLinkComplaintSearch
-                      id="linkedComplaint"
-                      onChange={(e, s) => handleLinkedComplaintChange(e, s)}
-                      errorMessage={linkedComplaintErrorMessage}
-                      value={selectedLinkedComplaint}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Contacted complainant - edit state */}
-              <div
-                className={assessmentDivClass}
-                id="assessment-contacted-complainant-div"
-              >
-                <label htmlFor="assessment-contacted-complainant-div">
-                  Contacted complainant<span className="required-ind">*</span>
-                </label>
-                <div className="comp-details-input full-width">
-                  <CompRadioGroup
-                    id="assessment-contacted-complainant-radiogroup"
-                    options={noYesOptions}
-                    enableValidation={true}
-                    itemClassName="comp-radio-btn"
-                    groupClassName="comp-equipment-form-radio-group"
-                    value={selectedContacted}
-                    onChange={(option: any) => setSelectedContacted(option.target.value)}
-                    isDisabled={false}
-                    radioGroupName="assessment-contacted-complainant-radiogroup"
-                  />
-                </div>
-              </div>
-
-              {/* Attended radio buttons - edit state */}
-              <div
-                className={assessmentDivClass}
-                id="assessment-attended-div"
-              >
-                <label htmlFor="assessment-attended-div">
-                  Attended<span className="required-ind">*</span>
-                </label>
-                <div className="comp-details-input full-width">
-                  <CompRadioGroup
-                    id="assessment-attended-radiogroup"
-                    options={noYesOptions}
-                    enableValidation={true}
-                    itemClassName="comp-radio-btn"
-                    groupClassName="comp-equipment-form-radio-group"
-                    value={selectedAttended}
-                    onChange={(option: any) => setSelectedAttended(option.target.value)}
-                    isDisabled={false}
-                    radioGroupName="assessment-attended-radiogroup"
-                  />
-                </div>
-              </div>
-
-              {/* Animal actions */}
-              <div
-                className={assessmentDivClass}
-                id="assessment-checkbox-div"
-              >
-                <div className="muliline-label">
-                  <div>
-                    <div>
-                      Animal actions<span className="required-ind">*</span>
-                    </div>
-                    <div>(Select all applicable boxes)</div>
-                  </div>
-                </div>
-                <div className="comp-details-input full-width">
-                  <ValidationCheckboxGroup
-                    errMsg={isLargeCarnivore ? "" : assessmentRequiredErrorMessage}
-                    options={assessmentTypeList}
-                    onCheckboxChange={(option: Option[]) => setSelectedAssessmentTypes(option)}
-                    checkedValues={selectedAssessmentTypes}
-                  ></ValidationCheckboxGroup>
-                  {isLargeCarnivore && (
-                    <ValidationCheckboxGroup
-                      errMsg={assessmentRequiredErrorMessage}
-                      options={assessmentCat1Options}
-                      onCheckboxChange={(option: Option[]) => setSelectedAssessmentCat1Types(option)}
-                      checkedValues={selectedAssessmentCat1Types}
-                    ></ValidationCheckboxGroup>
-                  )}
-                </div>
-              </div>
-
-              {isLargeCarnivore && (
-                <>
-                  {/* Location type - edit state */}
-                  <div
-                    className={assessmentDivClass}
-                    id="assessment-location-type-div"
-                  >
-                    <label
-                      className="mb-2"
-                      htmlFor="select-location-type"
-                    >
-                      Location type<span className="required-ind">*</span>
-                    </label>
-                    <CompSelect
-                      id="select-location-type"
-                      showInactive={false}
-                      classNamePrefix="comp-select"
-                      className="comp-details-input"
-                      options={locationOptions}
-                      value={selectedLocation}
-                      enableValidation={true}
-                      errorMessage={locationErrorMessage}
-                      placeholder={"Select"}
-                      onChange={(e: any) => {
-                        setSelectedLocation(e);
-                      }}
-                      isClearable={true}
-                    />
-                  </div>
-
-                  {/* Conflict history - edit state */}
-                  <div
-                    className={assessmentDivClass}
-                    id="assessment-conflict-history-div"
-                  >
-                    <label
-                      className="mb-2"
-                      htmlFor="select-conflict-history"
-                    >
-                      Conflict history
-                    </label>
-                    <CompSelect
-                      id="select-conflict-history"
-                      showInactive={false}
-                      classNamePrefix="comp-select"
-                      className="comp-details-input"
-                      options={conflictHistoryOptions}
-                      value={selectedConflictHistory}
-                      enableValidation={false}
-                      placeholder={"Select"}
-                      onChange={(e: any) => {
-                        setSelectedConflictHistory(e);
-                      }}
-                      isClearable={true}
-                    />
-                  </div>
-
-                  {/* Category level - edit state */}
-                  <div
-                    className={assessmentDivClass}
-                    id="assessment-category-level-div"
-                  >
-                    <label
-                      className="mb-2"
-                      htmlFor="select-category-level"
-                    >
-                      Category level
-                    </label>
-                    <CompSelect
-                      id="select-category-level"
-                      showInactive={false}
-                      classNamePrefix="comp-select"
-                      className="comp-details-input"
-                      options={threatLevelOptions}
-                      value={selectedCategoryLevel}
-                      enableValidation={false}
-                      placeholder={"Select"}
-                      onChange={(e: any) => {
-                        setSelectedCategoryLevel(e);
-                      }}
-                      isClearable={true}
-                    />
-                  </div>
-                </>
-              )}
-
-              {/* Officer */}
-              <div
-                className="comp-details-form-row"
-                id="outcome-officer-div"
-              >
-                <label htmlFor="outcome-officer">
-                  Officer<span className="required-ind">*</span>
-                </label>
-                <div className="comp-details-input full-width">
-                  <CompSelect
-                    id="outcome-officer"
+                    id="action-required"
                     showInactive={false}
                     className="comp-details-input"
                     classNamePrefix="comp-select"
-                    options={assignableOfficers}
+                    options={actionRequiredList}
                     enableValidation={true}
-                    errorMessage={officerErrorMessage}
-                    value={selectedOfficer}
-                    placeholder="Select "
-                    onChange={handleSelectedOfficerChange}
+                    errorMessage={actionRequiredErrorMessage}
+                    value={selectedActionRequired}
+                    placeholder="Select"
+                    onChange={(e) => handleActionRequiredChange(e)}
                     isDisabled={isReadOnly}
                     isClearable={true}
                   />
+                )}
+              </div>
+            </div>
+            <div
+              className={`comp-details-form-row ${justificationEditClass}`}
+              id="justification-div"
+            >
+              <label htmlFor="justification">
+                Justification<span className="required-ind">*</span>
+              </label>
+              <div className="comp-details-input full-width">
+                <CompSelect
+                  id="justification"
+                  showInactive={false}
+                  classNamePrefix="comp-select"
+                  options={justificationList}
+                  enableValidation={true}
+                  errorMessage={justificationRequiredErrorMessage}
+                  value={selectedJustification}
+                  placeholder="Select"
+                  onChange={(e) => handleJustificationChange(e)}
+                  isClearable={true}
+                />
+              </div>
+            </div>
+            {showDuplicateOptions && !quickClose && (
+              <div className="comp-details-form-row">
+                <label
+                  htmlFor="duplicate-warning"
+                  aria-label="warning"
+                />
+                <div className="comp-details-input full-width">
+                  <Alert
+                    id="duplicate-warning"
+                    variant="warning"
+                    className="comp-complaint-details-alert"
+                  >
+                    <i className="bi bi-info-circle-fill" /> Note that assessing a complaint as duplicate will close the
+                    complaint and link it to the selected complaint.
+                  </Alert>
                 </div>
               </div>
+            )}
+            {showDuplicateOptions && (
               <div
                 className="comp-details-form-row"
-                id="complaint-outcome-date-div"
+                id="linked-complaint-div"
               >
-                <label htmlFor="complaint-outcome-date">
-                  Date<span className="required-ind">*</span>
+                <label htmlFor="linkedComplaint">
+                  Link current complaint to:<span className="required-ind">*</span>
                 </label>
-                <div className="comp-details-input">
-                  <ValidationDatePicker
-                    id="complaint-outcome-date"
-                    selectedDate={selectedDate}
-                    onChange={handleDateChange}
-                    placeholder="Select date"
-                    className="comp-details-edit-calendar-input" // Adjust class as needed
-                    classNamePrefix="comp-select" // Adjust class as needed
-                    errMsg={assessmentDateErrorMessage} // Pass error message if any
-                    maxDate={new Date()}
-                    isDisabled={isReadOnly}
+                <div className="comp-details-input full-width">
+                  <HWCRComplaintAssessmentLinkComplaintSearch
+                    id="linkedComplaint"
+                    onChange={(e: Option | null, s: string | null) => handleLinkedComplaintChange(e, s)}
+                    errorMessage={linkedComplaintErrorMessage}
+                    value={selectedLinkedComplaint}
                   />
                 </div>
               </div>
-              <div className="comp-details-form-buttons">
-                <Button
-                  variant="outline-primary"
-                  id="outcome-cancel-button"
-                  title="Cancel Outcome"
-                  onClick={quickClose ? handleClose : cancelButtonClick}
-                  disabled={isReadOnly}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  id="outcome-save-button"
-                  title="Save Outcome"
-                  onClick={saveButtonClick}
-                  disabled={isReadOnly}
-                >
-                  <span>{quickClose ? "Save and Close" : "Save"}</span>
-                </Button>
+            )}
+
+            {/* Contacted complainant - edit state */}
+            <div
+              className={assessmentDivClass}
+              id="assessment-contacted-complainant-div"
+            >
+              <label htmlFor="assessment-contacted-complainant-div">
+                Contacted complainant<span className="required-ind">*</span>
+              </label>
+              <div className="comp-details-input full-width">
+                <CompRadioGroup
+                  id="assessment-contacted-complainant-radiogroup"
+                  options={noYesOptions}
+                  enableValidation={true}
+                  itemClassName="comp-radio-btn"
+                  groupClassName="comp-equipment-form-radio-group"
+                  value={selectedContacted}
+                  onChange={(option: any) => setSelectedContacted(option.target.value)}
+                  isDisabled={false}
+                  radioGroupName="assessment-contacted-complainant-radiogroup"
+                />
               </div>
             </div>
-          ) : (
-            <dl>
-              <div id="action-required-div">
-                <dt>Action required</dt>
-                <dd>{selectedActionRequired?.value}</dd>
+
+            {/* Attended radio buttons - edit state */}
+            <div
+              className={assessmentDivClass}
+              id="assessment-attended-div"
+            >
+              <label htmlFor="assessment-attended-div">
+                Attended<span className="required-ind">*</span>
+              </label>
+              <div className="comp-details-input full-width">
+                <CompRadioGroup
+                  id="assessment-attended-radiogroup"
+                  options={noYesOptions}
+                  enableValidation={true}
+                  itemClassName="comp-radio-btn"
+                  groupClassName="comp-equipment-form-radio-group"
+                  value={selectedAttended}
+                  onChange={(option: any) => setSelectedAttended(option.target.value)}
+                  isDisabled={false}
+                  radioGroupName="assessment-attended-radiogroup"
+                />
               </div>
-              <div
-                id="justification-div"
-                className={justificationLabelClass}
+            </div>
+
+            {/* Animal actions */}
+            <div
+              className={assessmentDivClass}
+              id="assessment-checkbox-div"
+            >
+              <div className="muliline-label">
+                <div>
+                  <div>
+                    Animal actions<span className="required-ind">*</span>
+                  </div>
+                  <div>(Select all applicable boxes)</div>
+                </div>
+              </div>
+              <div className="comp-details-input full-width">
+                <ValidationCheckboxGroup
+                  errMsg={isLargeCarnivore ? "" : assessmentRequiredErrorMessage}
+                  options={assessmentTypeList}
+                  onCheckboxChange={(option: Option[]) => setSelectedAssessmentTypes(option)}
+                  checkedValues={selectedAssessmentTypes}
+                ></ValidationCheckboxGroup>
+                {isLargeCarnivore && (
+                  <ValidationCheckboxGroup
+                    errMsg={assessmentRequiredErrorMessage}
+                    options={assessmentCat1Options}
+                    onCheckboxChange={(option: Option[]) => setSelectedAssessmentCat1Types(option)}
+                    checkedValues={selectedAssessmentCat1Types}
+                  ></ValidationCheckboxGroup>
+                )}
+              </div>
+            </div>
+
+            {isLargeCarnivore && (
+              <>
+                {/* Location type - edit state */}
+                <div
+                  className={assessmentDivClass}
+                  id="assessment-location-type-div"
+                >
+                  <label
+                    className="mb-2"
+                    htmlFor="select-location-type"
+                  >
+                    Location type<span className="required-ind">*</span>
+                  </label>
+                  <CompSelect
+                    id="select-location-type"
+                    showInactive={false}
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    options={locationOptions}
+                    value={selectedLocation}
+                    enableValidation={true}
+                    errorMessage={locationErrorMessage}
+                    placeholder={"Select"}
+                    onChange={(e: any) => {
+                      setSelectedLocation(e);
+                    }}
+                    isClearable={true}
+                  />
+                </div>
+
+                {/* Conflict history - edit state */}
+                <div
+                  className={assessmentDivClass}
+                  id="assessment-conflict-history-div"
+                >
+                  <label
+                    className="mb-2"
+                    htmlFor="select-conflict-history"
+                  >
+                    Conflict history
+                  </label>
+                  <CompSelect
+                    id="select-conflict-history"
+                    showInactive={false}
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    options={conflictHistoryOptions}
+                    value={selectedConflictHistory}
+                    enableValidation={false}
+                    placeholder={"Select"}
+                    onChange={(e: any) => {
+                      setSelectedConflictHistory(e);
+                    }}
+                    isClearable={true}
+                  />
+                </div>
+
+                {/* Category level - edit state */}
+                <div
+                  className={assessmentDivClass}
+                  id="assessment-category-level-div"
+                >
+                  <label
+                    className="mb-2"
+                    htmlFor="select-category-level"
+                  >
+                    Category level
+                  </label>
+                  <CompSelect
+                    id="select-category-level"
+                    showInactive={false}
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    options={threatLevelOptions}
+                    value={selectedCategoryLevel}
+                    enableValidation={false}
+                    placeholder={"Select"}
+                    onChange={(e: any) => {
+                      setSelectedCategoryLevel(e);
+                    }}
+                    isClearable={true}
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Officer */}
+            <div
+              className="comp-details-form-row"
+              id="outcome-officer-div"
+            >
+              <label htmlFor="outcome-officer">
+                Officer<span className="required-ind">*</span>
+              </label>
+              <div className="comp-details-input full-width">
+                <CompSelect
+                  id="outcome-officer"
+                  showInactive={false}
+                  className="comp-details-input"
+                  classNamePrefix="comp-select"
+                  options={assignableOfficers}
+                  enableValidation={true}
+                  errorMessage={officerErrorMessage}
+                  value={selectedOfficer}
+                  placeholder="Select "
+                  onChange={handleSelectedOfficerChange}
+                  isDisabled={isReadOnly}
+                  isClearable={true}
+                />
+              </div>
+            </div>
+            <div
+              className="comp-details-form-row"
+              id="complaint-outcome-date-div"
+            >
+              <label htmlFor="complaint-outcome-date">
+                Date<span className="required-ind">*</span>
+              </label>
+              <div className="comp-details-input">
+                <ValidationDatePicker
+                  id="complaint-outcome-date"
+                  selectedDate={selectedDate}
+                  onChange={handleDateChange}
+                  placeholder="Select date"
+                  className="comp-details-edit-calendar-input" // Adjust class as needed
+                  classNamePrefix="comp-select" // Adjust class as needed
+                  errMsg={assessmentDateErrorMessage} // Pass error message if any
+                  maxDate={new Date()}
+                  isDisabled={isReadOnly}
+                />
+              </div>
+            </div>
+            <div className="comp-details-form-buttons">
+              <Button
+                variant="outline-primary"
+                id="outcome-cancel-button"
+                title="Cancel Outcome"
+                onClick={quickClose ? handleClose : cancelButtonClick}
+                disabled={isReadOnly}
               >
-                <dt>Justification</dt>
-                <dd>
-                  <span>{selectedJustification?.label || ""}</span>
-                </dd>
-              </div>
-              {showDuplicateOptions && (
-                <div
-                  id="linked-complaint-div"
-                  className={justificationLabelClass}
-                >
-                  <dt>Linked complaint</dt>
-                  <dd>
-                    <Link
-                      to={`/complaint/HWCR/${selectedLinkedComplaint?.value}`}
-                      id={selectedLinkedComplaint?.value}
-                    >
-                      {selectedLinkedComplaint?.label || ""}
-                    </Link>
-                  </dd>
-                </div>
-              )}
-
-              {/* Contacted complainant - view state */}
-              {selectedContacted !== null && (
-                <div
-                  id="contacted-complainant-div"
-                  className={assessmentDivClass}
-                >
-                  <dt>Contacted complainant</dt>
-                  <dd>
-                    <span>{selectedContacted}</span>
-                  </dd>
-                </div>
-              )}
-
-              {/* Attended - view state */}
-              {selectedAttended !== null && (
-                <div
-                  id="attended-div"
-                  className={assessmentDivClass}
-                  style={{ marginTop: "0px" }}
-                >
-                  <dt>Attended</dt>
-                  <dd>
-                    <span>{selectedAttended}</span>
-                  </dd>
-                </div>
-              )}
-
-              {/* Legacy actions - view state */}
-              {legacyAssessmentTypes && legacyAssessmentTypes.length > 0 && (
-                <div
-                  id="assessment-legacy-checkbox-div"
-                  className={assessmentDivClass}
-                  style={{ marginTop: "0px" }}
-                >
-                  <dt>Actions (legacy)</dt>
-                  <dd>
-                    <ul>
-                      {legacyAssessmentTypes?.map((assesmentValue) => (
-                        <li
-                          className="checkbox-label-padding"
-                          key={assesmentValue.label}
-                        >
-                          {assesmentValue.label}
-                        </li>
-                      ))}
-                    </ul>
-                  </dd>
-                </div>
-              )}
-
-              {/* Animal actions - view state */}
-              {((selectedAssessmentTypes && selectedAssessmentTypes.length > 0) ||
-                (selectedAssessmentCat1Types && selectedAssessmentCat1Types.length > 0)) && (
-                <div
-                  id="assessment-checkbox-div"
-                  className={assessmentDivClass}
-                  style={{ marginTop: "0px" }}
-                >
-                  <dt>Animal actions</dt>
-                  <dd>
-                    <ul>
-                      {selectedAssessmentTypes?.map((assesmentValue) => (
-                        <li
-                          className="checkbox-label-padding"
-                          key={assesmentValue.label}
-                        >
-                          {assesmentValue.label}
-                        </li>
-                      ))}
-                      {selectedAssessmentCat1Types?.map((assesmentValue) => (
-                        <li
-                          className="checkbox-label-padding"
-                          key={assesmentValue.label}
-                        >
-                          {assesmentValue.label}
-                        </li>
-                      ))}
-                    </ul>
-                  </dd>
-                </div>
-              )}
-
-              {/* Location type - view state */}
-              {isLargeCarnivore && selectedActionRequired?.value === OptionLabels.OPTION_YES && selectedLocation && (
-                <div
-                  id="location-type-div"
-                  className={assessmentDivClass}
-                  style={{ marginTop: "0px" }}
-                >
-                  <dt>Location type</dt>
-                  <dd>
-                    <span>{selectedLocation?.label}</span>
-                  </dd>
-                </div>
-              )}
-
-              {/* Conflict history - view state */}
-              {(isLargeCarnivore || (legacyAssessmentTypes && legacyAssessmentTypes?.length > 0)) &&
-                selectedActionRequired?.value === OptionLabels.OPTION_YES &&
-                selectedConflictHistory && (
-                  <div
-                    id="conflict history-div"
-                    className={assessmentDivClass}
-                    style={{ marginTop: "0px" }}
-                  >
-                    <dt>Conflict history</dt>
-                    <dd>
-                      <span>{selectedConflictHistory.label}</span>
-                    </dd>
-                  </div>
-                )}
-
-              {/* Category level - view state */}
-              {isLargeCarnivore &&
-                selectedActionRequired?.value === OptionLabels.OPTION_YES &&
-                selectedCategoryLevel && (
-                  <div
-                    id="conflict history-div"
-                    className={assessmentDivClass}
-                    style={{ marginTop: "0px" }}
-                  >
-                    <dt>Category level</dt>
-                    <dd>
-                      <span>{selectedCategoryLevel.label}</span>
-                    </dd>
-                  </div>
-                )}
-
-              <div>
-                <dt>Officer</dt>
-                <dd>
-                  <span id="assessment-officer-div">{selectedOfficer?.label ?? ""}</span>
-                </dd>
-              </div>
-              <div id="assessment-date-div">
-                <dt>Date</dt>
-                <dd>{formatDate(`${selectedDate}`)}</dd>
-              </div>
-            </dl>
-          )}
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                id="outcome-save-button"
+                title="Save Outcome"
+                onClick={saveButtonClick}
+                disabled={isReadOnly}
+              >
+                <span>{quickClose ? "Save and Close" : "Save"}</span>
+              </Button>
+            </div>
+          </div>
         </Card.Body>
       </Card>
     </section>

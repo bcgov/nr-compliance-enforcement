@@ -1,5 +1,6 @@
 import { FC } from "react";
-import { HWCRComplaintAssessment } from "./hwcr-complaint-assessment";
+import { HWCRComplaintAssessment } from "./hwcr-assessment/hwcr-complaint-assessment";
+import { HWCRAssessments } from "./hwcr-assessment/hwcr-assessments";
 import { HWCREquipment } from "./hwcr-equipment";
 import { HWCRFileReview } from "./hwcr-file-review";
 import { Notes } from "./notes";
@@ -18,7 +19,7 @@ export const HWCROutcomeReport: FC = () => {
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
-      <HWCRComplaintAssessment id={id} />
+      <HWCRAssessments />
       <HWCRComplaintPrevention />
       <HWCREquipment />
       <HWCROutcomeByAnimalv2 />

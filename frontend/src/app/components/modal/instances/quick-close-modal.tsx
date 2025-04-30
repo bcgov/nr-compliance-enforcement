@@ -6,7 +6,7 @@ import { selectModalData, isLoading } from "@store/reducers/app";
 import { selectComplaint, refreshComplaints } from "@store/reducers/complaints";
 import { setIsInEdit } from "@store/reducers/cases";
 import {
-  selectAssessment,
+  selectAssessments,
   selectPrevention,
   selectEquipment,
   selectSubject,
@@ -14,7 +14,7 @@ import {
   selectIsReviewRequired,
   selectReviewComplete,
 } from "@store/reducers/case-selectors";
-import { HWCRComplaintAssessment } from "@components/containers/complaints/outcomes/hwcr-complaint-assessment";
+import { HWCRComplaintAssessment } from "@components/containers/complaints/outcomes/hwcr-assessment/hwcr-complaint-assessment";
 import useValidateComplaint from "@/app/hooks/validate-complaint";
 
 const ModalLoading: FC = memo(() => (
@@ -85,7 +85,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
   const complaintData = useAppSelector(selectComplaint);
-  const assessmentData = useAppSelector(selectAssessment);
+  const assessmentsData = useAppSelector(selectAssessments);
   const equipmentData = useAppSelector(selectEquipment);
   const preventionData = useAppSelector(selectPrevention);
   const subjectData = useAppSelector(selectSubject);
@@ -96,7 +96,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   // Vars
   const { title, complaint_identifier } = modalData;
   const hasOutcomeData =
-    assessmentData?.date !== undefined ||
+    assessmentsData?.length > 0 ||
     equipmentData?.length > 0 ||
     preventionData?.date !== undefined ||
     subjectData?.length > 0 ||

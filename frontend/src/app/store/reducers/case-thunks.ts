@@ -7,7 +7,7 @@ import { CaseFileDto } from "@apptypes/app/case-files/case-file";
 import {
   clearAssessment,
   clearPrevention,
-  setAssessment,
+  setAssessments,
   setCaseFile,
   setCaseId,
   setIsReviewedRequired,
@@ -74,15 +74,15 @@ export const getCaseFile =
       const {
         officers: { officers },
       } = getState();
-      const assessment = await parseAssessmentResponse(response, officers);
-      dispatch(setAssessment({ assessment }));
+      const assessments = await parseAssessmentResponse(response, officers);
+      dispatch(setAssessments(assessments));
       const updatedPreventionData = await parsePreventionResponse(response, officers);
       dispatch(setPrevention({ prevention: updatedPreventionData }));
       dispatch(setIsReviewedRequired(response.isReviewRequired));
       dispatch(setReviewComplete(response.reviewComplete));
     } else {
       // If there is no case file clear the assessment and prevention sections
-      dispatch(setAssessment({}));
+      dispatch(setAssessments([]));
       dispatch(setPrevention({}));
     }
   };
@@ -96,9 +96,9 @@ export const getAssessment =
     } = getState();
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     return await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      const updatedAssessmentData = await parseAssessmentResponse(res, officers);
+      const assessments = await parseAssessmentResponse(res, officers);
       dispatch(setCaseId(res.caseIdentifier));
-      dispatch(setAssessment({ assessment: updatedAssessmentData }));
+      dispatch(setAssessments(assessments));
       dispatch(setIsReviewedRequired(res.isReviewRequired));
       dispatch(setReviewComplete(res.reviewComplete));
     });
@@ -111,15 +111,16 @@ export const upsertAssessment =
       return;
     }
     const caseIdentifier = await dispatch(findCase(complaintIdentifier));
-    if (!caseIdentifier) {
-      dispatch(addAssessment(complaintIdentifier, assessment));
+    console.log("upsert", caseIdentifier, assessment);
+    if (!caseIdentifier || !assessment.id) {
+      dispatch(addAssessment(assessment, complaintIdentifier, caseIdentifier));
     } else {
-      dispatch(updateAssessment(complaintIdentifier, caseIdentifier, assessment));
+      dispatch(updateAssessment(assessment, complaintIdentifier, caseIdentifier));
     }
   };
 
 const addAssessment =
-  (complaintIdentifier: string, assessment: Assessment): AppThunk =>
+  (assessment: Assessment, complaintIdentifier: string, caseIdentifier?: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       codeTables: { "assessment-type": assessmentType, "assessment-cat1-type": assessmentCat1Type },
@@ -129,6 +130,7 @@ const addAssessment =
     } = getState();
     let createAssessmentInput = {
       leadIdentifier: complaintIdentifier,
+      caseIdentifier: caseIdentifier,
       createUserId: profile.idir_username,
       agencyCode: "COS",
       caseCode: "HWCR",
@@ -202,10 +204,11 @@ const addAssessment =
     }
 
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createAssessment`, createAssessmentInput);
+    console.log("createAssessmentInput", createAssessmentInput);
     await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      const updatedAssessmentData = await parseAssessmentResponse(res, officers);
+      const assessments = await parseAssessmentResponse(res, officers);
       if (res) {
-        dispatch(setAssessment({ assessment: updatedAssessmentData }));
+        dispatch(setAssessments(assessments));
         if (!caseId) dispatch(setCaseId(res.caseIdentifier));
         dispatch(clearComplaint());
         ToggleSuccess(`Assessment has been saved`);
@@ -217,7 +220,7 @@ const addAssessment =
   };
 
 const updateAssessment =
-  (complaintIdentifier: string, caseIdentifier: string, assessment: Assessment): AppThunk =>
+  (assessment: Assessment, complaintIdentifier: string, caseIdentifier: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       codeTables: { "assessment-type": assessmentType, "assessment-cat1-type": assessmentCat1Type },
@@ -232,6 +235,7 @@ const updateAssessment =
       agencyCode: "COS",
       caseCode: "HWCR",
       assessment: {
+        id: assessment.id,
         actionNotRequired: assessment.action_required === "No",
         actionCloseComplaint: assessment.close_complaint,
         actionJustificationCode: assessment.justification?.value,
@@ -301,10 +305,11 @@ const updateAssessment =
       }
     }
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/updateAssessment`, updateAssessmentInput);
+    console.log("updateAssessmentInput", updateAssessmentInput);
     await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      const updatedAssessmentData = await parseAssessmentResponse(res, officers);
+      const assessments = await parseAssessmentResponse(res, officers);
       if (res) {
-        dispatch(setAssessment({ assessment: updatedAssessmentData }));
+        dispatch(setAssessments(assessments));
         dispatch(clearComplaint());
         ToggleSuccess(`Assessment has been updated`);
       } else {
@@ -333,7 +338,11 @@ const parseAssessmentResponse = async (res: CaseFileDto, officers: Officer[]): P
       officerFullName = actor;
     }
 
+    console.log(assessment);
+
     const updatedAssessmentData = {
+      id: assessment.id,
+      agency: assessment.agencyCode,
       date: actionDate,
       officer: { key: officerFullName, value: actor },
       action_required: assessment.actionNotRequired ? "No" : "Yes",
