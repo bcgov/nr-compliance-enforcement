@@ -119,6 +119,8 @@ export const CreateAnimalOutcome: FC<props> = ({
 
     if (property === "outcome" && (!value || !OUTCOMES_REQUIRING_ACTIONED_BY.includes(value as string))) {
       model = { ...model, outcomeActionedBy: undefined };
+    } else if (property === "outcome" && value && OUTCOMES_REQUIRING_ACTIONED_BY.includes(value as string)) {
+      model = { ...model, outcomeActionedBy: agency };
     }
     applyData(model);
   };
@@ -565,7 +567,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                       className="comp-details-input"
                       options={outcomeActionedByOptions}
                       enableValidation={false}
-                      defaultOption={getDropdownOption(agency, outcomeActionedByOptions)}
+                      value={getDropdownOption(data.outcomeActionedBy, outcomeActionedByOptions)}
                       onChange={(evt) => {
                         updateModel("outcomeActionedBy", evt?.value);
                       }}

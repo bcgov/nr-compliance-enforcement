@@ -105,6 +105,8 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
     if (property === "outcome" && (!value || !OUTCOMES_REQUIRING_ACTIONED_BY.includes(value as string))) {
       model = { ...model, outcomeActionedBy: undefined };
+    } else if (property === "outcome" && value && OUTCOMES_REQUIRING_ACTIONED_BY.includes(value as string)) {
+      model = { ...model, outcomeActionedBy: agency };
     }
     applyData(model);
   };
@@ -593,7 +595,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                       className="comp-details-input"
                       options={outcomeActionedByOptions}
                       enableValidation={false}
-                      defaultOption={getDropdownOption(agency, outcomeActionedByOptions)}
                       onChange={(evt) => {
                         updateModel("outcomeActionedBy", evt?.value);
                       }}
