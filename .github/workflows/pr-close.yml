@@ -12,8 +12,8 @@ concurrency:
 env:
   GITOPS_REPO_BRANCH: main
   GITOPS_REPO: bcgov-c/tenant-gitops-f208ae
-  GITOPS_REPO_VALUES_PATH: ./charts/apps/values
-  GITOPS_REPO_OUTPUTS_PATH: ./charts/apps/values/.outputs
+  GITOPS_REPO_VALUES_PATH: ./charts/apps/natsuite/values
+  GITOPS_REPO_OUTPUTS_PATH: ./charts/apps/natsuite/values/.outputs
 
 jobs:
   # TODO: uncomment, just speeding up testing for now
