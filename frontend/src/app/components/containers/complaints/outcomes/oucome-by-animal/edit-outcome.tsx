@@ -9,7 +9,7 @@ import {
   selectActiveWildlifeComplaintOutcome,
   selectOutcomeActionedByOptions,
 } from "@store/reducers/code-table";
-import { selectOfficerListByAgency } from "@store/reducers/officer";
+import { selectOfficerAndCollaboratorListByAgency } from "@store/reducers/officer";
 import { Button, Card, ListGroup } from "react-bootstrap";
 import { CompSelect } from "@components/common/comp-select";
 import { BsExclamationCircleFill } from "react-icons/bs";
@@ -62,7 +62,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const ages = useAppSelector(selectAgeDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
   const outcomes = useAppSelector(selectActiveWildlifeComplaintOutcome);
-  const officers = useAppSelector(selectOfficerListByAgency);
+  const officers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const outcomeActionedByOptions = useAppSelector(selectOutcomeActionedByOptions);

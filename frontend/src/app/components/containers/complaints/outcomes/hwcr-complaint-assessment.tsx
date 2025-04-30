@@ -3,7 +3,11 @@ import { Button, Card, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectOfficerListByAgency, selectOfficersByAgency, assignComplaintToOfficer } from "@store/reducers/officer";
+import {
+  assignComplaintToOfficer,
+  selectOfficersAndCollaboratorsByAgency,
+  selectOfficerAndCollaboratorListByAgency,
+} from "@store/reducers/officer";
 import {
   selectComplaintCallerInformation,
   selectComplaintAssignedBy,
@@ -91,9 +95,9 @@ export const HWCRComplaintAssessment: FC<Props> = ({
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const cases = useAppSelector((state) => state.cases);
   const officersInAgencyList = useSelector((state: RootState) =>
-    selectOfficersByAgency(state, ownedByAgencyCode?.agency),
+    selectOfficersAndCollaboratorsByAgency(state, ownedByAgencyCode?.agency),
   );
-  const assignableOfficers = useAppSelector(selectOfficerListByAgency);
+  const assignableOfficers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
   const conflictHistoryOptions = useAppSelector(selectConflictHistoryDropdown);
   const threatLevelOptions = useAppSelector(selectThreatLevelDropdown);
   const locationOptions = useAppSelector(selectLocationDropdown);

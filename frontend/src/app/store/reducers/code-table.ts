@@ -309,6 +309,7 @@ export const fetchComplaintCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchReportedByCodes());
     dispatch(fetchGirTypes());
     dispatch(fetchComplaintMethodReceivedCodes());
+    dispatch(fetchTeam());
   } catch (error) {
     console.error(error);
   }

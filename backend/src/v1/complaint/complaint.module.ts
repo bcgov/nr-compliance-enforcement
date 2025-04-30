@@ -26,6 +26,8 @@ import { AutomapperModule } from "@automapper/nestjs";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { ComplaintUpdatesModule } from "../complaint_updates/complaint_updates.module";
+import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
+import { ComplaintReferralModule } from "../complaint_referral/complaint_referral.module";
 import { StagingComplaintModule } from "../staging_complaint/staging_complaint.module";
 import { ActionTaken } from "./entities/action_taken.entity";
 import { ComplaintMethodReceivedCode } from "../complaint_method_received_code/entities/complaint_method_received_code.entity";
@@ -56,6 +58,7 @@ import { OfficerModule } from "../officer/officer.module";
     TypeOrmModule.forFeature([ComplaintTypeCode]),
     TypeOrmModule.forFeature([GirComplaint]),
     TypeOrmModule.forFeature([ComplaintUpdate]),
+    TypeOrmModule.forFeature([ComplaintReferral]),
     TypeOrmModule.forFeature([GirComplaint]),
     TypeOrmModule.forFeature([ActionTaken]),
     TypeOrmModule.forFeature([ComplaintMethodReceivedCode]),
@@ -65,6 +68,7 @@ import { OfficerModule } from "../officer/officer.module";
     AttractantHwcrXrefModule,
     AutomapperModule,
     ComplaintUpdatesModule,
+    forwardRef(() => ComplaintReferralModule),
     StagingComplaintModule,
     CompMthdRecvCdAgcyCdXrefModule,
     LinkedComplaintXrefModule,

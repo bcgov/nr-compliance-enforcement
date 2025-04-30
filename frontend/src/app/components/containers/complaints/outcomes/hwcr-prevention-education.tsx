@@ -3,7 +3,10 @@ import Option from "@apptypes/app/option";
 import { Button, Card } from "react-bootstrap";
 import { Officer } from "@apptypes/person/person";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
+import {
+  selectOfficerAndCollaboratorListByAgency,
+  selectOfficersAndCollaboratorsByAgency,
+} from "@store/reducers/officer";
 import {
   selectComplaint,
   selectComplaintCallerInformation,
@@ -59,9 +62,9 @@ export const HWCRComplaintPrevention: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useSelector(
-    (state: RootState) => selectOfficersByAgency(state, ownedByAgencyCode?.agency), // Pass agency here
+    (state: RootState) => selectOfficersAndCollaboratorsByAgency(state, ownedByAgencyCode?.agency), // Pass agency here
   );
-  const assignableOfficers = useAppSelector(selectOfficerListByAgency);
+  const assignableOfficers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const handleDateChange = (date: Date | null) => {
