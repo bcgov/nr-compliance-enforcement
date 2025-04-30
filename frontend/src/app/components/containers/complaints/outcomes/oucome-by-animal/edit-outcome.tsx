@@ -595,6 +595,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                       className="comp-details-input"
                       options={outcomeActionedByOptions}
                       enableValidation={false}
+                      value={getDropdownOption(data.outcomeActionedBy, outcomeActionedByOptions)}
                       onChange={(evt) => {
                         updateModel("outcomeActionedBy", evt?.value);
                       }}

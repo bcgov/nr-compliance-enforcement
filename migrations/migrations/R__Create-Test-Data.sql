@@ -4426,6 +4426,30 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'AC_BY_FLTR',
+  'Outcome actioned by filter',
+  'Displays actioned by option for certain HWCR outcomes',
+  270,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
 
 -------------------------
 -- Insert Feature / Agency XREF
@@ -4685,6 +4709,46 @@ SELECT
   'ACTONSTKEN',
   'PARKS',
   'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'AC_BY_FLTR',
+  'COS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'AC_BY_FLTR',
+  'PARKS',
+  'Y',
   user,
   now(),
   user,

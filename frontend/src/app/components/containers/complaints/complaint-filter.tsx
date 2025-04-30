@@ -14,6 +14,7 @@ import {
   selectComplaintReceivedMethodDropdown,
   selectAllWildlifeComplaintOutcome,
   selectAllEquipmentDropdown,
+  selectOutcomeActionedByOptions,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
 import { selectDecisionTypeDropdown, selectEquipmentStatusDropdown } from "@store/reducers/code-table-selectors";
@@ -51,6 +52,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       complaintMethod,
       actionTaken,
       outcomeAnimal,
+      outcomeActionedBy,
       outcomeAnimalStartDate,
       outcomeAnimalEndDate,
       equipmentStatus,
@@ -77,6 +79,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const outcomeAnimalTypes = useAppSelector(selectAllWildlifeComplaintOutcome); //want to see inactive items in the filter
   const equipmentStatusTypes = useAppSelector(selectEquipmentStatusDropdown);
   const equipmentTypesDropdown = useAppSelector(selectAllEquipmentDropdown).filter((item) => item.isActive === true); //only display active equipment_code
+  const outcomeActionedByOptions = useAppSelector(selectOutcomeActionedByOptions);
 
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
@@ -340,6 +343,33 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             </div>
           </div>
         )}
+
+        {COMPLAINT_TYPES.HWCR === type &&
+          activeFilters.showOutcomeActionedByFilter &&
+          outcomeAnimal &&
+          ["EUTHNIZD", "DISPTCHD"].includes(outcomeAnimal.value) && (
+            <div id="comp-filter-status-id">
+              <label htmlFor="outcome-actioned-by-id">Outcome actioned by</label>
+              <div className="filter-select-padding">
+                <CompSelect
+                  id="outcome-actioned-by-id"
+                  showInactive={true}
+                  classNamePrefix="comp-select"
+                  onChange={(option) => {
+                    setFilter("outcomeActionedBy", option);
+                  }}
+                  classNames={{
+                    menu: () => "top-layer-select",
+                  }}
+                  options={outcomeActionedByOptions}
+                  placeholder="Select"
+                  enableValidation={false}
+                  value={outcomeActionedBy}
+                  isClearable={true}
+                />
+              </div>
+            </div>
+          )}
 
         {COMPLAINT_TYPES.HWCR === type && activeFilters.showOutcomeAnimalDateFilter && (
           <FilterDate

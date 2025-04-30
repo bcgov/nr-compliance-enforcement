@@ -17,6 +17,7 @@ export interface ComplaintRequestPayload {
   complaintMethodFilter?: Option;
   actionTakenFilter?: Option;
   outcomeAnimalFilter?: Option;
+  outcomeActionedByFilter?: Option;
   outcomeAnimalStartDateFilter?: Date;
   outcomeAnimalEndDateFilter?: Date;
   equipmentStatusFilter?: Option;

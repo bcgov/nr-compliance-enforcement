@@ -46,6 +46,7 @@ export const ComplaintFilterBar: FC<Props> = ({
     outcomeAnimal,
     outcomeAnimalStartDate,
     outcomeAnimalEndDate,
+    outcomeActionedBy,
     equipmentStatus,
     equipmentTypes,
   } = state;
@@ -272,6 +273,15 @@ export const ComplaintFilterBar: FC<Props> = ({
             id="comp-complaint-method-filter"
             label={dateRangeLabel(outcomeAnimalStartDate, outcomeAnimalEndDate)}
             name="outcomeAnimalDateRange"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("outcomeActionedBy") && (
+          <FilterButton
+            id="comp-complaint-method-filter"
+            label={outcomeActionedBy?.label}
+            name="outcomeActionedBy"
             clear={removeFilter}
           />
         )}

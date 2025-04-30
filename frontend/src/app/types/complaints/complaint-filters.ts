@@ -20,6 +20,7 @@ export interface ComplaintFilters {
   outcomeAnimalFilter?: Option;
   outcomeAnimalStartDateFilter?: Date;
   outcomeAnimalEndDateFilter?: Date;
+  outcomeActionedByFilter?: Option;
   equipmentStatusFilter?: Option;
   equipmentTypeFilter?: Option;
   equipmentTypesFilter?: Option[];
