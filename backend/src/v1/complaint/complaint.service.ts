@@ -2527,8 +2527,6 @@ export class ComplaintService {
         data = { ...data, authCat: [{ value: data.outcome.decision.ipmAuthCategoryLongDescription }] };
       }
 
-      console.log(data.outcome);
-
       //-- problems in the automapper mean dates need to be handled
       //-- seperatly
       const current = new Date();
