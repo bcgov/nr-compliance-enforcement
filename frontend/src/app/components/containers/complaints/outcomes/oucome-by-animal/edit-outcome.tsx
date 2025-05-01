@@ -95,6 +95,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const [speciesError, setSpeciesError] = useState("");
   const [officerError, setOfficerError] = useState("");
   const [outcomeDateError, setOutcomeDateError] = useState("");
+  const [outcomeActionedByError, setOutcomeActionedByError] = useState("");
 
   //-- input handlers
   const updateModel = (
@@ -295,6 +296,11 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
         _isValid = false;
         setOutcomeDateError(REQUIRED);
       }
+
+      if (OUTCOMES_REQUIRING_ACTIONED_BY.includes(outcome) && !data.outcomeActionedBy) {
+        _isValid = false;
+        setOutcomeActionedByError(REQUIRED);
+      }
     }
 
     //-- validate any ear-tags, drugs-used and
@@ -338,6 +344,27 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
     if (officerError && input?.value) {
       setOfficerError("");
+    }
+  };
+
+  const handleOutcomeChange = (input: Option | null) => {
+    if (data?.outcome) {
+      showEditWarning(() => {
+        updateModel("outcome", input?.value);
+      });
+    } else {
+      updateModel("outcome", input?.value);
+    }
+    if (outcomeActionedByError && !data.outcomeActionedBy) {
+      setOutcomeActionedByError("");
+    }
+  };
+
+  const handleActionedByChange = (input: Option | null) => {
+    updateModel("outcomeActionedBy", input?.value);
+
+    if (outcomeActionedByError && input?.value) {
+      setOutcomeActionedByError("");
     }
   };
 
@@ -570,13 +597,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     placeholder={"Select"}
                     value={getDropdownOption(data.outcome, outcomes)}
                     onChange={(evt) => {
-                      if (data?.outcome) {
-                        showEditWarning(() => {
-                          updateModel("outcome", evt?.value);
-                        });
-                      } else {
-                        updateModel("outcome", evt?.value);
-                      }
+                      handleOutcomeChange(evt);
                     }}
                     defaultOption={getDropdownOption(data.outcome, outcomes)}
                     isClearable={true}
@@ -596,9 +617,10 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                       enableValidation={false}
                       value={getDropdownOption(data.outcomeActionedBy, outcomeActionedByOptions)}
                       onChange={(evt) => {
-                        updateModel("outcomeActionedBy", evt?.value);
+                        handleActionedByChange(evt);
                       }}
                       isClearable={true}
+                      errorMessage={outcomeActionedByError}
                     />
                   </div>
                 </div>

@@ -88,6 +88,7 @@ export const CreateAnimalOutcome: FC<props> = ({
   const [speciesError, setSpeciesError] = useState("");
   const [officerError, setOfficerError] = useState("");
   const [outcomeDateError, setOutcomeDateError] = useState("");
+  const [outcomeActionedByError, setOutcomeActionedByError] = useState("");
 
   //-- new input data
   // eslint-disable-line no-console, max-len
@@ -323,6 +324,11 @@ export const CreateAnimalOutcome: FC<props> = ({
         _isValid = false;
         setOutcomeDateError(REQUIRED);
       }
+
+      if (OUTCOMES_REQUIRING_ACTIONED_BY.includes(outcome) && !data.outcomeActionedBy) {
+        _isValid = false;
+        setOutcomeActionedByError(REQUIRED);
+      }
     }
 
     //-- validate any ear-tags, drugs-used and
@@ -360,6 +366,22 @@ export const CreateAnimalOutcome: FC<props> = ({
 
     if (officerError && input?.value) {
       setOfficerError("");
+    }
+  };
+
+  const handleOutcomeChange = (input: Option | null) => {
+    updateModel("outcome", input?.value);
+
+    if (outcomeActionedByError && !data.outcomeActionedBy) {
+      setOutcomeActionedByError("");
+    }
+  };
+
+  const handleActionedByChange = (input: Option | null) => {
+    updateModel("outcomeActionedBy", input?.value);
+
+    if (outcomeActionedByError && input?.value) {
+      setOutcomeActionedByError("");
     }
   };
 
@@ -549,7 +571,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                     options={outcomes}
                     enableValidation={false}
                     onChange={(evt) => {
-                      updateModel("outcome", evt?.value);
+                      handleOutcomeChange(evt);
                     }}
                     isClearable={true}
                   />
@@ -568,9 +590,10 @@ export const CreateAnimalOutcome: FC<props> = ({
                       enableValidation={false}
                       value={getDropdownOption(data.outcomeActionedBy, outcomeActionedByOptions)}
                       onChange={(evt) => {
-                        updateModel("outcomeActionedBy", evt?.value);
+                        handleActionedByChange(evt);
                       }}
                       isClearable={true}
+                      errorMessage={outcomeActionedByError}
                     />
                   </div>
                 </div>
