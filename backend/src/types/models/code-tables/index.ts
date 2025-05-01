@@ -49,6 +49,7 @@ export const AvailableCodeTables = [
   "drug-methods",
   "drug-remaining-outcomes",
   "wildlife-outcomes",
+  "hwcr-outcome-actioned-by-codes",
   "equipment",
   "gir-type",
   "discharge",

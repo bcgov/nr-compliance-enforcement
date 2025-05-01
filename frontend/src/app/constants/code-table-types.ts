@@ -20,6 +20,7 @@ export const CODE_TABLE_TYPES = {
   CONFLICT_HISTORY: "conflict-history",
   EARS: "ear-tag",
   WILDLIFE_OUTCOMES: "wildlife-outcomes",
+  HWCR_OUTCOME_ACTIONED_BY: "hwcr-outcome-actioned-by-codes",
   DRUGS: "drugs",
   DRUG_METHOD_USE: "drug-methods",
   REMAINING_DRUG_USE: "drug-remaining-outcomes",

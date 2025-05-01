@@ -16,6 +16,7 @@ export interface AnimalOutcome {
   drugAuthorization?: DrugAuthorization;
 
   outcome?: string;
+  outcomeActionedBy?: string;
   officer?: string;
   date?: Date;
 

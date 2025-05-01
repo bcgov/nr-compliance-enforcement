@@ -44,6 +44,7 @@ export const generateMapComplaintRequestPayload = (
     complaintMethod,
     actionTaken,
     outcomeAnimal,
+    outcomeActionedBy,
     outcomeAnimalStartDate,
     outcomeAnimalEndDate,
     equipmentStatus,
@@ -83,6 +84,7 @@ export const generateMapComplaintRequestPayload = (
         speciesCodeFilter: species,
         natureOfComplaintFilter: natureOfComplaint,
         outcomeAnimalFilter: outcomeAnimal,
+        outcomeActionedByFilter: outcomeActionedBy,
         equipmentStatusFilter: equipmentStatus,
         equipmentTypesFilter: equipmentTypes,
       } as ComplaintRequestPayload;
@@ -147,6 +149,7 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
         complaintMethod: payload.complaintMethodFilter?.value,
         actionTaken: payload.actionTakenFilter?.value,
         outcomeAnimal: payload.outcomeAnimalFilter?.value,
+        outcomeActionedBy: payload.outcomeActionedByFilter?.value,
         outcomeAnimalStartDate: payload.outcomeAnimalStartDateFilter,
         outcomeAnimalEndDate: payload.outcomeAnimalEndDateFilter,
         equipmentStatus: payload.equipmentStatusFilter?.value,

@@ -58,6 +58,7 @@ export const generateComplaintRequestPayload = (
     outcomeAnimal,
     outcomeAnimalStartDate,
     outcomeAnimalEndDate,
+    outcomeActionedBy,
     equipmentStatus,
     equipmentTypes,
   } = filters;
@@ -100,6 +101,7 @@ export const generateComplaintRequestPayload = (
         outcomeAnimalFilter: outcomeAnimal,
         outcomeAnimalStartDateFilter: outcomeAnimalStartDate,
         outcomeAnimalEndDateFilter: outcomeAnimalEndDate,
+        outcomeActionedByFilter: outcomeActionedBy,
         equipmentStatusFilter: equipmentStatus,
         equipmentTypesFilter: equipmentTypes,
       } as ComplaintRequestPayload;
