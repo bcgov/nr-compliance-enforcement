@@ -606,7 +606,9 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
               </div>
               {showActionedBy && (
                 <div className="comp-details-form-row">
-                  <label htmlFor="select-actioned-by">Outcome actioned by</label>
+                  <label htmlFor="select-actioned-by">
+                    Outcome actioned by <span className="required-ind">*</span>
+                  </label>
                   <div className="comp-details-input full-width">
                     <CompSelect
                       id="select-actioned-by"
