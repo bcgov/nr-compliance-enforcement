@@ -312,7 +312,6 @@ export const CreateAnimalOutcome: FC<props> = ({
       _isValid = false;
       setSpeciesError(REQUIRED);
     }
-
     //-- if the outcome is set make sure that there's an officer and date
     if (outcome) {
       if (!officer) {
