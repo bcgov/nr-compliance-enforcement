@@ -11018,6 +11018,75 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
+INSERT INTO
+  configuration (
+    configuration_code,
+    configuration_value,
+    long_description,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'PRKHWCTMPT',
+    '',
+    'CDOGS Hash for Parks HWCR Template',
+    true,
+    CURRENT_USER,
+    CURRENT_TIMESTAMP,
+    CURRENT_USER,
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+  INSERT INTO
+  configuration (
+    configuration_code,
+    configuration_value,
+    long_description,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'PRKERSTMPT',
+    '',
+    'CDOGS Hash for Parks ERS Template',
+    true,
+    CURRENT_USER,
+    CURRENT_TIMESTAMP,
+    CURRENT_USER,
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+  INSERT INTO
+  configuration (
+    configuration_code,
+    configuration_value,
+    long_description,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'PRKGIRTMPT',
+    '',
+    'CDOGS Hash for Parks GIR Template',
+    true,
+    CURRENT_USER,
+    CURRENT_TIMESTAMP,
+    CURRENT_USER,
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
 
 --------------------------
 -- New Changes above this line
