@@ -22,7 +22,7 @@ export const HWCRAssessments: FC = () => {
 
   useEffect(() => {
     if (!isInEdit.assessment) {
-      setShowAddAssessment(false);
+      setShowAddAssessment(isInEdit.assessment);
       console.log("setShowAddAssessment to false");
     }
   }, [isInEdit.assessment, assessments]);

@@ -15,9 +15,9 @@ export const HWCRAssessment: FC<props> = ({ assessment }) => {
   const [showInput, setShowInput] = useState(!assessment);
 
   useEffect(() => {
-    dispatch(setIsInEdit({ notes: showInput }));
+    dispatch(setIsInEdit({ assessment: showInput }));
     return () => {
-      dispatch(setIsInEdit({ notes: false }));
+      dispatch(setIsInEdit({ assessment: false }));
     };
   }, [dispatch, showInput]);
 
@@ -27,7 +27,7 @@ export const HWCRAssessment: FC<props> = ({ assessment }) => {
         <HWCRAssessmentForm
           assessment={assessment}
           mode={assessment ? "update" : "create"}
-          handleCancel={() => setShowInput(false)}
+          handleClose={() => setShowInput(false)}
           handleSave={() => setShowInput(false)}
         />
       ) : (

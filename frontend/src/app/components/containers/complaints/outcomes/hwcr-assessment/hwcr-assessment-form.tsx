@@ -46,7 +46,6 @@ import { HWCRAssessmentItem } from "./hwcr-assessment-item";
 
 type Props = {
   mode: "create" | "update";
-  handleCancel: Function;
   assessment?: Assessment;
   handleSave?: () => void;
   handleClose?: () => void;
@@ -55,7 +54,6 @@ type Props = {
 
 export const HWCRAssessmentForm: FC<Props> = ({
   mode = "create",
-  handleCancel,
   assessment,
   handleSave = () => {},
   handleClose = () => {},
@@ -108,21 +106,20 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const hasAssessments = Boolean(assessment);
-  const showSectionErrors =
-    (!hasAssessments || editable) && cases.isInEdit.showSectionErrors && !cases.isInEdit.hideAssessmentErrors;
+  const showSectionErrors = !hasAssessments && cases.isInEdit.showSectionErrors && !cases.isInEdit.hideAssessmentErrors;
 
   const [assessmentState, setAssessmentState] = useState<Assessment>(assessment ?? ({} as Assessment));
 
   console.log("render", "HWCRAssessmentForm", { assessment, showSectionErrors, quickClose });
 
-  useEffect(() => {
-    if (!hasAssessments && editable) {
-      dispatch(setIsInEdit({ assessment: false }));
-    } else dispatch(setIsInEdit({ assessment: editable }));
-    return () => {
-      dispatch(setIsInEdit({ assessment: false }));
-    };
-  }, [dispatch, editable, hasAssessments]);
+  // useEffect(() => {
+  //   if (!hasAssessments && editable) {
+  //     dispatch(setIsInEdit({ assessment: false }));
+  //   } else dispatch(setIsInEdit({ assessment: editable }));
+  //   return () => {
+  //     dispatch(setIsInEdit({ assessment: false }));
+  //   };
+  // }, [dispatch, editable, hasAssessments]);
 
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
@@ -319,7 +316,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const showDuplicateOptions = selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
 
   const cancelConfirmed = () => {
-    populateAssessmentUI();
+    handleClose();
   };
 
   const cancelButtonClick = () => {
