@@ -2355,7 +2355,6 @@ export class ComplaintService {
           ];
 
           await _applyAssessmentData(assessment, assessmentActions);
-          return assessment;
         });
       }
 
@@ -2508,19 +2507,22 @@ export class ComplaintService {
       if (data.outcome.decision?.inspectionNumber) {
         data = { ...data, inspection: [{ value: data.outcome.decision.inspectionNumber }] };
       }
-      throw new Error("Not implemented yet");
-      // if (data.outcome.assessmentDetails?.locationType?.key) {
-      //   data = { ...data, assessmentLocation: [{ value: data.outcome.assessmentDetails.locationType.key }] };
-      // }
-      // if (data.outcome.assessmentDetails?.conflictHistory?.key) {
-      //   data = { ...data, conflict: [{ value: data.outcome.assessmentDetails.conflictHistory.key }] };
-      // }
-      // if (data.outcome.assessmentDetails?.categoryLevel?.key) {
-      //   data = { ...data, category: [{ value: data.outcome.assessmentDetails.categoryLevel.key }] };
-      // }
-      // if (data.outcome.assessmentDetails?.legacyActions) {
-      //   data = { ...data, legacy: [{ actions: data.outcome.assessmentDetails.legacyActions }] };
-      // }
+      if (data.outcome.assessments) {
+        data.outcome.assessments.forEach((assessment) => {
+          if (assessment.locationType?.key) {
+            data.assessmentLocation.push({ value: assessment.locationType.key });
+          }
+          if (assessment.conflictHistory?.key) {
+            data.conflict.push({ value: assessment.conflictHistory.key });
+          }
+          if (assessment.categoryLevel?.key) {
+            data.category.push({ value: assessment.categoryLevel.key });
+          }
+          if (assessment.legacyActions) {
+            data.legacy.push({ actions: assessment.legacyActions });
+          }
+        });
+      }
       if (data.outcome.decision?.ipmAuthCategoryLongDescription) {
         data = { ...data, authCat: [{ value: data.outcome.decision.ipmAuthCategoryLongDescription }] };
       }
