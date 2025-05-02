@@ -131,6 +131,13 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     setFilter("outcomeAnimalEndDate", end);
   };
 
+  const handleAnimalOutcomeChange = (option: Option | null) => {
+    setFilter("outcomeAnimal", option);
+    if (!option || !option.value || !OUTCOMES_REQUIRING_ACTIONED_BY.includes(option.value)) {
+      setFilter("outcomeActionedBy", null);
+    }
+  };
+
   ///--
   /// Render out the filter drawer by the complaint type passed from the parent complaint component
   /// Each type of compplaint needs to have its own unique second row of filters specified
@@ -330,7 +337,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 showInactive={true}
                 classNamePrefix="comp-select"
                 onChange={(option) => {
-                  setFilter("outcomeAnimal", option);
+                  handleAnimalOutcomeChange(option);
                 }}
                 classNames={{
                   menu: () => "top-layer-select outcome-animal-select",
