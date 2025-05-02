@@ -93,11 +93,18 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   useEffect(() => {
     if (assignedOfficer && officersInAgencyList) {
       const officerAssigned: any = officersInAgencyList
-        .filter((officer) => officer.person_guid.person_guid === assignedOfficer)
-        .map((item) => {
+        .filter((person: any) => {
+          const personGuid = person.person_guid?.person_guid ?? person.personGuid;
+          return personGuid === assignedOfficer;
+        })
+        .map((item: any) => {
+          const firstName = item.person_guid?.first_name ?? item.firstName;
+          const lastName = item.person_guid?.last_name ?? item.lastName;
+          const authUserGuid = item.auth_user_guid ?? item.authUserGuid;
+
           return {
-            label: `${item.person_guid?.last_name}, ${item.person_guid?.first_name}`,
-            value: item.auth_user_guid,
+            label: `${lastName}, ${firstName}`,
+            value: authUserGuid,
           } as Option;
         });
       if (officerAssigned.length === 1) {
