@@ -1,6 +1,6 @@
 import { FC, useEffect, useState, useCallback } from "react";
 import { Button, Card, Alert } from "react-bootstrap";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficerListByAgency, selectOfficersByAgency, assignComplaintToOfficer } from "@store/reducers/officer";
@@ -21,7 +21,6 @@ import {
   selectThreatLevelDropdown,
   selectYesNoCodeDropdown,
 } from "@store/reducers/code-table";
-import { formatDate } from "@common/methods";
 import { CompSelect } from "@components/common/comp-select";
 import { ValidationCheckboxGroup } from "@common/validation-checkbox-group";
 import { setIsInEdit } from "@store/reducers/cases";
@@ -42,13 +41,12 @@ import useValidateComplaint from "@hooks/validate-complaint";
 import { Officer } from "@/app/types/person/person";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
-import { HWCRAssessmentItem } from "./hwcr-assessment-item";
 
 type Props = {
   mode: "create" | "update";
   assessment?: Assessment;
   handleSave?: () => void;
-  handleClose?: () => void;
+  handleCancel?: () => void;
   quickClose?: boolean;
 };
 
@@ -56,7 +54,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   mode = "create",
   assessment,
   handleSave = () => {},
-  handleClose = () => {},
+  handleCancel = () => {},
   quickClose = false,
 }) => {
   const { id = "" } = useParams();
@@ -70,7 +68,6 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>();
 
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
-  const [editable, setEditable] = useState<boolean>(true);
   const [validateOnChange, setValidateOnChange] = useState<boolean>(false);
   const [selectedContacted, setSelectedContacted] = useState<string | null>("No");
   const [selectedOfficerData, setSelectedOfficerData] = useState<Officer | null>();
@@ -79,7 +76,6 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const [selectedConflictHistory, setSelectedConflictHistory] = useState<Option | null>(null);
   const [selectedCategoryLevel, setSelectedCategoryLevel] = useState<Option | null>(null);
   const [selectedAssessmentCat1Types, setSelectedAssessmentCat1Types] = useState<Option[]>([]);
-  const [legacyAssessmentTypes, setLegacyAssessmentTypes] = useState<Option[] | undefined>([]);
 
   const [officerErrorMessage, setOfficerErrorMessage] = useState<string>("");
   const [assessmentDateErrorMessage, setAssessmentDateErrorMessage] = useState<string>("");
@@ -110,26 +106,8 @@ export const HWCRAssessmentForm: FC<Props> = ({
 
   const [assessmentState, setAssessmentState] = useState<Assessment>(assessment ?? ({} as Assessment));
 
-  console.log("render", "HWCRAssessmentForm", { assessment, showSectionErrors, quickClose });
-
-  // useEffect(() => {
-  //   if (!hasAssessments && editable) {
-  //     dispatch(setIsInEdit({ assessment: false }));
-  //   } else dispatch(setIsInEdit({ assessment: editable }));
-  //   return () => {
-  //     dispatch(setIsInEdit({ assessment: false }));
-  //   };
-  // }, [dispatch, editable, hasAssessments]);
-
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
-  };
-
-  const toggleEdit = () => {
-    setEditable(true);
-    //Set Contacted complainant and Attended default to No, only in edit state
-    if (selectedContacted === null) setSelectedContacted("No");
-    if (selectedAttended === null) setSelectedAttended("No");
   };
 
   const handleActionRequiredChange = (selected: Option | null) => {
@@ -281,10 +259,8 @@ export const HWCRAssessmentForm: FC<Props> = ({
     setSelectedConflictHistory(selectedConflictHistory);
     setSelectedCategoryLevel(selectedCategoryLevel);
     setSelectedAssessmentCat1Types(selectedAssessmentCat1Types);
-    setLegacyAssessmentTypes(legacyAssessmentTypes);
 
     resetValidationErrors();
-    setEditable(!assessmentState.date);
 
     if (!selectedOfficer && assigned && officersInAgencyList) {
       const officerAssigned: Option[] = officersInAgencyList
@@ -316,7 +292,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const showDuplicateOptions = selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
 
   const cancelConfirmed = () => {
-    handleClose();
+    handleCancel();
   };
 
   const cancelButtonClick = () => {
@@ -406,7 +382,6 @@ export const HWCRAssessmentForm: FC<Props> = ({
       ) {
         dispatch(assignComplaintToOfficer(id, selectedOfficerData?.person_guid?.person_guid));
       }
-      setEditable(false);
       handleSave();
     } else {
       handleFormErrors();
@@ -885,7 +860,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
                 variant="outline-primary"
                 id="outcome-cancel-button"
                 title="Cancel Outcome"
-                onClick={quickClose ? handleClose : cancelButtonClick}
+                onClick={quickClose ? handleCancel : cancelButtonClick}
                 disabled={isReadOnly}
               >
                 Cancel

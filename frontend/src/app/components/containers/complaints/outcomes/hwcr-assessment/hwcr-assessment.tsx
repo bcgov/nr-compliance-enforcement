@@ -27,7 +27,7 @@ export const HWCRAssessment: FC<props> = ({ assessment }) => {
         <HWCRAssessmentForm
           assessment={assessment}
           mode={assessment ? "update" : "create"}
-          handleClose={() => setShowInput(false)}
+          handleCancel={() => setShowInput(false)}
           handleSave={() => setShowInput(false)}
         />
       ) : (

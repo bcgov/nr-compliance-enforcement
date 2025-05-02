@@ -229,7 +229,6 @@ const updateAssessment =
     } = getState();
 
     let updateAssessmentInput = {
-      leadIdentifier: complaintIdentifier,
       caseIdentifier: caseIdentifier,
       updateUserId: profile.idir_username,
       agencyCode: "COS",

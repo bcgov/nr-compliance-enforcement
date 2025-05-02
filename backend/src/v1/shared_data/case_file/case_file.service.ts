@@ -234,8 +234,8 @@ export class CaseFileService {
   updateAssessment = async (token: string, model: UpdateAssessmentInput): Promise<CaseFileDto> => {
     let returnValue;
 
-    const query = `mutation UpdateAssessment($updateAssessmentInput: UpdateAssessmentInput!) {
-    updateAssessment(updateAssessmentInput: $updateAssessmentInput) 
+    const query = `mutation UpdateAssessment($input: UpdateAssessmentInput!) {
+    updateAssessment(input: $input) 
     ${caseFileQueryFields}
     }`;
 
