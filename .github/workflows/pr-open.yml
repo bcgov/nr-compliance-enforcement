@@ -39,7 +39,14 @@ jobs:
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
           tag_fallback: latest
-          triggers: ('${{ matrix.package }}/')
+          # triggers: ('${{ matrix.package }}/')
+      - uses: shrink/actions-docker-registry-tag@v4
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: ${{ github.event.number }}
+          tags: |
+            ${{ github.sha }}
 
   # TODO: uncomment, just speeding up testing for now
   # # https://github.com/bcgov/quickstart-openshift
