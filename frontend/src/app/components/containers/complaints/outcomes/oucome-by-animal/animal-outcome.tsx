@@ -8,14 +8,16 @@ import {
   selectSpeciesCodeDropdown,
   selectThreatLevelDropdown,
   selectAllWildlifeComplaintOutcome,
+  selectOutcomeActionedByOptions,
 } from "@store/reducers/code-table";
 import { from } from "linq-to-typescript";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { formatDate, pad } from "@common/methods";
-import { selectOfficerListByAgency } from "@store/reducers/officer";
+import { selectOfficerAndCollaboratorListByAgency } from "@store/reducers/officer";
 import { DrugItem } from "./drug-item";
 import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
 import { selectComplaintLargeCarnivoreInd, selectComplaintViewMode } from "@/app/store/reducers/complaints";
+import { OUTCOMES_REQUIRING_ACTIONED_BY } from "@/app/constants/outcomes-requiring-actioned-by";
 
 type props = {
   index: number;
@@ -34,7 +36,8 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove, ou
   const ages = useAppSelector(selectAgeDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
   const outcomes = useAppSelector(selectAllWildlifeComplaintOutcome); //want to display inactive items
-  const officers = useAppSelector(selectOfficerListByAgency);
+  const outcomeActionedByOptions = useAppSelector(selectOutcomeActionedByOptions);
+  const officers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = !data.outcome && !data.officer && !data.date && isInEdit.showSectionErrors;
@@ -46,6 +49,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove, ou
   const [animalThreatLevel, setAnimalThreatLevel] = useState("");
   const [animalIdentifyingFeatures, setAnimalIdentifyingFeatures] = useState("");
   const [animalOutcome, setAnimalOutcome] = useState("");
+  const [outcomeActionedBy, setOutcomeActionedBy] = useState("");
   const [outcomeOfficer, setOutcomeOfficer] = useState("");
 
   //-- misc
@@ -61,8 +65,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove, ou
 
   //-- get all of the values for the animal outcome and apply them
   useEffect(() => {
-    const { species, sex, age, threatLevel, identifyingFeatures, outcome, officer } = data;
-
+    const { species, sex, age, threatLevel, identifyingFeatures, outcome, outcomeActionedBy, officer } = data;
     if (species) {
       const selected = from(speciesList).firstOrDefault((item) => item.value === species);
       if (selected?.label) {
@@ -99,6 +102,13 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove, ou
       const selected = from(outcomes).firstOrDefault((item) => item.value === outcome);
       if (selected?.label) {
         setAnimalOutcome(selected.label);
+      }
+    }
+
+    if (outcomeActionedBy) {
+      const selected = from(outcomeActionedByOptions).firstOrDefault((item) => item.value === outcomeActionedBy);
+      if (selected?.label) {
+        setOutcomeActionedBy(selected.label);
       }
     }
 
@@ -242,6 +252,15 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove, ou
               <dt>Outcome</dt>
               <dd>{data?.outcome ? animalOutcome : "Outcome pending"}</dd>
             </Col>
+            {(data?.outcomeActionedBy || (data?.outcome && OUTCOMES_REQUIRING_ACTIONED_BY.includes(data?.outcome))) && (
+              <Col
+                xs={12}
+                md={6}
+              >
+                <dt>Outcome actioned by</dt>
+                <dd>{data?.outcomeActionedBy ? outcomeActionedBy : "Outcome actioned by pending"}</dd>
+              </Col>
+            )}
             <Col
               xs={12}
               md={6}

@@ -30,7 +30,6 @@ import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_u
 import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
-import { ViolationCode } from "../violation_code/entities/violation_code.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
@@ -61,6 +60,7 @@ import { ScheduleSectorXref } from "src/types/models/code-tables/schedule-sector
 import { CaseLocationCode } from "src/types/models/code-tables/case-location-code";
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
 import { EquipmentStatus } from "src/types/models/code-tables/equipment-status";
+import { HwcrOutcomeActionedBy } from "src/types/models/code-tables/hwcr-outcome-actioned-by";
 
 @Injectable()
 export class CodeTableService {
@@ -360,8 +360,9 @@ export class CodeTableService {
             "{HWCRPreventionActions{actionTypeCode actionCode displayOrder activeIndicator shortDescription longDescription}}",
         });
         const preventionTypeCodes = data.HWCRPreventionActions.map(
-          ({ actionCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+          ({ actionTypeCode, actionCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
             const table: PreventionType = {
+              agencyCode: actionTypeCode === "COSPRV&EDU" ? "COS" : "PARKS", //Might need to be converted to a switch in the future
               preventionType: actionCode,
               shortDescription: shortDescription,
               longDescription: longDescription,
@@ -527,6 +528,25 @@ export class CodeTableService {
           ({ hwcrOutcomeCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
             const table: WildlifeComplaintOutcome = {
               outcome: hwcrOutcomeCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+            };
+            return table;
+          },
+        );
+        return results;
+      }
+      case "hwcr-outcome-actioned-by-codes": {
+        const { data } = await get(token, {
+          query:
+            "{hwcrOutcomeActionedByCodes{hwcrOutcomeActionedByCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.hwcrOutcomeActionedByCodes.map(
+          ({ hwcrOutcomeActionedByCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+            const table: HwcrOutcomeActionedBy = {
+              actionedBy: hwcrOutcomeActionedByCode,
               shortDescription: shortDescription,
               longDescription: longDescription,
               displayOrder: displayOrder,

@@ -397,21 +397,21 @@ export const getPrevention =
   };
 
 export const upsertPrevention =
-  (complaintIdentifier: string, prevention: Prevention): AppThunk =>
+  (complaintIdentifier: string, agencyCode: string, prevention: Prevention): AppThunk =>
   async (dispatch) => {
     if (!prevention) {
       return;
     }
     const caseIdentifier = await dispatch(findCase(complaintIdentifier));
     if (!caseIdentifier) {
-      dispatch(addPrevention(complaintIdentifier, prevention));
+      dispatch(addPrevention(complaintIdentifier, agencyCode, prevention));
     } else {
-      dispatch(updatePrevention(complaintIdentifier, caseIdentifier, prevention));
+      dispatch(updatePrevention(complaintIdentifier, agencyCode, caseIdentifier, prevention));
     }
   };
 
 const addPrevention =
-  (complaintIdentifier: string, prevention: Prevention): AppThunk =>
+  (complaintIdentifier: string, agencyCode: string, prevention: Prevention): AppThunk =>
   async (dispatch, getState) => {
     const {
       codeTables: { "prevention-type": preventionType },
@@ -423,14 +423,13 @@ const addPrevention =
       createPreventionInput: {
         leadIdentifier: complaintIdentifier,
         createUserId: profile.idir_username,
-        agencyCode: "COS",
+        agencyCode: agencyCode,
         caseCode: "HWCR",
         preventionDetails: {
           actions: prevention.prevention_type.map((item) => {
             return {
               date: prevention.date,
               actor: prevention.officer?.value,
-
               activeIndicator: true,
               actionCode: item.value,
             };
@@ -444,7 +443,7 @@ const addPrevention =
         preventionDetails: { actions },
       },
     } = createPreventionInput;
-    for (let item of preventionType.filter((record) => record.isActive)) {
+    for (let item of preventionType.filter((record) => record.isActive && record.agencyCode === agencyCode)) {
       if (
         !actions
           .map((action) => {
@@ -476,7 +475,7 @@ const addPrevention =
   };
 
 const updatePrevention =
-  (complaintIdentifier: string, caseIdentifier: string, prevention: Prevention): AppThunk =>
+  (complaintIdentifier: string, agencyCode: string, caseIdentifier: string, prevention: Prevention): AppThunk =>
   async (dispatch, getState) => {
     const {
       codeTables: { "prevention-type": preventionType },
@@ -489,7 +488,7 @@ const updatePrevention =
         leadIdentifier: complaintIdentifier,
         caseIdentifier: caseIdentifier,
         updateUserId: profile.idir_username,
-        agencyCode: "COS",
+        agencyCode: agencyCode,
         caseCode: "HWCR",
         preventionDetails: {
           actions: prevention.prevention_type.map((item) => {
@@ -509,7 +508,7 @@ const updatePrevention =
       },
     } = updatePreventionInput;
 
-    for (let item of preventionType.filter((record) => record.isActive)) {
+    for (let item of preventionType.filter((record) => record.isActive && record.agencyCode === agencyCode)) {
       if (
         !actions
           .map((action) => {
@@ -903,6 +902,7 @@ export const createAnimalOutcome =
       age,
       identifyingFeatures,
       outcome,
+      outcomeActionedBy,
       threatLevel,
       officer,
       date,
@@ -956,6 +956,7 @@ export const createAnimalOutcome =
         categoryLevel: threatLevel,
         identifyingFeatures,
         outcome,
+        outcomeActionedBy,
         tags: earTags,
         drugs: drugsUsed,
         actions: from(actions).any() ? actions : undefined,
@@ -997,6 +998,7 @@ export const updateAnimalOutcome =
       age,
       identifyingFeatures,
       outcome,
+      outcomeActionedBy,
       threatLevel,
       officer,
       date,
@@ -1047,6 +1049,7 @@ export const updateAnimalOutcome =
         categoryLevel: threatLevel,
         identifyingFeatures,
         outcome,
+        outcomeActionedBy,
         tags: tagsInput,
         drugs: drugsUsed,
         actions: from(actions).any() ? actions : undefined,

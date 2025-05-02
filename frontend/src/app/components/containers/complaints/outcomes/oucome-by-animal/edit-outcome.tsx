@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
 import { useAppSelector } from "@hooks/hooks";
 import {
@@ -7,8 +7,9 @@ import {
   selectAgeDropdown,
   selectThreatLevelDropdown,
   selectActiveWildlifeComplaintOutcome,
+  selectOutcomeActionedByOptions,
 } from "@store/reducers/code-table";
-import { selectOfficerListByAgency } from "@store/reducers/officer";
+import { selectOfficerAndCollaboratorListByAgency } from "@store/reducers/officer";
 import { Button, Card, ListGroup } from "react-bootstrap";
 import { CompSelect } from "@components/common/comp-select";
 import { BsExclamationCircleFill } from "react-icons/bs";
@@ -29,6 +30,7 @@ import { ToggleError } from "@common/toast";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { selectComplaintLargeCarnivoreInd } from "@store/reducers/complaints";
 import { getDropdownOption } from "@/app/common/methods";
+import { OUTCOMES_REQUIRING_ACTIONED_BY } from "@/app/constants/outcomes-requiring-actioned-by";
 
 type props = {
   index: number;
@@ -61,9 +63,10 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const ages = useAppSelector(selectAgeDropdown);
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
   const outcomes = useAppSelector(selectActiveWildlifeComplaintOutcome);
-  const officers = useAppSelector(selectOfficerListByAgency);
+  const officers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
+  const outcomeActionedByOptions = useAppSelector(selectOutcomeActionedByOptions);
   const showSectionErrors = isInEdit.showSectionErrors;
 
   const [showModal, setShowModal] = useState(false);
@@ -82,7 +85,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
   //-- new input data
   const [data, applyData] = useState<AnimalOutcome>({ ...outcome });
-
   //-- refs
   // eslint-disable-next-line @typescript-eslint/no-array-constructor
   const earTagRefs = useRef(Array(0));
@@ -93,13 +95,20 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const [speciesError, setSpeciesError] = useState("");
   const [officerError, setOfficerError] = useState("");
   const [outcomeDateError, setOutcomeDateError] = useState("");
+  const [outcomeActionedByError, setOutcomeActionedByError] = useState("");
 
   //-- input handlers
   const updateModel = (
     property: string,
     value: string | Date | Array<AnimalTagV2 | DrugUsedData> | DrugAuthorization | null | undefined,
   ) => {
-    const model = { ...data, [property]: value };
+    let model = { ...data, [property]: value };
+
+    if (property === "outcome" && (!value || !OUTCOMES_REQUIRING_ACTIONED_BY.includes(value as string))) {
+      model = { ...model, outcomeActionedBy: undefined };
+    } else if (property === "outcome" && value && OUTCOMES_REQUIRING_ACTIONED_BY.includes(value as string)) {
+      model = { ...model, outcomeActionedBy: agency };
+    }
     applyData(model);
   };
 
@@ -287,6 +296,11 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
         _isValid = false;
         setOutcomeDateError(REQUIRED);
       }
+
+      if (OUTCOMES_REQUIRING_ACTIONED_BY.includes(outcome) && !data.outcomeActionedBy) {
+        _isValid = false;
+        setOutcomeActionedByError(REQUIRED);
+      }
     }
 
     //-- validate any ear-tags, drugs-used and
@@ -309,6 +323,16 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
     return _isValid;
   };
 
+  // Determine if the actioned by field should be shown
+  const [showActionedBy, setShowActionedBy] = useState(false);
+  useEffect(() => {
+    if (data.outcome && OUTCOMES_REQUIRING_ACTIONED_BY.includes(data.outcome)) {
+      setShowActionedBy(true);
+    } else {
+      setShowActionedBy(false);
+    }
+  }, [data.outcome, data.outcomeActionedBy]);
+
   //-- events
   const handleSpeciesChange = (input: Option | null) => {
     updateModel("species", input?.value);
@@ -320,6 +344,27 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
 
     if (officerError && input?.value) {
       setOfficerError("");
+    }
+  };
+
+  const handleOutcomeChange = (input: Option | null) => {
+    if (data?.outcome) {
+      showEditWarning(() => {
+        updateModel("outcome", input?.value);
+      });
+    } else {
+      updateModel("outcome", input?.value);
+    }
+    if (outcomeActionedByError && !data.outcomeActionedBy) {
+      setOutcomeActionedByError("");
+    }
+  };
+
+  const handleActionedByChange = (input: Option | null) => {
+    updateModel("outcomeActionedBy", input?.value);
+
+    if (outcomeActionedByError && input?.value) {
+      setOutcomeActionedByError("");
     }
   };
 
@@ -552,19 +597,36 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     placeholder={"Select"}
                     value={getDropdownOption(data.outcome, outcomes)}
                     onChange={(evt) => {
-                      if (data?.outcome) {
-                        showEditWarning(() => {
-                          updateModel("outcome", evt?.value);
-                        });
-                      } else {
-                        updateModel("outcome", evt?.value);
-                      }
+                      handleOutcomeChange(evt);
                     }}
                     defaultOption={getDropdownOption(data.outcome, outcomes)}
                     isClearable={true}
                   />
                 </div>
               </div>
+              {showActionedBy && (
+                <div className="comp-details-form-row">
+                  <label htmlFor="select-actioned-by">
+                    Outcome actioned by <span className="required-ind">*</span>
+                  </label>
+                  <div className="comp-details-input full-width">
+                    <CompSelect
+                      id="select-actioned-by"
+                      showInactive={false}
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={outcomeActionedByOptions}
+                      enableValidation={false}
+                      value={getDropdownOption(data.outcomeActionedBy, outcomeActionedByOptions)}
+                      onChange={(evt) => {
+                        handleActionedByChange(evt);
+                      }}
+                      isClearable={true}
+                      errorMessage={outcomeActionedByError}
+                    />
+                  </div>
+                </div>
+              )}
               <div
                 className="comp-details-form-row"
                 id="officer-assigned-pair-id"
