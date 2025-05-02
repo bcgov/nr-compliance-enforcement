@@ -105,7 +105,7 @@ jobs:
       - name: Checkout CD repo
         uses: actions/checkout@v4
         with:
-          repository: bcgov-c/tenant-gitops-dc0a4a
+          repository: ${{ env.GITOPS_REPO }}
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
           ref: ${{ env.GITOPS_REPO_BRANCH }}
 
