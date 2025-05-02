@@ -133,7 +133,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
 
   const handleAnimalOutcomeChange = (option: Option | null) => {
     setFilter("outcomeAnimal", option);
-    if (!option || !option.value || !OUTCOMES_REQUIRING_ACTIONED_BY.includes(option.value)) {
+    if (!option?.value || !OUTCOMES_REQUIRING_ACTIONED_BY.includes(option.value)) {
       setFilter("outcomeActionedBy", null);
     }
   };
