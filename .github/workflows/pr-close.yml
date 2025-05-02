@@ -16,82 +16,81 @@ env:
   GITOPS_REPO_OUTPUTS_PATH: ./charts/apps/natsuite/values/.outputs
 
 jobs:
-  # TODO: uncomment, just speeding up testing for now
-  # cleanup:
-  #   name: Cleanup and Images
-  #   uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.5.0
-  #   secrets:
-  #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
-  #     oc_token: ${{ secrets.OC_TOKEN }}
-  #   with:
-  #     cleanup: helm
-  #     packages: backend frontend migrations
+  cleanup:
+    name: Cleanup and Images
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.5.0
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+    with:
+      cleanup: helm
+      packages: backend frontend migrations
 
-  # cleanup-labeled:
-  #   name: Cleanup Labeled Resources
-  #   uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.5.0
-  #   secrets:
-  #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
-  #     oc_token: ${{ secrets.OC_TOKEN }}
-  #   with:
-  #     cleanup: label
+  cleanup-labeled:
+    name: Cleanup Labeled Resources
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.5.0
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+    with:
+      cleanup: label
 
-  # cleanup-pvcs:
-  #   name: Cleanup Project PVCs
-  #   runs-on: ubuntu-22.04
-  #   environment:
-  #   timeout-minutes: 2
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - run: ./.github/scripts/cleanup_pvcs.sh
-  #       env:
-  #         OC_NAMESPACE: ${{ secrets.OC_NAMESPACE }}
-  #         OC_SERVER: ${{ vars.OC_SERVER }}
-  #         OC_TOKEN: ${{ secrets.OC_TOKEN }}
-  #         PR_NUMBER: ${{ github.event.number }}
+  cleanup-pvcs:
+    name: Cleanup Project PVCs
+    runs-on: ubuntu-22.04
+    environment:
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./.github/scripts/cleanup_pvcs.sh
+        env:
+          OC_NAMESPACE: ${{ secrets.OC_NAMESPACE }}
+          OC_SERVER: ${{ vars.OC_SERVER }}
+          OC_TOKEN: ${{ secrets.OC_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
 
-  # cleanup-crunchy:
-  #   name: Cleanup Ephemeral Crunchy Data
-  #   runs-on: ubuntu-24.04
-  #   timeout-minutes: 10
-  #   steps:
-  #     # OC setup
-  #     - uses: redhat-actions/openshift-tools-installer@v1
-  #       with:
-  #         oc: "4"
+  cleanup-crunchy:
+    name: Cleanup Ephemeral Crunchy Data
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      # OC setup
+      - uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4"
 
-  #     # OC Login
-  #     - run: |
-  #         # OC Login
-  #         oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
-  #         oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
-  #     - run: |
-  #         # check if postgres-crunchy exists or else exit
-  #         oc get PostgresCluster/postgres-crunchy-dev || exit 0
-  #         # Remove the user from the crunchy cluster yaml and apply the changes
-  #         USER_TO_REMOVE='{"databases":["app-${{ github.event.number }}"],"name":"app-${{ github.event.number }}"}'
+      # OC Login
+      - run: |
+          # OC Login
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+      - run: |
+          # check if postgres-crunchy exists or else exit
+          oc get PostgresCluster/postgres-crunchy-dev || exit 0
+          # Remove the user from the crunchy cluster yaml and apply the changes
+          USER_TO_REMOVE='{"databases":["app-${{ github.event.number }}"],"name":"app-${{ github.event.number }}"}'
 
-  #         echo 'getting current users from crunchy'
-  #         CURRENT_USERS=$(oc get PostgresCluster/postgres-crunchy-dev -o json | jq '.spec.users')
-  #         echo "${CURRENT_USERS}"
+          echo 'getting current users from crunchy'
+          CURRENT_USERS=$(oc get PostgresCluster/postgres-crunchy-dev -o json | jq '.spec.users')
+          echo "${CURRENT_USERS}"
 
-  #         # Remove the user from the list, 
-  #         UPDATED_USERS=$(echo "$CURRENT_USERS" | jq --argjson user "$USER_TO_REMOVE" 'map(select(. != $user))')
+          # Remove the user from the list, 
+          UPDATED_USERS=$(echo "$CURRENT_USERS" | jq --argjson user "$USER_TO_REMOVE" 'map(select(. != $user))')
 
-  #         PATCH_JSON=$(jq -n --argjson users "$UPDATED_USERS" '{"spec": {"users": $users}}')
-  #         oc patch PostgresCluster/postgres-crunchy-dev --type=merge -p "$PATCH_JSON"
+          PATCH_JSON=$(jq -n --argjson users "$UPDATED_USERS" '{"spec": {"users": $users}}')
+          oc patch PostgresCluster/postgres-crunchy-dev --type=merge -p "$PATCH_JSON"
 
-  #         # get primary crunchy pod and remove the role and db
-  #         CRUNCHY_PG_PRIMARY_POD_NAME=$(oc get pods -l postgres-operator.crunchydata.com/role=master -o json | jq -r '.items[0].metadata.name')
+          # get primary crunchy pod and remove the role and db
+          CRUNCHY_PG_PRIMARY_POD_NAME=$(oc get pods -l postgres-operator.crunchydata.com/role=master -o json | jq -r '.items[0].metadata.name')
 
-  #         echo "${CRUNCHY_PG_PRIMARY_POD_NAME}"
-  #         # Terminate all connections to the database before trying terminate and Drop the databse and role right after
+          echo "${CRUNCHY_PG_PRIMARY_POD_NAME}"
+          # Terminate all connections to the database before trying terminate and Drop the databse and role right after
 
-  #         oc exec -it "${CRUNCHY_PG_PRIMARY_POD_NAME}" -n ${{ secrets.OC_NAMESPACE }} -- bash -c "psql -U postgres -d postgres -c \"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'app-${{ github.event.number }}' AND pid <> pg_backend_pid();\" && \psql -U postgres -d postgres -c \"DROP DATABASE \\\"app-${{ github.event.number }}\\\";\" && \psql -U postgres -d postgres -c \"DROP ROLE \\\"app-${{ github.event.number }}\\\";\""
+          oc exec -it "${CRUNCHY_PG_PRIMARY_POD_NAME}" -n ${{ secrets.OC_NAMESPACE }} -- bash -c "psql -U postgres -d postgres -c \"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'app-${{ github.event.number }}' AND pid <> pg_backend_pid();\" && \psql -U postgres -d postgres -c \"DROP DATABASE \\\"app-${{ github.event.number }}\\\";\" && \psql -U postgres -d postgres -c \"DROP ROLE \\\"app-${{ github.event.number }}\\\";\""
 
-  #         echo "Database and Role for PR is cleaned."
+          echo "Database and Role for PR is cleaned."
 
-  #         exit 0
+          exit 0
 
   ### Emerald Jobs ###
   cleanup-emerald:
@@ -149,6 +148,7 @@ jobs:
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
           ./.github/scripts/gitops.sh disable dev-$DEPLOYMENT_NUMBER
 
+      # TODO: uncomment after crunchy is provisioned in f208ae
       # # We always run this to avoid deleting developer databases on commit pushes after a PR is opened
       # # there is a small edge case where a cleanup could be interrupted by this if 2 PRs open closely together
       # - name: Unset / No-op Crunchy development DB cleanup
