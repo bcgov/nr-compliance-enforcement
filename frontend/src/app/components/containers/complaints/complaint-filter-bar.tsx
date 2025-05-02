@@ -96,6 +96,10 @@ export const ComplaintFilterBar: FC<Props> = ({
           dispatch(clearFilter("equipmentStatus"));
           dispatch(clearFilter("equipmentTypes"));
           break;
+        case "outcomeAnimal":
+          dispatch(clearFilter("outcomeAnimal"));
+          dispatch(clearFilter("outcomeActionedBy"));
+          break;
         default:
           dispatch(clearFilter(name));
           break;
