@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import Option from "@apptypes/app/option";
 
 interface ValidationCheckboxGroupProps {
@@ -15,6 +15,10 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
   checkedValues = [],
 }) => {
   const [checkedItems, setCheckedItems] = useState<Option[]>(checkedValues);
+
+  useEffect(() => {
+    setCheckedItems(checkedValues);
+  }, [checkedValues]);
 
   const inputClassName = "form-check-input";
   const labelClassName = "form-check-label checkbox-label";
