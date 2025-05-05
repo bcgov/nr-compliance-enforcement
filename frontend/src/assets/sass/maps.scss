@@ -13,6 +13,10 @@
   @extend .map-marker;
   color: gray;
 }
+.map-marker-equipment-select {
+  @extend .map-marker;
+  color: #1f5c94;
+}
 
 .map-container {
   z-index: 1;

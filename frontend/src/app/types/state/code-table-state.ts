@@ -22,6 +22,7 @@ import { ThreatLevel } from "@apptypes/app/code-tables/threat-level";
 import { ConflictHistory } from "@apptypes/app/code-tables/conflict-history";
 import { EarTag } from "@apptypes/app/code-tables/ear-tag";
 import { WildlifeComplaintOutcome } from "@apptypes/app/code-tables/wildlife-complaint-outcome";
+import { HwcrOutcomeActionedBy } from "@apptypes/app/code-tables/hwcr-outcome-actioned-by";
 import { Drug } from "@apptypes/app/code-tables/drug";
 import { DrugMethod } from "@apptypes/app/code-tables/drug-method";
 import { DrugRemainingOutcome } from "@apptypes/app/code-tables/drug-remaining-outcome";
@@ -65,6 +66,7 @@ export interface CodeTableState {
     | Array<ConflictHistory>
     | Array<EarTag>
     | Array<WildlifeComplaintOutcome>
+    | Array<HwcrOutcomeActionedBy>
     | Array<Drug>
     | Array<DrugMethod>
     | Array<DrugRemainingOutcome>
@@ -103,6 +105,7 @@ export interface CodeTableState {
   "conflict-history": Array<ConflictHistory>;
   "ear-tag": Array<EarTag>;
   "wildlife-outcomes": Array<WildlifeComplaintOutcome>;
+  "hwcr-outcome-actioned-by-codes": Array<HwcrOutcomeActionedBy>;
   drugs: Array<Drug>;
   "drug-methods": Array<DrugMethod>;
   "drug-remaining-outcomes": Array<DrugRemainingOutcome>;

@@ -138,6 +138,15 @@ export class CdogsService implements ExternalApiService {
       case "GIRTMPLATE":
         template = "templates/complaint/CDOGS-GIR-COMPLAINT-TEMPLATE-v1.docx";
         break;
+      case "PRKHWCTMPT":
+        template = "templates/complaint/CDOGS-PARKS-HWCR-COMPLAINT-TEMPLATE-v1.docx";
+        break;
+      case "PRKERSTMPT":
+        template = "templates/complaint/CDOGS-PARKS-ERS-COMPLAINT-TEMPLATE-v1.docx";
+        break;
+      case "PRKGIRTMPT":
+        template = "templates/complaint/CDOGS-PARKS-GIR-COMPLAINT-TEMPLATE-v1.docx";
+        break;
       default:
         this.logger.error(`exception: unable to find template: ${template}`);
         break;
@@ -184,21 +193,23 @@ export class CdogsService implements ExternalApiService {
   generate = async (documentName: string, data: any, type: COMPLAINT_TYPE): Promise<AxiosResponse> => {
     //-- Determine template to use
     let templateCode: string;
-    switch (type) {
-      case "HWCR":
-        templateCode = CONFIGURATION_CODES.HWCTMPLATE;
-        break;
-      case "ERS":
-        if (data.ownedBy === "EPO") {
-          templateCode = CONFIGURATION_CODES.CEEBTMPLATE;
-        } else {
-          templateCode = CONFIGURATION_CODES.ERSTMPLATE;
-        }
-        break;
-      case "GIR":
-        templateCode = CONFIGURATION_CODES.GIRTMPLATE;
-        break;
-    }
+    const templateMap = {
+      HWCR: {
+        PARKS: CONFIGURATION_CODES.PRKHWCTMPT,
+        default: CONFIGURATION_CODES.HWCTMPLATE,
+      },
+      ERS: {
+        EPO: CONFIGURATION_CODES.CEEBTMPLATE,
+        PARKS: CONFIGURATION_CODES.PRKERSTMPT,
+        default: CONFIGURATION_CODES.ERSTMPLATE,
+      },
+      GIR: {
+        PARKS: CONFIGURATION_CODES.PRKGIRTMPT,
+        default: CONFIGURATION_CODES.GIRTMPLATE,
+      },
+    };
+
+    templateCode = templateMap[type]?.[data.ownedBy] ?? templateMap[type]?.default;
 
     try {
       const apiToken = await this.authenticate();

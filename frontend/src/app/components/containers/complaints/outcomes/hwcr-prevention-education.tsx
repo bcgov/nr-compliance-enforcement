@@ -3,7 +3,10 @@ import Option from "@apptypes/app/option";
 import { Button, Card } from "react-bootstrap";
 import { Officer } from "@apptypes/person/person";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectOfficerListByAgency, selectOfficersByAgency } from "@store/reducers/officer";
+import {
+  selectOfficerAndCollaboratorListByAgency,
+  selectOfficersAndCollaboratorsByAgency,
+} from "@store/reducers/officer";
 import {
   selectComplaint,
   selectComplaintCallerInformation,
@@ -59,9 +62,9 @@ export const HWCRComplaintPrevention: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const officersInAgencyList = useSelector(
-    (state: RootState) => selectOfficersByAgency(state, ownedByAgencyCode?.agency), // Pass agency here
+    (state: RootState) => selectOfficersAndCollaboratorsByAgency(state, ownedByAgencyCode?.agency), // Pass agency here
   );
-  const assignableOfficers = useAppSelector(selectOfficerListByAgency);
+  const assignableOfficers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const handleDateChange = (date: Date | null) => {
@@ -135,20 +138,25 @@ export const HWCRComplaintPrevention: FC = () => {
     setEditable(!preventionState.date);
 
     if (!selectedOfficer && officersInAgencyList && assigned) {
-      const officerAssigned: Option[] = officersInAgencyList
-        .filter((officer: Officer) => officer.person_guid.person_guid === assigned)
-        .map((element: Officer) => {
+      // Match by checking `person_guid.person_guid` for Officers
+      // or `personGuid` for Collaborators
+      const officerAssigned = officersInAgencyList
+        .filter((person: any) => {
+          const personGuid = person.person_guid?.person_guid ?? person.personGuid;
+          return personGuid === assigned;
+        })
+        .map((item: any) => {
+          const firstName = item.person_guid?.first_name ?? item.firstName;
+          const lastName = item.person_guid?.last_name ?? item.lastName;
+          const authUserGuid = item.auth_user_guid ?? item.authUserGuid;
+
           return {
-            label: `${element.person_guid?.last_name}, ${element.person_guid?.first_name}`,
-            value: element.auth_user_guid,
+            label: `${lastName}, ${firstName}`,
+            value: authUserGuid,
           } as Option;
         });
-      if (
-        officerAssigned &&
-        Array.isArray(officerAssigned) &&
-        officerAssigned.length > 0 &&
-        typeof officerAssigned[0].label !== "undefined"
-      ) {
+
+      if (officerAssigned.length > 0 && typeof officerAssigned[0].label !== "undefined") {
         setSelectedOfficer(officerAssigned[0]);
       }
     }

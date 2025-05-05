@@ -46,6 +46,7 @@ import {
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
 import { IPMAuthCategoryType } from "@apptypes/app/code-tables/ipm-auth-category";
+import { HwcrOutcomeActionedBy } from "@/app/types/app/code-tables/hwcr-outcome-actioned-by";
 
 const initialState: CodeTableState = {
   agency: [],
@@ -69,6 +70,7 @@ const initialState: CodeTableState = {
   "conflict-history": [],
   "ear-tag": [],
   "wildlife-outcomes": [],
+  "hwcr-outcome-actioned-by-codes": [],
   drugs: [],
   "drug-methods": [],
   "drug-remaining-outcomes": [],
@@ -135,6 +137,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "conflict-history": conflictHistory,
       "ear-tag": ears,
       "wildlife-outcomes": wildlifeOutcomes,
+      "hwcr-outcome-actioned-by-codes": hwcrOutcomeActionedByCodes,
       drugs,
       "drug-methods": drugUseMethods,
       "drug-remaining-outcomes": remainingDrugUse,
@@ -230,7 +233,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(wildlifeOutcomes).any()) {
       dispatch(fetchWildlifeComplaintOutcomes());
     }
-
+    if (!from(hwcrOutcomeActionedByCodes).any()) {
+      dispatch(fetchHwcrOutcomeActionedByCodes());
+    }
     if (!from(drugs).any()) {
       dispatch(fetchDrugs());
     }
@@ -304,6 +309,7 @@ export const fetchComplaintCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchReportedByCodes());
     dispatch(fetchGirTypes());
     dispatch(fetchComplaintMethodReceivedCodes());
+    dispatch(fetchTeam());
   } catch (error) {
     console.error(error);
   }
@@ -320,6 +326,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchConfictHistories());
     dispatch(fetchEars());
     dispatch(fetchWildlifeComplaintOutcomes());
+    dispatch(fetchHwcrOutcomeActionedByCodes());
     dispatch(fetchDrugs());
     dispatch(fetchDrugUseMethods());
     dispatch(fetchRemainingDrugUse());
@@ -586,6 +593,18 @@ export const fetchWildlifeComplaintOutcomes = (): AppThunk => async (dispatch) =
   const response = await get<Array<WildlifeComplaintOutcome>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.WILDLIFE_OUTCOMES, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchHwcrOutcomeActionedByCodes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.HWCR_OUTCOME_ACTIONED_BY}`,
+  );
+
+  const response = await get<Array<HwcrOutcomeActionedBy>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.HWCR_OUTCOME_ACTIONED_BY, data: response };
     dispatch(setCodeTable(payload));
   }
 };
@@ -1313,6 +1332,20 @@ export const selectActiveWildlifeComplaintOutcome = (state: RootState): Array<Op
   return data;
 };
 
+//Used for drop downs on Create / Edit
+export const selectOutcomeActionedByOptions = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "hwcr-outcome-actioned-by-codes": items },
+  } = state;
+
+  const data = items.map(({ actionedBy: value, shortDescription: label }) => {
+    const item: Option = { label, value };
+    return item;
+  });
+
+  return data;
+};
+
 //Used for filter dropdown and View State (could be legacy data)
 export const selectAllWildlifeComplaintOutcome = (state: RootState): Array<Option> => {
   const {
@@ -1320,6 +1353,19 @@ export const selectAllWildlifeComplaintOutcome = (state: RootState): Array<Optio
   } = state;
 
   const data = items.map(({ outcome: value, shortDescription: label, isActive }) => {
+    const item: Option = { label, value, isActive };
+    return item;
+  });
+
+  return data;
+};
+
+export const selectHwcrOutcomeActionedByCode = (state: RootState): Array<Option> => {
+  const {
+    codeTables: { "hwcr-outcome-actioned-by-codes": items },
+  } = state;
+
+  const data = items.map(({ actionedBy: value, shortDescription: label, isActive }) => {
     const item: Option = { label, value, isActive };
     return item;
   });

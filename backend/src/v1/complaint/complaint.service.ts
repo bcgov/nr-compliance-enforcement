@@ -67,7 +67,7 @@ import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates
 import { toDate, toZonedTime, format } from "date-fns-tz";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
-import { ComplaintUpdateDto } from "src/types/models/complaint-updates/complaint-update-dto";
+import { ComplaintUpdateDto, ComplaintUpdateType } from "../../types/models/complaint-updates/complaint-update-dto";
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
@@ -81,6 +81,8 @@ import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
 import { Role } from "../../enum/role.enum";
 import { dtoAlias } from "src/types/models/complaints/dtoAlias-type";
+import { ParkDto } from "../shared_data/dto/park.dto";
+import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
@@ -99,6 +101,8 @@ export class ComplaintService {
   private readonly _girComplaintRepository: Repository<GirComplaint>;
   @InjectRepository(ComplaintUpdate)
   private readonly _complaintUpdateRepository: Repository<ComplaintUpdate>;
+  @InjectRepository(ComplaintReferral)
+  private readonly _complaintReferralRepository: Repository<ComplaintReferral>;
   @InjectRepository(ActionTaken)
   private readonly _actionTakenRepository: Repository<ActionTaken>;
   @InjectRepository(Officer)
@@ -891,11 +895,12 @@ export class ComplaintService {
   private readonly _getComplaintsByOutcomeAnimal = async (
     token: string,
     outcomeAnimalCode: string,
+    outcomeActionedBy: string,
     startDate: Date | undefined,
     endDate: Date | undefined,
   ): Promise<string[]> => {
     const { data, errors } = await get(token, {
-      query: `{getLeadsByOutcomeAnimal (outcomeAnimalCode: "${outcomeAnimalCode}", startDate: "${startDate}" , endDate: "${endDate}")}`,
+      query: `{getLeadsByOutcomeAnimal (outcomeAnimalCode: "${outcomeAnimalCode}", outcomeActionedByCode: "${outcomeActionedBy}", startDate: "${startDate}" , endDate: "${endDate}")}`,
     });
     if (errors) {
       this.logger.error("GraphQL errors:", errors);
@@ -1114,6 +1119,7 @@ export class ComplaintService {
         const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(
           token,
           filters.outcomeAnimal,
+          filters.outcomeActionedBy,
           filters.outcomeAnimalStartDate,
           filters.outcomeAnimalEndDate,
         );
@@ -1246,6 +1252,7 @@ export class ComplaintService {
         const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(
           token,
           filters.outcomeAnimal,
+          filters.outcomeActionedBy,
           filters.outcomeAnimalStartDate,
           filters.outcomeAnimalEndDate,
         );
@@ -1889,9 +1896,9 @@ export class ComplaintService {
           update_seq_number: "DESC",
         });
 
-      const result = await builder.getMany();
+      const updatesResult = await builder.getMany();
 
-      const updates = result?.map((item) => {
+      const updates = updatesResult?.map((item) => {
         const utcDate = toDate(item.createUtcTimestamp, { timeZone: "UTC" });
         const zonedDate = toZonedTime(utcDate, tz);
         let updatedOn = format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
@@ -1921,11 +1928,72 @@ export class ComplaintService {
             email: item.updCallerEmail,
             organizationReportingComplaint: item.reported_by_code?.long_description,
           },
+          updateType: ComplaintUpdateType.UPDATE,
         };
         return record;
       });
 
-      return updates;
+      const referralsResult = await this._complaintReferralRepository.find({
+        where: {
+          complaint_identifier: id,
+        },
+        relations: {
+          referred_by_agency_code: true,
+          referred_to_agency_code: true,
+          officer_guid: {
+            person_guid: true,
+          },
+        },
+        select: {
+          referred_by_agency_code: {
+            long_description: true,
+          },
+          referred_to_agency_code: {
+            long_description: true,
+          },
+          officer_guid: {
+            officer_guid: true,
+            person_guid: {
+              last_name: true,
+              first_name: true,
+            },
+          },
+          referral_date: true,
+          referral_reason: true,
+        },
+      });
+
+      const referrals = referralsResult?.map((item) => {
+        const standardTz = "America/Vancouver";
+        const zonedReferralDate = toZonedTime(item.referral_date, standardTz);
+        const updateOn = format(zonedReferralDate, "yyyy-MM-dd HH:mm");
+        const record: ComplaintUpdateDto = {
+          sequenceId: null,
+          updateOn,
+          updateType: ComplaintUpdateType.REFERRAL,
+          referral: {
+            previousAgency: item.referred_by_agency_code.long_description,
+            newAgency: item.referred_to_agency_code.long_description,
+            referredBy: {
+              officerGuid: item.officer_guid.officer_guid,
+              lastName: item.officer_guid.person_guid.last_name,
+              firstName: item.officer_guid.person_guid.first_name,
+            },
+            referralReason: item.referral_reason,
+          },
+        };
+        return record;
+      });
+
+      const result = [...updates, ...referrals].sort((left, right) => {
+        return new Date(right.updateOn).valueOf() - new Date(left.updateOn).valueOf();
+      });
+
+      for (let index: number = 0; index < result.length; index++) {
+        result[index].sequenceId = result.length - index;
+      }
+
+      return result;
     };
 
     const _getActions = async (id: string) => {
@@ -2197,9 +2265,15 @@ export class ComplaintService {
       }
     };
 
-    const _getParkData = async (id: string, token: string, tz: string) => {
+    const _getParkData = async (id: string, token: string, tz: string): Promise<ParkDto> => {
       if (!id) {
-        return "";
+        return {
+          parkGuid: null,
+          externalId: "",
+          name: "",
+          legalName: "",
+          parkAreas: [],
+        };
       }
 
       const { data, errors } = await get(token, {
@@ -2209,7 +2283,11 @@ export class ComplaintService {
           externalId,
           name,
           legalName,
-          geoOrganizationUnitCode,
+          parkAreas {
+            parkAreaGuid
+            name
+            regionName
+          }
         }
       }`,
       });
@@ -2220,10 +2298,22 @@ export class ComplaintService {
       }
 
       if (data?.park?.parkGuid) {
-        return data.park.name;
+        return {
+          parkGuid: data.park.parkGuid,
+          externalId: data.park.externalId,
+          name: data.park.name,
+          legalName: data.park.legalName,
+          parkAreas: data.park.parkAreas?.map((area) => area.name) ?? [],
+        };
       } else {
-        this.logger.debug(`No results.`);
-        return "";
+        this.logger.debug(`No park found for id: ${id}.`);
+        return {
+          parkGuid: null,
+          externalId: "",
+          name: "",
+          legalName: "",
+          parkAreas: [],
+        };
       }
     };
 
@@ -2393,6 +2483,7 @@ export class ComplaintService {
 
       //-- get park data
       data.park = await _getParkData(data.parkGuid, token, tz);
+      data.parkAreasFormatted = (data.park.parkAreas ?? []).filter((name) => name && name.trim() !== "").join(", ");
 
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);

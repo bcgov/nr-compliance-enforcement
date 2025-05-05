@@ -4,6 +4,7 @@ export interface Collaborator {
   personComplaintXrefGuid: UUID;
   complaintId: string;
   personGuid: UUID;
+  authUserGuid: UUID;
   collaboratorAgency: string;
   firstName: string;
   lastName: string;
