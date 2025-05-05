@@ -7,9 +7,10 @@ import { Assessment } from "@/app/types/outcomes/assessment";
 
 type props = {
   assessment?: Assessment;
+  allowDuplicate?: boolean;
 };
 
-export const HWCRAssessment: FC<props> = ({ assessment }) => {
+export const HWCRAssessment: FC<props> = ({ assessment, allowDuplicate = false }) => {
   const dispatch = useAppDispatch();
 
   const [showInput, setShowInput] = useState(!assessment);
@@ -26,9 +27,9 @@ export const HWCRAssessment: FC<props> = ({ assessment }) => {
       {showInput ? (
         <HWCRAssessmentForm
           assessment={assessment}
-          mode={assessment ? "update" : "create"}
           handleCancel={() => setShowInput(false)}
           handleSave={() => setShowInput(false)}
+          allowDuplicate={false}
         />
       ) : (
         assessment && (

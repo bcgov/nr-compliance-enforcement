@@ -43,23 +43,26 @@ import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
 
 type Props = {
-  mode: "create" | "update";
   assessment?: Assessment;
   handleSave?: () => void;
   handleCancel?: () => void;
   quickClose?: boolean;
+  allowDuplicate?: boolean;
 };
 
 export const HWCRAssessmentForm: FC<Props> = ({
-  mode = "create",
   assessment,
   handleSave = () => {},
   handleCancel = () => {},
   quickClose = false,
+  allowDuplicate = false,
 }) => {
   const { id = "" } = useParams();
 
   const dispatch = useAppDispatch();
+
+  const [assessmentState] = useState<Assessment>(assessment || ({} as Assessment));
+
   const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
   const [selectedJustification, setSelectedJustification] = useState<Option | null>();
   const [selectedLinkedComplaint, setSelectedLinkedComplaint] = useState<Option | null>();
@@ -103,8 +106,6 @@ export const HWCRAssessmentForm: FC<Props> = ({
 
   const hasAssessments = Boolean(assessment);
   const showSectionErrors = !hasAssessments && cases.isInEdit.showSectionErrors && !cases.isInEdit.hideAssessmentErrors;
-
-  const [assessmentState, setAssessmentState] = useState<Assessment>(assessment ?? ({} as Assessment));
 
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
@@ -215,7 +216,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
         ? ({ label: assessmentState.category_level.key, value: assessmentState.category_level.value } as Option)
         : null;
 
-    const assesmentDate = assessmentState?.date ? new Date(assessmentState.date) : new Date();
+    const assesmentDate = assessment?.date ? new Date(assessmentState.date) : new Date();
 
     let selectedContacted;
     if (assessmentState.contacted_complainant === null) {
@@ -237,15 +238,6 @@ export const HWCRAssessmentForm: FC<Props> = ({
         value: item.value,
       };
     }) as Option[];
-
-    const legacyAssessmentTypes =
-      assessmentState.assessment_type_legacy &&
-      (assessmentState.assessment_type_legacy?.map((item) => {
-        return {
-          label: item.key,
-          value: item.value,
-        };
-      }) as Option[]);
 
     setSelectedDate(assesmentDate);
     setSelectedOfficer(selectedOfficer);
@@ -282,11 +274,11 @@ export const HWCRAssessmentForm: FC<Props> = ({
     }
     // officersInAgencyList should be in this list, but it is not a correctly implimented selector
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [assessmentState, linkedComplaintData, assigned, quickClose]);
+  }, [assessment, linkedComplaintData, assigned, quickClose]);
 
   useEffect(() => {
     populateAssessmentUI();
-  }, [assessmentState, populateAssessmentUI]);
+  }, [assessment, populateAssessmentUI]);
 
   const justificationEditClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
   const showDuplicateOptions = selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
@@ -455,19 +447,30 @@ export const HWCRAssessmentForm: FC<Props> = ({
     if (selectedActionRequired?.value === "No" && !selectedJustification) {
       setJustificationRequiredErrorMessage("Required when Action Required is No");
       return true;
-    } else if (
-      selectedActionRequired?.value === "No" &&
-      selectedJustification?.value === "DUPLICATE" &&
-      linkedComplaintData?.length > 0 &&
-      !linkedComplaintData[0].parent
-    ) {
-      setJustificationRequiredErrorMessage(
-        "Other complaints are linked to this complaint. This complaint cannot be closed as a duplicate.",
-      );
-      return true;
     }
+
+    if (selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE") {
+      if (!allowDuplicate) {
+        setJustificationRequiredErrorMessage(
+          "This complaint has other assessments. This complaint cannot be closed as a duplicate.",
+        );
+        return true;
+      }
+      if (
+        selectedActionRequired?.value === "No" &&
+        selectedJustification?.value === "DUPLICATE" &&
+        linkedComplaintData?.length > 0 &&
+        !linkedComplaintData[0].parent
+      ) {
+        setJustificationRequiredErrorMessage(
+          "Other complaints are linked to this complaint. This complaint cannot be closed as a duplicate.",
+        );
+        return true;
+      }
+    }
+
     return false;
-  }, [selectedActionRequired, selectedJustification, linkedComplaintData]);
+  }, [selectedActionRequired?.value, selectedJustification, allowDuplicate, linkedComplaintData]);
 
   const validateLinkedComplaint = useCallback((): boolean => {
     if (selectedJustification?.value === "DUPLICATE") {
@@ -491,7 +494,14 @@ export const HWCRAssessmentForm: FC<Props> = ({
       }
     }
     return false;
-  }, [dispatch, selectedJustification, selectedLinkedComplaint, validationResults, cases.isInEdit.showSectionErrors]);
+  }, [
+    selectedJustification?.value,
+    selectedLinkedComplaint,
+    id,
+    validationResults,
+    cases.isInEdit.showSectionErrors,
+    dispatch,
+  ]);
 
   // Validates the assessment
   const hasErrors = useCallback((): boolean => {

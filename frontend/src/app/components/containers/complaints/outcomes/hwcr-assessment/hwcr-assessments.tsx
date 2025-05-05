@@ -27,6 +27,8 @@ export const HWCRAssessments: FC = () => {
     }
   }, [isInEdit.assessment, assessments]);
 
+  const hasExistingDuplicate = assessments?.some((assessment: any) => assessment.justification?.value === "DUPLICATE");
+
   return (
     <section
       id="outcome-note"
@@ -40,12 +42,13 @@ export const HWCRAssessments: FC = () => {
           <HWCRAssessment
             key={assessment.id}
             assessment={assessment}
+            allowDuplicate={assessments.length === 0}
           />
           <br />
         </>
       ))}
       {showAddAssessment && <HWCRAssessment />}
-      {!isInEdit.assessment && !showAddAssessment && (
+      {!isInEdit.assessment && !hasExistingDuplicate && !showAddAssessment && (
         <Button
           variant="primary"
           id="outcome-report-add-assessment"

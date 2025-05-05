@@ -14,7 +14,7 @@ import {
   selectIsReviewRequired,
   selectReviewComplete,
 } from "@store/reducers/case-selectors";
-import { HWCRComplaintAssessment } from "@components/containers/complaints/outcomes/hwcr-assessment/hwcr-complaint-assessment";
+import { HWCRAssessmentForm } from "@components/containers/complaints/outcomes/hwcr-assessment/hwcr-assessment-form";
 import useValidateComplaint from "@/app/hooks/validate-complaint";
 
 const ModalLoading: FC = memo(() => (
@@ -150,14 +150,13 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
             display: displayAssessment ? "inherit" : "none",
           }}
         >
-          <HWCRComplaintAssessment
-            id={complaint_identifier}
-            showHeader={false}
+          <HWCRAssessmentForm
             handleSave={() => {
               submit();
               refreshComplaintsOnClose && dispatch(refreshComplaints(complaint_type));
             }}
-            handleClose={close}
+            handleCancel={close}
+            allowDuplicate={true}
             quickClose={true}
           />
         </div>
