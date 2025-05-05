@@ -2074,9 +2074,11 @@ export class ComplaintService {
         assessment.assessmentActor = assessmentActions[0].actor;
         assessment.assessmentDate = assessmentActions[0].date;
 
-        const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(assessment.assessmentActor))
-          .person_guid;
-        assessment.assessmentActor = `${last_name}, ${first_name}`;
+        const officer = await this._officerService.findByAuthUserGuid(assessment.assessmentActor);
+        const { first_name, last_name } = officer.person_guid;
+        const agency_code = officer.agency_code.short_description;
+
+        assessment.assessmentActor = `${last_name}, ${first_name} (${agency_code})`;
 
         //Apply timezone and format date
         assessment.assessmentDate = _applyTimezone(assessment.assessmentDate, tz, "date");
