@@ -23,7 +23,7 @@ export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
 
-  const showDuplicateOptions = !assessment.action_required && assessment.justification?.value === "DUPLICATE";
+  const showDuplicateOptions = assessment.action_required === "No" && assessment.justification?.value === "DUPLICATE";
   const assessmentDivClass = `comp-details-form-row ${assessment.action_required === "Yes" ? "inherit" : "hidden"}`;
   const justificationLabelClass = assessment.action_required === "Yes" ? "hidden" : "inherit";
 

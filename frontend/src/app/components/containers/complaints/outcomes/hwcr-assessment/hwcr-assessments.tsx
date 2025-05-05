@@ -28,7 +28,7 @@ export const HWCRAssessments: FC = () => {
   }, [isInEdit.assessment, assessments]);
 
   const hasExistingDuplicate = assessments?.some((assessment: any) => assessment.justification?.value === "DUPLICATE");
-  const allowDuplicate = assessments?.length === 0 || hasExistingDuplicate;
+  const allowDuplicate = assessments?.length === 0 && !hasExistingDuplicate;
 
   return (
     <section
@@ -43,7 +43,7 @@ export const HWCRAssessments: FC = () => {
           <HWCRAssessment
             key={assessment.id}
             assessment={assessment}
-            allowDuplicate={false}
+            allowDuplicate={assessment.justification?.value === "DUPLICATE" ? true : allowDuplicate} // Allow saving as duplicate if it is already a duplicate
           />
           <br />
         </>
