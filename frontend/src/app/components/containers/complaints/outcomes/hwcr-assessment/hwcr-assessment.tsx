@@ -29,7 +29,7 @@ export const HWCRAssessment: FC<props> = ({ assessment, allowDuplicate = false }
           assessment={assessment}
           handleCancel={() => setShowInput(false)}
           handleSave={() => setShowInput(false)}
-          allowDuplicate={false}
+          allowDuplicate={allowDuplicate}
         />
       ) : (
         assessment && (

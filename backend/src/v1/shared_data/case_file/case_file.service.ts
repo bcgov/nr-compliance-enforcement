@@ -189,7 +189,7 @@ export class CaseFileService {
       // Update the assessment in the Case Management database
       const result = await post(token, {
         query: query,
-        variables: assessmentInput.assessment,
+        variables: { input: assessmentInput },
       });
       returnValue = await this.handleAPIResponse(result, complaintBeingLinkedId);
       // If the mutation succeeded, commit the pending transaction
@@ -207,7 +207,7 @@ export class CaseFileService {
   async createAssessment(token: string, model: CreateAssessmentInput): Promise<CaseFileDto> {
     let returnValue;
 
-    this.logger.debug("createAssessment", model);
+    this.logger.error(`CREATING ASSESSMENT: ${JSON.stringify(model)}`);
 
     const query = `mutation CreateAssessment($input: CreateAssessmentInput!) {
           createAssessment(input: $input)

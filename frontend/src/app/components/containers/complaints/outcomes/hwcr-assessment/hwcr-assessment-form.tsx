@@ -35,7 +35,7 @@ import { BsExclamationCircleFill } from "react-icons/bs";
 import "@assets/sass/hwcr-assessment.scss";
 import { upsertAssessment } from "@store/reducers/case-thunks";
 import { OptionLabels } from "@constants/option-labels";
-import { HWCRComplaintAssessmentLinkComplaintSearch } from "./hwcr-complaint-assessment-link-complaint-search";
+import { HWCRAssessmentLinkComplaintSearch } from "./hwcr-assessment-link-complaint-search";
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { Officer } from "@/app/types/person/person";
@@ -646,7 +646,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
                   Link current complaint to:<span className="required-ind">*</span>
                 </label>
                 <div className="comp-details-input full-width">
-                  <HWCRComplaintAssessmentLinkComplaintSearch
+                  <HWCRAssessmentLinkComplaintSearch
                     id="linkedComplaint"
                     onChange={(e: Option | null, s: string | null) => handleLinkedComplaintChange(e, s)}
                     errorMessage={linkedComplaintErrorMessage}
