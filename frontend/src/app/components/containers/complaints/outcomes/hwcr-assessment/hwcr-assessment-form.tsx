@@ -216,7 +216,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
         ? ({ label: assessmentState.category_level.key, value: assessmentState.category_level.value } as Option)
         : null;
 
-    const assesmentDate = assessment?.date ? new Date(assessmentState.date) : new Date();
+    const assesmentDate = assessmentState?.date ? new Date(assessmentState.date) : new Date();
 
     let selectedContacted;
     if (assessmentState.contacted_complainant === null) {
@@ -305,7 +305,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const saveButtonClick = async () => {
     if (!hasErrors()) {
       const updatedAssessmentData: Assessment = {
-        id: assessment?.id,
+        id: assessmentState?.id,
         date: selectedDate,
         officer: {
           key: selectedOfficer?.label,
