@@ -10,6 +10,7 @@ export interface AnimalOutcomeInput {
   categoryLevel?: string;
   conflictHistory?: string;
   outcome?: string;
+  outcomeActionedBy?: string;
   tags?: Array<EarTagInput>;
   drugs?: Array<DrugUsedInputV3>;
 

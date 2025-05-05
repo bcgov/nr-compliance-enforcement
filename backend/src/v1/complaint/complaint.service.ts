@@ -895,11 +895,12 @@ export class ComplaintService {
   private readonly _getComplaintsByOutcomeAnimal = async (
     token: string,
     outcomeAnimalCode: string,
+    outcomeActionedBy: string,
     startDate: Date | undefined,
     endDate: Date | undefined,
   ): Promise<string[]> => {
     const { data, errors } = await get(token, {
-      query: `{getLeadsByOutcomeAnimal (outcomeAnimalCode: "${outcomeAnimalCode}", startDate: "${startDate}" , endDate: "${endDate}")}`,
+      query: `{getLeadsByOutcomeAnimal (outcomeAnimalCode: "${outcomeAnimalCode}", outcomeActionedByCode: "${outcomeActionedBy}", startDate: "${startDate}" , endDate: "${endDate}")}`,
     });
     if (errors) {
       this.logger.error("GraphQL errors:", errors);
@@ -1118,6 +1119,7 @@ export class ComplaintService {
         const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(
           token,
           filters.outcomeAnimal,
+          filters.outcomeActionedBy,
           filters.outcomeAnimalStartDate,
           filters.outcomeAnimalEndDate,
         );
@@ -1250,6 +1252,7 @@ export class ComplaintService {
         const complaintIdentifiers = await this._getComplaintsByOutcomeAnimal(
           token,
           filters.outcomeAnimal,
+          filters.outcomeActionedBy,
           filters.outcomeAnimalStartDate,
           filters.outcomeAnimalEndDate,
         );

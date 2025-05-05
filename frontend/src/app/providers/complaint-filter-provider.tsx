@@ -29,6 +29,7 @@ let initialState: ComplaintFilters = {
   complaintMethod: null,
   actionTaken: null,
   outcomeAnimal: null,
+  outcomeActionedBy: undefined,
   outcomeAnimalStartDate: undefined,
   outcomeAnimalEndDate: undefined,
   equipmentStatus: null,
@@ -59,6 +60,7 @@ const convertFilterNames = (complaintFilters: Partial<ComplaintFilters>) => {
     outcomeAnimalFilter,
     outcomeAnimalStartDateFilter,
     outcomeAnimalEndDateFilter,
+    outcomeActionedByFilter,
     equipmentStatusFilter,
     equipmentTypesFilter,
   } = complaintFilters;
@@ -102,6 +104,7 @@ const convertFilterNames = (complaintFilters: Partial<ComplaintFilters>) => {
     outcomeAnimal: outcomeAnimalFilter,
     outcomeAnimalStartDate: parsedOutcomeAnimalStartDate,
     outcomeAnimalEndDate: parsedOutcomeAnimalEndDate,
+    outcomeActionedBy: outcomeActionedByFilter,
     equipmentStatus: equipmentStatusFilter,
     equipmentTypes: equipmentTypesFilter,
   };

@@ -113,6 +113,8 @@ export const caseFileQueryFields: string = `
     identifyingFeatures
     outcome
     outcomeDescription
+    outcomeActionedBy
+    outcomeActionedByDescription
     tags { 
       id
       ear
