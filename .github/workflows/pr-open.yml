@@ -8,18 +8,26 @@ on:
       - opened
       - reopened
       - synchronize
-      - ready_for_review
 
 concurrency:
   # Cancel in progress for PR open and close
   group: ${{ github.event.number }}
   cancel-in-progress: true
 
+env:
+  GITOPS_REPO_BRANCH: main
+  GITOPS_REPO: bcgov-c/tenant-gitops-f208ae
+  GITOPS_REPO_VALUES_PATH: ./charts/apps/natsuite/values
+  GITOPS_REPO_OUTPUTS_PATH: ./charts/apps/natsuite/values/.outputs
+
 jobs:
   # https://github.com/bcgov/action-builder-ghcr
   builds:
     name: Builds
     runs-on: ubuntu-22.04
+    outputs:
+      digest: ${{ steps.builds.outputs.digest }}
+      sha: ${{ github.sha }}
     strategy:
       matrix:
         package: [backend, frontend, migrations, webeoc]
@@ -30,7 +38,14 @@ jobs:
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
           tag_fallback: latest
-          triggers: ('${{ matrix.package }}/')
+          # triggers: ('${{ matrix.package }}/')
+      - uses: shrink/actions-docker-registry-tag@v4
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: ${{ github.event.number }}
+          tags: |
+            ${{ github.sha }}
 
   # https://github.com/bcgov/quickstart-openshift
   crunchy:
@@ -93,3 +108,63 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - run: echo "Success!"
+  
+  ### Emerald Jobs ###
+  deploy-emerald:
+    name: Deploy Workloads To Emerald
+    needs: [builds]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout CD repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.GITOPS_REPO }}
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          ref: ${{ env.GITOPS_REPO_BRANCH }}
+
+      - name: Calculate Deployment Number
+        id: get-deployment-number
+        shell: bash
+        run: |
+          PR_NUMBER=$(echo ${{ github.event.number }})
+          PR_NUMBER_MOD_TEN=$(($PR_NUMBER % 10))
+          echo "DEPLOYMENT_NUMBER=$(($PR_NUMBER_MOD_TEN))" >> $GITHUB_OUTPUT
+
+      - name: Configure git
+        # From https://github.com/orgs/community/discussions/26560#discussioncomment-3531273
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Update dev environment tag and enable it for deployment
+        run: |
+          DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
+          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
+          ./.github/scripts/gitops.sh tag dev-$DEPLOYMENT_NUMBER ${{ needs.builds.outputs.sha }}
+
+          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
+          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
+          ./.github/scripts/gitops.sh enable dev-$DEPLOYMENT_NUMBER
+
+      # TODO: uncomment once crunchy is provisioned in f208ae
+      # We always run this to avoid deleting developer databases on commit pushes after a PR is opened
+      # there is a small edge case where a cleanup could be interrupted by this if 2 PRs open closely together
+      # - name: Unset / No-op Crunchy development DB cleanup
+      #   run: |
+      #     ./.github/scripts/crunchy.sh u
+
+      # On a newly opened PR we drop the old database and crunchy will standup a fresh db
+      # - name: Refresh developer database for newly opened PR
+      #   if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
+      #   run: |
+      #     DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+      #     ./.github/scripts/crunchy.sh s $DEPLOYMENT_NUMBER
+
+      - name: Commit and push update
+        shell: bash
+        run: |
+          DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+          ./.github/scripts/gitops.sh commitall "Updating dev-$DEPLOYMENT_NUMBER for PR ${{ github.event.number }}"
+          git push origin ${{ env.GITOPS_REPO_BRANCH }}

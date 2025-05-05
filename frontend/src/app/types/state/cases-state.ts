@@ -54,6 +54,7 @@ export interface AnimalOutcomeSubject {
   categoryLevel?: string;
   conflictHistory?: string;
   outcome?: string;
+  outcomeActionedBy?: string;
   tags?: Array<AnimalTagV2>;
   drugs?: Array<DrugUsed>;
   actions?: Array<CaseAction>;

@@ -422,8 +422,6 @@ export class CaseFileService {
       variables: model,
     };
 
-    this.logger.debug(mutationQuery);
-
     const result = await post(token, mutationQuery);
     // The model reaches this function in the shape { "createEquipmentInput": {...CaseFlieDTO} } despite that property
     // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.

@@ -10,6 +10,7 @@ export interface WildlifeInput {
   categoryLevel?: string;
   conflictHistory?: string;
   outcome?: string;
+  outcomeActionedBy?: string;
   tags?: Array<EarTagInput>;
   drugs?: Array<DrugUsedInput>;
   actions?: Array<WildlifeActionInput>;

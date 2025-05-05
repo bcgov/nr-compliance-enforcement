@@ -351,6 +351,9 @@ export const listActiveFilters =
       showOutcomeAnimalFilter: features.some(
         (feature: any) => feature.featureCode === FEATURE_TYPES.OUTCOME_ANIMAL_FILTER && feature.isActive === true,
       ),
+      showOutcomeActionedByFilter: features.some(
+        (feature: any) => feature.featureCode === FEATURE_TYPES.OUTCOME_ACTIONED_BY_FILTER && feature.isActive === true,
+      ),
       showOutcomeAnimalDateFilter: features.some(
         (feature: any) => feature.featureCode === FEATURE_TYPES.OUTCOME_ANIMAL_DATE_FILTER && feature.isActive === true,
       ),

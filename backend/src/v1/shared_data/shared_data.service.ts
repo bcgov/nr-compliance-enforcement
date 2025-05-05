@@ -12,7 +12,11 @@ const parkQueryFields: string = `
     externalId,
     name,
     legalName,
-    geoOrganizationUnitCode,
+    parkAreas {
+      parkAreaGuid
+      name
+      regionName
+    }
 }
 `;
 

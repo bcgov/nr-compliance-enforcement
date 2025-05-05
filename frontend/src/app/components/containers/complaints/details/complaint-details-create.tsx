@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { CompSelect } from "@components/common/comp-select";
 import { bcUtmZoneNumbers, formatLatLongCoordinate } from "@common/methods";
@@ -78,9 +78,12 @@ export const CreateComplaint: FC = () => {
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
   const activeTab = useAppSelector(selectActiveTab);
 
-  const handleSlideCountChange = (count: number) => {
-    setComplaintAttachmentCount(count);
-  };
+  const handleSlideCountChange = useCallback(
+    (count: number) => {
+      setComplaintAttachmentCount(count);
+    },
+    [setComplaintAttachmentCount],
+  );
 
   //Only remove all options but HWCR for HWCR only
   let selectableComplaintTypeCodes = complaintTypeCodes;

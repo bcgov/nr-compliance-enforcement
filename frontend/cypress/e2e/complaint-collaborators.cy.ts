@@ -33,6 +33,7 @@ describe("Complaint collaborators have the correct permissions", () => {
     cy.visit(`${Cypress.config().baseUrl}/complaint/HWCR/${COMPLAINT_ID}`);
     cy.contains("COS added you to this complaint as a collaborator").should("exist");
     cy.get("#details-screen-update-status-button").should("be.disabled");
+    cy.get("#outcome-report-add-note").should("not.be.disabled");
   });
 });
 

@@ -4426,6 +4426,30 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'AC_BY_FLTR',
+  'Outcome actioned by filter',
+  'Displays actioned by option for certain HWCR outcomes',
+  270,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
 
 -------------------------
 -- Insert Feature / Agency XREF
@@ -4685,6 +4709,46 @@ SELECT
   'ACTONSTKEN',
   'PARKS',
   'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'AC_BY_FLTR',
+  'COS',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'AC_BY_FLTR',
+  'PARKS',
+  'Y',
   user,
   now(),
   user,
@@ -5671,6 +5735,33 @@ values
 DO NOTHING;
 
 insert into
+  public.team_code (
+    team_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+values
+  (
+    'EPD',
+    'Environmental Protection Division',
+    'Environmental Protection Division',
+    5,
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT
+DO NOTHING;
+
+
+insert into
   public.team (
     team_code,
     agency_code,
@@ -5771,6 +5862,28 @@ insert into
 values
   (
     'RIPM',
+    'EPO',
+    true,
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT
+DO NOTHING;
+
+insert into
+  public.team (
+    team_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+values
+  (
+    'EPD',
     'EPO',
     true,
     'FLYWAY',
@@ -10904,6 +11017,75 @@ SELECT
   user,
   now() ON CONFLICT
 DO NOTHING;
+
+INSERT INTO
+  configuration (
+    configuration_code,
+    configuration_value,
+    long_description,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'PRKHWCTMPT',
+    '',
+    'CDOGS Hash for Parks HWCR Template',
+    true,
+    CURRENT_USER,
+    CURRENT_TIMESTAMP,
+    CURRENT_USER,
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+  INSERT INTO
+  configuration (
+    configuration_code,
+    configuration_value,
+    long_description,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'PRKERSTMPT',
+    '',
+    'CDOGS Hash for Parks ERS Template',
+    true,
+    CURRENT_USER,
+    CURRENT_TIMESTAMP,
+    CURRENT_USER,
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
+
+  INSERT INTO
+  configuration (
+    configuration_code,
+    configuration_value,
+    long_description,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES
+  (
+    'PRKGIRTMPT',
+    '',
+    'CDOGS Hash for Parks GIR Template',
+    true,
+    CURRENT_USER,
+    CURRENT_TIMESTAMP,
+    CURRENT_USER,
+    CURRENT_TIMESTAMP
+  ) ON CONFLICT DO NOTHING;
 
 
 --------------------------

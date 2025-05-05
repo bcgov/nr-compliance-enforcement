@@ -26,6 +26,7 @@ import { ComplaintReadOnlyIndicator } from "./migrations/migration-26";
 import { AddIPMAuthCategoryCode } from "./migrations/migration-27";
 import { AddComplaintReferral } from "./migrations/migration-28";
 import { AddEquipmentStatusCode } from "./migrations/migration-29";
+import { addHwcrOutcomeActionedByCodes } from "./migrations/migration-30";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -66,6 +67,7 @@ migration = {
   ...AddIPMAuthCategoryCode,
   ...AddComplaintReferral,
   ...AddEquipmentStatusCode,
+  ...addHwcrOutcomeActionedByCodes,
 };
 
 export default migration;

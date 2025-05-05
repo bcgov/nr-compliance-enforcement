@@ -1,11 +1,16 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { useAppSelector } from "@hooks/hooks";
 import { formatDate, formatTime } from "@common/methods";
 
 import { CaseAction } from "@apptypes/outcomes/case-action";
 import { Badge, Button, Card, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
+import {
+  selectComplaintViewMode,
+  selectComplaintCollaborators,
+  selectComplaint,
+} from "@/app/store/reducers/complaints";
 import { selectOfficers } from "@/app/store/reducers/officer";
+import { personGuid } from "@/app/store/reducers/app";
 
 type props = {
   note: string;
@@ -24,6 +29,21 @@ const longNoteLength = 300;
 export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDelete }) => {
   const officers = useAppSelector(selectOfficers);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
+  const collaborators = useAppSelector(selectComplaintCollaborators);
+  const userPersonGuid = useAppSelector(personGuid);
+  const [userIsCollaborator, setUserIsCollaborator] = useState<boolean>(false);
+  const complaint = useAppSelector(selectComplaint);
+  const [status, setStatus] = useState("CLOSED");
+
+  useEffect(() => {
+    setUserIsCollaborator(collaborators.some((c) => c.personGuid === userPersonGuid));
+  }, [collaborators, userPersonGuid]);
+
+  useEffect(() => {
+    if (complaint) {
+      setStatus(complaint.status);
+    }
+  }, [complaint]);
 
   const displayName = getActorDisplayName(actions[0].actor, officers);
 
@@ -95,7 +115,7 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
               size="sm"
               id="notes-edit-button"
               onClick={() => handleEdit()}
-              disabled={isReadOnly}
+              disabled={(isReadOnly && !userIsCollaborator) || status === "CLOSED"}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
@@ -105,7 +125,7 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
               variant="outline-primary"
               id="notes-delete-button"
               onClick={() => handleDelete()}
-              disabled={isReadOnly}
+              disabled={(isReadOnly && !userIsCollaborator) || status === "CLOSED"}
             >
               <i className="bi bi-trash3"></i>
               <span>Delete</span>
