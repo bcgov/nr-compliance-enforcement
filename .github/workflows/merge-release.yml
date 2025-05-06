@@ -187,6 +187,8 @@ jobs:
 
       - name: Roll latest changes out to test
         run: |
+          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
+          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
           ./.github/scripts/gitops.sh candidate
 
       - name: Commit and push update
