@@ -314,7 +314,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
 
   // save to redux if no errors.  Otherwise, display error message(s).
   const saveButtonClick = async () => {
-    if (!hasErrors()) {
+    if (!validateErrors()) {
       dispatch(upsertAssessment(id, getUpdatedAssessmentData()));
       if (
         selectedOfficer?.value &&
@@ -454,7 +454,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   ]);
 
   // Validates the assessment
-  const hasErrors = useCallback((): boolean => {
+  const validateErrors = useCallback((): boolean => {
     resetValidationErrors();
 
     let hasErrors = false;
@@ -479,10 +479,10 @@ export const HWCRAssessmentForm: FC<Props> = ({
 
   // Validate on selected value change
   useEffect(() => {
-    validateOnChange && hasErrors();
+    validateOnChange && validateErrors();
   }, [
     validateOnChange,
-    hasErrors,
+    validateErrors,
     selectedOfficer,
     selectedActionRequired,
     selectedJustification,
