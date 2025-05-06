@@ -283,39 +283,39 @@ export const HWCRAssessmentForm: FC<Props> = ({
     );
   };
 
+  const mapOption = (option?: Option | null) => (option ? { key: option.label, value: option.value } : undefined);
+
+  const mapOptions = (options?: Option[] | null) =>
+    options?.map((item) => ({ key: item.label, value: item.value })) ?? [];
+
+  const shouldCloseComplaint = () =>
+    selectedActionRequired?.value === "No" && (quickClose || selectedJustification?.value === "DUPLICATE");
+
+  const getUpdatedAssessmentData = () => ({
+    id: assessmentState?.id,
+    date: selectedDate,
+    officer: mapOption(selectedOfficer),
+    action_required: selectedActionRequired?.label,
+    close_complaint: shouldCloseComplaint(),
+    justification: mapOption(selectedJustification) ?? { key: "", value: "" },
+    linked_complaint: mapOption(selectedLinkedComplaint) ?? { key: "", value: "" },
+    assessment_type:
+      selectedActionRequired?.label === OptionLabels.OPTION_NO ? [] : mapOptions(selectedAssessmentTypes),
+    contacted_complainant: selectedContacted === "Yes",
+    attended: selectedAttended === "Yes",
+    location_type: isLargeCarnivore ? mapOption(selectedLocation) : undefined,
+    conflict_history: isLargeCarnivore && selectedConflictHistory ? mapOption(selectedConflictHistory) : undefined,
+    category_level: isLargeCarnivore && selectedCategoryLevel ? mapOption(selectedCategoryLevel) : undefined,
+    assessment_cat1_type:
+      selectedActionRequired?.label === OptionLabels.OPTION_NO || !isLargeCarnivore
+        ? []
+        : mapOptions(selectedAssessmentCat1Types),
+  });
+
   // save to redux if no errors.  Otherwise, display error message(s).
   const saveButtonClick = async () => {
     if (!hasErrors()) {
-      const mapOption = (option?: Option | null) => (option ? { key: option.label, value: option.value } : undefined);
-
-      const mapOptions = (options?: Option[] | null) =>
-        options?.map((item) => ({ key: item.label, value: item.value })) ?? [];
-
-      const shouldCloseComplaint = () =>
-        selectedActionRequired?.value === "No" && (quickClose || selectedJustification?.value === "DUPLICATE");
-
-      const updatedAssessmentData: Assessment = {
-        id: assessmentState?.id,
-        date: selectedDate,
-        officer: mapOption(selectedOfficer),
-        action_required: selectedActionRequired?.label,
-        close_complaint: shouldCloseComplaint(),
-        justification: mapOption(selectedJustification) ?? { key: "", value: "" },
-        linked_complaint: mapOption(selectedLinkedComplaint) ?? { key: "", value: "" },
-        assessment_type:
-          selectedActionRequired?.label === OptionLabels.OPTION_NO ? [] : mapOptions(selectedAssessmentTypes),
-        contacted_complainant: selectedContacted === "Yes",
-        attended: selectedAttended === "Yes",
-        location_type: isLargeCarnivore ? mapOption(selectedLocation) : undefined,
-        conflict_history: isLargeCarnivore && selectedConflictHistory ? mapOption(selectedConflictHistory) : undefined,
-        category_level: isLargeCarnivore && selectedCategoryLevel ? mapOption(selectedCategoryLevel) : undefined,
-        assessment_cat1_type:
-          selectedActionRequired?.label === OptionLabels.OPTION_NO || !isLargeCarnivore
-            ? []
-            : mapOptions(selectedAssessmentCat1Types),
-      };
-
-      dispatch(upsertAssessment(id, updatedAssessmentData));
+      dispatch(upsertAssessment(id, getUpdatedAssessmentData()));
       if (
         selectedOfficer?.value &&
         !assigned &&
