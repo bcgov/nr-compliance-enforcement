@@ -45,3 +45,8 @@ export const selectEquipmentStatusDropdown = createSelector([selectCodeTables], 
   const { "equipment-status": items } = codeTables;
   return items.map(({ equipmentStatus: value, longDescription: label }) => ({ label, value }));
 });
+
+export const selectParkAreasDropdown = createSelector([selectCodeTables], (codeTables) => {
+  const { "park-area": items } = codeTables;
+  return items.map(({ parkAreaGuid: value, name: label }) => ({ label, value }));
+});
