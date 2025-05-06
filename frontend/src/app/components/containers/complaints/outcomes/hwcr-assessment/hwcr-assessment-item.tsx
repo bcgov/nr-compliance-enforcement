@@ -57,7 +57,7 @@ export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
                       to={`/complaint/HWCR/${linkedComplaintData[0].id}`}
                       id={linkedComplaintData[0].id}
                     >
-                      {linkedComplaintData[0].id || ""}
+                      {linkedComplaintData[0].id ?? ""}
                     </Link>
                   </dd>
                 </div>

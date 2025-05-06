@@ -28,7 +28,6 @@ import { Complaint } from "../../complaint/entities/complaint.entity";
 import { CreateLinkedComplaintXrefDto } from "../../linked_complaint_xref/dto/create-linked_complaint_xref.dto";
 import { CaseManagementError } from "../../../enum/case_management_error.enum";
 import { CreateAssessmentInput } from "src/types/models/case-files/assessment/create-assessment-input";
-import { AssessmentDto } from "src/types/models/case-files/assessment/assessment";
 import { UpdateAssessmentInput } from "src/types/models/case-files/assessment/update-assessment-input";
 
 @Injectable({ scope: Scope.REQUEST })

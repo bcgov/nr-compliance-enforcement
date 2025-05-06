@@ -44,6 +44,7 @@ import useValidateComplaint from "@hooks/validate-complaint";
 import { Officer } from "@/app/types/person/person";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
+import KeyValuePair from "@/app/types/app/key-value-pair";
 
 type Props = {
   id: string;
@@ -64,7 +65,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const [assessmentState] = useState<Assessment>(assessment || ({} as Assessment));
+  const [assessmentState] = useState<Assessment>(assessment ?? ({} as Assessment));
 
   const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
   const [selectedJustification, setSelectedJustification] = useState<Option | null>();
@@ -164,88 +165,71 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const noYesOptions = [...actionRequiredList].reverse();
 
   const populateAssessmentUI = useCallback(() => {
-    const selectedOfficer = (
-      assessmentState.officer
-        ? {
-            label: assessmentState.officer?.key,
-            value: assessmentState.officer?.value,
-          }
-        : null
-    ) as Option;
+    const mapKeyValueToOption = (item?: KeyValuePair | null) =>
+      item?.key ? { label: item.key, value: item.value } : null;
 
-    let selectedActionRequired = quickClose ? ({ label: "No", value: "No" } as Option) : null;
+    const mapToOptionArray = (items?: KeyValuePair[] | null) =>
+      items?.map((item) => ({ label: item.key, value: item.value })) || [];
 
+    const parseBooleanToYesNo = (value?: boolean | null) => {
+      if (value === null) {
+        return null;
+      }
+      if (value) {
+        return "Yes";
+      }
+      return "No";
+    };
+
+    let selectedOfficer: Option | null = null;
+    if (assessmentState.officer) {
+      selectedOfficer = {
+        label: assessmentState.officer.key,
+        value: assessmentState.officer.value,
+      };
+    }
+
+    let selectedActionRequired: Option | null = null;
     if (assessmentState.action_required) {
       selectedActionRequired = {
         label: assessmentState.action_required,
         value: assessmentState.action_required,
-      } as Option;
+      };
+    } else if (quickClose) {
+      selectedActionRequired = { label: "No", value: "No" };
     }
 
-    let selectedJustification = quickClose ? ({ label: "Duplicate", value: "DUPLICATE" } as Option) : null;
-
+    let selectedJustification: Option | null = null;
     if (assessmentState.justification) {
       selectedJustification = {
-        label: assessmentState.justification?.key,
-        value: assessmentState.justification?.value,
-      } as Option;
+        label: assessmentState.justification.key,
+        value: assessmentState.justification.value,
+      };
+    } else if (quickClose) {
+      selectedJustification = { label: "Duplicate", value: "DUPLICATE" };
     }
 
     const selectedLinkedComplaint =
-      linkedComplaintData && linkedComplaintData.length > 0 && linkedComplaintData[0].id
-        ? ({ label: linkedComplaintData[0].id, value: linkedComplaintData[0].id } as Option)
+      linkedComplaintData?.length && linkedComplaintData[0].id
+        ? { label: linkedComplaintData[0].id, value: linkedComplaintData[0].id }
         : null;
 
-    const selectedAssessmentTypes = assessmentState.assessment_type?.map((item) => {
-      return {
-        label: item.key,
-        value: item.value,
-      };
-    }) as Option[];
+    const selectedAssessmentTypes = mapToOptionArray(assessmentState.assessment_type);
+    const selectedAssessmentCat1Types = mapToOptionArray(assessmentState.assessment_cat1_type);
 
-    const selectedLocation =
-      assessmentState.location_type && assessmentState.location_type.key !== ""
-        ? ({ label: assessmentState.location_type.key, value: assessmentState.location_type.value } as Option)
-        : null;
+    const selectedLocation = mapKeyValueToOption(assessmentState.location_type);
+    const selectedConflictHistory = mapKeyValueToOption(assessmentState.conflict_history);
+    const selectedCategoryLevel = mapKeyValueToOption(assessmentState.category_level);
 
-    const selectedConflictHistory =
-      assessmentState.conflict_history && assessmentState.conflict_history.key !== ""
-        ? ({ label: assessmentState.conflict_history.key, value: assessmentState.conflict_history.value } as Option)
-        : null;
+    const selectedDateValue = assessmentState?.date ? new Date(assessmentState.date) : new Date();
+    const selectedContacted = parseBooleanToYesNo(assessmentState.contacted_complainant);
+    const selectedAttended = parseBooleanToYesNo(assessmentState.attended);
 
-    const selectedCategoryLevel =
-      assessmentState.category_level && assessmentState.category_level.key !== ""
-        ? ({ label: assessmentState.category_level.key, value: assessmentState.category_level.value } as Option)
-        : null;
-
-    const assesmentDate = assessmentState?.date ? new Date(assessmentState.date) : new Date();
-
-    let selectedContacted;
-    if (assessmentState.contacted_complainant === null) {
-      selectedContacted = null;
-    } else {
-      selectedContacted = assessmentState.contacted_complainant ? "Yes" : "No";
-    }
-
-    let selectedAttended;
-    if (assessmentState.attended === null) {
-      selectedAttended = null;
-    } else {
-      selectedAttended = assessmentState.attended ? "Yes" : "No";
-    }
-
-    const selectedAssessmentCat1Types = assessmentState.assessment_cat1_type?.map((item) => {
-      return {
-        label: item.key,
-        value: item.value,
-      };
-    }) as Option[];
-
-    setSelectedDate(assesmentDate);
-    setSelectedOfficer(selectedOfficer);
-    setSelectedActionRequired(selectedActionRequired);
-    setSelectedJustification(selectedJustification);
-    setSelectedLinkedComplaint(selectedLinkedComplaint);
+    setSelectedDate(selectedDateValue);
+    setSelectedOfficer(selectedOfficer as Option);
+    setSelectedActionRequired(selectedActionRequired as Option);
+    setSelectedJustification(selectedJustification as Option);
+    setSelectedLinkedComplaint(selectedLinkedComplaint as Option);
     setSelectedAssessmentTypes(selectedAssessmentTypes);
     setSelectedContacted(selectedContacted);
     setSelectedAttended(selectedAttended);
@@ -257,8 +241,6 @@ export const HWCRAssessmentForm: FC<Props> = ({
     resetValidationErrors();
 
     if (!selectedOfficer && assigned && officersInAgencyList) {
-      // Match by checking `person_guid.person_guid` for Officers
-      // or `personGuid` for Collaborators
       const officerAssigned = officersInAgencyList
         .filter((person: any) => {
           const personGuid = person.person_guid?.person_guid ?? person.personGuid;
@@ -268,18 +250,12 @@ export const HWCRAssessmentForm: FC<Props> = ({
           const firstName = item.person_guid?.first_name ?? item.firstName;
           const lastName = item.person_guid?.last_name ?? item.lastName;
           const authUserGuid = item.auth_user_guid ?? item.authUserGuid;
-
-          return {
-            label: `${lastName}, ${firstName}`,
-            value: authUserGuid,
-          } as Option;
+          return { label: `${lastName}, ${firstName}`, value: authUserGuid } as Option;
         });
-
-      if (officerAssigned.length > 0 && typeof officerAssigned[0].label !== "undefined") {
+      if (officerAssigned.length && officerAssigned[0].label) {
         setSelectedOfficer(officerAssigned[0]);
       }
     }
-    // officersInAgencyList should be in this list, but it is not a correctly implimented selector
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessmentState, linkedComplaintData, assigned, quickClose]);
 
@@ -515,13 +491,13 @@ export const HWCRAssessmentForm: FC<Props> = ({
     resetValidationErrors();
 
     let hasErrors = false;
-    hasErrors = validateOfficer() || hasErrors;
-    hasErrors = validateDate() || hasErrors;
-    hasErrors = validateActionRequired() || hasErrors;
-    hasErrors = validateAssessmentTypes() || hasErrors;
-    hasErrors = validateJustification() || hasErrors;
-    hasErrors = validateLinkedComplaint() || hasErrors;
-    hasErrors = validateLocationType() || hasErrors;
+    hasErrors = validateOfficer() ?? hasErrors;
+    hasErrors = validateDate() ?? hasErrors;
+    hasErrors = validateActionRequired() ?? hasErrors;
+    hasErrors = validateAssessmentTypes() ?? hasErrors;
+    hasErrors = validateJustification() ?? hasErrors;
+    hasErrors = validateLinkedComplaint() ?? hasErrors;
+    hasErrors = validateLocationType() ?? hasErrors;
 
     return hasErrors;
   }, [
@@ -723,7 +699,6 @@ export const HWCRAssessmentForm: FC<Props> = ({
                 </div>
               </div>
               <div className="comp-details-input full-width">
-                setShowAddAssessment to
                 <ValidationCheckboxGroup
                   errMsg={isLargeCarnivore ? "" : assessmentRequiredErrorMessage}
                   options={assessmentTypeList}

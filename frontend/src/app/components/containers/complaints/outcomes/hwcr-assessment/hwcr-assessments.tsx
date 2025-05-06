@@ -58,7 +58,7 @@ export const HWCRAssessments: FC = () => {
           id="outcome-report-add-assessment"
           title="Add additional assessment"
           onClick={(e) => setShowAddAssessment(true)}
-          disabled={isReadOnly || status === "CLOSED"}
+          disabled={isReadOnly ?? status === "CLOSED"}
         >
           <i className="bi bi-plus-circle"></i>
           <span>Add assessment</span>
