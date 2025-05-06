@@ -2,7 +2,11 @@ import { FC, useEffect, useState, useCallback } from "react";
 import { Button, Card, Alert } from "react-bootstrap";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectOfficerListByAgency, selectOfficersByAgency, assignComplaintToOfficer } from "@store/reducers/officer";
+import {
+  assignComplaintToOfficer,
+  selectOfficersAndCollaboratorsByAgency,
+  selectOfficerAndCollaboratorListByAgency,
+} from "@store/reducers/officer";
 import {
   selectComplaintCallerInformation,
   selectComplaintAssignedBy,
@@ -92,9 +96,9 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
   const cases = useAppSelector((state) => state.cases);
   const officersInAgencyList = useSelector((state: RootState) =>
-    selectOfficersByAgency(state, ownedByAgencyCode?.agency),
+    selectOfficersAndCollaboratorsByAgency(state, ownedByAgencyCode?.agency),
   );
-  const assignableOfficers = useAppSelector(selectOfficerListByAgency);
+  const assignableOfficers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
   const conflictHistoryOptions = useAppSelector(selectConflictHistoryDropdown);
   const threatLevelOptions = useAppSelector(selectThreatLevelDropdown);
   const locationOptions = useAppSelector(selectLocationDropdown);
@@ -253,30 +257,35 @@ export const HWCRAssessmentForm: FC<Props> = ({
     resetValidationErrors();
 
     if (!selectedOfficer && assigned && officersInAgencyList) {
-      const officerAssigned: Option[] = officersInAgencyList
-        .filter((officer) => officer.person_guid.person_guid === assigned)
-        .map((item) => {
+      // Match by checking `person_guid.person_guid` for Officers
+      // or `personGuid` for Collaborators
+      const officerAssigned = officersInAgencyList
+        .filter((person: any) => {
+          const personGuid = person.person_guid?.person_guid ?? person.personGuid;
+          return personGuid === assigned;
+        })
+        .map((item: any) => {
+          const firstName = item.person_guid?.first_name ?? item.firstName;
+          const lastName = item.person_guid?.last_name ?? item.lastName;
+          const authUserGuid = item.auth_user_guid ?? item.authUserGuid;
+
           return {
-            label: `${item.person_guid?.last_name}, ${item.person_guid?.first_name}`,
-            value: item.auth_user_guid,
+            label: `${lastName}, ${firstName}`,
+            value: authUserGuid,
           } as Option;
         });
-      if (
-        officerAssigned &&
-        Array.isArray(officerAssigned) &&
-        officerAssigned.length > 0 &&
-        typeof officerAssigned[0].label !== "undefined"
-      ) {
+
+      if (officerAssigned.length > 0 && typeof officerAssigned[0].label !== "undefined") {
         setSelectedOfficer(officerAssigned[0]);
       }
     }
     // officersInAgencyList should be in this list, but it is not a correctly implimented selector
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [assessment, linkedComplaintData, assigned, quickClose]);
+  }, [assessmentState, linkedComplaintData, assigned, quickClose]);
 
   useEffect(() => {
     populateAssessmentUI();
-  }, [assessment, populateAssessmentUI]);
+  }, [assessmentState, populateAssessmentUI]);
 
   const justificationEditClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
   const showDuplicateOptions = selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
@@ -492,7 +501,14 @@ export const HWCRAssessmentForm: FC<Props> = ({
       }
     }
     return false;
-  }, [dispatch, selectedJustification, selectedLinkedComplaint, validationResults, cases.isInEdit.showSectionErrors]);
+  }, [
+    selectedJustification?.value,
+    selectedLinkedComplaint,
+    id,
+    validationResults,
+    cases.isInEdit.showSectionErrors,
+    dispatch,
+  ]);
 
   // Validates the assessment
   const hasErrors = useCallback((): boolean => {
