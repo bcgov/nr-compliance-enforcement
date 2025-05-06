@@ -27,7 +27,9 @@ export const HWCRAssessments: FC = () => {
     }
   }, [isInEdit.assessment, assessments]);
 
-  const hasExistingDuplicate = assessments?.some((assessment: any) => assessment.justification?.value === "DUPLICATE");
+  const hasExistingDuplicate = assessments?.some(
+    (assessment: any) => assessment.action_required?.value === "No" && assessment.justification?.value === "DUPLICATE",
+  );
   const allowDuplicate = assessments?.length === 0 && !hasExistingDuplicate;
 
   return (
