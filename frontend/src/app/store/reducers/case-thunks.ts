@@ -111,7 +111,6 @@ export const upsertAssessment =
       return;
     }
     const caseIdentifier = await dispatch(findCase(complaintIdentifier));
-    console.log("upsert", caseIdentifier, assessment);
     if (!caseIdentifier || !assessment.id) {
       dispatch(addAssessment(assessment, complaintIdentifier, caseIdentifier));
     } else {
@@ -204,7 +203,6 @@ const addAssessment =
     }
 
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createAssessment`, createAssessmentInput);
-    console.log("createAssessmentInput", createAssessmentInput);
     await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
       const assessments = await parseAssessmentResponse(res, officers);
       if (res) {
@@ -336,8 +334,6 @@ const parseAssessmentResponse = async (res: CaseFileDto, officers: Officer[]): P
     } else {
       officerFullName = actor;
     }
-
-    console.log(assessment);
 
     const updatedAssessmentData = {
       id: assessment.id,

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import Option from "@apptypes/app/option";
 
 interface ValidationCheckboxGroupProps {
@@ -14,25 +14,18 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
   onCheckboxChange,
   checkedValues = [],
 }) => {
-  const [checkedItems, setCheckedItems] = useState<Option[]>(checkedValues);
-
-  useEffect(() => {
-    setCheckedItems(checkedValues);
-  }, [checkedValues]);
-
   const inputClassName = "form-check-input";
   const labelClassName = "form-check-label checkbox-label";
 
   const handleCheckboxChange = (value: Option) => {
-    const updatedCheckedItems = checkedItems
+    const updatedCheckedItems = checkedValues
       .map((item) => {
         return item.value;
       })
       .includes(value.value)
-      ? checkedItems.filter((item) => item.value !== value.value)
-      : [...checkedItems, value];
+      ? checkedValues.filter((item) => item.value !== value.value)
+      : [...checkedValues, value];
 
-    setCheckedItems(updatedCheckedItems);
     onCheckboxChange(updatedCheckedItems);
   };
 
@@ -45,18 +38,18 @@ export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
         >
           <input
             type="checkbox"
-            id={option.value!}
+            id={option.value}
             className={inputClassName}
-            checked={checkedItems
+            checked={checkedValues
               .map((item) => {
                 return item.value;
               })
-              .includes(option.value!)}
+              .includes(option.value)}
             onChange={() => handleCheckboxChange(option)}
           />
           <label
             className={labelClassName}
-            htmlFor={option.value!}
+            htmlFor={option.value}
           >
             {option.label}
           </label>

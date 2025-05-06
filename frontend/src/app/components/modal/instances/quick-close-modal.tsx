@@ -151,6 +151,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
           }}
         >
           <HWCRAssessmentForm
+            id={complaint_identifier}
             handleSave={() => {
               submit();
               refreshComplaintsOnClose && dispatch(refreshComplaints(complaint_type));

@@ -46,7 +46,7 @@ export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
                   <span>{assessment.justification?.key}</span>
                 </dd>
               </div>
-              {showDuplicateOptions && (
+              {showDuplicateOptions && linkedComplaintData?.length > 0 && (
                 <div
                   id="linked-complaint-div"
                   className={justificationLabelClass}

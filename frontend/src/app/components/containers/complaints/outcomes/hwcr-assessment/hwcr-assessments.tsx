@@ -23,12 +23,11 @@ export const HWCRAssessments: FC = () => {
   useEffect(() => {
     if (!isInEdit.assessment) {
       setShowAddAssessment(isInEdit.assessment);
-      console.log("setShowAddAssessment to false");
     }
   }, [isInEdit.assessment, assessments]);
 
   const hasExistingDuplicate = assessments?.some(
-    (assessment: any) => assessment.action_required?.value === "No" && assessment.justification?.value === "DUPLICATE",
+    (assessment: any) => assessment.action_required === "No" && assessment.justification?.value === "DUPLICATE",
   );
   const allowDuplicate = assessments?.length === 0 && !hasExistingDuplicate;
 
@@ -45,7 +44,9 @@ export const HWCRAssessments: FC = () => {
           <HWCRAssessment
             key={assessment.id}
             assessment={assessment}
-            allowDuplicate={assessment.justification?.value === "DUPLICATE" ? true : allowDuplicate} // Allow saving as duplicate if it is already a duplicate
+            allowDuplicate={
+              assessment.justification?.value === "DUPLICATE" || assessments.length === 1 ? true : allowDuplicate
+            } // Allow saving as duplicate if it is already a duplicate or if it is the only assessment
           />
           <br />
         </>

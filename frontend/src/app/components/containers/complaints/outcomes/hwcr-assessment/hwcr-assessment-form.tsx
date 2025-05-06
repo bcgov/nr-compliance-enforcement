@@ -1,6 +1,5 @@
 import { FC, useEffect, useState, useCallback } from "react";
 import { Button, Card, Alert } from "react-bootstrap";
-import { useParams } from "react-router-dom";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficerListByAgency, selectOfficersByAgency, assignComplaintToOfficer } from "@store/reducers/officer";
@@ -43,6 +42,7 @@ import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
 
 type Props = {
+  id: string;
   assessment?: Assessment;
   handleSave?: () => void;
   handleCancel?: () => void;
@@ -51,14 +51,13 @@ type Props = {
 };
 
 export const HWCRAssessmentForm: FC<Props> = ({
+  id,
   assessment,
   handleSave = () => {},
   handleCancel = () => {},
   quickClose = false,
   allowDuplicate = false,
 }) => {
-  const { id = "" } = useParams();
-
   const dispatch = useAppDispatch();
 
   const [assessmentState] = useState<Assessment>(assessment || ({} as Assessment));
@@ -161,7 +160,6 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const noYesOptions = [...actionRequiredList].reverse();
 
   const populateAssessmentUI = useCallback(() => {
-    console.log("populateAssessmentUI");
     const selectedOfficer = (
       assessmentState.officer
         ? {
@@ -470,7 +468,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
     }
 
     return false;
-  }, [selectedActionRequired?.value, selectedJustification, allowDuplicate, linkedComplaintData]);
+  }, [selectedActionRequired, selectedJustification, linkedComplaintData, allowDuplicate]);
 
   const validateLinkedComplaint = useCallback((): boolean => {
     if (selectedJustification?.value === "DUPLICATE") {
@@ -494,14 +492,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
       }
     }
     return false;
-  }, [
-    selectedJustification?.value,
-    selectedLinkedComplaint,
-    id,
-    validationResults,
-    cases.isInEdit.showSectionErrors,
-    dispatch,
-  ]);
+  }, [dispatch, selectedJustification, selectedLinkedComplaint, validationResults, cases.isInEdit.showSectionErrors]);
 
   // Validates the assessment
   const hasErrors = useCallback((): boolean => {
@@ -716,6 +707,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
                 </div>
               </div>
               <div className="comp-details-input full-width">
+                setShowAddAssessment to
                 <ValidationCheckboxGroup
                   errMsg={isLargeCarnivore ? "" : assessmentRequiredErrorMessage}
                   options={assessmentTypeList}
