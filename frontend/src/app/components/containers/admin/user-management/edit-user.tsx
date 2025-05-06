@@ -307,6 +307,7 @@ export const EditUser: FC<EditUserProps> = ({
           );
 
           if (res?.team && res?.roles) {
+            dispatch(getOfficers()); //refresh the officer list to get the latest changes
             ToggleSuccess("Officer updated successfully");
           } else {
             ToggleError("Unable to update");
@@ -328,7 +329,7 @@ export const EditUser: FC<EditUserProps> = ({
         );
 
         if (res?.roles) {
-          dispatch(getOfficers());
+          dispatch(getOfficers()); //refresh the officer list to get the latest changes
           ToggleSuccess("Officer updated successfully");
         } else {
           ToggleError("Unable to update");
