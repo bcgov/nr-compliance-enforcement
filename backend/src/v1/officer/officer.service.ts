@@ -197,7 +197,6 @@ export class OfficerService {
 
   async update(officer_guid: UUID, updateOfficerDto: UpdateOfficerDto): Promise<Officer> {
     const userRoles = updateOfficerDto.user_roles;
-    console.log(updateOfficerDto);
     //exclude roles field populated from keycloak from update
     delete (updateOfficerDto as any).user_roles;
 
