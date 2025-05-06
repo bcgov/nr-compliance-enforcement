@@ -67,6 +67,7 @@ export class OfficerService {
           coms_enrolled_ind: officer.coms_enrolled_ind,
           deactivate_ind: officer.deactivate_ind,
           user_roles: roleMapping[useGuid] ?? [],
+          park_area_guid: officer.park_area_guid,
         } as Officer;
       });
     }
@@ -196,6 +197,7 @@ export class OfficerService {
 
   async update(officer_guid: UUID, updateOfficerDto: UpdateOfficerDto): Promise<Officer> {
     const userRoles = updateOfficerDto.user_roles;
+    console.log(updateOfficerDto);
     //exclude roles field populated from keycloak from update
     delete (updateOfficerDto as any).user_roles;
 

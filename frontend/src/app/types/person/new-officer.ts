@@ -7,6 +7,7 @@ export interface NewOfficer {
   auth_user_guid: string;
   office_guid: string | null;
   team_code: string | null;
+  park_area_guid: string | null;
   person_guid: {
     first_name: string;
     middle_name_1: null;
