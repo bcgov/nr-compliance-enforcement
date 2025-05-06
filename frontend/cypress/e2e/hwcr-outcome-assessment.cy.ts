@@ -12,6 +12,7 @@ describe("HWCR Outcome Assessments", () => {
     //This is required to make the tests re-runnable.  It's not great because it means it will only run the first time.
     //If we ever get the ability to remove an assessment this test suite should be rewritten to remove this conditional
     //and to add a test at the end to delete the assessment.
+    cy.get("#outcome-report-add-assessment").click({ force: true });
     cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
       if ($assessment.find("#outcome-save-button").length) {
         cy.validateComplaint("23-033066", "Coyote");
@@ -39,6 +40,7 @@ describe("HWCR Outcome Assessments", () => {
     //This is required to make the tests re-runnable.  It's not great because it means it will only run the first time.
     //If we ever get the ability to remove an assessment this test suite should be rewritten to remove this conditional
     //and to add a test at the end to delete the assessment.
+    cy.get("#outcome-report-add-assessment").click({ force: true });
     cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
       if ($assessment.find("#outcome-save-button").length) {
         cy.validateComplaint("23-033066", "Coyote");
@@ -106,6 +108,7 @@ describe("HWCR Outcome Assessments", () => {
 
     cy.validateComplaint("23-033066", "Coyote");
 
+    cy.get("#outcome-report-add-assessment").click({ force: true });
     cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
       if ($assessment.find("#assessment-edit-button").length) {
         cy.get("#assessment-edit-button").click();

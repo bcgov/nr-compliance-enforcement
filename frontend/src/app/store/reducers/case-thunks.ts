@@ -316,7 +316,7 @@ const updateAssessment =
   };
 
 const parseAssessmentResponse = async (res: CaseFileDto, officers: Officer[]): Promise<Assessment[] | null> =>
-  res.assessment.map((assessment: AssessmentDto) => {
+  res?.assessment?.map((assessment: AssessmentDto) => {
     const { actor, actionDate } = assessment.actions.map((action: { actor: any; date: any }) => {
       return { actor: action.actor, actionDate: action.date };
     })[0];
@@ -374,7 +374,7 @@ const parseAssessmentResponse = async (res: CaseFileDto, officers: Officer[]): P
     }
 
     return updatedAssessmentData;
-  });
+  }) || [];
 
 //-- prevention and education thunks
 export const getPrevention =
