@@ -229,6 +229,7 @@ const updateAssessment =
     } = getState();
 
     let updateAssessmentInput = {
+      leadIdentifier: complaintIdentifier,
       caseIdentifier: caseIdentifier,
       updateUserId: profile.idir_username,
       agencyCode: "COS",
@@ -304,7 +305,6 @@ const updateAssessment =
       }
     }
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/updateAssessment`, updateAssessmentInput);
-    console.log("updateAssessmentInput", updateAssessmentInput);
     await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
       const assessments = await parseAssessmentResponse(res, officers);
       if (res) {
