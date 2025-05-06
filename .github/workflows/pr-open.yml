@@ -148,19 +148,18 @@ jobs:
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
           ./.github/scripts/gitops.sh enable dev-$DEPLOYMENT_NUMBER
 
-      # TODO: uncomment once crunchy is provisioned in f208ae
       # We always run this to avoid deleting developer databases on commit pushes after a PR is opened
       # there is a small edge case where a cleanup could be interrupted by this if 2 PRs open closely together
-      # - name: Unset / No-op Crunchy development DB cleanup
-      #   run: |
-      #     ./.github/scripts/crunchy.sh u
+      - name: Unset / No-op Crunchy development DB cleanup
+        run: |
+          ./.github/scripts/crunchy.sh u
 
       # On a newly opened PR we drop the old database and crunchy will standup a fresh db
-      # - name: Refresh developer database for newly opened PR
-      #   if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
-      #   run: |
-      #     DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
-      #     ./.github/scripts/crunchy.sh s $DEPLOYMENT_NUMBER
+      - name: Refresh developer database for newly opened PR
+        if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') }}
+        run: |
+          DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+          ./.github/scripts/crunchy.sh s $DEPLOYMENT_NUMBER
 
       - name: Commit and push update
         shell: bash
