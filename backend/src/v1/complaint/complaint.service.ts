@@ -2351,7 +2351,7 @@ export class ComplaintService {
 
       let hasOutcome = false;
 
-      if (outcomeData.getCaseFileByLeadId.assessment.length > 0) {
+      if (outcomeData.getCaseFileByLeadId?.assessment?.length > 0) {
         hasOutcome = true;
         await outcomeData.getCaseFileByLeadId.assessment.forEach(async (assessment) => {
           const assessmentActions = [
