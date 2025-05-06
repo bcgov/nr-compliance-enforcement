@@ -67,6 +67,7 @@ export class OfficerService {
           coms_enrolled_ind: officer.coms_enrolled_ind,
           deactivate_ind: officer.deactivate_ind,
           user_roles: roleMapping[useGuid] ?? [],
+          park_area_guid: officer.park_area_guid,
         } as Officer;
       });
     }
