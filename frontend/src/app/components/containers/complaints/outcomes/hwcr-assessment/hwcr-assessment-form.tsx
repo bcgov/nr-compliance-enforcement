@@ -458,13 +458,13 @@ export const HWCRAssessmentForm: FC<Props> = ({
     resetValidationErrors();
 
     let hasErrors = false;
-    hasErrors = validateOfficer() ?? hasErrors;
-    hasErrors = validateDate() ?? hasErrors;
-    hasErrors = validateActionRequired() ?? hasErrors;
-    hasErrors = validateAssessmentTypes() ?? hasErrors;
-    hasErrors = validateJustification() ?? hasErrors;
-    hasErrors = validateLinkedComplaint() ?? hasErrors;
-    hasErrors = validateLocationType() ?? hasErrors;
+    hasErrors = validateOfficer() || hasErrors;
+    hasErrors = validateDate() || hasErrors;
+    hasErrors = validateActionRequired() || hasErrors;
+    hasErrors = validateAssessmentTypes() || hasErrors;
+    hasErrors = validateJustification() || hasErrors;
+    hasErrors = validateLinkedComplaint() || hasErrors;
+    hasErrors = validateLocationType() || hasErrors;
 
     return hasErrors;
   }, [
