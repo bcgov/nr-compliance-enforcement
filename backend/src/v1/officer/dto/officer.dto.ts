@@ -69,4 +69,10 @@ export class OfficerDto {
     description: "An indicator to determine if the officer has been deactivated",
   })
   deactivate_ind: boolean;
+
+  @ApiProperty({
+    example: "903f87c8-76dd-427c-a1bb-4d179e443252",
+    description: "The guid for park area of PARK officer",
+  })
+  park_area_guid: UUID;
 }

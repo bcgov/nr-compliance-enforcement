@@ -12,4 +12,5 @@ export class CreateOfficerDto extends PickType(OfficerDto, [
   "update_utc_timestamp",
   "coms_enrolled_ind",
   "deactivate_ind",
+  "park_area_guid",
 ] as const) {}
