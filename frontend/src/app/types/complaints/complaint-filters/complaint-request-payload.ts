@@ -7,6 +7,7 @@ export interface ComplaintRequestPayload {
   zoneCodeFilter?: Option;
   areaCodeFilter?: Option;
   parkFilter?: Option;
+  areaFilter?: Option;
   officerFilter?: Option;
   natureOfComplaintFilter?: Option;
   speciesCodeFilter?: Option;
