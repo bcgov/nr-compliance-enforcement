@@ -21,7 +21,9 @@ export const HWCRAssessments: FC = () => {
   const [showAddAssessment, setShowAddAssessment] = useState(false);
 
   useEffect(() => {
-    if (!isInEdit.assessment) {
+    if (assessments?.length === 0) {
+      setShowAddAssessment(true);
+    } else if (!isInEdit.assessment) {
       setShowAddAssessment(isInEdit.assessment);
     }
   }, [isInEdit.assessment, assessments]);
@@ -47,6 +49,7 @@ export const HWCRAssessments: FC = () => {
             allowDuplicate={
               assessment.justification?.value === "DUPLICATE" || assessments.length === 1 ? true : allowDuplicate
             } // Allow saving as duplicate if it is already a duplicate or if it is the only assessment
+            allowCancel={assessments?.length !== 0}
           />
           <br />
         </>

@@ -65,7 +65,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const [assessmentState] = useState<Assessment>(assessment ?? ({} as Assessment));
+  const [assessmentState, setAssessmentState] = useState<Assessment>(assessment ?? ({} as Assessment));
 
   const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
   const [selectedJustification, setSelectedJustification] = useState<Option | null>();
@@ -267,6 +267,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
 
   const cancelConfirmed = () => {
     handleCancel();
+    setAssessmentState(assessment ?? ({} as Assessment));
   };
 
   const cancelButtonClick = () => {

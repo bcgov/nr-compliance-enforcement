@@ -9,9 +9,10 @@ import { useParams } from "react-router-dom";
 type props = {
   assessment?: Assessment;
   allowDuplicate?: boolean;
+  allowCancel?: boolean;
 };
 
-export const HWCRAssessment: FC<props> = ({ assessment, allowDuplicate = false }) => {
+export const HWCRAssessment: FC<props> = ({ assessment, allowDuplicate = false, allowCancel = true }) => {
   const { id = "" } = useParams();
   const dispatch = useAppDispatch();
 
@@ -26,11 +27,13 @@ export const HWCRAssessment: FC<props> = ({ assessment, allowDuplicate = false }
 
   return (
     <>
-      {showInput ? (
+      {!assessment ? (
         <HWCRAssessmentForm
           id={id}
           assessment={assessment}
-          handleCancel={() => setShowInput(false)}
+          handleCancel={() => {
+            allowCancel && setShowInput(false);
+          }}
           handleSave={() => setShowInput(false)}
           allowDuplicate={allowDuplicate}
         />
