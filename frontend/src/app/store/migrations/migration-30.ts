@@ -4,6 +4,7 @@ export const addHwcrOutcomeActionedByCodes = {
     return {
       ...state,
       codeTables: {
+        ...state.codeTables,
         "wildlife-outcomes": [],
         "hwcr-outcome-actioned-by-codes": [],
       },

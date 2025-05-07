@@ -89,6 +89,13 @@ export class Officer {
   deactivate_ind: boolean;
 
   @ApiProperty({
+    example: "903f87c8-76dd-427c-a1bb-4d179e443252",
+    description: "The park area guid for the officer",
+  })
+  @Column()
+  park_area_guid: UUID;
+
+  @ApiProperty({
     example: "COS",
     description: "The agency code for the officer",
   })
