@@ -21,7 +21,7 @@ describe("Complaint Change Status spec - Details View", () => {
       actionRequired: "Yes",
       toastText: "Assessment has been saved",
     };
-    cy.get("#outcome-report-add-assessment").click({ force: true });
+    //cy.get("#outcome-report-add-assessment").click({ force: true });
     cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
       if ($assessment.find("#outcome-save-button").length) {
         cy.fillInHWCSection(sectionParams).then(() => {

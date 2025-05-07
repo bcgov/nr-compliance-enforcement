@@ -35,7 +35,7 @@ export const HWCRAssessments: FC = () => {
 
   return (
     <section
-      id="outcome-note"
+      id="outcome-assessments"
       className="comp-details-section mb-4"
     >
       <div className="comp-details-section-header">
