@@ -1483,18 +1483,22 @@ export const ComplaintDetailsEdit: FC = () => {
               draggable={true}
               onMarkerMove={handleMarkerMove}
               editComponent={true}
-              mapElements={[
-                {
-                  objectType: MapObjectType.Complaint,
-                  name: "Complaint",
-                  description: "Complaint Description",
-                  isActive: true,
-                  location: {
-                    lat: parentCoordinates.lat,
-                    lng: parentCoordinates.lng,
-                  },
-                } as MapElement,
-              ]}
+              mapElements={
+                !coordinateErrorsInd
+                  ? [
+                      {
+                        objectType: MapObjectType.Complaint,
+                        name: "Complaint",
+                        description: "Complaint Description",
+                        isActive: true,
+                        location: {
+                          lat: parentCoordinates.lat,
+                          lng: parentCoordinates.lng,
+                        },
+                      } as MapElement,
+                    ]
+                  : []
+              }
             />
           </div>
         )}
