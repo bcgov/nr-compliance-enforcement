@@ -30,9 +30,6 @@ describe("HWCR Outcome Assessments", () => {
           .should(($error) => {
             expect($error).to.contain.text("Required");
           });
-
-        //let inputs = ["#action-required-div", "#outcome-officer-div", "#assessment-checkbox-div"];
-        //cy.hasErrorMessage(inputs, "Errors in form");
       } else {
         cy.log("Test was previously run. Skip the Test");
         this.skip();
