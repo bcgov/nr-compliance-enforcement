@@ -1989,3 +1989,13 @@ WHERE feature_code = 'COMPREF';
 UPDATE public.feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'COMPCOLLAB';
+
+---------------------
+-- Enable referral emails in dev/test for all users
+---------------------
+
+
+-- MIKE      REMOVE BEFORE MERGE
+UPDATE public.feature_agency_xref
+SET active_ind = 'Y'
+WHERE feature_code = 'REFEMAIL';
