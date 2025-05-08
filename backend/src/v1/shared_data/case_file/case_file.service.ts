@@ -206,8 +206,6 @@ export class CaseFileService {
   async createAssessment(token: string, model: CreateAssessmentInput): Promise<CaseFileDto> {
     let returnValue;
 
-    this.logger.error(`CREATING ASSESSMENT: ${JSON.stringify(model)}`);
-
     const query = `mutation CreateAssessment($input: CreateAssessmentInput!) {
           createAssessment(input: $input)
           ${caseFileQueryFields}

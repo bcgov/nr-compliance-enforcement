@@ -457,17 +457,15 @@ export const HWCRAssessmentForm: FC<Props> = ({
   // Validates the assessment
   const validateErrors = useCallback((): boolean => {
     resetValidationErrors();
-
-    let hasErrors = false;
-    hasErrors = validateOfficer() || hasErrors;
-    hasErrors = validateDate() || hasErrors;
-    hasErrors = validateActionRequired() || hasErrors;
-    hasErrors = validateAssessmentTypes() || hasErrors;
-    hasErrors = validateJustification() || hasErrors;
-    hasErrors = validateLinkedComplaint() || hasErrors;
-    hasErrors = validateLocationType() || hasErrors;
-
-    return hasErrors;
+    return [
+      validateOfficer(),
+      validateDate(),
+      validateActionRequired(),
+      validateAssessmentTypes(),
+      validateJustification(),
+      validateLinkedComplaint(),
+      validateLocationType(),
+    ].some(Boolean);
   }, [
     validateOfficer,
     validateDate,
