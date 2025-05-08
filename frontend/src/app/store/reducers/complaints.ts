@@ -43,6 +43,7 @@ import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint
 import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
 import { getUserAgency } from "@/app/service/user-service";
 import { Collaborator } from "@apptypes/app/complaints/collaborator";
+import { Park } from "@/app/types/app/shared/park";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
@@ -270,7 +271,6 @@ export const complaintSlice = createSlice({
     setWebEOCChangeCount: (state, action: PayloadAction<number>) => {
       state.webeocChangeCount = action.payload;
     },
-
     setComplaintStatus: (state, action) => {
       if (state.complaint) {
         let currentComplaint: ComplaintDto = state.complaint as ComplaintDto;
@@ -279,6 +279,14 @@ export const complaintSlice = createSlice({
         }
 
         state.complaint.status = action.payload;
+      }
+    },
+    setComplaintPark: (state, action) => {
+      if (state.complaint) {
+        let currentComplaint: ComplaintDto = state.complaint as ComplaintDto;
+        if (currentComplaint) {
+          state.complaint.park = action.payload;
+        }
       }
     },
     setLinkedComplaints: (state, action) => {
@@ -311,6 +319,7 @@ export const {
   setActions,
   setWebEOCChangeCount,
   setComplaintStatus,
+  setComplaintPark,
   clearComplaint,
   setLinkedComplaints,
 } = complaintSlice.actions;
@@ -640,6 +649,20 @@ export const getComplaintById =
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       //-- handle the error
+    }
+  };
+
+//get park Data for a complaint
+export const getComplaintParkData =
+  (parkId: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${parkId}`);
+      const response = await get<Park>(dispatch, parameters);
+
+      dispatch(setComplaintPark({ ...response }));
+    } catch (error) {
+      console.error(`Unable to retrieve park information for ${parkId}: ${error}`);
     }
   };
 
@@ -1042,7 +1065,6 @@ export const selectComplaintHeader =
           delegates,
           ownedBy: complaintAgency,
           organization: { zone },
-          parkAreaGuids,
         } = complaint as ComplaintDto;
 
         const status = getStatusByStatusCode(statusCode, statusCodes);
@@ -1057,7 +1079,6 @@ export const selectComplaintHeader =
           officerAssigned,
           personGuid,
           complaintAgency,
-          parkAreaGuids: parkAreaGuids ?? [],
         };
 
         if (delegates && from(delegates).any(({ isActive, type }) => type === "ASSIGNEE" && isActive)) {

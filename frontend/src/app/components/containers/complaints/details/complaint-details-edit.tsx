@@ -16,6 +16,7 @@ import {
   selectLinkedComplaints,
   setLinkedComplaints,
   selectComplaintViewMode,
+  getComplaintParkData,
 } from "@store/reducers/complaints";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
@@ -231,7 +232,13 @@ export const ComplaintDetailsEdit: FC = () => {
     if (id && (!data || data.id !== id)) {
       dispatch(getComplaintById(id, complaintType));
     }
-  }, [id, complaintType, data, dispatch]);
+  }, [id, parkGuid, complaintType, data, dispatch]);
+
+  useEffect(() => {
+    if (parkGuid) {
+      dispatch(getComplaintParkData(parkGuid));
+    }
+  }, [parkGuid, dispatch]);
 
   useEffect(() => {
     const incidentDateTimeObject = incidentDateTime ? new Date(incidentDateTime) : null;

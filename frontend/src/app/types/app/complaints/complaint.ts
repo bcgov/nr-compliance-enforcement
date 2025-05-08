@@ -1,5 +1,6 @@
 import { Delegate } from "@apptypes/app/people/delegate";
 import { BaseComplaint } from "nrs-ce-common-types";
+import { Park } from "@apptypes/app/shared/park";
 
 export interface Complaint extends BaseComplaint {
   organization: {
@@ -10,5 +11,5 @@ export interface Complaint extends BaseComplaint {
     officeLocation?: string;
   };
   delegates: Array<Delegate>;
-  parkAreaGuids: Array<string>; //refactor to move to shared type?
+  park?: Park;
 }
