@@ -394,8 +394,14 @@ export const getComplaints =
         query: query,
       });
 
-      const { complaints, totalCount } = await get<ComplaintSearchResults, ComplaintQueryParams>(dispatch, parameters);
-
+      const result = await get<{ complaints: any[]; totalCount: number }>(dispatch, parameters);
+      const { complaints, totalCount } = result;
+      for (const complaint of complaints) {
+        if (complaint.parkGuid) {
+          const response = await dispatch(getComplaintParkData(complaint.parkGuid));
+          complaint.park = response;
+        }
+      }
       dispatch(setComplaints({ type: complaintType, data: complaints }));
       dispatch(setTotalCount(totalCount));
     } catch (error) {
@@ -652,17 +658,17 @@ export const getComplaintById =
     }
   };
 
-//get park Data for a complaint
+// get parkData for a single Complaint
 export const getComplaintParkData =
-  (parkId: string): AppThunk =>
+  (parkId: string): ((dispatch: any) => Promise<Park | undefined>) =>
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${parkId}`);
       const response = await get<Park>(dispatch, parameters);
-
-      dispatch(setComplaintPark({ ...response }));
+      return response;
     } catch (error) {
       console.error(`Unable to retrieve park information for ${parkId}: ${error}`);
+      return undefined;
     }
   };
 

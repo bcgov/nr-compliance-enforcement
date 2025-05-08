@@ -36,12 +36,13 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
     girType,
     locationDetail,
     locationSummary,
-    parkGuid,
+    park,
     organization: { area: locationCode, zone },
   } = complaint;
 
   const userAgency = getUserAgency();
   const derivedGeneralStatus = ownedBy !== userAgency ? "Referred" : status;
+  const parkAreaGuids = park?.parkAreas?.map((area) => area.parkAreaGuid) ?? [];
 
   const getLocationName = (input: string): string => {
     const code = areaCodes.find((item) => item.area === input);
@@ -128,8 +129,8 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
             onClick={toggleExpand}
           >
             <Park
-              id={`comp-details-park-${parkGuid}`}
-              initialParkGuid={parkGuid}
+              id={`comp-details-park-${park?.parkGuid}`}
+              initialParkGuid={park?.parkGuid}
               isInEdit={false}
             />
           </td>
@@ -166,6 +167,7 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
             zone={zone ?? ""}
             agency_code={ownedBy}
             complaint_status={derivedGeneralStatus}
+            park_area_guids={parkAreaGuids}
           />
         </td>
       </tr>

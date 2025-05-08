@@ -40,12 +40,13 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
     isInProgress,
     locationDetail,
     locationSummary,
-    parkGuid,
+    park,
     organization: { areaName: location, zone },
   } = complaint;
 
   const userAgency = getUserAgency();
   const derivedAllegationStatus = ownedBy !== userAgency ? "Referred" : status;
+  const parkAreaGuids = park?.parkAreas?.map((area) => area.parkAreaGuid) ?? [];
 
   const getStatusDescription = (input: string): string => {
     if (input === "Referred") {
@@ -148,8 +149,8 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
             onClick={toggleExpand}
           >
             <Park
-              id={`comp-details-park-${parkGuid}`}
-              initialParkGuid={parkGuid}
+              id={`comp-details-park-${park?.parkGuid}`}
+              initialParkGuid={park?.parkGuid}
               isInEdit={false}
             />
           </td>
@@ -186,6 +187,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
             zone={zone ?? ""}
             agency_code={ownedBy}
             complaint_status={derivedAllegationStatus}
+            park_area_guids={parkAreaGuids}
           />
         </td>
       </tr>
