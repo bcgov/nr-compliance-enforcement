@@ -27,7 +27,7 @@ export const HWCRAssessment: FC<props> = ({ assessment, allowDuplicate = false, 
 
   return (
     <>
-      {!assessment ? (
+      {!assessment || showInput ? (
         <HWCRAssessmentForm
           id={id}
           assessment={assessment}
