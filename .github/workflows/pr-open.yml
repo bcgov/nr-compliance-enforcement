@@ -31,16 +31,16 @@ jobs:
         run: |
           echo "Starting Crunchy PostgreSQL container..."
           docker run -d --name postgres \
-            -e POSTGRES_USER=app-${{ github.event.number }} \
+            -e POSTGRES_USER=postgres \
             -e POSTGRES_PASSWORD=default \
-            -e POSTGRES_DB=app-${{ github.event.number }} \
+            -e POSTGRES_DB=postgres \
             -p 5432:5432 \
             registry.developers.crunchydata.com/crunchydata/crunchy-postgres:16 \
       - name: Create public schema
         run: |
           echo "Creating public schema and granting privileges..."
-          docker exec postgres psql -U app-${{ github.event.number }} -d app-${{ github.event.number }} -c "CREATE SCHEMA IF NOT EXISTS public;"
-          docker exec postgres psql -U app-${{ github.event.number }} -d app-${{ github.event.number }} -c "GRANT ALL PRIVILEGES ON SCHEMA public TO \"app-${{ github.event.number }}\";"
+          docker exec postgres psql -U postgres -d postgres -c "CREATE SCHEMA IF NOT EXISTS public;"
+          docker exec postgres psql -U postgres -d postgres -c "GRANT ALL PRIVILEGES ON SCHEMA public TO \"postgres\";"
 
       - name: Install Flyway
         run: |
@@ -52,8 +52,8 @@ jobs:
         run: |
           echo "Running Flyway migrations..."
           flyway info migrate -outOfOrder=true \
-            -url=jdbc:postgresql://localhost:5432/app-${{ github.event.number }} \
-            -user=app-${{ github.event.number }} \
+            -url=jdbc:postgresql://localhost:5432/postgres \
+            -user=postgres \
             -password=default \
             -baselineOnMigrate=true \
             -defaultSchema=public \
@@ -152,7 +152,7 @@ jobs:
   ### Emerald Jobs ###
   deploy-emerald:
     name: Deploy Workloads To Emerald
-    needs: [builds]
+    needs: [builds, validate-flyway-migrations]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout CD repo
