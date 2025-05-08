@@ -148,12 +148,11 @@ jobs:
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
           ./.github/scripts/gitops.sh disable dev-$DEPLOYMENT_NUMBER
 
-      # TODO: uncomment after crunchy is provisioned in f208ae
-      # # We always run this to avoid deleting developer databases on commit pushes after a PR is opened
-      # # there is a small edge case where a cleanup could be interrupted by this if 2 PRs open closely together
-      # - name: Unset / No-op Crunchy development DB cleanup
-      #   run: |
-      #     ./.github/scripts/crunchy.sh u
+      # We always run this to avoid deleting developer databases on commit pushes after a PR is opened
+      # there is a small edge case where a cleanup could be interrupted by this if 2 PRs open closely together
+      - name: Unset / No-op Crunchy development DB cleanup
+        run: |
+          ./.github/scripts/crunchy.sh u
     
       - name: Commit and push update
         run: |
