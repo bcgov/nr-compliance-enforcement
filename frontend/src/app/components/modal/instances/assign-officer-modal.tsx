@@ -48,12 +48,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   const [selectedAssignee, setSelectedAssignee] = useState("");
   const [searchInput, setSearchInput] = useState<string>("");
 
-  const officersJson = useAppSelector(
-    selectOfficersByZoneAgencyAndRole(modalData?.agency_code, zone, [
-      "e88f5737-e6e2-4ffa-9f8c-f6597b4fbafa", //TODO: Remove hard coded values and pull from complaint
-      "edce36da-5fe1-45f7-8eda-3ac4bfe0b79e",
-    ]),
-  );
+  const officersJson = useAppSelector(selectOfficersByZoneAgencyAndRole(modalData?.agency_code, zone, park_area_guids));
   const searchResults = useAppSelector(searchOfficers(searchInput, modalData?.agency_code, complaint_type));
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 

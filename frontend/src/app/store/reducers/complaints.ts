@@ -1065,9 +1065,11 @@ export const selectComplaintHeader =
           delegates,
           ownedBy: complaintAgency,
           organization: { zone },
+          park,
         } = complaint as ComplaintDto;
 
         const status = getStatusByStatusCode(statusCode, statusCodes);
+        const parkAreaGuids = park?.parkAreas?.map((area) => area.parkAreaGuid) ?? [];
 
         result = {
           loggedDate: loggedDate.toString(),
@@ -1079,6 +1081,7 @@ export const selectComplaintHeader =
           officerAssigned,
           personGuid,
           complaintAgency,
+          parkAreaGuids,
         };
 
         if (delegates && from(delegates).any(({ isActive, type }) => type === "ASSIGNEE" && isActive)) {
