@@ -10,4 +10,5 @@ export interface Complaint extends BaseComplaint {
     officeLocation?: string;
   };
   delegates: Array<Delegate>;
+  parkAreaGuids: Array<string>; //refactor to move to shared type?
 }

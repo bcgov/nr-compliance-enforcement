@@ -478,7 +478,7 @@ export const selectOfficersByReportedBy =
   };
 
 export const selectOfficersByZoneAgencyAndRole =
-  (agency: string, zone?: string) =>
+  (agency: string, zone?: string, park_area_guids?: string[]) =>
   (state: RootState): Officer[] | null => {
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
@@ -486,6 +486,9 @@ export const selectOfficersByZoneAgencyAndRole =
     const role = mapAgencyToRole(agency);
     let result: boolean = false;
 
+    console.log(agency);
+    console.log(park_area_guids);
+    console.log(role);
     if (agency === "COS") {
       if (zone) {
         return officers.filter((officer) => {
@@ -501,10 +504,23 @@ export const selectOfficersByZoneAgencyAndRole =
           return result;
         });
       }
-    } else if (agency === "EPO" || agency === "PARKS") {
+    } else if (agency === "EPO") {
+      //only include officers who have the agency of "EPO" and do not have the read only role
       return officers.filter((officer) => {
         result = officer?.user_roles.includes(role) && !officer?.user_roles.includes(Roles.READ_ONLY);
         return result;
+      });
+    } else if (agency === "PARKS") {
+      //only include officers that meet the criteria
+      return officers.filter((officer) => {
+        const hasRole = officer?.user_roles.includes(role);
+        const isNotReadOnly = !officer?.user_roles.includes(Roles.READ_ONLY);
+        const matchesParkArea = Array.isArray(park_area_guids)
+          ? park_area_guids.includes(officer.park_area_guid)
+          : true;
+        console.log(officer.person_guid.first_name);
+        console.log(hasRole + "" + isNotReadOnly + "" + matchesParkArea);
+        return hasRole && isNotReadOnly && matchesParkArea;
       });
     }
     return [];

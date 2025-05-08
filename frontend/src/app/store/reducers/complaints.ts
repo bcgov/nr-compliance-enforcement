@@ -1027,6 +1027,7 @@ export const selectComplaintHeader =
         officerAssigned: "",
         personGuid: "",
         complaintAgency: "",
+        parkAreaGuids: [],
       };
 
       let officerAssigned = "Not Assigned";
@@ -1041,6 +1042,7 @@ export const selectComplaintHeader =
           delegates,
           ownedBy: complaintAgency,
           organization: { zone },
+          parkAreaGuids,
         } = complaint as ComplaintDto;
 
         const status = getStatusByStatusCode(statusCode, statusCodes);
@@ -1055,6 +1057,7 @@ export const selectComplaintHeader =
           officerAssigned,
           personGuid,
           complaintAgency,
+          parkAreaGuids: parkAreaGuids ?? [],
         };
 
         if (delegates && from(delegates).any(({ isActive, type }) => type === "ASSIGNEE" && isActive)) {
