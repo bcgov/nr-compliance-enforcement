@@ -35,7 +35,7 @@ jobs:
             -e POSTGRES_PASSWORD=default \
             -e POSTGRES_DB=app-${{ github.event.number }} \
             -p 5432:5432 \
-            registry.developers.crunchydata.com/crunchydata/crunchy-postgres:16-3.4 \
+            registry.developers.crunchydata.com/crunchydata/crunchy-postgres:16 \
       - name: Create public schema
         run: |
           echo "Creating public schema and granting privileges..."
@@ -148,7 +148,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - run: echo "Success!"
-  
+
   ### Emerald Jobs ###
   deploy-emerald:
     name: Deploy Workloads To Emerald
