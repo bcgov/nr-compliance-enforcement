@@ -1,6 +1,8 @@
 import KeyValuePair from "@apptypes/app/key-value-pair";
 
 export interface Assessment {
+  id?: string;
+  agency?: string;
   assessment_type: KeyValuePair[];
   action_required?: string | null;
   close_complaint?: boolean;
