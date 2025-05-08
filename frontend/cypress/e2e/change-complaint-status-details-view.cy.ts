@@ -49,6 +49,7 @@ describe("Complaint Change Status spec - Details View", () => {
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
         cy.assignSelfToComplaint();
         fillInAssessmentSection();
+        cy.waitForSpinner();
       } else {
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
         cy.assignSelfToComplaint();
