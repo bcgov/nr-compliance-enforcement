@@ -24,41 +24,33 @@ jobs:
   validate-flyway-migrations:
     name: Validate Flyway Migrations
     runs-on: ubuntu-22.04
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_DB: default
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: default
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    timeout-minutes: 10
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Run PostgreSQL container
-        run: |
-          echo "Starting Crunchy PostgreSQL container..."
-          docker run -d --name postgres \
-            -e POSTGRES_USER=postgres \
-            -e POSTGRES_PASSWORD=default \
-            -e POSTGRES_DB=postgres \
-            -p 5432:5432 \
-            registry.developers.crunchydata.com/crunchydata/crunchy-postgres:16 \
-      - name: Create public schema
-        run: |
-          echo "Creating public schema and granting privileges..."
-          docker exec postgres psql -U postgres -d postgres -c "CREATE SCHEMA IF NOT EXISTS public;"
-          docker exec postgres psql -U postgres -d postgres -c "GRANT ALL PRIVILEGES ON SCHEMA public TO \"postgres\";"
-
-      - name: Install Flyway
-        run: |
-          echo "Installing Flyway CLI version 10..."
-          wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/10/flyway-commandline-10-linux-x64.tar.gz | tar xvz
-          sudo ln -s $(pwd)/flyway-10/flyway /usr/local/bin/flyway
-
+      - uses: actions/checkout@v4
       - name: Run Flyway migrations
-        run: |
-          echo "Running Flyway migrations..."
-          flyway info migrate -outOfOrder=true \
-            -url=jdbc:postgresql://localhost:5432/postgres \
-            -user=postgres \
-            -password=default \
-            -baselineOnMigrate=true \
-            -defaultSchema=public \
-            -locations=filesystem:./migrations/migrations,filesystem:./migrations/test-only-migrations \
-            && echo "Flyway migrations completed successfully" || echo "Flyway migrations failed"
+        uses: docker://flyway/flyway:10
+        env:
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
+          FLYWAY_USER: postgres
+          FLYWAY_PASSWORD: default
+          FLYWAY_LOCATIONS: filesystem:./migrations/migrations
+          FLYWAY_DEFAULT_SCHEMA: "public"
+        with:
+          args: info migrate info
         continue-on-error: true
 
   # https://github.com/bcgov/action-builder-ghcr
