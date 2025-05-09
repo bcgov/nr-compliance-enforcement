@@ -9,5 +9,4 @@ export interface ComplaintDto extends BaseComplaint {
     officeLocation?: string;
   };
   delegates: Array<DelegateDto>;
-  parkAreaGuids: Array<string>;
 }
