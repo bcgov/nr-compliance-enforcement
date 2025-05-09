@@ -934,6 +934,18 @@ export class ComplaintService {
     return complaintIdentifiers;
   };
 
+  private readonly _getComplaintsByParkArea = async (token: string, area: string): Promise<string[]> => {
+    const { data, errors } = await get(token, {
+      query: `{getParksByArea ( parkAreaGuid: "${area}") { parkGuid, name}}`,
+    });
+    if (errors) {
+      this.logger.error("GraphQL errors:", errors);
+      throw new Error("GraphQL errors occurred");
+    }
+    const parkGuids = data.getParksByArea.length > 0 ? data.getParksByArea.map((park) => park.parkGuid) : ["-1"];
+    return parkGuids;
+  };
+
   findAllByType = async (
     complaintType: COMPLAINT_TYPE,
   ): Promise<Array<WildlifeComplaintDto> | Array<AllegationComplaintDto>> => {
@@ -1140,6 +1152,14 @@ export class ComplaintService {
         });
       }
 
+      if (agencies.includes(Role.PARKS) && filters.area) {
+        const parkIdentifiers = await this._getComplaintsByParkArea(token, filters.area);
+
+        builder.andWhere("complaint.park_guid IN(:...park_guids)", {
+          park_guids: parkIdentifiers,
+        });
+      }
+
       //-- apply search
       if (query) {
         builder = await this._applySearch(builder, complaintType, query, token);
@@ -1270,6 +1290,14 @@ export class ComplaintService {
         );
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
+      if (agencies.includes(Role.PARKS) && filters.area) {
+        const parkIdentifiers = await this._getComplaintsByParkArea(token, filters.area);
+
+        builder.andWhere("complaint.park_guid IN(:...park_guids)", {
+          park_guids: parkIdentifiers,
         });
       }
 
