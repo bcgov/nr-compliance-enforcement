@@ -6,9 +6,10 @@ import Option from "@apptypes/app/option";
 import { useAppDispatch } from "@hooks/hooks";
 import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
-import { getCachedParkName, setCachedParkName } from "@common/cache/park-name-cache";
 import { Badge } from "react-bootstrap";
 import { Park } from "@/app/types/app/shared/park";
+import { useSelector } from "react-redux";
+import { selectAllParks, setPark } from "@/app/store/reducers/park";
 
 type Props = {
   id?: string;
@@ -32,6 +33,7 @@ export const ParkPicker: FC<Props> = ({
   const [parks, setParks] = useState<Park[]>([]);
   const [lastQuery, setLastQuery] = useState<string>("");
   const [lastSkip, setLastSkip] = useState<number>(0);
+  const parkCache = useSelector(selectAllParks);
 
   useEffect(() => {
     setIsLoading(true);
@@ -39,17 +41,15 @@ export const ParkPicker: FC<Props> = ({
       typeof initialParkGuid === "object" && initialParkGuid !== null ? initialParkGuid?.value : initialParkGuid;
 
     if (guid) {
-      const cachedName = getCachedParkName(guid);
+      const cachedName = parkCache[guid].name;
 
       if (cachedName) {
         setParkOption({ label: cachedName, value: guid });
       } else {
-        console.log(guid);
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${guid}`);
-        get(dispatch, parameters, {}, false).then((response: any) => {
+        get<Park>(dispatch, parameters, {}, false).then((response: Park) => {
           if (response) {
-            console.log(response);
-            setCachedParkName(guid, response.name);
+            setPark(response);
             setParkOption({ label: response.name, value: response.parkGuid } as Option);
           } else {
             console.log("no response");
@@ -61,7 +61,7 @@ export const ParkPicker: FC<Props> = ({
       setParkOption(undefined);
     }
     setIsLoading(false);
-  }, [initialParkGuid, dispatch]);
+  }, [initialParkGuid, dispatch, parkCache]);
 
   const handleChange = (selected: any[]) => {
     if (selected.length > 0) {

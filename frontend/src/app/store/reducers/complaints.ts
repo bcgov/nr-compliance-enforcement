@@ -674,7 +674,6 @@ export const getComplaintParkData =
     }
     //If not fetch from the shared database
     try {
-      console.log(parkId);
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${parkId}`);
       const response = await get<Park>(dispatch, parameters);
 
