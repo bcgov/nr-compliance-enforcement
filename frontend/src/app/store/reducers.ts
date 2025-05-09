@@ -31,6 +31,12 @@ const complaintsPersistConfig = {
   whitelist: ["complaintSearchParameters"],
 };
 
+const parksPersistConfig = {
+  key: "park",
+  storage: storage,
+  whitelist: ["parkCache"],
+};
+
 export const rootReducer = combineReducers({
   app: persistReducer(appPersistConfig, app),
   officers,
@@ -39,5 +45,5 @@ export const rootReducer = combineReducers({
   codeTables,
   attachments,
   cases,
-  parks,
+  parks: persistReducer(parksPersistConfig, parks),
 });

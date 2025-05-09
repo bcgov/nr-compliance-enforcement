@@ -43,6 +43,7 @@ import { getUserAgency } from "@/app/service/user-service";
 import { Collaborator } from "@apptypes/app/complaints/collaborator";
 import { Park } from "@/app/types/app/shared/park";
 import { setPark } from "./park";
+import { UUID } from "crypto";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
@@ -398,7 +399,14 @@ export const getComplaints =
       for (const complaint of complaints.filter((c) => !!c.parkGuid)) {
         //filter out null, undefined or falsy
         const response = await dispatch(getComplaintParkData(complaint.parkGuid));
-        complaint.park = response;
+        if (response) {
+          complaint.park = response;
+        } else {
+          complaint.park = {
+            name: "Park name unavailable",
+            parkGuid: complaint.parkGuid as UUID,
+          };
+        }
       }
       dispatch(setComplaints({ type: complaintType, data: complaints }));
       dispatch(setTotalCount(totalCount));
@@ -651,7 +659,14 @@ export const getComplaintById =
       const response = await get<dtoAlias>(dispatch, parameters);
       if (response.parkGuid) {
         const parkResponse = await dispatch(getComplaintParkData(response.parkGuid));
-        response.park = parkResponse;
+        if (parkResponse) {
+          response.park = parkResponse;
+        } else {
+          response.park = {
+            name: "Park name unavailable",
+            parkGuid: response.parkGuid as UUID,
+          };
+        }
       }
 
       dispatch(setComplaint({ ...response }));
@@ -665,7 +680,7 @@ export const getComplaintParkData =
   (parkId: string): ThunkAction<Promise<Park | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     // check and see if we've got a cached copy of this park
-    const existingPark = getState().parks.park[parkId];
+    const existingPark = getState().parks.parkCache[parkId];
     if (existingPark) {
       return existingPark;
     }

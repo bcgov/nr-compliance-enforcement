@@ -3,13 +3,13 @@ import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
 interface ParkState {
-  park: Record<string, Park>;
+  parkCache: Record<string, Park>;
 }
 
-const selectParkEntities = (state: RootState) => state.parks.park;
+const selectParkEntities = (state: RootState) => state.parks.parkCache;
 
 const initialState: ParkState = {
-  park: {},
+  parkCache: {},
 };
 
 const parksReducer = createSlice({
@@ -17,7 +17,7 @@ const parksReducer = createSlice({
   initialState,
   reducers: {
     setPark: (state, action: PayloadAction<Park>) => {
-      state.park[action.payload.parkGuid] = action.payload;
+      state.parkCache[action.payload.parkGuid] = action.payload;
     },
   },
 });
