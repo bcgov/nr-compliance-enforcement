@@ -8,6 +8,7 @@ import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
 import { getCachedParkName, setCachedParkName } from "@common/cache/park-name-cache";
 import { Badge } from "react-bootstrap";
+import { Park } from "@/app/types/app/shared/park";
 
 type Props = {
   id?: string;
@@ -17,7 +18,7 @@ type Props = {
   isInEdit?: boolean;
 };
 
-export const Park: FC<Props> = ({
+export const ParkPicker: FC<Props> = ({
   id = "parks",
   onChange = () => {},
   errorMessage = "",
@@ -28,7 +29,7 @@ export const Park: FC<Props> = ({
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [parkOption, setParkOption] = useState<Option | undefined>(undefined);
-  const [parks, setParks] = useState<any[]>([]);
+  const [parks, setParks] = useState<Park[]>([]);
   const [lastQuery, setLastQuery] = useState<string>("");
   const [lastSkip, setLastSkip] = useState<number>(0);
 
@@ -43,12 +44,15 @@ export const Park: FC<Props> = ({
       if (cachedName) {
         setParkOption({ label: cachedName, value: guid });
       } else {
+        console.log(guid);
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${guid}`);
         get(dispatch, parameters, {}, false).then((response: any) => {
           if (response) {
+            console.log(response);
             setCachedParkName(guid, response.name);
             setParkOption({ label: response.name, value: response.parkGuid } as Option);
           } else {
+            console.log("no response");
             setParkOption(undefined);
           }
         });
@@ -79,13 +83,13 @@ export const Park: FC<Props> = ({
     const response: any = await get(dispatch, parameters, {}, false);
     if (response) {
       const parkSearchOptions = response.map(
-        (park: any) =>
+        (park: Park) =>
           ({
             label: park.name,
             value: park.parkGuid,
             labelElement: (
               <>
-                {park.parkAreas.map((area: any) => (
+                {park.parkAreas?.map((area: any) => (
                   <>
                     <span> </span>
                     <Badge

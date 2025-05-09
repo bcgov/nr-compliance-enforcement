@@ -397,6 +397,9 @@ export const getComplaints =
       const { complaints, totalCount } = result;
       for (const complaint of complaints.filter((c) => !!c.parkGuid)) {
         //filter out null, undefined or falsy
+        console.log("A");
+        console.log(complaint);
+        console.log("A");
         const response = await dispatch(getComplaintParkData(complaint.parkGuid));
         complaint.park = response;
       }
@@ -671,6 +674,7 @@ export const getComplaintParkData =
     }
     //If not fetch from the shared database
     try {
+      console.log(parkId);
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${parkId}`);
       const response = await get<Park>(dispatch, parameters);
 
@@ -998,9 +1002,10 @@ export const selectComplaintDetails = createSelector(
         location: { coordinates },
         organization: { area: areaCode, region, zone, officeLocation },
         ownedBy,
+        park,
       } = complaint as ComplaintDto;
 
-      result = { ...result, details, location, locationDescription, incidentDateTime, coordinates, ownedBy };
+      result = { ...result, details, location, locationDescription, incidentDateTime, coordinates, ownedBy, park };
 
       if (complaintType === "HWCR") {
         const { attractants } = complaint as WildlifeComplaintDto;
@@ -1037,7 +1042,7 @@ export const selectComplaintDetails = createSelector(
         const { complaintMethodReceivedCode }: any = complaint;
         result.complaintMethodReceivedCode =
           getComplaintMethodReceivedCode(complaintMethodReceivedCode, complaintMethodReceivedCodes) ?? undefined;
-        result.parkGuid = complaint.parkGuid;
+        result.park = complaint.park;
       }
     }
     return result;

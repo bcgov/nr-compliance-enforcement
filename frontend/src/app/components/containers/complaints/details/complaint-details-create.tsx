@@ -56,7 +56,7 @@ import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { FeatureFlag } from "@components/common/feature-flag";
 import { Roles } from "@/app/types/app/roles";
 import { RootState } from "@/app/store/store";
-import { Park } from "@/app/components/common/park";
+import { ParkPicker } from "@/app/components/common/park";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -1036,7 +1036,7 @@ export const CreateComplaint: FC = () => {
           >
             <label htmlFor="complaint-park">Park</label>
             <div className="comp-details-edit-input">
-              <Park
+              <ParkPicker
                 id="complaint-park"
                 onChange={(e) => handleParkChange(e?.value)}
                 isInEdit={true}

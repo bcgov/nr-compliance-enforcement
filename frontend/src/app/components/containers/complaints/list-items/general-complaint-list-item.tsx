@@ -10,7 +10,6 @@ import getOfficerAssigned from "@common/get-officer-assigned";
 import { getUserAgency } from "@/app/service/user-service";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
-import { Park } from "@/app/components/common/park";
 
 type Props = {
   type: string;
@@ -128,11 +127,7 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
             className={`${isExpandedClass}`}
             onClick={toggleExpand}
           >
-            <Park
-              id={`comp-details-park-${park?.parkGuid}`}
-              initialParkGuid={park?.parkGuid}
-              isInEdit={false}
-            />
+            {park?.name}
           </td>
         </FeatureFlag>
         <FeatureFlag feature={FEATURE_TYPES.LOCATION_COLUMN}>

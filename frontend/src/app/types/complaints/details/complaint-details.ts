@@ -1,5 +1,6 @@
 import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint-method-received-type";
 import { ComplaintDetailsAttractant } from "./complaint-attactant";
+import { Park } from "@apptypes/app/shared/park";
 
 export interface ComplaintDetails {
   details?: string;
@@ -22,5 +23,5 @@ export interface ComplaintDetails {
   girTypeCode?: string;
   complaintMethodReceivedCode?: ComplaintMethodReceivedType;
   ownedBy?: string;
-  parkGuid?: string;
+  park?: Park;
 }

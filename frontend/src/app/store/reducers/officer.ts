@@ -486,9 +486,6 @@ export const selectOfficersByZoneAgencyAndRole =
     const role = mapAgencyToRole(agency);
     let result: boolean = false;
 
-    console.log(agency);
-    console.log(park_area_guids);
-    console.log(role);
     if (agency === "COS") {
       if (zone) {
         return officers.filter((officer) => {
@@ -520,7 +517,6 @@ export const selectOfficersByZoneAgencyAndRole =
             ? park_area_guids.includes(officer.park_area_guid)
             : true;
 
-        console.log(hasRole + "" + isNotReadOnly + "" + matchesParkArea);
         return hasRole && isNotReadOnly && matchesParkArea;
       });
     }

@@ -8,7 +8,6 @@ import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { FeatureFlag } from "@components/common/feature-flag";
 import { CompLocationInfo } from "@components/common/comp-location-info";
-import { Park } from "@/app/components/common/park";
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -29,7 +28,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
     violationInProgress,
     violationObserved,
     complaintMethodReceivedCode,
-    parkGuid,
+    park,
   } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
   return (
@@ -125,15 +124,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
           <dl className="comp-call-details-group">
             <div>
               <dt>Park</dt>
-              <dd id="comp-details-park">
-                {parkGuid && (
-                  <Park
-                    id={`comp-details-park-${parkGuid}`}
-                    initialParkGuid={parkGuid}
-                    isInEdit={false}
-                  />
-                )}
-              </dd>
+              <dd id="comp-details-park">{park?.name}</dd>
             </div>
           </dl>
 
