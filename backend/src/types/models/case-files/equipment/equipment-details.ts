@@ -1,4 +1,4 @@
-import { AssessmentActionDto } from "../assessment-action";
+import { AssessmentActionDto } from "../assessment/assessment-action";
 export interface EquipmentDetailsDto {
   typeCode: string;
   typeShortDescription;

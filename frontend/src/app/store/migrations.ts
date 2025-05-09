@@ -28,6 +28,7 @@ import { AddComplaintReferral } from "./migrations/migration-28";
 import { AddEquipmentStatusCode } from "./migrations/migration-29";
 import { addHwcrOutcomeActionedByCodes } from "./migrations/migration-30";
 import { AddParkAreaCode } from "@/app/store/migrations/migration-31";
+import { MultipleAssessments } from "@/app/store/migrations/migration-32";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -70,6 +71,7 @@ migration = {
   ...AddEquipmentStatusCode,
   ...addHwcrOutcomeActionedByCodes,
   ...AddParkAreaCode,
+  ...MultipleAssessments,
 };
 
 export default migration;

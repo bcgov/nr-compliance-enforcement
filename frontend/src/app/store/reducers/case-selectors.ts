@@ -19,9 +19,9 @@ export const selectCaseId = (state: RootState): string => {
   return caseId ?? "";
 };
 
-export const selectAssessment = (state: RootState): Assessment => {
+export const selectAssessments = (state: RootState): Assessment[] => {
   const { cases } = state;
-  return cases.assessment;
+  return cases.assessments;
 };
 
 export const selectPrevention = (state: RootState): Prevention => {

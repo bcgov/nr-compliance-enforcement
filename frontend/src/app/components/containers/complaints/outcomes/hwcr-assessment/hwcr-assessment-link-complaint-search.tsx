@@ -62,7 +62,7 @@ const CustomHint = ({ children, className, hintText }: HintProps) => {
   );
 };
 
-export const HWCRComplaintAssessmentLinkComplaintSearch: FC<Props> = ({
+export const HWCRAssessmentLinkComplaintSearch: FC<Props> = ({
   id = "linkedComplaint",
   onChange = () => {},
   errorMessage = "",
