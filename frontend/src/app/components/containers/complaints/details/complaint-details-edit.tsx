@@ -79,7 +79,7 @@ import { getCaseFile } from "@/app/store/reducers/case-thunks";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
 import { RootState } from "@/app/store/store";
 import { Roles } from "@/app/types/app/roles";
-import { ParkPicker } from "@/app/components/common/park";
+import { ParkSelect } from "@/app/components/common/park";
 import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
 import { selectEquipment } from "@/app/store/reducers/case-selectors";
 
@@ -1155,7 +1155,7 @@ export const ComplaintDetailsEdit: FC = () => {
               >
                 <label htmlFor="complaint-park">Park</label>
                 <div className="comp-details-edit-input">
-                  <ParkPicker
+                  <ParkSelect
                     id="complaint-park"
                     initialParkGuid={parkGuid}
                     onChange={(e) => handleParkChange(e?.value)}

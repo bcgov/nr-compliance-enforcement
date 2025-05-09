@@ -397,9 +397,6 @@ export const getComplaints =
       const { complaints, totalCount } = result;
       for (const complaint of complaints.filter((c) => !!c.parkGuid)) {
         //filter out null, undefined or falsy
-        console.log("A");
-        console.log(complaint);
-        console.log("A");
         const response = await dispatch(getComplaintParkData(complaint.parkGuid));
         complaint.park = response;
       }

@@ -19,7 +19,7 @@ type Props = {
   isInEdit?: boolean;
 };
 
-export const ParkPicker: FC<Props> = ({
+export const ParkSelect: FC<Props> = ({
   id = "parks",
   onChange = () => {},
   errorMessage = "",
