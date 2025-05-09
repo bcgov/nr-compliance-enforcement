@@ -40,7 +40,7 @@ const BaseMigration = {
 };
 
 let migration = { ...BaseMigration };
-migration = { 
+migration = {
   ...migration,
   ...Migration1,
   ...Migration2,
