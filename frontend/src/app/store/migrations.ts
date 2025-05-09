@@ -28,7 +28,8 @@ import { AddComplaintReferral } from "./migrations/migration-28";
 import { AddEquipmentStatusCode } from "./migrations/migration-29";
 import { addHwcrOutcomeActionedByCodes } from "./migrations/migration-30";
 import { AddParkAreaCode } from "@/app/store/migrations/migration-31";
-import { AddParkCache } from "@/app/store/migrations/migration-32";
+import { MultipleAssessments } from "@/app/store/migrations/migration-32";
+import { AddParkCache } from "@/app/store/migrations/migration-33";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -39,7 +40,7 @@ const BaseMigration = {
 };
 
 let migration = { ...BaseMigration };
-migration = {
+migration = { 
   ...migration,
   ...Migration1,
   ...Migration2,
@@ -71,6 +72,7 @@ migration = {
   ...AddEquipmentStatusCode,
   ...addHwcrOutcomeActionedByCodes,
   ...AddParkAreaCode,
+  ...MultipleAssessments,
   ...AddParkCache,
 };
 
