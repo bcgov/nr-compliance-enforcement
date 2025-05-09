@@ -312,7 +312,7 @@ export const searchOfficers =
           return false;
         } else if (agency === "COS") {
           return !fromAdminOffice && nameMatch && roleMatch;
-        } else if (agency === "EPO") {
+        } else if (agency === "EPO" || agency === "PARKS") {
           return roleMatch && nameMatch;
         } else {
           return false;
