@@ -9,6 +9,7 @@ import offices from "./reducers/office";
 import codeTables from "./reducers/code-table";
 import attachments from "./reducers/attachments";
 import cases from "./reducers/cases";
+import parks from "./reducers/park";
 
 const appPersistConfig = {
   key: "app",
@@ -38,4 +39,5 @@ export const rootReducer = combineReducers({
   codeTables,
   attachments,
   cases,
+  parks,
 });

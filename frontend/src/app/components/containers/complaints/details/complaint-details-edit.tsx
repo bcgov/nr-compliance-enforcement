@@ -16,8 +16,6 @@ import {
   selectLinkedComplaints,
   setLinkedComplaints,
   selectComplaintViewMode,
-  getComplaintParkData,
-  setComplaintPark,
 } from "@store/reducers/complaints";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
@@ -234,17 +232,6 @@ export const ComplaintDetailsEdit: FC = () => {
       dispatch(getComplaintById(id, complaintType));
     }
   }, [id, parkGuid, complaintType, data, dispatch]);
-
-  useEffect(() => {
-    const fetchParkData = async () => {
-      if (parkGuid) {
-        const response = await dispatch(getComplaintParkData(parkGuid));
-        dispatch(setComplaintPark({ ...response }));
-      }
-    };
-
-    fetchParkData();
-  }, [parkGuid, dispatch]);
 
   useEffect(() => {
     const incidentDateTimeObject = incidentDateTime ? new Date(incidentDateTime) : null;

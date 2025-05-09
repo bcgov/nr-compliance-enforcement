@@ -515,10 +515,11 @@ export const selectOfficersByZoneAgencyAndRole =
       return officers.filter((officer) => {
         const hasRole = officer?.user_roles.includes(role);
         const isNotReadOnly = !officer?.user_roles.includes(Roles.READ_ONLY);
-        const matchesParkArea = Array.isArray(park_area_guids)
-          ? park_area_guids.includes(officer.park_area_guid)
-          : true;
-        console.log(officer.person_guid.first_name);
+        const matchesParkArea =
+          Array.isArray(park_area_guids) && park_area_guids.length > 0
+            ? park_area_guids.includes(officer.park_area_guid)
+            : true;
+
         console.log(hasRole + "" + isNotReadOnly + "" + matchesParkArea);
         return hasRole && isNotReadOnly && matchesParkArea;
       });
