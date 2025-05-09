@@ -524,17 +524,6 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           )}
 
           {activeFilters.showParkFilter && (
-            <div id="comp-filter-park-id">
-              <label htmlFor="park-select-id">Park</label>
-              <div className="filter-select-padding">
-                <ParkSelect
-                  id={`comp-details-park-${park}`}
-                  initialParkGuid={park}
-                  isInEdit={true}
-                  onChange={(option) => {
-                    setFilter("park", option);
-                  }}
-                />
             <>
               <div id="comp-filter-area-id">
                 <label htmlFor="community-select-id">Area</label>
@@ -560,7 +549,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               <div id="comp-filter-park-id">
                 <label htmlFor="park-select-id">Park</label>
                 <div className="filter-select-padding">
-                  <Park
+                  <ParkSelect
                     id={`comp-details-park-${park}`}
                     initialParkGuid={park}
                     isInEdit={true}
