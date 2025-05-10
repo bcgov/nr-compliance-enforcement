@@ -6,8 +6,8 @@ import { ComplaintReferral } from "./entities/complaint_referral.entity";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { PersonComplaintXrefModule } from "../person_complaint_xref/person_complaint_xref.module";
 import { ComplaintModule } from "../complaint/complaint.module";
-import { EmailModule } from "src/v1/email/email.module";
-import { FeatureFlagModule } from "src/v1/feature_flag/feature_flag.module";
+import { EmailModule } from "../../v1/email/email.module";
+import { FeatureFlagModule } from "../../v1/feature_flag/feature_flag.module";
 
 @Module({
   imports: [

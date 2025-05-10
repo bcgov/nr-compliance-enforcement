@@ -1,6 +1,6 @@
 import { PickType } from "@nestjs/swagger";
 import { ComplaintReferralDto } from "./complaint_referral.dto";
-import { ExportComplaintParameters } from "src/types/models/complaints/export-complaint-parameters";
+import { ExportComplaintParameters } from "../../../types/models/complaints/export-complaint-parameters";
 
 export class CreateComplaintReferralDto extends PickType(ComplaintReferralDto, [
   "create_user_id",

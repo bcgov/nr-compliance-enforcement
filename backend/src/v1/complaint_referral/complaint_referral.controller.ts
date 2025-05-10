@@ -6,7 +6,7 @@ import { Roles } from "../../auth/decorators/roles.decorator";
 import { coreRoles } from "../../enum/role.enum";
 import { CreateComplaintReferralDto } from "../complaint_referral/dto/create-complaint_referral.dto";
 import { Token } from "../../auth/decorators/token.decorator";
-import { User } from "src/auth/decorators/user.decorator";
+import { User } from "../../auth/decorators/user.decorator";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint-referral")

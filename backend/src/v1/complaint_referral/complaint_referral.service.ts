@@ -7,7 +7,7 @@ import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { REQUEST } from "@nestjs/core";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { EmailService } from "../../v1/email/email.service";
-import { FeatureFlagService } from "src/v1/feature_flag/feature_flag.service";
+import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintReferralService {
