@@ -755,7 +755,6 @@
          <column autoUpdated="false" defaultValue="false" digits="0" id="9" name="coms_enrolled_ind" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="false" digits="0" id="10" name="deactivate_ind" nullable="true" remarks="A boolean indicator representing if an officer has been deactivated" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="agency_code" nullable="true" remarks="" size="6" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="park_area_guid" nullable="true" remarks="System generated unique identifier for a park area." size="2147483647" type="uuid" typeCode="1111"/>
          <primaryKey column="officer_guid" sequenceNumberInPK="1"/>
          <index name="PK_officer" unique="true">
             <column ascending="true" name="officer_guid"/>
