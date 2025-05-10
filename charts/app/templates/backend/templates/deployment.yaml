@@ -127,27 +127,27 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-backend
-                  key: cedsEmail
+                  key: CEDS_EMAIL
             - name: CHES_CLIENT_ID
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-backend
-                  key: chesClientId
+                  key: CHES_CLIENT_ID
             - name: CHES_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-backend
-                  key: chesClientSecret
+                  key: CHES_CLIENT_SECRET
             - name: CHES_TOKEN_ENDPOINT
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-backend
-                  key: chesTokenEndpoint
+                  key: CHES_TOKEN_ENDPOINT
             - name: CHES_URI
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-backend
-                  key: chesUri
+                  key: CHES_URI
           ports:
             - name: http
               containerPort: {{ .Values.backend.service.targetPort }}
