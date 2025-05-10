@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { EmailReference } from "src/v1/email_reference/entities/email_reference.entity";
+import { EmailReference } from "../../v1/email_reference/entities/email_reference.entity";
 
 @Injectable()
 export class EmailReferenceService {
