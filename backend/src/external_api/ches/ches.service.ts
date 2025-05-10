@@ -46,7 +46,14 @@ export class ChesService implements ExternalApiService {
     }
   };
 
-  sendEmail = async (emailSubject, emailBody, recipientList: String[], ccList?: String[], attachments?: any[]) => {
+  sendEmail = async (
+    senderEmailAddress,
+    emailSubject,
+    emailBody,
+    recipientList: String[],
+    ccList?: String[],
+    attachments?: any[],
+  ) => {
     try {
       const apiToken = await this.authenticate();
 
@@ -67,7 +74,7 @@ export class ChesService implements ExternalApiService {
         cc: ccList,
         delayTS: 0,
         encoding: "utf-8",
-        from: "NatComplaints <mike.vesprini@gov.bc.ca>",
+        from: `NatComplaints <${senderEmailAddress}>`,
         priority: "normal",
         subject: emailSubject,
         to: recipientList,

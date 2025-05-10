@@ -7,5 +7,6 @@ import { HwcrComplaintNatureCode } from "./entities/hwcr_complaint_nature_code.e
   imports: [TypeOrmModule.forFeature([HwcrComplaintNatureCode])],
   controllers: [],
   providers: [HwcrComplaintNatureCodeService],
+  exports: [HwcrComplaintNatureCodeService],
 })
 export class HwcrComplaintNatureCodeModule {}

@@ -7,5 +7,6 @@ import { GeoOrganizationUnitCode } from "./entities/geo_organization_unit_code.e
   imports: [TypeOrmModule.forFeature([GeoOrganizationUnitCode])],
   controllers: [],
   providers: [GeoOrganizationUnitCodeService],
+  exports: [GeoOrganizationUnitCodeService],
 })
 export class GeoOrganizationUnitCodeModule {}

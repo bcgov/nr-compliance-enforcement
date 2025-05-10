@@ -7,5 +7,6 @@ import { ViolationCode } from "./entities/violation_code.entity";
   imports: [TypeOrmModule.forFeature([ViolationCode])],
   controllers: [],
   providers: [ViolationCodeService],
+  exports: [ViolationCodeService],
 })
 export class ViolationCodeModule {}

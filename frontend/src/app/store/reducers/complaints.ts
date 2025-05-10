@@ -43,6 +43,8 @@ import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint
 import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
 import { getUserAgency } from "@/app/service/user-service";
 import { Collaborator } from "@apptypes/app/complaints/collaborator";
+import { generateExportComplaintInputParams } from "@/app/store/reducers/documents-thunks";
+import { AttachmentsState } from "@/app/types/state/attachments-state";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
@@ -607,9 +609,20 @@ export const createComplaintReferral =
     referred_to_agency_code: string,
     officer_guid: string,
     referral_reason: string,
+    complaint_type: string,
+    date_logged: Date,
+    complaint_url: string,
   ): AppThunk =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
     try {
+      const { attachments } = getState();
+      const documentExportParams = generateExportComplaintInputParams(
+        complaint_identifier,
+        attachments,
+        complaint_type,
+        date_logged,
+        referred_by_agency_code,
+      );
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-referral`, {
         complaint_identifier,
         referral_date,
@@ -617,6 +630,8 @@ export const createComplaintReferral =
         referred_to_agency_code,
         officer_guid,
         referral_reason,
+        documentExportParams,
+        complaint_url,
       });
 
       await post<any>(dispatch, parameters);

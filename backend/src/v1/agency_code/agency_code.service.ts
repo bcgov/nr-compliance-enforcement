@@ -26,6 +26,10 @@ export class AgencyCodeService {
     return this.agencyCodeRepository.findOneOrFail(id);
   }
 
+  async findById(id: any): Promise<AgencyCode> {
+    return this.agencyCodeRepository.findOneByOrFail({ agency_code: id });
+  }
+
   async update(agency_code: string, updateAgencyCodeDto: UpdateAgencyCodeDto): Promise<AgencyCode> {
     await this.agencyCodeRepository.update({ agency_code }, updateAgencyCodeDto);
     return this.findOne(agency_code);

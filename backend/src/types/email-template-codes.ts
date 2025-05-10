@@ -1,0 +1,3 @@
+export const EMAIL_TEMPLATE_CODES = {
+  REFERRAL: "REFERRAL",
+};

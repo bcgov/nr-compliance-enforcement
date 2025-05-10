@@ -7,5 +7,6 @@ import { SpeciesCode } from "./entities/species_code.entity";
   imports: [TypeOrmModule.forFeature([SpeciesCode])],
   controllers: [],
   providers: [SpeciesCodeService],
+  exports: [SpeciesCodeService],
 })
 export class SpeciesCodeModule {}
