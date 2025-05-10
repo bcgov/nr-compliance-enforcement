@@ -11420,6 +11420,9 @@ INSERT INTO
     true
   ) on conflict do nothing;
 
+UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'ZONE_FLTR' AND agency_code = 'PARKS';
+UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'REG_FLTR' AND agency_code = 'PARKS';
+
 --------------------------
 -- New Changes above this line
 -------------------------

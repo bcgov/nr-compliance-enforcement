@@ -819,6 +819,13 @@ export class CodeTableService {
         );
         return results;
       }
+      case "park-area": {
+        const { data } = await get(token, {
+          query: "{parkAreas{parkAreaGuid name regionName}}",
+        });
+        const results = data.parkAreas;
+        return results;
+      }
     }
   };
 

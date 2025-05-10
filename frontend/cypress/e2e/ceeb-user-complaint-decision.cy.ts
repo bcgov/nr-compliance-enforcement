@@ -17,7 +17,7 @@ describe("CEEB Complaints can be created and outcome decisions set ", () => {
     methodComplaintReceived: "RAPP",
     status: "Closed",
     statusIndex: 1,
-    assigned: "Kot, Steve",
+    assigned: "TestAcct, ENV",
     assignedIndex: 1,
     violationInProgressIndex: 1,
     violationInProgressString: "No",

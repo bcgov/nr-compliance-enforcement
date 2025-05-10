@@ -20,7 +20,7 @@ const originalCallDetails = {
   methodComplaintReceived: "Observed in field",
   status: "Open",
   statusIndex: 0,
-  assigned: "Kot, Steve",
+  assigned: "TestAcct, ENV",
   assignedIndex: 0,
   violationType: "Other",
   violationIndex: 6,
@@ -66,7 +66,7 @@ const editCallDetails = {
   regionCode: "KTNY",
   status: "Closed",
   statusIndex: 1,
-  assigned: "Kot, Steve",
+  assigned: "TestAcct, ENV",
   assignedIndex: 1,
   violationInProgressIndex: 1,
   violationInProgressString: "No",
@@ -364,7 +364,7 @@ describe("Complaint Edit Page spec - Edit Allegation View", () => {
     cy.get("#officer-assigned-pair-id label").should(($label) => {
       expect($label).to.contain.text("Officer assigned");
     });
-    cy.get("#officer-assigned-pair-id .comp-details-input").contains("Kot, Steve");
+    cy.get("#officer-assigned-pair-id .comp-details-input").contains("TestAcct, ENV");
 
     // Check the Call Details inputs
     // Complaint Location

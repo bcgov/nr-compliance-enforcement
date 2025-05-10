@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAppSelector } from "@hooks/hooks";
 import {
-  selectAssessment,
+  selectAssessments,
   selectPrevention,
   selectEquipment,
   selectAnimalOutcomes,
@@ -35,7 +35,7 @@ type validationResults = {
 
 const useValidateComplaint = () => {
   // Selectors
-  const assessment = useAppSelector(selectAssessment);
+  const assessments = useAppSelector(selectAssessments);
   const prevention = useAppSelector(selectPrevention);
   const equipment = useAppSelector(selectEquipment);
   const outcomes = useAppSelector(selectAnimalOutcomes);
@@ -86,10 +86,12 @@ const useValidateComplaint = () => {
         !isInEdit.fileReview;
 
       //check Assessment section must be filled out if complaint type is HWCR
-      const assessmentCriteria = complaintType === COMPLAINT_TYPES.HWCR ? Object.keys(assessment).length !== 0 : true;
+      const assessmentCriteria = complaintType === COMPLAINT_TYPES.HWCR ? assessments.length !== 0 : true;
 
       //check Prevention must be filled out if action required is Yes
-      const preventionCriteria = assessment.action_required === "Yes" ? Object.keys(prevention).length !== 0 : true;
+      const preventionCriteria = assessments.some((assessment) => assessment.action_required === "Yes")
+        ? Object.keys(prevention).length !== 0
+        : true;
 
       //check Equipment must have removed date, except for Signage and Trail
       const equipmentCriteria =
@@ -197,7 +199,7 @@ const useValidateComplaint = () => {
 
     validateComplaint();
   }, [
-    assessment,
+    assessments,
     equipment,
     isInEdit,
     isReviewRequired,

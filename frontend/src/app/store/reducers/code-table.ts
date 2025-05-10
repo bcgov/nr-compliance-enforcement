@@ -42,6 +42,7 @@ import {
   fetchCEEBDecisionTypes,
   fetchScheduleSectorTypes,
   fetchEquipmentStatus,
+  fetchParkAreas,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -90,6 +91,7 @@ const initialState: CodeTableState = {
   "ipm-auth-category": [],
   "case-location-type": [],
   "equipment-status": [],
+  "park-area": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -156,6 +158,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "ipm-auth-category": ipmAuthCategoryType,
       "case-location-type": caseLocationType,
       "equipment-status": equipmentStatus,
+      "park-area": parkArea,
     },
   } = state;
 
@@ -290,6 +293,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(equipmentStatus).any()) {
       dispatch(fetchEquipmentStatus());
     }
+    if (!from(parkArea).any()) {
+      dispatch(fetchParkAreas());
+    }
   } catch (error) {}
 };
 
@@ -342,6 +348,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchCaseLocationTypes());
     dispatch(fetchIPMAuthCategories());
     dispatch(fetchEquipmentStatus());
+    dispatch(fetchParkAreas());
   } catch (error) {
     console.error(error);
   }

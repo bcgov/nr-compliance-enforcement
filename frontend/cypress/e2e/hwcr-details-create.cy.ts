@@ -25,7 +25,7 @@ describe("Complaint Create Page spec - Create View", () => {
     speciesIndex: 3,
     status: "Closed",
     statusIndex: 1,
-    assigned: "Kot, Steve",
+    assigned: "TestAcct, ENV",
     assignedIndex: 1,
   };
 
