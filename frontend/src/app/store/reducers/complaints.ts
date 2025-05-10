@@ -44,7 +44,6 @@ import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
 import { getUserAgency } from "@/app/service/user-service";
 import { Collaborator } from "@apptypes/app/complaints/collaborator";
 import { generateExportComplaintInputParams } from "@/app/store/reducers/documents-thunks";
-import { AttachmentsState } from "@/app/types/state/attachments-state";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
