@@ -132,7 +132,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-backend
-                  key: chesClient
+                  key: chesClientId
             - name: CHES_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
