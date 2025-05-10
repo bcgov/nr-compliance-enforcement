@@ -50,16 +50,15 @@ export class ComplaintReferralService {
 
     // FEATURE FLAG
     // If both agencies involved have the feature flag active, send the referral email notification
-    if (
-      this._featureFlagService.checkActiveByAgencyAndFeatureCode(
-        createComplaintReferralDto.referred_by_agency_code,
-        "REFEMAIL",
-      ) &&
-      this._featureFlagService.checkActiveByAgencyAndFeatureCode(
-        createComplaintReferralDto.referred_to_agency_code,
-        "REFEMAIL",
-      )
-    ) {
+    const referredByActive = await this._featureFlagService.checkActiveByAgencyAndFeatureCode(
+      createComplaintReferralDto.referred_by_agency_code,
+      "REFEMAIL",
+    );
+    const referrefToActive = await this._featureFlagService.checkActiveByAgencyAndFeatureCode(
+      createComplaintReferralDto.referred_to_agency_code,
+      "REFEMAIL",
+    );
+    if (referredByActive && referrefToActive) {
       // Email the appropriate recipient
       await this._emailService.sendReferralEmail(createComplaintReferralDto, token, user);
     }

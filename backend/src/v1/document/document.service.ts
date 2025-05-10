@@ -3,7 +3,6 @@ import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ComplaintService } from "../complaint/complaint.service";
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { Attachment, AttachmentType } from "src/types/models/general/attachment";
-import { ExportComplaintParameters } from "src/types/models/complaints/export-complaint-parameters";
 
 @Injectable()
 export class DocumentService {

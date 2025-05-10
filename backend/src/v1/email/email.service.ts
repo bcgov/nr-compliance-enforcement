@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ChesService } from "../../external_api/ches/ches.service";
 import { DocumentService } from "../../v1/document/document.service";
-import { generateReferralEmailBody } from "src/email_templates/referrals";
+import { generateReferralEmailBody, GenerateReferralEmailParams } from "src/email_templates/referrals";
 import { EmailReferenceService } from "src/v1/email_reference/email_reference.service";
 import { ComplaintService } from "src/v1/complaint/complaint.service";
 import { WildlifeComplaintDto } from "src/types/models/complaints/wildlife-complaint";
@@ -45,6 +45,7 @@ export class EmailService {
         referred_to_agency_code,
         referred_by_agency_code,
         referral_reason,
+        complaint_url,
       } = createComplaintReferralDto;
       const { type, fileName, tz, attachments } = createComplaintReferralDto.documentExportParams;
 
@@ -142,18 +143,19 @@ export class EmailService {
       }
       const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : null;
       const emailSubject = `${envFlag}NatCom referral ${type} complaint #${id} ${subjectAdditionalDetails}`;
-      const emailBody = generateReferralEmailBody(
-        id,
-        type,
-        senderName,
-        senderEmailAddress,
-        referredToAgencyName,
-        referredByAgencyName,
-        referral_reason,
-        supportEmail,
-        complaintSummaryText,
-        createComplaintReferralDto.complaint_url,
-      );
+      const generateReferralEmailParams: GenerateReferralEmailParams = {
+        complaintId: id,
+        complaintType: type,
+        senderName: senderName,
+        senderEmailAddress: senderEmailAddress,
+        referredToAgency: referredToAgencyName,
+        referredByAgency: referredByAgencyName,
+        reasonForReferral: referral_reason,
+        supportEmail: supportEmail,
+        complaintSummaryText: complaintSummaryText,
+        complaintUrl: complaint_url,
+      };
+      const emailBody = generateReferralEmailBody(generateReferralEmailParams);
 
       return await this._chesService.sendEmail(
         senderEmailAddress,

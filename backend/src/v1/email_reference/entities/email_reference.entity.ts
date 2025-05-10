@@ -1,8 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
-import { GeoOrganizationUnitCode } from "../../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class EmailReference {
@@ -34,25 +32,6 @@ export class EmailReference {
   })
   @Column()
   public geo_organization_unit_code: string;
-
-  // @ManyToOne(() => AgencyCode, (agency_code) => agency_code.agency_code)
-  // @JoinColumn({ name: "agency_code" })
-  // @ApiProperty({
-  // example: "COS",
-  // description: "System generated unique key for a agency.",
-  // })
-  // public agency_code: AgencyCode;
-
-  // @ManyToOne(
-  //   () => GeoOrganizationUnitCode,
-  //   (geo_organization_unit_code) => geo_organization_unit_code.geo_organization_unit_code,
-  // )
-  // @JoinColumn({ name: "geo_organization_unit_code" })
-  // @ApiProperty({
-  // example: "STHPCE",
-  // description: "The geographic organization code that the email address belongs to.",
-  // })
-  // public geo_organization_unit_code: GeoOrganizationUnitCode;
 
   @ApiProperty({
     example: "2003-04-12 04:05:06",

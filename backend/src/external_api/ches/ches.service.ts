@@ -50,8 +50,8 @@ export class ChesService implements ExternalApiService {
     senderEmailAddress,
     emailSubject,
     emailBody,
-    recipientList: String[],
-    ccList?: String[],
+    recipientList: string[],
+    ccList?: string[],
     attachments?: any[],
   ) => {
     try {

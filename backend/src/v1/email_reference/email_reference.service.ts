@@ -1,16 +1,15 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
-import { DataSource, Repository } from "typeorm";
+import { Injectable, Logger } from "@nestjs/common";
+import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { REQUEST } from "@nestjs/core";
 import { EmailReference } from "src/v1/email_reference/entities/email_reference.entity";
 
 @Injectable()
 export class EmailReferenceService {
   private readonly logger = new Logger(EmailReferenceService.name);
   @InjectRepository(EmailReference)
-  private emailReferenceRepository: Repository<EmailReference>;
+  private readonly emailReferenceRepository: Repository<EmailReference>;
 
-  constructor(@Inject(REQUEST) private request: Request, private dataSource: DataSource) {}
+  constructor() {}
 
   async findActiveByAgency(agencyCode: any): Promise<any> {
     try {

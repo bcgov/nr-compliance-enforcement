@@ -65,7 +65,6 @@ export const exportComplaint =
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
 
-      // const exportComplaintInput = { id, type, fileName, tz, attachments } as ExportComplaintInput;
       const exportComplaintInput = generateExportComplaintInputParams(id, attachments, type, dateLogged, agency);
 
       const url = `${config.API_BASE_URL}/v1/document/export-complaint`;
