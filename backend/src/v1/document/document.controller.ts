@@ -7,8 +7,7 @@ import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
 import { escape } from "escape-html";
-import { ExportComplaintParameters } from "src/types/models/complaints/export-complaint-parameters";
-import { Attachment, AttachmentType } from "../../types/models/general/attachment";
+import { ExportComplaintParameters } from "../../types/models/complaints/export-complaint-parameters";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("document")
