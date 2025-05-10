@@ -55,6 +55,8 @@ import { PersonComplaintXref } from "../person_complaint_xref/entities/person_co
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { REQUEST } from "@nestjs/core";
 import { ComplaintService } from "../complaint/complaint.service";
+import { EmailService } from "../../v1/email/email.service";
+import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
 
 describe("ComplaintReferralController", () => {
   let controller: ComplaintReferralController;
@@ -229,6 +231,14 @@ describe("ComplaintReferralController", () => {
           useValue: {
             user: { idir_username: "TEST" },
           },
+        },
+        {
+          provide: EmailService,
+          useValue: {},
+        },
+        {
+          provide: FeatureFlagService,
+          useValue: {},
         },
       ],
     }).compile();

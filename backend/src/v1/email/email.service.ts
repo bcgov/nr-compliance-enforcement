@@ -162,8 +162,7 @@ export class EmailService {
         emailSubject,
         emailBody,
         recipientList,
-        // [senderEmailAddress],
-        [],
+        [senderEmailAddress],
         emailAttachments,
       );
     } catch (error) {
