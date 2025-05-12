@@ -41,10 +41,10 @@ export const ParkSelect: FC<Props> = ({
       typeof initialParkGuid === "object" && initialParkGuid !== null ? initialParkGuid?.value : initialParkGuid;
 
     if (guid) {
-      const cachedName = parkCache[guid].name;
+      const cachedPark = parkCache[guid];
 
-      if (cachedName) {
-        setParkOption({ label: cachedName, value: guid });
+      if (cachedPark) {
+        setParkOption({ label: cachedPark.name, value: guid });
       } else {
         const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${guid}`);
         get<Park>(dispatch, parameters, {}, false).then((response: Park) => {
