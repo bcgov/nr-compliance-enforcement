@@ -41,9 +41,6 @@ import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint
 import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
 import { getUserAgency } from "@/app/service/user-service";
 import { Collaborator } from "@apptypes/app/complaints/collaborator";
-import { Park } from "@/app/types/app/shared/park";
-import { selectParkByGuid, setPark } from "./park";
-import { UUID } from "crypto";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
@@ -281,14 +278,6 @@ export const complaintSlice = createSlice({
         state.complaint.status = action.payload;
       }
     },
-    setComplaintPark: (state, action) => {
-      if (state.complaint) {
-        let currentComplaint: ComplaintDto = state.complaint as ComplaintDto;
-        if (currentComplaint) {
-          state.complaint.park = action.payload;
-        }
-      }
-    },
     setLinkedComplaints: (state, action) => {
       return { ...state, linkedComplaints: action.payload };
     },
@@ -319,7 +308,6 @@ export const {
   setActions,
   setWebEOCChangeCount,
   setComplaintStatus,
-  setComplaintPark,
   clearComplaint,
   setLinkedComplaints,
 } = complaintSlice.actions;
@@ -398,18 +386,7 @@ export const getComplaints =
 
       const result = await get<{ complaints: any[]; totalCount: number }>(dispatch, parameters);
       const { complaints, totalCount } = result;
-      for (const complaint of complaints.filter((c) => !!c.parkGuid)) {
-        //filter out null, undefined or falsy
-        const response = await dispatch(getComplaintParkData(complaint.parkGuid));
-        if (response) {
-          complaint.park = response;
-        } else {
-          complaint.park = {
-            name: "Park name unavailable",
-            parkGuid: complaint.parkGuid as UUID,
-          };
-        }
-      }
+
       dispatch(setComplaints({ type: complaintType, data: complaints }));
       dispatch(setTotalCount(totalCount));
     } catch (error) {
@@ -659,41 +636,10 @@ export const getComplaintById =
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
       );
       const response = await get<dtoAlias>(dispatch, parameters);
-      if (response.parkGuid) {
-        const parkResponse = await dispatch(getComplaintParkData(response.parkGuid));
-        if (parkResponse) {
-          response.parkGuid = parkResponse.parkGuid;
-        }
-      }
 
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       //-- handle the error
-    }
-  };
-
-// get parkData for a single Complaint
-export const getComplaintParkData =
-  (parkId: string): ThunkAction<Promise<Park | undefined>, RootState, unknown, Action<string>> =>
-  async (dispatch, getState) => {
-    // check and see if we've got a cached copy of this park
-    const existingPark = getState().parks.parkCache[parkId];
-    if (existingPark) {
-      return existingPark;
-    }
-    //If not fetch from the shared database
-    try {
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/shared-data/park/${parkId}`);
-      const response = await get<Park>(dispatch, parameters);
-
-      if (response) {
-        dispatch(setPark(response));
-      }
-
-      return response;
-    } catch (error) {
-      console.error(`Unable to retrieve park information for ${parkId}: ${error}`);
-      return undefined;
     }
   };
 

@@ -7,4 +7,5 @@ export interface Park {
   name: string;
   legalName?: string;
   parkAreas?: Array<ParkArea>;
+  isFallback?: boolean;
 }

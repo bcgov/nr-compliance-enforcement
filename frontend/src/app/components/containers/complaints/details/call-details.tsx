@@ -8,7 +8,7 @@ import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { FeatureFlag } from "@components/common/feature-flag";
 import { CompLocationInfo } from "@components/common/comp-location-info";
-import { selectParkByGuid } from "@/app/store/reducers/park";
+import { usePark } from "@/app/hooks/usePark";
 
 interface ComplaintHeaderProps {
   complaintType: string;
@@ -32,7 +32,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
     parkGuid,
   } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
-  const park = useAppSelector(selectParkByGuid(parkGuid));
+  const park = usePark(parkGuid);
 
   return (
     <section className="comp-details-section">
