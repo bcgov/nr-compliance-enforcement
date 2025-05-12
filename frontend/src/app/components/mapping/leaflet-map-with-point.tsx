@@ -98,6 +98,9 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
   const parkLayerParams = useMemo(() => {
     return { format: "image/png", layers: "pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW", transparent: true };
   }, []);
+  const reserveLayerParams = useMemo(() => {
+    return { format: "image/png", layers: "pub:WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP", transparent: true };
+  }, []);
 
   const getEquipmentStatus = (locationItem: MapElement): string => {
     if (
@@ -130,6 +133,12 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
             <WMSTileLayer
               url="https://openmaps.gov.bc.ca/geo/pub/WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW/ows"
               params={parkLayerParams}
+            />
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="First Nations Reserves">
+            <WMSTileLayer
+              url="https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP/ows"
+              params={reserveLayerParams}
             />
           </LayersControl.Overlay>
         </LayersControl>

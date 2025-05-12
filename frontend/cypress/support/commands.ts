@@ -408,7 +408,7 @@ Cypress.Commands.add(
 
     if (section === "ASSESSMENT") {
       if (actionRequired) {
-        cy.get("#action-required-div").should(($div) => {
+        cy.contains("#action-required-div", actionRequired).should(($div) => {
           expect($div).to.contain.text(actionRequired);
         });
         if (actionRequired === "Yes") {
