@@ -118,7 +118,7 @@ export const ComplaintDetailsEdit: FC = () => {
     violationObserved,
     girType,
     complaintMethodReceivedCode,
-    park,
+    parkGuid,
   } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
   const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
@@ -174,7 +174,6 @@ export const ComplaintDetailsEdit: FC = () => {
   ) as ComplaintSuspectWitness;
 
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
-  const parkGuid = park?.parkGuid;
 
   const equipmentList = useAppSelector(selectEquipment);
 

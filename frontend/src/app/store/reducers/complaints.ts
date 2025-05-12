@@ -1015,10 +1015,10 @@ export const selectComplaintDetails = createSelector(
         location: { coordinates },
         organization: { area: areaCode, region, zone, officeLocation },
         ownedBy,
-        park,
+        parkGuid,
       } = complaint as ComplaintDto;
 
-      result = { ...result, details, location, locationDescription, incidentDateTime, coordinates, ownedBy, park };
+      result = { ...result, details, location, locationDescription, incidentDateTime, coordinates, ownedBy, parkGuid };
 
       if (complaintType === "HWCR") {
         const { attractants } = complaint as WildlifeComplaintDto;
@@ -1055,7 +1055,7 @@ export const selectComplaintDetails = createSelector(
         const { complaintMethodReceivedCode }: any = complaint;
         result.complaintMethodReceivedCode =
           getComplaintMethodReceivedCode(complaintMethodReceivedCode, complaintMethodReceivedCodes) ?? undefined;
-        result.park = complaint.park;
+        result.parkGuid = complaint.park?.parkGuid;
       }
     }
     return result;

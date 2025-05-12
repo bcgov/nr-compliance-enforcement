@@ -24,5 +24,8 @@ const parksReducer = createSlice({
 
 export const selectAllParks = createSelector([selectParkEntities], (parks): Record<string, Park> => parks);
 
+export const selectParkByGuid = (guid: string | undefined) =>
+  createSelector([selectParkEntities], (parkCache) => (guid ? parkCache[guid] : undefined));
+
 export const { setPark } = parksReducer.actions;
 export default parksReducer.reducer;
