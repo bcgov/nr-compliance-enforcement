@@ -1,3 +1,5 @@
+{{- if and .Values.metabase.enabled .Values.metabase-pg.enabled }}
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -13,3 +15,4 @@ spec:
       name: http
   selector:
     {{- include "metabase.selectorLabels" . | nindent 4 }}
+{{- end }}
