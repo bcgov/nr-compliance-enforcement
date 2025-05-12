@@ -5,10 +5,10 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_backend_prod_cpu_quota" {
   severity = "medium"
   query = "sysdig_container_cpu_quota_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_deployment_name=\"nr-compliance-enforcement-prod-backend\",container_name=\"nr-compliance-enforcement-prod-backend\"}  > 98"
   enabled = true
-  duration_seconds = 180
+  duration_seconds = 600
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Backend"
@@ -21,10 +21,10 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_backend_prod_mem_usage" {
   severity = "medium"
   query = "sysdig_container_memory_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_deployment_name=\"nr-compliance-enforcement-prod-backend\",container_name=\"nr-compliance-enforcement-prod-backend\"}  > 98"
   enabled = true
-  duration_seconds = 180
+  duration_seconds = 600
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Backend"
@@ -37,26 +37,10 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_backend_prod_mem_limit" {
   severity = "high"
   query = "sysdig_container_memory_limit_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_deployment_name=\"nr-compliance-enforcement-prod-backend\",container_name=\"nr-compliance-enforcement-prod-backend\"}  > 70"
   enabled = true
-  duration_seconds = 180
+  duration_seconds = 600
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
-  }
-  labels = {
-    service = "NatCom Backend"
-    app = "NatCom"
-  }
-}
-resource "sysdig_monitor_alert_v2_prometheus" "nr_backend_prod_uptime_score" {
-  name = "Prod Backend Uptime Alert"
-  description = "Alert when the backend container has too much downtime"
-  severity = "high"
-  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_deployment_name=\"nr-compliance-enforcement-prod-backend\",container_name=\"nr-compliance-enforcement-prod-backend\"} < 0.5"
-  enabled = true
-  duration_seconds = 180
-  notification_channels {
-    id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Backend"
@@ -72,7 +56,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_backend_prod_http_silent" {
   duration_seconds = 300
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Backend"
@@ -86,10 +70,10 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_frontend_prod_cpu_quota" {
   severity = "medium"
   query = "sysdig_container_cpu_quota_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_deployment_name=\"nr-compliance-enforcement-prod-frontend\",container_name=\"nr-compliance-enforcement-prod-frontend\"}  > 98"
   enabled = true
-  duration_seconds = 180
+  duration_seconds = 600
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Frontend"
@@ -102,10 +86,10 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_frontend_prod_mem_usage" {
   severity = "medium"
   query = "sysdig_container_memory_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_deployment_name=\"nr-compliance-enforcement-prod-frontend\",container_name=\"nr-compliance-enforcement-prod-frontend\"}  > 98"
   enabled = true
-  duration_seconds = 180
+  duration_seconds = 600
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Frontend"
@@ -118,26 +102,10 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_frontend_prod_mem_limit" {
   severity = "high"
   query = "sysdig_container_memory_limit_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_deployment_name=\"nr-compliance-enforcement-prod-frontend\",container_name=\"nr-compliance-enforcement-prod-frontend\"}  > 70"
   enabled = true
-  duration_seconds = 180
+  duration_seconds = 600
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
-  }
-  labels = {
-    service = "NatCom Frontend"
-    app = "NatCom"
-  }
-}
-resource "sysdig_monitor_alert_v2_prometheus" "nr_frontend_prod_uptime_score" {
-  name = "Prod Frontend Uptime Alert"
-  description = "Alert when the frontend container has too much downtime"
-  severity = "high"
-  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_deployment_name=\"nr-compliance-enforcement-prod-frontend\",container_name=\"nr-compliance-enforcement-prod-frontend\"} < 0.5"
-  enabled = true
-  duration_seconds = 180
-  notification_channels {
-    id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Frontend"
@@ -153,7 +121,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_frontend_prod_http_silent" {
   duration_seconds = 300
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Frontend"
@@ -169,7 +137,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_frontend_prod_http_error_rate"
   duration_seconds = 300
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Frontend"
@@ -183,10 +151,10 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_prod_cpu_quota" {
   severity = "medium"
   query = "sysdig_container_cpu_quota_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-prod\"}  > 98"
   enabled = true
-  duration_seconds = 180
+  duration_seconds = 600
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Database"
@@ -199,10 +167,10 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_prod_mem_usage" {
   severity = "medium"
   query = "sysdig_container_memory_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-prod\"}  > 98"
   enabled = true
-  duration_seconds = 180
+  duration_seconds = 600
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Database"
@@ -215,26 +183,10 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_prod_mem_limit" {
   severity = "high"
   query = "sysdig_container_memory_limit_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-prod\"}  > 70"
   enabled = true
-  duration_seconds = 180
+  duration_seconds = 600
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
-  }
-  labels = {
-    service = "NatCom Database"
-    app = "NatCom"
-  }
-}
-resource "sysdig_monitor_alert_v2_prometheus" "nr_database_prod_uptime_score" {
-  name = "Prod Database Uptime Alert"
-  description = "Alert when the database container has too much downtime"
-  severity = "high"
-  query = "sysdig_container_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-prod\"} < 0.7"
-  enabled = true
-  duration_seconds = 180
-  notification_channels {
-    id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Database"
@@ -245,12 +197,12 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_prod_storage_usage" {
   name = "Prod Database Storage Alert"
   description = "Alert when the database storage usage is too high"
   severity = "high"
-  query = "sysdig_fs_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-prod\"} > 65"
+  query = "sysdig_fs_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-prod\"} > 70"
   enabled = true
   duration_seconds = 600
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Database"
@@ -266,7 +218,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_webeoc_prod_storage_usage" {
   duration_seconds = 600
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
-    renotify_every_minutes = 120
+    renotify_every_minutes = 1440
   }
   labels = {
     service = "NatCom Webeoc"
