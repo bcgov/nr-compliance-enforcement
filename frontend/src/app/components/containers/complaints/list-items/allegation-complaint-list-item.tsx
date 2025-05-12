@@ -14,7 +14,6 @@ import getOfficerAssigned from "@common/get-officer-assigned";
 import { getUserAgency } from "@/app/service/user-service";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
-import { selectParkByGuid } from "@/app/store/reducers/park";
 import { usePark } from "@/app/hooks/usePark";
 
 type Props = {

@@ -1,6 +1,5 @@
 import { Delegate } from "@apptypes/app/people/delegate";
 import { BaseComplaint } from "nrs-ce-common-types";
-import { Park } from "@apptypes/app/shared/park";
 
 export interface Complaint extends BaseComplaint {
   organization: {
