@@ -7,7 +7,7 @@ import { CaseFileDto } from "@apptypes/app/case-files/case-file";
 import {
   clearAssessment,
   clearPrevention,
-  setAssessment,
+  setAssessments,
   setCaseFile,
   setCaseId,
   setIsReviewedRequired,
@@ -16,9 +16,9 @@ import {
 } from "./cases";
 import { Assessment } from "@apptypes/outcomes/assessment";
 import { Officer } from "@apptypes/person/person";
-import { AssessmentActionDto } from "@apptypes/app/case-files/assessment-action";
-import { UpdateAssessmentInput } from "@apptypes/app/case-files/update-assessment-input";
-import { CreateAssessmentInput } from "@apptypes/app/case-files/create-assessment-input";
+import { AssessmentActionDto } from "@/app/types/app/case-files/assessment/assessment-action";
+import { UpdateAssessmentInput } from "@/app/types/app/case-files/assessment/update-assessment-input";
+import { CreateAssessmentInput } from "@/app/types/app/case-files/assessment/create-assessment-input";
 import { Prevention } from "@apptypes/outcomes/prevention";
 import { PreventionActionDto } from "@apptypes/app/case-files/prevention/prevention-action";
 import { UpdatePreventionInput } from "@apptypes/app/case-files/prevention/update-prevention-input";
@@ -52,6 +52,7 @@ import { UpdateAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/a
 import { getUserAgency } from "@service/user-service";
 import { DeleteAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/delete-authorization-outcome-input";
 import { Note } from "@/app/types/outcomes/note";
+import { AssessmentDto } from "@/app/types/app/case-files/assessment/assessment";
 
 //-- general thunks
 export const findCase =
@@ -73,15 +74,15 @@ export const getCaseFile =
       const {
         officers: { officers },
       } = getState();
-      const assessment = await parseAssessmentResponse(response, officers);
-      dispatch(setAssessment({ assessment }));
+      const assessments = await parseAssessmentResponse(response, officers);
+      dispatch(setAssessments(assessments));
       const updatedPreventionData = await parsePreventionResponse(response, officers);
       dispatch(setPrevention({ prevention: updatedPreventionData }));
       dispatch(setIsReviewedRequired(response.isReviewRequired));
       dispatch(setReviewComplete(response.reviewComplete));
     } else {
       // If there is no case file clear the assessment and prevention sections
-      dispatch(setAssessment({}));
+      dispatch(setAssessments([]));
       dispatch(setPrevention({}));
     }
   };
@@ -95,9 +96,9 @@ export const getAssessment =
     } = getState();
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     return await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      const updatedAssessmentData = await parseAssessmentResponse(res, officers);
+      const assessments = await parseAssessmentResponse(res, officers);
       dispatch(setCaseId(res.caseIdentifier));
-      dispatch(setAssessment({ assessment: updatedAssessmentData }));
+      dispatch(setAssessments(assessments));
       dispatch(setIsReviewedRequired(res.isReviewRequired));
       dispatch(setReviewComplete(res.reviewComplete));
     });
@@ -110,15 +111,15 @@ export const upsertAssessment =
       return;
     }
     const caseIdentifier = await dispatch(findCase(complaintIdentifier));
-    if (!caseIdentifier) {
-      dispatch(addAssessment(complaintIdentifier, assessment));
+    if (!caseIdentifier || !assessment.id) {
+      dispatch(addAssessment(assessment, complaintIdentifier, caseIdentifier));
     } else {
-      dispatch(updateAssessment(complaintIdentifier, caseIdentifier, assessment));
+      dispatch(updateAssessment(assessment, complaintIdentifier, caseIdentifier));
     }
   };
 
 const addAssessment =
-  (complaintIdentifier: string, assessment: Assessment): AppThunk =>
+  (assessment: Assessment, complaintIdentifier: string, caseIdentifier?: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       codeTables: { "assessment-type": assessmentType, "assessment-cat1-type": assessmentCat1Type },
@@ -127,49 +128,46 @@ const addAssessment =
       cases: { caseId },
     } = getState();
     let createAssessmentInput = {
-      createAssessmentInput: {
-        leadIdentifier: complaintIdentifier,
-        createUserId: profile.idir_username,
-        agencyCode: "COS",
-        caseCode: "HWCR",
-        assessmentDetails: {
-          actionNotRequired: assessment.action_required === "No",
-          actionCloseComplaint: assessment.close_complaint,
-          actions: assessment.assessment_type
-            ? assessment.assessment_type.map((item) => {
-                return {
-                  date: assessment.date,
-                  actor: assessment.officer?.value,
-                  activeIndicator: true,
-                  actionCode: item.value,
-                };
-              })
-            : [],
-          actionJustificationCode: assessment.justification?.value,
-          actionLinkedComplaintIdentifier: assessment.linked_complaint?.value,
-          contactedComplainant: assessment.contacted_complainant,
-          attended: assessment.attended,
-          locationType: assessment.location_type,
-          conflictHistory: assessment.conflict_history,
-          categoryLevel: assessment.category_level,
-          cat1Actions: assessment.assessment_cat1_type
-            ? assessment.assessment_cat1_type.map((item) => {
-                return {
-                  date: assessment.date,
-                  actor: assessment.officer?.value,
-                  activeIndicator: true,
-                  actionCode: item.value,
-                };
-              })
-            : [],
-        },
+      leadIdentifier: complaintIdentifier,
+      caseIdentifier: caseIdentifier,
+      createUserId: profile.idir_username,
+      agencyCode: "COS",
+      caseCode: "HWCR",
+      assessment: {
+        actionNotRequired: assessment.action_required === "No",
+        actionCloseComplaint: assessment.close_complaint,
+        actions: assessment.assessment_type
+          ? assessment.assessment_type.map((item) => {
+              return {
+                date: assessment.date,
+                actor: assessment.officer?.value,
+                activeIndicator: true,
+                actionCode: item.value,
+              };
+            })
+          : [],
+        actionJustificationCode: assessment.justification?.value,
+        actionLinkedComplaintIdentifier: assessment.linked_complaint?.value,
+        contactedComplainant: assessment.contacted_complainant,
+        attended: assessment.attended,
+        locationType: assessment.location_type,
+        conflictHistory: assessment.conflict_history,
+        categoryLevel: assessment.category_level,
+        cat1Actions: assessment.assessment_cat1_type
+          ? assessment.assessment_cat1_type.map((item) => {
+              return {
+                date: assessment.date,
+                actor: assessment.officer?.value,
+                activeIndicator: true,
+                actionCode: item.value,
+              };
+            })
+          : [],
       },
     } as CreateAssessmentInput;
 
     let {
-      createAssessmentInput: {
-        assessmentDetails: { actions, cat1Actions },
-      },
+      assessment: { actions, cat1Actions },
     } = createAssessmentInput;
     for (let item of assessmentType.filter((record) => record.isActive)) {
       if (
@@ -206,9 +204,9 @@ const addAssessment =
 
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createAssessment`, createAssessmentInput);
     await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      const updatedAssessmentData = await parseAssessmentResponse(res, officers);
+      const assessments = await parseAssessmentResponse(res, officers);
       if (res) {
-        dispatch(setAssessment({ assessment: updatedAssessmentData }));
+        dispatch(setAssessments(assessments));
         if (!caseId) dispatch(setCaseId(res.caseIdentifier));
         dispatch(clearComplaint());
         ToggleSuccess(`Assessment has been saved`);
@@ -220,7 +218,7 @@ const addAssessment =
   };
 
 const updateAssessment =
-  (complaintIdentifier: string, caseIdentifier: string, assessment: Assessment): AppThunk =>
+  (assessment: Assessment, complaintIdentifier: string, caseIdentifier: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       codeTables: { "assessment-type": assessmentType, "assessment-cat1-type": assessmentCat1Type },
@@ -229,55 +227,52 @@ const updateAssessment =
     } = getState();
 
     let updateAssessmentInput = {
-      updateAssessmentInput: {
-        leadIdentifier: complaintIdentifier,
-        caseIdentifier: caseIdentifier,
-        updateUserId: profile.idir_username,
-        agencyCode: "COS",
-        caseCode: "HWCR",
-        assessmentDetails: {
-          actionNotRequired: assessment.action_required === "No",
-          actionCloseComplaint: assessment.close_complaint,
-          actionJustificationCode: assessment.justification?.value,
-          actionLinkedComplaintIdentifier: assessment.linked_complaint?.value,
-          actions: assessment.assessment_type
-            ? assessment.assessment_type.map((item) => {
-                return {
-                  actor: assessment.officer?.value,
-                  date: assessment.date,
-                  actionCode: item.value,
-                  activeIndicator: true,
-                };
-              })
-            : [],
-          contactedComplainant: assessment.contacted_complainant,
-          attended: assessment.attended,
-          locationType: assessment.location_type,
-          conflictHistory: assessment.conflict_history,
-          categoryLevel: assessment.category_level,
-          cat1Actions: assessment.assessment_cat1_type
-            ? assessment.assessment_cat1_type.map((item) => {
-                return {
-                  actor: assessment.officer?.value,
-                  date: assessment.date,
-                  actionCode: item.value,
-                  activeIndicator: true,
-                };
-              })
-            : [],
-        },
+      leadIdentifier: complaintIdentifier,
+      caseIdentifier: caseIdentifier,
+      updateUserId: profile.idir_username,
+      agencyCode: "COS",
+      caseCode: "HWCR",
+      assessment: {
+        id: assessment.id,
+        actionNotRequired: assessment.action_required === "No",
+        actionCloseComplaint: assessment.close_complaint,
+        actionJustificationCode: assessment.justification?.value,
+        actionLinkedComplaintIdentifier: assessment.linked_complaint?.value,
+        actions: assessment.assessment_type
+          ? assessment.assessment_type.map((item) => {
+              return {
+                actor: assessment.officer?.value,
+                date: assessment.date,
+                actionCode: item.value,
+                activeIndicator: true,
+              };
+            })
+          : [],
+        contactedComplainant: assessment.contacted_complainant,
+        attended: assessment.attended,
+        locationType: assessment.location_type,
+        conflictHistory: assessment.conflict_history,
+        categoryLevel: assessment.category_level,
+        cat1Actions: assessment.assessment_cat1_type
+          ? assessment.assessment_cat1_type.map((item) => {
+              return {
+                actor: assessment.officer?.value,
+                date: assessment.date,
+                actionCode: item.value,
+                activeIndicator: true,
+              };
+            })
+          : [],
       },
     } as UpdateAssessmentInput;
     let {
-      updateAssessmentInput: {
-        assessmentDetails: { actions, cat1Actions },
-      },
+      assessment: { actions, cat1Actions },
     } = updateAssessmentInput;
 
     for (let item of assessmentType.filter((record) => record.isActive)) {
       if (
         !actions
-          .map((action) => {
+          .map((action: { actionCode: any }) => {
             return action.actionCode;
           })
           .includes(item.assessmentType)
@@ -294,7 +289,7 @@ const updateAssessment =
     for (let item of assessmentCat1Type.filter((record) => record.isActive)) {
       if (
         !cat1Actions
-          .map((action) => {
+          .map((action: { actionCode: any }) => {
             return action.actionCode;
           })
           .includes(item.assessmentType)
@@ -309,9 +304,9 @@ const updateAssessment =
     }
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/updateAssessment`, updateAssessmentInput);
     await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
-      const updatedAssessmentData = await parseAssessmentResponse(res, officers);
+      const assessments = await parseAssessmentResponse(res, officers);
       if (res) {
-        dispatch(setAssessment({ assessment: updatedAssessmentData }));
+        dispatch(setAssessments(assessments));
         dispatch(clearComplaint());
         ToggleSuccess(`Assessment has been updated`);
       } else {
@@ -320,12 +315,9 @@ const updateAssessment =
     });
   };
 
-const parseAssessmentResponse = async (
-  res: CaseFileDto,
-  officers: Officer[],
-): Promise<Assessment | undefined | null> => {
-  if (res?.assessmentDetails?.actions?.length) {
-    const { actor, actionDate } = res.assessmentDetails.actions.map((action) => {
+const parseAssessmentResponse = async (res: CaseFileDto, officers: Officer[]): Promise<Assessment[] | null> =>
+  res?.assessment?.map((assessment: AssessmentDto) => {
+    const { actor, actionDate } = assessment.actions.map((action: { actor: any; date: any }) => {
       return { actor: action.actor, actionDate: action.date };
     })[0];
 
@@ -344,32 +336,37 @@ const parseAssessmentResponse = async (
     }
 
     const updatedAssessmentData = {
+      id: assessment.id,
+      agency: assessment.agencyCode,
       date: actionDate,
       officer: { key: officerFullName, value: actor },
-      action_required: res.assessmentDetails.actionNotRequired ? "No" : "Yes",
+      action_required: assessment.actionNotRequired ? "No" : "Yes",
       justification: {
-        value: res.assessmentDetails.actionJustificationCode,
-        key: res.assessmentDetails.actionJustificationLongDescription,
+        value: assessment.actionJustificationCode,
+        key: assessment.actionJustificationLongDescription,
       },
       assessment_type: [],
       assessment_type_legacy: [],
-      contacted_complainant: res.assessmentDetails.contactedComplainant,
-      attended: res.assessmentDetails.attended,
-      location_type: res.assessmentDetails.locationType,
-      conflict_history: res.assessmentDetails.conflictHistory,
-      category_level: res.assessmentDetails.categoryLevel,
-      assessment_cat1_type: res.assessmentDetails.cat1Actions
-        .filter((action) => {
+      contacted_complainant: assessment.contactedComplainant,
+      attended: assessment.attended,
+      location_type: assessment.locationType,
+      conflict_history: assessment.conflictHistory,
+      category_level: assessment.categoryLevel,
+      assessment_cat1_type: assessment.cat1Actions
+        .filter((action: { activeIndicator: any }) => {
           return action.activeIndicator;
         })
         .map((action) => {
           return { key: action.longDescription, value: action.actionCode };
         }),
     } as unknown as Assessment;
-    for (let action of res.assessmentDetails.actions) {
+    for (let action of assessment.actions) {
       if (action.activeIndicator) {
         if (action.isLegacy && updatedAssessmentData.assessment_type_legacy) {
-          updatedAssessmentData.assessment_type_legacy.push({ key: action.longDescription, value: action.actionCode });
+          updatedAssessmentData.assessment_type_legacy.push({
+            key: action.longDescription,
+            value: action.actionCode,
+          });
         } else {
           updatedAssessmentData.assessment_type.push({ key: action.longDescription, value: action.actionCode });
         }
@@ -377,10 +374,7 @@ const parseAssessmentResponse = async (
     }
 
     return updatedAssessmentData;
-  } else {
-    return null;
-  }
-};
+  }) || [];
 
 //-- prevention and education thunks
 export const getPrevention =

@@ -7,6 +7,7 @@ export type ComplaintFilters = {
   region: DropdownOption | null;
   zone: DropdownOption | null;
   community: DropdownOption | null;
+  area: DropdownOption | null;
   officer: DropdownOption | null;
 
   startDate?: Date;

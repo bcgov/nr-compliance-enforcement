@@ -934,6 +934,18 @@ export class ComplaintService {
     return complaintIdentifiers;
   };
 
+  private readonly _getComplaintsByParkArea = async (token: string, area: string): Promise<string[]> => {
+    const { data, errors } = await get(token, {
+      query: `{getParksByArea ( parkAreaGuid: "${area}") { parkGuid, name}}`,
+    });
+    if (errors) {
+      this.logger.error("GraphQL errors:", errors);
+      throw new Error("GraphQL errors occurred");
+    }
+    const parkGuids = data.getParksByArea.length > 0 ? data.getParksByArea.map((park) => park.parkGuid) : ["-1"];
+    return parkGuids;
+  };
+
   findAllByType = async (
     complaintType: COMPLAINT_TYPE,
   ): Promise<Array<WildlifeComplaintDto> | Array<AllegationComplaintDto>> => {
@@ -1140,6 +1152,14 @@ export class ComplaintService {
         });
       }
 
+      if (agencies.includes(Role.PARKS) && filters.area) {
+        const parkIdentifiers = await this._getComplaintsByParkArea(token, filters.area);
+
+        builder.andWhere("complaint.park_guid IN(:...park_guids)", {
+          park_guids: parkIdentifiers,
+        });
+      }
+
       //-- apply search
       if (query) {
         builder = await this._applySearch(builder, complaintType, query, token);
@@ -1270,6 +1290,14 @@ export class ComplaintService {
         );
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
+        });
+      }
+
+      if (agencies.includes(Role.PARKS) && filters.area) {
+        const parkIdentifiers = await this._getComplaintsByParkArea(token, filters.area);
+
+        builder.andWhere("complaint.park_guid IN(:...park_guids)", {
+          park_guids: parkIdentifiers,
         });
       }
 
@@ -2043,15 +2071,15 @@ export class ComplaintService {
       }
     };
 
-    const _applyAssessmentData = async (assessmentDetails, assessmentActions) => {
+    const _applyAssessmentData = async (assessment, assessmentActions) => {
       //-- Convert booleans to Yes/No
 
       //Note this one is backwards since the variable is action NOT required but the report is action required
-      assessmentDetails.actionNotRequired = assessmentDetails.actionNotRequired ? "No" : "Yes";
+      assessment.actionNotRequired = assessment.actionNotRequired ? "No" : "Yes";
 
-      assessmentDetails.contactedComplainant = assessmentDetails.contactedComplainant ? "Yes" : "No";
+      assessment.contactedComplainant = assessment.contactedComplainant ? "Yes" : "No";
 
-      assessmentDetails.attended = assessmentDetails.attended ? "Yes" : "No";
+      assessment.attended = assessment.attended ? "Yes" : "No";
 
       //-- Remove all inactive assessment and prevention actions
       let filteredActions = assessmentActions.filter((item) => item.activeIndicator === true);
@@ -2069,21 +2097,22 @@ export class ComplaintService {
         { legacyActions: [], actions: [] },
       ); // Initial value with two empty arrays
 
-      assessmentDetails.actions = actions;
-      assessmentDetails.legacyActions = legacyActions;
+      assessment.actions = actions;
+      assessment.legacyActions = legacyActions;
 
       //-- Convert Officer Guids to Names
       if (assessmentActions?.[0]?.actor) {
-        assessmentDetails.assessmentActor = assessmentActions[0].actor;
-        assessmentDetails.assessmentDate = assessmentActions[0].date;
+        assessment.assessmentActor = assessmentActions[0].actor;
+        assessment.assessmentDate = assessmentActions[0].date;
 
-        const { first_name, last_name } = (
-          await this._officerService.findByAuthUserGuid(assessmentDetails.assessmentActor)
-        ).person_guid;
-        assessmentDetails.assessmentActor = `${last_name}, ${first_name}`;
+        const officer = await this._officerService.findByAuthUserGuid(assessment.assessmentActor);
+        const { first_name, last_name } = officer.person_guid;
+        const agency_code = officer.agency_code.short_description;
+
+        assessment.assessmentActor = `${last_name}, ${first_name} (${agency_code})`;
 
         //Apply timezone and format date
-        assessmentDetails.assessmentDate = _applyTimezone(assessmentDetails.assessmentDate, tz, "date");
+        assessment.assessmentDate = _applyTimezone(assessment.assessmentDate, tz, "date");
       }
     };
 
@@ -2342,12 +2371,6 @@ export class ComplaintService {
           "UA" + outcomeData.getCaseFileByLeadId.authorization.value;
       }
 
-      // Take advantage of value by reference to make the rest of the code a bit more readable
-      const assessmentDetails = outcomeData.getCaseFileByLeadId.assessmentDetails;
-      const assessmentActions = [
-        ...(Array.isArray(assessmentDetails?.actions) ? assessmentDetails.actions : []),
-        ...(Array.isArray(assessmentDetails?.cat1Actions) ? assessmentDetails.cat1Actions : []),
-      ];
       const preventionDetails = outcomeData.getCaseFileByLeadId.preventionDetails;
       const preventionActions = preventionDetails?.actions;
       const equipment = outcomeData.getCaseFileByLeadId.equipment;
@@ -2356,9 +2379,16 @@ export class ComplaintService {
 
       let hasOutcome = false;
 
-      if (assessmentDetails?.actionNotRequired !== null && assessmentDetails?.actionNotRequired !== undefined) {
+      if (outcomeData.getCaseFileByLeadId?.assessment?.length > 0) {
         hasOutcome = true;
-        await _applyAssessmentData(assessmentDetails, assessmentActions);
+        await outcomeData.getCaseFileByLeadId.assessment.forEach(async (assessment) => {
+          const assessmentActions = [
+            ...(Array.isArray(assessment?.actions) ? assessment.actions : []),
+            ...(Array.isArray(assessment?.cat1Actions) ? assessment.cat1Actions : []),
+          ];
+
+          await _applyAssessmentData(assessment, assessmentActions);
+        });
       }
 
       if (preventionDetails) {
@@ -2510,17 +2540,21 @@ export class ComplaintService {
       if (data.outcome.decision?.inspectionNumber) {
         data = { ...data, inspection: [{ value: data.outcome.decision.inspectionNumber }] };
       }
-      if (data.outcome.assessmentDetails?.locationType?.key) {
-        data = { ...data, assessmentLocation: [{ value: data.outcome.assessmentDetails.locationType.key }] };
-      }
-      if (data.outcome.assessmentDetails?.conflictHistory?.key) {
-        data = { ...data, conflict: [{ value: data.outcome.assessmentDetails.conflictHistory.key }] };
-      }
-      if (data.outcome.assessmentDetails?.categoryLevel?.key) {
-        data = { ...data, category: [{ value: data.outcome.assessmentDetails.categoryLevel.key }] };
-      }
-      if (data.outcome.assessmentDetails?.legacyActions) {
-        data = { ...data, legacy: [{ actions: data.outcome.assessmentDetails.legacyActions }] };
+      if (data.outcome.assessments) {
+        data.outcome.assessments.forEach((assessment) => {
+          if (assessment.locationType?.key) {
+            data.assessmentLocation.push({ value: assessment.locationType.key });
+          }
+          if (assessment.conflictHistory?.key) {
+            data.conflict.push({ value: assessment.conflictHistory.key });
+          }
+          if (assessment.categoryLevel?.key) {
+            data.category.push({ value: assessment.categoryLevel.key });
+          }
+          if (assessment.legacyActions) {
+            data.legacy.push({ actions: assessment.legacyActions });
+          }
+        });
       }
       if (data.outcome.decision?.ipmAuthCategoryLongDescription) {
         data = { ...data, authCat: [{ value: data.outcome.decision.ipmAuthCategoryLongDescription }] };

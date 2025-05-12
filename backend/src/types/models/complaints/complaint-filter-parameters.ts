@@ -3,6 +3,7 @@ export interface ComplaintFilterParameters {
   zone?: string;
   region?: string;
   park?: string;
+  area?: string;
   officerAssigned?: string;
   natureOfComplaint?: string;
   speciesCode?: string;

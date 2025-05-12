@@ -10,7 +10,7 @@ import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/
 
 export interface CasesState {
   caseId: string | undefined;
-  assessment: Assessment;
+  assessments: Assessment[];
   prevention: Prevention;
   notes: Note[];
   isReviewRequired: boolean;

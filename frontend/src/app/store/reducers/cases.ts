@@ -4,20 +4,7 @@ import { Assessment } from "@apptypes/outcomes/assessment";
 
 const initialState: CasesState = {
   caseId: undefined,
-  assessment: {
-    action_required: undefined,
-    date: undefined,
-    justification: undefined,
-    linked_complaint: undefined,
-    officer: undefined,
-    assessment_type: [],
-    contacted_complainant: undefined,
-    attended: undefined,
-    location_type: undefined,
-    conflict_history: undefined,
-    category_level: undefined,
-    assessment_cat1_type: [],
-  },
+  assessments: [],
   prevention: {
     date: undefined,
     officer: undefined,
@@ -55,11 +42,8 @@ export const casesSlice = createSlice({
       const { payload } = action;
       return { ...state, caseId: payload };
     },
-    setAssessment: (state, action) => {
-      const {
-        payload: { assessment },
-      } = action;
-      state.assessment = { ...assessment }; // Update only the assessment property
+    setAssessments: (state, action) => {
+      state.assessments = action.payload; // Update only the assessment property
     },
     setPrevention: (state, action) => {
       const {
@@ -76,7 +60,7 @@ export const casesSlice = createSlice({
       return { ...state, reviewComplete: payload };
     },
     clearAssessment: (state) => {
-      state.assessment = {} as Assessment;
+      state.assessments = [] as Assessment[];
     },
     clearPrevention: (state) => {
       state.prevention = { ...initialState.prevention };
@@ -111,7 +95,7 @@ export const casesSlice = createSlice({
 
 // export the actions/reducers
 export const {
-  setAssessment,
+  setAssessments,
   setPrevention,
   setCaseId,
   setIsReviewedRequired,

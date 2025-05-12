@@ -32,6 +32,8 @@ import { CreateAuthorizationOutcomeInput } from "../../../types/models/case-file
 import { UpdateAuthorizationOutcomeInput } from "../../../types/models/case-files/ceeb/site/update-authorization-outcome-input";
 import { DeleteAuthorizationOutcomeInput } from "../../../types/models/case-files/ceeb/site/delete-authorization-outcome-input";
 import { CaseManagementError } from "src/enum/case_management_error.enum";
+import { UpdateAssessmentInput } from "src/types/models/case-files/assessment/update-assessment-input";
+import { CreateAssessmentInput } from "src/types/models/case-files/assessment/create-assessment-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -73,13 +75,13 @@ export class CaseFileController {
 
   @Post("/createAssessment")
   @Roles(Role.COS, Role.PARKS)
-  async createAssessment(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+  async createAssessment(@Token() token, @Body() model: CreateAssessmentInput): Promise<CaseFileDto> {
     return await this.service.createAssessment(token, model);
   }
 
   @Patch("/updateAssessment")
   @Roles(Role.COS, Role.PARKS)
-  async updateAssessment(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+  async updateAssessment(@Token() token, @Body() model: UpdateAssessmentInput): Promise<CaseFileDto> {
     return await this.service.updateAssessment(token, model);
   }
 
