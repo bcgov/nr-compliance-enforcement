@@ -11,5 +11,5 @@ export interface Complaint extends BaseComplaint {
     officeLocation?: string;
   };
   delegates: Array<Delegate>;
-  park?: Park;
+  park?: string;
 }

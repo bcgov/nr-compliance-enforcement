@@ -42,7 +42,7 @@ import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
 import { getUserAgency } from "@/app/service/user-service";
 import { Collaborator } from "@apptypes/app/complaints/collaborator";
 import { Park } from "@/app/types/app/shared/park";
-import { setPark } from "./park";
+import { selectParkByGuid, setPark } from "./park";
 import { UUID } from "crypto";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
@@ -662,12 +662,7 @@ export const getComplaintById =
       if (response.parkGuid) {
         const parkResponse = await dispatch(getComplaintParkData(response.parkGuid));
         if (parkResponse) {
-          response.park = parkResponse;
-        } else {
-          response.park = {
-            name: "Park name unavailable",
-            parkGuid: response.parkGuid as UUID,
-          };
+          response.parkGuid = parkResponse.parkGuid;
         }
       }
 
@@ -1055,7 +1050,7 @@ export const selectComplaintDetails = createSelector(
         const { complaintMethodReceivedCode }: any = complaint;
         result.complaintMethodReceivedCode =
           getComplaintMethodReceivedCode(complaintMethodReceivedCode, complaintMethodReceivedCodes) ?? undefined;
-        result.parkGuid = complaint.park?.parkGuid;
+        result.parkGuid = complaint.parkGuid;
       }
     }
     return result;
@@ -1074,6 +1069,7 @@ export const selectComplaintHeader =
         "nature-of-complaint": natureOfComplaints,
         "gir-type": girTypeCodes,
       },
+      parks: { parkCache },
     } = state;
 
     const selectSharedHeader = () => {
@@ -1102,10 +1098,11 @@ export const selectComplaintHeader =
           delegates,
           ownedBy: complaintAgency,
           organization: { zone },
-          park,
+          parkGuid,
         } = complaint as ComplaintDto;
 
         const status = getStatusByStatusCode(statusCode, statusCodes);
+        const park = parkGuid ? parkCache[parkGuid] : undefined;
         const parkAreaGuids = park?.parkAreas?.map((area) => area.parkAreaGuid) ?? [];
 
         result = {
@@ -1136,7 +1133,6 @@ export const selectComplaintHeader =
 
       return result;
     };
-
     let result = selectSharedHeader();
 
     if (complaint) {

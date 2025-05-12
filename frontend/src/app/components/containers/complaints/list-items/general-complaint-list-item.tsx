@@ -10,6 +10,7 @@ import getOfficerAssigned from "@common/get-officer-assigned";
 import { getUserAgency } from "@/app/service/user-service";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { selectParkByGuid } from "@/app/store/reducers/park";
 
 type Props = {
   type: string;
@@ -35,12 +36,13 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
     girType,
     locationDetail,
     locationSummary,
-    park,
+    parkGuid,
     organization: { area: locationCode, zone },
   } = complaint;
 
   const userAgency = getUserAgency();
   const derivedGeneralStatus = ownedBy !== userAgency ? "Referred" : status;
+  const park = useAppSelector(selectParkByGuid(parkGuid));
   const parkAreaGuids = park?.parkAreas?.map((area) => area.parkAreaGuid) ?? [];
 
   const getLocationName = (input: string): string => {
