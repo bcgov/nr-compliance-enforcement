@@ -51,7 +51,6 @@ jobs:
           FLYWAY_DEFAULT_SCHEMA: "public"
         with:
           args: info migrate info
-        continue-on-error: true
 
   # https://github.com/bcgov/action-builder-ghcr
   builds:
