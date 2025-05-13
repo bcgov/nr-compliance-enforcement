@@ -1,6 +1,6 @@
 {
   "name": "nr-sample-natcomplaints",
-  "version": "1.9.11",
+  "version": "1.9.12",
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
