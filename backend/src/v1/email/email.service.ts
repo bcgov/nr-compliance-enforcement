@@ -159,6 +159,7 @@ export class EmailService {
 
       return await this._chesService.sendEmail(
         senderEmailAddress,
+        senderName,
         emailSubject,
         emailBody,
         recipientList,

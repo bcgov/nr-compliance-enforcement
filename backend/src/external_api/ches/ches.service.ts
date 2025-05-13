@@ -48,6 +48,7 @@ export class ChesService implements ExternalApiService {
 
   sendEmail = async (
     senderEmailAddress,
+    senderName,
     emailSubject,
     emailBody,
     recipientList: string[],
@@ -74,7 +75,7 @@ export class ChesService implements ExternalApiService {
         cc: ccList,
         delayTS: 0,
         encoding: "utf-8",
-        from: `NatComplaints <${senderEmailAddress}>`,
+        from: `${senderName} <${senderEmailAddress}>`,
         priority: "normal",
         subject: emailSubject,
         to: recipientList,

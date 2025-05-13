@@ -54,11 +54,11 @@ export class ComplaintReferralService {
       createComplaintReferralDto.referred_by_agency_code,
       "REFEMAIL",
     );
-    const referrefToActive = await this._featureFlagService.checkActiveByAgencyAndFeatureCode(
+    const referredToActive = await this._featureFlagService.checkActiveByAgencyAndFeatureCode(
       createComplaintReferralDto.referred_to_agency_code,
       "REFEMAIL",
     );
-    if (referredByActive && referrefToActive) {
+    if (referredByActive && referredToActive) {
       // Email the appropriate recipient
       await this._emailService.sendReferralEmail(createComplaintReferralDto, token, user);
     }
