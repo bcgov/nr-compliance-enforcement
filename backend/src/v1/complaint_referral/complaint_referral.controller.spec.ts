@@ -57,6 +57,7 @@ import { REQUEST } from "@nestjs/core";
 import { ComplaintService } from "../complaint/complaint.service";
 import { EmailService } from "../../v1/email/email.service";
 import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
+import { DocumentService } from "src/v1/document/document.service";
 
 describe("ComplaintReferralController", () => {
   let controller: ComplaintReferralController;
@@ -238,6 +239,10 @@ describe("ComplaintReferralController", () => {
         },
         {
           provide: FeatureFlagService,
+          useValue: {},
+        },
+        {
+          provide: DocumentService,
           useValue: {},
         },
       ],
