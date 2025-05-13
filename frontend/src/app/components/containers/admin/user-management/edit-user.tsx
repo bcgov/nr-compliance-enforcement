@@ -12,7 +12,14 @@ import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown, selectOffices } from "@store/reducers/office";
 import { ToggleError, ToggleSuccess } from "@common/toast";
-import { clearNotification, openModal, selectNotification, userId } from "@store/reducers/app";
+import {
+  clearNotification,
+  getTokenProfile,
+  openModal,
+  personGuid,
+  selectNotification,
+  userId,
+} from "@store/reducers/app";
 import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
 import { CEEB_ROLE_OPTIONS, COS_ROLE_OPTIONS, PARKS_ROLE_OPTIONS, ROLE_OPTIONS } from "@constants/ceeb-roles";
 import { generateApiParameters, get, patch } from "@common/api";
@@ -51,6 +58,7 @@ export const EditUser: FC<EditUserProps> = ({
   const parkAreasList = useAppSelector(selectParkAreasDropdown);
   const availableOffices = useAppSelector(selectOffices);
   const adminIdirUsername = useAppSelector(userId);
+  const userPersonGuid = useAppSelector(personGuid);
 
   const [officerError, setOfficerError] = useState<string>("");
   const [officeError, setOfficeError] = useState<string>("");
@@ -72,7 +80,7 @@ export const EditUser: FC<EditUserProps> = ({
   useEffect(() => {
     if (officeAssignments) {
       dispatch(fetchOfficeAssignments());
-      let options = availableOffices.map((item) => {
+      let options = availableOffices.map((item: { id: any; name: any; agency: any }) => {
         const { id, name, agency } = item;
         const record: Option = {
           label: `${agency} - ${name}`,
@@ -266,7 +274,17 @@ export const EditUser: FC<EditUserProps> = ({
         //update existing officer
         const selectedUserAgency = currentAgency ?? selectedAgency;
         const selectedUserIdir = `${officerData?.auth_user_guid.split("-").join("")}@idir`;
-        await updateOfficer(selectedUserAgency, selectedUserIdir, mapRoles);
+        const res = await updateOfficer(selectedUserAgency, selectedUserIdir, mapRoles);
+        if (res?.roles) {
+          dispatch(getOfficers()); //refresh the officer list to get the latest changes
+          ToggleSuccess("Officer updated successfully");
+          //If current user edit their own account, refresh current user profile
+          if (officer.value === userPersonGuid) {
+            dispatch(getTokenProfile());
+          }
+        } else {
+          ToggleError("Unable to update");
+        }
       }
       resetSelect();
       goToSearchView();
@@ -320,13 +338,7 @@ export const EditUser: FC<EditUserProps> = ({
             selectedTeam?.value,
             mapRoles,
           );
-
-          if (res?.team && res?.roles) {
-            dispatch(getOfficers()); //refresh the officer list to get the latest changes
-            ToggleSuccess("Officer updated successfully");
-          } else {
-            ToggleError("Unable to update");
-          }
+          return res;
         }
         break;
       }
@@ -344,13 +356,7 @@ export const EditUser: FC<EditUserProps> = ({
           null,
           mapRoles,
         );
-        if (res?.roles) {
-          dispatch(getOfficers());
-          ToggleSuccess("Officer updated successfully");
-        } else {
-          ToggleError("Unable to update");
-        }
-        break;
+        return res;
       }
       case AgencyType.COS:
       default: {
@@ -364,14 +370,7 @@ export const EditUser: FC<EditUserProps> = ({
           null,
           mapRoles,
         );
-
-        if (res?.roles) {
-          dispatch(getOfficers()); //refresh the officer list to get the latest changes
-          ToggleSuccess("Officer updated successfully");
-        } else {
-          ToggleError("Unable to update");
-        }
-        break;
+        return res;
       }
     }
   };
