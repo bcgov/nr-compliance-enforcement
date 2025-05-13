@@ -123,31 +123,6 @@ spec:
                   name: postgres-crunchy-{{ .Values.global.crunchyClusterEnvironment }}-pguser-app
                   key: password
             {{- end }}
-            - name: CEDS_EMAIL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-backend
-                  key: CEDS_EMAIL
-            - name: CHES_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-backend
-                  key: CHES_CLIENT_ID
-            - name: CHES_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-backend
-                  key: CHES_CLIENT_SECRET
-            - name: CHES_TOKEN_ENDPOINT
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-backend
-                  key: CHES_TOKEN_ENDPOINT
-            - name: CHES_URI
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-backend
-                  key: CHES_URI
           ports:
             - name: http
               containerPort: {{ .Values.backend.service.targetPort }}
