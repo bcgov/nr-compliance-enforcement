@@ -44,7 +44,7 @@ export class EmailService {
         referral_reason,
         complaint_url,
       } = createComplaintReferralDto;
-      const { type, fileName, tz, attachments } = createComplaintReferralDto.documentExportParams;
+      const { type, fileName } = createComplaintReferralDto.documentExportParams;
 
       const complaint = await this._complaintService.findById(id, type);
 
