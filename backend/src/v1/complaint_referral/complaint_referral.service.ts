@@ -8,6 +8,7 @@ import { REQUEST } from "@nestjs/core";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { EmailService } from "../../v1/email/email.service";
 import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
+import { DocumentService } from "src/v1/document/document.service";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintReferralService {
@@ -25,30 +26,14 @@ export class ComplaintReferralService {
     private readonly _emailService: EmailService,
     @Inject(FeatureFlagService)
     private readonly _featureFlagService: FeatureFlagService,
+    @Inject(DocumentService)
+    private readonly _documentService: DocumentService,
   ) {}
 
   private readonly logger = new Logger(ComplaintReferralService.name);
 
   async create(createComplaintReferralDto: any, token: string, user): Promise<ComplaintReferral> {
-    const idir = getIdirFromRequest(this.request);
-    createComplaintReferralDto.create_user_id = idir;
-    createComplaintReferralDto.update_user_id = idir;
-
-    const newComplaintReferral = this.complaintReferralRepository.create(createComplaintReferralDto);
-    const result: any = await this.complaintReferralRepository.save(newComplaintReferral);
-
-    //Update owned_by_agency_code in complaint table
-    if (result.complaint_referral_guid) {
-      await this.complaintRepository.update(
-        { complaint_identifier: createComplaintReferralDto.complaint_identifier },
-        { owned_by_agency_code: createComplaintReferralDto.referred_to_agency_code },
-      );
-    }
-
-    // Clear the officer assigend to the complaint
-    this._personService.clearAssignedOfficer(createComplaintReferralDto.complaint_identifier);
-
-    // FEATURE FLAG
+    // FEATURE FLAG check
     // If both agencies involved have the feature flag active, send the referral email notification
     const referredByActive = await this._featureFlagService.checkActiveByAgencyAndFeatureCode(
       createComplaintReferralDto.referred_by_agency_code,
@@ -58,9 +43,36 @@ export class ComplaintReferralService {
       createComplaintReferralDto.referred_to_agency_code,
       "REFEMAIL",
     );
-    if (referredByActive && referredToActive) {
+    const sendEmail = referredByActive && referredToActive;
+    const idir = getIdirFromRequest(this.request);
+    createComplaintReferralDto.create_user_id = idir;
+    createComplaintReferralDto.update_user_id = idir;
+
+    const { complaint_identifier: id, referred_to_agency_code } = createComplaintReferralDto;
+    const { type, fileName, tz, attachments } = createComplaintReferralDto.documentExportParams;
+    // Generate the document export from the referring agency if sending the referral email
+    let complaintExport;
+    if (sendEmail) {
+      complaintExport = await this._documentService.exportComplaint(id, type, fileName, tz, attachments, token);
+    }
+
+    const newComplaintReferral = this.complaintReferralRepository.create(createComplaintReferralDto);
+    const result: any = await this.complaintReferralRepository.save(newComplaintReferral);
+
+    //Update owned_by_agency_code in complaint table
+    if (result.complaint_referral_guid) {
+      await this.complaintRepository.update(
+        { complaint_identifier: id },
+        { owned_by_agency_code: referred_to_agency_code },
+      );
+    }
+
+    // Clear the officer assigend to the complaint
+    this._personService.clearAssignedOfficer(createComplaintReferralDto.complaint_identifier);
+
+    if (sendEmail) {
       // Email the appropriate recipient
-      await this._emailService.sendReferralEmail(createComplaintReferralDto, token, user);
+      await this._emailService.sendReferralEmail(createComplaintReferralDto, user, complaintExport);
     }
 
     return result;

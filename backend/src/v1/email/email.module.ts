@@ -2,7 +2,6 @@ import { Module, forwardRef } from "@nestjs/common";
 import { EmailService } from "./email.service";
 import { EmailController } from "./email.controller";
 import { ChesModule } from "../../external_api/ches/ches.module";
-import { DocumentModule } from "../../v1/document/document.module";
 import { EmailReferenceModule } from "../../v1/email_reference/email_reference.module";
 import { ComplaintModule } from "../../v1/complaint/complaint.module";
 import { SpeciesCodeModule } from "../../v1/species_code/species_code.module";
@@ -15,7 +14,6 @@ import { GirTypeCodeModule } from "../../v1/gir_type_code/gir_type_code.module";
 @Module({
   imports: [
     ChesModule,
-    DocumentModule,
     EmailReferenceModule,
     forwardRef(() => ComplaintModule),
     SpeciesCodeModule,

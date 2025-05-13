@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { EmailService } from "./email.service";
 import { ChesService } from "../../external_api/ches/ches.service";
-import { DocumentService } from "../../v1/document/document.service";
 import { EmailReferenceService } from "../../v1/email_reference/email_reference.service";
 import { ComplaintService } from "../../v1/complaint/complaint.service";
 import { SpeciesCodeService } from "../../v1/species_code/species_code.service";
@@ -20,10 +19,6 @@ describe("EmailService", () => {
         EmailService,
         {
           provide: ChesService,
-          useValue: {},
-        },
-        {
-          provide: DocumentService,
           useValue: {},
         },
         {

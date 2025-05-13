@@ -1,6 +1,5 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ChesService } from "../../external_api/ches/ches.service";
-import { DocumentService } from "../../v1/document/document.service";
 import { generateReferralEmailBody, GenerateReferralEmailParams } from "../../email_templates/referrals";
 import { EmailReferenceService } from "../../v1/email_reference/email_reference.service";
 import { ComplaintService } from "../../v1/complaint/complaint.service";
@@ -18,8 +17,6 @@ import { GirTypeCodeService } from "../../v1/gir_type_code/gir_type_code.service
 export class EmailService {
   @Inject(ChesService)
   private readonly _chesService: ChesService;
-  @Inject(DocumentService)
-  private readonly _documentService: DocumentService;
   @Inject(EmailReferenceService)
   private readonly _emailReferenceService: EmailReferenceService;
   @Inject(ComplaintService)
@@ -38,7 +35,7 @@ export class EmailService {
   private readonly _girTypeCodeService: GirTypeCodeService;
   private readonly logger = new Logger(EmailService.name);
 
-  sendReferralEmail = async (createComplaintReferralDto, token, user) => {
+  sendReferralEmail = async (createComplaintReferralDto, user, exportContentBuffer) => {
     try {
       const {
         complaint_identifier: id,
@@ -51,10 +48,8 @@ export class EmailService {
 
       const complaint = await this._complaintService.findById(id, type);
 
-      // Get the complaint export to be attached to the email
-      const complaintExport = await this._documentService.exportComplaint(id, type, fileName, tz, attachments, token);
       // Convert the PDF data to base64
-      const base64Content = Buffer.from(complaintExport.data).toString("base64");
+      const base64Content = Buffer.from(exportContentBuffer.data).toString("base64");
       const emailAttachments = [
         {
           content: base64Content,

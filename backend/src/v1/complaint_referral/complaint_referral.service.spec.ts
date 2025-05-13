@@ -235,6 +235,10 @@ describe("ComplaintReferralService", () => {
           provide: FeatureFlagService,
           useValue: {},
         },
+        {
+          provide: DocumentService,
+          useValue: {},
+        },
       ],
     }).compile();
 
