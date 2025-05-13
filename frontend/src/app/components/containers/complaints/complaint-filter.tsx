@@ -28,7 +28,7 @@ import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
 import { FilterDate } from "@components/common/filter-date";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
-import { Park } from "@/app/components/common/park";
+import { ParkSelect } from "@/app/components/common/park-select";
 import { OUTCOMES_REQUIRING_ACTIONED_BY } from "@/app/constants/outcomes-requiring-actioned-by";
 import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
 
@@ -549,7 +549,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               <div id="comp-filter-park-id">
                 <label htmlFor="park-select-id">Park</label>
                 <div className="filter-select-padding">
-                  <Park
+                  <ParkSelect
                     id={`comp-details-park-${park}`}
                     initialParkGuid={park}
                     isInEdit={true}

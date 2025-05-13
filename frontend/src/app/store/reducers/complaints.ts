@@ -12,10 +12,8 @@ import ComplaintType from "@constants/complaint-types";
 import { ZoneAtAGlanceStats } from "@apptypes/complaints/zone-at-a-glance-stats";
 import { ComplaintFilters } from "@apptypes/complaints/complaint-filters";
 import { generateApiParameters, get, patch, post } from "@common/api";
-import { ComplaintQueryParams } from "@apptypes/api-params/complaint-query-params";
 import { Feature } from "@apptypes/maps/bcGeocoderType";
 import { ToggleSuccess, ToggleError } from "@common/toast";
-import { ComplaintSearchResults } from "@apptypes/api-params/complaint-results";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 
 import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
@@ -270,7 +268,6 @@ export const complaintSlice = createSlice({
     setWebEOCChangeCount: (state, action: PayloadAction<number>) => {
       state.webeocChangeCount = action.payload;
     },
-
     setComplaintStatus: (state, action) => {
       if (state.complaint) {
         let currentComplaint: ComplaintDto = state.complaint as ComplaintDto;
@@ -387,7 +384,8 @@ export const getComplaints =
         query: query,
       });
 
-      const { complaints, totalCount } = await get<ComplaintSearchResults, ComplaintQueryParams>(dispatch, parameters);
+      const result = await get<{ complaints: any[]; totalCount: number }>(dispatch, parameters);
+      const { complaints, totalCount } = result;
 
       dispatch(setComplaints({ type: complaintType, data: complaints }));
       dispatch(setTotalCount(totalCount));
@@ -958,9 +956,10 @@ export const selectComplaintDetails = createSelector(
         location: { coordinates },
         organization: { area: areaCode, region, zone, officeLocation },
         ownedBy,
+        parkGuid,
       } = complaint as ComplaintDto;
 
-      result = { ...result, details, location, locationDescription, incidentDateTime, coordinates, ownedBy };
+      result = { ...result, details, location, locationDescription, incidentDateTime, coordinates, ownedBy, parkGuid };
 
       if (complaintType === "HWCR") {
         const { attractants } = complaint as WildlifeComplaintDto;
@@ -1016,6 +1015,7 @@ export const selectComplaintHeader =
         "nature-of-complaint": natureOfComplaints,
         "gir-type": girTypeCodes,
       },
+      parks: { parkCache },
     } = state;
 
     const selectSharedHeader = () => {
@@ -1029,6 +1029,7 @@ export const selectComplaintHeader =
         officerAssigned: "",
         personGuid: "",
         complaintAgency: "",
+        parkAreaGuids: [],
       };
 
       let officerAssigned = "Not Assigned";
@@ -1043,9 +1044,12 @@ export const selectComplaintHeader =
           delegates,
           ownedBy: complaintAgency,
           organization: { zone },
+          parkGuid,
         } = complaint as ComplaintDto;
 
         const status = getStatusByStatusCode(statusCode, statusCodes);
+        const park = parkGuid ? parkCache[parkGuid] : undefined;
+        const parkAreaGuids = park?.parkAreas?.map((area) => area.parkAreaGuid) ?? [];
 
         result = {
           loggedDate: loggedDate.toString(),
@@ -1057,6 +1061,7 @@ export const selectComplaintHeader =
           officerAssigned,
           personGuid,
           complaintAgency,
+          parkAreaGuids,
         };
 
         if (delegates && from(delegates).any(({ isActive, type }) => type === "ASSIGNEE" && isActive)) {
@@ -1074,7 +1079,6 @@ export const selectComplaintHeader =
 
       return result;
     };
-
     let result = selectSharedHeader();
 
     if (complaint) {

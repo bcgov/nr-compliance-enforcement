@@ -13,6 +13,7 @@ type Props = {
   zone: string;
   agency_code: string;
   complaint_status: string;
+  park_area_guids: string[];
 };
 
 export const ComplaintActionItems: FC<Props> = ({
@@ -21,6 +22,7 @@ export const ComplaintActionItems: FC<Props> = ({
   zone,
   agency_code,
   complaint_status,
+  park_area_guids,
 }) => {
   const dispatch = useAppDispatch();
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
@@ -38,6 +40,7 @@ export const ComplaintActionItems: FC<Props> = ({
           complaint_type: complaint_type,
           zone: zone,
           agency_code: agency_code,
+          park_area_guids: park_area_guids,
         },
       }),
     );
