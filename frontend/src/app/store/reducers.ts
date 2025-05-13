@@ -9,6 +9,7 @@ import offices from "./reducers/office";
 import codeTables from "./reducers/code-table";
 import attachments from "./reducers/attachments";
 import cases from "./reducers/cases";
+import parks from "./reducers/park";
 
 const appPersistConfig = {
   key: "app",
@@ -30,6 +31,12 @@ const complaintsPersistConfig = {
   whitelist: ["complaintSearchParameters"],
 };
 
+const parksPersistConfig = {
+  key: "park",
+  storage: storage,
+  whitelist: ["parkCache"],
+};
+
 export const rootReducer = combineReducers({
   app: persistReducer(appPersistConfig, app),
   officers,
@@ -38,4 +45,5 @@ export const rootReducer = combineReducers({
   codeTables,
   attachments,
   cases,
+  parks: persistReducer(parksPersistConfig, parks),
 });
