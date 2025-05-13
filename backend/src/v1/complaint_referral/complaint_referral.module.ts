@@ -8,7 +8,7 @@ import { PersonComplaintXrefModule } from "../person_complaint_xref/person_compl
 import { ComplaintModule } from "../complaint/complaint.module";
 import { EmailModule } from "../../v1/email/email.module";
 import { FeatureFlagModule } from "../../v1/feature_flag/feature_flag.module";
-import { DocumentModule } from "src/v1/document/document.module";
+import { DocumentModule } from "../../v1/document/document.module";
 
 @Module({
   imports: [

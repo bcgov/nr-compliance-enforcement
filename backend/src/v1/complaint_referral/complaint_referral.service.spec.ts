@@ -56,7 +56,7 @@ import { CssService } from "../../external_api/css/css.service";
 import { CacheModule } from "@nestjs/cache-manager";
 import { EmailService } from "../../v1/email/email.service";
 import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
-import { DocumentService } from "src/v1/document/document.service";
+import { DocumentService } from "../../v1/document/document.service";
 
 describe("ComplaintReferralService", () => {
   let service: ComplaintReferralService;
