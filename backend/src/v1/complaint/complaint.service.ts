@@ -2117,6 +2117,7 @@ export class ComplaintService {
     };
 
     const _applyPreventionData = async (preventions) => {
+      let preventionCount = 1;
       for (const prevention of preventions) {
         //-- Remove all inactive assessment and prevention actions
         let filteredActions = prevention.actions.filter((item) => item.activeIndicator === true);
@@ -2134,6 +2135,9 @@ export class ComplaintService {
 
           //Apply timezone and format date
           prevention.preventionDate = _applyTimezone(prevention.preventionDate, tz, "date");
+          //give it a nice friendly number as nothing comes back from the GQL
+          prevention.order = preventionCount;
+          preventionCount++;
         }
       }
     };
@@ -2391,6 +2395,7 @@ export class ComplaintService {
         });
       }
 
+      this.logger.debug("Prevention data", prevention);
       if (prevention) {
         hasOutcome = true;
         await _applyPreventionData(prevention);

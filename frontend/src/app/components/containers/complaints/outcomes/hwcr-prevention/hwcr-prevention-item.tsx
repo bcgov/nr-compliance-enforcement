@@ -1,9 +1,10 @@
 import { FC } from "react";
 import { Prevention } from "@/app/types/outcomes/prevention";
-import { Button, Card } from "react-bootstrap";
+import { Badge, Button, Card } from "react-bootstrap";
 import { formatDate } from "@common/methods";
 import { selectComplaintViewMode } from "@store/reducers/complaints";
 import { useAppSelector } from "@/app/hooks/hooks";
+import UserService from "@/app/service/user-service";
 
 type Props = {
   prevention: Prevention;
@@ -13,6 +14,7 @@ type Props = {
 
 export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDelete }) => {
   const isReadOnly = useAppSelector(selectComplaintViewMode);
+  const isSameAgency = UserService.getUserAgency() === prevention.agencyCode;
   return (
     <Card border="default">
       <Card.Body>
@@ -37,7 +39,8 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
               <div id="prev-educ-outcome-officer-div">
                 <dt>Officer</dt>
                 <dd>
-                  <span id="comp-review-required-officer">{prevention.officer?.key ?? ""}</span>
+                  <span id="comp-review-required-officer">{prevention.officer?.key ?? ""}</span>{" "}
+                  <Badge className="comp-status-badge-closed">{prevention.agencyCode}</Badge>
                 </dd>
               </div>
               <div id="prev-educ-outcome-date-div">
@@ -52,7 +55,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
               size="sm"
               id="preventions-edit-button"
               onClick={() => handleEdit()}
-              disabled={isReadOnly}
+              disabled={isReadOnly || !isSameAgency}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
@@ -62,7 +65,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
               variant="outline-primary"
               id="preventions-delete-button"
               onClick={() => handleDelete()}
-              disabled={isReadOnly}
+              disabled={isReadOnly || !isSameAgency}
             >
               <i className="bi bi-trash3"></i>
               <span>Delete</span>

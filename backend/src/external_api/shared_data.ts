@@ -63,6 +63,7 @@ export const caseFileQueryFields: string = `
   }
   prevention {
     id
+    agencyCode
     actions {
       actionId
       actor
