@@ -18,4 +18,5 @@ export interface ComplaintHeader {
   lastName?: string;
   girType?: string;
   girTypeCode?: string;
+  parkAreaGuids?: string[];
 }

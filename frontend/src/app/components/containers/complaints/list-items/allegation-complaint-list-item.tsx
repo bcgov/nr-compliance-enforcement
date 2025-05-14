@@ -14,7 +14,7 @@ import getOfficerAssigned from "@common/get-officer-assigned";
 import { getUserAgency } from "@/app/service/user-service";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
-import { Park } from "@/app/components/common/park";
+import { usePark } from "@/app/hooks/usePark";
 
 type Props = {
   type: string;
@@ -46,6 +46,8 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
 
   const userAgency = getUserAgency();
   const derivedAllegationStatus = ownedBy !== userAgency ? "Referred" : status;
+  const park = usePark(parkGuid);
+  const parkAreaGuids = park?.parkAreas?.map((area) => area.parkAreaGuid) ?? [];
 
   const getStatusDescription = (input: string): string => {
     if (input === "Referred") {
@@ -147,11 +149,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
             className={`${isExpandedClass}`}
             onClick={toggleExpand}
           >
-            <Park
-              id={`comp-details-park-${parkGuid}`}
-              initialParkGuid={parkGuid}
-              isInEdit={false}
-            />
+            {park?.name}
           </td>
         </FeatureFlag>
         <FeatureFlag feature={FEATURE_TYPES.LOCATION_COLUMN}>
@@ -186,6 +184,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
             zone={zone ?? ""}
             agency_code={ownedBy}
             complaint_status={derivedAllegationStatus}
+            park_area_guids={parkAreaGuids}
           />
         </td>
       </tr>
