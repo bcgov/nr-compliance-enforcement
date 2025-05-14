@@ -1973,6 +1973,13 @@ SET agency_code = 'EPO'
 WHERE office_guid is null
 AND agency_code is null;
 
+---------------------
+-- Overwrite all email addresses in dev and test to avoid accidents
+---------------------
+UPDATE public.email_reference
+SET email_address = 'ceds@gov.bc.ca'
+WHERE true;
+
 
 ---------------------
 -- Enable referrals in dev/test for all users
@@ -1989,3 +1996,11 @@ WHERE feature_code = 'COMPREF';
 UPDATE public.feature_agency_xref
 SET active_ind = 'Y'
 WHERE feature_code = 'COMPCOLLAB';
+
+---------------------
+-- Disable referral emails in dev/test for all users
+---------------------
+
+UPDATE public.feature_agency_xref
+SET active_ind = 'N'
+WHERE feature_code = 'REFEMAIL';
