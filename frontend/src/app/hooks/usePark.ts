@@ -8,7 +8,7 @@ export const usePark = (parkGuid?: string): Park | undefined => {
   const park = useAppSelector(selectParkByGuid(parkGuid));
 
   useEffect(() => {
-    if (parkGuid && !park) {
+    if (parkGuid && (!park || park.isFallback)) {
       dispatch(getParkData(parkGuid));
     }
   }, [dispatch, parkGuid, park]);
