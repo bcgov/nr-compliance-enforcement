@@ -54,6 +54,9 @@ import { ConfigurationService } from "../configuration/configuration.service";
 import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
 import { CssService } from "../../external_api/css/css.service";
 import { CacheModule } from "@nestjs/cache-manager";
+import { EmailService } from "../../v1/email/email.service";
+import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
+import { DocumentService } from "../../v1/document/document.service";
 
 describe("ComplaintReferralService", () => {
   let service: ComplaintReferralService;
@@ -224,6 +227,18 @@ describe("ComplaintReferralService", () => {
           useValue: {
             user: { idir_username: "TEST" },
           },
+        },
+        {
+          provide: EmailService,
+          useValue: {},
+        },
+        {
+          provide: FeatureFlagService,
+          useValue: {},
+        },
+        {
+          provide: DocumentService,
+          useValue: {},
         },
       ],
     }).compile();
