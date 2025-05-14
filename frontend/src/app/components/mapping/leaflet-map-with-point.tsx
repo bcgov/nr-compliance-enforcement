@@ -85,7 +85,6 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
   // recenter the map when the center value is updated
   const Centerer = () => {
     const map = useMap();
-
     useEffect(() => {
       if (areCoordinatesValid(mapCenterPosition)) {
         if (mapElements.some((item) => item.objectType === MapObjectType.Equipment)) {
