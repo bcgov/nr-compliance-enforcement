@@ -7,8 +7,7 @@ import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
 import { escape } from "escape-html";
-import { ExportComplaintParameters } from "src/types/models/complaints/export-complaint-parameters";
-import { Attachment, AttachmentType } from "../../types/models/general/attachment";
+import { ExportComplaintParameters } from "../../types/models/complaints/export-complaint-parameters";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("document")
@@ -22,33 +21,9 @@ export class DocumentController {
   @Roles(coreRoles)
   async exportComplaint(@Body() model: ExportComplaintParameters, @Token() token, @Res() res: Response): Promise<void> {
     const id: string = model?.id ?? "unknown";
-
-    const complaintsAttachments = model?.attachments?.complaintsAttachments ?? [];
-    const outcomeAttachments = model?.attachments?.outcomeAttachments ?? [];
-
-    const attachments: Attachment[] = [
-      ...complaintsAttachments.map((item, index) => {
-        return {
-          type: AttachmentType.COMPLAINT_ATTACHMENT,
-          user: item.createdBy,
-          name: decodeURIComponent(item.name),
-          date: item.createdAt,
-          sequenceId: index,
-        } as Attachment;
-      }),
-      ...outcomeAttachments.map((item, index) => {
-        return {
-          type: AttachmentType.OUTCOME_ATTACHMENT,
-          date: item.createdAt,
-          name: decodeURIComponent(item.name),
-          user: item.createdBy,
-          sequenceId: index,
-        } as Attachment;
-      }),
-    ];
-
+    const { type, fileName, tz, attachments } = model;
     try {
-      const response = await this.service.exportComplaint(id, model.type, model.fileName, model.tz, token, attachments);
+      const response = await this.service.exportComplaint(id, type, fileName, tz, attachments, token);
 
       if (!response || !response.data) {
         throw Error(`exception: unable to export document for complaint: ${id}`);

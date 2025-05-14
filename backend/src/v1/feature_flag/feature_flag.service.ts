@@ -66,6 +66,22 @@ export class FeatureFlagService {
     return result;
   }
 
+  async checkActiveByAgencyAndFeatureCode(agencyCode: any, featureCode: string): Promise<any> {
+    const data = await this.featureAgencyXrefRepository
+      .createQueryBuilder("featureAgencyXref")
+      .leftJoinAndSelect(
+        "featureAgencyXref.feature_code",
+        "featureCode",
+        "featureAgencyXref.feature_code = featureCode.feature_code",
+      )
+      .where("featureAgencyXref.agency_code = :agency_code", { agency_code: agencyCode })
+      .andWhere("featureAgencyXref.feature_code = :feature_code", { feature_code: featureCode })
+      .getOne();
+
+    const response = data.active_ind ?? false;
+    return response;
+  }
+
   async update(id: UUID, updateFeatureAgencyXrefDto: UpdateFeatureAgencyXrefDto) {
     await this.featureAgencyXrefRepository.update({ feature_agency_xref_guid: id }, updateFeatureAgencyXrefDto);
     return this.findOne(id);

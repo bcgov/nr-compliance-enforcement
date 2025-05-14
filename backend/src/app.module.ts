@@ -57,6 +57,8 @@ import { LinkedComplaintXrefModule } from "./v1/linked_complaint_xref/linked_com
 import { ViolationAgencyXrefModule } from "./v1/violation_agency_xref/violation_agency_xref.module";
 import { ComplaintReferralModule } from "./v1/complaint_referral/complaint_referral.module";
 import { SharedDataModule } from "./v1/shared_data/shared_data.module";
+import { ChesModule } from "./external_api/ches/ches.module";
+import { EmailReferenceModule } from "./v1/email_reference/email_reference.module";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -136,6 +138,8 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     ViolationAgencyXrefModule,
     ComplaintReferralModule,
     SharedDataModule,
+    ChesModule,
+    EmailReferenceModule,
   ],
   controllers: [AppController],
   providers: [AppService, ComplaintSequenceResetScheduler],
