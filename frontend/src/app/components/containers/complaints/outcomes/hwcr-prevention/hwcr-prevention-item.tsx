@@ -15,6 +15,7 @@ type Props = {
 export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDelete }) => {
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const isSameAgency = UserService.getUserAgency() === prevention.agencyCode;
+  const canEdit = isSameAgency && !isReadOnly;
   return (
     <Card border="default">
       <Card.Body>
@@ -55,7 +56,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
               size="sm"
               id="prevention-edit-button"
               onClick={() => handleEdit()}
-              disabled={isReadOnly ?? !isSameAgency}
+              disabled={canEdit}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
@@ -65,7 +66,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
               variant="outline-primary"
               id="prevention-delete-button"
               onClick={() => handleDelete()}
-              disabled={isReadOnly ?? !isSameAgency}
+              disabled={canEdit}
             >
               <i className="bi bi-trash3"></i>
               <span>Delete</span>
