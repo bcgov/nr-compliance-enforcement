@@ -11,7 +11,7 @@ import {
   setCaseFile,
   setCaseId,
   setIsReviewedRequired,
-  setPrevention,
+  setPreventions,
   setReviewComplete,
 } from "./cases";
 import { Assessment } from "@apptypes/outcomes/assessment";
@@ -53,6 +53,8 @@ import { getUserAgency } from "@service/user-service";
 import { DeleteAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/delete-authorization-outcome-input";
 import { Note } from "@/app/types/outcomes/note";
 import { AssessmentDto } from "@/app/types/app/case-files/assessment/assessment";
+import { PreventionDto } from "@/app/types/app/case-files/prevention/prevention";
+import { DeletePreventionInput } from "@/app/types/app/case-files/prevention/delete-prevention-input";
 
 //-- general thunks
 export const findCase =
@@ -77,13 +79,13 @@ export const getCaseFile =
       const assessments = await parseAssessmentResponse(response, officers);
       dispatch(setAssessments(assessments));
       const updatedPreventionData = await parsePreventionResponse(response, officers);
-      dispatch(setPrevention({ prevention: updatedPreventionData }));
+      dispatch(setPreventions(updatedPreventionData));
       dispatch(setIsReviewedRequired(response.isReviewRequired));
       dispatch(setReviewComplete(response.reviewComplete));
     } else {
       // If there is no case file clear the assessment and prevention sections
       dispatch(setAssessments([]));
-      dispatch(setPrevention({}));
+      dispatch(setPreventions([]));
     }
   };
 
@@ -386,7 +388,7 @@ export const getPrevention =
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
     await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
       const updatedPreventionData = await parsePreventionResponse(res, officers);
-      dispatch(setPrevention({ prevention: updatedPreventionData }));
+      dispatch(setPreventions(updatedPreventionData));
     });
   };
 
@@ -397,15 +399,15 @@ export const upsertPrevention =
       return;
     }
     const caseIdentifier = await dispatch(findCase(complaintIdentifier));
-    if (!caseIdentifier) {
-      dispatch(addPrevention(complaintIdentifier, agencyCode, prevention));
+    if (!caseIdentifier || !prevention.id) {
+      dispatch(addPrevention(complaintIdentifier, agencyCode, prevention, caseIdentifier));
     } else {
-      dispatch(updatePrevention(complaintIdentifier, agencyCode, caseIdentifier, prevention));
+      dispatch(updatePrevention(complaintIdentifier, agencyCode, prevention, caseIdentifier));
     }
   };
 
 const addPrevention =
-  (complaintIdentifier: string, agencyCode: string, prevention: Prevention): AppThunk =>
+  (complaintIdentifier: string, agencyCode: string, prevention: Prevention, caseIdentifier?: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       codeTables: { "prevention-type": preventionType },
@@ -414,38 +416,31 @@ const addPrevention =
       cases: { caseId },
     } = getState();
     let createPreventionInput = {
-      createPreventionInput: {
-        leadIdentifier: complaintIdentifier,
-        createUserId: profile.idir_username,
-        agencyCode: agencyCode,
-        caseCode: "HWCR",
-        preventionDetails: {
-          actions: prevention.prevention_type.map((item) => {
-            return {
-              date: prevention.date,
-              actor: prevention.officer?.value,
-              activeIndicator: true,
-              actionCode: item.value,
-            };
-          }),
-        },
+      leadIdentifier: complaintIdentifier,
+      caseIdentifier: caseIdentifier,
+      createUserId: profile.idir_username,
+      agencyCode: agencyCode,
+      caseCode: "HWCR",
+      prevention: {
+        actions: prevention.prevention_type.map((item) => {
+          return {
+            date: prevention.date,
+            actor: prevention.officer?.value,
+            activeIndicator: true,
+            actionCode: item.value,
+          };
+        }),
       },
     } as CreatePreventionInput;
-
-    let {
-      createPreventionInput: {
-        preventionDetails: { actions },
-      },
-    } = createPreventionInput;
     for (let item of preventionType.filter((record) => record.isActive && record.agencyCode === agencyCode)) {
       if (
-        !actions
+        !createPreventionInput.prevention.actions
           .map((action) => {
             return action.actionCode;
           })
           .includes(item.preventionType)
       ) {
-        actions.push({
+        createPreventionInput.prevention.actions.push({
           date: prevention.date,
           actor: prevention.officer?.value,
           activeIndicator: false,
@@ -453,68 +448,59 @@ const addPrevention =
         } as PreventionActionDto);
       }
     }
-
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createPrevention`, createPreventionInput);
     await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
       const updatedPreventionData = await parsePreventionResponse(res, officers);
       if (res) {
-        dispatch(setPrevention({ prevention: updatedPreventionData }));
+        dispatch(setPreventions(updatedPreventionData));
         if (!caseId) dispatch(setCaseId(res.caseIdentifier));
         ToggleSuccess(`Prevention and education has been saved`);
       } else {
-        await dispatch(clearPrevention());
+        dispatch(clearPrevention());
         ToggleError(`Unable to create prevention and education`);
       }
     });
   };
 
 const updatePrevention =
-  (complaintIdentifier: string, agencyCode: string, caseIdentifier: string, prevention: Prevention): AppThunk =>
+  (complaintIdentifier: string, agencyCode: string, prevention: Prevention, caseIdentifier: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       codeTables: { "prevention-type": preventionType },
       officers: { officers },
       app: { profile },
     } = getState();
-
     let updatePreventionInput = {
-      updatePreventionInput: {
-        leadIdentifier: complaintIdentifier,
-        caseIdentifier: caseIdentifier,
-        updateUserId: profile.idir_username,
-        agencyCode: agencyCode,
-        caseCode: "HWCR",
-        preventionDetails: {
-          actions: prevention.prevention_type.map((item) => {
-            return {
-              actor: prevention.officer?.value,
-              date: prevention.date,
-              actionCode: item.value,
-              activeIndicator: true,
-            };
-          }),
-        },
+      leadIdentifier: complaintIdentifier,
+      caseIdentifier: caseIdentifier,
+      updateUserId: profile.idir_username,
+      agencyCode: agencyCode,
+      caseCode: "HWCR",
+      prevention: {
+        id: prevention.id,
+        actions: prevention.prevention_type.map((item) => {
+          return {
+            date: prevention.date,
+            actor: prevention.officer?.value,
+            activeIndicator: true,
+            actionCode: item.value,
+          };
+        }),
       },
     } as UpdatePreventionInput;
-    let {
-      updatePreventionInput: {
-        preventionDetails: { actions },
-      },
-    } = updatePreventionInput;
-
     for (let item of preventionType.filter((record) => record.isActive && record.agencyCode === agencyCode)) {
       if (
-        !actions
+        !updatePreventionInput.prevention.actions
           .map((action) => {
             return action.actionCode;
           })
           .includes(item.preventionType)
       ) {
-        actions.push({
-          actor: prevention.officer?.value,
+        updatePreventionInput.prevention.actions.push({
           date: prevention.date,
-          actionCode: item.preventionType,
+          actor: prevention.officer?.value,
           activeIndicator: false,
+          actionCode: item.preventionType,
         } as PreventionActionDto);
       }
     }
@@ -522,11 +508,36 @@ const updatePrevention =
     await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
       const updatedPreventionData = await parsePreventionResponse(res, officers);
       if (res) {
-        dispatch(setPrevention({ prevention: updatedPreventionData }));
+        dispatch(setPreventions(updatedPreventionData));
         ToggleSuccess(`Prevention and education has been updated`);
       } else {
-        await dispatch(getPrevention(complaintIdentifier));
+        dispatch(getPrevention(complaintIdentifier));
         ToggleError(`Unable to update prevention and education`);
+      }
+    });
+  };
+
+export const deletePrevention =
+  (complaintIdentifier: string, id: string): AppThunk =>
+  async (dispatch, getState) => {
+    const {
+      officers: { officers },
+      app: { profile },
+    } = getState();
+    const deletePreventionInput = {
+      id: id,
+      leadIdentifier: complaintIdentifier,
+      updateUserId: profile.idir_username,
+    } as DeletePreventionInput;
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/prevention`, deletePreventionInput);
+    await deleteMethod<CaseFileDto>(dispatch, parameters).then(async (res) => {
+      const updatedPreventionData = await parsePreventionResponse(res, officers);
+      if (res) {
+        dispatch(setPreventions(updatedPreventionData));
+        ToggleSuccess(`Prevention and education actions have been deleted`);
+      } else {
+        dispatch(getPrevention(complaintIdentifier));
+        ToggleError(`Unable to delete prevention and education actions`);
       }
     });
   };
@@ -534,9 +545,9 @@ const updatePrevention =
 const parsePreventionResponse = async (
   res: CaseFileDto,
   officers: Officer[],
-): Promise<Prevention | undefined | null> => {
-  if (res?.preventionDetails?.actions?.length) {
-    const { actor, actionDate } = res.preventionDetails.actions.map((action) => {
+): Promise<Prevention[] | undefined | null> =>
+  res?.prevention?.map((prevention: PreventionDto) => {
+    const { actor, actionDate } = prevention.actions.map((action) => {
       return { actor: action.actor, actionDate: action.date };
     })[0];
 
@@ -553,9 +564,11 @@ const parsePreventionResponse = async (
       officerFullName = actor;
     }
     const updatedPreventionData = {
+      id: prevention.id,
+      agencyCode: prevention.agencyCode,
       date: actionDate,
       officer: { key: officerFullName, value: actor },
-      prevention_type: res.preventionDetails.actions
+      prevention_type: prevention.actions
         .filter((action) => {
           return action.activeIndicator;
         })
@@ -564,10 +577,7 @@ const parsePreventionResponse = async (
         }),
     } as Prevention;
     return updatedPreventionData;
-  } else {
-    return null;
-  }
-};
+  }) || [];
 
 //-- note thunks
 export const upsertNote =

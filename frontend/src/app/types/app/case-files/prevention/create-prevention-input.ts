@@ -1,4 +1,12 @@
-import { CaseFileDto } from "@apptypes/app/case-files/case-file";
+import { UUID } from "crypto";
+import { PreventionDto } from "./prevention";
 export interface CreatePreventionInput {
-  createPreventionInput: CaseFileDto;
+  leadIdentifier: string;
+  caseIdentifier?: string;
+  agencyCode: string;
+  caseCode: string;
+  actor: UUID;
+  createUserId: string;
+  updateUserId: string;
+  prevention: PreventionDto;
 }

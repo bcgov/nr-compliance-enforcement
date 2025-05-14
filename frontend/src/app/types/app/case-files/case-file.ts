@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 import { AssessmentDto } from "./assessment/assessment";
 import { ReviewCompleteAction } from "./review-complete-action";
-import { PreventionDetailsDto } from "./prevention/prevention-details";
+import { PreventionDto } from "./prevention/prevention";
 import { EquipmentDetailsDto } from "./equipment-details";
 import { Subject } from "@apptypes/state/cases-state";
 import { PermitSite } from "./ceeb/authorization-outcome/permit-site";
@@ -14,7 +14,7 @@ export interface CaseFileDto {
   agencyCode: string;
   caseCode: string;
   assessment: AssessmentDto[];
-  preventionDetails: PreventionDetailsDto;
+  prevention: PreventionDto[];
   updateUserId: string;
   isReviewRequired: boolean;
   reviewComplete?: ReviewCompleteAction;

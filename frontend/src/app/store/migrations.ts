@@ -30,7 +30,7 @@ import { addHwcrOutcomeActionedByCodes } from "./migrations/migration-30";
 import { AddParkAreaCode } from "@/app/store/migrations/migration-31";
 import { MultipleAssessments } from "@/app/store/migrations/migration-32";
 import { AddParkCache } from "@/app/store/migrations/migration-33";
-
+import { MultiplePreventions } from "@/app/store/migrations/migration-34";
 const BaseMigration = {
   0: (state: any) => {
     return {
@@ -74,6 +74,7 @@ migration = {
   ...AddParkAreaCode,
   ...MultipleAssessments,
   ...AddParkCache,
+  ...MultiplePreventions,
 };
 
 export default migration;

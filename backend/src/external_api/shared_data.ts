@@ -61,7 +61,9 @@ export const caseFileQueryFields: string = `
     actionId
     activeIndicator
   }
-  preventionDetails {
+  prevention {
+    id
+    agencyCode
     actions {
       actionId
       actor

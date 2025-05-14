@@ -7,7 +7,7 @@ import { selectComplaint, refreshComplaints } from "@store/reducers/complaints";
 import { setIsInEdit } from "@store/reducers/cases";
 import {
   selectAssessments,
-  selectPrevention,
+  selectPreventions,
   selectEquipment,
   selectSubject,
   selectNotes,
@@ -87,7 +87,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   const complaintData = useAppSelector(selectComplaint);
   const assessmentsData = useAppSelector(selectAssessments);
   const equipmentData = useAppSelector(selectEquipment);
-  const preventionData = useAppSelector(selectPrevention);
+  const preventionData = useAppSelector(selectPreventions);
   const subjectData = useAppSelector(selectSubject);
   const notesData = useAppSelector(selectNotes);
   const isReviewRequired = useAppSelector(selectIsReviewRequired);
@@ -98,7 +98,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   const hasOutcomeData =
     assessmentsData?.length > 0 ||
     equipmentData?.length > 0 ||
-    preventionData?.date !== undefined ||
+    preventionData?.length > 0 ||
     subjectData?.length > 0 ||
     notesData?.length > 0 ||
     isReviewRequired ||

@@ -491,6 +491,7 @@
 // OUTCOME REPORT - GENERIC
 .comp-outcome-item-header-actions {
   display: flex;
+  min-width: fit-content;
   gap: 8px;
 }
 
