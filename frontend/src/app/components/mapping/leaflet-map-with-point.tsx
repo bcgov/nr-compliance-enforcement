@@ -88,8 +88,12 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
     useEffect(() => {
       if (areCoordinatesValid(mapCenterPosition)) {
         if (mapElements.some((item) => item.objectType === MapObjectType.Equipment)) {
-          const bounds: Leaflet.LatLngBoundsExpression = getMapBounds();
-          map.fitBounds(bounds, { padding: [50, 50] });
+          const bounds: Leaflet.LatLngBoundsExpression | null = getMapBounds();
+          if (bounds) {
+            map.fitBounds(bounds, { padding: [50, 50] });
+          } else {
+            map.setView(mapCenterPosition);
+          }
         } else {
           map.setView(mapCenterPosition);
         }
@@ -98,14 +102,17 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
     return null;
   };
 
-  const getMapBounds = (): Leaflet.LatLngBoundsExpression => {
+  const getMapBounds = (): Leaflet.LatLngBoundsExpression | null => {
     const validMapElements = mapElements.filter((item) => ![item.location.lat, item.location.lng].includes(0));
     const lats = validMapElements.map((item) => item.location.lat);
     const lngs = validMapElements.map((item) => item.location.lng);
-    const bounds: Leaflet.LatLngBoundsExpression = [
-      [Math.min(...lats), Math.min(...lngs)],
-      [Math.max(...lats), Math.max(...lngs)],
-    ];
+    let bounds: Leaflet.LatLngBoundsExpression | null = null;
+    if (lats.length > 0 && lngs.length > 0) {
+      bounds = [
+        [Math.min(...lats), Math.min(...lngs)],
+        [Math.max(...lats), Math.max(...lngs)],
+      ];
+    }
     return bounds;
   };
 
