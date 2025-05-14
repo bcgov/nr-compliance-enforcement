@@ -56,7 +56,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
               size="sm"
               id="prevention-edit-button"
               onClick={() => handleEdit()}
-              disabled={canEdit}
+              disabled={!canEdit}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
@@ -66,7 +66,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
               variant="outline-primary"
               id="prevention-delete-button"
               onClick={() => handleDelete()}
-              disabled={canEdit}
+              disabled={!canEdit}
             >
               <i className="bi bi-trash3"></i>
               <span>Delete</span>
