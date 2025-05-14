@@ -55,7 +55,12 @@ export const getParkData =
           parkGuid: parkId as UUID,
           isFallback: true,
         };
-        dispatch(setPark(fallback));
+
+        if (!existingPark) {
+          // Only set fallback if needed to avoid infinite render
+          dispatch(setPark(fallback));
+        }
+
         return fallback;
       }
     } catch (error) {

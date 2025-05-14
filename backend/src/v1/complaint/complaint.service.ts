@@ -2107,7 +2107,7 @@ export class ComplaintService {
 
         const officer = await this._officerService.findByAuthUserGuid(assessment.assessmentActor);
         const { first_name, last_name } = officer.person_guid;
-        const agency_code = officer.agency_code.short_description;
+        const agency_code = officer.agency_code?.short_description;
 
         assessment.assessmentActor = `${last_name}, ${first_name} (${agency_code})`;
 

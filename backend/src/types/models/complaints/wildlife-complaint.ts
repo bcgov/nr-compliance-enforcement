@@ -1,9 +1,8 @@
 import { UUID } from "crypto";
 import { ComplaintDto } from "./complaint";
 import { AttractantXrefDto } from "./attractant-ref";
-import { BaseComplaint } from "nrs-ce-common-types";
 
-export interface WildlifeComplaintDto extends ComplaintDto, BaseComplaint {
+export interface WildlifeComplaintDto extends ComplaintDto {
   hwcrId: UUID;
   species: string;
   isLargeCarnivore: boolean;
