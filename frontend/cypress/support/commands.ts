@@ -246,8 +246,9 @@ Cypress.Commands.add("selectItemById", (selectId: string, optionText: string) =>
 });
 
 Cypress.Commands.add("selectTypeAheadItemByText", (selectId: string, optionText: string) => {
-  cy.get(`#${selectId}`).find("input").first().click({ force: true });
-  cy.get(`#${selectId}`).find("input").first().clear().type(optionText).type("{downarrow}").type("{enter}");
+  cy.get(`#${selectId}`).find("input").first().as("typeaheadInput");
+  cy.get("@typeaheadInput").clear().type(optionText);
+  cy.get(".dropdown-item").contains(optionText).should("be.visible").click();
 });
 
 Cypress.Commands.add(

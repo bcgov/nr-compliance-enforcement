@@ -6,5 +6,6 @@ import { AgencyCode } from "./entities/agency_code.entity";
 @Module({
   imports: [TypeOrmModule.forFeature([AgencyCode])],
   providers: [AgencyCodeService],
+  exports: [AgencyCodeService],
 })
 export class AgencyCodeModule {}

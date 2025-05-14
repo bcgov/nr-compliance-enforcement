@@ -10,6 +10,10 @@ export class GirTypeCodeService {
     private girTypeCodeRepository: Repository<GirTypeCode>,
   ) {}
 
+  async findOne(code: string): Promise<GirTypeCode> {
+    return this.girTypeCodeRepository.findOneBy({ gir_type_code: code });
+  }
+
   async findAll(): Promise<GirTypeCode[]> {
     return this.girTypeCodeRepository.find();
   }

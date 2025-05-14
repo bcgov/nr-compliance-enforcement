@@ -1,9 +1,13 @@
-export const MultiplePreventions = {
-  32: (state: any) => {
+export const AddParkCache = {
+  33: (state: any) => {
     return {
       ...state,
-      cases: {
-        preventions: [],
+      complaints: {
+        ...state.complaints,
+        complaint: { park: "" },
+      },
+      parks: {
+        park: {},
       },
     };
   },
