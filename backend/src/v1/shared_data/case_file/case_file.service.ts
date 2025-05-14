@@ -29,6 +29,9 @@ import { CreateLinkedComplaintXrefDto } from "../../linked_complaint_xref/dto/cr
 import { CaseManagementError } from "../../../enum/case_management_error.enum";
 import { CreateAssessmentInput } from "src/types/models/case-files/assessment/create-assessment-input";
 import { UpdateAssessmentInput } from "src/types/models/case-files/assessment/update-assessment-input";
+import { CreatePreventionInput } from "src/types/models/case-files/prevention/create-prevention-input";
+import { UpdatePreventionInput } from "src/types/models/case-files/prevention/update-prevention-input";
+import { DeletePreventionInput } from "src/types/models/case-files/prevention/delete-prevention-input";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -335,40 +338,42 @@ export class CaseFileService {
     return caseFileDTO;
   };
 
-  createPrevention = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
+  createPrevention = async (token: string, model: CreatePreventionInput): Promise<CaseFileDto> => {
     const result = await post(token, {
-      query: `mutation CreatePrevention($createPreventionInput: CreatePreventionInput!) {
-        createPrevention(createPreventionInput: $createPreventionInput) 
-        ${caseFileQueryFields}
-      }`,
-      variables: model,
+      query: `mutation CreatePrevention($input: CreatePreventionInput!) {
+          createPrevention(input: $input)
+          ${caseFileQueryFields}
+        }`,
+      variables: { input: model },
     });
-    // The model reaches this function in the shape { "createPreventionInput": {...CaseFlieDTO} } despite that property
-    // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.
-    // For example, leadIdentifier would be found in model.leadIdentifier by the type's definition, however in this
-    // scope it is at model.createPreventionInput.leadIdentifier, which errors due to type violation.
-    // This copies it into a new variable cast to any to allow access to the nested properties.
-    let modelAsAny: any = { ...model };
-    const returnValue = await this.handleAPIResponse(result, modelAsAny.createPreventionInput.leadIdentifier);
+    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     return returnValue?.createPrevention;
   };
 
-  updatePrevention = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
+  updatePrevention = async (token: string, model: UpdatePreventionInput): Promise<CaseFileDto> => {
     const result = await post(token, {
-      query: `mutation UpdatePrevention($updatePreventionInput: UpdatePreventionInput!) {
-        updatePrevention(updatePreventionInput: $updatePreventionInput) 
-        ${caseFileQueryFields}
-      }`,
-      variables: model,
+      query: `mutation UpdatePrevention($input: UpdatePreventionInput!) {
+          updatePrevention(input: $input)
+          ${caseFileQueryFields}
+        }`,
+      variables: { input: model },
     });
-    // The model reaches this function in the shape { "updatePreventionInput": {...CaseFlieDTO} } despite that property
-    // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.
-    // For example, leadIdentifier would be found in model.leadIdentifier by the type's definition, however in this
-    // scope it is at model.updatePreventionInput.leadIdentifier, which errors due to type violation.
-    // This copies it into a new variable cast to any to allow access to the nested properties.
-    let modelAsAny: any = { ...model };
-    const returnValue = await this.handleAPIResponse(result, modelAsAny.updatePreventionInput.leadIdentifier);
+
+    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     return returnValue?.updatePrevention;
+  };
+
+  deletePrevention = async (token: string, model: DeletePreventionInput): Promise<CaseFileDto> => {
+    this.logger.debug(`Deleting prevention with id ${model.id} for leadIdentifier ${model.leadIdentifier}`);
+    const result = await post(token, {
+      query: `mutation DeletePrevention($input: DeletePreventionInput!) {
+          deletePrevention(input: $input)
+          ${caseFileQueryFields}
+        }`,
+      variables: { input: model },
+    });
+    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
+    return returnValue?.deletePrevention;
   };
 
   private readonly handleAPIResponse = async (

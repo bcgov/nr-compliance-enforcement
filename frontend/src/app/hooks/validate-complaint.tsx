@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAppSelector } from "@hooks/hooks";
 import {
   selectAssessments,
-  selectPrevention,
+  selectPreventions,
   selectEquipment,
   selectAnimalOutcomes,
   selectSubject,
@@ -36,7 +36,7 @@ type validationResults = {
 const useValidateComplaint = () => {
   // Selectors
   const assessments = useAppSelector(selectAssessments);
-  const prevention = useAppSelector(selectPrevention);
+  const preventions = useAppSelector(selectPreventions);
   const equipment = useAppSelector(selectEquipment);
   const outcomes = useAppSelector(selectAnimalOutcomes);
   const subject = useAppSelector(selectSubject);
@@ -90,7 +90,7 @@ const useValidateComplaint = () => {
 
       //check Prevention must be filled out if action required is Yes
       const preventionCriteria = assessments.some((assessment) => assessment.action_required === "Yes")
-        ? Object.keys(prevention).length !== 0
+        ? preventions.some((prevention) => Object.keys(prevention).length !== 0)
         : true;
 
       //check Equipment must have removed date, except for Signage and Trail
@@ -203,7 +203,7 @@ const useValidateComplaint = () => {
     equipment,
     isInEdit,
     isReviewRequired,
-    prevention,
+    preventions,
     reviewComplete,
     subject,
     complaintType,

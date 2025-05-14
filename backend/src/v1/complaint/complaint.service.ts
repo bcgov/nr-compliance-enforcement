@@ -2116,24 +2116,25 @@ export class ComplaintService {
       }
     };
 
-    const _applyPreventionData = async (preventionDetails, preventionActions) => {
-      //-- Remove all inactive assessment and prevention actions
-      let filteredActions = preventionActions.filter((item) => item.activeIndicator === true);
-      preventionDetails.actions = filteredActions;
+    const _applyPreventionData = async (preventions) => {
+      for (const prevention of preventions) {
+        //-- Remove all inactive assessment and prevention actions
+        let filteredActions = prevention.actions.filter((item) => item.activeIndicator === true);
+        prevention.actions = filteredActions;
 
-      //-- Convert Officer Guid to Names
-      if (preventionDetails?.actions[0]?.actor) {
-        preventionDetails.preventionActor = preventionActions[0].actor;
-        preventionDetails.preventionDate = preventionActions[0].date;
+        //-- Convert Officer Guid to Names
+        if (prevention?.actions[0]?.actor) {
+          prevention.preventionActor = prevention.actions[0].actor;
+          prevention.preventionDate = prevention.actions[0].date;
 
-        const { first_name, last_name } = (
-          await this._officerService.findByAuthUserGuid(preventionDetails.preventionActor)
-        ).person_guid;
+          const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(prevention.preventionActor))
+            .person_guid;
 
-        preventionDetails.preventionActor = `${last_name}, ${first_name}`;
+          prevention.preventionActor = `${last_name}, ${first_name}`;
 
-        //Apply timezone and format date
-        preventionDetails.preventionDate = _applyTimezone(preventionDetails.preventionDate, tz, "date");
+          //Apply timezone and format date
+          prevention.preventionDate = _applyTimezone(prevention.preventionDate, tz, "date");
+        }
       }
     };
 
@@ -2371,8 +2372,7 @@ export class ComplaintService {
           "UA" + outcomeData.getCaseFileByLeadId.authorization.value;
       }
 
-      const preventionDetails = outcomeData.getCaseFileByLeadId.preventionDetails;
-      const preventionActions = preventionDetails?.actions;
+      const prevention = outcomeData.getCaseFileByLeadId.prevention;
       const equipment = outcomeData.getCaseFileByLeadId.equipment;
       const wildlife = outcomeData.getCaseFileByLeadId.subject;
       const notes = outcomeData.getCaseFileByLeadId.notes;
@@ -2391,9 +2391,9 @@ export class ComplaintService {
         });
       }
 
-      if (preventionDetails) {
+      if (prevention) {
         hasOutcome = true;
-        await _applyPreventionData(preventionDetails, preventionActions);
+        await _applyPreventionData(prevention);
       }
 
       if (equipment) {
