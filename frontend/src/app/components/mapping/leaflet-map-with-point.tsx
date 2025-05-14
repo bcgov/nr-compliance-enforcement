@@ -92,9 +92,7 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
           const bounds: Leaflet.LatLngBoundsExpression = getMapBounds();
           map.fitBounds(bounds, { padding: [50, 50] });
         } else {
-          setTimeout(() => {
-            map.setView(mapCenterPosition);
-          }, 100);
+          map.setView(mapCenterPosition);
         }
       }
     }, [map]);
