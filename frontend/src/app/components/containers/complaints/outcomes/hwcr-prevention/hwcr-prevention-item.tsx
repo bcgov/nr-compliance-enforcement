@@ -53,7 +53,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
             <Button
               variant="outline-primary"
               size="sm"
-              id="preventions-edit-button"
+              id="prevention-edit-button"
               onClick={() => handleEdit()}
               disabled={isReadOnly ?? !isSameAgency}
             >
@@ -63,7 +63,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
             <Button
               size="sm"
               variant="outline-primary"
-              id="preventions-delete-button"
+              id="prevention-delete-button"
               onClick={() => handleDelete()}
               disabled={isReadOnly ?? !isSameAgency}
             >
