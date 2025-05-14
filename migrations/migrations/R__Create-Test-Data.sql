@@ -11370,6 +11370,16 @@ INSERT INTO
     true
   ),
   (
+    'COS.SouthPeaceZone@gov.bc.ca',
+    'COS',
+    'SPCE',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
     'COS.Sunshine.Coast.Zone@gov.bc.ca',
     'COS',
     'SNSHNCST',
