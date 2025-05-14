@@ -29,6 +29,7 @@ staging_metadata_mapping
 action_taken
 allegation_complaint
 attractant_hwcr_xref
+email_reference
 feature_agency_xref
 gir_complaint
 linked_complaint_xref

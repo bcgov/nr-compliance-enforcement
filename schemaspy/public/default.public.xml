@@ -43,6 +43,7 @@
             <child column="referred_by_agency_code" foreignKey="FK_cmplreferral__referred_by_agency_code" implied="false" onDeleteCascade="false" schema="public" table="complaint_referral"/>
             <child column="referred_to_agency_code" foreignKey="FK_cmplreferral__referred_to_agency_code" implied="false" onDeleteCascade="false" schema="public" table="complaint_referral"/>
             <child column="agency_code" foreignKey="FK_complaint_type_code_agency_code" implied="false" onDeleteCascade="false" schema="public" table="complaint_type_code"/>
+            <child column="agency_code" foreignKey="FK_emailref__agency_code" implied="false" onDeleteCascade="false" schema="public" table="email_reference"/>
             <child column="agency_code" foreignKey="FK_agencycode" implied="false" onDeleteCascade="false" schema="public" table="feature_agency_xref"/>
             <child column="agency_code" foreignKey="FK_gorgustrct_agencycode" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_structure"/>
             <child column="agency_code" foreignKey="team_agency_code_fk" implied="false" onDeleteCascade="false" schema="public" table="team"/>
@@ -403,6 +404,25 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="area_name" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="administrative_office_ind" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
       </table>
+      <table name="email_reference" remarks="Used to track shared email addresses used by various agencies." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="email_reference_guid" nullable="false" remarks="System generated unique key for the referral action." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address" nullable="false" remarks="The email address used by parties referenced by this record." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code" nullable="true" remarks="The agency that the email address belongs to." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_emailref__agency_code" implied="false" onDeleteCascade="false" schema="public" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="geo_organization_unit_code" nullable="true" remarks="The geographic organization code that the email address belongs to." size="10" type="varchar" typeCode="12">
+            <parent column="geo_organization_unit_code" foreignKey="FK_emailref__geo_org_unit_code" implied="false" onDeleteCascade="false" schema="public" table="geo_organization_unit_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the email reference record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when email reference was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="The id of the user that updated email reference." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="update_utc_timestamp" nullable="false" remarks="The timestamp when email reference was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="8" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the email reference is active." size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="email_reference_guid" sequenceNumberInPK="1"/>
+         <index name="PK_emailref" unique="true">
+            <column ascending="true" name="email_reference_guid"/>
+         </index>
+      </table>
       <table name="entity_code" remarks="" schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="entity_code" nullable="false" remarks="" size="10" type="varchar" typeCode="12">
             <child column="entity_code" foreignKey="staging_staging_metadata_mapping_entity_code" implied="false" onDeleteCascade="false" schema="public" table="staging_metadata_mapping"/>
@@ -536,6 +556,7 @@
       <table name="geo_organization_unit_code" remarks="A geographical organization unit is a named geographical boundary that represents a physical location.   The level of granularity can vary with Regions being the highest level - for example Okanagan, and Areas being the lowest level - for example Big White" schema="public" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="geo_organization_unit_code" nullable="false" remarks="A human readable code used to identify a geographical organization unit." size="10" type="varchar" typeCode="12">
             <child column="geo_organization_unit_code" foreignKey="FK_complaint_geoorgutnd" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
+            <child column="geo_organization_unit_code" foreignKey="FK_emailref__geo_org_unit_code" implied="false" onDeleteCascade="false" schema="public" table="email_reference"/>
             <child column="child_geo_org_unit_code" foreignKey="FK_gorgustrct_child_geoorgutcd" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_structure"/>
             <child column="parent_geo_org_unit_code" foreignKey="FK_gorgustrct_parent_geoorgutcd" implied="false" onDeleteCascade="false" schema="public" table="geo_org_unit_structure"/>
             <child column="geo_organization_unit_code" foreignKey="FK_office_geoorgutnd" implied="false" onDeleteCascade="false" schema="public" table="office"/>

@@ -24,6 +24,7 @@ officer_team_xref
 linked_complaint_xref
 gir_complaint
 feature_agency_xref
+email_reference
 attractant_hwcr_xref
 allegation_complaint
 action_taken
