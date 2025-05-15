@@ -9,6 +9,14 @@ describe("HWCR Outcome Prevention and Education", () => {
   it("it requires valid user input", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030330", true);
 
+    // Delete a prevention and education if it exists
+    cy.get("#outcome-preventions").then(function ($preventionAndEducation) {
+      if ($preventionAndEducation.find("#prevention-delete-button").length) {
+        cy.get("#prevention-delete-button").click();
+        cy.get(".btn-primary").contains("delete actions").click();
+      }
+    });
+
     cy.get("#outcome-preventions").then(function () {
       cy.get("#outcome-report-add-prevention").click();
       //click Save Button
