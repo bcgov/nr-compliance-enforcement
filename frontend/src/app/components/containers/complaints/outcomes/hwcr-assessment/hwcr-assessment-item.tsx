@@ -205,7 +205,7 @@ export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
             <Button
               variant="outline-primary"
               size="sm"
-              id="notes-edit-button"
+              id="assessment-edit-button"
               onClick={() => handleEdit()}
               disabled={isReadOnly}
             >
