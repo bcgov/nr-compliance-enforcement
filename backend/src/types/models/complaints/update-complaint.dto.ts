@@ -5,8 +5,8 @@ import { GeoOrganizationUnitCode } from "../../../v1/geo_organization_unit_code/
 import { Point } from "geojson";
 import { CosGeoOrgUnit } from "../../../v1/cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { PersonComplaintXref } from "../../../v1/person_complaint_xref/entities/person_complaint_xref.entity";
-import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
-import { CompMthdRecvCdAgcyCdXref } from "src/v1/comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
+import { ReportedByCode } from "../../../v1/reported_by_code/entities/reported_by_code.entity";
+import { CompMthdRecvCdAgcyCdXref } from "../../../v1/comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 
 export class UpdateComplaintDto {
   @ApiProperty({

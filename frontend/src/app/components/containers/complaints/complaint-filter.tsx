@@ -28,8 +28,9 @@ import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
 import { FilterDate } from "@components/common/filter-date";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
-import { Park } from "@/app/components/common/park";
+import { ParkSelect } from "@/app/components/common/park-select";
 import { OUTCOMES_REQUIRING_ACTIONED_BY } from "@/app/constants/outcomes-requiring-actioned-by";
+import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
 
 type Props = {
   type: string;
@@ -42,6 +43,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       zone,
       community,
       park,
+      area,
       officer,
       species,
       natureOfComplaint,
@@ -90,6 +92,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
 
   const activeFilters = useAppSelector(listActiveFilters());
+  const parkAreasList = useAppSelector(selectParkAreasDropdown);
 
   const setFilter = useCallback(
     (name: string, value?: Option | Date | null) => {
@@ -521,21 +524,43 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           )}
 
           {activeFilters.showParkFilter && (
-            <div id="comp-filter-park-id">
-              <label htmlFor="park-select-id">Park</label>
-              <div className="filter-select-padding">
-                <Park
-                  id={`comp-details-park-${park}`}
-                  initialParkGuid={park}
-                  isInEdit={true}
-                  onChange={(option) => {
-                    setFilter("park", option);
-                  }}
-                />
+            <>
+              <div id="comp-filter-area-id">
+                <label htmlFor="community-select-id">Area</label>
+                <div className="filter-select-padding">
+                  <CompSelect
+                    id="area-select-id"
+                    showInactive={true}
+                    classNamePrefix="comp-select"
+                    onChange={(option) => {
+                      setFilter("area", option);
+                    }}
+                    classNames={{
+                      menu: () => "top-layer-select",
+                    }}
+                    options={parkAreasList}
+                    placeholder="Select"
+                    enableValidation={false}
+                    value={area}
+                    isClearable={true}
+                  />
+                </div>
               </div>
-            </div>
+              <div id="comp-filter-park-id">
+                <label htmlFor="park-select-id">Park</label>
+                <div className="filter-select-padding">
+                  <ParkSelect
+                    id={`comp-details-park-${park}`}
+                    initialParkGuid={park}
+                    isInEdit={true}
+                    onChange={(option) => {
+                      setFilter("park", option);
+                    }}
+                  />
+                </div>
+              </div>
+            </>
           )}
-
           {activeFilters.showOfficerFilter && (
             <div id="comp-filter-officer-id">
               <label htmlFor="officer-select-id">Officer assigned</label>

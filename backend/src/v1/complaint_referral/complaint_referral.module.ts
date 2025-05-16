@@ -6,12 +6,18 @@ import { ComplaintReferral } from "./entities/complaint_referral.entity";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { PersonComplaintXrefModule } from "../person_complaint_xref/person_complaint_xref.module";
 import { ComplaintModule } from "../complaint/complaint.module";
+import { EmailModule } from "../../v1/email/email.module";
+import { FeatureFlagModule } from "../../v1/feature_flag/feature_flag.module";
+import { DocumentModule } from "../../v1/document/document.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ComplaintReferral, Complaint]),
     PersonComplaintXrefModule,
+    EmailModule,
     forwardRef(() => ComplaintModule),
+    FeatureFlagModule,
+    DocumentModule,
   ],
   controllers: [ComplaintReferralController],
   providers: [ComplaintReferralService],

@@ -6,6 +6,43 @@ import axios, { AxiosRequestConfig } from "axios";
 import { AUTH_TOKEN, getUserAgency } from "@service/user-service";
 import { AgencyType } from "@apptypes/app/agency-types";
 import { ExportComplaintInput } from "@/app/types/complaints/export-complaint-input";
+import { AttachmentsState } from "@/app/types/state/attachments-state";
+
+export const generateExportComplaintInputParams = (
+  id: string,
+  attachments: AttachmentsState,
+  type: string,
+  dateLogged: Date,
+  agency: string,
+) => {
+  let fileName = "";
+
+  if (agency != null) {
+    switch (agency) {
+      case AgencyType.CEEB: {
+        fileName = `${format(dateLogged, "yyyy-MM-dd")} Complaint ${id}.pdf`;
+        break;
+      }
+      case AgencyType.COS:
+      default: {
+        let typeName = type;
+        if (type === "ERS") {
+          typeName = "EC";
+        } else if (type === "HWCR") {
+          typeName = "HWC";
+        }
+        fileName = `${typeName}_${id}_${format(dateLogged, "yyMMdd")}.pdf`;
+        break;
+      }
+    }
+  } else {
+    // Can't find any agency information - use previous standard
+    fileName = `Complaint-${id}-${type}-${format(dateLogged, "yyyy-MM-dd")}.pdf`;
+  }
+  const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const exportComplaintInput = { id, type, fileName, tz, attachments } as ExportComplaintInput;
+  return exportComplaintInput;
+};
 
 //--
 //-- exports a complaint as a pdf document
@@ -15,36 +52,12 @@ export const exportComplaint =
     type: string,
     id: string,
     dateLogged: Date,
+    forAgency?: string,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const { attachments } = getState();
     try {
-      const agency = getUserAgency();
-      let fileName = "";
-      if (agency != null) {
-        switch (agency) {
-          case AgencyType.CEEB: {
-            fileName = `${format(dateLogged, "yyyy-MM-dd")} Complaint ${id}.pdf`;
-            break;
-          }
-          case AgencyType.COS:
-          default: {
-            let typeName = type;
-            if (type === "ERS") {
-              typeName = "EC";
-            } else if (type === "HWCR") {
-              typeName = "HWC";
-            }
-            fileName = `${typeName}_${id}_${format(dateLogged, "yyMMdd")}.pdf`;
-            break;
-          }
-        }
-      } else {
-        // Can't find any agency information - use previous standard
-        fileName = `Complaint-${id}-${type}-${format(dateLogged, "yyyy-MM-dd")}.pdf`;
-      }
-
-      const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const agency = forAgency ?? getUserAgency();
 
       const axiosConfig: AxiosRequestConfig = {
         responseType: "arraybuffer", // Specify response type as arraybuffer
@@ -52,7 +65,7 @@ export const exportComplaint =
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
 
-      const exportComplaintInput = { id, type, fileName, tz, attachments } as ExportComplaintInput;
+      const exportComplaintInput = generateExportComplaintInputParams(id, attachments, type, dateLogged, agency);
 
       const url = `${config.API_BASE_URL}/v1/document/export-complaint`;
 
@@ -65,7 +78,7 @@ export const exportComplaint =
       let link = document.createElement("a");
       link.id = "hidden-details-screen-export-complaint";
       link.href = fileURL;
-      link.download = fileName;
+      link.download = exportComplaintInput.fileName;
 
       document.body.appendChild(link);
       link.click();

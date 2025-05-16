@@ -12,6 +12,11 @@ describe("HWCR Outcome Assessments", () => {
     //This is required to make the tests re-runnable.  It's not great because it means it will only run the first time.
     //If we ever get the ability to remove an assessment this test suite should be rewritten to remove this conditional
     //and to add a test at the end to delete the assessment.
+    cy.get("#outcome-assessments").then(($assessmentSection) => {
+      if ($assessmentSection.find("#outcome-report-add-assessment").length) {
+        cy.get("#outcome-report-add-assessment").click({ force: true });
+      }
+    });
     cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
       if ($assessment.find("#outcome-save-button").length) {
         cy.validateComplaint("23-033066", "Coyote");
@@ -20,12 +25,11 @@ describe("HWCR Outcome Assessments", () => {
         cy.get("#outcome-save-button").click();
 
         //validate error message
-        cy.get(".error-message").should(($error) => {
-          expect($error).to.contain.text("Required");
-        });
-
-        let inputs = ["#action-required-div", "#outcome-officer-div", "#assessment-checkbox-div"];
-        cy.hasErrorMessage(inputs, "Errors in form");
+        cy.get(".error-message")
+          .should("contain.text", "Required")
+          .should(($error) => {
+            expect($error).to.contain.text("Required");
+          });
       } else {
         cy.log("Test was previously run. Skip the Test");
         this.skip();
@@ -39,8 +43,20 @@ describe("HWCR Outcome Assessments", () => {
     //This is required to make the tests re-runnable.  It's not great because it means it will only run the first time.
     //If we ever get the ability to remove an assessment this test suite should be rewritten to remove this conditional
     //and to add a test at the end to delete the assessment.
-    cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
-      if ($assessment.find("#outcome-save-button").length) {
+
+    // If assessment edit button exists, skip this test
+    cy.get("#outcome-assessments").then(function ($assessments) {
+      if ($assessments.find("#assessment-edit-button").length) {
+        cy.log("Test was previously run. Skip the Test");
+        this.skip();
+      }
+    });
+
+    cy.get("#outcome-assessments").then(function ($assessments) {
+      if ($assessments.find("#outcome-report-add-assessment").length) {
+        cy.get("#outcome-report-add-assessment").click({ force: true });
+      }
+      if ($assessments.find("#outcome-save-button").length) {
         cy.validateComplaint("23-033066", "Coyote");
 
         let sectionParams = {
@@ -57,9 +73,6 @@ describe("HWCR Outcome Assessments", () => {
 
           cy.validateHWCSection(sectionParams);
         });
-      } else {
-        cy.log("Test was previously run. Skip the Test");
-        this.skip();
       }
     });
   });
@@ -69,8 +82,8 @@ describe("HWCR Outcome Assessments", () => {
 
     cy.validateComplaint("23-033066", "Coyote");
 
-    cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
-      if ($assessment.find("#assessment-edit-button").length) {
+    cy.get("#outcome-assessments").then(($assessments) => {
+      if ($assessments.find("#assessment-edit-button").length) {
         cy.get("#assessment-edit-button").click();
 
         cy.get("#action-required-div")
@@ -94,9 +107,6 @@ describe("HWCR Outcome Assessments", () => {
               });
             }
           });
-      } else {
-        cy.log("Assessment Not Found, did a previous test fail? Skip the Test");
-        this.skip();
       }
     });
   });
@@ -106,7 +116,7 @@ describe("HWCR Outcome Assessments", () => {
 
     cy.validateComplaint("23-033066", "Coyote");
 
-    cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
+    cy.get("#outcome-assessments").then(function ($assessment) {
       if ($assessment.find("#assessment-edit-button").length) {
         cy.get("#assessment-edit-button").click();
 

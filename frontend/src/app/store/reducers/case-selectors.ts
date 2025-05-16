@@ -19,14 +19,14 @@ export const selectCaseId = (state: RootState): string => {
   return caseId ?? "";
 };
 
-export const selectAssessment = (state: RootState): Assessment => {
+export const selectAssessments = (state: RootState): Assessment[] => {
   const { cases } = state;
-  return cases.assessment;
+  return cases.assessments;
 };
 
-export const selectPrevention = (state: RootState): Prevention => {
+export const selectPreventions = (state: RootState): Prevention[] => {
   const { cases } = state;
-  return cases.prevention;
+  return cases.preventions;
 };
 
 export const selectEquipment = (state: RootState): EquipmentDetailsDto[] => {

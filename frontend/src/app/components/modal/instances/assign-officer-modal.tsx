@@ -26,10 +26,18 @@ type AssignOfficerModalProps = {
   complaint_type: string;
   zone: string;
   agency: string;
+  park_area_guids: string[];
 };
 
 // A modal dialog containing a list of officers in the current user's zone.  Used to select an officer to assign to a complaint.
-export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit, complaint_type, zone, agency }) => {
+export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
+  close,
+  submit,
+  complaint_type,
+  zone,
+  agency,
+  park_area_guids,
+}) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const { title, complaint_identifier } = modalData;
@@ -40,7 +48,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({ close, submit,
   const [selectedAssignee, setSelectedAssignee] = useState("");
   const [searchInput, setSearchInput] = useState<string>("");
 
-  const officersJson = useAppSelector(selectOfficersByZoneAgencyAndRole(modalData?.agency_code, zone));
+  const officersJson = useAppSelector(selectOfficersByZoneAgencyAndRole(modalData?.agency_code, zone, park_area_guids));
   const searchResults = useAppSelector(searchOfficers(searchInput, modalData?.agency_code, complaint_type));
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 

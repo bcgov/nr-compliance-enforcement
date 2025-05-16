@@ -32,6 +32,11 @@ import { CreateAuthorizationOutcomeInput } from "../../../types/models/case-file
 import { UpdateAuthorizationOutcomeInput } from "../../../types/models/case-files/ceeb/site/update-authorization-outcome-input";
 import { DeleteAuthorizationOutcomeInput } from "../../../types/models/case-files/ceeb/site/delete-authorization-outcome-input";
 import { CaseManagementError } from "src/enum/case_management_error.enum";
+import { UpdateAssessmentInput } from "src/types/models/case-files/assessment/update-assessment-input";
+import { CreateAssessmentInput } from "src/types/models/case-files/assessment/create-assessment-input";
+import { UpdatePreventionInput } from "src/types/models/case-files/prevention/update-prevention-input";
+import { CreatePreventionInput } from "src/types/models/case-files/prevention/create-prevention-input";
+import { DeletePreventionInput } from "src/types/models/case-files/prevention/delete-prevention-input";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("case")
@@ -73,26 +78,43 @@ export class CaseFileController {
 
   @Post("/createAssessment")
   @Roles(Role.COS, Role.PARKS)
-  async createAssessment(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+  async createAssessment(@Token() token, @Body() model: CreateAssessmentInput): Promise<CaseFileDto> {
     return await this.service.createAssessment(token, model);
   }
 
   @Patch("/updateAssessment")
   @Roles(Role.COS, Role.PARKS)
-  async updateAssessment(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+  async updateAssessment(@Token() token, @Body() model: UpdateAssessmentInput): Promise<CaseFileDto> {
     return await this.service.updateAssessment(token, model);
   }
 
   @Post("/createPrevention")
   @Roles(Role.COS, Role.PARKS)
-  async createPrevention(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+  async createPrevention(@Token() token, @Body() model: CreatePreventionInput): Promise<CaseFileDto> {
     return await this.service.createPrevention(token, model);
   }
 
   @Patch("/updatePrevention")
   @Roles(Role.COS, Role.PARKS)
-  async updatePrevention(@Token() token, @Body() model: CaseFileDto): Promise<CaseFileDto> {
+  async updatePrevention(@Token() token, @Body() model: UpdatePreventionInput): Promise<CaseFileDto> {
     return await this.service.updatePrevention(token, model);
+  }
+
+  @Delete("/prevention")
+  @Roles(coreRoles)
+  async deletePrevention(
+    @Token() token,
+    @Query("id") id: string,
+    @Query("leadIdentifier") leadIdentifier: string,
+    @Query("updateUserId") updateUserId: string,
+  ): Promise<CaseFileDto> {
+    const input = {
+      id,
+      leadIdentifier,
+      updateUserId,
+    };
+
+    return await this.service.deletePrevention(token, input as DeletePreventionInput);
   }
 
   @Post("/review")

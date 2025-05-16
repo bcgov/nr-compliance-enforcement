@@ -6,15 +6,15 @@ import { selectModalData, isLoading } from "@store/reducers/app";
 import { selectComplaint, refreshComplaints } from "@store/reducers/complaints";
 import { setIsInEdit } from "@store/reducers/cases";
 import {
-  selectAssessment,
-  selectPrevention,
+  selectAssessments,
+  selectPreventions,
   selectEquipment,
   selectSubject,
   selectNotes,
   selectIsReviewRequired,
   selectReviewComplete,
 } from "@store/reducers/case-selectors";
-import { HWCRComplaintAssessment } from "@components/containers/complaints/outcomes/hwcr-complaint-assessment";
+import { HWCRAssessmentForm } from "@components/containers/complaints/outcomes/hwcr-assessment/hwcr-assessment-form";
 import useValidateComplaint from "@/app/hooks/validate-complaint";
 
 const ModalLoading: FC = memo(() => (
@@ -85,9 +85,9 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
   const complaintData = useAppSelector(selectComplaint);
-  const assessmentData = useAppSelector(selectAssessment);
+  const assessmentsData = useAppSelector(selectAssessments);
   const equipmentData = useAppSelector(selectEquipment);
-  const preventionData = useAppSelector(selectPrevention);
+  const preventionData = useAppSelector(selectPreventions);
   const subjectData = useAppSelector(selectSubject);
   const notesData = useAppSelector(selectNotes);
   const isReviewRequired = useAppSelector(selectIsReviewRequired);
@@ -96,9 +96,9 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   // Vars
   const { title, complaint_identifier } = modalData;
   const hasOutcomeData =
-    assessmentData?.date !== undefined ||
+    assessmentsData?.length > 0 ||
     equipmentData?.length > 0 ||
-    preventionData?.date !== undefined ||
+    preventionData?.length > 0 ||
     subjectData?.length > 0 ||
     notesData?.length > 0 ||
     isReviewRequired ||
@@ -150,14 +150,14 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
             display: displayAssessment ? "inherit" : "none",
           }}
         >
-          <HWCRComplaintAssessment
+          <HWCRAssessmentForm
             id={complaint_identifier}
-            showHeader={false}
             handleSave={() => {
               submit();
               refreshComplaintsOnClose && dispatch(refreshComplaints(complaint_type));
             }}
-            handleClose={close}
+            handleCancel={close}
+            allowDuplicate={true}
             quickClose={true}
           />
         </div>

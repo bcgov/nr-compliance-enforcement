@@ -58,6 +58,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     species,
     complaintAgency,
     girType,
+    parkAreaGuids,
   } = useAppSelector(selectComplaintHeader(complaintType));
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   const showComplaintReferrals = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_REFERRALS));
@@ -133,6 +134,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           complaint_type: complaintType,
           zone: zone,
           agency_code: complaintAgency,
+          park_area_guids: parkAreaGuids,
         },
       }),
     );

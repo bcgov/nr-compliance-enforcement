@@ -67,6 +67,7 @@ export class OfficerService {
           coms_enrolled_ind: officer.coms_enrolled_ind,
           deactivate_ind: officer.deactivate_ind,
           user_roles: roleMapping[useGuid] ?? [],
+          park_area_guid: officer.park_area_guid,
         } as Officer;
       });
     }
@@ -90,6 +91,7 @@ export class OfficerService {
     return this.officerRepository.findOne({
       where: { auth_user_guid: auth_user_guid },
       relations: {
+        agency_code: true,
         person_guid: {},
       },
     });

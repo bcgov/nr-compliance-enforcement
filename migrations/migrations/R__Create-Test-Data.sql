@@ -11087,6 +11087,351 @@ VALUES
     CURRENT_TIMESTAMP
   ) ON CONFLICT DO NOTHING;
 
+-------------------------
+-- Create new feature for Referral emails
+-------------------------
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'REFEMAIL',
+  'Enable Referral Email Notifications',
+  'Enables the sending of email notifications when a complaint is referred.',
+  280,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'REFEMAIL',
+  'COS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'REFEMAIL',
+  'PARKS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'REFEMAIL',
+  'EPO',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+-------------------------
+-- Add Email References
+-------------------------
+INSERT INTO
+  public.email_reference (
+    email_address,
+    agency_code,
+    geo_organization_unit_code,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp,
+    active_ind
+  ) values
+  (
+    'EnvironmentalComplaints@gov.bc.ca',
+    'EPO',
+    null,
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'parkinfo@gov.bc.ca',
+    'PARKS',
+    null,
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.Bulkley-CassiarZone@gov.bc.ca',
+    'COS',
+    'BLKYCSR',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.Cariboo-ChilcotinZone@gov.bc.ca',
+    'COS',
+    'CRBOCHLCTN',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+    (
+    'COS.CaribooThompsonZone@gov.bc.ca',
+    'COS',
+    'CRBOTMPSN',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.CentralIslandZone@gov.bc.ca',
+    'COS',
+    'CENISL',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.CentralOkanaganZone@gov.bc.ca',
+    'COS',
+    'CENOKNGN',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.FraserNorthZone@gov.bc.ca',
+    'COS',
+    'FRSRN',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.FraserSouthZone@gov.bc.ca',
+    'COS',
+    'FRSRS',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.Nechako-LakesZone@gov.bc.ca  ',
+    'COS',
+    'NCHKOLKS',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.NorthCoastZone@gov.bc.ca',
+    'COS',
+    'NCST',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COs.North.Island.Zone@gov.bc.ca',
+    'COS',
+    'NISL',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COSNOKAN@gov.bc.ca',
+    'COS',
+    'NOKNGN',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.North.Peace.Zone@gov.bc.ca',
+    'COS',
+    'NPCE',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.OminecaZone@gov.bc.ca',
+    'COS',
+    'OMNCA',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.SeatoSkyZone@gov.bc.ca',
+    'COS',
+    'SEA2SKY',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.South.Island.Zone@gov.bc.ca',
+    'COS',
+    'SISL',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.SouthOkanaganZone@gov.bc.ca',
+    'COS',
+    'SOKNGN',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.SouthPeaceZone@gov.bc.ca',
+    'COS',
+    'SPCE',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.Sunshine.Coast.Zone@gov.bc.ca',
+    'COS',
+    'SNSHNCST',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.ThompsonNicolaZone@gov.bc.ca',
+    'COS',
+    'TMPSNNCLA',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COSCKZ@gov.bc.ca',
+    'COS',
+    'CLMBAKTNY',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.East.Kootenay.Zone@gov.bc.ca',
+    'COS',
+    'EKTNY',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ),
+  (
+    'COS.WestKootenay.Zone@gov.bc.ca',
+    'COS',
+    'WKTNY',
+    user,
+    now(),
+    user,
+    now(),
+    true
+  ) on conflict do nothing;
+
+UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'ZONE_FLTR' AND agency_code = 'PARKS';
+UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'REG_FLTR' AND agency_code = 'PARKS';
 
 --------------------------
 -- New Changes above this line

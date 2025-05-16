@@ -9,6 +9,12 @@ concurrency:
   group: ${{ github.event.number }}
   cancel-in-progress: true
 
+env:
+  GITOPS_REPO_BRANCH: main
+  GITOPS_REPO: bcgov-c/tenant-gitops-f208ae
+  GITOPS_REPO_VALUES_PATH: ./charts/apps/natsuite/values
+  GITOPS_REPO_OUTPUTS_PATH: ./charts/apps/natsuite/values/.outputs
+
 jobs:
   cleanup:
     name: Cleanup and Images
@@ -85,3 +91,71 @@ jobs:
           echo "Database and Role for PR is cleaned."
 
           exit 0
+
+  ### Emerald Jobs ###
+  cleanup-emerald:
+    name: Cleanup Ephemeral Emerald Developer Environments
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Setup gitops repo access
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+
+      - name: Checkout CD repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.GITOPS_REPO }}
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          ref: ${{ env.GITOPS_REPO_BRANCH }}
+
+      - name: Calculate Deployment Number
+        id: get-deployment-number
+        shell: bash
+        run: |
+          PR_NUMBER=$(echo ${{ github.event.number }})
+          PR_NUMBER_MOD_TEN=$(($PR_NUMBER % 10))
+          echo "DEPLOYMENT_NUMBER=$(($PR_NUMBER_MOD_TEN))" >> $GITHUB_OUTPUT
+
+      - name: Configure git
+        # From https://github.com/orgs/community/discussions/26560#discussioncomment-3531273
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Include new infrastructure changes on merge
+        # in addition to new infra changes, we also update the base image tag
+        # so that our next test release will use the tag from this PR
+        #
+        # why do this instead of promoting the tag out of the PR? In the event we have 10+
+        # PRs open after the last release merge, we could promote an invalid build #
+        if: ${{ github.event.pull_request.merged == true }}
+        run: |
+          DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
+          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
+          ./.github/scripts/gitops.sh updatebase dev-$DEPLOYMENT_NUMBER
+
+          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
+          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
+          ./.github/scripts/gitops.sh tag base ${{ github.event.number }}
+
+      - name: Disable dev environment
+        run: |
+          DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
+          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
+          ./.github/scripts/gitops.sh disable dev-$DEPLOYMENT_NUMBER
+
+      # We always run this to avoid deleting developer databases on commit pushes after a PR is opened
+      # there is a small edge case where a cleanup could be interrupted by this if 2 PRs open closely together
+      - name: Unset / No-op Crunchy development DB cleanup
+        run: |
+          ./.github/scripts/crunchy.sh u
+    
+      - name: Commit and push update
+        run: |
+          DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+          ./.github/scripts/gitops.sh commitall "Disabling dev-$DEPLOYMENT_NUMBER for PR ${{ github.event.number }}"
+          git push origin ${{ env.GITOPS_REPO_BRANCH }}

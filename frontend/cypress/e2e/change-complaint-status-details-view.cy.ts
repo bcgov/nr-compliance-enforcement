@@ -21,6 +21,15 @@ describe("Complaint Change Status spec - Details View", () => {
       actionRequired: "Yes",
       toastText: "Assessment has been saved",
     };
+    // If assessment edit button exists, click it
+    cy.get("#outcome-assessments").then(function ($assessments) {
+      if ($assessments.find("#assessment-edit-button").length) {
+        sectionParams.toastText = "Assessment has been updated";
+        cy.get("#assessment-edit-button").click();
+      } else if ($assessments.find("#outcome-report-add-assessment").length) {
+        cy.get("#outcome-report-add-assessment").click({ force: true });
+      }
+    });
     cy.get(".comp-outcome-report-complaint-assessment").then(function ($assessment) {
       if ($assessment.find("#outcome-save-button").length) {
         cy.fillInHWCSection(sectionParams).then(() => {
@@ -43,6 +52,7 @@ describe("Complaint Change Status spec - Details View", () => {
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true);
         cy.assignSelfToComplaint();
         fillInAssessmentSection();
+        cy.waitForSpinner();
       } else {
         cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true);
         cy.assignSelfToComplaint();

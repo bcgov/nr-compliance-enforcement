@@ -27,6 +27,11 @@ import { CodeTableService } from "../../code-table/code-table.service";
 import { Complaint } from "../../complaint/entities/complaint.entity";
 import { CreateLinkedComplaintXrefDto } from "../../linked_complaint_xref/dto/create-linked_complaint_xref.dto";
 import { CaseManagementError } from "../../../enum/case_management_error.enum";
+import { CreateAssessmentInput } from "src/types/models/case-files/assessment/create-assessment-input";
+import { UpdateAssessmentInput } from "src/types/models/case-files/assessment/update-assessment-input";
+import { CreatePreventionInput } from "src/types/models/case-files/prevention/create-prevention-input";
+import { UpdatePreventionInput } from "src/types/models/case-files/prevention/update-prevention-input";
+import { DeletePreventionInput } from "src/types/models/case-files/prevention/delete-prevention-input";
 
 @Injectable({ scope: Scope.REQUEST })
 export class CaseFileService {
@@ -83,11 +88,11 @@ export class CaseFileService {
    * This process of creating the complaint links is handled here to accommodate this pseudo two phase commit
    * pattern.
    */
-  linkComplaintsAndRunQuery = async (token: string, model: CaseFileDto, assessmentInput: any, query: string) => {
+  linkComplaintsAndRunQuery = async (token: string, assessmentInput: any, query: string) => {
     let returnValue;
     const dateLinkCreated = new Date();
     const complaintBeingLinkedId = assessmentInput.leadIdentifier; //child complaint (A)
-    let linkingToComplaintId = assessmentInput.assessmentDetails.actionLinkedComplaintIdentifier; //parent complaint (B)
+    let linkingToComplaintId = assessmentInput.assessment.actionLinkedComplaintIdentifier; //parent complaint (B)
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -173,7 +178,7 @@ export class CaseFileService {
       }
 
       // Update the status of the complaint to "closed" if actionCloseComplaint is set to true
-      if (assessmentInput.assessmentDetails.actionCloseComplaint) {
+      if (assessmentInput.assessment.actionCloseComplaint) {
         const statusCode = await this._codeTableService.getComplaintStatusCodeByStatus("CLOSED");
         await this._complaintsRepository
           .createQueryBuilder("complaint")
@@ -186,7 +191,7 @@ export class CaseFileService {
       // Update the assessment in the Case Management database
       const result = await post(token, {
         query: query,
-        variables: model,
+        variables: { input: assessmentInput },
       });
       returnValue = await this.handleAPIResponse(result, complaintBeingLinkedId);
       // If the mutation succeeded, commit the pending transaction
@@ -201,67 +206,49 @@ export class CaseFileService {
     return returnValue;
   };
 
-  async createAssessment(token: string, model: CaseFileDto): Promise<CaseFileDto> {
+  async createAssessment(token: string, model: CreateAssessmentInput): Promise<CaseFileDto> {
     let returnValue;
 
-    // The model reaches this function in the shape { "createAssessmentInput": {...CaseFlieDTO} } despite that property
-    // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.
-    // For example, leadIdentifier would be found in model.leadIdentifier by the type's definition, however in this
-    // scope it is at model.createAssessmentInput.leadIdentifier, which errors due to type violation.
-    // This copies it into a new variable cast to any to allow access to the nested properties.
-    let modelAsAny: any = { ...model };
-
-    const query = `mutation CreateAssessment($createAssessmentInput: CreateAssessmentInput!) {
-          createAssessment(createAssessmentInput: $createAssessmentInput)
+    const query = `mutation CreateAssessment($input: CreateAssessmentInput!) {
+          createAssessment(input: $input)
           ${caseFileQueryFields}
         }`;
 
     // If changes need to be made in both databases (i.e. we need to create a link or change the status of a complaint)
     // then the transactional approach is taken.
-    if (
-      modelAsAny.createAssessmentInput.assessmentDetails.actionLinkedComplaintIdentifier ||
-      modelAsAny.createAssessmentInput.assessmentDetails.actionCloseComplaint
-    ) {
-      returnValue = await this.linkComplaintsAndRunQuery(token, model, modelAsAny.createAssessmentInput, query);
+    if (model.assessment.actionLinkedComplaintIdentifier || model.assessment.actionCloseComplaint) {
+      returnValue = await this.linkComplaintsAndRunQuery(token, model, query);
     } else {
       // If the assessment is not linking two complaints then simply create the new assessment in CM.
       const result = await post(token, {
         query: query,
-        variables: model,
+        variables: { input: model },
       });
 
-      returnValue = await this.handleAPIResponse(result, modelAsAny.createAssessmentInput.leadIdentifier);
+      returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     }
 
     return returnValue?.createAssessment;
   }
 
-  updateAssessment = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
+  updateAssessment = async (token: string, model: UpdateAssessmentInput): Promise<CaseFileDto> => {
     let returnValue;
 
-    // The model reaches this function in the shape { "updateAssessmentInput": {...CaseFlieDTO} } despite that property
-    // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.
-    // For example, leadIdentifier would be found in model.leadIdentifier by the type's definition, however in this
-    // scope it is at model.updateAssessmentInput.leadIdentifier, which errors due to type violation.
-    // This copies it into a new variable cast to any to allow access to the nested properties.
-    let modelAsAny: any = { ...model };
-
-    const query = `mutation UpdateAssessment($updateAssessmentInput: UpdateAssessmentInput!) {
-    updateAssessment(updateAssessmentInput: $updateAssessmentInput) 
+    const query = `mutation UpdateAssessment($input: UpdateAssessmentInput!) {
+    updateAssessment(input: $input) 
     ${caseFileQueryFields}
     }`;
 
     // If the assessment being updated has no action required or the justification is not duplicate, then check if there
     // was previously a link to another complaint. If there is, remove it.
     if (
-      !modelAsAny.updateAssessmentInput.assessmentDetails.actionNotRequired ||
-      (modelAsAny.updateAssessmentInput.assessmentDetails.actionJustificationCode &&
-        modelAsAny.updateAssessmentInput.assessmentDetails.actionJustificationCode !== "DUPLICATE")
+      !model.assessment.actionNotRequired ||
+      (model.assessment.actionJustificationCode && model.assessment.actionJustificationCode !== "DUPLICATE")
     ) {
       const existingLink = await this._linkedComplaintXrefRepository.findOne({
         relations: { linked_complaint_identifier: true, complaint_identifier: true },
         where: {
-          linked_complaint_identifier: { complaint_identifier: modelAsAny.updateAssessmentInput.leadIdentifier },
+          linked_complaint_identifier: { complaint_identifier: model.leadIdentifier },
           active_ind: true,
         },
       });
@@ -273,18 +260,15 @@ export class CaseFileService {
     }
     // If changes need to be made in both databases (i.e. we need to create a link or change the status of a complaint)
     // then the transactional approach is taken.
-    if (
-      modelAsAny.updateAssessmentInput.assessmentDetails.actionLinkedComplaintIdentifier ||
-      modelAsAny.updateAssessmentInput.assessmentDetails.actionCloseComplaint
-    ) {
-      returnValue = await this.linkComplaintsAndRunQuery(token, model, modelAsAny.updateAssessmentInput, query);
+    if (model.assessment.actionLinkedComplaintIdentifier || model.assessment.actionCloseComplaint) {
+      returnValue = await this.linkComplaintsAndRunQuery(token, model, query);
     } else {
       // If the assessment is not linking two complaints then simply update the assessment in CM.
       const result = await post(token, {
         query: query,
-        variables: model,
+        variables: { input: model },
       });
-      returnValue = await this.handleAPIResponse(result, modelAsAny.updateAssessmentInput.leadIdentifier);
+      returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     }
     return returnValue?.updateAssessment;
   };
@@ -354,40 +338,42 @@ export class CaseFileService {
     return caseFileDTO;
   };
 
-  createPrevention = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
+  createPrevention = async (token: string, model: CreatePreventionInput): Promise<CaseFileDto> => {
     const result = await post(token, {
-      query: `mutation CreatePrevention($createPreventionInput: CreatePreventionInput!) {
-        createPrevention(createPreventionInput: $createPreventionInput) 
-        ${caseFileQueryFields}
-      }`,
-      variables: model,
+      query: `mutation CreatePrevention($input: CreatePreventionInput!) {
+          createPrevention(input: $input)
+          ${caseFileQueryFields}
+        }`,
+      variables: { input: model },
     });
-    // The model reaches this function in the shape { "createPreventionInput": {...CaseFlieDTO} } despite that property
-    // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.
-    // For example, leadIdentifier would be found in model.leadIdentifier by the type's definition, however in this
-    // scope it is at model.createPreventionInput.leadIdentifier, which errors due to type violation.
-    // This copies it into a new variable cast to any to allow access to the nested properties.
-    let modelAsAny: any = { ...model };
-    const returnValue = await this.handleAPIResponse(result, modelAsAny.createPreventionInput.leadIdentifier);
+    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     return returnValue?.createPrevention;
   };
 
-  updatePrevention = async (token: string, model: CaseFileDto): Promise<CaseFileDto> => {
+  updatePrevention = async (token: string, model: UpdatePreventionInput): Promise<CaseFileDto> => {
     const result = await post(token, {
-      query: `mutation UpdatePrevention($updatePreventionInput: UpdatePreventionInput!) {
-        updatePrevention(updatePreventionInput: $updatePreventionInput) 
-        ${caseFileQueryFields}
-      }`,
-      variables: model,
+      query: `mutation UpdatePrevention($input: UpdatePreventionInput!) {
+          updatePrevention(input: $input)
+          ${caseFileQueryFields}
+        }`,
+      variables: { input: model },
     });
-    // The model reaches this function in the shape { "updatePreventionInput": {...CaseFlieDTO} } despite that property
-    // not existing in the CaseFileDTO type, which renders the CaseFile fields inside inaccessible in this scope.
-    // For example, leadIdentifier would be found in model.leadIdentifier by the type's definition, however in this
-    // scope it is at model.updatePreventionInput.leadIdentifier, which errors due to type violation.
-    // This copies it into a new variable cast to any to allow access to the nested properties.
-    let modelAsAny: any = { ...model };
-    const returnValue = await this.handleAPIResponse(result, modelAsAny.updatePreventionInput.leadIdentifier);
+
+    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
     return returnValue?.updatePrevention;
+  };
+
+  deletePrevention = async (token: string, model: DeletePreventionInput): Promise<CaseFileDto> => {
+    this.logger.debug(`Deleting prevention with id ${model.id} for leadIdentifier ${model.leadIdentifier}`);
+    const result = await post(token, {
+      query: `mutation DeletePrevention($input: DeletePreventionInput!) {
+          deletePrevention(input: $input)
+          ${caseFileQueryFields}
+        }`,
+      variables: { input: model },
+    });
+    const returnValue = await this.handleAPIResponse(result, model.leadIdentifier);
+    return returnValue?.deletePrevention;
   };
 
   private readonly handleAPIResponse = async (

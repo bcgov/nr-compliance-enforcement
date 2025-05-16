@@ -200,6 +200,19 @@ export const selectDefaultRegion = (state: RootState): DropdownOption | null => 
   return value && label ? { value, label } : null;
 };
 
+export const selectDefaultParkArea = (state: RootState): DropdownOption | null => {
+  const {
+    profile: { parkAreaGuid: value },
+  } = state.app;
+  let label = "";
+
+  const defaultParkArea = state.codeTables["park-area"].find((item) => item.parkAreaGuid === value);
+  if (defaultParkArea) {
+    label = defaultParkArea.name;
+  }
+  return value && label ? { value, label } : null;
+};
+
 export const selectModalOpenState = (state: RootState): boolean => {
   const { app } = state;
   return app.modalIsOpen;
@@ -391,6 +404,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       let agency = response.agency_code;
       let personGuid = response.person_guid.person_guid;
       let comsEnrolledInd = response.coms_enrolled_ind;
+      let parkAreaGuid = response.park_area_guid;
 
       if (response.office_guid !== null) {
         const {
@@ -426,6 +440,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         agency,
         personGuid,
         comsEnrolledInd,
+        parkAreaGuid,
       };
 
       dispatch(setTokenProfile(profile));
@@ -562,6 +577,7 @@ const initialState: AppState = {
     agency: "",
     personGuid: "",
     comsEnrolledInd: null,
+    parkAreaGuid: null,
   },
   isSidebarOpen: true,
 
@@ -618,6 +634,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         agency: payload.agency,
         personGuid: payload.personGuid,
         comsEnrolledInd: payload.comsEnrolledInd,
+        parkAreaGuid: payload.parkAreaGuid,
       };
 
       return { ...state, profile };

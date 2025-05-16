@@ -39,6 +39,7 @@ import { ScheduleSectorXref } from "@apptypes/app/code-tables/schedule-sector-xr
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
 import { IPMAuthCategoryType } from "@apptypes/app/code-tables/ipm-auth-category";
 import { EquipmentStatus } from "@/app/types/app/code-tables/equipment-status";
+import { ParkArea } from "@/app/types/app/code-tables/park-area";
 
 export interface CodeTableState {
   [key: string]:
@@ -82,7 +83,8 @@ export interface CodeTableState {
     | Array<TeamType>
     | Array<IPMAuthCategoryType>
     | Array<CaseLocationType>
-    | Array<EquipmentStatus>;
+    | Array<EquipmentStatus>
+    | Array<ParkArea>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -124,4 +126,5 @@ export interface CodeTableState {
   "ipm-auth-category": Array<IPMAuthCategoryType>;
   "case-location-type": Array<CaseLocationType>;
   "equipment-status": Array<EquipmentStatus>;
+  "park-area": Array<ParkArea>;
 }

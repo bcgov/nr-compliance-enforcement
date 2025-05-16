@@ -40,6 +40,7 @@ export const CODE_TABLE_TYPES = {
   IPM_AUTH_CATEGORY_TYPE: "ipm-auth-category",
   CASE_LOCATION_TYPE: "case-location-type",
   EQUIPMENT_STATUS: "equipment-status",
+  PARK_AREA: "park-area",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",

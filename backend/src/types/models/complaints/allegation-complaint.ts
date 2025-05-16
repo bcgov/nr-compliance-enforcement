@@ -1,8 +1,7 @@
 import { UUID } from "crypto";
 import { ComplaintDto } from "./complaint";
-import { BaseComplaint } from "nrs-ce-common-types";
 
-export interface AllegationComplaintDto extends ComplaintDto, BaseComplaint {
+export interface AllegationComplaintDto extends ComplaintDto {
   ersId: UUID;
   violation: string;
   isInProgress: boolean;

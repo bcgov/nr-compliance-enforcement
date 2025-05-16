@@ -18,6 +18,7 @@ import {
   selectActiveComplaintsViewType,
   setActiveComplaintsViewType,
   selectDefaultRegion,
+  selectDefaultParkArea,
 } from "../../../store/reducers/app";
 
 import { ComplaintMapWithServerSideClustering } from "./complaint-map-with-server-side-clustering";
@@ -61,6 +62,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const defaultZone = useAppSelector(selectDefaultZone);
   const defaultRegion = useAppSelector(selectDefaultRegion);
+  const defaultParkArea = useAppSelector(selectDefaultParkArea);
 
   //-- this is used to apply the search to the pager component
   const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
@@ -69,7 +71,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const handleComplaintTabChange = (complaintType: string) => {
     setComplaintType(complaintType);
     dispatch(resetComplaintSearchParameters());
-    let filters = getFilters(currentOfficer, defaultZone, defaultRegion);
+    let filters = getFilters(currentOfficer, defaultZone, defaultRegion, defaultParkArea);
 
     const payload: Array<ComplaintFilterPayload> = [
       ...Object.entries(filters).map(([filter, value]) => ({
@@ -185,13 +187,16 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
   const defaultZone = useAppSelector(selectDefaultZone, shallowEqual);
   const defaultRegion = useAppSelector(selectDefaultRegion);
+  const defaultParkArea = useAppSelector(selectDefaultParkArea);
   const currentOfficer = useAppSelector(selectCurrentOfficer);
   const storedSearchParams = useAppSelector(selectComplaintSearchParameters);
 
   // If the search is fresh, there are only 2 default parameters set. If more than 2 exist,
   // this is not a fresh search as the search funtion itself sets more filters, even if blank.
   const freshSearch = Object.keys(storedSearchParams).length === 2;
-  const complaintFilters = freshSearch ? getFilters(currentOfficer, defaultZone, defaultRegion) : storedSearchParams;
+  const complaintFilters = freshSearch
+    ? getFilters(currentOfficer, defaultZone, defaultRegion, defaultParkArea)
+    : storedSearchParams;
   return (
     <>
       {currentOfficer && (
@@ -223,7 +228,12 @@ const getComplaintTypes = () => {
 };
 
 // Sets the default filters
-const getFilters = (currentOfficer: any, defaultZone: DropdownOption | null, defaultRegion: DropdownOption | null) => {
+const getFilters = (
+  currentOfficer: any,
+  defaultZone: DropdownOption | null,
+  defaultRegion: DropdownOption | null,
+  defaultParkArea: DropdownOption | null,
+) => {
   let filters: any = {};
 
   // If user has both Parks and Province-wide roles, default filter are "Open" and "Unassigned"
@@ -232,11 +242,7 @@ const getFilters = (currentOfficer: any, defaultZone: DropdownOption | null, def
   }
 
   // Province-wide, HWCR only and Parks role defaults to only "Open" so skip the other checks
-  if (
-    UserService.hasRole(Roles.PROVINCE_WIDE) ||
-    UserService.hasRole(Roles.PARKS) ||
-    UserService.hasRole(Roles.HWCR_ONLY)
-  ) {
+  if (UserService.hasRole(Roles.PROVINCE_WIDE) || UserService.hasRole(Roles.HWCR_ONLY)) {
     return filters;
   }
 
@@ -247,6 +253,8 @@ const getFilters = (currentOfficer: any, defaultZone: DropdownOption | null, def
     } else {
       filters = { ...filters, zone: defaultZone };
     }
+  } else if (UserService.hasRole(Roles.PARKS)) {
+    filters = { ...filters, area: defaultParkArea };
   } else if (currentOfficer && !UserService.hasRole(Roles.CEEB_COMPLIANCE_COORDINATOR)) {
     const {
       person: { firstName, lastName, id },

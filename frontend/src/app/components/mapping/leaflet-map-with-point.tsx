@@ -85,18 +85,42 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
   // recenter the map when the center value is updated
   const Centerer = () => {
     const map = useMap();
-
     useEffect(() => {
-      if (mapCenterPosition) {
-        map.setView(mapCenterPosition);
+      if (areCoordinatesValid(mapCenterPosition)) {
+        if (mapElements.some((item) => item.objectType === MapObjectType.Equipment)) {
+          const bounds: Leaflet.LatLngBoundsExpression | null = getMapBounds();
+          if (bounds) {
+            map.fitBounds(bounds, { padding: [50, 50] });
+          } else {
+            map.setView(mapCenterPosition);
+          }
+        } else {
+          map.setView(mapCenterPosition);
+        }
       }
     }, [map]);
-
     return null;
+  };
+
+  const getMapBounds = (): Leaflet.LatLngBoundsExpression | null => {
+    const validMapElements = mapElements.filter((item) => ![item.location.lat, item.location.lng].includes(0));
+    const lats = validMapElements.map((item) => item.location.lat);
+    const lngs = validMapElements.map((item) => item.location.lng);
+    let bounds: Leaflet.LatLngBoundsExpression | null = null;
+    if (lats.length > 0 && lngs.length > 0) {
+      bounds = [
+        [Math.min(...lats), Math.min(...lngs)],
+        [Math.max(...lats), Math.max(...lngs)],
+      ];
+    }
+    return bounds;
   };
 
   const parkLayerParams = useMemo(() => {
     return { format: "image/png", layers: "pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW", transparent: true };
+  }, []);
+  const reserveLayerParams = useMemo(() => {
+    return { format: "image/png", layers: "pub:WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP", transparent: true };
   }, []);
 
   const getEquipmentStatus = (locationItem: MapElement): string => {
@@ -132,28 +156,36 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
               params={parkLayerParams}
             />
           </LayersControl.Overlay>
+          <LayersControl.Overlay name="First Nations Reserves">
+            <WMSTileLayer
+              url="https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP/ows"
+              params={reserveLayerParams}
+            />
+          </LayersControl.Overlay>
         </LayersControl>
         <MarkerClusterGroup key={nanoid()}>
-          {mapElements.map((item, index) => {
-            return (
-              <Marker
-                key={nanoid()}
-                data-testid="complaint-location-marker"
-                position={item.location}
-                icon={getMarkerIcon(item.objectType, item.isActive)}
-                draggable={draggable}
-                eventHandlers={{ dragend: handleMarkerDragEnd }}
-              >
-                <Popup>
-                  <p className="leaflet-popup-object-description">{item.name} coordinates</p>
-                  <p className="leaflet-popup-object-coordinates">
-                    {item.location.lat} , {item.location.lng}
-                  </p>
-                  <p className="leaflet-popup-object-description">{getEquipmentStatus(item)}</p>
-                </Popup>
-              </Marker>
-            );
-          })}
+          {mapElements
+            .filter((item) => ![item.location.lat, item.location.lng].includes(0))
+            .map((item) => {
+              return (
+                <Marker
+                  key={nanoid()}
+                  data-testid="complaint-location-marker"
+                  position={item.location}
+                  icon={getMarkerIcon(item.objectType, item.isActive)}
+                  draggable={draggable}
+                  eventHandlers={{ dragend: handleMarkerDragEnd }}
+                >
+                  <Popup>
+                    <p className="leaflet-popup-object-description">{item.name} coordinates</p>
+                    <p className="leaflet-popup-object-coordinates">
+                      {item.location.lat} , {item.location.lng}
+                    </p>
+                    <p className="leaflet-popup-object-description">{getEquipmentStatus(item)}</p>
+                  </Popup>
+                </Marker>
+              );
+            })}
         </MarkerClusterGroup>
       </MapContainer>
     </Card>

@@ -20,6 +20,12 @@ concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
 
+env:
+  GITOPS_REPO_BRANCH: main
+  GITOPS_REPO: bcgov-c/tenant-gitops-f208ae
+  GITOPS_REPO_VALUES_PATH: ./charts/apps/natsuite/values
+  GITOPS_REPO_OUTPUTS_PATH: ./charts/apps/natsuite/values/.outputs
+
 jobs:
   vars:
     name: Set Variables
@@ -158,3 +164,34 @@ jobs:
         with:
           folder: output
           target-folder: schemaspy
+
+  ### Emerald jobs
+  deploy-emerald-test:
+    name: Deploy Workloads To Emerald (test)
+    needs: [vars, promote]
+    environment: test
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout CD repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.GITOPS_REPO }}
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          ref: ${{ env.GITOPS_REPO_BRANCH }}
+      - name: Configure git
+        # From https://github.com/orgs/community/discussions/26560#discussioncomment-3531273
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Roll latest changes out to test
+        run: |
+          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
+          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
+          ./.github/scripts/gitops.sh candidate
+
+      - name: Commit and push update
+        run: |
+          ./.github/scripts/gitops.sh commitall "Updating test for PR ${{ needs.vars.outputs.pr }}"
+          git push origin ${{ env.GITOPS_REPO_BRANCH }}

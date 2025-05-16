@@ -11,6 +11,7 @@ import { setCodeTable } from "./code-table";
 import { DecisionType } from "@apptypes/app/code-tables/decision-type";
 import { ScheduleSectorXref } from "@apptypes/app/code-tables/schedule-sector-xref";
 import { EquipmentStatus } from "@apptypes/app/code-tables/equipment-status";
+import { ParkArea } from "@/app/types/app/code-tables/park-area";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
@@ -78,6 +79,16 @@ export const fetchEquipmentStatus = (): AppThunk => async (dispatch) => {
   const response = await get<Array<EquipmentStatus>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.EQUIPMENT_STATUS, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchParkAreas = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.PARK_AREA}`);
+
+  const response = await get<Array<ParkArea>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.PARK_AREA, data: response };
     dispatch(setCodeTable(payload));
   }
 };

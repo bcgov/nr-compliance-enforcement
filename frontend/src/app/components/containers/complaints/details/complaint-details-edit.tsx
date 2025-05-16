@@ -79,7 +79,7 @@ import { getCaseFile } from "@/app/store/reducers/case-thunks";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
 import { RootState } from "@/app/store/store";
 import { Roles } from "@/app/types/app/roles";
-import { Park } from "@/app/components/common/park";
+import { ParkSelect } from "@/app/components/common/park-select";
 import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
 import { selectEquipment } from "@/app/store/reducers/case-selectors";
 
@@ -231,7 +231,7 @@ export const ComplaintDetailsEdit: FC = () => {
     if (id && (!data || data.id !== id)) {
       dispatch(getComplaintById(id, complaintType));
     }
-  }, [id, complaintType, data, dispatch]);
+  }, [id, parkGuid, complaintType, data, dispatch]);
 
   useEffect(() => {
     const incidentDateTimeObject = incidentDateTime ? new Date(incidentDateTime) : null;
@@ -1154,7 +1154,7 @@ export const ComplaintDetailsEdit: FC = () => {
               >
                 <label htmlFor="complaint-park">Park</label>
                 <div className="comp-details-edit-input">
-                  <Park
+                  <ParkSelect
                     id="complaint-park"
                     initialParkGuid={parkGuid}
                     onChange={(e) => handleParkChange(e?.value)}
@@ -1483,18 +1483,22 @@ export const ComplaintDetailsEdit: FC = () => {
               draggable={true}
               onMarkerMove={handleMarkerMove}
               editComponent={true}
-              mapElements={[
-                {
-                  objectType: MapObjectType.Complaint,
-                  name: "Complaint",
-                  description: "Complaint Description",
-                  isActive: true,
-                  location: {
-                    lat: parentCoordinates.lat,
-                    lng: parentCoordinates.lng,
-                  },
-                } as MapElement,
-              ]}
+              mapElements={
+                !coordinateErrorsInd
+                  ? [
+                      {
+                        objectType: MapObjectType.Complaint,
+                        name: "Complaint",
+                        description: "Complaint Description",
+                        isActive: true,
+                        location: {
+                          lat: parentCoordinates.lat,
+                          lng: parentCoordinates.lng,
+                        },
+                      } as MapElement,
+                    ]
+                  : []
+              }
             />
           </div>
         )}

@@ -1,12 +1,25 @@
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { assignOfficerToOffice, createOfficer, getOfficers, selectOfficerByPersonGuid } from "@store/reducers/officer";
+import {
+  assignOfficerToOffice,
+  createOfficer,
+  getOfficers,
+  selectOfficerByPersonGuid,
+  updateOfficer as updateOfficerReducer,
+} from "@store/reducers/officer";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown, selectOffices } from "@store/reducers/office";
 import { ToggleError, ToggleSuccess } from "@common/toast";
-import { clearNotification, openModal, selectNotification, userId } from "@store/reducers/app";
+import {
+  clearNotification,
+  getTokenProfile,
+  openModal,
+  personGuid,
+  selectNotification,
+  userId,
+} from "@store/reducers/app";
 import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
 import { CEEB_ROLE_OPTIONS, COS_ROLE_OPTIONS, PARKS_ROLE_OPTIONS, ROLE_OPTIONS } from "@constants/ceeb-roles";
 import { generateApiParameters, get, patch } from "@common/api";
@@ -17,6 +30,7 @@ import { CssUser } from "@/app/types/person/person";
 import { NewOfficer } from "@/app/types/person/new-officer";
 import { TOGGLE_DEACTIVATE } from "@/app/types/modal/modal-types";
 import "@assets/sass/user-management.scss";
+import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
 
 interface EditUserProps {
   officer: Option;
@@ -41,8 +55,10 @@ export const EditUser: FC<EditUserProps> = ({
   const notification = useAppSelector(selectNotification);
   const teams = useAppSelector(selectTeamDropdown);
   const agency = useAppSelector(selectAgencyDropdown);
+  const parkAreasList = useAppSelector(selectParkAreasDropdown);
   const availableOffices = useAppSelector(selectOffices);
   const adminIdirUsername = useAppSelector(userId);
+  const userPersonGuid = useAppSelector(personGuid);
 
   const [officerError, setOfficerError] = useState<string>("");
   const [officeError, setOfficeError] = useState<string>("");
@@ -55,8 +71,8 @@ export const EditUser: FC<EditUserProps> = ({
   const [selectedTeam, setSelectedTeam] = useState<Option | null>();
   const [selectedRoles, setSelectedRoles] = useState<Array<Option>>();
   const [selectedOffice, setSelectedOffice] = useState<Option | null>();
+  const [selectedParkArea, setSelectedParkArea] = useState<Option | null>();
   const [currentAgency, setCurrentAgency] = useState<Option | null>();
-  const [hideTeamOffice, setHideTeamOffice] = useState(false);
 
   const [offices, setOffices] = useState<Array<Option>>([]);
   const [roleList, setRoleList] = useState<Array<Option>>([]);
@@ -64,7 +80,7 @@ export const EditUser: FC<EditUserProps> = ({
   useEffect(() => {
     if (officeAssignments) {
       dispatch(fetchOfficeAssignments());
-      let options = availableOffices.map((item) => {
+      let options = availableOffices.map((item: { id: any; name: any; agency: any }) => {
         const { id, name, agency } = item;
         const record: Option = {
           label: `${agency} - ${name}`,
@@ -103,21 +119,25 @@ export const EditUser: FC<EditUserProps> = ({
         const hasCEEBRole = officerData.user_roles.some((role: any) => role.includes("CEEB"));
         const hasCOSRole = officerData.user_roles.some((role: any) => role.includes("COS"));
         if (hasCEEBRole) {
-          currentAgency = mapAgencyDropDown(AgencyType.CEEB, agency);
+          currentAgency = mapValueToDropdownList(AgencyType.CEEB, agency);
           const currentTeam = await getUserCurrentTeam(officerData.officer_guid);
           if (currentTeam?.team_guid) {
-            const currentTeamMapped = mapAgencyDropDown(currentTeam.team_guid.team_code.team_code, teams);
+            const currentTeamMapped = mapValueToDropdownList(currentTeam.team_guid.team_code.team_code, teams);
             setSelectedTeam(currentTeamMapped);
           }
         } else if (hasCOSRole) {
-          currentAgency = mapAgencyDropDown(AgencyType.COS, agency);
+          currentAgency = mapValueToDropdownList(AgencyType.COS, agency);
           //map current user's office if agency is COS
           if (officerData.office_guid) {
-            const currentOffice = mapAgencyDropDown(officerData.office_guid.office_guid, offices);
+            const currentOffice = mapValueToDropdownList(officerData.office_guid.office_guid, offices);
             setSelectedOffice(currentOffice);
           }
         } else {
-          currentAgency = mapAgencyDropDown(AgencyType.PARKS, agency);
+          if (officerData.park_area_guid) {
+            const currentParkArea = mapValueToDropdownList(officerData.park_area_guid, parkAreasList);
+            setSelectedParkArea(currentParkArea);
+          }
+          currentAgency = mapValueToDropdownList(AgencyType.PARKS, agency);
         }
         setCurrentAgency(currentAgency);
       }
@@ -140,16 +160,13 @@ export const EditUser: FC<EditUserProps> = ({
   useEffect(() => {
     switch (currentAgency?.value ?? selectedAgency?.value) {
       case AgencyType.CEEB:
-        setHideTeamOffice(false);
         setRoleList(CEEB_ROLE_OPTIONS);
         break;
       case AgencyType.COS:
-        setHideTeamOffice(false);
         setRoleList(COS_ROLE_OPTIONS);
         break;
       case AgencyType.PARKS:
       default:
-        setHideTeamOffice(true);
         setRoleList(PARKS_ROLE_OPTIONS);
         break;
     }
@@ -164,8 +181,8 @@ export const EditUser: FC<EditUserProps> = ({
     return result;
   };
 
-  const mapAgencyDropDown = (userAgency: any, agencyList: Option[]) => {
-    const result = agencyList.find((agencyItem: Option) => agencyItem.value === userAgency);
+  const mapValueToDropdownList = (value: any, list: Option[]) => {
+    const result = list.find((item: Option) => item.value === value);
     return result ?? undefined;
   };
 
@@ -187,12 +204,6 @@ export const EditUser: FC<EditUserProps> = ({
     return response;
   };
 
-  const handleOfficeChange = (input: any) => {
-    if (input.value) {
-      setSelectedOffice(input);
-    }
-  };
-
   const handleAgencyChange = (input: any) => {
     resetSelect();
 
@@ -212,6 +223,17 @@ export const EditUser: FC<EditUserProps> = ({
       setOffices(filtered);
 
       setSelectedAgency(input);
+    }
+  };
+
+  const handleOfficeChange = (input: any) => {
+    if (input.value) {
+      setSelectedOffice(input);
+    }
+  };
+  const handleParkAreaChange = (input: any) => {
+    if (input.value) {
+      setSelectedParkArea(input);
     }
   };
   const handleTeamChange = (input: any) => {
@@ -252,7 +274,17 @@ export const EditUser: FC<EditUserProps> = ({
         //update existing officer
         const selectedUserAgency = currentAgency ?? selectedAgency;
         const selectedUserIdir = `${officerData?.auth_user_guid.split("-").join("")}@idir`;
-        await updateOfficer(selectedUserAgency, selectedUserIdir, mapRoles);
+        const res = await updateOfficer(selectedUserAgency, selectedUserIdir, mapRoles);
+        if (res?.roles) {
+          dispatch(getOfficers()); //refresh the officer list to get the latest changes
+          ToggleSuccess("Officer updated successfully");
+          //If current user edit their own account, refresh current user profile
+          if (officer.value === userPersonGuid) {
+            dispatch(getTokenProfile());
+          }
+        } else {
+          ToggleError("Unable to update");
+        }
       }
       resetSelect();
       goToSearchView();
@@ -270,6 +302,7 @@ export const EditUser: FC<EditUserProps> = ({
       auth_user_guid: newUser.username.slice(0, -5),
       office_guid: selectedOffice?.value ?? null,
       team_code: selectedTeam?.value ?? null,
+      park_area_guid: selectedParkArea?.value ?? null,
       person_guid: {
         first_name: newUser.firstName,
         middle_name_1: null,
@@ -296,7 +329,7 @@ export const EditUser: FC<EditUserProps> = ({
     mapRoles: Array<{ name: string | undefined }>,
   ) => {
     switch (selectedUserAgency?.value) {
-      case "EPO": {
+      case AgencyType.CEEB: {
         if (selectedTeam && selectedRoles) {
           let res = await updateTeamRole(
             selectedUserIdir,
@@ -305,16 +338,27 @@ export const EditUser: FC<EditUserProps> = ({
             selectedTeam?.value,
             mapRoles,
           );
-
-          if (res?.team && res?.roles) {
-            ToggleSuccess("Officer updated successfully");
-          } else {
-            ToggleError("Unable to update");
-          }
+          return res;
         }
         break;
       }
-      case "COS":
+      case AgencyType.PARKS: {
+        const officer_guid = officerData?.officer_guid;
+        //Update park_area_guid
+        if (officer_guid && selectedParkArea) {
+          dispatch(updateOfficerReducer(officer_guid, { park_area_guid: selectedParkArea?.value }));
+        }
+        //Update roles
+        let res = await updateTeamRole(
+          selectedUserIdir,
+          officerData?.officer_guid,
+          selectedUserAgency?.value,
+          null,
+          mapRoles,
+        );
+        return res;
+      }
+      case AgencyType.COS:
       default: {
         const officerId = officer?.value ? officer.value : "";
         const officeId = selectedOffice?.value ? selectedOffice.value : "";
@@ -326,14 +370,7 @@ export const EditUser: FC<EditUserProps> = ({
           null,
           mapRoles,
         );
-
-        if (res?.roles) {
-          dispatch(getOfficers());
-          ToggleSuccess("Officer updated successfully");
-        } else {
-          ToggleError("Unable to update");
-        }
-        break;
+        return res;
       }
     }
   };
@@ -366,6 +403,17 @@ export const EditUser: FC<EditUserProps> = ({
     setSelectedRoles([]);
     setOfficeError("");
     setOfficerError("");
+  };
+
+  const labelOffice = () => {
+    const agency = currentAgency ?? selectedAgency;
+    if (agency?.value === AgencyType.CEEB) {
+      return "Team";
+    } else if (agency?.value === AgencyType.COS) {
+      return "Office";
+    } else if (agency?.value === AgencyType.PARKS) {
+      return "Park area";
+    }
   };
 
   return (
@@ -492,12 +540,12 @@ export const EditUser: FC<EditUserProps> = ({
           </div>
         </div>
 
-        {/* Team/ office */}
-        {!hideTeamOffice && (
+        {/* Office / Team / Park Area */}
+        {(currentAgency || selectedAgency) && (
           <div className="comp-details-form-row">
-            <label htmlFor="user-team-office-id">Team / office</label>
+            <label htmlFor="user-team-office-id">{labelOffice()}</label>
             <div className="comp-details-edit-input user-team-office-id">
-              {currentAgency?.value === "EPO" || selectedAgency?.value === "EPO" ? (
+              {(currentAgency?.value === AgencyType.CEEB || selectedAgency?.value === AgencyType.CEEB) && (
                 <CompSelect
                   id="team-select-id"
                   showInactive={false}
@@ -513,7 +561,8 @@ export const EditUser: FC<EditUserProps> = ({
                   errorMessage={""}
                   isDisabled={officerData?.deactivate_ind}
                 />
-              ) : (
+              )}
+              {(currentAgency?.value === AgencyType.COS || selectedAgency?.value === AgencyType.COS) && (
                 <CompSelect
                   id="species-select-id"
                   showInactive={false}
@@ -527,6 +576,22 @@ export const EditUser: FC<EditUserProps> = ({
                   enableValidation={true}
                   value={selectedOffice}
                   errorMessage={officeError}
+                  isDisabled={officerData?.deactivate_ind}
+                />
+              )}
+              {(currentAgency?.value === AgencyType.PARKS || selectedAgency?.value === AgencyType.PARKS) && (
+                <CompSelect
+                  id="species-select-id"
+                  showInactive={false}
+                  classNamePrefix="comp-select"
+                  onChange={(evt) => handleParkAreaChange(evt)}
+                  classNames={{
+                    menu: () => "top-layer-select",
+                  }}
+                  options={parkAreasList}
+                  placeholder="Select"
+                  enableValidation={true}
+                  value={selectedParkArea}
                   isDisabled={officerData?.deactivate_ind}
                 />
               )}

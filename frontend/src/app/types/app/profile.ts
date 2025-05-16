@@ -14,4 +14,5 @@ export default interface Profile {
   agency: string;
   personGuid: string;
   comsEnrolledInd: boolean | null;
+  parkAreaGuid: string | null;
 }

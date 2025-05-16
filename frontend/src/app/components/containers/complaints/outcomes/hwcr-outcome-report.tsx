@@ -1,18 +1,15 @@
 import { FC, useEffect } from "react";
-import { HWCRComplaintAssessment } from "./hwcr-complaint-assessment";
+import { HWCRAssessments } from "./hwcr-assessment/hwcr-assessments";
 import { HWCREquipment } from "./hwcr-equipment";
 import { HWCRFileReview } from "./hwcr-file-review";
 import { Notes } from "./notes";
 import { OutcomeAttachments } from "./outcome-attachments";
-import { HWCRComplaintPrevention } from "./hwcr-prevention-education";
-import { useParams } from "react-router-dom";
 import { useAppDispatch } from "@hooks/hooks";
-import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
 import { HWCROutcomeByAnimalv2 } from "./hwcr-outcome-by-animal-v2";
 import { resetCases } from "@/app/store/reducers/cases";
+import { HWCRPreventions } from "./hwcr-prevention/hwcr-preventions";
 
 export const HWCROutcomeReport: FC = () => {
-  const { id = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
 
   // Clear case state when component unmounts
@@ -28,8 +25,8 @@ export const HWCROutcomeReport: FC = () => {
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
-      <HWCRComplaintAssessment id={id} />
-      <HWCRComplaintPrevention />
+      <HWCRAssessments />
+      <HWCRPreventions />
       <HWCREquipment />
       <HWCROutcomeByAnimalv2 />
       <Notes />

@@ -4,25 +4,14 @@ import { Assessment } from "@apptypes/outcomes/assessment";
 
 const initialState: CasesState = {
   caseId: undefined,
-  assessment: {
-    action_required: undefined,
-    date: undefined,
-    justification: undefined,
-    linked_complaint: undefined,
-    officer: undefined,
-    assessment_type: [],
-    contacted_complainant: undefined,
-    attended: undefined,
-    location_type: undefined,
-    conflict_history: undefined,
-    category_level: undefined,
-    assessment_cat1_type: [],
-  },
-  prevention: {
-    date: undefined,
-    officer: undefined,
-    prevention_type: [],
-  },
+  assessments: [],
+  preventions: [
+    {
+      date: undefined,
+      officer: undefined,
+      prevention_type: [],
+    },
+  ],
   isReviewRequired: false,
   reviewComplete: undefined,
   notes: [],
@@ -55,17 +44,11 @@ export const casesSlice = createSlice({
       const { payload } = action;
       return { ...state, caseId: payload };
     },
-    setAssessment: (state, action) => {
-      const {
-        payload: { assessment },
-      } = action;
-      state.assessment = { ...assessment }; // Update only the assessment property
+    setAssessments: (state, action) => {
+      state.assessments = action.payload;
     },
-    setPrevention: (state, action) => {
-      const {
-        payload: { prevention },
-      } = action;
-      state.prevention = { ...prevention }; // Update only the assessment property
+    setPreventions: (state, action) => {
+      state.preventions = action.payload;
     },
     setIsReviewedRequired: (state, action) => {
       const { payload } = action;
@@ -76,10 +59,10 @@ export const casesSlice = createSlice({
       return { ...state, reviewComplete: payload };
     },
     clearAssessment: (state) => {
-      state.assessment = {} as Assessment;
+      state.assessments = [] as Assessment[];
     },
     clearPrevention: (state) => {
-      state.prevention = { ...initialState.prevention };
+      state.preventions = { ...initialState.preventions };
     },
     setCaseFile: (state, action) => {
       const {
@@ -111,8 +94,8 @@ export const casesSlice = createSlice({
 
 // export the actions/reducers
 export const {
-  setAssessment,
-  setPrevention,
+  setAssessments,
+  setPreventions,
   setCaseId,
   setIsReviewedRequired,
   setReviewComplete,
@@ -122,6 +105,6 @@ export const {
   clearPrevention,
 } = casesSlice.actions;
 
-export const resetPrevention = createAction("prevention/reset");
+export const resetPreventions = createAction("prevention/reset");
 export const resetCases = createAction("cases/reset");
 export default casesSlice.reducer;

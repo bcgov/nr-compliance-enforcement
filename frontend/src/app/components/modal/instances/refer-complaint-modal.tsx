@@ -14,6 +14,8 @@ import { COMPLAINT_TYPE_AGENCY_MAPPING } from "@apptypes/app/complaint-types";
 import Option from "@apptypes/app/option";
 import { getComplaintById, createComplaintReferral } from "@/app/store/reducers/complaints";
 import { Officer } from "@/app/types/person/person";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 type ReferComplaintModalProps = {
   close: () => void;
@@ -72,6 +74,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
   const handleReferComplaint = async () => {
     let hasError = false;
     const officer = officers?.find((officer: Officer) => officer.auth_user_guid === selectedOfficer?.value);
+    const complaintUrl = window.location.href;
     if (!selectedAgency) {
       setSelectedAgencyError("Please select a new lead agency");
       hasError = true;
@@ -102,6 +105,9 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
           selectedAgency?.value ?? "",
           officer?.officer_guid ?? "",
           referralReason,
+          complaint_type,
+          complaintData?.reportedOn as Date,
+          complaintUrl,
         ),
       );
       await dispatch(getComplaintById(id, complaint_type));
@@ -137,6 +143,18 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
             <span>{` Your organization will not have the ability to edit the complaint after it is referred.`}</span>
           </div>
         </Alert>
+        <FeatureFlag feature={FEATURE_TYPES.REFERRAL_EMAILS}>
+          <Alert
+            variant="warning"
+            className="comp-complaint-details-alert"
+            id="comp-complaint-refer-alert"
+          >
+            <div>
+              <i className="bi bi-exclamation-triangle-fill"></i>
+              <span>{` Clicking ‘Refer’ will send an email on your behalf to notify the user of this referral. `}</span>
+            </div>
+          </Alert>
+        </FeatureFlag>
 
         <div className="comp-details-form">
           <div className="comp-details-form-row refer-complaint-agency">

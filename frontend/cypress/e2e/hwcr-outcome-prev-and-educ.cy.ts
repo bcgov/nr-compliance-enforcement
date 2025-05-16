@@ -9,20 +9,16 @@ describe("HWCR Outcome Prevention and Education", () => {
   it("it requires valid user input", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030330", true);
 
-    //This is required to make the tests re-runnable.  It's not great because it means it will only run the first time.
-    //If we ever get the ability to remove an prevention and education this test suite should be rewritten to remove this conditional
-    //and to add a test at the end to delete the prevention and education.
-    cy.get(".comp-hwcr-outcome-report").then(function ($outcome) {
-      if ($outcome.find("#outcome-report-add-prevention-outcome").length > 0) {
-        cy.get("#outcome-report-add-prevention-outcome").click();
-        cy.validateComplaint("23-030330", "Black Bear");
-      } else {
-        cy.log("Test was previously run. Skip the Test");
-        this.skip();
+    // Delete a prevention and education if it exists
+    cy.get("#outcome-preventions").then(function ($preventionAndEducation) {
+      if ($preventionAndEducation.find("#prevention-delete-button").length) {
+        cy.get("#prevention-delete-button").click();
+        cy.get(".btn-primary").contains("delete actions").click();
       }
     });
 
-    cy.get(".comp-outcome-report-complaint-prev-and-educ").then(function () {
+    cy.get("#outcome-preventions").then(function () {
+      cy.get("#outcome-report-add-prevention").click();
       //click Save Button
       cy.get("#outcome-save-prev-and-educ-button").click();
 
@@ -50,32 +46,24 @@ describe("HWCR Outcome Prevention and Education", () => {
     let params = {
       section: "PREV&EDUC",
       checkboxes: ["#PROVSFTYIN", "#CNTCTBYLAW"],
-      officer: "Kot, Steve",
+      officer: "TestAcct, ENV",
       date: "01",
       toastText: "Prevention and education has been saved",
     };
 
-    //This is required to make the tests re-runnable.  It's not great because it means it will only run the first time.
-    //If we ever get the ability to remove an assessment this test suite should be rewritten to remove this conditional
-    //and to add a test at the end to delete the assessment.
-    cy.get(".comp-hwcr-outcome-report").then(function ($outcome) {
-      if ($outcome.find("#outcome-report-add-prevention-outcome").length > 0) {
-        cy.get("#outcome-report-add-prevention-outcome").click();
-        cy.validateComplaint("23-030330", "Black Bear");
+    cy.get("#outcome-preventions").then(function ($outcome) {
+      cy.get("#outcome-report-add-prevention").click();
+      cy.validateComplaint("23-030330", "Black Bear");
 
-        cy.fillInHWCSection(params).then(() => {
-          //expand checkboxes for validating in view state
-          params.checkboxes = [
-            "Provided safety information to the public",
-            "Contacted/referred to bylaw to assist with managing attractants",
-          ];
+      cy.fillInHWCSection(params).then(() => {
+        //expand checkboxes for validating in view state
+        params.checkboxes = [
+          "Provided safety information to the public",
+          "Contacted/referred to bylaw to assist with managing attractants",
+        ];
 
-          cy.validateHWCSection(params);
-        });
-      } else {
-        cy.log("Test was previously run. Skip the Test");
-        this.skip();
-      }
+        cy.validateHWCSection(params);
+      });
     });
   });
 
@@ -84,7 +72,7 @@ describe("HWCR Outcome Prevention and Education", () => {
 
     cy.validateComplaint("23-030330", "Black Bear");
 
-    cy.get(".comp-outcome-report-complaint-prev-and-educ").then(function ($preventionAndEducation) {
+    cy.get("#outcome-preventions").then(function ($preventionAndEducation) {
       if ($preventionAndEducation.find("#prevention-edit-button").length) {
         cy.get("#prevention-edit-button").click();
 
@@ -118,14 +106,14 @@ describe("HWCR Outcome Prevention and Education", () => {
 
     cy.validateComplaint("23-030330", "Black Bear");
 
-    cy.get(".comp-outcome-report-complaint-prev-and-educ").then(function ($preventionAndEducation) {
+    cy.get("#outcome-preventions").then(function ($preventionAndEducation) {
       if ($preventionAndEducation.find("#prevention-edit-button").length) {
         cy.get("#prevention-edit-button").click();
 
         let params = {
           section: "PREV&EDUC",
           checkboxes: ["#CNTCTBIOVT"],
-          officer: "Kot, Steve",
+          officer: "TestAcct, ENV",
           date: "01",
           toastText: "Prevention and education has been updated",
         };
@@ -140,6 +128,22 @@ describe("HWCR Outcome Prevention and Education", () => {
 
           cy.validateHWCSection(params);
         });
+      } else {
+        cy.log("Prevention and Education Edit Button Not Found, did a previous test fail? Skip the Test");
+        this.skip();
+      }
+    });
+  });
+
+  it("it can delete an existing prevention and education", () => {
+    cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030330", true);
+
+    cy.validateComplaint("23-030330", "Black Bear");
+
+    cy.get("#outcome-preventions").then(function ($preventionAndEducation) {
+      if ($preventionAndEducation.find("#prevention-delete-button").length) {
+        cy.get("#prevention-delete-button").click();
+        cy.get(".btn-primary").contains("delete actions").click();
       } else {
         cy.log("Prevention and Education Edit Button Not Found, did a previous test fail? Skip the Test");
         this.skip();
