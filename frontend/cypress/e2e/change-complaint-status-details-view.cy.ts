@@ -21,9 +21,13 @@ describe("Complaint Change Status spec - Details View", () => {
       actionRequired: "Yes",
       toastText: "Assessment has been saved",
     };
-    // If assessment button exists, click it
-    cy.get("#outcome-assessments").then(($assessmentSection) => {
-      if ($assessmentSection.find("#outcome-report-add-assessment").length) {
+
+    // If assessment edit button exists, click it
+    cy.get("#outcome-assessments").then(function ($assessments) {
+      if ($assessments.find("#assessment-edit-button").length) {
+        sectionParams.toastText = "Assessment has been updated";
+        cy.get("#assessment-edit-button").click();
+      } else if ($assessments.find("#outcome-report-add-assessment").length) {
         cy.get("#outcome-report-add-assessment").click({ force: true });
       }
     });
