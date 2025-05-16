@@ -21,6 +21,7 @@ describe("Complaint Change Status spec - Details View", () => {
       actionRequired: "Yes",
       toastText: "Assessment has been saved",
     };
+
     // If assessment edit button exists, click it
     cy.get("#outcome-assessments").then(function ($assessments) {
       if ($assessments.find("#assessment-edit-button").length) {

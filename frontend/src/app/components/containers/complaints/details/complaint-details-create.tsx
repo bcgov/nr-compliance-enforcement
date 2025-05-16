@@ -1019,6 +1019,7 @@ export const CreateComplaint: FC = () => {
           </div>
           <CompCoordinateInput
             id="create-complaint-coordinates"
+            mode="complaint"
             utmZones={bcUtmZoneNumbers.map((zone: string) => {
               return { value: zone, label: zone } as Option;
             })}
@@ -1028,6 +1029,8 @@ export const CreateComplaint: FC = () => {
             throwError={throwError}
             enableCopyCoordinates={false}
             validationRequired={false}
+            sourceXCoordinate="0"
+            sourceYCoordinate="0"
           />
 
           <div

@@ -3,7 +3,7 @@ import ReactDOMServer from "react-dom/server";
 import { Modal, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
-import { MapContainer, TileLayer, Marker, useMapEvents, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents, Popup, Tooltip } from "react-leaflet";
 import { selectGeocodedComplaintCoordinates } from "@store/reducers/complaints";
 import Leaflet from "leaflet";
 import { Coordinates } from "@apptypes/app/coordinate-type";
@@ -28,7 +28,18 @@ const redMarkerIcon = new Leaflet.DivIcon({
   iconAnchor: [20, 40],
 });
 
+const ZOOM_LEVELS = {
+  Continent: 2,
+  Country: 4,
+  Province: 6,
+  Region: 8,
+  City: 10,
+  Neighborhood: 12,
+  Street: 17,
+};
+
 type MapClickHandlerProps = {
+  mode: "complaint" | "equipment";
   complaintCoords: [number, number] | null;
   tempCoordinates: [number, number] | null;
   equipmentType: string;
@@ -36,6 +47,7 @@ type MapClickHandlerProps = {
 };
 
 const MapClickHandler: FC<MapClickHandlerProps> = ({
+  mode,
   complaintCoords,
   tempCoordinates,
   equipmentType,
@@ -49,7 +61,7 @@ const MapClickHandler: FC<MapClickHandlerProps> = ({
   return (
     <>
       {/* Complaint marker (red) */}
-      {complaintCoords && (
+      {mode === "equipment" && complaintCoords && (
         <Marker
           position={[complaintCoords[1], complaintCoords[0]]}
           icon={redMarkerIcon}
@@ -59,14 +71,19 @@ const MapClickHandler: FC<MapClickHandlerProps> = ({
       {tempCoordinates && (
         <Marker
           position={tempCoordinates}
-          icon={blueMarkerIcon}
+          icon={mode === "equipment" ? blueMarkerIcon : redMarkerIcon}
         >
-          <Popup>
-            <p className="leaflet-popup-object-description">{equipmentType} coordinates</p>
-            <p className="leaflet-popup-object-coordinates">
+          <Tooltip
+            direction="top"
+            offset={[0, -50]}
+            opacity={1}
+            permanent
+          >
+            <div>{mode === "equipment" ? equipmentType : "Complaint"} coordinates</div>
+            <div>
               {tempCoordinates[0]} , {tempCoordinates[1]}
-            </p>
-          </Popup>
+            </div>
+          </Tooltip>
         </Marker>
       )}
     </>
@@ -74,6 +91,7 @@ const MapClickHandler: FC<MapClickHandlerProps> = ({
 };
 
 type MapModalProps = {
+  mode: "complaint" | "equipment";
   close: () => void;
   submit: () => void;
   complaintCoords: [number, number] | null;
@@ -85,6 +103,7 @@ type MapModalProps = {
 };
 
 export const MapModal: FC<MapModalProps> = ({
+  mode,
   close,
   submit,
   complaintCoords,
@@ -104,6 +123,15 @@ export const MapModal: FC<MapModalProps> = ({
   const geocodedComplaintCoordinates = useAppSelector(selectGeocodedComplaintCoordinates);
   const [tempCoordinates, setTempCoordinates] = useState<[number, number] | null>(null);
 
+  let zoomLevel = ZOOM_LEVELS.Province;
+  if (mode === "equipment") {
+    zoomLevel = complaintCoords ? ZOOM_LEVELS.Street : ZOOM_LEVELS.Neighborhood;
+  } else if (mode === "complaint") {
+    if (equipmentCoords) {
+      zoomLevel = ZOOM_LEVELS.Neighborhood;
+    }
+  }
+
   useEffect(() => {
     if (equipmentCoords) {
       setTempCoordinates(equipmentCoords);
@@ -111,26 +139,32 @@ export const MapModal: FC<MapModalProps> = ({
   }, [equipmentCoords]);
 
   useEffect(() => {
-    if (complaintCoords) {
-      setMapCenterPosition({ lat: complaintCoords[1], lng: complaintCoords[0] });
-    } else if (geocodedComplaintCoordinates?.features) {
-      const lat =
-        geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude] !== undefined
-          ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude]
-          : 0;
-      const lng =
-        geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude] !== undefined
-          ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude]
-          : 0;
-      setMapCenterPosition({ lat: lat, lng: lng });
+    if (mode === "equipment" || (mode === "complaint" && equipmentCoords)) {
+      if (complaintCoords) {
+        setMapCenterPosition({ lat: complaintCoords[1], lng: complaintCoords[0] });
+      } else if (geocodedComplaintCoordinates?.features) {
+        const lat =
+          geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude] !== undefined
+            ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude]
+            : 0;
+        const lng =
+          geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude] !== undefined
+            ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude]
+            : 0;
+        setMapCenterPosition({ lat: lat, lng: lng });
+      }
+    } else {
+      setMapCenterPosition({ lat: 49.57, lng: -120.333 });
     }
   }, [complaintCoords]);
 
   // Save coordinates and close modal
   const handleSaveCoordinates = () => {
     if (tempCoordinates && tempCoordinates.length > 0) {
-      setYCoordinate(tempCoordinates[0].toString());
-      setXCoordinate(tempCoordinates[1].toString());
+      if (mode === "equipment") {
+        setYCoordinate(tempCoordinates[0].toString());
+        setXCoordinate(tempCoordinates[1].toString());
+      }
       syncCoordinates(tempCoordinates[0].toString(), tempCoordinates[1].toString());
     }
     submit();
@@ -145,11 +179,12 @@ export const MapModal: FC<MapModalProps> = ({
         {mapCenterPosition.lat !== 0 && mapCenterPosition.lng !== 0 && (
           <MapContainer
             center={mapCenterPosition} // Center on complaint coordinates
-            zoom={complaintCoords ? 17 : 12} //Zoom in more details if has complaint coords
+            zoom={zoomLevel}
             style={{ height: "50vh", width: "100%", cursor: "default" }}
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             <MapClickHandler
+              mode={mode}
               complaintCoords={complaintCoords}
               tempCoordinates={tempCoordinates}
               equipmentType={equipmentType}

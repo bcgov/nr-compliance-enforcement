@@ -44,6 +44,7 @@ describe("HWCR Outcome Assessments", () => {
     //If we ever get the ability to remove an assessment this test suite should be rewritten to remove this conditional
     //and to add a test at the end to delete the assessment.
 
+
     // If assessment edit button exists, skip this test
     cy.get("#outcome-assessments").then(function ($assessments) {
       if ($assessments.find("#assessment-edit-button").length) {
@@ -81,6 +82,7 @@ describe("HWCR Outcome Assessments", () => {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-033066", true);
 
     cy.validateComplaint("23-033066", "Coyote");
+
 
     cy.get("#outcome-assessments").then(($assessments) => {
       if ($assessments.find("#assessment-edit-button").length) {
