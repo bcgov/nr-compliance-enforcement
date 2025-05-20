@@ -109,6 +109,7 @@ describe("Testing: OfficeService", () => {
       update_user_id: "MSEARS",
       create_utc_timestamp: new Date(),
       update_utc_timestamp: new Date(),
+      external_agency_ind: false,
     };
 
     const payload: CreateOfficeDto = {
