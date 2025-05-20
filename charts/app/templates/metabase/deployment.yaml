@@ -1,4 +1,4 @@
-{{- if and .Values.metabase.enabled .Values.metabase-pg.enabled }}
+{{- if and .Values.metabase.enabled }}
 ---
 apiVersion: apps/v1
 kind: Deployment
