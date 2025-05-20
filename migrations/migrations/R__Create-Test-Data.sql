@@ -11438,8 +11438,8 @@ UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'REG_FLTR
 ---------------------------
 
 insert into agency_code (agency_code, short_description, long_description, display_order, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, external_agency_ind)
-values ('DFO', 'Fisheries and Oceans Canada', 'Fisheries and Oceans Canada', 10, true, user, now(), user, now(), 'Y'),
-      ('ECCC', 'Environment and Climate Change Canada', 'Environment and Climate Change Canada', 20, true, user, now(), user, now(), 'Y'),
+values ('DFO', 'Fisheries and Oceans Canada', 'Fisheries and Oceans Canada', 20, true, user, now(), user, now(), 'Y'),
+      ('ECCC', 'Environment and Climate Change Canada', 'Environment and Climate Change Canada', 10, true, user, now(), user, now(), 'Y'),
       ('POL', 'Police', 'Police', 50, true, user, now(), user, now(), 'Y'),
       ('NROS', 'Natural Resource Officer Service', 'Natural Resource Officer Service', 30, true, user, now(), user, now(), 'Y'),
       ('OTH', 'Other', 'Other', 40, true, user, now(), user, now(), 'Y')
