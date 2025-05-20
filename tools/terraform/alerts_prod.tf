@@ -225,3 +225,44 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_webeoc_prod_storage_usage" {
     app = "NatCom"
   }
 }
+### Kubernetes Critical Events
+resource "sysdig_monitor_alert_v2_event" "nr_events_prod_failedimagepull" {
+  name = "Failed to pull image"
+  description = "A Kubernetes pod failed to pull an image from the registry"
+  severity = "high"
+  filter = "Failed to pull image"
+  sources = ["kubernetes"]
+  operator = ">"
+  threshold = 2
+  group_by = ["kube_pod_name"]
+  scope {
+    label = "kube_namespace_name"
+    operator = "in"
+    values = ["c1c7ed-prod"]
+  }
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
+    renotify_every_minutes = 1440
+  }
+  range_seconds = 600
+}
+resource "sysdig_monitor_alert_v2_event" "nr_events_prod_failedvolumeattach" {
+  name = "Failed to attach to volume within deadline"
+  description = "A pod was unable to attach to its specified volume within the schedule"
+  severity = "high"
+  filter = "Attach failed for volume"
+  sources = ["kubernetes"]
+  operator = ">"
+  threshold = 1
+  group_by = ["kube_pod_name"]
+  scope {
+    label = "kube_namespace_name"
+    operator = "in"
+    values = ["c1c7ed-prod"]
+  }
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
+    renotify_every_minutes = 1440
+  }
+  range_seconds = 600
+}
