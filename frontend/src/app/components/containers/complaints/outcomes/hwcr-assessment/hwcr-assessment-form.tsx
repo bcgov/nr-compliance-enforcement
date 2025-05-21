@@ -293,8 +293,9 @@ export const HWCRAssessmentForm: FC<Props> = ({
     selectedActionRequired?.value === "No" && (quickClose || selectedJustification?.value === "DUPLICATE");
 
   const getAssessmentAgency = () => {
-    let officer = officersInAgencyList?.find((officer) => officer.auth_user_guid === selectedOfficer?.value);
-    return officer?.agency_code?.agency_code;
+    const officer = officersInAgencyList?.find((officer) => officer.auth_user_guid === selectedOfficer?.value);
+    const agency_code = officer?.agency_code?.agency_code;
+    return agency_code ?? "";
   };
 
   const getUpdatedAssessmentData = () => ({

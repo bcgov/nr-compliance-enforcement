@@ -335,7 +335,7 @@ export class PersonComplaintXrefService {
       })
       .andWhere("person_complaint_xref.active_ind = true")
       .andWhere("officer.person_guid = person.person_guid")
-      .addSelect("agency_code.short_description")
+      .addSelect("agency_code.short_description", "agency_code_short_description")
       .addSelect("officer.auth_user_guid")
       .execute();
 
