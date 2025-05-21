@@ -14,7 +14,6 @@ import { MapGestureHandler } from "./map-gesture-handler";
 import { Alert, Card } from "react-bootstrap";
 import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
 import { nanoid } from "nanoid";
-import { is } from "cypress/types/bluebird";
 
 type Props = {
   coordinates?: { lat: number; lng: number };
