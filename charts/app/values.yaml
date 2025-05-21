@@ -371,7 +371,7 @@ webeoc:
 
 #-- Metabase Values
 metabase:
-  enabled: true
+  enabled: false
   replicaCount: 1
   nameOverride: ""
   fullnameOverride: ""
@@ -404,7 +404,7 @@ metabase:
   affinity: {}
 
 metabase-pg:
-  enabled: true
+  enabled: false
   image:
     registry: ghcr.io
     repository: bcgov/nr-containers/bitnami/postgresql
