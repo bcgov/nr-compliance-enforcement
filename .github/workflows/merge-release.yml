@@ -83,6 +83,8 @@ jobs:
         --set backup.persistence.size=256Mi
         --set global.useCrunchy=true
         --set global.crunchyClusterEnvironment=test
+        --set metabase.enabled=true
+        --set metabase-pg.enabled=true
 
   healthcheck:
     name: Healthcheck Test Deployment

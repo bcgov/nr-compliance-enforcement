@@ -8,6 +8,7 @@ spec:
   metadata:
     labels: {{ include "crunchy-postgres.labels" . | nindent 6 }}
   imagePullPolicy: {{.Values.crunchy.imagePullPolicy}}
+  openshift: true
   postgresVersion: {{ .Values.crunchy.postgresVersion }}
   {{ if .Values.crunchy.postGISVersion }}
   postGISVersion: {{ .Values.crunchy.postGISVersion | quote }}
