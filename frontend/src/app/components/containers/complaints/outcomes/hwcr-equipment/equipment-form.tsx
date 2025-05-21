@@ -92,8 +92,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     };
   }, []);
 
-  // console.log(enableCopyCoordinates);
-
   // for turning codes into values
   const getValue = useCallback(
     (property: string): Option | undefined => {

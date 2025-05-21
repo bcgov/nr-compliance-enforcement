@@ -151,9 +151,7 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
           id={`equipment-map-notification`}
         >
           <i className="bi bi-info-circle-fill"></i>
-          <span>
-            {unmappedEquipment} equipment{unmappedEquipment === 1 ? "" : "s"} could not be mapped
-          </span>
+          <span>{unmappedEquipment} equipment could not be mapped.</span>
         </Alert>
       )}
 

@@ -299,7 +299,9 @@ export const CompCoordinateInput: FC<Props> = ({
         if (sourceXCoordinate && sourceYCoordinate) {
           handleGeoPointChange(sourceYCoordinate, sourceXCoordinate);
         }
-      } else if (coordinateType === COORDINATE_TYPES.UTM) {
+      }
+      // If COORDINATE_TYPES.UTM
+      else {
         if (sourceXCoordinate && sourceYCoordinate) {
           const { easting, northing, zone } = updateUtmFields(sourceYCoordinate, sourceXCoordinate);
           if (easting && northing && zone) {
