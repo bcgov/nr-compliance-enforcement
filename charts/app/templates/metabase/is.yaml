@@ -1,3 +1,4 @@
+{{- if and .Values.metabase.enabled }}
 ---
 apiVersion: image.openshift.io/v1
 kind: ImageStream
@@ -15,3 +16,4 @@ spec:
         name: "{{ .Values.metabase.image.repository }}:{{ .Values.metabase.metabaseImage.tag }}"
       referencePolicy:
         type: Local
+{{- end }}
