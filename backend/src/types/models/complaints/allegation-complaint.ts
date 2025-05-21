@@ -7,4 +7,5 @@ export interface AllegationComplaintDto extends ComplaintDto {
   isInProgress: boolean;
   wasObserved: boolean;
   violationDetails: string;
+  authorization: string;
 }
