@@ -293,21 +293,23 @@ export const CompCoordinateInput: FC<Props> = ({
 
   useEffect(() => {
     if (enableCopyCoordinates) {
-      if (coordinateType === COORDINATE_TYPES.LatLong) {
-        setXCoordinate(sourceXCoordinate);
-        setYCoordinate(sourceYCoordinate);
-        if (sourceXCoordinate && sourceYCoordinate) {
-          handleGeoPointChange(sourceYCoordinate, sourceXCoordinate);
-        }
-      }
-      // If COORDINATE_TYPES.UTM
-      else {
-        if (sourceXCoordinate && sourceYCoordinate) {
-          const { easting, northing, zone } = updateUtmFields(sourceYCoordinate, sourceXCoordinate);
-          if (easting && northing && zone) {
-            handleUtmGeoPointChange(easting, northing, zone);
+      switch (coordinateType) {
+        case COORDINATE_TYPES.UTM:
+          if (sourceXCoordinate && sourceYCoordinate) {
+            const { easting, northing, zone } = updateUtmFields(sourceYCoordinate, sourceXCoordinate);
+            if (easting && northing && zone) {
+              handleUtmGeoPointChange(easting, northing, zone);
+            }
           }
-        }
+          break;
+        case COORDINATE_TYPES.LatLong:
+        default:
+          setXCoordinate(sourceXCoordinate);
+          setYCoordinate(sourceYCoordinate);
+          if (sourceXCoordinate && sourceYCoordinate) {
+            handleGeoPointChange(sourceYCoordinate, sourceXCoordinate);
+          }
+          break;
       }
     }
   }, [enableCopyCoordinates]);
