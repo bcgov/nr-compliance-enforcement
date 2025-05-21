@@ -1188,7 +1188,6 @@ export class ComplaintService {
           );
 
           // Get the authorization id from the case management system
-          this.logger.error("Getting case files from CM");
           const ids = items.map((item) => item.id);
           const { data, errors } = await get(token, {
             query: `{getCaseFilesByLeadId (leadIdentifiers: [${ids.map((id) => '"' + id + '"').join(", ")}])
