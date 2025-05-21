@@ -1029,8 +1029,8 @@ export const CreateComplaint: FC = () => {
             throwError={throwError}
             enableCopyCoordinates={false}
             validationRequired={false}
-            sourceXCoordinate="0"
-            sourceYCoordinate="0"
+            sourceXCoordinate={longitude ?? "0"}
+            sourceYCoordinate={latitude ?? "0"}
           />
 
           <div

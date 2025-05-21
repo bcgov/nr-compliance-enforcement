@@ -3,7 +3,7 @@ import ReactDOMServer from "react-dom/server";
 import { Modal, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
-import { MapContainer, TileLayer, Marker, useMapEvents, Popup, Tooltip } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents, Tooltip } from "react-leaflet";
 import { selectGeocodedComplaintCoordinates } from "@store/reducers/complaints";
 import Leaflet from "leaflet";
 import { Coordinates } from "@apptypes/app/coordinate-type";
