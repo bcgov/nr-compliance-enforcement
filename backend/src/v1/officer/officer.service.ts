@@ -41,10 +41,9 @@ export class OfficerService {
       .createQueryBuilder("officer")
       .leftJoinAndSelect("officer.office_guid", "office")
       .leftJoinAndSelect("officer.person_guid", "person")
-      .leftJoinAndSelect("office.agency_code", "agency")
+      .leftJoinAndSelect("officer.agency_code", "agency")
       // This view is slow :(
       .leftJoinAndSelect("office.cos_geo_org_unit", "cos_geo_org_unit")
-      .leftJoinAndSelect("office.agency_code", "agency_code")
       .orderBy("person.last_name", "ASC")
       .getMany();
 
