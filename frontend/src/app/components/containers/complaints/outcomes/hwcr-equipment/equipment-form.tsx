@@ -66,6 +66,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const [wasAnimalCaptured, setWasAnimalCaptured] = useState<string>("U");
   const [wasAnimalCapturedErrorMsg, setWasAnimalCapturedErrorMsg] = useState<string>("");
   const [quantityErrorMsg, setQuantityErrorMsg] = useState<string>("");
+  const [enableCopyCoordinates, setEnableCopyCoordinates] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
   const { id = "" } = useParams<{ id: string }>();
@@ -81,6 +82,17 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
 
   const isInEdit = useAppSelector((state) => state.cases.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
+
+  // Clear state on unmount
+  useEffect(() => {
+    return () => {
+      setXCoordinate("");
+      setYCoordinate("");
+      setEnableCopyCoordinates(false);
+    };
+  }, []);
+
+  // console.log(enableCopyCoordinates);
 
   // for turning codes into values
   const getValue = useCallback(
@@ -333,6 +345,23 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     setCoordinateErrorsInd(hasError);
   };
 
+  const handleCopyLocation = () => {
+    // Copy address if exists
+    if (complaintData) {
+      setAddress(complaintData.locationSummary);
+    } else setAddress("");
+
+    // Copy coordinates if exists
+    setEnableCopyCoordinates(true);
+  };
+
+  useEffect(() => {
+    // Reset enableCopyCoordinates if xCoordinate, yCoordinate, and address are set
+    if (enableCopyCoordinates && xCoordinate && yCoordinate && address) {
+      setEnableCopyCoordinates(false);
+    }
+  }, [xCoordinate, yCoordinate, address, enableCopyCoordinates]);
+
   return (
     <div>
       <ToastContainer />
@@ -406,6 +435,32 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               <label htmlFor="equipment-address">
                 Location info (choose one)<span className="required-ind">*</span>
               </label>
+              <div className="comp-details-input full-width">
+                {complaintData?.locationSummary && (
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    className="btn-txt svg-icon mt-2 validation-group-input"
+                    id="equipment-copy-address-button"
+                    onClick={handleCopyLocation}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-copy"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"
+                      />
+                    </svg>
+                    <span>Copy all location information from complaint details</span>
+                  </Button>
+                )}
+              </div>
             </div>
             <div
               id="equipment-address-div"
@@ -431,30 +486,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                   value={address}
                 />
                 <div className="error-message">{equipmentAddressErrorMsg}</div>
-                {complaintData?.locationSummary && (
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    className="btn-txt svg-icon mt-2 validation-group-input"
-                    id="equipment-copy-address-button"
-                    onClick={() => (complaintData ? setAddress(complaintData.locationSummary) : "")}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="bi bi-copy"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"
-                      />
-                    </svg>
-                    <span>Copy location from complaint details</span>
-                  </Button>
-                )}
                 <div className="error-message">{xCoordinateErrorMsg || yCoordinateErrorMsg}</div>
               </div>
             </div>
@@ -469,7 +500,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               throwError={throwError}
               sourceXCoordinate={complaintData?.location?.coordinates[0].toString() ?? ""}
               sourceYCoordinate={complaintData?.location?.coordinates[1].toString() ?? ""}
-              enableCopyCoordinates={true}
+              enableCopyCoordinates={enableCopyCoordinates}
               validationRequired={true}
               selectFromMap={true}
               equipmentType={type?.label}
