@@ -11,16 +11,16 @@ let utmObj = require("utm-latlng");
 
 type Props = {
   id?: string;
+  mode: "complaint" | "equipment";
   utmZones?: Array<Option>;
   initXCoordinate?: string;
   initYCoordinate?: string;
   syncCoordinates: (yCoordinate: string | undefined, xCoordinate: string | undefined) => void;
   throwError: (hasError: boolean) => void;
-  sourceXCoordinate?: string;
-  sourceYCoordinate?: string;
   enableCopyCoordinates: boolean;
   validationRequired: boolean;
-  selectFromMap?: boolean;
+  sourceXCoordinate?: string;
+  sourceYCoordinate?: string;
   equipmentType?: string;
 };
 
@@ -31,6 +31,7 @@ const COORDINATE_TYPES = {
 
 export const CompCoordinateInput: FC<Props> = ({
   id,
+  mode,
   utmZones,
   initXCoordinate,
   initYCoordinate,
@@ -40,7 +41,6 @@ export const CompCoordinateInput: FC<Props> = ({
   throwError,
   enableCopyCoordinates,
   validationRequired,
-  selectFromMap,
   equipmentType,
 }) => {
   const dispatch = useAppDispatch();
@@ -302,7 +302,8 @@ export const CompCoordinateInput: FC<Props> = ({
         modalSize: "lg",
         modalType: MAP_MODAL,
         data: {
-          title: "Select equipment from map",
+          mode: mode,
+          title: mode === "complaint" ? "Select location from map" : "Select equipment from map",
           complaintCoords:
             sourceXCoordinate !== "0" && sourceYCoordinate !== "0"
               ? [Number(sourceXCoordinate), Number(sourceYCoordinate)]
@@ -405,7 +406,7 @@ export const CompCoordinateInput: FC<Props> = ({
               </div>
             </div>
           )}
-          {selectFromMap && coordinateType === COORDINATE_TYPES.LatLong && (
+          {coordinateType === COORDINATE_TYPES.LatLong && (
             <Button
               variant="outline-primary"
               onClick={openMapModal}
