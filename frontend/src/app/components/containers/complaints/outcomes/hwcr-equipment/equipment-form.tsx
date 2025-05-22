@@ -350,7 +350,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
     } else setAddress("");
 
     // Copy coordinates if exists
-    setEnableCopyCoordinates(true);
+    if (complaintData?.location?.coordinates[0] !== 0 && complaintData?.location?.coordinates[1] !== 0) {
+      setEnableCopyCoordinates(true);
+    }
   };
 
   useEffect(() => {
@@ -359,6 +361,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
       setEnableCopyCoordinates(false);
     }
   }, [xCoordinate, yCoordinate, address, enableCopyCoordinates]);
+
+  const showCopyAllLocationInfo =
+    complaintData?.locationSummary ||
+    (complaintData?.location?.coordinates[0] !== 0 && complaintData?.location?.coordinates[1] !== 0);
 
   return (
     <div>
@@ -434,7 +440,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                 Location info (choose one)<span className="required-ind">*</span>
               </label>
               <div className="comp-details-input full-width">
-                {complaintData?.locationSummary && (
+                {showCopyAllLocationInfo && (
                   <Button
                     variant="outline-primary"
                     size="sm"
