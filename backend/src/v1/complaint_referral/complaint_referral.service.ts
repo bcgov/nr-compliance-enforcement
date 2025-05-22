@@ -48,7 +48,7 @@ export class ComplaintReferralService {
     createComplaintReferralDto.create_user_id = idir;
     createComplaintReferralDto.update_user_id = idir;
 
-    const { complaint_identifier: id, referred_to_agency_code } = createComplaintReferralDto;
+    const { complaint_identifier: id, referred_to_agency_code, externalAgencyInd } = createComplaintReferralDto;
     const { type, fileName, tz, attachments } = createComplaintReferralDto.documentExportParams;
     // Generate the document export from the referring agency if sending the referral email
     let complaintExport;
@@ -59,14 +59,16 @@ export class ComplaintReferralService {
     const newComplaintReferral = this.complaintReferralRepository.create(createComplaintReferralDto);
     const result: any = await this.complaintReferralRepository.save(newComplaintReferral);
 
-    //Update owned_by_agency_code in complaint table
     if (result.complaint_referral_guid) {
-      await this.complaintRepository.update(
-        { complaint_identifier: id },
-        { owned_by_agency_code: referred_to_agency_code },
-      );
-    }
+      const updateData: any = {
+        owned_by_agency_code: referred_to_agency_code,
+      };
+      if (externalAgencyInd) {
+        updateData.complaint_status_code = "CLOSED";
+      }
 
+      await this.complaintRepository.update({ complaint_identifier: id }, updateData);
+    }
     // Clear the officer assigend to the complaint
     this._personService.clearAssignedOfficer(createComplaintReferralDto.complaint_identifier);
 

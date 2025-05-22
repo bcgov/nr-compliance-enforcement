@@ -16,6 +16,7 @@ export interface ComplaintReferral {
   referred_to_agency_code: {
     agency_code: string;
     long_description: string;
+    external_agency_ind: string;
   };
   referral_reason: string;
   referral_date: string;

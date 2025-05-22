@@ -82,6 +82,7 @@ describe("Testing: Office Controller", () => {
       update_user_id: "",
       create_utc_timestamp: new Date(),
       update_utc_timestamp: new Date(),
+      external_agency_ind: false,
     };
 
     const payload: CreateOfficeDto = {
@@ -107,6 +108,7 @@ describe("Testing: Office Controller", () => {
       update_user_id: "",
       create_utc_timestamp: new Date(),
       update_utc_timestamp: new Date(),
+      external_agency_ind: false,
     };
 
     const payload: UpdateOfficeDto = {
