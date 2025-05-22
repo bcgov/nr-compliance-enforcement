@@ -126,7 +126,7 @@ export class EmailService {
             complaintAsErs.violation,
           );
           const { isInProgress } = complaintAsErs;
-          complaintSummaryText = `${violationCodeName}, ${
+          complaintSummaryText = `${bodyTypeDescription} ${violationCodeName}, ${
             isInProgress === true ? "Violation in progress, " : ""
           }${communityName}`;
           subjectAdditionalDetails = `(${violationCodeName}, ${
