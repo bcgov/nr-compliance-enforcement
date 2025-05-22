@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Modal, Button, ListGroup } from "react-bootstrap";
+import { Modal, Button, ListGroup, Alert } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
 import { CompSelect } from "@components/common/comp-select";
@@ -20,6 +20,8 @@ import {
 } from "@/app/store/reducers/complaints";
 import { getAvatarInitials } from "@/app/common/methods";
 import { AgencyNames } from "@/app/types/app/agency-types";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 type ManageCollaboratorsModalProps = {
   close: () => void;
@@ -97,7 +99,8 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
     }
 
     if (!hasError && selectedPerson?.value) {
-      dispatch(addCollaboratorToComplaint(complaintId, selectedPerson.value));
+      const complaintUrl = window.location.href;
+      dispatch(addCollaboratorToComplaint(complaintId, selectedPerson.value, complaintType, complaintUrl));
       // Reset selections after successful add
       setSelectedAgency(null);
       setSelectedPerson(null);
@@ -116,6 +119,18 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
         </Modal.Header>
       )}
       <Modal.Body>
+        <FeatureFlag feature={FEATURE_TYPES.COLLABORATOR_EMAILS}>
+          <Alert
+            variant="warning"
+            className="comp-complaint-details-alert"
+            id="comp-complaint-refer-alert"
+          >
+            <div>
+              <i className="bi bi-exclamation-triangle-fill"></i>
+              <span>{`Clicking ‘Add as a collaborator’ will send an email on your behalf to notify the user of the invitation.`}</span>
+            </div>
+          </Alert>
+        </FeatureFlag>
         <div className="manage-collaborators-modal comp-details-form">
           <div className="comp-details-form-row">
             <label htmlFor="select-agency">

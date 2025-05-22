@@ -9,6 +9,8 @@ import { REQUEST } from "@nestjs/core";
 import { PersonComplaintXrefCodeEnum } from "../../enum/person_complaint_xref_code.enum";
 import { Officer } from "../officer/entities/officer.entity";
 import { UUID } from "crypto";
+import { EmailService } from "../email/email.service";
+import { SendCollaboratorEmalDto } from "../email/dto/send_collaborator_email.dto";
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -20,6 +22,8 @@ export class PersonComplaintXrefService {
   constructor(
     private readonly dataSource: DataSource,
     @Inject(forwardRef(() => ComplaintService)) private readonly _complaintService: ComplaintService,
+    @Inject(EmailService)
+    private readonly _emailService: EmailService,
     @Inject(REQUEST)
     private readonly request: Request,
   ) {}
@@ -247,7 +251,12 @@ export class PersonComplaintXrefService {
     }
   }
 
-  async addCollaboratorToComplaint(complaintIdentifier: string, personGuid: string): Promise<PersonComplaintXref> {
+  async addCollaboratorToComplaint(
+    complaintIdentifier: string,
+    personGuid: string,
+    sendCollaboratorEmailDto: SendCollaboratorEmalDto,
+    user,
+  ): Promise<PersonComplaintXref> {
     this.logger.debug(`Adding collaborator ${personGuid} Complaint ${complaintIdentifier}`);
     let newPersonComplaintXref: PersonComplaintXref;
     const currentUserId = getIdirFromRequest(this.request);
@@ -263,6 +272,7 @@ export class PersonComplaintXrefService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+    let sendEmail = false;
     try {
       // create a new record representing the collaboration
       newPersonComplaintXref = await this.create(createPersonComplaintXrefDto);
@@ -271,6 +281,7 @@ export class PersonComplaintXrefService {
       // Update the complaint last updated date on the parent record
       await this.updateComplaintLastUpdatedDate(complaintIdentifier, newPersonComplaintXref, queryRunner);
       await queryRunner.commitTransaction();
+      sendEmail = true;
       this.logger.debug(`Succesfully added collaborator ${personGuid} to complaint ${complaintIdentifier}`);
     } catch (err) {
       this.logger.error(err);
@@ -278,6 +289,13 @@ export class PersonComplaintXrefService {
       throw new BadRequestException(err);
     } finally {
       await queryRunner.release();
+      if (sendEmail) {
+        try {
+          await this._emailService.sendCollaboratorEmail(complaintIdentifier, sendCollaboratorEmailDto, user);
+        } catch (error) {
+          this.logger.error(`Error sending collaborator email.`, error);
+        }
+      }
     }
     return newPersonComplaintXref;
   }

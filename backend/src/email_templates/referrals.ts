@@ -26,7 +26,7 @@ export function generateReferralEmailBody(emailReferralParams: GenerateReferralE
   } = emailReferralParams;
   return `<p>Hello,</p>
 <p>
-  ${complaintType} complaint #<a href=${complaintUrl}>${complaintId}</a> has been referred to ${referredToAgency} by ${senderName} (CC’d) at ${referredByAgency}.
+  ${complaintType} complaint #<a href=${complaintUrl}>${complaintId}</a> has been referred to ${referredToAgency} by <strong>${senderName} (CC’d)</strong> at ${referredByAgency}.
 </p>
 <ul>
   <li>Summary: ${complaintSummaryText}</li>
