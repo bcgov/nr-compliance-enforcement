@@ -280,7 +280,7 @@ export const CompCoordinateInput: FC<Props> = ({
     if (xCoordinate && yCoordinate) {
       handleGeoPointChange(yCoordinate, xCoordinate);
     }
-  }, [xCoordinate, yCoordinate]);
+  }, [xCoordinate, yCoordinate, handleGeoPointChange]);
 
   const formatUtmCoordinate = (input: string | undefined): string => {
     const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
@@ -292,27 +292,30 @@ export const CompCoordinateInput: FC<Props> = ({
   };
 
   useEffect(() => {
-    if (enableCopyCoordinates) {
-      switch (coordinateType) {
-        case COORDINATE_TYPES.UTM:
-          if (sourceXCoordinate && sourceYCoordinate) {
-            const { easting, northing, zone } = updateUtmFields(sourceYCoordinate, sourceXCoordinate);
-            if (easting && northing && zone) {
-              handleUtmGeoPointChange(easting, northing, zone);
-            }
-          }
-          break;
-        case COORDINATE_TYPES.LatLong:
-        default:
-          setXCoordinate(sourceXCoordinate);
-          setYCoordinate(sourceYCoordinate);
-          if (sourceXCoordinate && sourceYCoordinate) {
-            handleGeoPointChange(sourceYCoordinate, sourceXCoordinate);
-          }
-          break;
+    if (!enableCopyCoordinates) return;
+
+    const hasCoordinates = sourceXCoordinate && sourceYCoordinate;
+
+    if (coordinateType === COORDINATE_TYPES.UTM && hasCoordinates) {
+      const { easting, northing, zone } = updateUtmFields(sourceYCoordinate, sourceXCoordinate);
+      if (easting && northing && zone) {
+        handleUtmGeoPointChange(easting, northing, zone);
+      }
+    } else {
+      setXCoordinate(sourceXCoordinate);
+      setYCoordinate(sourceYCoordinate);
+      if (hasCoordinates) {
+        handleGeoPointChange(sourceYCoordinate, sourceXCoordinate);
       }
     }
-  }, [enableCopyCoordinates]);
+  }, [
+    enableCopyCoordinates,
+    coordinateType,
+    handleGeoPointChange,
+    handleUtmGeoPointChange,
+    sourceXCoordinate,
+    sourceYCoordinate,
+  ]);
 
   const isZeroOrEmpty = (input: string | undefined): boolean => {
     return input === "" || input === "0";
