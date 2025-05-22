@@ -99,10 +99,14 @@ export class EmailService {
         referred_by_agency_code,
       );
       let subjectAdditionalDetails = "";
+      let subjectTypeDescription = type;
+      let bodyTypeDescription = type;
       let complaintSummaryText = "";
 
       switch (type) {
         case "HWCR": {
+          subjectTypeDescription = "HWC";
+          bodyTypeDescription = "Human wildlife conflict";
           const complaintAsWildlife = complaint as WildlifeComplaintDto;
           const { short_description: speciesName } = await this._speciesCodeService.findOne(
             complaintAsWildlife.species,
@@ -110,11 +114,13 @@ export class EmailService {
           const { long_description: natureOfComplaint } = await this._natureOfComplaintService.findOne(
             complaintAsWildlife.natureOfComplaint,
           );
-          complaintSummaryText = `${type}, ${natureOfComplaint}, ${speciesName}, ${communityName}`;
+          complaintSummaryText = `${bodyTypeDescription}, ${natureOfComplaint}, ${speciesName}, ${communityName}`;
           subjectAdditionalDetails = `(${speciesName}, ${communityName})`;
           break;
         }
         case "ERS": {
+          subjectTypeDescription = "Enforcement";
+          bodyTypeDescription = "Enforcement";
           const complaintAsErs = complaint as AllegationComplaintDto;
           const { long_description: violationCodeName } = await this._violationCodeService.findOne(
             complaintAsErs.violation,
@@ -129,19 +135,19 @@ export class EmailService {
           break;
         }
         case "GIR": {
+          bodyTypeDescription = "General incident";
           const complaintAsGir = complaint as GeneralIncidentComplaintDto;
           const { long_description: girTypeName } = await this._girTypeCodeService.findOne(complaintAsGir.girType);
-          complaintSummaryText = `${type}, ${girTypeName}, ${communityName}`;
+          complaintSummaryText = `${bodyTypeDescription}, ${girTypeName}, ${communityName}`;
           subjectAdditionalDetails = `(${girTypeName}, ${communityName})`;
           break;
         }
       }
       const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : null;
-      const complaintTypeDescription = type === "ERS" ? "Enforcement" : type;
-      const emailSubject = `${envFlag}NatCom referral ${complaintTypeDescription} complaint #${id} ${subjectAdditionalDetails}`;
+      const emailSubject = `${envFlag}NatCom referral ${subjectTypeDescription} complaint #${id} ${subjectAdditionalDetails}`;
       const generateReferralEmailParams: GenerateReferralEmailParams = {
         complaintId: id,
-        complaintTypeDescription: complaintTypeDescription,
+        complaintTypeDescription: bodyTypeDescription,
         senderName: senderName,
         senderEmailAddress: senderEmailAddress,
         referredToAgency: referredToAgencyName,
