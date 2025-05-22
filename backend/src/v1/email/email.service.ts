@@ -137,10 +137,11 @@ export class EmailService {
         }
       }
       const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : null;
-      const emailSubject = `${envFlag}NatCom referral ${type} complaint #${id} ${subjectAdditionalDetails}`;
+      const complaintTypeDescription = type === "ERS" ? "Enforcement" : type;
+      const emailSubject = `${envFlag}NatCom referral ${complaintTypeDescription} complaint #${id} ${subjectAdditionalDetails}`;
       const generateReferralEmailParams: GenerateReferralEmailParams = {
         complaintId: id,
-        complaintType: type,
+        complaintTypeDescription: complaintTypeDescription,
         senderName: senderName,
         senderEmailAddress: senderEmailAddress,
         referredToAgency: referredToAgencyName,
