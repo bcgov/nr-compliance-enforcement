@@ -4415,6 +4415,30 @@ INSERT INTO
     update_utc_timestamp
   )
 SELECT
+  'AUTHCOL',
+  'Authorization Column',
+  'Displays the Authorization column in the list view',
+  250,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
   'LCTNCOL',
   'Location/address Column',
   'Displays the Location/address column in the list view',
@@ -5532,6 +5556,66 @@ SELECT
   'PARKCOL',
   'PARKS',
   'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'AUTHCOL',
+  'COS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'AUTHCOL',
+  'EPO',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'AUTHCOL',
+  'PARKS',
+  'N',
   user,
   now(),
   user,
