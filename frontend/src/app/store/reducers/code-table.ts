@@ -766,11 +766,13 @@ export const selectCreatableComplaintTypeDropdown = createSelector(
 export const selectAgencyDropdown = createSelector(
   (state: RootState) => state.codeTables.agency,
   (agencyItems) =>
-    agencyItems.map(({ agency, longDescription, isActive }) => ({
-      label: longDescription,
-      value: agency,
-      isActive,
-    })),
+    agencyItems
+      .filter((agency) => !agency.externalAgencyInd) // filter out the pseudo-agencies
+      .map(({ agency, longDescription, isActive }) => ({
+        label: longDescription,
+        value: agency,
+        isActive,
+      })),
 );
 
 export const selectLeadAgencyDropdown = (state: RootState): Array<Option> => {

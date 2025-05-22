@@ -102,16 +102,19 @@ export class CodeTableService {
     switch (table) {
       case "agency": {
         const data = await this._agencyRepository.find({ order: { display_order: "ASC" } });
-        let results = data.map(({ agency_code, short_description, long_description, display_order, active_ind }) => {
-          let table: Agency = {
-            agency: agency_code,
-            shortDescription: short_description,
-            longDescription: long_description,
-            displayOrder: display_order,
-            isActive: active_ind,
-          };
-          return table;
-        });
+        let results = data.map(
+          ({ agency_code, short_description, long_description, display_order, active_ind, external_agency_ind }) => {
+            let table: Agency = {
+              agency: agency_code,
+              shortDescription: short_description,
+              longDescription: long_description,
+              displayOrder: display_order,
+              isActive: active_ind,
+              externalAgencyInd: external_agency_ind,
+            };
+            return table;
+          },
+        );
 
         return results;
       }
@@ -776,6 +779,7 @@ export class CodeTableService {
               longDescription: longDescription,
               displayOrder: displayOrder,
               isActive: activeIndicator,
+              externalAgencyInd: false, // Included in the type but external agencies are only in Natcom, not CM
             };
             return table;
           },

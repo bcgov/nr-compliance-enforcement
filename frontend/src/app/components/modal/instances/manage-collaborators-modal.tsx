@@ -65,7 +65,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
   }, [selectedAgency, complaintType, allOfficers, collaborators]);
 
   const agencyOptions = agencies
-    .filter((agency) => agency.agency !== complaintData?.ownedBy)
+    .filter((agency) => !agency.externalAgencyInd && agency.agency !== complaintData?.ownedBy)
     .map((agency) => ({
       label: agency.longDescription,
       labelElement: <AgencyBanner agency={agency.agency} />,
