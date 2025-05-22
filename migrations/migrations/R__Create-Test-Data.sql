@@ -11517,6 +11517,35 @@ INSERT INTO
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'ZONE_FLTR' AND agency_code = 'PARKS';
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'REG_FLTR' AND agency_code = 'PARKS';
 
+---------------------------
+-- CE-225 Add external agencies
+---------------------------
+
+insert into agency_code (agency_code, short_description, long_description, display_order, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, external_agency_ind)
+values ('DFO', 'Fisheries and Oceans Canada', 'Fisheries and Oceans Canada', 20, true, user, now(), user, now(), 'Y'),
+      ('ECCC', 'Environment and Climate Change Canada', 'Environment and Climate Change Canada', 10, true, user, now(), user, now(), 'Y'),
+      ('POL', 'Police', 'Police', 50, true, user, now(), user, now(), 'Y'),
+      ('NROS', 'Natural Resource Officer Service', 'Natural Resource Officer Service', 30, true, user, now(), user, now(), 'Y'),
+      ('OTH', 'Other', 'Other', 40, true, user, now(), user, now(), 'Y')
+on conflict do nothing;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+values ('REFEMAIL','DFO','N',user,now(),user,now()),
+('REFEMAIL','ECCC','N',user,now(),user,now()),
+('REFEMAIL','POL','N',user,now(),user,now()),
+('REFEMAIL','NROS','N',user,now(),user,now()),
+('REFEMAIL','OTH','N',user,now(),user,now())
+ON CONFLICT DO NOTHING;
+
 --------------------------
 -- New Changes above this line
 -------------------------

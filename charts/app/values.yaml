@@ -241,7 +241,7 @@ crunchy: # enable it for TEST and PROD, for PR based pipelines simply use single
         memory: 64Mi
 
 bitnami-pg:
-  enabled: true
+  enabled: false
   image:
     registry: ghcr.io
     repository: bcgov/nr-containers/bitnami/postgresql

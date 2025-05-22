@@ -55,6 +55,13 @@ export class AgencyCode {
   @Column()
   update_utc_timestamp: Date;
 
+  @ApiProperty({
+    example: "false",
+    description: "Flag to indicate if an agency has been onboarded to Natcom or is external.",
+  })
+  @Column()
+  external_agency_ind: boolean;
+
   @OneToMany(() => ViolationAgencyXref, (violationAgencyXref) => violationAgencyXref.agency_code)
   violationAgencyXrefs: ViolationAgencyXref[];
 
