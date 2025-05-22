@@ -1205,8 +1205,8 @@ export class ComplaintService {
             if (caseFile?.authorization) {
               item.authorization =
                 caseFile.authorization.type !== "permit"
-                  ? caseFile.authorization.value
-                  : "UA" + caseFile.authorization.value;
+                  ? "UA" + caseFile.authorization.value
+                  : caseFile.authorization.value;
             }
           });
 
