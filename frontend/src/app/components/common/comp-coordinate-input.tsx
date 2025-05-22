@@ -291,6 +291,7 @@ export const CompCoordinateInput: FC<Props> = ({
     return result ?? "";
   };
 
+  // Check if Copy coordinates button enabled
   useEffect(() => {
     if (enableCopyCoordinates) {
       switch (coordinateType) {
