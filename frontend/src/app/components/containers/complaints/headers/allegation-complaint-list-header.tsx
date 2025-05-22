@@ -34,6 +34,12 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
           className="comp-cell-width-160 comp-cell-min-width-160"
         />
 
+        <FeatureFlag feature={FEATURE_TYPES.AUTHORIZATION_COLUMN}>
+          <th className="unsortable-header">
+            <div className="header-label">Authorization</div>
+          </th>
+        </FeatureFlag>
+
         <SortableHeader
           title="Violation type"
           sortFnc={handleSort}

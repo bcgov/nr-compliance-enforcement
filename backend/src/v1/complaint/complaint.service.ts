@@ -1186,6 +1186,30 @@ export class ComplaintService {
             "AllegationComplaint",
             "AllegationComplaintDto",
           );
+
+          // Get the authorization id from the case management system
+          const ids = items.map((item) => item.id);
+          const { data, errors } = await get(token, {
+            query: `{getCaseFilesByLeadId (leadIdentifiers: [${ids.map((id) => '"' + id + '"').join(", ")}])
+            ${caseFileQueryFields}
+          }`,
+          });
+          if (errors) {
+            this.logger.error("GraphQL errors:", errors);
+            throw new Error("GraphQL errors occurred");
+          }
+
+          // inject the authorization id onto each complaint
+          items.forEach((item) => {
+            const caseFile = data.getCaseFilesByLeadId.find((file) => file.leadIdentifier === item.id);
+            if (caseFile?.authorization) {
+              item.authorization =
+                caseFile.authorization.type !== "permit"
+                  ? "UA" + caseFile.authorization.value
+                  : caseFile.authorization.value;
+            }
+          });
+
           results.complaints = items;
           break;
         }
