@@ -489,6 +489,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
             </div>
             <CompCoordinateInput
               id="equipment-coordinates"
+              mode="equipment"
               utmZones={bcUtmZoneNumbers.map((zone: string) => {
                 return { value: zone, label: zone } as Option;
               })}
@@ -500,7 +501,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               sourceYCoordinate={complaintData?.location?.coordinates[1].toString() ?? ""}
               enableCopyCoordinates={enableCopyCoordinates}
               validationRequired={true}
-              selectFromMap={true}
               equipmentType={type?.label}
             />
             {/* SET BY */}
