@@ -37,6 +37,7 @@ describe("Complaint List Functionality", () => {
         cy.get("#ers-tab").should("contain.text", "Enforcement");
         cy.get("table thead").should("contain.text", "Complaint #");
         cy.get("table thead").should("contain.text", "Date logged");
+        cy.get("table thead").should("not.contain.text", "Authorization");
         cy.get("table thead").should("contain.text", "Violation type");
         cy.get("table thead").should("contain.text", "Community");
         cy.get("table thead").should("not.contain.text", "Location/address");
