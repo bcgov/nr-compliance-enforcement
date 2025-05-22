@@ -37,6 +37,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
     status,
     ownedBy,
     violation,
+    authorization,
     isInProgress,
     locationDetail,
     locationSummary,
@@ -111,6 +112,14 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
         >
           {reportedOnDateTime}
         </td>
+        <FeatureFlag feature={FEATURE_TYPES.AUTHORIZATION_COLUMN}>
+          <td
+            className={`${isExpandedClass}`}
+            onClick={toggleExpand}
+          >
+            {authorization}
+          </td>
+        </FeatureFlag>
         <td
           className={`${isExpandedClass}`}
           onClick={toggleExpand}
