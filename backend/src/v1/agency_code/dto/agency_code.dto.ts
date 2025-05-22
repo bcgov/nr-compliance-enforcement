@@ -43,4 +43,10 @@ export class AgencyCodeDto {
     description: "The timestamp when the agency was last updated",
   })
   update_utc_timestamp: Date;
+
+  @ApiProperty({
+    example: "false",
+    description: "Flag to indicate if an agency has been onboarded to Natcom or is external.",
+  })
+  external_agency_ind: boolean;
 }
