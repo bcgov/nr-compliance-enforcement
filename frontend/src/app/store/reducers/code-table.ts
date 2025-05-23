@@ -1498,14 +1498,4 @@ const privacyDropdownOptions: Option[] = [
 ];
 export const selectPrivacyDropdown = (): Array<Option> => privacyDropdownOptions;
 
-// As agencies change names we often want to display the short description instead of the code
-// this select returns the short description for the code.
-export const selectAgencyShortDescription = createSelector(
-  [(state: RootState) => state.codeTables.agency, (_: RootState, agencyCode?: string) => agencyCode],
-  (agencyList, agencyCode): string => {
-    const match = agencyList.find((entry) => entry.agency === agencyCode);
-    return match?.shortDescription ?? "Unknown";
-  },
-);
-
 export default codeTableSlice.reducer;

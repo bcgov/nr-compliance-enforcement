@@ -12,8 +12,8 @@ import { Assessment } from "@apptypes/outcomes/assessment";
 import { Badge, Button, Card } from "react-bootstrap";
 
 import "@assets/sass/hwcr-assessment.scss";
-import { selectAgencyShortDescription } from "@/app/store/reducers/code-table";
 import UserService from "@/app/service/user-service";
+import { selectOfficerByAuthUserGuid } from "@/app/store/reducers/officer";
 
 type Props = {
   assessment: Assessment;
@@ -24,7 +24,7 @@ export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
-  const agencyDescription = useAppSelector((state) => selectAgencyShortDescription(state, assessment.agency));
+  const officer = useAppSelector(selectOfficerByAuthUserGuid(assessment.officer?.value ?? ""));
 
   const showDuplicateOptions = assessment.action_required === "No" && assessment.justification?.value === "DUPLICATE";
   const assessmentDivClass = `comp-details-form-row ${assessment.action_required === "Yes" ? "inherit" : "hidden"}`;
@@ -195,7 +195,7 @@ export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
                 <dt>Officer</dt>
                 <dd>
                   <span id="assessment-officer-div">{assessment.officer?.key ?? ""}</span>{" "}
-                  <Badge className="comp-status-badge-closed">{agencyDescription}</Badge>
+                  <Badge className="comp-status-badge-closed">{officer?.agency_code.short_description}</Badge>
                 </dd>
               </div>
               <div id="assessment-date-div">

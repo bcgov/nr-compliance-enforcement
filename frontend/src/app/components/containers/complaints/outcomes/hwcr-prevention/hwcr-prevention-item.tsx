@@ -5,7 +5,7 @@ import { formatDate } from "@common/methods";
 import { selectComplaintViewMode } from "@store/reducers/complaints";
 import { useAppSelector } from "@/app/hooks/hooks";
 import UserService from "@/app/service/user-service";
-import { selectAgencyShortDescription } from "@/app/store/reducers/code-table";
+import { selectOfficerByAuthUserGuid } from "@/app/store/reducers/officer";
 
 type Props = {
   prevention: Prevention;
@@ -16,8 +16,9 @@ type Props = {
 export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDelete }) => {
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const isSameAgency = UserService.getUserAgency() === prevention.agencyCode;
+  const officer = useAppSelector(selectOfficerByAuthUserGuid(prevention.officer?.value ?? ""));
   const canEdit = isSameAgency && !isReadOnly;
-  const agencyDescription = useAppSelector((state) => selectAgencyShortDescription(state, prevention.agencyCode));
+
   return (
     <Card border="default">
       <Card.Body>
@@ -43,7 +44,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
                 <dt>Officer</dt>
                 <dd>
                   <span id="comp-review-required-officer">{prevention.officer?.key ?? ""}</span>{" "}
-                  <Badge className="comp-status-badge-closed">{agencyDescription}</Badge>
+                  <Badge className="comp-status-badge-closed">{officer?.agency_code.short_description}</Badge>
                 </dd>
               </div>
               <div id="prev-educ-outcome-date-div">

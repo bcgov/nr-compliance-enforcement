@@ -166,12 +166,6 @@ export const HWCRPreventionForm: FC<Props> = ({ id, prevention, handleSave = () 
     );
   };
 
-  const getPreventionAgency = () => {
-    const officer = officersInAgencyList?.find((officer) => officer.auth_user_guid === selectedOfficer?.value);
-    const agency_code = officer?.agency_code?.agency_code;
-    return agency_code ?? "";
-  };
-
   const saveButtonClick = async () => {
     if (!hasErrors()) {
       const updatedPreventionData: Prevention = {
@@ -189,7 +183,7 @@ export const HWCRPreventionForm: FC<Props> = ({ id, prevention, handleSave = () 
         }),
       };
 
-      dispatch(upsertPrevention(id, getPreventionAgency(), updatedPreventionData));
+      dispatch(upsertPrevention(id, ownedByAgencyCode.agency, updatedPreventionData));
       handleSave();
     } else {
       handleFormErrors();
