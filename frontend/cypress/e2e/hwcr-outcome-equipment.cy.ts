@@ -65,7 +65,6 @@ describe("HWCR Outcome Equipment", () => {
           equipmentType: "Snare",
         };
         cy.get("#equipment-copy-address-button").click();
-        cy.get("#copy-coordinates-button").click();
 
         cy.fillInHWCSection(sectionParams).then(() => {
           cy.validateHWCSection(sectionParams);
