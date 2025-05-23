@@ -208,7 +208,7 @@ export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
               size="sm"
               id="assessment-edit-button"
               onClick={() => handleEdit()}
-              disabled={isReadOnly || assessment.agency !== UserService.getUserAgency()}
+              disabled={isReadOnly === true || assessment.agency !== UserService.getUserAgency()}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
