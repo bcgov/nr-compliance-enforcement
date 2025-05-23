@@ -1,6 +1,7 @@
 -------------------------
 -- Add Email References
 -------------------------
+TRUNCATE email_reference;
 INSERT INTO
   public.email_reference (
     email_address,
