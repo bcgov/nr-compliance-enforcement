@@ -88,6 +88,24 @@ export class CssService implements ExternalApiService {
     }
   };
 
+  getUserByGuid = async (userGuid: string): Promise<CssUser> => {
+    try {
+      const apiToken = await this.authenticate();
+      const url = `${this.baseUri}/api/v1/${this.env}/idir/users?guid=${userGuid}`;
+      const config: AxiosRequestConfig = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiToken}`,
+        },
+      };
+      const response = await get(apiToken, url, config);
+      return response?.data.data;
+    } catch (error) {
+      this.logger.error(`exception: unable to get user by guid: ${userGuid} - error: ${error}`);
+      throw new Error(`exception: unable to get user by guid: ${userGuid} - error: ${error}`);
+    }
+  };
+
   getUserRoles = async (userIdir): Promise<{ name: string; composite: string }[]> => {
     try {
       const apiToken = await this.authenticate();

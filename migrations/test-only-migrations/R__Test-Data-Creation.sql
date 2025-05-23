@@ -2004,3 +2004,11 @@ WHERE feature_code = 'COMPCOLLAB';
 UPDATE public.feature_agency_xref
 SET active_ind = 'N'
 WHERE feature_code = 'REFEMAIL';
+
+---------------------
+-- Disable collaborator emails in dev/test for all users
+---------------------
+
+UPDATE public.feature_agency_xref
+SET active_ind = 'N'
+WHERE feature_code = 'COLEMAIL';

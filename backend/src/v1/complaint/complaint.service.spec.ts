@@ -133,7 +133,10 @@ describe("Testing: Complaint Service", () => {
         },
         ComplaintUpdatesService,
         ComplaintService,
-        PersonComplaintXrefService,
+        {
+          provide: PersonComplaintXrefService,
+          useValue: {},
+        },
         OfficerService,
         LinkedComplaintXrefService,
         OfficeService,
@@ -440,7 +443,10 @@ describe("Testing: Complaint Service", () => {
         },
         ComplaintUpdatesService,
         ComplaintService,
-        PersonComplaintXrefService,
+        {
+          provide: PersonComplaintXrefService,
+          useValue: {},
+        },
         OfficerService,
         LinkedComplaintXrefService,
         OfficeService,

@@ -7,6 +7,8 @@ import { DataSource } from "typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { ComplaintService } from "../complaint/complaint.service";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
+import { REQUEST } from "@nestjs/core";
+import { EmailService } from "../email/email.service";
 
 describe("PersonComplaintXrefController", () => {
   let controller: PersonComplaintXrefController;
@@ -17,6 +19,7 @@ describe("PersonComplaintXrefController", () => {
       providers: [
         PersonComplaintXrefService,
         ComplaintService,
+        EmailService,
         {
           provide: getRepositoryToken(PersonComplaintXref),
           useValue: {},
@@ -31,6 +34,14 @@ describe("PersonComplaintXrefController", () => {
         },
         {
           provide: getRepositoryToken(ComplaintReferral),
+          useValue: {},
+        },
+        {
+          provide: EmailService,
+          useValue: {},
+        },
+        {
+          provide: REQUEST,
           useValue: {},
         },
       ],

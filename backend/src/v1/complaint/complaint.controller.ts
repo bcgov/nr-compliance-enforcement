@@ -27,6 +27,8 @@ import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_comp
 import { getAgenciesFromRoles } from "../../common/methods";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { UUID } from "crypto";
+import { SendCollaboratorEmalDto } from "../../v1/email/dto/send_collaborator_email.dto";
+import { User } from "../../auth/decorators/user.decorator";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
@@ -159,8 +161,18 @@ export class ComplaintController {
   // Collaborator routes
   @Post("/:complaint_id/add-collaborator/:person_guid")
   @Roles(coreRoles)
-  async addCollaborator(@Param("complaint_id") complaintId: string, @Param("person_guid") personGuid: string) {
-    return await this.personComplaintXrefService.addCollaboratorToComplaint(complaintId, personGuid);
+  async addCollaborator(
+    @Param("complaint_id") complaintId: string,
+    @Param("person_guid") personGuid: string,
+    @Body() sendCollaboratorEmailDto: SendCollaboratorEmalDto,
+    @User() user,
+  ) {
+    return await this.personComplaintXrefService.addCollaboratorToComplaint(
+      complaintId,
+      personGuid,
+      sendCollaboratorEmailDto,
+      user,
+    );
   }
 
   @Patch("/:complaint_id/remove-collaborator/:person_complaint_xref_guid")

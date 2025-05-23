@@ -10,6 +10,8 @@ import { GeoOrganizationUnitCodeModule } from "../../v1/geo_organization_unit_co
 import { AgencyCodeModule } from "../../v1/agency_code/agency_code.module";
 import { ViolationCodeModule } from "../../v1/violation_code/violation_code.module";
 import { GirTypeCodeModule } from "../../v1/gir_type_code/gir_type_code.module";
+import { CssModule } from "../../external_api/css/css.module";
+import { OfficerModule } from "../../v1/officer/officer.module";
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { GirTypeCodeModule } from "../../v1/gir_type_code/gir_type_code.module";
     AgencyCodeModule,
     ViolationCodeModule,
     GirTypeCodeModule,
+    CssModule,
+    OfficerModule,
   ],
   controllers: [EmailController],
   providers: [EmailService],
