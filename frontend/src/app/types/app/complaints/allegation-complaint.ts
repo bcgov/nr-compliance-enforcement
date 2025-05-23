@@ -7,4 +7,5 @@ export interface AllegationComplaint extends Complaint {
   isInProgress: boolean;
   wasObserved: boolean;
   violationDetails: string;
+  authorization: string;
 }

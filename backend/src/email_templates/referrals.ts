@@ -1,6 +1,6 @@
 export interface GenerateReferralEmailParams {
   complaintId: string;
-  complaintType: string;
+  complaintTypeDescription: string;
   senderName: string;
   senderEmailAddress: string;
   referredToAgency: string;
@@ -14,7 +14,7 @@ export interface GenerateReferralEmailParams {
 export function generateReferralEmailBody(emailReferralParams: GenerateReferralEmailParams) {
   const {
     complaintId,
-    complaintType,
+    complaintTypeDescription,
     senderName,
     senderEmailAddress,
     referredToAgency,
@@ -26,7 +26,7 @@ export function generateReferralEmailBody(emailReferralParams: GenerateReferralE
   } = emailReferralParams;
   return `<p>Hello,</p>
 <p>
-  ${complaintType} complaint #<a href=${complaintUrl}>${complaintId}</a> has been referred to ${referredToAgency} by <strong>${senderName} (CC’d)</strong> at ${referredByAgency}.
+  ${complaintTypeDescription} complaint #<a href=${complaintUrl}>${complaintId}</a> has been referred to ${referredToAgency} by <strong>${senderName} (CC’d)</strong> at ${referredByAgency}.
 </p>
 <ul>
   <li>Summary: ${complaintSummaryText}</li>
