@@ -11,7 +11,7 @@ import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Leaflet from "leaflet";
 import NonDismissibleAlert from "@components/common/non-dismissible-alert";
 import { MapGestureHandler } from "./map-gesture-handler";
-import { Card } from "react-bootstrap";
+import { Alert, Card } from "react-bootstrap";
 import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
 import { nanoid } from "nanoid";
 
@@ -134,9 +134,26 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
     }
   };
 
+  const unmappedEquipment = useMemo(() => {
+    const countUnmapped = mapElements.filter((item) => {
+      return item.objectType === MapObjectType.Equipment && item.location.lat === 0 && item.location.lng === 0;
+    }).length;
+    return countUnmapped;
+  }, [mapElements]);
+
   return (
     <Card className="comp-map-container">
       {geocodedLocation && areCoordinatesValid(geocodedLocation) && <NonDismissibleAlert />}
+      {unmappedEquipment > 0 && (
+        <Alert
+          variant="warning"
+          className="comp-complaint-details-alert"
+          id={`equipment-map-notification`}
+        >
+          <i className="bi bi-info-circle-fill"></i>
+          <span>{unmappedEquipment} equipment could not be mapped.</span>
+        </Alert>
+      )}
 
       <MapContainer
         id="map"
