@@ -12,6 +12,7 @@ import { upsertNote, getCaseFile } from "@store/reducers/case-thunks";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { ToggleError } from "@common/toast";
 import { Note } from "@/app/types/outcomes/note";
+import UserService from "@/app/service/user-service";
 
 type props = {
   id: string;
@@ -70,7 +71,7 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
 
   const handleSaveNotes = () => {
     if (validateInput()) {
-      dispatch(upsertNote(id, complaintType, currentNote, note?.id)).then((result) => {
+      dispatch(upsertNote(id, complaintType, currentNote, UserService.getUserAgency(), note?.id)).then((result) => {
         if (result === "success") {
           dispatch(getCaseFile(id));
           handleCancel();

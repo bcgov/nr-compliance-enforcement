@@ -77,6 +77,7 @@ export const caseFileQueryFields: string = `
   notes {
     id
     note 
+    agencyCode
     actions { 
       actor
       actionCode

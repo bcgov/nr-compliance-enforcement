@@ -45,6 +45,7 @@ import { Officer } from "@/app/types/person/person";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
 import KeyValuePair from "@/app/types/app/key-value-pair";
+import UserService from "@/app/service/user-service";
 
 type Props = {
   id: string;
@@ -311,6 +312,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
       selectedActionRequired?.label === OptionLabels.OPTION_NO || !isLargeCarnivore
         ? []
         : mapOptions(selectedAssessmentCat1Types),
+    agency: UserService.getUserAgency(),
   });
 
   // save to redux if no errors.  Otherwise, display error message(s).
