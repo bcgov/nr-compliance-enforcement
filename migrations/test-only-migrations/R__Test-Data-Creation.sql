@@ -1998,7 +1998,7 @@ SET active_ind = 'Y'
 WHERE feature_code = 'COMPCOLLAB';
 
 ---------------------
--- Disable referral emails in dev/test for all users
+-- Disable referral emails in dev and test for all users
 ---------------------
 
 UPDATE public.feature_agency_xref
