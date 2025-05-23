@@ -1,7 +1,7 @@
 export interface GenerateCollaboratorEmailParams {
   complaintId: string;
   collaboratorName: string;
-  complaintType: string;
+  complaintTypeDescription: string;
   owningAgency: string;
   senderName: string;
   senderEmailAddress: string;
@@ -14,7 +14,7 @@ export function generateCollaboratorEmailBody(emailCollaboratorParams: GenerateC
   const {
     complaintId,
     collaboratorName,
-    complaintType,
+    complaintTypeDescription,
     owningAgency,
     senderName,
     senderEmailAddress,
@@ -26,7 +26,7 @@ export function generateCollaboratorEmailBody(emailCollaboratorParams: GenerateC
 <p>
   You have been invited to collaborate on:
   <ul>
-    <li>${complaintType} complaint <strong><a href=${complaintUrl}>#${complaintId}</a></strong>, ${complaintSummaryText}</li>
+    <li>${complaintTypeDescription} complaint <strong><a href=${complaintUrl}>#${complaintId}</a></strong>, ${complaintSummaryText}</li>
     <li>Invitation from: <strong>${senderName} (CC'd)</strong> within ${owningAgency}</li>
   </ul>
 </p>

@@ -126,12 +126,11 @@ export class EmailService {
           const { long_description: violationCodeName } = await this._violationCodeService.findOne(
             complaintAsErs.violation,
           );
-          const { isInProgress } = complaintAsErs;
           complaintSummaryText = `${bodyTypeDescription} ${violationCodeName}, ${
-            isInProgress === true ? "Violation in progress, " : ""
+            complaintAsErs.isInProgress === true ? "Violation in progress, " : ""
           }${communityName}`;
           subjectAdditionalDetails = `(${violationCodeName}, ${
-            isInProgress === true ? "In progress, " : ""
+            complaintAsErs.isInProgress === true ? "In progress, " : ""
           }${communityName})`;
           break;
         }
@@ -195,9 +194,13 @@ export class EmailService {
       const { short_description: owningAgency } = await this._agencyCodeService.findById(complaint.ownedBy);
       let subjectAdditionalDetails = "";
       let complaintSummaryText = "";
+      let subjectTypeDescription = `${complaintType}`;
+      let complaintTypeDescription = `${complaintType}`;
       switch (complaintType) {
         case "HWCR": {
           const complaintAsWildlife = complaint as WildlifeComplaintDto;
+          subjectTypeDescription = "HWC";
+          complaintTypeDescription = "Human wildlife conflict";
           const { short_description: speciesName } = await this._speciesCodeService.findOne(
             complaintAsWildlife.species,
           );
@@ -210,6 +213,8 @@ export class EmailService {
         }
         case "ERS": {
           const complaintAsErs = complaint as AllegationComplaintDto;
+          subjectTypeDescription = "Enforcement";
+          complaintTypeDescription = "Enforcement";
           const { long_description: violationCodeName } = await this._violationCodeService.findOne(
             complaintAsErs.violation,
           );
@@ -220,6 +225,8 @@ export class EmailService {
         }
         case "GIR": {
           const complaintAsGir = complaint as GeneralIncidentComplaintDto;
+          subjectTypeDescription = "General incident";
+          complaintTypeDescription = "General incident";
           const { long_description: girTypeName } = await this._girTypeCodeService.findOne(complaintAsGir.girType);
           complaintSummaryText = `${girTypeName}`;
           subjectAdditionalDetails = `(${girTypeName})`;
@@ -227,11 +234,11 @@ export class EmailService {
         }
       }
       const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : "";
-      const emailSubject = `${envFlag}Invitation to collaborate: NatCom ${complaintType} complaint #${complaintId} ${subjectAdditionalDetails}`;
+      const emailSubject = `${envFlag}Invitation to collaborate: NatCom ${subjectTypeDescription} complaint #${complaintId} ${subjectAdditionalDetails}`;
       const generateCollaboratorEmailParams: GenerateCollaboratorEmailParams = {
         complaintId,
         collaboratorName,
-        complaintType,
+        complaintTypeDescription,
         owningAgency,
         senderName,
         senderEmailAddress,
