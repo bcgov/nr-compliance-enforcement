@@ -68,6 +68,10 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
       ))}
     </Tooltip>
   );
+  const isDisabled = () => {
+    const isEnabled = status !== "CLOSED" && (userIsCollaborator || agencyCode === UserService.getUserAgency());
+    return !isEnabled;
+  };
 
   return (
     <Card className="comp-outcome-notes">
@@ -117,9 +121,7 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
               size="sm"
               id="notes-edit-button"
               onClick={() => handleEdit()}
-              disabled={
-                (isReadOnly && !userIsCollaborator) || status === "CLOSED" || agencyCode !== UserService.getUserAgency()
-              }
+              disabled={isDisabled()}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
@@ -129,9 +131,7 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
               variant="outline-primary"
               id="notes-delete-button"
               onClick={() => handleDelete()}
-              disabled={
-                (isReadOnly && !userIsCollaborator) || status === "CLOSED" || agencyCode !== UserService.getUserAgency()
-              }
+              disabled={isDisabled()}
             >
               <i className="bi bi-trash3"></i>
               <span>Delete</span>
