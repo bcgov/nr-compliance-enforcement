@@ -12,6 +12,7 @@ import { Assessment } from "@apptypes/outcomes/assessment";
 import { Badge, Button, Card } from "react-bootstrap";
 
 import "@assets/sass/hwcr-assessment.scss";
+import UserService from "@/app/service/user-service";
 
 type Props = {
   assessment: Assessment;
@@ -207,7 +208,7 @@ export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
               size="sm"
               id="assessment-edit-button"
               onClick={() => handleEdit()}
-              disabled={isReadOnly}
+              disabled={isReadOnly || assessment.agency !== UserService.getUserAgency()}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
