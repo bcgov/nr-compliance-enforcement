@@ -58,6 +58,11 @@ export const CompCoordinateInput: FC<Props> = ({
 
   const handleGeoPointChange = useCallback(
     (latitude: string, longitude: string) => {
+      // Prevent infinite renders in UseEffects when values haven't changed
+      if (latitude === yCoordinate && longitude === xCoordinate) {
+        return;
+      }
+
       setYCoordinateErrorMsg("");
       setXCoordinateErrorMsg("");
       setYCoordinate(latitude);
