@@ -136,6 +136,7 @@ export class EmailService {
           break;
         }
         case "GIR": {
+          subjectTypeDescription = "General incident";
           bodyTypeDescription = "General incident";
           const complaintAsGir = complaint as GeneralIncidentComplaintDto;
           const { long_description: girTypeName } = await this._girTypeCodeService.findOne(complaintAsGir.girType);
