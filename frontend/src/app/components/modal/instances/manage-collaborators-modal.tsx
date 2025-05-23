@@ -19,7 +19,6 @@ import {
   selectComplaintCollaborators,
 } from "@/app/store/reducers/complaints";
 import { getAvatarInitials } from "@/app/common/methods";
-import { AgencyNames } from "@/app/types/app/agency-types";
 
 type ManageCollaboratorsModalProps = {
   close: () => void;
@@ -180,12 +179,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
                           data-initials-sm={getAvatarInitials(`${collaborator.lastName}, ${collaborator.firstName}`)}
                         >
                           {collaborator.firstName} {collaborator.lastName} |{" "}
-                          <span className="fw-bold">
-                            {collaborator.collaboratorAgency &&
-                            Object.keys(AgencyNames).includes(collaborator.collaboratorAgency)
-                              ? AgencyNames[collaborator.collaboratorAgency as keyof typeof AgencyNames].short
-                              : ""}
-                          </span>
+                          <span className="fw-bold">{collaborator.collaboratorAgency}</span>
                         </div>
                       </div>
                       <Button

@@ -401,10 +401,23 @@ export const selectOfficersByAgency = createSelector(
 
 export const selectOfficersAndCollaboratorsByAgency = createSelector(
   (state: RootState) => state.officers.officers,
-  (state: RootState) => state.complaints.complaintCollaborators,
+  (state: RootState) => state.complaints.complaintCollaborators as Collaborator[],
   (state: RootState, agency: string) => agency,
-  (officers, complaintCollaborators, agency) => {
-    return [...filterOfficerByAgency(agency, officers), ...complaintCollaborators];
+  (officers, complaintCollaborators, agency): Officer[] => {
+    // First let's trim down to only the officers for a specific agency
+    const officersByAgency = filterOfficerByAgency(agency, officers);
+    const officerGuids = new Set(officersByAgency.map((officer) => officer.auth_user_guid));
+
+    // Map Collaborators into Officer object so we are dealing with a single type
+    const extraOfficersFromCollaborators = complaintCollaborators
+      .filter((c) => !officerGuids.has(c.authUserGuid)) // only add if not already in list
+      .map((c) => {
+        // Try to find the full officer data based on authUserGuid
+        return officers.find((o) => o.auth_user_guid === c.authUserGuid);
+      })
+      .filter((o): o is Officer => o !== undefined); // remove undefined so we can guarantee the return type
+
+    return [...officersByAgency, ...extraOfficersFromCollaborators];
   },
 );
 

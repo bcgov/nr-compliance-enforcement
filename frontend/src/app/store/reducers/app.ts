@@ -401,7 +401,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       let regionDescription = "";
       let zone = "";
       let zoneDescription = "";
-      let agency = response.agency_code;
+      let agency = response.agency_code.agency_code;
       let personGuid = response.person_guid.person_guid;
       let comsEnrolledInd = response.coms_enrolled_ind;
       let parkAreaGuid = response.park_area_guid;
@@ -445,7 +445,8 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
 
       dispatch(setTokenProfile(profile));
     } catch (error) {
-      //-- handler error
+      //-- handle error
+      console.error(error);
     }
   } else {
     //-- the user is not logged in redirect them to the login

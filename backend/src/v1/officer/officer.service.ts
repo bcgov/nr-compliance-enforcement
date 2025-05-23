@@ -41,7 +41,7 @@ export class OfficerService {
       .createQueryBuilder("officer")
       .leftJoinAndSelect("officer.office_guid", "office")
       .leftJoinAndSelect("officer.person_guid", "person")
-      .leftJoinAndSelect("office.agency_code", "agency")
+      .leftJoinAndSelect("officer.agency_code", "agency")
       // This view is slow :(
       .leftJoinAndSelect("office.cos_geo_org_unit", "cos_geo_org_unit")
       .leftJoinAndSelect("office.agency_code", "agency_code")
@@ -125,10 +125,10 @@ export class OfficerService {
     return this.officerRepository.findOne({
       where: { user_id: userid },
       relations: {
+        agency_code: {},
         person_guid: {},
         office_guid: {
           cos_geo_org_unit: true,
-          agency_code: true,
         },
       },
     });

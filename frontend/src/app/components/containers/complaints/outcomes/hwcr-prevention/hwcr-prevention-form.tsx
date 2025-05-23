@@ -183,8 +183,6 @@ export const HWCRPreventionForm: FC<Props> = ({ id, prevention, handleSave = () 
         }),
       };
 
-      console.log("updatedPreventionData", updatedPreventionData);
-
       dispatch(upsertPrevention(id, ownedByAgencyCode.agency, updatedPreventionData));
       handleSave();
     } else {
