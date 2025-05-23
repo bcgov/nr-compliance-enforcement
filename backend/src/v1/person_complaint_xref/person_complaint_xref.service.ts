@@ -22,7 +22,7 @@ export class PersonComplaintXrefService {
   constructor(
     private readonly dataSource: DataSource,
     @Inject(forwardRef(() => ComplaintService)) private readonly _complaintService: ComplaintService,
-    @Inject(EmailService)
+    @Inject(forwardRef(() => EmailService))
     private readonly _emailService: EmailService,
     @Inject(REQUEST)
     private readonly request: Request,
