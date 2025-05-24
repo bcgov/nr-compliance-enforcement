@@ -229,10 +229,10 @@ Cypress.Commands.add("navigateToCreateScreen", () => {
 });
 
 Cypress.Commands.add("waitForSpinner", () => {
-  cy.get(".comp-loader-overla", { timeout: 3000 })
+  cy.get(".comp-loader-overlay", { timeout: 5000 })
     .should((_) => {})
     .then((element) => {
-      if (element.length) {
+      if (element) {
         cy.get(".comp-loader-overlay").should("not.exist");
       }
     });
