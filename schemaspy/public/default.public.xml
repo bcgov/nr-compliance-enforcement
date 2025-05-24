@@ -57,7 +57,6 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the agency was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the agency code." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the agency was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="false" digits="0" id="9" name="external_agency_ind" nullable="true" remarks="Flag to indicate if an agency has been onboarded to Natcom or is external." size="1" type="bool" typeCode="-7"/>
          <primaryKey column="agency_code" sequenceNumberInPK="1"/>
          <index name="PK_agengycode" unique="true">
             <column ascending="true" name="agency_code"/>
