@@ -229,10 +229,13 @@ Cypress.Commands.add("navigateToCreateScreen", () => {
 });
 
 Cypress.Commands.add("waitForSpinner", () => {
-  const overlayExists = Cypress.$(".comp-loader-overlay", { timeout: 3000 }).length;
-  if (overlayExists > 0) {
-    cy.get(".comp-loader-overlay").should("not.exist");
-  }
+  cy.get(".comp-loader-overla", { timeout: 3000 })
+    .should((_) => {})
+    .then((element) => {
+      if (element.length) {
+        cy.get(".comp-loader-overlay").should("not.exist");
+      }
+    });
 });
 
 Cypress.Commands.add("clearFilterById", (filterId: string) => {
