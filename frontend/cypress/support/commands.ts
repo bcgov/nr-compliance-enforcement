@@ -233,7 +233,6 @@ Cypress.Commands.add("waitForSpinner", () => {
   if (overlayExists > 0) {
     cy.get(".comp-loader-overlay").should("not.exist");
   }
-  // cy.get(".comp-loader-overlay").should("exist");
 });
 
 Cypress.Commands.add("clearFilterById", (filterId: string) => {
