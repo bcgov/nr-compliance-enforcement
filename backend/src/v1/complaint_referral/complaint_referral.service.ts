@@ -62,9 +62,11 @@ export class ComplaintReferralService {
     if (result.complaint_referral_guid) {
       const updateData: any = {
         owned_by_agency_code: referred_to_agency_code,
+        comp_last_upd_utc_timestamp: new Date(),
       };
       if (externalAgencyInd) {
         updateData.complaint_status_code = "CLOSED";
+        updateData.comp_last_upd_utc_timestamp = new Date();
       }
 
       await this.complaintRepository.update({ complaint_identifier: id }, updateData);
