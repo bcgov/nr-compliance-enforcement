@@ -9,6 +9,7 @@ import { REQUEST } from "@nestjs/core";
 import { PersonComplaintXrefCodeEnum } from "../../enum/person_complaint_xref_code.enum";
 import { Officer } from "../officer/entities/officer.entity";
 import { UUID } from "crypto";
+import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -327,13 +328,14 @@ export class PersonComplaintXrefService {
       .createQueryBuilder("person_complaint_xref")
       .leftJoinAndSelect("person_complaint_xref.person_guid", "person")
       .innerJoin(Officer, "officer", "person.person_guid=officer.person_guid")
+      .innerJoin(AgencyCode, "agency_code", "officer.agency_code=agency_code.agency_code")
       .where("person_complaint_xref.complaint_identifier = :complaintId", { complaintId: complaintIdentifier })
       .andWhere("person_complaint_xref.person_complaint_xref_code = :code", {
         code: PersonComplaintXrefCodeEnum.COLLABORATOR,
       })
       .andWhere("person_complaint_xref.active_ind = true")
       .andWhere("officer.person_guid = person.person_guid")
-      .addSelect("officer.agency_code")
+      .addSelect("agency_code.short_description", "agency_code_short_description")
       .addSelect("officer.auth_user_guid")
       .execute();
 
@@ -343,7 +345,7 @@ export class PersonComplaintXrefService {
         complaintId: row.person_complaint_xref_complaint_identifier,
         personGuid: row.person_complaint_xref_person_guid,
         authUserGuid: row.officer_auth_user_guid,
-        collaboratorAgency: row.officer_agency_code,
+        collaboratorAgency: row.agency_code_short_description,
         firstName: row.person_first_name,
         lastName: row.person_last_name,
         middleName1: row.person_middle_name_1,
