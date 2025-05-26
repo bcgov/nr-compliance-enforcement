@@ -32,6 +32,8 @@ describe("Complaint List Functionality", () => {
         cy.get("table thead").should("contain.text", "Officer assigned");
         cy.get("table thead").should("contain.text", "Last updated");
         cy.get("table thead").should("contain.text", "Actions");
+        cy.get("#complaint_pagination_container_id").should("exist");
+        cy.get('[id^="pagination_page_"]').should("exist");
       }
       if ("#ers-tab".includes(complaintTypes[index])) {
         cy.get("#ers-tab").should("contain.text", "Enforcement");
@@ -46,6 +48,8 @@ describe("Complaint List Functionality", () => {
         cy.get("table thead").should("contain.text", "Officer assigned");
         cy.get("table thead").should("contain.text", "Last updated");
         cy.get("table thead").should("contain.text", "Actions");
+        cy.get("#complaint_pagination_container_id").should("exist");
+        cy.get('[id^="pagination_page_"]').should("exist");
       }
       if ("#gir-tab".includes(complaintTypes[index])) {
         cy.get("#gir-tab").should("contain.text", "General Incident");
@@ -59,6 +63,8 @@ describe("Complaint List Functionality", () => {
         cy.get("table thead").should("contain.text", "Officer assigned");
         cy.get("table thead").should("contain.text", "Last updated");
         cy.get("table thead").should("contain.text", "Actions");
+        cy.get("#complaint_pagination_container_id").should("exist");
+        cy.get('[id^="pagination_page_"]').should("exist");
       }
     });
   });
