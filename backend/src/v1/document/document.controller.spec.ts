@@ -224,7 +224,10 @@ describe("DocumentController", () => {
         ComplaintUpdatesService,
         ComplaintService,
         CodeTableService,
-        PersonComplaintXrefService,
+        {
+          provide: PersonComplaintXrefService,
+          useValue: {},
+        },
         OfficerService,
         LinkedComplaintXrefService,
         OfficeService,

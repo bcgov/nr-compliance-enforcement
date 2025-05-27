@@ -222,7 +222,10 @@ describe("DocumentService", () => {
         ComplaintUpdatesService,
         ComplaintService,
         CodeTableService,
-        PersonComplaintXrefService,
+        {
+          provide: PersonComplaintXrefService,
+          useValue: {},
+        },
         OfficerService,
         LinkedComplaintXrefService,
         OfficeService,
