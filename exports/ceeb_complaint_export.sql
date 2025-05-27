@@ -1,5 +1,8 @@
 select 
 	cmp.complaint_identifier as "Record ID",
+	agt.short_description as "Referred to agency",
+	agb.short_description as "Referred by agency",
+	to_char(crf.referral_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Los_Angeles', 'YYYY-MM-DD HH24:MI') as "Referral date",
 	-- Try and use the Incident Date if it doesn't exist use the Date Received
 	TO_CHAR(((cmp.incident_reported_utc_timestmp at time zone 'UTC') at time zone 'PDT'), 'YYYY-MM-DD') as "Date Received",
 	CASE 
@@ -36,8 +39,14 @@ left join
 	comp_mthd_recv_cd_agcy_cd_xref cmrcacx on cmrcacx.comp_mthd_recv_cd_agcy_cd_xref_guid = cmp.comp_mthd_recv_cd_agcy_cd_xref_guid
 left join 
 	complaint_method_received_code cmrc on cmrc.complaint_method_received_code = cmrcacx.complaint_method_received_code
+left join
+	complaint_referral crf on crf.complaint_identifier = cmp.complaint_identifier 
+left join
+	agency_code agt on agt.agency_code = crf.referred_to_agency_code 
+left join
+	agency_code agb on agb.agency_code = crf.referred_by_agency_code 
 left join 
-	person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true
+	person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true and pcx.person_complaint_xref_code = 'ASSIGNEE'
 left join 
 	person per on per.person_guid = pcx.person_guid 
 left join 
@@ -45,6 +54,7 @@ left join
 right join 
 	allegation_complaint ac on ac.complaint_identifier = cmp.complaint_identifier 
 where
-	cmp.owned_by_agency_code = 'EPO'
+	cmp.owned_by_agency_code = 'EPO' or
+	crf.referred_by_agency_code = 'EPO'
 order by
 	cmp.complaint_identifier asc
