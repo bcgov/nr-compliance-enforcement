@@ -9,6 +9,9 @@ import { REQUEST } from "@nestjs/core";
 import { PersonComplaintXrefCodeEnum } from "../../enum/person_complaint_xref_code.enum";
 import { Officer } from "../officer/entities/officer.entity";
 import { UUID } from "crypto";
+import { EmailService } from "../email/email.service";
+import { SendCollaboratorEmalDto } from "../email/dto/send_collaborator_email.dto";
+import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -20,6 +23,8 @@ export class PersonComplaintXrefService {
   constructor(
     private readonly dataSource: DataSource,
     @Inject(forwardRef(() => ComplaintService)) private readonly _complaintService: ComplaintService,
+    @Inject(forwardRef(() => EmailService))
+    private readonly _emailService: EmailService,
     @Inject(REQUEST)
     private readonly request: Request,
   ) {}
@@ -247,7 +252,12 @@ export class PersonComplaintXrefService {
     }
   }
 
-  async addCollaboratorToComplaint(complaintIdentifier: string, personGuid: string): Promise<PersonComplaintXref> {
+  async addCollaboratorToComplaint(
+    complaintIdentifier: string,
+    personGuid: string,
+    sendCollaboratorEmailDto: SendCollaboratorEmalDto,
+    user,
+  ): Promise<PersonComplaintXref> {
     this.logger.debug(`Adding collaborator ${personGuid} Complaint ${complaintIdentifier}`);
     let newPersonComplaintXref: PersonComplaintXref;
     const currentUserId = getIdirFromRequest(this.request);
@@ -263,6 +273,7 @@ export class PersonComplaintXrefService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+    let sendEmail = false;
     try {
       // create a new record representing the collaboration
       newPersonComplaintXref = await this.create(createPersonComplaintXrefDto);
@@ -271,6 +282,7 @@ export class PersonComplaintXrefService {
       // Update the complaint last updated date on the parent record
       await this.updateComplaintLastUpdatedDate(complaintIdentifier, newPersonComplaintXref, queryRunner);
       await queryRunner.commitTransaction();
+      sendEmail = true;
       this.logger.debug(`Succesfully added collaborator ${personGuid} to complaint ${complaintIdentifier}`);
     } catch (err) {
       this.logger.error(err);
@@ -278,6 +290,13 @@ export class PersonComplaintXrefService {
       throw new BadRequestException(err);
     } finally {
       await queryRunner.release();
+      if (sendEmail) {
+        try {
+          await this._emailService.sendCollaboratorEmail(complaintIdentifier, sendCollaboratorEmailDto, user);
+        } catch (error) {
+          this.logger.error(`Error sending collaborator email.`, error);
+        }
+      }
     }
     return newPersonComplaintXref;
   }
@@ -327,13 +346,14 @@ export class PersonComplaintXrefService {
       .createQueryBuilder("person_complaint_xref")
       .leftJoinAndSelect("person_complaint_xref.person_guid", "person")
       .innerJoin(Officer, "officer", "person.person_guid=officer.person_guid")
+      .innerJoin(AgencyCode, "agency_code", "officer.agency_code=agency_code.agency_code")
       .where("person_complaint_xref.complaint_identifier = :complaintId", { complaintId: complaintIdentifier })
       .andWhere("person_complaint_xref.person_complaint_xref_code = :code", {
         code: PersonComplaintXrefCodeEnum.COLLABORATOR,
       })
       .andWhere("person_complaint_xref.active_ind = true")
       .andWhere("officer.person_guid = person.person_guid")
-      .addSelect("officer.agency_code")
+      .addSelect("agency_code.short_description", "agency_code_short_description")
       .addSelect("officer.auth_user_guid")
       .execute();
 
@@ -343,7 +363,7 @@ export class PersonComplaintXrefService {
         complaintId: row.person_complaint_xref_complaint_identifier,
         personGuid: row.person_complaint_xref_person_guid,
         authUserGuid: row.officer_auth_user_guid,
-        collaboratorAgency: row.officer_agency_code,
+        collaboratorAgency: row.agency_code_short_description,
         firstName: row.person_first_name,
         lastName: row.person_last_name,
         middleName1: row.person_middle_name_1,

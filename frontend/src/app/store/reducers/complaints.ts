@@ -699,11 +699,16 @@ export const getComplaintCollaboratorsByComplaintId =
   };
 
 export const addCollaboratorToComplaint =
-  (complaintId: string, personGuid: string): AppThunk =>
+  (complaintId: string, personGuid: string, complaintType: string, complaintUrl: string): AppThunk =>
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/${complaintId}/add-collaborator/${personGuid}`,
+        {
+          complaintType,
+          complaintUrl,
+          personGuid,
+        },
       );
       await post(dispatch, parameters);
       dispatch(getComplaintCollaboratorsByComplaintId(complaintId));

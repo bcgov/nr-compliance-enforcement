@@ -232,7 +232,7 @@ const updateAssessment =
       leadIdentifier: complaintIdentifier,
       caseIdentifier: caseIdentifier,
       updateUserId: profile.idir_username,
-      agencyCode: "COS",
+      agencyCode: assessment.agency,
       caseCode: "HWCR",
       assessment: {
         id: assessment.id,
