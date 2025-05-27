@@ -19,6 +19,8 @@ import {
   selectComplaintCollaborators,
 } from "@/app/store/reducers/complaints";
 import { getAvatarInitials } from "@/app/common/methods";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
 
 type ManageCollaboratorsModalProps = {
   close: () => void;
