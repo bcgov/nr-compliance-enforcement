@@ -2005,6 +2005,14 @@ UPDATE public.feature_agency_xref
 SET active_ind = 'N'
 WHERE feature_code = 'REFEMAIL';
 
+---------------------
+-- Disable collaborator emails in dev/test for all users
+---------------------
+
+UPDATE public.feature_agency_xref
+SET active_ind = 'N'
+WHERE feature_code = 'COLEMAIL';
+
 -----------------------
 -- Default users with a null agency to COS 
 -- This really only affects the Dev environment as everyone in test has already been set
