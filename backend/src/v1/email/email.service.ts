@@ -126,7 +126,7 @@ export class EmailService {
           const { long_description: violationCodeName } = await this._violationCodeService.findOne(
             complaintAsErs.violation,
           );
-          complaintSummaryText = `${bodyTypeDescription} ${violationCodeName}, ${
+          complaintSummaryText = `${bodyTypeDescription}, ${violationCodeName}, ${
             complaintAsErs.isInProgress === true ? "Violation in progress, " : ""
           }${communityName}`;
           subjectAdditionalDetails = `(${violationCodeName}, ${
