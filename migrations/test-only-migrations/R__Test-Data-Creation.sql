@@ -2004,3 +2004,13 @@ WHERE feature_code = 'COMPCOLLAB';
 UPDATE public.feature_agency_xref
 SET active_ind = 'N'
 WHERE feature_code = 'REFEMAIL';
+
+-----------------------
+-- Default users with a null agency to COS 
+-- This really only affects the Dev environment as everyone in test has already been set
+-- This may cause some odd display issues if this script conflicts with a role set in CSS
+-- In the event of mismatch - just update the user in CSS to be the desired role
+-----------------------
+UPDATE public.officer 
+SET agency_code = 'COS'
+WHERE agency_code is null;
