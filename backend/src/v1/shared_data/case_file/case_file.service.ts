@@ -457,7 +457,7 @@ export class CaseFileService {
       query: `mutation CreateNote($input: CreateNoteInput!) {
         createNote(input: $input) {
           caseIdentifier
-          notes { note, actions { actor, date, actionCode, actionId } }
+          notes { note, agencyCode, actions { actor, date, actionCode, actionId } }
         }
       }`,
       variables: { input: model },

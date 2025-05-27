@@ -133,7 +133,7 @@ const addAssessment =
       leadIdentifier: complaintIdentifier,
       caseIdentifier: caseIdentifier,
       createUserId: profile.idir_username,
-      agencyCode: "COS",
+      agencyCode: assessment.agency,
       caseCode: "HWCR",
       assessment: {
         actionNotRequired: assessment.action_required === "No",
@@ -232,7 +232,7 @@ const updateAssessment =
       leadIdentifier: complaintIdentifier,
       caseIdentifier: caseIdentifier,
       updateUserId: profile.idir_username,
-      agencyCode: "COS",
+      agencyCode: assessment.agency,
       caseCode: "HWCR",
       assessment: {
         id: assessment.id,
@@ -585,6 +585,7 @@ export const upsertNote =
     leadIdentifier: string,
     complaintType: string,
     note: string,
+    agencyCode: string,
     id?: UUID,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
@@ -602,12 +603,13 @@ export const upsertNote =
         note: string,
         actor: string,
         userId: string,
+        agencyCode: string,
       ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const input: CreateNoteInput = {
           note,
           leadIdentifier: leadIdentifier,
-          agencyCode: getUserAgency(),
+          agencyCode: agencyCode,
           caseCode: complaintType,
           actor,
           createUserId: userId,
@@ -644,7 +646,9 @@ export const upsertNote =
 
     let result;
     if (!id) {
-      result = await dispatch(_createNote(leadIdentifier, note, officer ? officer.auth_user_guid : "", idir));
+      result = await dispatch(
+        _createNote(leadIdentifier, note, officer ? officer.auth_user_guid : "", idir, agencyCode),
+      );
 
       if (result !== null) {
         dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.

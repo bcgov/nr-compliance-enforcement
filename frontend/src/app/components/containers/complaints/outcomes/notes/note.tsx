@@ -63,6 +63,7 @@ export const Note: FC<props> = ({ id = "", complaintType = "", note }) => {
             actions={note.actions}
             handleEdit={() => setShowInput(true)}
             handleDelete={openDeleteNoteModal}
+            agencyCode={note.agencyCode}
           />
         )
       )}

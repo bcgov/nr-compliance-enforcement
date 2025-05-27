@@ -72,7 +72,10 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
     setReferralReasonError("");
   };
 
+  const [isReferDisabled, setIsReferDisabled] = useState<boolean>(false);
+
   const handleReferComplaint = async () => {
+    setIsReferDisabled(false);
     let hasError = false;
     const officer = officers?.find((officer: Officer) => officer.auth_user_guid === selectedOfficer?.value);
     const complaintUrl = window.location.href;
@@ -97,7 +100,9 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
     } else {
       setReferralReasonError("");
     }
+
     if (!hasError) {
+      setIsReferDisabled(true);
       await dispatch(
         createComplaintReferral(
           id,
@@ -268,7 +273,12 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
         >
           Cancel
         </Button>
-        <Button onClick={handleReferComplaint}>Refer</Button>
+        <Button
+          onClick={handleReferComplaint}
+          disabled={isReferDisabled}
+        >
+          Refer
+        </Button>
       </Modal.Footer>
     </>
   );
