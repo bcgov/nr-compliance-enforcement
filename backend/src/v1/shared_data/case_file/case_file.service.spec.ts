@@ -232,7 +232,10 @@ describe("Testing: Case File Service", () => {
         CssService,
         ConfigurationService,
         PersonService,
-        PersonComplaintXrefService,
+        {
+          provide: PersonComplaintXrefService,
+          useValue: {},
+        },
         AttractantHwcrXrefService,
         CompMthdRecvCdAgcyCdXrefService,
         TeamService,

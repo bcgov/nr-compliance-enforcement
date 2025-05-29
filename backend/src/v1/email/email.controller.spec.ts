@@ -11,6 +11,8 @@ import { GeoOrganizationUnitCodeService } from "../../v1/geo_organization_unit_c
 import { AgencyCodeService } from "../../v1/agency_code/agency_code.service";
 import { ViolationCodeService } from "../../v1/violation_code/violation_code.service";
 import { GirTypeCodeService } from "../../v1/gir_type_code/gir_type_code.service";
+import { CssService } from "../../external_api/css/css.service";
+import { OfficerService } from "../../v1/officer/officer.service";
 
 describe("EmailController", () => {
   let controller: EmailController;
@@ -58,6 +60,14 @@ describe("EmailController", () => {
         },
         {
           provide: GirTypeCodeService,
+          useValue: {},
+        },
+        {
+          provide: CssService,
+          useValue: {},
+        },
+        {
+          provide: OfficerService,
           useValue: {},
         },
       ],

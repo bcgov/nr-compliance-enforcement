@@ -4415,6 +4415,30 @@ INSERT INTO
     update_utc_timestamp
   )
 SELECT
+  'AUTHCOL',
+  'Authorization Column',
+  'Displays the Authorization column in the list view',
+  250,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
   'LCTNCOL',
   'Location/address Column',
   'Displays the Location/address column in the list view',
@@ -5532,6 +5556,66 @@ SELECT
   'PARKCOL',
   'PARKS',
   'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'AUTHCOL',
+  'COS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'AUTHCOL',
+  'EPO',
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'AUTHCOL',
+  'PARKS',
+  'N',
   user,
   now(),
   user,
@@ -11176,262 +11260,125 @@ SELECT
 DO NOTHING;
 
 -------------------------
--- Add Email References
+-- Create new feature for Collaborator emails
 -------------------------
+
 INSERT INTO
-  public.email_reference (
-    email_address,
-    agency_code,
-    geo_organization_unit_code,
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
-    update_utc_timestamp,
-    active_ind
-  ) values
-  (
-    'EnvironmentalComplaints@gov.bc.ca',
-    'EPO',
-    null,
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'parkinfo@gov.bc.ca',
-    'PARKS',
-    null,
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.Bulkley-CassiarZone@gov.bc.ca',
-    'COS',
-    'BLKYCSR',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.Cariboo-ChilcotinZone@gov.bc.ca',
-    'COS',
-    'CRBOCHLCTN',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-    (
-    'COS.CaribooThompsonZone@gov.bc.ca',
-    'COS',
-    'CRBOTMPSN',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.CentralIslandZone@gov.bc.ca',
-    'COS',
-    'CENISL',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.CentralOkanaganZone@gov.bc.ca',
-    'COS',
-    'CENOKNGN',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.FraserNorthZone@gov.bc.ca',
-    'COS',
-    'FRSRN',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.FraserSouthZone@gov.bc.ca',
-    'COS',
-    'FRSRS',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.Nechako-LakesZone@gov.bc.ca  ',
-    'COS',
-    'NCHKOLKS',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.NorthCoastZone@gov.bc.ca',
-    'COS',
-    'NCST',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COs.North.Island.Zone@gov.bc.ca',
-    'COS',
-    'NISL',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COSNOKAN@gov.bc.ca',
-    'COS',
-    'NOKNGN',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.North.Peace.Zone@gov.bc.ca',
-    'COS',
-    'NPCE',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.OminecaZone@gov.bc.ca',
-    'COS',
-    'OMNCA',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.SeatoSkyZone@gov.bc.ca',
-    'COS',
-    'SEA2SKY',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.South.Island.Zone@gov.bc.ca',
-    'COS',
-    'SISL',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.SouthOkanaganZone@gov.bc.ca',
-    'COS',
-    'SOKNGN',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.SouthPeaceZone@gov.bc.ca',
-    'COS',
-    'SPCE',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.Sunshine.Coast.Zone@gov.bc.ca',
-    'COS',
-    'SNSHNCST',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.ThompsonNicolaZone@gov.bc.ca',
-    'COS',
-    'TMPSNNCLA',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COSCKZ@gov.bc.ca',
-    'COS',
-    'CLMBAKTNY',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.East.Kootenay.Zone@gov.bc.ca',
-    'COS',
-    'EKTNY',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ),
-  (
-    'COS.WestKootenay.Zone@gov.bc.ca',
-    'COS',
-    'WKTNY',
-    user,
-    now(),
-    user,
-    now(),
-    true
-  ) on conflict do nothing;
+    update_utc_timestamp
+  )
+SELECT
+  'COLEMAIL',
+  'Enable Collaborator Email Notifications',
+  'Enables the sending of email notifications when a collaborator is added to a complaint.',
+  290,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COLEMAIL',
+  'COS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COLEMAIL',
+  'PARKS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'COLEMAIL',
+  'EPO',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
 
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'ZONE_FLTR' AND agency_code = 'PARKS';
 UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'REG_FLTR' AND agency_code = 'PARKS';
+
+---------------------------
+-- CE-225 Add external agencies
+---------------------------
+
+insert into agency_code (agency_code, short_description, long_description, display_order, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, external_agency_ind)
+values ('DFO', 'Fisheries and Oceans Canada', 'Fisheries and Oceans Canada', 20, true, user, now(), user, now(), 'Y'),
+      ('ECCC', 'Environment and Climate Change Canada', 'Environment and Climate Change Canada', 10, true, user, now(), user, now(), 'Y'),
+      ('POL', 'Police', 'Police', 50, true, user, now(), user, now(), 'Y'),
+      ('NROS', 'Natural Resource Officer Service', 'Natural Resource Officer Service', 30, true, user, now(), user, now(), 'Y'),
+      ('OTH', 'Other', 'Other', 40, true, user, now(), user, now(), 'Y')
+on conflict do nothing;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+values ('REFEMAIL','DFO','N',user,now(),user,now()),
+('REFEMAIL','ECCC','N',user,now(),user,now()),
+('REFEMAIL','POL','N',user,now(),user,now()),
+('REFEMAIL','NROS','N',user,now(),user,now()),
+('REFEMAIL','OTH','N',user,now(),user,now())
+ON CONFLICT DO NOTHING;
 
 --------------------------
 -- New Changes above this line

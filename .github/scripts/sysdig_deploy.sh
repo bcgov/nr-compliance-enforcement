@@ -5,7 +5,12 @@ set -e # failfast
 # ENV:
 # APPLY: determines if plan is applied, lease as false for dry-run
 
-cd terraform || exit 1
+if [ -z "$TERRAFORM_PATH" ]; then
+    echo "TERRAFORM_PATH not set, exiting"
+    exit 1
+fi
+
+cd $TERRAFORM_PATH || exit 1
 terraform -v
 terraform init \
     -backend-config="bucket=${STATE_BACKEND_BUCKET}" \

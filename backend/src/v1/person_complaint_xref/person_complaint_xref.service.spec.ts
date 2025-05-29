@@ -5,6 +5,7 @@ import { DataSource } from "typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { ComplaintService } from "../complaint/complaint.service";
+import { EmailService } from "../email/email.service";
 
 describe("PersonComplaintXrefService", () => {
   let service: PersonComplaintXrefService;
@@ -25,6 +26,10 @@ describe("PersonComplaintXrefService", () => {
         {
           provide: DataSource,
           useFactory: dataSourceMockFactory,
+        },
+        {
+          provide: EmailService,
+          useValue: {},
         },
       ],
     }).compile();

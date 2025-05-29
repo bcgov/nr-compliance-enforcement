@@ -11,16 +11,16 @@ let utmObj = require("utm-latlng");
 
 type Props = {
   id?: string;
+  mode: "complaint" | "equipment";
   utmZones?: Array<Option>;
   initXCoordinate?: string;
   initYCoordinate?: string;
   syncCoordinates: (yCoordinate: string | undefined, xCoordinate: string | undefined) => void;
   throwError: (hasError: boolean) => void;
-  sourceXCoordinate?: string;
-  sourceYCoordinate?: string;
   enableCopyCoordinates: boolean;
   validationRequired: boolean;
-  selectFromMap?: boolean;
+  sourceXCoordinate?: string;
+  sourceYCoordinate?: string;
   equipmentType?: string;
 };
 
@@ -31,6 +31,7 @@ const COORDINATE_TYPES = {
 
 export const CompCoordinateInput: FC<Props> = ({
   id,
+  mode,
   utmZones,
   initXCoordinate,
   initYCoordinate,
@@ -40,7 +41,6 @@ export const CompCoordinateInput: FC<Props> = ({
   throwError,
   enableCopyCoordinates,
   validationRequired,
-  selectFromMap,
   equipmentType,
 }) => {
   const dispatch = useAppDispatch();
@@ -58,6 +58,11 @@ export const CompCoordinateInput: FC<Props> = ({
 
   const handleGeoPointChange = useCallback(
     (latitude: string, longitude: string) => {
+      // Prevent infinite renders in UseEffects when values haven't changed
+      if (latitude === yCoordinate && longitude === xCoordinate) {
+        return;
+      }
+
       setYCoordinateErrorMsg("");
       setXCoordinateErrorMsg("");
       setYCoordinate(latitude);
@@ -280,7 +285,7 @@ export const CompCoordinateInput: FC<Props> = ({
     if (xCoordinate && yCoordinate) {
       handleGeoPointChange(yCoordinate, xCoordinate);
     }
-  }, [xCoordinate, yCoordinate]);
+  }, [xCoordinate, yCoordinate, handleGeoPointChange]);
 
   const formatUtmCoordinate = (input: string | undefined): string => {
     const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
@@ -290,6 +295,33 @@ export const CompCoordinateInput: FC<Props> = ({
     }
     return result ?? "";
   };
+
+  // Check if Copy coordinates button enabled
+  useEffect(() => {
+    if (!enableCopyCoordinates) return;
+
+    const hasCoordinates = sourceXCoordinate && sourceYCoordinate;
+
+    if (coordinateType === COORDINATE_TYPES.UTM && hasCoordinates) {
+      const { easting, northing, zone } = updateUtmFields(sourceYCoordinate, sourceXCoordinate);
+      if (easting && northing && zone) {
+        handleUtmGeoPointChange(easting, northing, zone);
+      }
+    } else {
+      setXCoordinate(sourceXCoordinate);
+      setYCoordinate(sourceYCoordinate);
+      if (hasCoordinates) {
+        handleGeoPointChange(sourceYCoordinate, sourceXCoordinate);
+      }
+    }
+  }, [
+    enableCopyCoordinates,
+    coordinateType,
+    handleGeoPointChange,
+    handleUtmGeoPointChange,
+    sourceXCoordinate,
+    sourceYCoordinate,
+  ]);
 
   const isZeroOrEmpty = (input: string | undefined): boolean => {
     return input === "" || input === "0";
@@ -302,7 +334,8 @@ export const CompCoordinateInput: FC<Props> = ({
         modalSize: "lg",
         modalType: MAP_MODAL,
         data: {
-          title: "Select equipment from map",
+          mode: mode,
+          title: mode === "complaint" ? "Select location from map" : "Select equipment from map",
           complaintCoords:
             sourceXCoordinate !== "0" && sourceYCoordinate !== "0"
               ? [Number(sourceXCoordinate), Number(sourceYCoordinate)]
@@ -405,7 +438,7 @@ export const CompCoordinateInput: FC<Props> = ({
               </div>
             </div>
           )}
-          {selectFromMap && coordinateType === COORDINATE_TYPES.LatLong && (
+          {coordinateType === COORDINATE_TYPES.LatLong && (
             <Button
               variant="outline-primary"
               onClick={openMapModal}
@@ -495,48 +528,6 @@ export const CompCoordinateInput: FC<Props> = ({
         <div className="error-message">{eastingCoordinateErrorMsg}</div>
         <div className="error-message">{northingCoordinateErrorMsg}</div>
         <div className="error-message">{zoneErrorMsg}</div>
-        {enableCopyCoordinates && (
-          <Button
-            variant="outline-primary"
-            size="sm"
-            className={`
-              btn-txt svg-icon mt-2
-              ${validationRequired ? "validation-group-sub-label" : ""}
-            `}
-            id="copy-coordinates-button"
-            onClick={() => {
-              if (coordinateType === COORDINATE_TYPES.LatLong) {
-                setXCoordinate(sourceXCoordinate);
-                setYCoordinate(sourceYCoordinate);
-                if (sourceXCoordinate && sourceYCoordinate) {
-                  handleGeoPointChange(sourceYCoordinate, sourceXCoordinate);
-                }
-              } else if (coordinateType === COORDINATE_TYPES.UTM) {
-                if (sourceXCoordinate && sourceYCoordinate) {
-                  const { easting, northing, zone } = updateUtmFields(sourceYCoordinate, sourceXCoordinate);
-                  if (easting && northing && zone) {
-                    handleUtmGeoPointChange(easting, northing, zone);
-                  }
-                }
-              }
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              className="bi bi-copy"
-              viewBox="0 0 16 16"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"
-              />
-            </svg>
-            <span>Copy coordinates from complaint details</span>
-          </Button>
-        )}
       </div>
     </div>
   );

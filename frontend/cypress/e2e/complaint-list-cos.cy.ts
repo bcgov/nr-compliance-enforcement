@@ -30,11 +30,15 @@ describe("Complaint List Functionality", () => {
         cy.get("table thead").should("contain.text", "Officer assigned");
         cy.get("table thead").should("contain.text", "Last updated");
         cy.get("table thead").should("contain.text", "Actions");
+        cy.get("#comp-zone-filter").click({ force: true });
+        cy.get("#complaint_pagination_container_id").should("exist");
+        cy.get('[id^="pagination_page_"]').should("exist");
       }
       if ("#ers-tab".includes(complaintTypes[index])) {
         cy.get("#ers-tab").should("contain.text", "Enforcement");
         cy.get("table thead").should("contain.text", "Complaint #");
         cy.get("table thead").should("contain.text", "Date logged");
+        cy.get("table thead").should("not.contain.text", "Authorization");
         cy.get("table thead").should("contain.text", "Violation type");
         cy.get("table thead").should("contain.text", "Community");
         cy.get("table thead").should("contain.text", "Location/address");

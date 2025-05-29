@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger, forwardRef } from "@nestjs/common";
 import { ChesService } from "../../external_api/ches/ches.service";
 import { generateReferralEmailBody, GenerateReferralEmailParams } from "../../email_templates/referrals";
 import { EmailReferenceService } from "../../v1/email_reference/email_reference.service";
@@ -12,28 +12,29 @@ import { AgencyCodeService } from "../../v1/agency_code/agency_code.service";
 import { ViolationCodeService } from "../../v1/violation_code/violation_code.service";
 import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
 import { GirTypeCodeService } from "../../v1/gir_type_code/gir_type_code.service";
+import { GenerateCollaboratorEmailParams, generateCollaboratorEmailBody } from "../../email_templates/collaborator";
+import { CssService } from "../../external_api/css/css.service";
+import { SendCollaboratorEmalDto } from "../../v1/email/dto/send_collaborator_email.dto";
+import { OfficerService } from "../../v1/officer/officer.service";
 
 @Injectable()
 export class EmailService {
-  @Inject(ChesService)
-  private readonly _chesService: ChesService;
-  @Inject(EmailReferenceService)
-  private readonly _emailReferenceService: EmailReferenceService;
-  @Inject(ComplaintService)
-  private readonly _complaintService: ComplaintService;
-  @Inject(SpeciesCodeService)
-  private readonly _speciesCodeService: SpeciesCodeService;
-  @Inject(HwcrComplaintNatureCodeService)
-  private readonly _natureOfComplaintService: HwcrComplaintNatureCodeService;
-  @Inject(GeoOrganizationUnitCodeService)
-  private readonly _geoOrganizationUnitCodeService: GeoOrganizationUnitCodeService;
-  @Inject(AgencyCodeService)
-  private readonly _agencyCodeService: AgencyCodeService;
-  @Inject(ViolationCodeService)
-  private readonly _violationCodeService: ViolationCodeService;
-  @Inject(GirTypeCodeService)
-  private readonly _girTypeCodeService: GirTypeCodeService;
   private readonly logger = new Logger(EmailService.name);
+
+  constructor(
+    private readonly _chesService: ChesService,
+    private readonly _emailReferenceService: EmailReferenceService,
+    @Inject(forwardRef(() => ComplaintService))
+    private readonly _complaintService: ComplaintService,
+    private readonly _speciesCodeService: SpeciesCodeService,
+    private readonly _natureOfComplaintService: HwcrComplaintNatureCodeService,
+    private readonly _geoOrganizationUnitCodeService: GeoOrganizationUnitCodeService,
+    private readonly _agencyCodeService: AgencyCodeService,
+    private readonly _violationCodeService: ViolationCodeService,
+    private readonly _girTypeCodeService: GirTypeCodeService,
+    private readonly _cssService: CssService,
+    private readonly _officerService: OfficerService,
+  ) {}
 
   sendReferralEmail = async (createComplaintReferralDto, user, exportContentBuffer) => {
     try {
@@ -99,10 +100,14 @@ export class EmailService {
         referred_by_agency_code,
       );
       let subjectAdditionalDetails = "";
+      let subjectTypeDescription = type;
+      let bodyTypeDescription = type;
       let complaintSummaryText = "";
 
       switch (type) {
         case "HWCR": {
+          subjectTypeDescription = "HWC";
+          bodyTypeDescription = "Human wildlife conflict";
           const complaintAsWildlife = complaint as WildlifeComplaintDto;
           const { short_description: speciesName } = await this._speciesCodeService.findOne(
             complaintAsWildlife.species,
@@ -110,37 +115,40 @@ export class EmailService {
           const { long_description: natureOfComplaint } = await this._natureOfComplaintService.findOne(
             complaintAsWildlife.natureOfComplaint,
           );
-          complaintSummaryText = `${type}, ${natureOfComplaint}, ${speciesName}, ${communityName}`;
+          complaintSummaryText = `${bodyTypeDescription}, ${natureOfComplaint}, ${speciesName}, ${communityName}`;
           subjectAdditionalDetails = `(${speciesName}, ${communityName})`;
           break;
         }
         case "ERS": {
+          subjectTypeDescription = "Enforcement";
+          bodyTypeDescription = "Enforcement";
           const complaintAsErs = complaint as AllegationComplaintDto;
           const { long_description: violationCodeName } = await this._violationCodeService.findOne(
             complaintAsErs.violation,
           );
-          const { isInProgress } = complaintAsErs;
-          complaintSummaryText = `${violationCodeName}, ${
-            isInProgress === true ? "Violation in progress, " : ""
+          complaintSummaryText = `${bodyTypeDescription}, ${violationCodeName}, ${
+            complaintAsErs.isInProgress === true ? "Violation in progress, " : ""
           }${communityName}`;
           subjectAdditionalDetails = `(${violationCodeName}, ${
-            isInProgress === true ? "In progress, " : ""
+            complaintAsErs.isInProgress === true ? "In progress, " : ""
           }${communityName})`;
           break;
         }
         case "GIR": {
+          subjectTypeDescription = "General incident";
+          bodyTypeDescription = "General incident";
           const complaintAsGir = complaint as GeneralIncidentComplaintDto;
           const { long_description: girTypeName } = await this._girTypeCodeService.findOne(complaintAsGir.girType);
-          complaintSummaryText = `${type}, ${girTypeName}, ${communityName}`;
+          complaintSummaryText = `${bodyTypeDescription}, ${girTypeName}, ${communityName}`;
           subjectAdditionalDetails = `(${girTypeName}, ${communityName})`;
           break;
         }
       }
       const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : null;
-      const emailSubject = `${envFlag}NatCom referral ${type} complaint #${id} ${subjectAdditionalDetails}`;
+      const emailSubject = `${envFlag}NatCom referral ${subjectTypeDescription} complaint #${id} ${subjectAdditionalDetails}`;
       const generateReferralEmailParams: GenerateReferralEmailParams = {
         complaintId: id,
-        complaintType: type,
+        complaintTypeDescription: bodyTypeDescription,
         senderName: senderName,
         senderEmailAddress: senderEmailAddress,
         referredToAgency: referredToAgencyName,
@@ -163,6 +171,92 @@ export class EmailService {
       );
     } catch (error) {
       this.logger.error(`Failed to send referral email: ${error.message}`);
+      throw error;
+    }
+  };
+
+  sendCollaboratorEmail = async (complaintId, sendCollaboratorEmailDto: SendCollaboratorEmalDto, user) => {
+    try {
+      const { complaintType, personGuid, complaintUrl } = sendCollaboratorEmailDto;
+      const senderEmailAddress = user.email ?? process.env.CEDS_EMAIL;
+      const supportEmail = process.env.CEDS_EMAIL;
+      const { given_name, family_name } = user;
+      const senderName = `${family_name} ${given_name}`;
+      const collaboratorOfficer = await this._officerService.findByPersonGuid(personGuid);
+      const collaboratorUserRes = await this._cssService.getUserByGuid(
+        collaboratorOfficer.auth_user_guid.replace(/-/g, ""),
+      );
+      const collaborator = collaboratorUserRes[0];
+      const { email, lastName, firstName } = collaborator;
+      const collaboratorName = `${firstName} ${lastName}`;
+      const complaint = await this._complaintService.findById(complaintId, complaintType);
+
+      const { short_description: owningAgency } = await this._agencyCodeService.findById(complaint.ownedBy);
+      let subjectAdditionalDetails = "";
+      let complaintSummaryText = "";
+      let subjectTypeDescription = `${complaintType}`;
+      let complaintTypeDescription = `${complaintType}`;
+      switch (complaintType) {
+        case "HWCR": {
+          const complaintAsWildlife = complaint as WildlifeComplaintDto;
+          subjectTypeDescription = "HWC";
+          complaintTypeDescription = "Human wildlife conflict";
+          const { short_description: speciesName } = await this._speciesCodeService.findOne(
+            complaintAsWildlife.species,
+          );
+          const { long_description: natureOfComplaint } = await this._natureOfComplaintService.findOne(
+            complaintAsWildlife.natureOfComplaint,
+          );
+          complaintSummaryText = `${natureOfComplaint}, ${speciesName}`;
+          subjectAdditionalDetails = `(${speciesName})`;
+          break;
+        }
+        case "ERS": {
+          const complaintAsErs = complaint as AllegationComplaintDto;
+          subjectTypeDescription = "Enforcement";
+          complaintTypeDescription = "Enforcement";
+          const { long_description: violationCodeName } = await this._violationCodeService.findOne(
+            complaintAsErs.violation,
+          );
+          const { isInProgress } = complaintAsErs;
+          complaintSummaryText = `${violationCodeName}${isInProgress === true ? ", violation in progress" : ""}`;
+          subjectAdditionalDetails = `(${violationCodeName})`;
+          break;
+        }
+        case "GIR": {
+          const complaintAsGir = complaint as GeneralIncidentComplaintDto;
+          subjectTypeDescription = "General incident";
+          complaintTypeDescription = "General incident";
+          const { long_description: girTypeName } = await this._girTypeCodeService.findOne(complaintAsGir.girType);
+          complaintSummaryText = `${girTypeName}`;
+          subjectAdditionalDetails = `(${girTypeName})`;
+          break;
+        }
+      }
+      const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : "";
+      const emailSubject = `${envFlag}Invitation to collaborate: NatCom ${subjectTypeDescription} complaint #${complaintId} ${subjectAdditionalDetails}`;
+      const generateCollaboratorEmailParams: GenerateCollaboratorEmailParams = {
+        complaintId,
+        collaboratorName,
+        complaintTypeDescription,
+        owningAgency,
+        senderName,
+        senderEmailAddress,
+        supportEmail,
+        complaintSummaryText,
+        complaintUrl,
+      };
+      const emailBody = generateCollaboratorEmailBody(generateCollaboratorEmailParams);
+      return await this._chesService.sendEmail(
+        senderEmailAddress,
+        senderName,
+        emailSubject,
+        emailBody,
+        [email],
+        [senderEmailAddress],
+      );
+    } catch (error) {
+      this.logger.error(`Failed to send collaborator email: ${error.message}`);
       throw error;
     }
   };

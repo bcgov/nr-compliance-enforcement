@@ -467,9 +467,9 @@ export const CreateComplaint: FC = () => {
     setLongitude(xCoordinate ?? "0");
     setLatitude(yCoordinate ?? "0");
 
-    if (latitude && longitude && !Number.isNaN(latitude) && !Number.isNaN(longitude)) {
-      coordinates[Coordinates.Longitude] = parseFloat(formatLatLongCoordinate(longitude) ?? "");
-      coordinates[Coordinates.Latitude] = parseFloat(formatLatLongCoordinate(latitude) ?? "");
+    if (yCoordinate && xCoordinate && !Number.isNaN(yCoordinate) && !Number.isNaN(xCoordinate)) {
+      coordinates[Coordinates.Longitude] = parseFloat(formatLatLongCoordinate(xCoordinate) ?? "");
+      coordinates[Coordinates.Latitude] = parseFloat(formatLatLongCoordinate(yCoordinate) ?? "");
     }
     const complaint = { ...complaintData, location: { type: "Point", coordinates } } as ComplaintDto;
     applyComplaintData(complaint);
@@ -1019,6 +1019,7 @@ export const CreateComplaint: FC = () => {
           </div>
           <CompCoordinateInput
             id="create-complaint-coordinates"
+            mode="complaint"
             utmZones={bcUtmZoneNumbers.map((zone: string) => {
               return { value: zone, label: zone } as Option;
             })}
@@ -1028,6 +1029,8 @@ export const CreateComplaint: FC = () => {
             throwError={throwError}
             enableCopyCoordinates={false}
             validationRequired={false}
+            sourceXCoordinate={longitude ?? "0"}
+            sourceYCoordinate={latitude ?? "0"}
           />
 
           <div

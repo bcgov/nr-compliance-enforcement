@@ -8,6 +8,9 @@ select distinct
     when alc.complaint_identifier is not null then 'ERS'
 		else 'Unknown' 
   end as "Complaint Type",
+	agt.short_description as "Referred to agency",
+  agb.short_description as "Referred by agency",
+	to_char(crf.referral_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Los_Angeles', 'YYYY-MM-DD HH24:MI') as "Referral date",
   vc.long_description as "Violation Type",
 	case -- This is a temporary solution as it isn't really scalable.
 	    when cmp.incident_reported_utc_timestmp at time zone 'UTC' at time zone 'America/Los_Angeles' 
@@ -54,8 +57,14 @@ join
 	geo_organization_unit_code goc on goc.geo_organization_unit_code  = cmp.geo_organization_unit_code 
 join 
 	cos_geo_org_unit_flat_mvw gfv on gfv.area_code = goc.geo_organization_unit_code 
+left join
+	complaint_referral crf on crf.complaint_identifier = cmp.complaint_identifier 
+left join
+	agency_code agt on agt.agency_code = crf.referred_to_agency_code 
+left join
+	agency_code agb on agb.agency_code = crf.referred_by_agency_code 
 left join 
-	person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true
+	person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true and pcx.person_complaint_xref_code = 'ASSIGNEE'
 left join 
 	person per on per.person_guid = pcx.person_guid 
 right join
@@ -69,6 +78,8 @@ left join
    complaint_update cu ON cu.complaint_identifier = cmp.complaint_identifier
 left join
 	violation_code vc  on alc.violation_code = vc.violation_code 
-where cmp.owned_by_agency_code = 'COS'
+where
+	cmp.owned_by_agency_code = 'COS' or
+	crf.referred_by_agency_code = 'COS'
 order by
 	cmp.complaint_identifier asc

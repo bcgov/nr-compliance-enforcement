@@ -42,6 +42,7 @@ import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
 import { getUserAgency } from "@/app/service/user-service";
 import { Collaborator } from "@apptypes/app/complaints/collaborator";
 import { generateExportComplaintInputParams } from "@/app/store/reducers/documents-thunks";
+import { CodeTableState } from "@/app/types/state/code-table-state";
 
 type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
 
@@ -615,6 +616,10 @@ export const createComplaintReferral =
   async (dispatch, getState) => {
     try {
       const { attachments } = getState();
+      const agencyTable = getState()?.codeTables?.agency as CodeTableState['agency'] | undefined;
+      const agency = agencyTable?.find((item) => item.agency === referred_to_agency_code);
+      const externalAgencyInd = agency?.externalAgencyInd;
+
       const documentExportParams = generateExportComplaintInputParams(
         complaint_identifier,
         attachments,
@@ -631,6 +636,7 @@ export const createComplaintReferral =
         referral_reason,
         documentExportParams,
         complaint_url,
+        externalAgencyInd,
       });
 
       await post<any>(dispatch, parameters);
@@ -693,11 +699,16 @@ export const getComplaintCollaboratorsByComplaintId =
   };
 
 export const addCollaboratorToComplaint =
-  (complaintId: string, personGuid: string): AppThunk =>
+  (complaintId: string, personGuid: string, complaintType: string, complaintUrl: string): AppThunk =>
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/${complaintId}/add-collaborator/${personGuid}`,
+        {
+          complaintType,
+          complaintUrl,
+          personGuid,
+        },
       );
       await post(dispatch, parameters);
       dispatch(getComplaintCollaboratorsByComplaintId(complaintId));
