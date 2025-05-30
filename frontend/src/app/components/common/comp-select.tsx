@@ -28,11 +28,8 @@ const CustomOption = (props: any) => {
 // Custom filterOption to ensure searchability
 const customFilterOption = (option: Option, rawInput: string) => {
   const searchText = rawInput.toLowerCase();
-  if (option && option.label) {
-    const label = option.label?.toLowerCase() || "";
-    return label.includes(searchText);
-  }
-  return false;
+  const label = option.label?.toLowerCase() || "";
+  return label.includes(searchText);
 };
 
 export const CompSelect: FC<Props> = ({
