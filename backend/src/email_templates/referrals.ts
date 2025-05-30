@@ -1,6 +1,6 @@
 export interface GenerateReferralEmailParams {
   complaintId: string;
-  complaintTypeDescription: string;
+  complaintTypeDescription?: string;
   senderName: string;
   senderEmailAddress: string;
   referredToAgency: string;
@@ -8,7 +8,7 @@ export interface GenerateReferralEmailParams {
   reasonForReferral: string;
   supportEmail: string;
   complaintSummaryText: string;
-  complaintUrl: string;
+  complaintUrl?: string;
 }
 
 export function generateReferralEmailBody(emailReferralParams: GenerateReferralEmailParams) {
@@ -39,6 +39,35 @@ export function generateReferralEmailBody(emailReferralParams: GenerateReferralE
   <li>You may also view the attached PDF</li>
 </ul>
 <p>Please note this is an automated email from NatCom generated on behalf of the person sending the referral. If you need assistance, please contact:</p>
+<ul>
+  <li>${senderEmailAddress} for information about the complaint and referral.</li>
+  <li>${supportEmail} for technical support.</li>
+</ul>
+`;
+}
+
+export function generateExternalReferralEmailBody(emailReferralParams: GenerateReferralEmailParams) {
+  const {
+    complaintId,
+    senderName,
+    senderEmailAddress,
+    referredToAgency,
+    referredByAgency,
+    reasonForReferral,
+    supportEmail,
+    complaintSummaryText,
+  } = emailReferralParams;
+  return `<p>Hello,</p>
+<p>
+  Complaint #${complaintId} has been referred to ${referredToAgency} by <strong>${senderName} (CC’d)</strong> at ${referredByAgency}.
+</p>
+<ul>
+  <li>Summary: ${complaintSummaryText}</li>
+  <li>The reason for referral is: ${reasonForReferral}</li>
+</ul>
+<b>You can view the full complaint details and any actions taken in the <u>attached PDF</u>.</b>
+
+<p>Please note this is an automated email from ${referredByAgency}'s complaint management system, generated on behalf of the person sending the referral. If you need assistance, please contact:</p>
 <ul>
   <li>${senderEmailAddress} for information about the complaint and referral.</li>
   <li>${supportEmail} for technical support.</li>

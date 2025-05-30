@@ -616,9 +616,11 @@ export const createComplaintReferral =
   async (dispatch, getState) => {
     try {
       const { attachments } = getState();
-      const agencyTable = getState()?.codeTables?.agency as CodeTableState['agency'] | undefined;
+      const agencyTable = getState()?.codeTables?.agency as CodeTableState["agency"] | undefined;
       const agency = agencyTable?.find((item) => item.agency === referred_to_agency_code);
       const externalAgencyInd = agency?.externalAgencyInd;
+      // TODO: Remove this hard coded email once UI has been written
+      const additionalEmailRecipients = ["Alec.2.Wilcox@gov.bc.ca"];
 
       const documentExportParams = generateExportComplaintInputParams(
         complaint_identifier,
@@ -637,6 +639,7 @@ export const createComplaintReferral =
         documentExportParams,
         complaint_url,
         externalAgencyInd,
+        additionalEmailRecipients,
       });
 
       await post<any>(dispatch, parameters);

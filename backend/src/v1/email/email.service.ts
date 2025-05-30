@@ -1,6 +1,10 @@
 import { Inject, Injectable, Logger, forwardRef } from "@nestjs/common";
 import { ChesService } from "../../external_api/ches/ches.service";
-import { generateReferralEmailBody, GenerateReferralEmailParams } from "../../email_templates/referrals";
+import {
+  generateExternalReferralEmailBody,
+  generateReferralEmailBody,
+  GenerateReferralEmailParams,
+} from "../../email_templates/referrals";
 import { EmailReferenceService } from "../../v1/email_reference/email_reference.service";
 import { ComplaintService } from "../../v1/complaint/complaint.service";
 import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
@@ -44,6 +48,7 @@ export class EmailService {
         referred_by_agency_code,
         referral_reason,
         complaint_url,
+        additionalEmailRecipients,
       } = createComplaintReferralDto;
       const { type, fileName } = createComplaintReferralDto.documentExportParams;
 
@@ -65,7 +70,7 @@ export class EmailService {
       const { given_name, family_name } = user;
       const senderName = `${given_name} ${family_name}`;
 
-      const recipientList = [];
+      const recipientList = additionalEmailRecipients;
       const emailReferences = await this._emailReferenceService.findActiveByAgency(referred_to_agency_code);
       for (const ref of emailReferences) {
         switch (referred_to_agency_code) {
@@ -159,6 +164,117 @@ export class EmailService {
         complaintUrl: complaint_url,
       };
       const emailBody = generateReferralEmailBody(generateReferralEmailParams);
+
+      return await this._chesService.sendEmail(
+        senderEmailAddress,
+        senderName,
+        emailSubject,
+        emailBody,
+        recipientList,
+        [senderEmailAddress],
+        emailAttachments,
+      );
+    } catch (error) {
+      this.logger.error(`Failed to send referral email: ${error.message}`);
+      throw error;
+    }
+  };
+
+  sendExternalReferralEmail = async (createComplaintReferralDto, user, exportContentBuffer) => {
+    try {
+      const {
+        complaint_identifier: id,
+        referred_to_agency_code,
+        referred_by_agency_code,
+        referral_reason,
+        complaint_url,
+        additionalEmailRecipients,
+      } = createComplaintReferralDto;
+      const { type, fileName } = createComplaintReferralDto.documentExportParams;
+
+      const complaint = await this._complaintService.findById(id, type);
+
+      // Convert the PDF data to base64
+      const base64Content = Buffer.from(exportContentBuffer.data).toString("base64");
+      const emailAttachments = [
+        {
+          content: base64Content,
+          contentType: "application/pdf",
+          encoding: "base64",
+          filename: fileName,
+        },
+      ];
+
+      const senderEmailAddress = user.email ?? process.env.CEDS_EMAIL;
+      const supportEmail = process.env.CEDS_EMAIL;
+      const { given_name, family_name } = user;
+      const senderName = `${given_name} ${family_name}`;
+
+      const recipientList = additionalEmailRecipients;
+
+      const { short_description: communityName } = await this._geoOrganizationUnitCodeService.findOne(
+        complaint.organization.area,
+      );
+      const { short_description: referredToAgencyName } = await this._agencyCodeService.findById(
+        referred_to_agency_code,
+      );
+      const { short_description: referredByAgencyName, long_description: referredByAgencyFullName } =
+        await this._agencyCodeService.findById(referred_by_agency_code);
+      let subjectAgencyDescription = "";
+      let subjectTypeDescription = type;
+      let bodyTypeDescription = type;
+      let complaintSummaryText = "";
+
+      switch (type) {
+        case "HWCR": {
+          subjectTypeDescription = "HWC";
+          bodyTypeDescription = "Human wildlife conflict";
+          const complaintAsWildlife = complaint as WildlifeComplaintDto;
+          const { short_description: speciesName } = await this._speciesCodeService.findOne(
+            complaintAsWildlife.species,
+          );
+          const { long_description: natureOfComplaint } = await this._natureOfComplaintService.findOne(
+            complaintAsWildlife.natureOfComplaint,
+          );
+          complaintSummaryText = `${bodyTypeDescription}, ${natureOfComplaint}, ${speciesName}, ${communityName}`;
+          break;
+        }
+        case "ERS": {
+          subjectTypeDescription = "Enforcement";
+          bodyTypeDescription = "Enforcement";
+          const complaintAsErs = complaint as AllegationComplaintDto;
+          const { long_description: violationCodeName } = await this._violationCodeService.findOne(
+            complaintAsErs.violation,
+          );
+          complaintSummaryText = `${bodyTypeDescription}, ${violationCodeName}, ${
+            complaintAsErs.isInProgress === true ? "Violation in progress, " : ""
+          }${communityName}`;
+          break;
+        }
+        case "GIR": {
+          subjectTypeDescription = "General incident";
+          bodyTypeDescription = "General incident";
+          const complaintAsGir = complaint as GeneralIncidentComplaintDto;
+          const { long_description: girTypeName } = await this._girTypeCodeService.findOne(complaintAsGir.girType);
+          complaintSummaryText = `${bodyTypeDescription}, ${girTypeName}, ${communityName}`;
+          break;
+        }
+      }
+      const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : null;
+      const emailSubject = `${envFlag}Referral from ${referredByAgencyFullName}: ${subjectTypeDescription} complaint #${id}`;
+      const generateReferralEmailParams: GenerateReferralEmailParams = {
+        complaintId: id,
+        complaintTypeDescription: bodyTypeDescription,
+        senderName: senderName,
+        senderEmailAddress: senderEmailAddress,
+        referredToAgency: referredToAgencyName,
+        referredByAgency: referredByAgencyName,
+        reasonForReferral: referral_reason,
+        supportEmail: supportEmail,
+        complaintSummaryText: complaintSummaryText,
+        complaintUrl: complaint_url,
+      };
+      const emailBody = generateExternalReferralEmailBody(generateReferralEmailParams);
 
       return await this._chesService.sendEmail(
         senderEmailAddress,
