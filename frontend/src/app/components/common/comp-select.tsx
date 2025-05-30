@@ -22,13 +22,13 @@ type Props = {
 // Custom Option component to render labelElement
 const CustomOption = (props: any) => {
   const { data } = props;
-  return <components.Option {...props}>{data.labelElement || data.label}</components.Option>;
+  return <components.Option {...props}>{data.labelElement ?? data.label}</components.Option>;
 };
 
 // Custom filterOption to ensure searchability
 const customFilterOption = (option: Option, rawInput: string) => {
   const searchText = rawInput.toLowerCase();
-  const label = option.label?.toLowerCase() || "";
+  const label = option.label?.toLowerCase() ?? "";
   return label.includes(searchText);
 };
 
