@@ -9,6 +9,7 @@ export interface GenerateReferralEmailParams {
   supportEmail: string;
   complaintSummaryText: string;
   complaintUrl?: string;
+  isExternal: boolean;
 }
 
 export function generateReferralEmailBody(emailReferralParams: GenerateReferralEmailParams) {
@@ -23,51 +24,35 @@ export function generateReferralEmailBody(emailReferralParams: GenerateReferralE
     supportEmail,
     complaintSummaryText,
     complaintUrl,
+    isExternal,
   } = emailReferralParams;
+
   return `<p>Hello,</p>
 <p>
-  ${complaintTypeDescription} complaint #<a href=${complaintUrl}>${complaintId}</a> has been referred to ${referredToAgency} by <strong>${senderName} (CC’d)</strong> at ${referredByAgency}.
+  ${
+    isExternal
+      ? `Complaint #${complaintId}`
+      : `${complaintTypeDescription} complaint #<a href=${complaintUrl}>${complaintId}</a>`
+  }
+  has been referred to ${referredToAgency} by <strong>${senderName} (CC'd)</strong> at ${referredByAgency}.
 </p>
 <ul>
   <li>Summary: ${complaintSummaryText}</li>
   <li>The reason for referral is: ${reasonForReferral}</li>
 </ul>
-<p>You can access the complaint and view any actions taken by the referring agency via:</p>
-<ul>
-  <li>The link above</li>
-  <li>The complaint has been added to your list view in NatCom</li>
-  <li>You may also view the attached PDF</li>
-</ul>
-<p>Please note this is an automated email from NatCom generated on behalf of the person sending the referral. If you need assistance, please contact:</p>
-<ul>
-  <li>${senderEmailAddress} for information about the complaint and referral.</li>
-  <li>${supportEmail} for technical support.</li>
-</ul>
-`;
+${
+  isExternal
+    ? `<b>You can view the full complaint details and any actions taken in the <u>attached PDF</u>.</b>`
+    : `<p>You can access the complaint and view any actions taken by the referring agency via:</p>
+  <ul>
+    <li>The link above</li>
+    <li>The complaint has been added to your list view in NatCom</li>
+    <li>You may also view the attached PDF</li>
+  </ul>`
 }
-
-export function generateExternalReferralEmailBody(emailReferralParams: GenerateReferralEmailParams) {
-  const {
-    complaintId,
-    senderName,
-    senderEmailAddress,
-    referredToAgency,
-    referredByAgency,
-    reasonForReferral,
-    supportEmail,
-    complaintSummaryText,
-  } = emailReferralParams;
-  return `<p>Hello,</p>
-<p>
-  Complaint #${complaintId} has been referred to ${referredToAgency} by <strong>${senderName} (CC’d)</strong> at ${referredByAgency}.
-</p>
-<ul>
-  <li>Summary: ${complaintSummaryText}</li>
-  <li>The reason for referral is: ${reasonForReferral}</li>
-</ul>
-<b>You can view the full complaint details and any actions taken in the <u>attached PDF</u>.</b>
-
-<p>Please note this is an automated email from ${referredByAgency}'s complaint management system, generated on behalf of the person sending the referral. If you need assistance, please contact:</p>
+<p>Please note this is an automated email from ${
+    isExternal ? `${referredByAgency}'s complaint management system` : `NatCom`
+  } generated on behalf of the person sending the referral. If you need assistance, please contact:</p>
 <ul>
   <li>${senderEmailAddress} for information about the complaint and referral.</li>
   <li>${supportEmail} for technical support.</li>

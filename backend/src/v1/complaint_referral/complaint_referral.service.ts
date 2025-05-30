@@ -43,9 +43,7 @@ export class ComplaintReferralService {
       createComplaintReferralDto.referred_to_agency_code,
       "REFEMAIL",
     );
-    // TODO: Should I leave the check the way it was?
-    const hasAdditionalRecipients = createComplaintReferralDto.additionalEmailRecipients?.length > 0;
-    const sendEmail = hasAdditionalRecipients || (referredByActive && referredToActive);
+    const sendEmail = referredByActive && referredToActive;
 
     const idir = getIdirFromRequest(this.request);
     createComplaintReferralDto.create_user_id = idir;
@@ -78,12 +76,7 @@ export class ComplaintReferralService {
     this._personService.clearAssignedOfficer(createComplaintReferralDto.complaint_identifier);
 
     if (sendEmail) {
-      // Email the appropriate recipient
-      if (createComplaintReferralDto.externalAgencyInd) {
-        await this._emailService.sendExternalReferralEmail(createComplaintReferralDto, user, complaintExport);
-      } else {
-        await this._emailService.sendReferralEmail(createComplaintReferralDto, user, complaintExport);
-      }
+      await this._emailService.sendReferralEmail(createComplaintReferralDto, user, complaintExport);
     }
 
     return result;
