@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents, WMSTileLayer, LayersControl } from "react-leaflet";
+import { MapContainer, Marker, useMapEvents, WMSTileLayer, LayersControl, Pane } from "react-leaflet";
+import { BasemapLayer } from "react-esri-leaflet";
+import VectorTileLayer from "react-esri-leaflet/plugins/VectorTileLayer";
 import "leaflet/dist/leaflet.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReactDOMServer from "react-dom/server";
@@ -13,6 +15,36 @@ import { MapGestureHandler } from "./map-gesture-handler";
 import { Alert, Spinner } from "react-bootstrap";
 import { isLoading } from "@store/reducers/app";
 import Spiderfy from "./spiderfy";
+
+// Workaround for issue with Leaflet removeLayer being called twice due to strict mode
+// causing an exception with the VectorTileLayer plugin
+Leaflet.Map.include({
+  removeLayer(layer: Leaflet.Layer) {
+    if (!layer) return this;
+
+    const id = Leaflet.Util.stamp(layer);
+
+    if (!this._layers[id]) {
+      return this;
+    }
+
+    if (this._loaded) {
+      layer.onRemove(this);
+    }
+
+    delete this._layers[id];
+
+    if (this._loaded) {
+      this.fire("layerremove", { layer });
+      layer.fire("remove");
+    }
+
+    // @ts-expect-error leaflet TS very incomplete
+    layer._map = layer._mapToAdd = null;
+
+    return this;
+  },
+});
 
 interface MapProps {
   complaintType: string;
@@ -149,22 +181,42 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
       >
         <ServerSideClusteringHandler />
         <MapGestureHandler />
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
         <LayersControl position="topleft">
+          <LayersControl.BaseLayer
+            name="Default"
+            checked
+          >
+            <VectorTileLayer url="bbe05270d3a642f5b62203d6c454f457" />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name="Topographic">
+            <BasemapLayer name="Topographic" />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name="Satellite">
+            <BasemapLayer name="Imagery" />
+          </LayersControl.BaseLayer>
           <LayersControl.Overlay name="Provincial Parks, Ecological Reserves, and Protected Areas">
-            <WMSTileLayer
-              url="https://openmaps.gov.bc.ca/geo/pub/WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW/ows"
-              params={parkLayerParams}
-            />
+            <Pane
+              name="parks"
+              style={{ zIndex: 499 }}
+            >
+              <WMSTileLayer
+                url="https://openmaps.gov.bc.ca/geo/pub/WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW/ows"
+                params={parkLayerParams}
+                zIndex={1000}
+              />
+            </Pane>
           </LayersControl.Overlay>
           <LayersControl.Overlay name="First Nations Reserves">
-            <WMSTileLayer
-              url="https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP/ows"
-              params={reserveLayerParams}
-            />
+            <Pane
+              name="reserves"
+              style={{ zIndex: 499 }}
+            >
+              <WMSTileLayer
+                url="https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP/ows"
+                params={reserveLayerParams}
+                zIndex={1000}
+              />
+            </Pane>
           </LayersControl.Overlay>
         </LayersControl>
         <Spiderfy
