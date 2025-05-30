@@ -46,7 +46,7 @@
     "dom-helpers": "^5.2.1",
     "dotenv": "^16.0.3",
     "esri-leaflet": "^3.0.16",
-    "esri-leaflet-vector": "^4.2.8",
+    "esri-leaflet-vector": "^3.1.2",
     "faker": "^5.5.3",
     "fs": "^0.0.1-security",
     "immutable": "^4.3.0",
