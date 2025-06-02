@@ -60,6 +60,7 @@ import { SharedDataModule } from "./v1/shared_data/shared_data.module";
 import { ChesModule } from "./external_api/ches/ches.module";
 import { EmailReferenceModule } from "./v1/email_reference/email_reference.module";
 import { EmailModule } from "./v1/email/email.module";
+import { ComplaintReferralEmailLogModule } from "./v1/complaint_referral_email_log/complaint_referral_email_log.module";
 
 console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
 console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
@@ -142,6 +143,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     ChesModule,
     EmailReferenceModule,
     EmailModule,
+    ComplaintReferralEmailLogModule,
   ],
   controllers: [AppController],
   providers: [AppService, ComplaintSequenceResetScheduler],
