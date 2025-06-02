@@ -34,6 +34,5 @@ export class ComplaintReferralEmailLog {
 
   @ManyToOne(() => ComplaintReferral, (referral) => referral.complaint_referral_guid)
   @JoinColumn({ name: "complaint_referral_guid" })
-  @Column("uuid", { name: "complaint_referral_guid" })
   complaint_referral_guid: ComplaintReferral;
 }

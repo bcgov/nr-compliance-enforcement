@@ -16,7 +16,10 @@ export class ComplaintReferralEmailLogService {
     createComplaintReferralEmailLogDto: CreateComplaintReferralEmailLogDto,
   ): Promise<ComplaintReferralEmailLog> {
     try {
-      return this.complaintReferralEmailLogRepository.create(createComplaintReferralEmailLogDto);
+      const newComplaintReferralEmailLog = this.complaintReferralEmailLogRepository.create(
+        createComplaintReferralEmailLogDto,
+      );
+      return await this.complaintReferralEmailLogRepository.save(newComplaintReferralEmailLog);
     } catch (error) {
       this.logger.error("Error creating complaint referral email log.", error);
       throw new Error("Error creating complaint referral email log.", error);

@@ -11,7 +11,7 @@ export class ComplaintReferralEmailLogDto {
   public complaint_referral_email_log_guid: UUID;
 
   @ApiProperty({
-    example: "903f87c8-76dd-427c-a1bb-4d179e443252",
+    example: "d705b9db-0e49-4e5b-9783-b49849fd28f3",
     description: "The unique identifier for the complaint referral associated with this email log.",
   })
   public complaint_referral_guid: UUID;
@@ -52,9 +52,4 @@ export class ComplaintReferralEmailLogDto {
       "The timestamp when the email log record was last updated. The timestamp is stored in UTC with no Offset.",
   })
   public update_utc_timestamp: Date;
-
-  @ApiProperty({
-    description: "The complaint referral object related to this email log.",
-  })
-  public complaint_referral: ComplaintReferral;
 }

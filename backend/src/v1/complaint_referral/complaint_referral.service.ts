@@ -9,6 +9,9 @@ import { PersonComplaintXrefService } from "../person_complaint_xref/person_comp
 import { EmailService } from "../../v1/email/email.service";
 import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
 import { DocumentService } from "../../v1/document/document.service";
+import { ComplaintReferralEmailLogService } from "../complaint_referral_email_log/complaint_referral_email_log.service";
+import { CreateComplaintReferralEmailLogDto } from "../complaint_referral_email_log/dto/create-complaint_referral_email_log.dto";
+import { v4 as uuidv4 } from "uuid";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ComplaintReferralService {
@@ -28,6 +31,8 @@ export class ComplaintReferralService {
     private readonly _featureFlagService: FeatureFlagService,
     @Inject(DocumentService)
     private readonly _documentService: DocumentService,
+    @Inject(ComplaintReferralEmailLogService)
+    private readonly _complaintReferralEmailLogService: ComplaintReferralEmailLogService,
   ) {}
 
   private readonly logger = new Logger(ComplaintReferralService.name);
@@ -77,8 +82,28 @@ export class ComplaintReferralService {
 
     if (sendEmail) {
       await this._emailService.sendReferralEmail(createComplaintReferralDto, user, complaintExport);
-    }
 
+      // Log the additional emails
+      const createPromises = createComplaintReferralDto.additionalEmailRecipients.map((emailAddress) => {
+        const emailReferralLog: CreateComplaintReferralEmailLogDto = {
+          complaint_referral_email_log_guid: uuidv4(),
+          email_address: emailAddress,
+          email_sent_utc_timestamp: new Date(),
+          create_user_id: idir,
+          create_utc_timestamp: new Date(),
+          update_user_id: idir,
+          update_utc_timestamp: new Date(),
+          complaint_referral_guid: result.complaint_referral_guid,
+        };
+        return this._complaintReferralEmailLogService.create(emailReferralLog);
+      });
+
+      try {
+        await Promise.all(createPromises);
+      } catch (error) {
+        console.error("Error creating one or more email logs:", error);
+      }
+    }
     return result;
   }
 }
