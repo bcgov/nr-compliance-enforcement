@@ -58,6 +58,8 @@ import { ComplaintService } from "../complaint/complaint.service";
 import { EmailService } from "../../v1/email/email.service";
 import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
 import { DocumentService } from "../../v1/document/document.service";
+import { ComplaintReferralEmailLogService } from "../complaint_referral_email_log/complaint_referral_email_log.service";
+import { ComplaintReferralEmailLog } from "../complaint_referral_email_log/entities/complaint_referral_email_log.entity";
 
 describe("ComplaintReferralController", () => {
   let controller: ComplaintReferralController;
@@ -197,6 +199,10 @@ describe("ComplaintReferralController", () => {
           useValue: {},
         },
         {
+          provide: getRepositoryToken(ComplaintReferralEmailLog),
+          useValue: {},
+        },
+        {
           provide: getRepositoryToken(AttractantHwcrXref),
           useValue: {},
         },
@@ -207,6 +213,7 @@ describe("ComplaintReferralController", () => {
         OfficerService,
         OfficerTeamXrefService,
         TeamService,
+        ComplaintReferralEmailLogService,
         ConfigurationService,
         CssService,
         LinkedComplaintXrefService,
