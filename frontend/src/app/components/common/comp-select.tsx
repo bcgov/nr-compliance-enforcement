@@ -1,5 +1,5 @@
 import { FC } from "react";
-import Select, { StylesConfig } from "react-select";
+import Select, { StylesConfig, components } from "react-select";
 import Option from "@apptypes/app/option";
 
 type Props = {
@@ -17,6 +17,19 @@ type Props = {
   onChange?: (selectedOption: Option | null) => void;
   isDisabled?: boolean;
   isClearable?: boolean;
+};
+
+// Custom Option component to render labelElement
+const CustomOption = (props: any) => {
+  const { data } = props;
+  return <components.Option {...props}>{data.labelElement ?? data.label}</components.Option>;
+};
+
+// Custom filterOption to ensure searchability
+const customFilterOption = (option: Option, rawInput: string) => {
+  const searchText = rawInput.toLowerCase();
+  const label = option.label?.toLowerCase() ?? "";
+  return label.includes(searchText);
 };
 
 export const CompSelect: FC<Props> = ({
@@ -49,7 +62,13 @@ export const CompSelect: FC<Props> = ({
     if (value && !items.find((o) => o.value === value.value)) {
       items.push(value);
     }
-    items = items.map((o) => ({ label: o.labelElement || o.label, value: o.value }));
+
+    // Map options to include label and labelElement
+    items = items.map((o) => ({
+      label: o.label, //for searchability
+      value: o.value,
+      labelElement: o.labelElement,
+    }));
   }
 
   // If "none" is an option, lighten the colour a bit so that it doesn't appear the same as the other selectable options
@@ -77,13 +96,14 @@ export const CompSelect: FC<Props> = ({
         styles={styles}
         placeholder={placeholder}
         options={items}
-        // if labelElement is present, use it instead of the string label (used for displaying a custom element)
-        value={value?.labelElement ? { label: value?.labelElement || value?.label, value: value?.value } : value}
+        value={value}
         onChange={handleChange}
         classNamePrefix={classNamePrefix}
         defaultValue={defaultOption}
         isDisabled={isDisabled}
         menuPlacement="auto"
+        filterOption={customFilterOption}
+        components={{ Option: CustomOption }}
         isClearable={isClearable ?? false}
       />
       {enableValidation && <div className="error-message">{errorMessage}</div>}
