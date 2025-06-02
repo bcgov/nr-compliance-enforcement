@@ -3,6 +3,7 @@ import { MapContainer, Marker, useMapEvents, WMSTileLayer, LayersControl, Pane }
 import { BasemapLayer } from "react-esri-leaflet";
 import VectorTileLayer from "react-esri-leaflet/plugins/VectorTileLayer";
 import "leaflet/dist/leaflet.css";
+import "mapbox-gl/dist/mapbox-gl.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReactDOMServer from "react-dom/server";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
@@ -91,7 +92,7 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
 
   useEffect(() => {
     if (defaultClusterView) {
-      if (clusters.length > 0) {
+      if (clusters.length > 1) {
         // Calculate the bounds of all markers
         const bounds = Leaflet.latLngBounds(
           clusters.map(
@@ -232,6 +233,7 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
               point_count_abbreviated: pointCountAbbreviated,
               zoom: clusterZoom,
             } = cluster.properties;
+            console.log("isCluster", isCluster, "clusterId", clusterId, "latitude", latitude, "longitude", longitude);
             let size;
             if (pointCount < 5) {
               size = "small";
