@@ -1,6 +1,6 @@
 {
   "name": "nr-sample-natcomplaints",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
@@ -46,6 +46,8 @@
     "dequal": "^2.0.3",
     "dom-helpers": "^5.2.1",
     "dotenv": "^16.0.3",
+    "esri-leaflet": "^3.0.16",
+    "esri-leaflet-vector": "^3.1.2",
     "faker": "^5.5.3",
     "fs": "^0.0.1-security",
     "immutable": "^4.3.0",
@@ -62,6 +64,7 @@
     "linq-to-typescript": "^11.0.0",
     "lodash": "^4.17.21",
     "make-fetch-happen": "11.0.3",
+    "mapbox-gl-leaflet": "^0.0.16",
     "node": "^21.6.1",
     "npm": "^10.9.1",
     "nrs-ce-common-types": "^1.0.13",
@@ -81,6 +84,7 @@
     "react-datepicker": "^4.14.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.3.8",
+    "react-esri-leaflet": "^2.0.1",
     "react-icons": "^4.2.0",
     "react-is": "^16.13.1",
     "react-leaflet": "^4.2.1",
