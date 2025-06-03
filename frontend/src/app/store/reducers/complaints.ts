@@ -616,7 +616,7 @@ export const createComplaintReferral =
   async (dispatch, getState) => {
     try {
       const { attachments } = getState();
-      const agencyTable = getState()?.codeTables?.agency as CodeTableState['agency'] | undefined;
+      const agencyTable = getState()?.codeTables?.agency as CodeTableState["agency"] | undefined;
       const agency = agencyTable?.find((item) => item.agency === referred_to_agency_code);
       const externalAgencyInd = agency?.externalAgencyInd;
 
@@ -794,8 +794,6 @@ export const createComplaint =
       ).then(async (res) => {
         const { id } = res;
         result = id;
-
-        await dispatch(getComplaintById(id, "HWCR"));
       });
       ToggleSuccess("Complaint has been saved");
       return result;
