@@ -48,7 +48,7 @@ jobs:
 
       # Bump the minor version (which resets the patch to 0)
       - name: Bump minor version
-        id: bump_version
+        id: increment_version
         run: |
           cd frontend
           npm version minor
@@ -74,7 +74,7 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           git add frontend/package.json backend/package.json webeoc/package.json charts/app/Chart.yaml
-          git commit -m 'chore: bump version to ${{ steps.bump_version.outputs.new_version }}'
+          git commit -m 'chore: bump version to ${{ steps.increment_version.outputs.new_version }}'
           git push origin HEAD:${{ github.ref }}
 
       # Create a new tag with the bumped minor version
@@ -82,5 +82,5 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          git tag "v${{ steps.bump_version.outputs.new_version }}"
-          git push origin "v${{ steps.bump_version.outputs.new_version }}"
+          git tag "v${{ steps.increment_version.outputs.new_version }}"
+          git push origin "v${{ steps.increment_version.outputs.new_version }}"
