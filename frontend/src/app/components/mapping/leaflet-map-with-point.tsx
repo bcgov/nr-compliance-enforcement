@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useState } from "react";
-import { MapContainer, TileLayer, Marker, useMap, LayersControl, WMSTileLayer, Popup, Pane } from "react-leaflet";
+import { MapContainer, Marker, useMap, LayersControl, WMSTileLayer, Popup, Pane } from "react-leaflet";
 import { BasemapLayer } from "react-esri-leaflet";
 import VectorTileLayer from "react-esri-leaflet/plugins/VectorTileLayer";
 import "leaflet/dist/leaflet.css"; // Import Leaflet CSS
