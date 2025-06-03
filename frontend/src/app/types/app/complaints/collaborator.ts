@@ -10,4 +10,5 @@ export interface Collaborator {
   lastName: string;
   middleName1: string;
   middleName2: string;
+  activeInd: boolean;
 }

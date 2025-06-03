@@ -616,7 +616,7 @@ export const createComplaintReferral =
   async (dispatch, getState) => {
     try {
       const { attachments } = getState();
-      const agencyTable = getState()?.codeTables?.agency as CodeTableState['agency'] | undefined;
+      const agencyTable = getState()?.codeTables?.agency as CodeTableState["agency"] | undefined;
       const agency = agencyTable?.find((item) => item.agency === referred_to_agency_code);
       const externalAgencyInd = agency?.externalAgencyInd;
 
@@ -923,6 +923,14 @@ export const selectComplaintCollaborators = (state: RootState): Collaborator[] =
     complaints: { complaintCollaborators },
   } = state;
   return complaintCollaborators;
+};
+
+export const selectActiveComplaintCollaborators = (state: RootState): Collaborator[] => {
+  const {
+    complaints: { complaintCollaborators },
+  } = state;
+  const activeCollaborators = complaintCollaborators.filter((collaborator) => collaborator.activeInd);
+  return activeCollaborators;
 };
 
 export const selectComplaintLargeCarnivoreInd = createSelector(
