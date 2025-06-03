@@ -233,7 +233,6 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
               point_count_abbreviated: pointCountAbbreviated,
               zoom: clusterZoom,
             } = cluster.properties;
-            console.log("isCluster", isCluster, "clusterId", clusterId, "latitude", latitude, "longitude", longitude);
             let size;
             if (pointCount < 5) {
               size = "small";
