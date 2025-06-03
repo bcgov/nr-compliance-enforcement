@@ -155,6 +155,7 @@
     "@types/jest": "^29.5.1",
     "@types/react-test-renderer": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "copy-webpack-plugin": "^13.0.0",
     "cy-verify-downloads": "^0.2.4",
     "cypress": "^13.6.1",
     "cypress-delete-downloads-folder": "^0.0.5",
