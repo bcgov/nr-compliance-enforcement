@@ -1,6 +1,6 @@
 {
-  "short_name": "NR Sample App",
-  "name": "Sample application for natural resources in BCGov",
+  "short_name": "NatComplaints",
+  "name": "Complaint management system for the BCGov Natural Resources.",
   "icons": [
     {
       "src": "favicon.ico",
