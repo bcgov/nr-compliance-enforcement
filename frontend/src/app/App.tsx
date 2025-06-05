@@ -22,6 +22,7 @@ import GenericErrorBoundary from "./components/error-handling/generic-error-boun
 import { VerifyAccess } from "./components/containers/pages/verify-access";
 import { Roles, coreRoles } from "./types/app/roles";
 import { FeatureManagement } from "./components/containers/admin/feature-management";
+import { AppUpdate } from "./AppUpdate";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -37,6 +38,7 @@ const App: FC = () => {
 
   return (
     <GenericErrorBoundary>
+      <AppUpdate />
       <Router>
         <ScrollToTop />
         <Modal />

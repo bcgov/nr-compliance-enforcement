@@ -33,6 +33,8 @@ describe("Complaint Search Functionality", () => {
     cy.get("#complaint-search").click({ force: true });
     cy.get("#complaint-search").clear().type("sibling{enter}"); //-- {enter} will perform an enter keypress
 
+    cy.waitForSpinner();
+
     //-- verify one complaint, and verify complaint-id
     cy.get("#complaint-list tbody").find("tr").should("have.length", 1);
     cy.contains("td", "23-029788");
@@ -51,6 +53,8 @@ describe("Complaint Search Functionality", () => {
     //-- search for Oil and verify there's at least 23 complaints (this may increase as new complaints are added from WebEOC)
     cy.get("#complaint-search").click({ force: true });
     cy.get("#complaint-search").clear().type("Oil{enter}"); //-- {enter} will perform an enter keypress
+
+    cy.waitForSpinner();
 
     //-- verify one complaint, and verify complaint-id
     cy.get("#complaint-list tbody").find("tr").should("have.length.at.least", 23);
@@ -84,6 +88,8 @@ describe("Complaint Search Functionality", () => {
     cy.get("#complaint-search").click({ force: true });
     cy.get("#complaint-search").clear().type("Zebra{enter}"); //-- {enter} will perform an enter keypress
 
+    cy.waitForSpinner();
+
     //-- verify no complaints
     cy.get("#complaint-list tbody").find("tr").should("have.length", 0);
   });
@@ -98,6 +104,8 @@ describe("Complaint Search Functionality", () => {
     //-- search for sibling and verify there's one complaint
     cy.get("#complaint-search").click({ force: true });
     cy.get("#complaint-search").clear().type("23-031562{enter}"); //-- {enter} will perform an enter keypress
+
+    cy.waitForSpinner();
 
     //-- verify only one complaint
     cy.get("#complaint-list tbody").find("tr").should("have.length", 1);
@@ -136,6 +144,8 @@ describe("Complaint Search Functionality", () => {
     cy.get("#complaint-search").click({ force: true });
     cy.get("#complaint-search").clear().type("fire{enter}"); //-- {enter} will perform an enter keypress
 
+    cy.waitForSpinner();
+
     cy.get("#map_toggle_id").click({ force: true });
     cy.verifyMapMarkerExists(true);
 
@@ -162,6 +172,11 @@ describe("Complaint Search Functionality", () => {
 
     cy.get("#complaint-search").click({ force: true });
     cy.get("#complaint-search").clear().type("wildlife{enter}"); //-- {enter} will perform an enter keypress
+    cy.waitForSpinner();
+
+    // At this point, we need to wait for the map to complete loading to continue the test
+    // Intercept calls that contain a GET request with a request path containing /api/customer/
+    cy.intercept({ method: "GET" }).as("mapData");
 
     cy.get("#map_toggle_id").click({ force: true });
     cy.verifyMapMarkerExists(true);
@@ -171,6 +186,10 @@ describe("Complaint Search Functionality", () => {
       .should(({ length }) => {
         expect(length).to.eq(2);
       });
+
+    cy.wait(1000); // wait for the map to start loading
+    // Wait for all the GET requests loading tile data to complete
+    cy.wait("@mapData", { timeout: 10000 });
 
     // Navigate to a different page, and return to then complaints page
     cy.get("#create-complaints-link").click({ force: true });
