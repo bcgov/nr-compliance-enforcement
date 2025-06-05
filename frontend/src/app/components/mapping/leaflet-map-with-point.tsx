@@ -2,7 +2,8 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { MapContainer, Marker, useMap, LayersControl, WMSTileLayer, Popup, Pane } from "react-leaflet";
 import { BasemapLayer } from "react-esri-leaflet";
 import VectorTileLayer from "react-esri-leaflet/plugins/VectorTileLayer";
-import "leaflet/dist/leaflet.css"; // Import Leaflet CSS
+import "leaflet/dist/leaflet.css";
+import "mapbox-gl/dist/mapbox-gl.css";
 import "react-leaflet-markercluster/styles";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import "@fortawesome/fontawesome-svg-core/styles.css";
