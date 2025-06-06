@@ -800,8 +800,6 @@ export const createComplaint =
       ).then(async (res) => {
         const { id } = res;
         result = id;
-
-        await dispatch(getComplaintById(id, "HWCR"));
       });
       ToggleSuccess("Complaint has been saved");
       return result;

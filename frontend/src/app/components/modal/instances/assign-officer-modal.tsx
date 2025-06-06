@@ -25,8 +25,8 @@ type AssignOfficerModalProps = {
   submit: () => void;
   complaint_type: string;
   zone: string;
-  agency: string;
   park_area_guids: string[];
+  isHeader: boolean;
 };
 
 // A modal dialog containing a list of officers in the current user's zone.  Used to select an officer to assign to a complaint.
@@ -35,8 +35,8 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   submit,
   complaint_type,
   zone,
-  agency,
   park_area_guids,
+  isHeader,
 }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
@@ -60,14 +60,16 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   // assigns the selected officer to a complaint
   const handleSubmit = () => {
     if (selectedAssignee !== "") {
-      dispatch(updateComplaintAssignee(userid, complaint_identifier, complaint_type, selectedAssignee as UUID));
+      dispatch(
+        updateComplaintAssignee(userid, complaint_identifier, complaint_type, isHeader, selectedAssignee as UUID),
+      );
       submit();
     }
   };
 
   // assigns the logged in user to a complaint
   const handleSelfAssign = () => {
-    dispatch(assignCurrentUserToComplaint(userid, idir, complaint_identifier, complaint_type));
+    dispatch(assignCurrentUserToComplaint(userid, idir, complaint_identifier, complaint_type, isHeader));
     submit();
   };
 

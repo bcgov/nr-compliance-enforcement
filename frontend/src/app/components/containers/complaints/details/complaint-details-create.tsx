@@ -31,7 +31,7 @@ import { Officer } from "@apptypes/person/person";
 import { selectOfficersByAgency } from "@store/reducers/officer";
 import { CreateComplaintHeader } from "./create-complaint-header";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { createComplaint, getComplaintById, selectComplaintDetails, setComplaint } from "@store/reducers/complaints";
+import { createComplaint, selectComplaintDetails, setComplaint } from "@store/reducers/complaints";
 import { from } from "linq-to-typescript";
 import { ToggleError } from "@common/toast";
 import { ToastContainer } from "react-toastify";
@@ -673,8 +673,6 @@ export const CreateComplaint: FC = () => {
   const handleHwcrComplaint = async (complaint: ComplaintAlias) => {
     const complaintId = await dispatch(createComplaint(complaintType, complaint));
     if (complaintId) {
-      await dispatch(getComplaintById(complaintId, complaintType));
-
       navigate(`/complaint/${complaintType}/${complaintId}`);
     }
     return complaintId;
