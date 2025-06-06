@@ -36,19 +36,6 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
 
   useEffect(() => {
     if (status.length > 1) {
-      updateThunksSequentially();
-      submit();
-    }
-  });
-
-  useEffect(() => {
-    setStatusChangeDisabledInd(isReviewRequired && !reviewCompleteAction?.actionCode && complaint_status === "PENDREV");
-  }, [isReviewRequired, reviewCompleteAction, complaint_status]);
-
-  // Since there are different reducers for updating the state of complaints for tables and details, we need to handle both
-  // This will ensure that both are triggered, sequentially.
-  const updateThunksSequentially = async () => {
-    try {
       if (COMPLAINT_TYPES.HWCR === complaint_type) {
         dispatch(updateWildlifeComplaintStatus(complaint_identifier, status));
       } else if (COMPLAINT_TYPES.ERS === complaint_type) {
@@ -56,13 +43,13 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
       } else if (COMPLAINT_TYPES.GIR === complaint_type) {
         dispatch(updateGeneralIncidentComplaintStatus(complaint_identifier, status));
       }
-
-      dispatch(getComplaintById(complaint_identifier, complaint_type));
-    } catch (error) {
-      // Handle any errors that occurred during the dispatch
-      console.error("Error dispatching thunks:", error);
+      submit();
     }
-  };
+  });
+
+  useEffect(() => {
+    setStatusChangeDisabledInd(isReviewRequired && !reviewCompleteAction?.actionCode && complaint_status === "PENDREV");
+  }, [isReviewRequired, reviewCompleteAction, complaint_status]);
 
   const { title, description, complaint_identifier } = modalData;
   const is_officer_assigned: boolean = modalData.is_officer_assigned;

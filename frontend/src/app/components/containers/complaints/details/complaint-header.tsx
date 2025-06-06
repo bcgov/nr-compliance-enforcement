@@ -135,6 +135,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           zone: zone,
           agency_code: complaintAgency,
           park_area_guids: parkAreaGuids,
+          isHeader: true,
         },
       }),
     );
