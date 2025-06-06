@@ -1,6 +1,15 @@
 // craco.config.ts
 
 import path from "path";
+import CopyPlugin from "copy-webpack-plugin";
+import packageJson from "./package.json";
+
+// Update version in manifest.json based on package.json version and current timestamp
+function modify(buffer: any) {
+  let manifest = JSON.parse(buffer.toString());
+  manifest.version = packageJson.version + "." + Date.now();
+  return JSON.stringify(manifest, null, 2);
+}
 
 const config = {
   webpack: {
@@ -15,6 +24,23 @@ const config = {
       "@service": path.resolve(__dirname, "src/app/service/"),
       "@store": path.resolve(__dirname, "src/app/store/"),
       "@apptypes": path.resolve(__dirname, "src/app/types/"),
+    },
+    plugins: {
+      add: [
+        new CopyPlugin({
+          patterns: [
+            {
+              from: "src/manifest.json",
+              to: "manifest.json",
+              transform: {
+                transformer(content, path) {
+                  return modify(content);
+                },
+              },
+            },
+          ],
+        }),
+      ],
     },
   },
   jest: {

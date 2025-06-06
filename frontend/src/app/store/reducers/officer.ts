@@ -75,7 +75,7 @@ export const getOfficers =
 
 // Assigns the current user to an office
 export const assignCurrentUserToComplaint =
-  (userId: string, userGuid: UUID, complaint_identifier: string, complaint_type: string): AppThunk =>
+  (userId: string, userGuid: UUID, complaint_identifier: string, complaint_type: string, isHeader: boolean): AppThunk =>
   async (dispatch) => {
     try {
       let officerParams = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`);
@@ -99,25 +99,10 @@ export const assignCurrentUserToComplaint =
           userId,
           complaint_identifier,
           complaint_type,
+          isHeader,
           officerResponse.person_guid.person_guid as UUID,
         ),
       );
-
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`,
-      );
-      const response = await get<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
-        dispatch,
-        parameters,
-      );
-
-      if (complaint_type === COMPLAINT_TYPES.HWCR) {
-        dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaintDto));
-      } else if (COMPLAINT_TYPES.GIR === complaint_type) {
-        dispatch(updateGeneralComplaintByRow(response as GeneralIncidentComplaintDto));
-      } else {
-        dispatch(updateAllegationComplaintByRow(response as AllegationComplaintDto));
-      }
     } catch (error) {
       //-- handle error
     }
@@ -125,7 +110,13 @@ export const assignCurrentUserToComplaint =
 
 // creates a new cross reference for a person and office.  Assigns a person to an office.
 export const updateComplaintAssignee =
-  (currentUser: string, complaint_identifier: string, complaint_type: string, person_guid?: UUID): AppThunk =>
+  (
+    currentUser: string,
+    complaint_identifier: string,
+    complaint_type: string,
+    isHeader: boolean,
+    person_guid?: UUID,
+  ): AppThunk =>
   async (dispatch) => {
     try {
       // add new person complaint record
@@ -146,24 +137,28 @@ export const updateComplaintAssignee =
       );
       await post<Array<PersonComplaintXref>>(dispatch, personComplaintXrefGuidParams);
 
-      const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`,
-      );
-      const response = await get<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
-        dispatch,
-        parameters,
-      );
+      if (!isHeader) {
+        // thunk was called via the list view, get the latest version
+        const parameters = generateApiParameters(
+          `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`,
+        );
+        const response = await get<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
+          dispatch,
+          parameters,
+        );
 
-      // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
-      if (COMPLAINT_TYPES.HWCR === complaint_type) {
-        dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaintDto));
-      } else if (COMPLAINT_TYPES.GIR === complaint_type) {
-        dispatch(updateGeneralComplaintByRow(response as GeneralIncidentComplaintDto));
+        // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
+        if (COMPLAINT_TYPES.HWCR === complaint_type) {
+          dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaintDto));
+        } else if (COMPLAINT_TYPES.GIR === complaint_type) {
+          dispatch(updateGeneralComplaintByRow(response as GeneralIncidentComplaintDto));
+        } else {
+          dispatch(updateAllegationComplaintByRow(response as AllegationComplaintDto));
+        }
       } else {
-        dispatch(updateAllegationComplaintByRow(response as AllegationComplaintDto));
+        // Thunk was called via complaint header, refresh complaint to view the changes
+        dispatch(getComplaintById(complaint_identifier, complaint_type));
       }
-
-      await dispatch(getComplaintById(complaint_identifier, complaint_type));
     } catch (error) {
       console.log(error);
     }
