@@ -16,7 +16,7 @@ import { getComplaintById, createComplaintReferral } from "@/app/store/reducers/
 import { Officer } from "@/app/types/person/person";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
-import { isValidEmail } from "@/app/hooks/validate-email";
+import { isValidEmail } from "@/app/common/validate-email";
 
 type ReferComplaintModalProps = {
   close: () => void;

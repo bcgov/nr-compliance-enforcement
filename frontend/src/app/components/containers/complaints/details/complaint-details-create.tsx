@@ -57,6 +57,7 @@ import { FeatureFlag } from "@components/common/feature-flag";
 import { Roles } from "@/app/types/app/roles";
 import { RootState } from "@/app/store/store";
 import { ParkSelect } from "@/app/components/common/park-select";
+import { isValidEmail } from "@/app/common/validate-email";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -528,8 +529,7 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleEmailChange = (value: string) => {
-    let re = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    if (value !== undefined && value !== "" && !re.test(value)) {
+    if (value !== undefined && value !== "" && !isValidEmail(value)) {
       setEmailMsg("Please enter a vaild email");
     } else {
       setEmailMsg("");
