@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { ComplaintReferral } from "../../complaint_referral/entities/complaint_referral.entity";
 
 export class ComplaintReferralEmailLogDto {
   @ApiProperty({
