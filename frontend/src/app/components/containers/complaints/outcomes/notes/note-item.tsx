@@ -4,11 +4,7 @@ import { formatDate, formatTime } from "@common/methods";
 
 import { CaseAction } from "@apptypes/outcomes/case-action";
 import { Badge, Button, Card, OverlayTrigger, Tooltip } from "react-bootstrap";
-import {
-  selectComplaintViewMode,
-  selectComplaintCollaborators,
-  selectComplaint,
-} from "@/app/store/reducers/complaints";
+import { selectActiveComplaintCollaborators, selectComplaint } from "@/app/store/reducers/complaints";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { personGuid } from "@/app/store/reducers/app";
 import UserService from "@/app/service/user-service";
@@ -30,16 +26,15 @@ const longNoteLength = 300;
 
 export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDelete, agencyCode }) => {
   const officers = useAppSelector(selectOfficers);
-  const isReadOnly = useAppSelector(selectComplaintViewMode);
-  const collaborators = useAppSelector(selectComplaintCollaborators);
+  const activeCollaborators = useAppSelector(selectActiveComplaintCollaborators);
   const userPersonGuid = useAppSelector(personGuid);
   const [userIsCollaborator, setUserIsCollaborator] = useState<boolean>(false);
   const complaint = useAppSelector(selectComplaint);
   const [status, setStatus] = useState("CLOSED");
 
   useEffect(() => {
-    setUserIsCollaborator(collaborators.some((c) => c.personGuid === userPersonGuid));
-  }, [collaborators, userPersonGuid]);
+    setUserIsCollaborator(activeCollaborators.some((c) => c.personGuid === userPersonGuid));
+  }, [activeCollaborators, userPersonGuid]);
 
   useEffect(() => {
     if (complaint) {

@@ -16,7 +16,7 @@ import {
   getComplaintCollaboratorsByComplaintId,
   removeCollaboratorFromComplaint,
   selectComplaint,
-  selectComplaintCollaborators,
+  selectActiveComplaintCollaborators,
 } from "@/app/store/reducers/complaints";
 import { getAvatarInitials } from "@/app/common/methods";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
@@ -45,7 +45,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
   useEffect(() => {
     dispatch(getComplaintCollaboratorsByComplaintId(complaintId));
   }, [complaintId, dispatch]);
-  const collaborators = useAppSelector(selectComplaintCollaborators);
+  const collaborators = useAppSelector(selectActiveComplaintCollaborators);
 
   const allOfficers = useAppSelector(selectOfficers);
   // Get officers for the selected agency
