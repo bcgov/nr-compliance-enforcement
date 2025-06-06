@@ -61,7 +61,7 @@ import { CaseLocationCode } from "src/types/models/code-tables/case-location-cod
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
 import { EquipmentStatus } from "src/types/models/code-tables/equipment-status";
 import { HwcrOutcomeActionedBy } from "src/types/models/code-tables/hwcr-outcome-actioned-by";
-import { EmailReference } from "src/v1/email_reference/entities/email_reference.entity";
+import { EmailReference } from "../email_reference/entities/email_reference.entity";
 
 @Injectable()
 export class CodeTableService {
