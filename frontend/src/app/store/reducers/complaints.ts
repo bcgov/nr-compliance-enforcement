@@ -283,6 +283,9 @@ export const complaintSlice = createSlice({
     setLinkedComplaints: (state, action) => {
       return { ...state, linkedComplaints: action.payload };
     },
+    setComplaintEmailReferences: (state, action) => {
+      return { ...state, emailReferences: action.payload };
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -312,6 +315,7 @@ export const {
   setComplaintStatus,
   clearComplaint,
   setLinkedComplaints,
+  setComplaintEmailReferences,
 } = complaintSlice.actions;
 
 //-- redux thunks
@@ -612,6 +616,7 @@ export const createComplaintReferral =
     complaint_type: string,
     date_logged: Date,
     complaint_url: string,
+    additionalEmailRecipients: string[] = [],
   ): AppThunk =>
   async (dispatch, getState) => {
     try {
@@ -619,8 +624,6 @@ export const createComplaintReferral =
       const agencyTable = getState()?.codeTables?.agency as CodeTableState["agency"] | undefined;
       const agency = agencyTable?.find((item) => item.agency === referred_to_agency_code);
       const externalAgencyInd = agency?.externalAgencyInd;
-      // TODO: Remove this hard coded email once UI has been written
-      const additionalEmailRecipients = ["Alec.2.Wilcox@gov.bc.ca"];
 
       const documentExportParams = generateExportComplaintInputParams(
         complaint_identifier,

@@ -41,6 +41,7 @@ export const CODE_TABLE_TYPES = {
   CASE_LOCATION_TYPE: "case-location-type",
   EQUIPMENT_STATUS: "equipment-status",
   PARK_AREA: "park-area",
+  EMAIL_REFERENCE: "email-reference",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",
