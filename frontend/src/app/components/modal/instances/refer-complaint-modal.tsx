@@ -351,7 +351,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
                 <div>
                   {additionalEmails.map((email, index) => (
                     <div
-                      key={index}
+                      key={email}
                       style={{
                         display: "flex",
                         justifyContent: "space-between",
