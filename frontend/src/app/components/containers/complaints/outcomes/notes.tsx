@@ -7,7 +7,7 @@ import { Note } from "./notes/note";
 import { useAppSelector } from "@/app/hooks/hooks";
 import {
   selectComplaintViewMode,
-  selectComplaintCollaborators,
+  selectActiveComplaintCollaborators,
   selectComplaint,
 } from "@/app/store/reducers/complaints";
 import { personGuid } from "@/app/store/reducers/app";
@@ -17,7 +17,7 @@ export const Notes: FC = () => {
   const isInEdit = useAppSelector(selectIsInEdit);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const notes = useAppSelector(selectNotes);
-  const collaborators = useAppSelector(selectComplaintCollaborators);
+  const activeCollaborators = useAppSelector(selectActiveComplaintCollaborators);
   const userPersonGuid = useAppSelector(personGuid);
   const [userIsCollaborator, setUserIsCollaborator] = useState<boolean>(false);
   const complaint = useAppSelector(selectComplaint);
@@ -38,8 +38,8 @@ export const Notes: FC = () => {
   }, [isInEdit.notes]);
 
   useEffect(() => {
-    setUserIsCollaborator(collaborators.some((c) => c.personGuid === userPersonGuid));
-  }, [collaborators, userPersonGuid]);
+    setUserIsCollaborator(activeCollaborators.some((c) => c.personGuid === userPersonGuid));
+  }, [activeCollaborators, userPersonGuid]);
 
   return (
     <section
