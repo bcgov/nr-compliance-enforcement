@@ -1,9 +1,10 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 import { Modal, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
-import { MapContainer, TileLayer, Marker, useMapEvents, Tooltip } from "react-leaflet";
+import { MapContainer, Marker, useMapEvents, Tooltip, LayersControl, WMSTileLayer, Pane } from "react-leaflet";
+import VectorTileLayer from "react-esri-leaflet/plugins/VectorTileLayer";
 import { selectGeocodedComplaintCoordinates } from "@store/reducers/complaints";
 import Leaflet from "leaflet";
 import { Coordinates } from "@apptypes/app/coordinate-type";
@@ -11,7 +12,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 
 import "leaflet/dist/leaflet.css";
+import "mapbox-gl/dist/mapbox-gl.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { BasemapLayer } from "react-esri-leaflet";
 
 const iconHTML = ReactDOMServer.renderToString(<FontAwesomeIcon icon={faMapMarkerAlt} />);
 const blueMarkerIcon = new Leaflet.DivIcon({
@@ -132,6 +135,13 @@ export const MapModal: FC<MapModalProps> = ({
     }
   }
 
+  const parkLayerParams = useMemo(() => {
+    return { format: "image/png", layers: "pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW", transparent: true };
+  }, []);
+  const reserveLayerParams = useMemo(() => {
+    return { format: "image/png", layers: "pub:WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP", transparent: true };
+  }, []);
+
   useEffect(() => {
     if (equipmentCoords) {
       setTempCoordinates(equipmentCoords);
@@ -182,7 +192,44 @@ export const MapModal: FC<MapModalProps> = ({
             zoom={zoomLevel}
             style={{ height: "50vh", width: "100%", cursor: "default" }}
           >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <LayersControl position="topleft">
+              <LayersControl.BaseLayer
+                name="Default"
+                checked
+              >
+                <VectorTileLayer url="bbe05270d3a642f5b62203d6c454f457" />
+              </LayersControl.BaseLayer>
+              <LayersControl.BaseLayer name="Topographic">
+                <BasemapLayer name="Topographic" />
+              </LayersControl.BaseLayer>
+              <LayersControl.BaseLayer name="Satellite">
+                <BasemapLayer name="Imagery" />
+              </LayersControl.BaseLayer>
+              <LayersControl.Overlay name="Provincial Parks, Ecological Reserves, and Protected Areas">
+                <Pane
+                  name="parks"
+                  style={{ zIndex: 499 }}
+                >
+                  <WMSTileLayer
+                    url="https://openmaps.gov.bc.ca/geo/pub/WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW/ows"
+                    params={parkLayerParams}
+                    zIndex={1000}
+                  />
+                </Pane>
+              </LayersControl.Overlay>
+              <LayersControl.Overlay name="First Nations Reserves">
+                <Pane
+                  name="reserves"
+                  style={{ zIndex: 499 }}
+                >
+                  <WMSTileLayer
+                    url="https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP/ows"
+                    params={reserveLayerParams}
+                    zIndex={1000}
+                  />
+                </Pane>
+              </LayersControl.Overlay>
+            </LayersControl>
             <MapClickHandler
               mode={mode}
               complaintCoords={complaintCoords}
