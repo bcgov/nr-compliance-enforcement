@@ -448,7 +448,9 @@ export const selectOfficerAndCollaboratorListByAgency = createSelector(
         labelElement: renderLabelElement(collaborator),
       }));
 
-      return [...collaboratorOptions, ...officerOptions];
+      return [...collaboratorOptions, ...officerOptions].filter(
+        (current, index, self) => index === self.findIndex((item) => item.value === current.value),
+      );
     }
     return [];
   },

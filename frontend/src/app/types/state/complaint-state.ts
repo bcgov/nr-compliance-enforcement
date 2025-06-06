@@ -8,13 +8,14 @@ import { WebEOCComplaintUpdateDTO } from "@apptypes/app/complaints/webeoc-compla
 import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 import { ComplaintFilters } from "@apptypes/complaints/complaint-filters";
 import { ComplaintReferral } from "@/app/types/app/complaints/complaint-referral";
+import { Collaborator } from "@/app/types/app/complaints/collaborator";
 
 export interface ComplaintState {
   complaintSearchParameters: ComplaintFilters;
   complaintItems: ComplaintCollection;
   totalCount: number;
   complaint: WildlifeComplaintDto | AllegationComplaintDto | GeneralInformationComplaintDto | null;
-  complaintCollaborators: [];
+  complaintCollaborators: Collaborator[];
   zoneAtGlance: ZoneAtAGlanceState;
   complaintLocation: Feature | null;
   mappedComplaintsCount: MappedComplaintsCountState;

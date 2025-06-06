@@ -929,6 +929,14 @@ export const selectComplaintCollaborators = (state: RootState): Collaborator[] =
   return complaintCollaborators;
 };
 
+export const selectActiveComplaintCollaborators = (state: RootState): Collaborator[] => {
+  const {
+    complaints: { complaintCollaborators },
+  } = state;
+  const activeCollaborators = complaintCollaborators.filter((collaborator) => collaborator.activeInd);
+  return activeCollaborators;
+};
+
 export const selectComplaintLargeCarnivoreInd = createSelector(
   (state: RootState) => state.complaints.complaint,
   (complaint): boolean => {
