@@ -101,6 +101,7 @@ export const ComplaintEllipsisPopover: FC<Props> = ({
           complaint_type: complaint_type,
           zone: complaint_zone,
           complaint_agency: complaint_agency,
+          isHeader: false,
         },
       }),
     );
