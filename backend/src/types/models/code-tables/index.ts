@@ -66,6 +66,7 @@ export const AvailableCodeTables = [
   "ipm-auth-category",
   "equipment-status",
   "park-area",
+  "email-reference",
 ];
 
 export const AvailableAgencies = ["cos"];

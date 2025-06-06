@@ -109,7 +109,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     document.body.click();
     dispatch(
       openModal({
-        modalSize: "lg",
+        modalSize: "md",
         modalType: REFER_COMPLAINT,
         data: {
           title: "Refer complaint",

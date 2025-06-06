@@ -79,6 +79,7 @@ import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.s
 import { CacheModule } from "@nestjs/cache-manager";
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
+import { EmailReference } from "../email_reference/entities/email_reference.entity";
 
 describe("DocumentService", () => {
   let service: DocumentService;
@@ -205,6 +206,10 @@ describe("DocumentService", () => {
         },
         {
           provide: getRepositoryToken(Person),
+          useValue: {},
+        },
+        {
+          provide: getRepositoryToken(EmailReference),
           useValue: {},
         },
         {

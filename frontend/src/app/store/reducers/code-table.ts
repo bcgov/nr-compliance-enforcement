@@ -43,6 +43,7 @@ import {
   fetchScheduleSectorTypes,
   fetchEquipmentStatus,
   fetchParkAreas,
+  fetchEmailReference,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -92,6 +93,7 @@ const initialState: CodeTableState = {
   "case-location-type": [],
   "equipment-status": [],
   "park-area": [],
+  "email-reference": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -159,6 +161,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "case-location-type": caseLocationType,
       "equipment-status": equipmentStatus,
       "park-area": parkArea,
+      "email-reference": emailReference,
     },
   } = state;
 
@@ -296,6 +299,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(parkArea).any()) {
       dispatch(fetchParkAreas());
     }
+    if (!from(emailReference).any()) {
+      dispatch(fetchEmailReference());
+    }
   } catch (error) {}
 };
 
@@ -316,6 +322,7 @@ export const fetchComplaintCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchGirTypes());
     dispatch(fetchComplaintMethodReceivedCodes());
     dispatch(fetchTeam());
+    dispatch(fetchEmailReference());
   } catch (error) {
     console.error(error);
   }

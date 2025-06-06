@@ -61,6 +61,7 @@ import { CaseLocationCode } from "src/types/models/code-tables/case-location-cod
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
 import { EquipmentStatus } from "src/types/models/code-tables/equipment-status";
 import { HwcrOutcomeActionedBy } from "src/types/models/code-tables/hwcr-outcome-actioned-by";
+import { EmailReference } from "../email_reference/entities/email_reference.entity";
 
 @Injectable()
 export class CodeTableService {
@@ -96,6 +97,8 @@ export class CodeTableService {
   private readonly _teamCodeRepository: Repository<TeamCode>;
   @InjectRepository(CompMthdRecvCdAgcyCdXref)
   private readonly _compMthdRecvCdAgcyCdXrefRepository: Repository<CompMthdRecvCdAgcyCdXref>;
+  @InjectRepository(EmailReference)
+  private readonly _emailReferenceRepository: Repository<EmailReference>;
 
   getCodeTableByName = async (table: string, token?: string): Promise<BaseCodeTable[]> => {
     this.logger.debug("in code table: " + JSON.stringify(table));
@@ -829,6 +832,22 @@ export class CodeTableService {
         });
         const results = data.parkAreas;
         return results;
+      }
+      case "email-reference": {
+        const data = await this._emailReferenceRepository.find({
+          where: { active_ind: true },
+          order: { agency_code: "ASC" },
+        });
+        const emailReferences = data.map(({ agency_code, email_address, geo_organization_unit_code }) => {
+          return {
+            agencyCode: agency_code,
+            emailAddress: email_address,
+            geoOrgUnitTypeCode: geo_organization_unit_code,
+            shortDescription: "",
+            longDescription: "",
+          };
+        });
+        return emailReferences;
       }
     }
   };

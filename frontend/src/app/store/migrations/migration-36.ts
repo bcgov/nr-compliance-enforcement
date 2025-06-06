@@ -1,10 +1,10 @@
-export const ExternalAgencies = {
-  35: (state: any) => {
+export const AddEmailReference = {
+  36: (state: any) => {
     return {
       ...state,
       codeTables: {
         ...state.codeTables,
-        agency: [],
+        "email-reference": [],
       },
     };
   },
