@@ -36,6 +36,74 @@ export class EmailService {
     private readonly _officerService: OfficerService,
   ) {}
 
+  private async _buildRecipientList(externalAgencyInd, referredToAgencyCode, complaint, additionalRecipients) {
+    const recipientList = [...additionalRecipients];
+    if (externalAgencyInd) return recipientList;
+
+    const emailReferences = await this._emailReferenceService.findActiveByAgency(referredToAgencyCode);
+    for (const ref of emailReferences) {
+      switch (referredToAgencyCode) {
+        case "COS":
+          if (ref.geo_organization_unit_code === complaint.organization.zone) {
+            recipientList.push(ref.email_address);
+          }
+          break;
+        case "EPO":
+        case "PARKS":
+          recipientList.push(ref.email_address);
+          break;
+        default: {
+          break;
+        }
+      }
+    }
+    return recipientList;
+  }
+
+  private async _getComplaintDetailsByType(type, complaint, communityName) {
+    let subjectTypeDescription = type;
+    let bodyTypeDescription = type;
+    let complaintSummaryText = "";
+    let subjectAdditionalDetails = "";
+
+    switch (type) {
+      case "HWCR": {
+        subjectTypeDescription = "HWC";
+        bodyTypeDescription = "Human wildlife conflict";
+        const wildlifeComplaint = complaint as WildlifeComplaintDto;
+        const speciesName = (await this._speciesCodeService.findOne(wildlifeComplaint.species)).short_description;
+        const natureOfComplaint = (await this._natureOfComplaintService.findOne(wildlifeComplaint.natureOfComplaint))
+          .long_description;
+        complaintSummaryText = `${bodyTypeDescription}, ${natureOfComplaint}, ${speciesName}, ${communityName}`;
+        subjectAdditionalDetails = `(${speciesName}, ${communityName})`;
+        break;
+      }
+      case "ERS": {
+        subjectTypeDescription = "Enforcement";
+        bodyTypeDescription = "Enforcement";
+        const ersComplaint = complaint as AllegationComplaintDto;
+        const violationCodeName = (await this._violationCodeService.findOne(ersComplaint.violation)).long_description;
+        const inProgressText = ersComplaint.isInProgress ? "Violation in progress, " : "";
+        complaintSummaryText = `${bodyTypeDescription}, ${violationCodeName}, ${inProgressText}${communityName}`;
+        subjectAdditionalDetails = `(${violationCodeName}, ${
+          ersComplaint.isInProgress ? "In progress, " : ""
+        }${communityName})`;
+        break;
+      }
+      case "GIR": {
+        subjectTypeDescription = "General incident";
+        bodyTypeDescription = "General incident";
+        const girComplaint = complaint as GeneralIncidentComplaintDto;
+        const girTypeName = (await this._girTypeCodeService.findOne(girComplaint.girType)).long_description;
+        complaintSummaryText = `${bodyTypeDescription}, ${girTypeName}, ${communityName}`;
+        subjectAdditionalDetails = `(${girTypeName}, ${communityName})`;
+        break;
+      }
+    }
+
+    return { subjectTypeDescription, bodyTypeDescription, complaintSummaryText, subjectAdditionalDetails };
+  }
+
   sendReferralEmail = async (createComplaintReferralDto, user, exportContentBuffer) => {
     const {
       complaint_identifier: id,
@@ -51,7 +119,6 @@ export class EmailService {
     try {
       const complaint = await this._complaintService.findById(id, type);
 
-      // Convert the PDF data to base64
       const base64Content = Buffer.from(exportContentBuffer.data).toString("base64");
       const emailAttachments = [
         {
@@ -67,34 +134,12 @@ export class EmailService {
       const { given_name, family_name } = user;
       const senderName = `${given_name} ${family_name}`;
 
-      const recipientList = [...additionalEmailRecipients];
-
-      //if the referal is to an external agency look up the receipient list
-      if (!externalAgencyInd) {
-        const emailReferences = await this._emailReferenceService.findActiveByAgency(referred_to_agency_code);
-        for (const ref of emailReferences) {
-          switch (referred_to_agency_code) {
-            case "COS": {
-              if (ref.geo_organization_unit_code === complaint.organization.zone) {
-                recipientList.push(ref.email_address);
-              }
-              break;
-            }
-            // Currently Parks and EPO only have a single shared inbox
-            case "EPO": {
-              recipientList.push(ref.email_address);
-              break;
-            }
-            case "PARKS": {
-              recipientList.push(ref.email_address);
-              break;
-            }
-            default: {
-              break;
-            }
-          }
-        }
-      }
+      const recipientList = await this._buildRecipientList(
+        externalAgencyInd,
+        referred_to_agency_code,
+        complaint,
+        additionalEmailRecipients,
+      );
 
       const { short_description: communityName } = await this._geoOrganizationUnitCodeService.findOne(
         complaint.organization.area,
@@ -102,75 +147,28 @@ export class EmailService {
       const referredToAgency = await this._agencyCodeService.findById(referred_to_agency_code);
       const referredByAgency = await this._agencyCodeService.findById(referred_by_agency_code);
 
-      let subjectTypeDescription = type;
-      let bodyTypeDescription = type;
-      let complaintSummaryText = "";
-      let subjectAdditionalDetails = "";
-
-      switch (type) {
-        case "HWCR": {
-          subjectTypeDescription = "HWC";
-          bodyTypeDescription = "Human wildlife conflict";
-          const complaintAsWildlife = complaint as WildlifeComplaintDto;
-          const { short_description: speciesName } = await this._speciesCodeService.findOne(
-            complaintAsWildlife.species,
-          );
-          const { long_description: natureOfComplaint } = await this._natureOfComplaintService.findOne(
-            complaintAsWildlife.natureOfComplaint,
-          );
-          complaintSummaryText = `${bodyTypeDescription}, ${natureOfComplaint}, ${speciesName}, ${communityName}`;
-          subjectAdditionalDetails = `(${speciesName}, ${communityName})`;
-          break;
-        }
-        case "ERS": {
-          subjectTypeDescription = "Enforcement";
-          bodyTypeDescription = "Enforcement";
-          const complaintAsErs = complaint as AllegationComplaintDto;
-          const { long_description: violationCodeName } = await this._violationCodeService.findOne(
-            complaintAsErs.violation,
-          );
-          complaintSummaryText = `${bodyTypeDescription}, ${violationCodeName}, ${
-            complaintAsErs.isInProgress === true ? "Violation in progress, " : ""
-          }${communityName}`;
-          subjectAdditionalDetails = `(${violationCodeName}, ${
-            complaintAsErs.isInProgress === true ? "In progress, " : ""
-          }${communityName})`;
-          break;
-        }
-        case "GIR": {
-          subjectTypeDescription = "General incident";
-          bodyTypeDescription = "General incident";
-          const complaintAsGir = complaint as GeneralIncidentComplaintDto;
-          const { long_description: girTypeName } = await this._girTypeCodeService.findOne(complaintAsGir.girType);
-          complaintSummaryText = `${bodyTypeDescription}, ${girTypeName}, ${communityName}`;
-          subjectAdditionalDetails = `(${girTypeName}, ${communityName})`;
-          break;
-        }
-      }
-
-      // the contents of these will change depending if it is an external or an internal referal
-      let emailSubject;
+      const { subjectTypeDescription, bodyTypeDescription, complaintSummaryText, subjectAdditionalDetails } =
+        await this._getComplaintDetailsByType(type, complaint, communityName);
 
       const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : null;
-      if (externalAgencyInd) {
-        emailSubject = `${envFlag}Referral from ${referredByAgency.long_description}: ${subjectTypeDescription} complaint #${id}`;
-      } else {
-        emailSubject = `${envFlag}NatCom referral ${subjectTypeDescription} complaint #${id} ${subjectAdditionalDetails}`;
-      }
+      const emailSubject = externalAgencyInd
+        ? `${envFlag}Referral from ${referredByAgency.long_description}: ${subjectTypeDescription} complaint #${id}`
+        : `${envFlag}NatCom referral ${subjectTypeDescription} complaint #${id} ${subjectAdditionalDetails}`;
 
-      const generateReferralEmailParams: GenerateReferralEmailParams = {
+      const generateReferralEmailParams = {
         complaintId: id,
         complaintTypeDescription: bodyTypeDescription,
-        senderName: senderName,
-        senderEmailAddress: senderEmailAddress,
+        senderName,
+        senderEmailAddress,
         referredToAgency: referredToAgency.short_description,
         referredByAgency: referredByAgency.short_description,
         reasonForReferral: referral_reason,
-        supportEmail: supportEmail,
-        complaintSummaryText: complaintSummaryText,
+        supportEmail,
+        complaintSummaryText,
         complaintUrl: complaint_url,
         isExternal: externalAgencyInd,
       };
+
       const emailBody = generateReferralEmailBody(generateReferralEmailParams);
 
       return await this._chesService.sendEmail(
