@@ -40,6 +40,7 @@ import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
 import { IPMAuthCategoryType } from "@apptypes/app/code-tables/ipm-auth-category";
 import { EquipmentStatus } from "@/app/types/app/code-tables/equipment-status";
 import { ParkArea } from "@/app/types/app/code-tables/park-area";
+import { EmailReference } from "@/app/types/app/code-tables/email-reference";
 
 export interface CodeTableState {
   [key: string]:
@@ -84,7 +85,8 @@ export interface CodeTableState {
     | Array<IPMAuthCategoryType>
     | Array<CaseLocationType>
     | Array<EquipmentStatus>
-    | Array<ParkArea>;
+    | Array<ParkArea>
+    | Array<EmailReference>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -127,4 +129,5 @@ export interface CodeTableState {
   "case-location-type": Array<CaseLocationType>;
   "equipment-status": Array<EquipmentStatus>;
   "park-area": Array<ParkArea>;
+  "email-reference": Array<EmailReference>;
 }

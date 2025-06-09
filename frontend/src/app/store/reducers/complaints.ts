@@ -283,6 +283,9 @@ export const complaintSlice = createSlice({
     setLinkedComplaints: (state, action) => {
       return { ...state, linkedComplaints: action.payload };
     },
+    setComplaintEmailReferences: (state, action) => {
+      return { ...state, emailReferences: action.payload };
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -312,6 +315,7 @@ export const {
   setComplaintStatus,
   clearComplaint,
   setLinkedComplaints,
+  setComplaintEmailReferences,
 } = complaintSlice.actions;
 
 //-- redux thunks
@@ -612,6 +616,7 @@ export const createComplaintReferral =
     complaint_type: string,
     date_logged: Date,
     complaint_url: string,
+    additionalEmailRecipients: string[] = [],
   ): AppThunk =>
   async (dispatch, getState) => {
     try {
@@ -637,6 +642,7 @@ export const createComplaintReferral =
         documentExportParams,
         complaint_url,
         externalAgencyInd,
+        additionalEmailRecipients,
       });
 
       await post<any>(dispatch, parameters);
