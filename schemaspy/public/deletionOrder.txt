@@ -15,7 +15,6 @@ complaint_h
 attractant_hwcr_xref_h
 allegation_complaint_h
 action_taken_h
-complaint_referral
 staging_complaint
 person_complaint_xref
 geo_org_unit_structure
@@ -30,12 +29,14 @@ allegation_complaint
 action_taken
 staging_metadata_mapping
 complaint_type_code
+complaint_referral_email_log
+complaint_referral
 hwcr_complaint
 team
 complaint_update
 officer
-office
 complaint
+office
 comp_mthd_recv_cd_agcy_cd_xref
 geo_organization_unit_code
 team_code

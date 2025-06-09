@@ -261,7 +261,9 @@
          </index>
       </table>
       <table name="complaint_referral" remarks="Used to track complaint refer actions from an agency to a different agency." schema="public" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="complaint_referral_guid" nullable="false" remarks="System generated unique key for the referral action." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="complaint_referral_guid" nullable="false" remarks="System generated unique key for the referral action." size="2147483647" type="uuid" typeCode="1111">
+            <child column="complaint_referral_guid" foreignKey="FK_refemailog__complaint_referral_guid" implied="false" onDeleteCascade="false" schema="public" table="complaint_referral_email_log"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="complaint_identifier" nullable="false" remarks="A human readable code used to identify a complaint being referred." size="20" type="varchar" typeCode="12">
             <parent column="complaint_identifier" foreignKey="FK_cmplreferral__complaint" implied="false" onDeleteCascade="false" schema="public" table="complaint"/>
          </column>
@@ -284,6 +286,22 @@
          <primaryKey column="complaint_referral_guid" sequenceNumberInPK="1"/>
          <index name="PK_cmplreferral" unique="true">
             <column ascending="true" name="complaint_referral_guid"/>
+         </index>
+      </table>
+      <table name="complaint_referral_email_log" remarks="Used to track additional emails that were added to a specific complaint referral in order to maintain an audit trail.  This table does not track emails sent to the default email for an agency which is stored in the email reference table as this can be inferred from the complaint referral table." schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="complaint_referral_email_log_guid" nullable="false" remarks="System generated unique key for the referral email log action." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="complaint_referral_guid" nullable="false" remarks="Foreign key to system generated unique key for the complaint referral." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="complaint_referral_guid" foreignKey="FK_refemailog__complaint_referral_guid" implied="false" onDeleteCascade="false" schema="public" table="complaint_referral"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="email_address" nullable="false" remarks="An additional email address entered by a user that they have indicated the complaint should be referred to." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="email_sent_utc_timestamp" nullable="false" remarks="The date and time the email was sent.  The timestamp is stored in UTC with no Offset" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the email reference record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when email reference was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="The id of the user that updated email reference." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="update_utc_timestamp" nullable="false" remarks="The timestamp when email reference was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="complaint_referral_email_log_guid" sequenceNumberInPK="1"/>
+         <index name="PK_refemailog" unique="true">
+            <column ascending="true" name="complaint_referral_email_log_guid"/>
          </index>
       </table>
       <table name="complaint_status_code" remarks="The status of a Complaint.  Values include OPEN = Open and CLOSED = Closed." schema="public" type="TABLE">
