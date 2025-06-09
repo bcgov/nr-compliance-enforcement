@@ -397,20 +397,22 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
               )}
             </div>
           )}
-          <div className="comp-details-form-row--refer">
-            <div>
-              <Button
-                variant="primary"
-                id="refer-add-additional-email-input"
-                title="Add additional email"
-                onClick={() => setShowAdditionalEmailForm(true)}
-                disabled={showAdditionalEmailForm && additionalEmailInput !== ""}
-              >
-                <i className="bi bi-plus-circle"></i>
-                <span>Add additional email</span>
-              </Button>
+          {selectedAgency && (
+            <div className="comp-details-form-row--refer">
+              <div>
+                <Button
+                  variant="primary"
+                  id="refer-add-additional-email-input"
+                  title="Add additional email"
+                  onClick={() => setShowAdditionalEmailForm(true)}
+                  disabled={showAdditionalEmailForm && additionalEmailInput !== ""}
+                >
+                  <i className="bi bi-plus-circle"></i>
+                  <span>Add additional email</span>
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
           <div className="comp-details-form-row--refer">
             <label htmlFor="refer-complaint-type-select">Complaint type</label>
             <div className="comp-details-input full-width">
