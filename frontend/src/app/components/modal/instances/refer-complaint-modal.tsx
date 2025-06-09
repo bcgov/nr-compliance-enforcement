@@ -35,6 +35,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
   const complaintData = useAppSelector(selectComplaint);
   const emailReferenceList = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.EMAIL_REFERENCE));
+  const complaintAgency = agencies.find((agency) => agency.agency === complaintData?.ownedBy);
 
   const { title } = modalData;
   const currentDate = new Date();
@@ -253,7 +254,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
                 enableValidation={false}
                 showInactive={true}
                 value={{
-                  label: complaintData?.ownedBy,
+                  label: complaintAgency?.longDescription,
                   labelElement: <AgencyBanner agency={complaintData?.ownedBy} />,
                   value: complaintData?.ownedBy,
                   isActive: true,
