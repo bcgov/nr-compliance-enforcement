@@ -197,7 +197,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_prod_storage_usage" {
   name = "Prod Database Storage Alert"
   description = "Alert when the database storage usage is too high"
   severity = "high"
-  query = "sysdig_fs_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-prod\"} > 70"
+  query = "sysdig_fs_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-prod\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-prod\"} > 50"
   enabled = true
   duration_seconds = 600
   notification_channels {
