@@ -2429,7 +2429,6 @@ export class ComplaintService {
         });
       }
 
-      this.logger.debug("Prevention data", prevention);
       if (prevention) {
         hasOutcome = true;
         await _applyPreventionData(prevention);
