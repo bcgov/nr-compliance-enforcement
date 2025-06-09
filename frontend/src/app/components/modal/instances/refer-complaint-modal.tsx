@@ -398,7 +398,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
               )}
             </div>
           )}
-          {selectedAgency && (
+          {selectedAgency && (defaultAgencyEmail !== "" || defaultRecipientEmail !== "") && (
             <div className="comp-details-form-row--refer">
               <div>
                 <Button
