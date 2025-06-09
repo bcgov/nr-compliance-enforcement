@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { FC, useState, useEffect, useRef } from "react";
 import { Modal, Button, Alert } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
@@ -81,6 +81,10 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
       });
       if (defaultEmail) {
         setDefaultAgencyEmail(defaultEmail.emailAddress);
+      } else {
+        setTimeout(() => {
+          inputRecipientEmailRef.current?.focus();
+        }, 0);
       }
     }
   };
@@ -99,6 +103,8 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
 
   const [isReferDisabled, setIsReferDisabled] = useState<boolean>(false);
 
+  const inputAdditionalEmailRef = useRef<HTMLInputElement>(null);
+  const inputRecipientEmailRef = useRef<HTMLInputElement>(null);
   const [showAdditionalEmailForm, setShowAdditionalEmailForm] = useState<boolean>(false);
   const [additionalEmailInput, setAdditionalEmailInput] = useState<string>("");
   const [additionalEmailInputError, setAdditionalEmailInputError] = useState<string>("");
@@ -106,6 +112,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
   const [defaultRecipientEmail, setDefaultRecipientEmail] = useState<string>("");
   const [defaultRecipientEmailInputError, setDefaultRecipientEmailInputError] = useState<string>("");
   const [additionalEmails, setAdditionalEmails] = useState<string[]>([]);
+  const showRecipientEmailForm = defaultAgencyEmail === "" && defaultRecipientEmail === "";
 
   const handleAdditionalEmailChange = (email: string) => {
     if (email === "") setAdditionalEmailInputError("");
@@ -169,7 +176,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
     } else {
       setReferralReasonError("");
     }
-    if (defaultAgencyEmail === "" && defaultRecipientEmail === "") {
+    if (showRecipientEmailForm) {
       setDefaultRecipientEmailInputError("Please add recipient's email address");
       hasError = true;
     }
@@ -312,7 +319,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
               </div>
             </div>
           )}
-          {selectedAgency && defaultAgencyEmail === "" && defaultRecipientEmail === "" && (
+          {selectedAgency && showRecipientEmailForm && (
             <div className="comp-details-form-row--refer refer-complaint-agency--new">
               <label htmlFor="refer-complaint-to">
                 Add recipient’s email address<span className="required-ind">*</span>
@@ -329,11 +336,12 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
                       setDefaultRecipientEmailInput(e.target.value);
                     }}
                     maxLength={120}
+                    ref={inputRecipientEmailRef}
                   />
                   <Button
                     variant="primary"
                     id="outcome-report-add-equipment"
-                    title="Add additional email"
+                    title="Add email"
                     onClick={handleAddRecipientEmail}
                     disabled={defaultRecipientEmailInput === ""}
                   >
@@ -381,11 +389,12 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
                       placeholder="Type or paste here"
                       onChange={(e) => handleAdditionalEmailChange(e.target.value)}
                       maxLength={120}
+                      ref={inputAdditionalEmailRef}
                     />
                     <Button
                       variant="primary"
                       id="outcome-report-add-equipment"
-                      title="Add additional email"
+                      title="Add email"
                       onClick={handleAddAdditionalEmail}
                       disabled={additionalEmailInput === ""}
                     >
@@ -397,15 +406,20 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
               )}
             </div>
           )}
-          {selectedAgency && (defaultAgencyEmail !== "" || defaultRecipientEmail !== "") && (
+          {selectedAgency && (
             <div className="comp-details-form-row--refer">
               <div>
                 <Button
                   variant="primary"
                   id="refer-add-additional-email-input"
                   title="Add additional email"
-                  onClick={() => setShowAdditionalEmailForm(true)}
-                  disabled={showAdditionalEmailForm && additionalEmailInput !== ""}
+                  onClick={() => {
+                    setShowAdditionalEmailForm(true);
+                    setTimeout(() => {
+                      inputAdditionalEmailRef.current?.focus();
+                    }, 0);
+                  }}
+                  disabled={showAdditionalEmailForm || showRecipientEmailForm}
                 >
                   <i className="bi bi-plus-circle"></i>
                   <span>Add additional email</span>
