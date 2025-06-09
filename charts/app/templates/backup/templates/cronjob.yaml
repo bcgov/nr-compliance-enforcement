@@ -45,28 +45,22 @@ spec:
                   value: {{ .Values.backup.weeklyBackups | quote }}
                 - name: MONTHLY_BACKUPS
                   value: {{ .Values.backup.monthlyBackups | quote }}
-                - name: DATABASE_SERVICE_NAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ .Release.Name }}-backend
-                      key: POSTGRESQL_HOST
                 - name: DEFAULT_PORT
                   value: "5432"
+                - name: DATABASE_SERVICE_NAME
+                  value: postgres-crunchy-{{ .Values.global.crunchyClusterEnvironment }}-replicas
                 - name: POSTGRESQL_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ .Release.Name }}-backend
-                      key: "POSTGRESQL_DATABASE"
+                  value: app
                 - name: DATABASE_USER
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Release.Name }}-backend
-                      key: "POSTGRESQL_USER"
+                      name: postgres-crunchy-{{ .Values.global.crunchyClusterEnvironment }}-pguser-app
+                      key: user
                 - name: DATABASE_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Release.Name }}-backend
-                      key: "POSTGRESQL_PASSWORD"
+                      name: postgres-crunchy-{{ .Values.global.crunchyClusterEnvironment }}-pguser-app
+                      key: password
                 - name: S3_USER
                   valueFrom:
                     secretKeyRef:
