@@ -294,7 +294,7 @@ backup:
     accessModes:
       - ReadWriteOnce
     mountPath: "/backups/"
-    size: 256Mi #Volume space available for data, e.g. 512Mi, 2Gi.
+    size: 1Gi #Volume space available for data, e.g. 512Mi, 2Gi.
     storageClass: "netapp-file-backup"
   schedule: "0 0 * * *" # cron job schedule
   strategy: "rolling" # daily or rolling

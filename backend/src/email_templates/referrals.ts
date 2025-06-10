@@ -37,7 +37,7 @@ export function generateReferralEmailBody(emailReferralParams: GenerateReferralE
   has been referred to ${referredToAgency} by <strong>${senderName} (CC'd)</strong> at ${referredByAgency}.
 </p>
 <ul>
-  <li>Summary: ${complaintSummaryText}</li>
+  <li>Summary of complaint and location: ${complaintSummaryText}</li>
   <li>The reason for referral is: ${reasonForReferral}</li>
 </ul>
 ${
