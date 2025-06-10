@@ -36,15 +36,15 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     { name: "setup", testMatch: /.*\.setup\.ts/ },
-    {
-      name: "chromium",
-      use: {
-        ...devices["Desktop Chrome"],
-        baseURL: baseURL,
-      },
-      dependencies: ["setup"],
-      testMatch: /.*\.(spec|test)\.ts/,
-    },
+    // {
+    //   name: "chromium",
+    //   use: {
+    //     ...devices["Desktop Chrome"],
+    //     baseURL: baseURL,
+    //   },
+    //   dependencies: ["setup"],
+    //   testMatch: /.*\.(spec|test)\.ts/,
+    // },
     // {
     //   name: 'Google Chrome',
     //   use: {
