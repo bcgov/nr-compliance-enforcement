@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { OfficeDto } from "../../office/dto/office.dto";
 import { PersonDto } from "../../person/dto/person.dto";
+import { AgencyCodeDto } from "src/v1/agency_code/dto/agency_code.dto";
 
 export class OfficerDto {
   @ApiProperty({
@@ -75,4 +76,10 @@ export class OfficerDto {
     description: "The guid for park area of PARK officer",
   })
   park_area_guid: UUID;
+
+  @ApiProperty({
+    example: "903f87c8-76dd-427c-a1bb-4d179e443252",
+    description: "The guid for park area of PARK officer",
+  })
+  agency_code: AgencyCodeDto;
 }
