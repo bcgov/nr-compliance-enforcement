@@ -35,7 +35,7 @@ import { Officer } from "@apptypes/person/person";
 import Option from "@apptypes/app/option";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { ComplaintSuspectWitness } from "@apptypes/complaints/details/complaint-suspect-witness-details";
-import { selectOfficersByAgency } from "@store/reducers/officer";
+import { selectOfficersByAgency, selectOfficers } from "@store/reducers/officer";
 import { ComplaintLocation } from "./complaint-location";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
@@ -93,10 +93,11 @@ export const ComplaintDetailsEdit: FC = () => {
   const dispatch = useAppDispatch();
 
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
+  const allOfficers = useSelector((state: RootState) => selectOfficers(state));
 
   useEffect(() => {
     dispatch(getCaseFile(id));
-  }, [id, dispatch]);
+  }, [id, dispatch, allOfficers]);
 
   //-- selectors
   const data = useAppSelector(selectComplaint);
