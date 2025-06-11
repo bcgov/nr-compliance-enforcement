@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { OfficeDto } from "../../office/dto/office.dto";
 import { PersonDto } from "../../person/dto/person.dto";
-import { AgencyCodeDto } from "src/v1/agency_code/dto/agency_code.dto";
+import { AgencyCodeDto } from "../../agency_code/dto/agency_code.dto";
 
 export class OfficerDto {
   @ApiProperty({
