@@ -6,6 +6,12 @@ export const COMPLAINT_TYPE_AGENCY_MAPPING = {
   ERS: ["COS", "PARKS", "EPO"],
 };
 
+export const COMPLAINT_TYPE_EXTERNAL_AGENCY_MAPPING = {
+  HWCR: false,
+  GIR: true,
+  ERS: true,
+};
+
 export const COMPLAINT_TYPES = {
   HWCR: "HWCR",
   ERS: "ERS",
