@@ -17,6 +17,7 @@ import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 import { TeamCode } from "../team_code/entities/team_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
+import { EmailReference } from "src/v1/email_reference/entities/email_reference.entity";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation
     TypeOrmModule.forFeature([GirTypeCode]),
     TypeOrmModule.forFeature([TeamCode]),
     TypeOrmModule.forFeature([CompMthdRecvCdAgcyCdXref]),
+    TypeOrmModule.forFeature([EmailReference]),
   ],
   controllers: [CodeTableController, CaseManagementCodeTableController],
   providers: [CodeTableService],

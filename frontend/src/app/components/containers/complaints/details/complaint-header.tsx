@@ -4,7 +4,7 @@ import COMPLAINT_TYPES, { complaintTypeToName } from "@apptypes/app/complaint-ty
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import {
   getComplaintCollaboratorsByComplaintId,
-  selectComplaintCollaborators,
+  selectActiveComplaintCollaborators,
   selectComplaintHeader,
   selectComplaintViewMode,
   selectRelatedData,
@@ -65,7 +65,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const showComplaintCollaboration = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_COLLABORATION));
   const userPersonGuid = useAppSelector(personGuid);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
-  const collaborators = useAppSelector(selectComplaintCollaborators);
+  const collaborators = useAppSelector(selectActiveComplaintCollaborators);
   const userAgency = getUserAgency();
   const relatedData = useAppSelector(selectRelatedData);
   let referrals = relatedData.referrals ?? [];
@@ -109,7 +109,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     document.body.click();
     dispatch(
       openModal({
-        modalSize: "lg",
+        modalSize: "md",
         modalType: REFER_COMPLAINT,
         data: {
           title: "Refer complaint",
@@ -135,6 +135,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           zone: zone,
           agency_code: complaintAgency,
           park_area_guids: parkAreaGuids,
+          isHeader: true,
         },
       }),
     );

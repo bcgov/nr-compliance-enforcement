@@ -2287,6 +2287,16 @@ export class ComplaintService {
           drug.officer = drugActor;
           drug.date = drugDate;
         });
+
+        if (animal.tags?.length > 0) {
+          animal.tags = animal.tags
+            .map((item) => {
+              return `ID: ${item.identifier} (${item.earDescription} side)`;
+            })
+            .join("\n");
+        } else {
+          animal.tags = "";
+        }
       }
       return wildlife;
     };
@@ -2419,7 +2429,6 @@ export class ComplaintService {
         });
       }
 
-      this.logger.debug("Prevention data", prevention);
       if (prevention) {
         hasOutcome = true;
         await _applyPreventionData(prevention);

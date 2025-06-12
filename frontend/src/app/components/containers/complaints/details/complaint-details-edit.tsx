@@ -35,7 +35,7 @@ import { Officer } from "@apptypes/person/person";
 import Option from "@apptypes/app/option";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { ComplaintSuspectWitness } from "@apptypes/complaints/details/complaint-suspect-witness-details";
-import { selectOfficersByAgency } from "@store/reducers/officer";
+import { selectOfficersByAgency, selectOfficers } from "@store/reducers/officer";
 import { ComplaintLocation } from "./complaint-location";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
@@ -82,6 +82,7 @@ import { Roles } from "@/app/types/app/roles";
 import { ParkSelect } from "@/app/components/common/park-select";
 import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
 import { selectEquipment } from "@/app/store/reducers/case-selectors";
+import { isValidEmail } from "@/app/common/validate-email";
 
 export type ComplaintParams = {
   id: string;
@@ -92,10 +93,11 @@ export const ComplaintDetailsEdit: FC = () => {
   const dispatch = useAppDispatch();
 
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
+  const allOfficers = useSelector((state: RootState) => selectOfficers(state));
 
   useEffect(() => {
     dispatch(getCaseFile(id));
-  }, [id, dispatch]);
+  }, [id, dispatch, allOfficers]);
 
   //-- selectors
   const data = useAppSelector(selectComplaint);
@@ -689,8 +691,7 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   function handleEmailChange(value: string) {
-    let re = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    if (value !== undefined && value !== "" && !re.test(value)) {
+    if (value !== undefined && value !== "" && !isValidEmail(value)) {
       setEmailMsg("Please enter a vaild email");
     } else {
       setEmailMsg("");

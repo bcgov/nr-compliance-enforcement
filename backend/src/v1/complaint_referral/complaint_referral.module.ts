@@ -9,11 +9,13 @@ import { ComplaintModule } from "../complaint/complaint.module";
 import { EmailModule } from "../../v1/email/email.module";
 import { FeatureFlagModule } from "../../v1/feature_flag/feature_flag.module";
 import { DocumentModule } from "../../v1/document/document.module";
+import { ComplaintReferralEmailLogModule } from "../complaint_referral_email_log/complaint_referral_email_log.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ComplaintReferral, Complaint]),
     PersonComplaintXrefModule,
+    ComplaintReferralEmailLogModule,
     EmailModule,
     forwardRef(() => ComplaintModule),
     FeatureFlagModule,

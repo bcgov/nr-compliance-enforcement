@@ -351,10 +351,10 @@ export class PersonComplaintXrefService {
       .andWhere("person_complaint_xref.person_complaint_xref_code = :code", {
         code: PersonComplaintXrefCodeEnum.COLLABORATOR,
       })
-      .andWhere("person_complaint_xref.active_ind = true")
       .andWhere("officer.person_guid = person.person_guid")
       .addSelect("agency_code.short_description", "agency_code_short_description")
       .addSelect("officer.auth_user_guid")
+      .addSelect("person_complaint_xref.active_ind")
       .execute();
 
     const collaborators = res.map((row) => {
@@ -368,6 +368,7 @@ export class PersonComplaintXrefService {
         lastName: row.person_last_name,
         middleName1: row.person_middle_name_1,
         middleName2: row.person_middle_name_2,
+        activeInd: row.active_ind,
       };
     });
     return collaborators;

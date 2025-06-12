@@ -197,7 +197,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_storage_usage" {
   name = "Test Database Storage Alert"
   description = "Alert when the database storage usage is too high"
   severity = "high"
-  query = "sysdig_fs_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-test\"} > 70"
+  query = "sysdig_fs_used_percent{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-test\"} > 50"
   enabled = true
   duration_seconds = 600
   notification_channels {

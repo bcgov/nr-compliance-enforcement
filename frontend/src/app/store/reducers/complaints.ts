@@ -283,6 +283,9 @@ export const complaintSlice = createSlice({
     setLinkedComplaints: (state, action) => {
       return { ...state, linkedComplaints: action.payload };
     },
+    setComplaintEmailReferences: (state, action) => {
+      return { ...state, emailReferences: action.payload };
+    },
   },
 
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -312,6 +315,7 @@ export const {
   setComplaintStatus,
   clearComplaint,
   setLinkedComplaints,
+  setComplaintEmailReferences,
 } = complaintSlice.actions;
 
 //-- redux thunks
@@ -612,11 +616,12 @@ export const createComplaintReferral =
     complaint_type: string,
     date_logged: Date,
     complaint_url: string,
+    additionalEmailRecipients: string[] = [],
   ): AppThunk =>
   async (dispatch, getState) => {
     try {
       const { attachments } = getState();
-      const agencyTable = getState()?.codeTables?.agency as CodeTableState['agency'] | undefined;
+      const agencyTable = getState()?.codeTables?.agency as CodeTableState["agency"] | undefined;
       const agency = agencyTable?.find((item) => item.agency === referred_to_agency_code);
       const externalAgencyInd = agency?.externalAgencyInd;
 
@@ -637,6 +642,7 @@ export const createComplaintReferral =
         documentExportParams,
         complaint_url,
         externalAgencyInd,
+        additionalEmailRecipients,
       });
 
       await post<any>(dispatch, parameters);
@@ -794,8 +800,6 @@ export const createComplaint =
       ).then(async (res) => {
         const { id } = res;
         result = id;
-
-        await dispatch(getComplaintById(id, "HWCR"));
       });
       ToggleSuccess("Complaint has been saved");
       return result;
@@ -923,6 +927,14 @@ export const selectComplaintCollaborators = (state: RootState): Collaborator[] =
     complaints: { complaintCollaborators },
   } = state;
   return complaintCollaborators;
+};
+
+export const selectActiveComplaintCollaborators = (state: RootState): Collaborator[] => {
+  const {
+    complaints: { complaintCollaborators },
+  } = state;
+  const activeCollaborators = complaintCollaborators.filter((collaborator) => collaborator.activeInd);
+  return activeCollaborators;
 };
 
 export const selectComplaintLargeCarnivoreInd = createSelector(

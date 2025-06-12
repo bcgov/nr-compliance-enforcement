@@ -269,7 +269,7 @@ export const EditUser: FC<EditUserProps> = ({
 
       if (newUser) {
         //create new officer
-        addNewOfficer(newUser, mapRoles);
+        addNewOfficer(newUser, selectedAgency, mapRoles);
       } else {
         //update existing officer
         const selectedUserAgency = currentAgency ?? selectedAgency;
@@ -292,7 +292,11 @@ export const EditUser: FC<EditUserProps> = ({
     }
   };
 
-  const addNewOfficer = (newUser: CssUser, mapRoles: Array<{ name: string | undefined }>) => {
+  const addNewOfficer = (
+    newUser: CssUser,
+    selectedAgency: Option | null,
+    mapRoles: Array<{ name: string | undefined }>,
+  ) => {
     const newOfficerData: NewOfficer = {
       user_id: newUser.attributes.idir_username[0],
       create_user_id: adminIdirUsername,
@@ -319,6 +323,9 @@ export const EditUser: FC<EditUserProps> = ({
       },
       coms_enrolled_ind: false,
       deactivate_ind: false,
+      agency_code: {
+        agency_code: selectedAgency?.value,
+      },
     };
     dispatch(createOfficer(newOfficerData));
   };
