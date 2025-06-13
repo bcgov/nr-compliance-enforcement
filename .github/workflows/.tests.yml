@@ -119,21 +119,25 @@ jobs:
       - name: Debug secrets
         run: |
           echo "Checking secrets..."
-          echo "auth_base_url: ${{ vars.E2E_BASE_URL }}"
-          echo "auth_realm: ${{ vars.KEYCLOAK_REALM }}"
-          echo "keycloak_user_01: ${{ vars.KEYCLOAK_USER }}"
-          echo "keycloak_user_02: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_02 }}"
-          echo "keycloak_user_03: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_03 }}"
-          echo "keycloak_password: ${{ secrets.KEYCLOAK_PASSWORD }}"
-          echo "keycloak_client_id: ${{ vars.KEYCLOAK_CLIENT_ID }}"
+          echo "KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}"
+          echo "REACT_APP_KEYCLOAK_CLIENT_ID: ${{ vars.REACT_APP_KEYCLOAK_CLIENT_ID }}"
+          echo "REACT_APP_KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_DEV}}"
+          echo "REACT_APP_KEYCLOAK_REALM: ${{vars.REACT_APP_KEYCLOAK_REALM}}"
+          echo "E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}"
+          echo "KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}"
+          echo "PLAYWRIGHT_KEYCLOAK_USER: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER }}"
+          echo "PLAYWRIGHT_KEYCLOAK_USER_02: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_02 }}"
+          echo "PLAYWRIGHT_KEYCLOAK_USER_03: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_03 }}"
         env:
           KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
+          REACT_APP_KEYCLOAK_CLIENT_ID: ${{ vars.REACT_APP_KEYCLOAK_CLIENT_ID }}
+          REACT_APP_KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_DEV}}
+          REACT_APP_KEYCLOAK_REALM: ${{vars.REACT_APP_KEYCLOAK_REALM}}
           E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
           KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
-          KEYCLOAK_USER: ${{ vars.KEYCLOAK_USER }}
+          PLAYWRIGHT_KEYCLOAK_USER: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER }}
           PLAYWRIGHT_KEYCLOAK_USER_02: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_02 }}
           PLAYWRIGHT_KEYCLOAK_USER_03: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_03 }}
-          KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
       - name: Install dependencies
         run: npm ci
       - name: Install Playwright Browsers
