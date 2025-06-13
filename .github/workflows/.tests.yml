@@ -120,9 +120,9 @@ jobs:
         run: |
           echo "Checking secrets..."
           echo "KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}"
-          echo "REACT_APP_KEYCLOAK_CLIENT_ID: ${{ vars.REACT_APP_KEYCLOAK_CLIENT_ID }}"
+          echo "REACT_APP_KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}"
           echo "REACT_APP_KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_DEV}}"
-          echo "REACT_APP_KEYCLOAK_REALM: ${{vars.REACT_APP_KEYCLOAK_REALM}}"
+          echo "REACT_APP_KEYCLOAK_REALM: ${{vars.KEYCLOAK_REALM}}"
           echo "E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}"
           echo "KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}"
           echo "PLAYWRIGHT_KEYCLOAK_USER: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER }}"
