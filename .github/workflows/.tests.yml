@@ -109,6 +109,8 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.53.0-noble
       options: --user 1001
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -127,4 +129,4 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run the tests
-        run: npx playwright test
+        run: cd frontend && npx playwright test
