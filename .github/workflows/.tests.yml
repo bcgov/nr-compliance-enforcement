@@ -128,6 +128,12 @@ jobs:
           echo "PLAYWRIGHT_KEYCLOAK_USER: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER }}"
           echo "PLAYWRIGHT_KEYCLOAK_USER_02: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_02 }}"
           echo "PLAYWRIGHT_KEYCLOAK_USER_03: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_03 }}"
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx playwright test
         env:
           KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
           REACT_APP_KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
@@ -138,12 +144,6 @@ jobs:
           PLAYWRIGHT_KEYCLOAK_USER: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER }}
           PLAYWRIGHT_KEYCLOAK_USER_02: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_02 }}
           PLAYWRIGHT_KEYCLOAK_USER_03: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_03 }}
-      - name: Install dependencies
-        run: npm ci
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      - name: Run Playwright tests
-        run: npx playwright test
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
