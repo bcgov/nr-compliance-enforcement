@@ -1,10 +1,11 @@
 /// <reference types="node" />
 import { test as setup, expect, Page } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "./utils/authConfig";
-import { slowExpect } from "./utils/helpers";
+import { slowExpect, waitForSpinner } from "./utils/helpers";
 
 setup("authenticate as COS", async ({ page }) => {
   await loginToKeycloak(page, "COS");
+  await waitForSpinner(page);
   await slowExpect(page.getByText("Conservation Officer Service")).toBeVisible();
   await page.context().storageState({ path: STORAGE_STATE_BY_ROLE.COS });
 });
@@ -59,7 +60,6 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
 
   // Handle login form
   await expect(page.locator("#user")).toBeVisible();
-  console.log("Arrived at ", authUrl);
   await page.fill('[name="user"]', account);
   await page.fill('[name="password"]', process.env.KEYCLOAK_PASSWORD!);
   await page.click('[name="btnSubmit"]');
@@ -67,8 +67,8 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
 
   // Wait for redirect and app load
   await page.waitForLoadState("networkidle");
-  console.log("Network idle");
   await page.waitForSelector(".loading-spinner", { state: "hidden" });
+  console.log("Succesfully logged in as ", role);
 }
 
 const base64url = (source) => {
