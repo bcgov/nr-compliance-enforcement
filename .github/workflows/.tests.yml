@@ -126,7 +126,5 @@ jobs:
           echo "keycloak_user_03: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_03 }}"
           echo "keycloak_password: ${{ vars.PLAYWRIGHT_KEYCLOAK_PASSWORD }}"
           echo "keycloak_client_id: ${{ vars.KEYCLOAK_CLIENT_ID }}"
-      - name: Install dependencies
-        run: npm ci
-      - name: Run the tests
-        run: cd frontend && npx playwright test
+      - name: Install dependencies and run tests
+        run: cd frontend && npm ci && npx playwright test
