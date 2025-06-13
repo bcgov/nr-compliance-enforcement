@@ -59,12 +59,15 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
 
   // Handle login form
   await expect(page.locator("#user")).toBeVisible();
+  console.log("Arrived at ", authUrl);
   await page.fill('[name="user"]', account);
   await page.fill('[name="password"]', process.env.KEYCLOAK_PASSWORD!);
   await page.click('[name="btnSubmit"]');
+  console.log("Logging in...");
 
   // Wait for redirect and app load
   await page.waitForLoadState("networkidle");
+  console.log("Network idle");
   await page.waitForSelector(".loading-spinner", { state: "hidden" });
 }
 
