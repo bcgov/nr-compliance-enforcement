@@ -1,5 +1,6 @@
 name: .Tests
-
+permissions:
+  contents: read
 on:
   workflow_call:
     inputs:
@@ -115,6 +116,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+      - name: Debug secrets
+        run: |
+          echo "Checking secrets..."
+          echo "auth_base_url: ${{ vars.E2E_BASE_URL }}"
+          echo "auth_realm: ${{ vars.KEYCLOAK_REALM }}"
+          echo "keycloak_user_01: ${{ vars.KEYCLOAK_USER }}"
+          echo "keycloak_user_02: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_02 }}"
+          echo "keycloak_user_03: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_03 }}"
+          echo "keycloak_password: ${{ vars.KEYCLOAK_PASSWORD }}"
+          echo "keycloak_client_id: ${{ vars.KEYCLOAK_CLIENT_ID }}"
+        env:
+          KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
       - name: Install dependencies
         run: npm ci
       - name: Install Playwright Browsers
