@@ -105,26 +105,24 @@ jobs:
             /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/screenshots/
   playwright-tests:
     name: "Playwright Tests"
+    timeout-minutes: 60
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.52.0-noble
-      options: --user 1001
-    permissions:
-      contents: read
+    defaults:
+      run:
+        working-directory: ./frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-      - name: Debug secrets
-        run: |
-          echo "Checking secrets..."
-          echo "auth_base_url: ${{ vars.E2E_BASE_URL }}"
-          echo "auth_realm: ${{ vars.KEYCLOAK_REALM }}"
-          echo "keycloak_user_01: ${{ vars.KEYCLOAK_USER }}"
-          echo "keycloak_user_02: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_02 }}"
-          echo "keycloak_user_03: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_03 }}"
-          echo "keycloak_password: ${{ vars.PLAYWRIGHT_KEYCLOAK_PASSWORD }}"
-          echo "keycloak_client_id: ${{ vars.KEYCLOAK_CLIENT_ID }}"
-      - name: Install dependencies and run tests
-        run: cd frontend && npm ci && npx playwright test
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/playwright-report
