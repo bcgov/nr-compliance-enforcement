@@ -65,9 +65,14 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
   await page.waitForSelector(".loading-spinner", { state: "hidden" });
 }
 
-const base64url = (source: string): string => {
-  const base64 = Buffer.from(source).toString("base64");
-  return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const base64url = (source) => {
+  // Encode the input string as base64.
+  let encodedSource = btoa(source);
+
+  // Replace any characters that are not URL-safe.
+  encodedSource = encodedSource.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+
+  return encodedSource;
 };
 
 const sha256 = async (plain: string): Promise<string> => {
