@@ -43,7 +43,7 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
 
   // Construct auth URL
   const urlString = `${authBaseUrl}/realms/${realm}/protocol/openid-connect/auth`;
-  console.log("urlString: ", urlString);
+  console.log("redirectUri: ", redirectUri);
   const authUrl = new URL(urlString);
   authUrl.searchParams.append("client_id", clientId);
   authUrl.searchParams.append("redirect_uri", redirectUri);
