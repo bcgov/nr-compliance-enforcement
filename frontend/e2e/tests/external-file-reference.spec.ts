@@ -57,7 +57,6 @@ complaintTypes.forEach((type) => {
     test(`Can enter an external reference number: ${type}`, async ({ page }) => {
       //navigatetoComplaint
       await navigateToComplaint(page, type);
-      await waitForSpinner(page);
 
       // ERS for COS need to be assigned before a COORS number can be saved
       if (type === COMPLAINT_TYPES.ERS) {
