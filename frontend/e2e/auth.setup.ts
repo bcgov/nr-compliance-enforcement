@@ -56,10 +56,10 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
   authUrl.searchParams.append("code_challenge", codeChallenge);
 
   // Navigate to auth URL, and prevent the automatic redirect
-  await page.request.get(authUrl.toString(), { maxRedirects: 0 });
+  await page.goto(authUrl.toString());
 
   // Handle login form
-  await expect(page.locator("#user")).toBeVisible();
+  await slowExpect(page.locator("#user")).toBeVisible();
   await page.fill('[name="user"]', account);
   await page.fill('[name="password"]', process.env.KEYCLOAK_PASSWORD!);
   await page.click('[name="btnSubmit"]');
