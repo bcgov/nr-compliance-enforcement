@@ -55,8 +55,8 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
   authUrl.searchParams.append("code_challenge_method", "S256");
   authUrl.searchParams.append("code_challenge", codeChallenge);
 
-  // Navigate to auth URL
-  await page.goto(authUrl.toString());
+  // Navigate to auth URL, and prevent the automatic redirect
+  await page.request.get(authUrl.toString(), { maxRedirects: 0 });
 
   // Handle login form
   await expect(page.locator("#user")).toBeVisible();
