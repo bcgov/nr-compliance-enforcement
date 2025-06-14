@@ -5,7 +5,6 @@ import { slowExpect, waitForSpinner } from "./utils/helpers";
 
 setup("authenticate as COS", async ({ page }) => {
   await loginToKeycloak(page, "COS");
-  await waitForSpinner(page);
   await slowExpect(page.getByText("Conservation Officer Service")).toBeVisible();
   await page.context().storageState({ path: STORAGE_STATE_BY_ROLE.COS });
 });
@@ -43,7 +42,6 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
 
   // Construct auth URL
   const urlString = `${authBaseUrl}/realms/${realm}/protocol/openid-connect/auth`;
-  console.log("redirectUri: ", redirectUri);
   const authUrl = new URL(urlString);
   authUrl.searchParams.append("client_id", clientId);
   authUrl.searchParams.append("redirect_uri", redirectUri);
@@ -63,7 +61,6 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
   await page.fill('[name="user"]', account);
   await page.fill('[name="password"]', process.env.KEYCLOAK_PASSWORD!);
   await page.click('[name="btnSubmit"]');
-  console.log("Logging in...");
 
   // Wait for redirect and app load
   await page.waitForLoadState("networkidle");
