@@ -133,17 +133,18 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx playwright test
+        run: E2E_BASE_URL=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }} npx playwright test
         env:
           KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
           REACT_APP_KEYCLOAK_CLIENT_ID: ${{ vars.KEYCLOAK_CLIENT_ID }}
           REACT_APP_KEYCLOAK_URL: ${{vars.KEYCLOAK_URL_DEV}}
           REACT_APP_KEYCLOAK_REALM: ${{vars.KEYCLOAK_REALM}}
-          E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
           KEYCLOAK_REALM: ${{ vars.KEYCLOAK_REALM }}
           PLAYWRIGHT_KEYCLOAK_USER: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER }}
           PLAYWRIGHT_KEYCLOAK_USER_02: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_02 }}
           PLAYWRIGHT_KEYCLOAK_USER_03: ${{ vars.PLAYWRIGHT_KEYCLOAK_USER_03 }}
+          DOMAIN: apps.silver.devops.gov.bc.ca
+          PREFIX: ${{ github.event.repository.name }}-${{ inputs.target }}
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
