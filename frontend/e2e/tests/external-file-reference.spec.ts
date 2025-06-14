@@ -48,6 +48,7 @@ async function setStatusOpen(page: Page) {
   await page.locator("#update_complaint_status_button").click();
   await expect(page.locator("#update_complaint_status_button")).not.toBeVisible();
 }
+
 complaintTypes.forEach((type) => {
   test.describe(`Test external file reference behaviour for ${type}`, () => {
     test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
@@ -55,8 +56,6 @@ complaintTypes.forEach((type) => {
 
     test(`Can enter an external reference number: ${type}`, async ({ page }) => {
       //navigatetoComplaint
-      await page.goto("/complaints");
-      await waitForSpinner(page);
       await navigateToComplaint(page, type);
       await waitForSpinner(page);
 
