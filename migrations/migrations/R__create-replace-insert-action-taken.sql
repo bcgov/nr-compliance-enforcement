@@ -1,6 +1,6 @@
--- DROP FUNCTION public.process_staging_activity_taken(uuid, varchar);
+-- DROP FUNCTION process_staging_activity_taken(uuid, varchar);
 CREATE
-OR REPLACE FUNCTION public.process_staging_activity_taken (
+OR REPLACE FUNCTION process_staging_activity_taken (
   staging_id uuid,
   action_taken_type character varying
 ) RETURNS void LANGUAGE plpgsql AS $function$
@@ -48,7 +48,7 @@ RAISE notice 'EXECUTING FUNCTION';
   _is_update := staged_data ->> 'isUpdate';
 
   -- insert new action-taken
-  INSERT INTO public.action_taken (
+  INSERT INTO action_taken (
     action_taken_guid, 
     complaint_identifier, 
     complaint_update_guid, 

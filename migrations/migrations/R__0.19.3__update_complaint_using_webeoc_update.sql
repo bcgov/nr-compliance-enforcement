@@ -1,9 +1,9 @@
-CREATE OR REPLACE FUNCTION public.update_complaint_using_webeoc_update(_complaint_identifier character varying, update_complaint_data jsonb)
+CREATE OR REPLACE FUNCTION update_complaint_using_webeoc_update(_complaint_identifier character varying, update_complaint_data jsonb)
  RETURNS void
  LANGUAGE plpgsql
 AS $function$
 declare
-	current_complaint_record PUBLIC.complaint;
+	current_complaint_record complaint;
     -- Variables from webeoc that may be used to update a record in the COMPLAINT table
     -- used to determine if a webeoc update is actually an update.  WebEOC's API will unfortunately default to
     -- the original value of a field if another field is updated.  So, we ignore these as part of updates.  This
@@ -38,13 +38,13 @@ BEGIN
     -- Get the current state of the complaint
     SELECT *
     INTO   current_complaint_record
-    FROM   PUBLIC.complaint
+    FROM   complaint
     WHERE  complaint_identifier = _complaint_identifier;
    
     -- Get the original record via the history table
     select ch.data_after_executed_operation
     into original_complaint_record
-    from PUBLIC.complaint_h ch 
+    from complaint_h ch 
     where ch.target_row_id = _complaint_identifier
     and ch.operation_type = 'I';
   
@@ -52,7 +52,7 @@ BEGIN
     -- get the code based on the update from WebEOC
     SELECT *
     INTO   _update_species_code
-    FROM   PUBLIC.insert_and_return_code(_update_webeoc_species, 'speciescd');
+    FROM   insert_and_return_code(_update_webeoc_species, 'speciescd');
    
     -- get the current species code
    	SELECT hc.species_code 
@@ -77,7 +77,7 @@ BEGIN
  
   if (_parent_report_type = 'ERS') then
 	 SELECT *
-	 FROM   PUBLIC.insert_and_return_code( update_complaint_data->>'update_violation_type', 'violatncd' )
+	 FROM   insert_and_return_code( update_complaint_data->>'update_violation_type', 'violatncd' )
 	 INTO   _update_violation_code;
 	 
      select ac.violation_code
@@ -94,11 +94,11 @@ BEGIN
     
      if ((_update_violation_code <> _original_violation_type_code) and (_update_violation_code <> _current_violation_type_code)) then 
 	    if _update_violation_code = 'WASTE' OR _update_violation_code = 'PESTICDE' then
-        UPDATE PUBLIC.complaint
+        UPDATE complaint
         SET    owned_by_agency_code = 'EPO'
         WHERE  complaint_identifier = _complaint_identifier;
       else
-        UPDATE PUBLIC.complaint
+        UPDATE complaint
         SET    owned_by_agency_code = 'COS'
         WHERE  complaint_identifier = _complaint_identifier;
       end if;

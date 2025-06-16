@@ -37,7 +37,7 @@ services:
       - FLYWAY_USER=postgres
       - FLYWAY_PASSWORD=default
       - FLYWAY_BASELINE_ON_MIGRATE=true
-      - FLYWAY_DEFAULT_SCHEMA=public
+      - FLYWAY_DEFAULT_SCHEMA=complaint
       - FLYWAY_LOCATIONS=filesystem:./sql, filesystem:./sql-test
     depends_on:
       database:

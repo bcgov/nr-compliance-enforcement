@@ -99,7 +99,7 @@ export class ComplaintUpdatesService {
   };
   getComplaintChangeCount(id: string): Promise<ComplaintChangeCount[]> {
     return this.stagingComplaintRepository.manager.query(
-      `select count(1) as value from public.staging_complaint where complaint_identifier = $1 
+      `select count(1) as value from staging_complaint where complaint_identifier = $1 
       and (staging_activity_code in ('EDIT', 'UPDATE') and staging_status_code = 'SUCCESS')`,
       [id],
     );

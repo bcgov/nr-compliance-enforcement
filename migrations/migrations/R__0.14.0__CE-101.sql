@@ -1,5 +1,5 @@
 CREATE
-OR REPLACE FUNCTION public.insert_and_return_code (
+OR REPLACE FUNCTION insert_and_return_code (
   webeoc_value character varying,
   code_table_type character varying
 ) RETURNS character varying LANGUAGE plpgsql AS $function$
@@ -124,7 +124,7 @@ END;
 $function$;
 
 CREATE
-OR REPLACE FUNCTION public.format_phone_number (phone_number text) RETURNS text LANGUAGE plpgsql AS $function$
+OR REPLACE FUNCTION format_phone_number (phone_number text) RETURNS text LANGUAGE plpgsql AS $function$
 DECLARE
     formatted_phone_number TEXT;
 BEGIN
@@ -145,7 +145,7 @@ END;
 $function$;
 
 CREATE
-OR REPLACE FUNCTION public.validate_coordinate_field (coordinate_field text) RETURNS text LANGUAGE plpgsql AS $function$
+OR REPLACE FUNCTION validate_coordinate_field (coordinate_field text) RETURNS text LANGUAGE plpgsql AS $function$
 DECLARE
     formatted_coordinate_field TEXT;
 BEGIN

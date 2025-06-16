@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION public.insert_complaint_update_from_staging(_complaint_identifier character varying, _update_number integer)
+CREATE OR REPLACE FUNCTION insert_complaint_update_from_staging(_complaint_identifier character varying, _update_number integer)
  RETURNS void
  LANGUAGE plpgsql
 AS $function$
@@ -32,10 +32,10 @@ BEGIN
     END IF;
    
    -- update complaint data based on the incoming webeoc update, if necessary
-   perform PUBLIC.update_complaint_using_webeoc_update(_complaint_identifier, update_complaint_data);
+   perform update_complaint_using_webeoc_update(_complaint_identifier, update_complaint_data);
    
    -- create an update record if required
-   perform PUBLIC.log_complaint_update(_complaint_identifier, update_complaint_data);
+   perform log_complaint_update(_complaint_identifier, update_complaint_data);
 
    -- Update staging_complaint to mark the process as successful
    UPDATE staging_complaint

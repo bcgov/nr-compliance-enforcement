@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION public.edit_complaint_using_webeoc_complaint(_complaint_identifier character varying)
+CREATE OR REPLACE FUNCTION edit_complaint_using_webeoc_complaint(_complaint_identifier character varying)
  RETURNS void
  LANGUAGE plpgsql
 AS $function$
@@ -10,8 +10,8 @@ declare
     STAGING_STATUS_CODE_EDIT CONSTANT varchar(6) := 'EDIT' ;
     STAGING_STATUS_CODE_ERROR CONSTANT varchar(5) := 'ERROR';
    
-	current_complaint_record PUBLIC.complaint; -- record being edited
-	allegation_complaint_record PUBLIC.allegation_complaint;
+	current_complaint_record complaint; -- record being edited
+	allegation_complaint_record allegation_complaint;
 	edit_complaint_data JSONB; -- the complaint data containing the edits from webeoc
     original_complaint_record JSONB; -- the complaint data before the edits, used to determine i
    
@@ -85,7 +85,7 @@ BEGIN
     -- will contain all previous edits too
    select sc.complaint_jsonb
     into edit_complaint_data
-    from PUBLIC.staging_complaint sc 
+    from staging_complaint sc 
     where sc.complaint_identifier  = _complaint_identifier
     and sc.staging_activity_code  = STAGING_STATUS_CODE_EDIT
     and sc.staging_status_code  = STAGING_STATUS_CODE_PENDING
@@ -133,13 +133,13 @@ BEGIN
     -- Get the codes from our application (inserting if necessary) for the codes retrieved from WebEOC
     SELECT *
     INTO   _edit_cos_reffered_by_lst
-    FROM   PUBLIC.insert_and_return_code(_edit_webeoc_reported_by_code, 'reprtdbycd');
+    FROM   insert_and_return_code(_edit_webeoc_reported_by_code, 'reprtdbycd');
 
    
     -- Get the current state of the complaint
     SELECT *
     INTO   current_complaint_record
-    FROM   PUBLIC.complaint
+    FROM   complaint
     WHERE  complaint_identifier = _complaint_identifier;
 
       -- update the complaint data, if the incoming webeoc contains applicable updates
@@ -276,10 +276,10 @@ BEGIN
       LOOP                                                -- Trim whitespace and check if the item is 'Not Applicable'
         IF trim(attractant_item) <> 'Not Applicable' THEN -- Your insertion logic here
           SELECT *
-          FROM   PUBLIC.insert_and_return_code( trim(attractant_item), 'atractntcd' )
+          FROM   insert_and_return_code( trim(attractant_item), 'atractntcd' )
           INTO   _attractant_code;
           
-          INSERT INTO PUBLIC.attractant_hwcr_xref
+          INSERT INTO attractant_hwcr_xref
                       (
                                   attractant_code,
                                   hwcr_complaint_guid,
@@ -303,7 +303,7 @@ BEGIN
     -- get the code based on the update from WebEOC
     SELECT *
     INTO   _edit_species_code
-    FROM   PUBLIC.insert_and_return_code(_edit_webeoc_species, 'speciescd');
+    FROM   insert_and_return_code(_edit_webeoc_species, 'speciescd');
    
     -- get the current species code
    	SELECT hc.species_code 
@@ -349,7 +349,7 @@ BEGIN
      -- Get the current state of the complaint
      SELECT *
      INTO   allegation_complaint_record
-     FROM   PUBLIC.allegation_complaint ac
+     FROM   allegation_complaint ac
      WHERE  complaint_identifier = _complaint_identifier;
 
    
@@ -377,7 +377,7 @@ BEGIN
 
   
 	 SELECT *
-	 FROM   PUBLIC.insert_and_return_code( edit_complaint_data->>'violation_type', 'violatncd' )
+	 FROM   insert_and_return_code( edit_complaint_data->>'violation_type', 'violatncd' )
 	 INTO   _edit_violation_code;
 	 
      select ac.violation_code
@@ -387,11 +387,11 @@ BEGIN
 
     if (_edit_violation_code <> _current_violation_type_code) then
 	    if _edit_violation_code = 'WASTE' OR _edit_violation_code = 'PESTICDE' then
-        UPDATE PUBLIC.complaint
+        UPDATE complaint
         SET    owned_by_agency_code = 'EPO'
         WHERE  complaint_identifier = _complaint_identifier;
       else
-        UPDATE PUBLIC.complaint
+        UPDATE complaint
         SET    owned_by_agency_code = 'COS'
         WHERE  complaint_identifier = _complaint_identifier;
       end if;  

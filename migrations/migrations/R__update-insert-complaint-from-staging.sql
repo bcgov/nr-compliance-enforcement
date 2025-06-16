@@ -1,5 +1,5 @@
 CREATE
-OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier character varying) RETURNS void LANGUAGE plpgsql AS $function$
+OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier character varying) RETURNS void LANGUAGE plpgsql AS $function$
   declare
     WEBEOC_USER_ID CONSTANT varchar(6) := 'webeoc';
     WEBEOC_UPDATE_TYPE_INSERT CONSTANT varchar(6) := 'INSERT';
@@ -154,15 +154,15 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
     _cos_reffered_by_txt := left(complaint_data ->> '_cos_reffered_by_txt',120);
 
     SELECT *
-    FROM   PUBLIC.insert_and_return_code( _webeoc_cos_reffered_by_lst, 'reprtdbycd' )
+    FROM   insert_and_return_code( _webeoc_cos_reffered_by_lst, 'reprtdbycd' )
     INTO   _cos_reffered_by_lst;
     
     SELECT *
-    FROM   PUBLIC.insert_and_return_code( _webeoc_cos_area_community, 'geoorgutcd' )
+    FROM   insert_and_return_code( _webeoc_cos_area_community, 'geoorgutcd' )
     INTO   _geo_organization_unit_code;
     
     -- Insert data into 'complaint' table
-    INSERT INTO PUBLIC.complaint
+    INSERT INTO complaint
                 (
                             complaint_identifier,
                             detail_text,
@@ -220,12 +220,12 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
       -- convert webeoc species to our species code
 	  _webeoc_species := complaint_data ->> 'species';
 	  SELECT *
-	  FROM   PUBLIC.insert_and_return_code(_webeoc_species, 'speciescd')
+	  FROM   insert_and_return_code(_webeoc_species, 'speciescd')
 	  INTO   _species_code;
 	    
 	  _webeoc_hwcr_complaint_nature_code := complaint_data ->> 'nature_of_complaint';
 	  SELECT *
-	  FROM   PUBLIC.insert_and_return_code( _webeoc_hwcr_complaint_nature_code, 'cmpltntrcd' )
+	  FROM   insert_and_return_code( _webeoc_hwcr_complaint_nature_code, 'cmpltntrcd' )
 	  INTO   _hwcr_complaint_nature_code;
     
       -- Prepare data for 'hwcr_complaint' table
@@ -234,7 +234,7 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
       INTO   generated_uuid;
       
       -- Insert data into 'hwcr_complaint' table
-      INSERT INTO PUBLIC.hwcr_complaint
+      INSERT INTO hwcr_complaint
                   (
                               hwcr_complaint_guid,
                               other_attractants_text,
@@ -266,10 +266,10 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
       LOOP                                                -- Trim whitespace and check if the item is 'Not Applicable'
         IF trim(attractant_item) <> 'Not Applicable' THEN -- Your insertion logic here
           SELECT *
-          FROM   PUBLIC.insert_and_return_code( trim(attractant_item), 'atractntcd' )
+          FROM   insert_and_return_code( trim(attractant_item), 'atractntcd' )
           INTO   _attractant_code;
           
-          INSERT INTO PUBLIC.attractant_hwcr_xref
+          INSERT INTO attractant_hwcr_xref
                       (
                                   attractant_code,
                                   hwcr_complaint_guid,
@@ -296,10 +296,10 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
       -- Prepare data for 'gir_complaint' table
       _gir_type_description := complaint_data ->> 'call_type_gir';
       SELECT *
-      FROM   PUBLIC.insert_and_return_code( _gir_type_description, 'girtypecd' )
+      FROM   insert_and_return_code( _gir_type_description, 'girtypecd' )
       INTO   _gir_type_code;
       -- Insert data into 'gir_complaint' table
-      INSERT INTO PUBLIC.gir_complaint
+      INSERT INTO gir_complaint
                   (
                               gir_complaint_guid,
                               create_user_id,
@@ -326,7 +326,7 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
       _observed_ind := (complaint_data->>'observe_violation');
       _suspect_witnesss_dtl_text := complaint_data->>'suspect_details';
       SELECT *
-      FROM   PUBLIC.insert_and_return_code( complaint_data->>'violation_type', 'violatncd' )
+      FROM   insert_and_return_code( complaint_data->>'violation_type', 'violatncd' )
       INTO   _violation_code;
       
       IF _in_progress_ind = 'Yes' THEN
@@ -341,13 +341,13 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
       END IF;
 
       IF _violation_code = 'WASTE' OR _violation_code = 'PESTICDE' THEN
-        UPDATE PUBLIC.complaint
+        UPDATE complaint
         SET    owned_by_agency_code = 'EPO', complaint_status_code = 'OPEN'
         WHERE  complaint_identifier = _complaint_identifier;
       END IF;
 
       -- Insert data into 'allegation_complaint' table
-      INSERT INTO PUBLIC.allegation_complaint
+      INSERT INTO allegation_complaint
                   (
                   			  allegation_complaint_guid,
                               in_progress_ind,
@@ -376,7 +376,7 @@ OR REPLACE FUNCTION public.insert_complaint_from_staging (_complaint_identifier 
     
     END IF;
    
-    UPDATE public.complaint 
+    UPDATE complaint 
     SET comp_mthd_recv_cd_agcy_cd_xref_guid = (
         SELECT comp_mthd_recv_cd_agcy_cd_xref_guid 
         FROM comp_mthd_recv_cd_agcy_cd_xref cmrcacx 
