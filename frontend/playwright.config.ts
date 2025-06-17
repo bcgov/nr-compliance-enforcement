@@ -35,7 +35,7 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    { name: "setup", testMatch: /.*\.setup\.ts/ },
+    { name: "setup", testMatch: /.{0,5}\.setup\.ts/ },
     // {
     //   name: "chromium",
     //   use: {
@@ -43,7 +43,7 @@ export default defineConfig({
     //     baseURL: baseURL,
     //   },
     //   dependencies: ["setup"],
-    //   testMatch: /.*\.(spec|test)\.ts/,
+    //   testMatch: /.{0,5}\.(spec|test)\.ts/,
     // },
     // {
     //   name: 'Google Chrome',
@@ -53,7 +53,7 @@ export default defineConfig({
     //     baseURL: baseURL,
     //   },
     //   dependencies: ['setup'],
-    //   testMatch: /.*\.(spec|test)\.ts/,
+    //   testMatch: /.{0,5}\.(spec|test)\.ts/,
     // },
 
     // {
@@ -63,7 +63,7 @@ export default defineConfig({
     //     baseURL: baseURL,
     //   },
     //   dependencies: ['setup'],
-    //   testMatch: /.*\.(spec|test)\.ts/,
+    //   testMatch: /.{0,5}\.(spec|test)\.ts/,
     // },
 
     {
@@ -73,7 +73,7 @@ export default defineConfig({
         baseURL: baseURL,
       },
       dependencies: ["setup"],
-      testMatch: /.*\.(spec|test)\.ts/,
+      testMatch: /.{0,5}\.(spec|test)\.ts/,
     },
     // {
     //   name: 'Microsoft Edge',
@@ -83,7 +83,7 @@ export default defineConfig({
     //     baseURL: baseURL,
     //   },
     //   dependencies: ['setup'],
-    //   testMatch: /.*\.(spec|test)\.ts/,
+    //   testMatch: /.{0,5}\.(spec|test)\.ts/,
     // },
   ],
 });
