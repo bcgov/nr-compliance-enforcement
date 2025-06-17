@@ -24,9 +24,6 @@ export async function navigateToDetailsScreen(
       waitUntil: "commit",
     });
 
-    //Need to make sure the filters are loaded before switching tabs.
-    // await waitForSpinner(page);
-
     //-- click on HWCR tab
     await page.locator(`#${complaintType.toLowerCase()}-tab`).click();
     await expect(page.locator("#comp-zone-filter")).toBeVisible();
@@ -41,7 +38,6 @@ export async function navigateToDetailsScreen(
     //-- check to make sure there are items in the table
     await expect(await page.locator("#complaint-list").locator("tr").count()).toBeGreaterThan(0);
     await page.locator("#complaint-list > tbody > tr").getByText(complaintIdentifier).first().click();
-    // await waitForSpinner(page);
   }
 }
 
@@ -84,7 +80,7 @@ export async function typeAndTriggerChange(locatorValue, value, page: Page) {
 }
 
 export async function selectItemById(selectId: string, optionText: string, page: Page) {
-  await page.locator(`#${selectId}`).locator("div").first().click();
+  await page.locator(`#${selectId}`).click();
   await expect(page.locator(".comp-select__menu-list")).toBeVisible(); //Wait for the options to show
   await page.locator(`.comp-select__option`, { hasText: optionText }).first().click();
 }
@@ -97,8 +93,8 @@ export async function enterDateTimeInDatePicker(
   minute?: string,
 ) {
   await page.locator(`#${datePickerId}`).click();
-  await expect(await page.locator(`.react-datepicker__day--0${day}`)).toBeVisible();
-  await page.locator(`.react-datepicker__day--0${day}`).first().click();
+  const dateButtons = await page.locator(`.react-datepicker__day--0${day}`).all();
+  await dateButtons[0].click();
 
   // Locate the time input field and click it to open the time picker
   if (hour && minute) {
@@ -249,4 +245,10 @@ export async function validateHWCSection(loc: Locator, page: Page, sectionParams
     const $toast = page.locator(".Toastify__toast-body");
     expect($toast).toHaveText(toastText);
   }
+}
+
+export async function navigateToCreateScreen(page: Page) {
+  await page.goto("/");
+  await waitForSpinner(page);
+  await page.locator("#create-complaints-link").click();
 }
