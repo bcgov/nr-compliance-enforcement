@@ -150,7 +150,7 @@ export class EmailService {
       const { subjectTypeDescription, bodyTypeDescription, complaintSummaryText, subjectAdditionalDetails } =
         await this._getComplaintDetailsByType(type, complaint, communityName);
 
-      const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : "";
+      const envFlag = ["test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : "";
       const emailSubject = externalAgencyInd
         ? `${envFlag}Referral from ${referredByAgency.long_description}: ${subjectTypeDescription} complaint #${id}`
         : `${envFlag}NatCom referral ${subjectTypeDescription} complaint #${id} ${subjectAdditionalDetails}`;
