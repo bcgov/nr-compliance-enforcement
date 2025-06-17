@@ -73,8 +73,10 @@ const base64url = (source) => {
   let encodedSource = btoa(source);
 
   // Replace any characters that are not URL-safe.
-  encodedSource = encodedSource.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-
+  encodedSource = encodedSource
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/={1,2}$/, "");
   return encodedSource;
 };
 
