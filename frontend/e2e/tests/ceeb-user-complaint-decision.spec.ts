@@ -61,7 +61,9 @@ test.describe("CEEB Complaints can be created and outcome decisions set ", () =>
 
   test("can create a complaint with a violation type of Waste", async function ({ page }) {
     //start create changes
-    await page.goto("/complaint/createComplaint");
+    await page.goto("/complaint/createComplaint", {
+      waitUntil: "commit",
+    });
     await waitForSpinner(page);
     await selectItemById("violation-type-select-id", "Waste", page);
     await page.locator("#complaint-description-textarea-id").click();
