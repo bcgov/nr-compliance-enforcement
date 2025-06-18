@@ -78,7 +78,7 @@ jobs:
           FLYWAY_USER: postgres
           FLYWAY_PASSWORD: default
           FLYWAY_LOCATIONS: filesystem:./migrations/migrations
-          FLYWAY_DEFAULT_SCHEMA: "public"
+          FLYWAY_DEFAULT_SCHEMA: complaint
         with:
           args: info migrate info
 
