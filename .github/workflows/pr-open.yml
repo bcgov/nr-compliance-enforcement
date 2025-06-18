@@ -61,7 +61,7 @@ jobs:
       sha: ${{ github.sha }}
     strategy:
       matrix:
-        package: [backend, frontend, migrations, webeoc]
+        package: [backend, frontend, migrations, webeoc, backend-cm, frontend-cm, migrations-cm]
     timeout-minutes: 10
     steps:
       - uses: bcgov/action-builder-ghcr@v2.2.0
