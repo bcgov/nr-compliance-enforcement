@@ -190,8 +190,8 @@ export class ComplaintService {
     type: COMPLAINT_TYPE,
     includeCosOrganization: boolean,
     count: boolean,
-  ): SelectQueryBuilder<complaintAlias> => {
-    let builder: SelectQueryBuilder<complaintAlias>;
+  ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
+    let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
 
     switch (type) {
       case "ERS":
@@ -207,7 +207,6 @@ export class ComplaintService {
           .leftJoin("general.gir_type_code", "gir");
         break;
       case "HWCR":
-      default:
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife")
           .leftJoin("wildlife.complaint_identifier", "complaint")
@@ -215,6 +214,10 @@ export class ComplaintService {
           .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
           .leftJoin("wildlife.attractant_hwcr_xref", "attractants", "attractants.active_ind = true")
           .leftJoin("attractants.attractant_code", "attractant_code");
+        break;
+      case "SECTOR":
+      default:
+        builder = this.complaintsRepository.createQueryBuilder("complaint");
         break;
     }
 
@@ -230,6 +233,7 @@ export class ComplaintService {
 
     builder
       .leftJoin("complaint.complaint_status_code", "complaint_status")
+      .leftJoin("complaint.complaint_type_code", "complaint_type")
       .leftJoin("complaint.reported_by_code", "reported_by")
       .leftJoin("complaint.complaint_update", "complaint_update")
       .leftJoin("complaint.action_taken", "action_taken")
@@ -247,8 +251,10 @@ export class ComplaintService {
     return builder;
   };
 
-  private readonly _generateQueryBuilder = (type: COMPLAINT_TYPE): SelectQueryBuilder<complaintAlias> => {
-    let builder: SelectQueryBuilder<complaintAlias>;
+  private readonly _generateQueryBuilder = (
+    type: COMPLAINT_TYPE,
+  ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
+    let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
     switch (type) {
       case "ERS":
         builder = this._allegationComplaintRepository
@@ -272,7 +278,6 @@ export class ComplaintService {
           .addSelect(["gir.gir_type_code", "gir.short_description", "gir.long_description"]);
         break;
       case "HWCR":
-      default:
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
           .leftJoinAndSelect("wildlife.complaint_identifier", "complaint")
@@ -301,6 +306,10 @@ export class ComplaintService {
             "attractant_code.long_description",
           ]);
         break;
+      case "SECTOR":
+      default:
+        builder = this.complaintsRepository.createQueryBuilder("complaint");
+        break;
     }
 
     builder
@@ -309,6 +318,12 @@ export class ComplaintService {
         "complaint_status.complaint_status_code",
         "complaint_status.short_description",
         "complaint_status.long_description",
+      ])
+      .leftJoin("complaint.complaint_type_code", "complaint_type")
+      .addSelect([
+        "complaint_type.complaint_type_code",
+        "complaint_type.short_description",
+        "complaint_type.long_description",
       ])
       .leftJoin("complaint.reported_by_code", "reported_by")
       .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
@@ -334,7 +349,7 @@ export class ComplaintService {
   };
 
   private _applyFilters(
-    builder: SelectQueryBuilder<complaintAlias>,
+    builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     {
       community,
       zone,
@@ -351,7 +366,7 @@ export class ComplaintService {
       complaintMethod,
     }: ComplaintFilterParameters,
     complaintType: COMPLAINT_TYPE,
-  ): SelectQueryBuilder<complaintAlias> {
+  ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> {
     if (community) {
       builder.andWhere("cos_organization.area_code = :Community", {
         Community: community,
@@ -427,8 +442,7 @@ export class ComplaintService {
         }
         break;
       }
-      case "HWCR":
-      default: {
+      case "HWCR": {
         if (natureOfComplaint) {
           builder.andWhere("wildlife.hwcr_complaint_nature_code = :NatureOfComplaint", {
             NatureOfComplaint: natureOfComplaint,
@@ -442,17 +456,20 @@ export class ComplaintService {
         }
         break;
       }
+      default:
+        // Sector complaints do not have specific fields to filter, so we skip this case
+        break;
     }
 
     return builder;
   }
 
   private async _applySearch(
-    builder: SelectQueryBuilder<complaintAlias>,
+    builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     complaintType: COMPLAINT_TYPE,
     query: string,
     token: string,
-  ): Promise<SelectQueryBuilder<complaintAlias>> {
+  ): Promise<SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>> {
     let caseSearchData = [];
     if (complaintType === "ERS") {
       // Search CM for any case files that may match based on authorization id
@@ -565,8 +582,7 @@ export class ComplaintService {
             });
             break;
           }
-          case "HWCR":
-          default: {
+          case "HWCR": {
             qb.orWhere("wildlife.other_attractants_text ILIKE :query", {
               query: `%${query}%`,
             });
@@ -588,6 +604,11 @@ export class ComplaintService {
             qb.orWhere("attractant_code.long_description ILIKE :query", {
               query: `%${query}%`,
             });
+            break;
+          }
+          case "SECTOR":
+          default: {
+            // Sector complaints do not have specific fields to search, so we skip this case
             break;
           }
         }
@@ -621,8 +642,7 @@ export class ComplaintService {
           .leftJoinAndSelect("allegation.complaint_identifier", "complaint");
         break;
       }
-      case "HWCR":
-      default: {
+      case "HWCR": {
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
           .leftJoinAndSelect("wildlife.complaint_identifier", "complaint");
@@ -993,6 +1013,12 @@ export class ComplaintService {
             "complaint_status.short_description",
             "complaint_status.long_description",
           ])
+          .leftJoin("complaint.complaint_type_code", "complaint_type")
+          .addSelect([
+            "complaint_type.complaint_type_code",
+            "complaint_type.short_description",
+            "complaint_type.long_description",
+          ])
           .leftJoin("complaint.reported_by_code", "reported_by")
           .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
           .leftJoin("complaint.owned_by_agency_code", "owned_by")
@@ -1049,10 +1075,10 @@ export class ComplaintService {
   };
 
   private readonly _applyReferralFilters = (
-    builder: SelectQueryBuilder<complaintAlias>,
+    builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     status?: string,
     agencies?: string[],
-  ): SelectQueryBuilder<complaintAlias> => {
+  ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
     // Special handling for referral status
     if (status === "REFERRED") {
       builder.innerJoin("complaint.complaint_referral", "complaint_referral");
@@ -1222,14 +1248,23 @@ export class ComplaintService {
           results.complaints = items;
           break;
         }
-        case "HWCR":
-        default: {
+        case "HWCR": {
           const items = this.mapper.mapArray<HwcrComplaint, WildlifeComplaintDto>(
             complaints as Array<HwcrComplaint>,
             "HwcrComplaint",
             "WildlifeComplaintDto",
           );
 
+          results.complaints = items;
+          break;
+        }
+        case "SECTOR":
+        default: {
+          const items = this.mapper.mapArray<Complaint, ComplaintDto>(
+            complaints as Array<Complaint>,
+            "Complaint",
+            "ComplaintDto",
+          );
           results.complaints = items;
           break;
         }
@@ -1260,7 +1295,7 @@ export class ComplaintService {
     agencies: string[],
     token?: string,
     count: boolean = false,
-  ): Promise<SelectQueryBuilder<complaintAlias>> => {
+  ): Promise<SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>> => {
     const { query, ...filters } = model;
 
     try {
@@ -1764,9 +1799,9 @@ export class ComplaintService {
       queryRunner.startTransaction();
 
       complaintId = await generateComplaintId(queryRunner);
-
       //-- convert the the dto from the client back into an entity
       //-- so that it can be used to create the comaplaint
+      model.type = complaintType;
       let entity: Complaint = this.mapper.map<ComplaintDto, Complaint>(
         model as ComplaintDto,
         "ComplaintDto",
@@ -2491,6 +2526,12 @@ export class ComplaintService {
             "complaint_status.complaint_status_code",
             "complaint_status.short_description",
             "complaint_status.long_description",
+          ])
+          .leftJoin("complaint.complaint_type_code", "complaint_type")
+          .addSelect([
+            "complaint_type.complaint_type_code",
+            "complaint_type.short_description",
+            "complaint_type.long_description",
           ])
           .leftJoin("complaint.reported_by_code", "reported_by")
           .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])

@@ -16,9 +16,10 @@ import { Feature } from "@apptypes/maps/bcGeocoderType";
 import { ToggleSuccess, ToggleError } from "@common/toast";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 
-import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
-import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
-import { Complaint as ComplaintDto } from "@apptypes/app/complaints/complaint";
+import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
+import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
+import { Complaint } from "@apptypes/app/complaints/complaint";
+
 import { AttractantXref as AttractantXrefDto } from "@apptypes/app/complaints/attractant-xref";
 import { Attractant as AttractantDto } from "@apptypes/app/code-tables/attactant";
 
@@ -36,7 +37,7 @@ import { WebEOCComplaintUpdateDTO } from "@apptypes/app/complaints/webeoc-compla
 import { RelatedData } from "@apptypes/app/complaints/related-data";
 import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 
-import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
+import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 import { ComplaintMethodReceivedType } from "@apptypes/app/code-tables/complaint-method-received-type";
 import { LinkedComplaint } from "@/app/types/app/complaints/linked-complaint";
 import { getUserAgency } from "@/app/service/user-service";
@@ -44,7 +45,7 @@ import { Collaborator } from "@apptypes/app/complaints/collaborator";
 import { generateExportComplaintInputParams } from "@/app/store/reducers/documents-thunks";
 import { CodeTableState } from "@/app/types/state/code-table-state";
 
-type dtoAlias = WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto;
+type dtoAlias = WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint;
 
 const initialState: ComplaintState = {
   complaintSearchParameters: {
@@ -55,6 +56,7 @@ const initialState: ComplaintState = {
     wildlife: [],
     allegations: [],
     general: [],
+    sector: [],
   },
   totalCount: 0,
   complaint: null,
@@ -95,7 +97,7 @@ export const complaintSlice = createSlice({
       } = action;
       const { complaintItems } = state;
 
-      let update: ComplaintCollection = { wildlife: [], allegations: [], general: [] };
+      let update: ComplaintCollection = { wildlife: [], allegations: [], general: [], sector: [] };
       switch (type) {
         case COMPLAINT_TYPES.ERS:
           update = { ...complaintItems, allegations: data };
@@ -106,6 +108,9 @@ export const complaintSlice = createSlice({
         case COMPLAINT_TYPES.GIR:
           update = { ...complaintItems, general: data };
           break;
+        default:
+          update = { ...complaintItems, sector: data };
+          break;
       }
       return { ...state, complaintItems: update };
     },
@@ -115,7 +120,7 @@ export const complaintSlice = createSlice({
 
     setComplaint: (state, action) => {
       const { payload: complaint } = action;
-      let currentComplaint: ComplaintDto = complaint as ComplaintDto;
+      let currentComplaint: Complaint = complaint as Complaint;
       let isReadOnly = false;
       if (currentComplaint) {
         if (["CLOSED"].includes(currentComplaint.status)) {
@@ -159,7 +164,7 @@ export const complaintSlice = createSlice({
 
       return { ...state, zoneAtGlance: update };
     },
-    updateWildlifeComplaintByRow: (state, action: PayloadAction<WildlifeComplaintDto>) => {
+    updateWildlifeComplaintByRow: (state, action: PayloadAction<WildlifeComplaint>) => {
       const { payload: updatedComplaint } = action;
       const { complaintItems } = current(state);
       const { wildlife } = complaintItems;
@@ -179,7 +184,7 @@ export const complaintSlice = createSlice({
         return { ...state, complaintItems: updatedItems };
       }
     },
-    updateGeneralComplaintByRow: (state, action: PayloadAction<GeneralIncidentComplaintDto>) => {
+    updateGeneralComplaintByRow: (state, action: PayloadAction<GeneralIncidentComplaint>) => {
       const { payload: updatedComplaint } = action;
       const { complaintItems } = current(state);
       const { general } = complaintItems;
@@ -199,7 +204,7 @@ export const complaintSlice = createSlice({
         return { ...state, complaintItems: updatedItems };
       }
     },
-    updateAllegationComplaintByRow: (state, action: PayloadAction<AllegationComplaintDto>) => {
+    updateAllegationComplaintByRow: (state, action: PayloadAction<AllegationComplaint>) => {
       const { payload: updatedComplaint } = action;
       const { complaintItems } = current(state);
       const { allegations } = complaintItems;
@@ -219,7 +224,7 @@ export const complaintSlice = createSlice({
         return { ...state, complaintItems: updatedItems };
       }
     },
-    updateGeneralIncidentComplaintByRow: (state, action: PayloadAction<GeneralIncidentComplaintDto>) => {
+    updateGeneralIncidentComplaintByRow: (state, action: PayloadAction<GeneralIncidentComplaint>) => {
       const { payload: updatedComplaint } = action;
       const { complaintItems } = current(state);
       const { general } = complaintItems;
@@ -272,7 +277,7 @@ export const complaintSlice = createSlice({
     },
     setComplaintStatus: (state, action) => {
       if (state.complaint) {
-        let currentComplaint: ComplaintDto = state.complaint as ComplaintDto;
+        let currentComplaint: Complaint = state.complaint as Complaint;
         if (currentComplaint) {
           state.complaintView.isReadOnly = ["CLOSED"].includes(action.payload);
         }
@@ -516,7 +521,7 @@ const updateComplaintStatus = async (dispatch: Dispatch, id: string, status: str
     status: `${status}`,
   });
 
-  await patch<ComplaintDto>(dispatch, parameters);
+  await patch<Complaint>(dispatch, parameters);
 };
 
 export const updateWildlifeComplaintStatus =
@@ -531,9 +536,9 @@ export const updateWildlifeComplaintStatus =
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/HWCR/${complaint_identifier}`,
       );
 
-      const response = await get<WildlifeComplaintDto>(dispatch, parameters);
+      const response = await get<WildlifeComplaint>(dispatch, parameters);
 
-      dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaintDto));
+      dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaint));
       const result = response;
 
       dispatch(setComplaint({ ...result }));
@@ -553,7 +558,7 @@ export const updateAllegationComplaintStatus =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/ERS/${complaint_identifier}`,
       );
-      const response = await get<AllegationComplaintDto>(dispatch, parameters);
+      const response = await get<AllegationComplaint>(dispatch, parameters);
       dispatch(updateAllegationComplaintByRow(response));
       const result = response;
 
@@ -573,7 +578,7 @@ export const updateGeneralIncidentComplaintStatus =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/GIR/${complaint_identifier}`,
       );
-      const response = await get<GeneralIncidentComplaintDto>(dispatch, parameters);
+      const response = await get<GeneralIncidentComplaint>(dispatch, parameters);
       dispatch(updateGeneralIncidentComplaintByRow(response));
       const result = response;
 
@@ -585,7 +590,7 @@ export const updateGeneralIncidentComplaintStatus =
 
 export const updateComplaintById =
   (
-    complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
+    complaint: Complaint | WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint,
     complaintType: string,
   ): AppThunk =>
   async (dispatch) => {
@@ -676,7 +681,7 @@ export const getComplaintStatusById =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
       );
-      const response = await get<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
+      const response = await get<WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint>(
         dispatch,
         parameters,
       );
@@ -754,7 +759,7 @@ export const getLinkedComplaints =
 export const createComplaint =
   (
     complaintType: string,
-    complaint: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
+    complaint: Complaint | WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
@@ -768,7 +773,7 @@ export const createComplaint =
         location,
         locationSummary,
         organization: { area: community },
-      } = complaint as ComplaintDto;
+      } = complaint as Complaint;
       const { coordinates } = location;
       const selectedCommunity = areaCodes.find(({ area }) => area === community);
 
@@ -794,7 +799,7 @@ export const createComplaint =
         complaint,
       );
 
-      await post<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
+      await post<WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint>(
         dispatch,
         postParameters,
       ).then(async (res) => {
@@ -851,13 +856,22 @@ export const selectAllegationZagOpenComplaints = (state: RootState): ZoneAtAGlan
   return zoneAtGlance.allegation;
 };
 
-export const selectWildlifeComplaints = (state: RootState): Array<WildlifeComplaintDto> => {
+export const selectWildlifeComplaints = (state: RootState): Array<WildlifeComplaint> => {
   const {
     complaints: { complaintItems },
   } = state;
   const { wildlife } = complaintItems;
 
   return wildlife;
+};
+
+export const selectSectorComplaints = (state: RootState): Array<any> => {
+  const {
+    complaints: { complaintItems },
+  } = state;
+  const { sector } = complaintItems;
+
+  return sector;
 };
 
 export const selectAllegationComplaints = (state: RootState): Array<any> => {
@@ -890,17 +904,17 @@ export const selectTotalComplaintsByType =
 
 export const selectComplaintsByType =
   (complaintType: string) =>
-  (
-    state: RootState,
-  ): Array<WildlifeComplaintDto> | Array<AllegationComplaintDto> | Array<GeneralIncidentComplaintDto> => {
+  (state: RootState): Array<WildlifeComplaint> | Array<AllegationComplaint> | Array<GeneralIncidentComplaint> => {
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
         return selectAllegationComplaints(state);
       case COMPLAINT_TYPES.GIR:
         return selectGeneralInformationComplaints(state);
       case COMPLAINT_TYPES.HWCR:
-      default:
         return selectWildlifeComplaints(state);
+      case COMPLAINT_TYPES.SECTOR:
+      default:
+        return selectSectorComplaints(state);
     }
   };
 
@@ -915,7 +929,7 @@ export const selectTotalMappedComplaints = (state: RootState): number => {
 
 export const selectComplaint = (
   state: RootState,
-): WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto | null => {
+): WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint | null => {
   const {
     complaints: { complaint },
   } = state;
@@ -940,7 +954,7 @@ export const selectActiveComplaintCollaborators = (state: RootState): Collaborat
 export const selectComplaintLargeCarnivoreInd = createSelector(
   (state: RootState) => state.complaints.complaint,
   (complaint): boolean => {
-    const complaintData = complaint as WildlifeComplaintDto;
+    const complaintData = complaint as WildlifeComplaint;
     return complaintData ? complaintData.isLargeCarnivore : false;
   },
 );
@@ -994,21 +1008,20 @@ export const selectComplaintDetails = createSelector(
         organization: { area: areaCode, region, zone, officeLocation },
         ownedBy,
         parkGuid,
-      } = complaint as ComplaintDto;
+      } = complaint as Complaint;
 
       result = { ...result, details, location, locationDescription, incidentDateTime, coordinates, ownedBy, parkGuid };
 
       if (complaintType === "HWCR") {
-        const { attractants } = complaint as WildlifeComplaintDto;
+        const { attractants } = complaint as WildlifeComplaint;
         if (attractants?.length) {
           result.attractants = getAttractants(attractants, attractantCodeTable);
         }
       } else if (complaintType === "ERS") {
-        const { isInProgress: violationInProgress, wasObserved: violationObserved } =
-          complaint as AllegationComplaintDto;
+        const { isInProgress: violationInProgress, wasObserved: violationObserved } = complaint as AllegationComplaint;
         result = { ...result, violationInProgress, violationObserved };
       } else if (complaintType === "GIR") {
-        const { girType: girTypeCode } = complaint as GeneralIncidentComplaintDto;
+        const { girType: girTypeCode } = complaint as GeneralIncidentComplaint;
         const girType = getGirTypeByGirTypeCode(girTypeCode, girTypeCodes);
         result = { ...result, girType, girTypeCode };
       }
@@ -1082,7 +1095,7 @@ export const selectComplaintHeader =
           ownedBy: complaintAgency,
           organization: { zone },
           parkGuid,
-        } = complaint as ComplaintDto;
+        } = complaint as Complaint;
 
         const status = getStatusByStatusCode(statusCode, statusCodes);
         const park = parkGuid ? parkCache[parkGuid] : undefined;
@@ -1122,7 +1135,7 @@ export const selectComplaintHeader =
       switch (complaintType) {
         case COMPLAINT_TYPES.ERS:
           {
-            const { violation: violationTypeCode } = complaint as AllegationComplaintDto;
+            const { violation: violationTypeCode } = complaint as AllegationComplaint;
             const violationType = getViolationByViolationCode(violationTypeCode, violationCodes);
 
             result = { ...result, violationType, violationTypeCode };
@@ -1130,7 +1143,7 @@ export const selectComplaintHeader =
           break;
         case COMPLAINT_TYPES.GIR:
           {
-            const { girType: girTypeCode } = complaint as GeneralIncidentComplaintDto;
+            const { girType: girTypeCode } = complaint as GeneralIncidentComplaint;
             const girType = getGirTypeByGirTypeCode(girTypeCode, girTypeCodes);
             result = { ...result, girType, girTypeCode };
           }
@@ -1138,8 +1151,7 @@ export const selectComplaintHeader =
         case COMPLAINT_TYPES.HWCR:
         default:
           {
-            const { species: speciesCode, natureOfComplaint: natureOfComplaintCode } =
-              complaint as WildlifeComplaintDto;
+            const { species: speciesCode, natureOfComplaint: natureOfComplaintCode } = complaint as WildlifeComplaint;
             const species = getSpeciesBySpeciesCode(speciesCode, speciesCodes);
             const natureOfComplaint = getNatureOfComplaintByNatureOfComplaintCode(
               natureOfComplaintCode,
@@ -1213,7 +1225,7 @@ export const selectComplaintSuspectWitnessDetails = createSelector(
   (complaint): ComplaintSuspectWitness => {
     let results = {} as ComplaintSuspectWitness;
     if (complaint) {
-      const { violationDetails: details } = complaint as AllegationComplaintDto;
+      const { violationDetails: details } = complaint as AllegationComplaint;
       results = { ...results, details };
     }
     return results;

@@ -273,6 +273,18 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
       (destination) => destination.parkGuid,
       mapFrom((source) => source.park_guid),
     ),
+    forMember(
+      (destination) => destination.type,
+      mapFrom((source) => {
+        if (!source.complaint_type_code) {
+          return null;
+        }
+        const {
+          complaint_type_code: { complaint_type_code },
+        } = source;
+        return complaint_type_code;
+      }),
+    ),
   );
 };
 
@@ -739,6 +751,20 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       (destination) => destination.parkGuid,
       mapFrom((source) => source.complaint_identifier.park_guid),
     ),
+    forMember(
+      (destination) => destination.type,
+      mapFrom((source) => {
+        if (!source.complaint_identifier.complaint_type_code) {
+          return null;
+        }
+        const {
+          complaint_identifier: {
+            complaint_type_code: { complaint_type_code },
+          },
+        } = source;
+        return complaint_type_code;
+      }),
+    ),
   );
 };
 
@@ -974,6 +1000,20 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
       (destination) => destination.parkGuid,
       mapFrom((source) => source.complaint_identifier.park_guid),
     ),
+    forMember(
+      (destination) => destination.type,
+      mapFrom((source) => {
+        if (!source.complaint_identifier.complaint_type_code) {
+          return null;
+        }
+        const {
+          complaint_identifier: {
+            complaint_type_code: { complaint_type_code },
+          },
+        } = source;
+        return complaint_type_code;
+      }),
+    ),
   );
 };
 export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
@@ -1184,6 +1224,20 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.parkGuid,
       mapFrom((source) => source.complaint_identifier.park_guid),
+    ),
+    forMember(
+      (destination) => destination.type,
+      mapFrom((source) => {
+        if (!source.complaint_identifier.complaint_type_code) {
+          return null;
+        }
+        const {
+          complaint_identifier: {
+            complaint_type_code: { complaint_type_code },
+          },
+        } = source;
+        return complaint_type_code;
+      }),
     ),
   );
 };
@@ -1516,6 +1570,20 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
       (destination) => destination.parkGuid,
       mapFrom((source) => source.complaint_identifier.park_guid),
     ),
+    forMember(
+      (destination) => destination.type,
+      mapFrom((source) => {
+        if (!source.complaint_identifier.complaint_type_code) {
+          return null;
+        }
+        const {
+          complaint_identifier: {
+            complaint_type_code: { complaint_type_code },
+          },
+        } = source;
+        return complaint_type_code;
+      }),
+    ),
   );
 };
 
@@ -1818,6 +1886,20 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
       (destination) => destination.parkGuid,
       mapFrom((source) => source.complaint_identifier.park_guid),
     ),
+    forMember(
+      (destination) => destination.type,
+      mapFrom((source) => {
+        if (!source.complaint_identifier.complaint_type_code) {
+          return null;
+        }
+        const {
+          complaint_identifier: {
+            complaint_type_code: { complaint_type_code },
+          },
+        } = source;
+        return complaint_type_code;
+      }),
+    ),
   );
 };
 
@@ -2101,6 +2183,20 @@ export const mapGeneralIncidentReport = (mapper: Mapper, tz: string = "America/V
     forMember(
       (destination) => destination.parkGuid,
       mapFrom((source) => source.complaint_identifier.park_guid),
+    ),
+    forMember(
+      (destination) => destination.type,
+      mapFrom((source) => {
+        if (!source.complaint_identifier.complaint_type_code) {
+          return null;
+        }
+        const {
+          complaint_identifier: {
+            complaint_type_code: { complaint_type_code },
+          },
+        } = source;
+        return complaint_type_code;
+      }),
     ),
   );
 };
