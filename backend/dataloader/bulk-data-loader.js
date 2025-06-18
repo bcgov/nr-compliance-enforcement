@@ -261,7 +261,7 @@ const processPendingComplaints = async () => {
           WHERE staging_status_code = 'PENDING'
       LOOP
           -- Call the insert_complaint_from_staging function for each complaint
-          PERFORM public.insert_complaint_from_staging(complaint_record.complaint_identifier);
+          PERFORM complaint.insert_complaint_from_staging(complaint_record.complaint_identifier);
       END LOOP;
     
       TRUNCATE TABLE staging_complaint;

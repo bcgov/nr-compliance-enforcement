@@ -84,6 +84,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
           database: process.env.POSTGRESQL_DATABASE || "postgres",
           username: process.env.POSTGRESQL_USER || "postgres",
           password: process.env.POSTGRESQL_PASSWORD,
+          schema: "complaint",
           autoLoadEntities: true, // Auto load all entities registered by typeorm forFeature method.
           logging: process.env.POSTGRESQL_ENABLE_LOGGING === "true",
         };

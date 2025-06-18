@@ -4,7 +4,7 @@ import { EntityCode } from "../../entity_code/entities/entity_code.entity";
 @Index("PK_staging_metadata_mapping_guid", ["stagingMetadataMappingGuid"], {
   unique: true,
 })
-@Entity("staging_metadata_mapping", { schema: "public" })
+@Entity("staging_metadata_mapping", { schema: "complaint" })
 export class StagingMetadataMapping {
   @Column("uuid", {
     primary: true,
