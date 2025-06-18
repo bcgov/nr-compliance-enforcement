@@ -7,6 +7,24 @@ export async function waitForSpinner(page: Page) {
   await slowExpect(page.locator(".comp-loader-overlay")).not.toBeVisible();
 }
 
+export async function optionallyWaitForSpinner(page: Page, alternativeSelector: string) {
+  const foundSpinner = await Promise.race([
+    page
+      .locator(".comp-loader-overlay")
+      .waitFor()
+      .then(() => true),
+    page
+      .locator(alternativeSelector)
+      .waitFor()
+      .then(() => false),
+  ]).catch(() => {
+    throw new Error(`When searching for ${alternativeSelector} and loader overaly, neither were found`);
+  });
+  if (foundSpinner) {
+    await slowExpect(page.locator(".comp-loader-overlay")).not.toBeVisible();
+  }
+}
+
 export async function navigateToDetailsScreen(
   complaintType: string,
   complaintIdentifier: string,

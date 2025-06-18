@@ -1,6 +1,12 @@
 import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 import { test, expect, Page } from "@playwright/test";
-import { assignSelfToComplaint, hasErrorMessage, navigateToDetailsScreen, waitForSpinner } from "../utils/helpers";
+import {
+  assignSelfToComplaint,
+  hasErrorMessage,
+  navigateToDetailsScreen,
+  optionallyWaitForSpinner,
+  waitForSpinner,
+} from "../utils/helpers";
 import { STORAGE_STATE_BY_ROLE } from "../utils/authConfig";
 
 const complaintTypes = [COMPLAINT_TYPES.HWCR, COMPLAINT_TYPES.ERS];
@@ -119,7 +125,7 @@ complaintTypes.forEach((type) => {
     test(`Can cancel pending changes to a reference file number (new): ${type}`, async ({ page }) => {
       //navigatetoComplaint
       await navigateToComplaint(page, type);
-      await waitForSpinner(page);
+      await optionallyWaitForSpinner(page, "#external-file-reference");
 
       //attempt to delete if there is old data
       await deleteReferenceNumber(page);

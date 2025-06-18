@@ -1,7 +1,7 @@
 /// <reference types="node" />
-import { test as setup, expect, Page } from "@playwright/test";
+import { test as setup, Page } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "./utils/authConfig";
-import { slowExpect, waitForSpinner } from "./utils/helpers";
+import { slowExpect } from "./utils/helpers";
 
 setup("authenticate as COS", async ({ page }) => {
   await loginToKeycloak(page, "COS");

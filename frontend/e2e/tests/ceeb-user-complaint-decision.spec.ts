@@ -3,9 +3,9 @@ import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 
 import {
   enterDateTimeInDatePicker,
-  navigateToCreateScreen,
   navigateToDetailsScreen,
   navigateToEditScreen,
+  optionallyWaitForSpinner,
   selectItemById,
   waitForSpinner,
 } from "../utils/helpers";
@@ -64,7 +64,7 @@ test.describe("CEEB Complaints can be created and outcome decisions set ", () =>
     await page.goto("/complaint/createComplaint", {
       waitUntil: "commit",
     });
-    await waitForSpinner(page);
+    await optionallyWaitForSpinner(page, "#violation-type-select-id");
     await selectItemById("violation-type-select-id", "Waste", page);
     await page.locator("#complaint-description-textarea-id").click();
     await page.locator("#complaint-description-textarea-id").clear();
