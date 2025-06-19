@@ -4,11 +4,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 const baseURL = process.env.E2E_BASE_URL || "http://localhost:3000";
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
 
 /**
  * See https://playwright.dev/docs/test-configuration.

@@ -4,7 +4,7 @@ import {
   assignSelfToComplaint,
   hasErrorMessage,
   navigateToDetailsScreen,
-  optionallyWaitForSpinner,
+  timedWaitForSpinner,
   waitForSpinner,
 } from "../utils/helpers";
 import { STORAGE_STATE_BY_ROLE } from "../utils/authConfig";
@@ -125,7 +125,7 @@ complaintTypes.forEach((type) => {
     test(`Can cancel pending changes to a reference file number (new): ${type}`, async ({ page }) => {
       //navigatetoComplaint
       await navigateToComplaint(page, type);
-      await optionallyWaitForSpinner(page, "#external-file-reference");
+      await timedWaitForSpinner(page);
 
       //attempt to delete if there is old data
       await deleteReferenceNumber(page);

@@ -7,6 +7,21 @@ export async function waitForSpinner(page: Page) {
   await slowExpect(page.locator(".comp-loader-overlay")).not.toBeVisible();
 }
 
+export async function timedWaitForSpinner(page: Page, timeBeforeContinuing: number = 6000) {
+  const foundSpinner = await Promise.race([
+    page
+      .locator(".comp-loader-overlay")
+      .waitFor()
+      .then(() => true),
+    page.waitForTimeout(timeBeforeContinuing).then(() => false),
+  ]).catch((error) => {
+    throw new Error(`An error occurred while executing timedWaitForSpinner`, error);
+  });
+  if (foundSpinner) {
+    await slowExpect(page.locator(".comp-loader-overlay")).not.toBeVisible();
+  }
+}
+
 export async function optionallyWaitForSpinner(page: Page, alternativeSelector: string) {
   const foundSpinner = await Promise.race([
     page
@@ -143,9 +158,9 @@ interface HWCSectionParams {
 }
 
 export async function fillInHWCSection(loc: Locator, page: Page, sectionParams: Partial<HWCSectionParams>) {
-  let officerId = "";
-  let datePickerId = "";
-  let saveButtonId = "";
+  let officerId = "prev-educ-outcome-officer";
+  let datePickerId = "prev-educ-outcome-date";
+  let saveButtonId = "#outcome-save-prev-and-educ-button";
   const { section, actionRequired, checkboxes, justification, equipmentType, officer, date } = sectionParams;
 
   if (section === "ASSESSMENT") {
@@ -156,24 +171,18 @@ export async function fillInHWCSection(loc: Locator, page: Page, sectionParams: 
     officerId = "equipment-officer-set-select";
     datePickerId = "equipment-day-set";
     saveButtonId = "#equipment-save-button";
-  } else {
-    officerId = "prev-educ-outcome-officer";
-    datePickerId = "prev-educ-outcome-date";
-    saveButtonId = "#outcome-save-prev-and-educ-button";
   }
 
-  if (section === "ASSESSMENT") {
-    if (actionRequired) {
-      await selectItemById("action-required", actionRequired, page);
-      if (actionRequired === "Yes") {
-        for (let i = 0; i < checkboxes.length; i++) {
-          await loc.locator(checkboxes[i]).check();
-        }
+  if (section === "ASSESSMENT" && actionRequired) {
+    await selectItemById("action-required", actionRequired, page);
+    if (actionRequired === "Yes") {
+      for (let checkbox of checkboxes) {
+        await loc.locator(checkbox).check();
       }
     }
   } else if (checkboxes) {
-    for (let i = 0; i < checkboxes.length; i++) {
-      await loc.locator(checkboxes[i]).check();
+    for (let checkbox of checkboxes) {
+      await loc.locator(checkbox).check();
     }
   }
 
@@ -193,9 +202,9 @@ export async function fillInHWCSection(loc: Locator, page: Page, sectionParams: 
 
 export async function validateHWCSection(loc: Locator, page: Page, sectionParams: Partial<HWCSectionParams>) {
   const { section, actionRequired, checkboxes, justification, equipmentType, officer, date, toastText } = sectionParams;
-  let checkboxDiv = "";
-  let officerDiv = "";
-  let dateDiv = "";
+  let checkboxDiv = "#prev-educ-checkbox-div";
+  let officerDiv = "#prev-educ-outcome-officer-div";
+  let dateDiv = "#prev-educ-outcome-date-div";
 
   if (section === "ASSESSMENT") {
     checkboxDiv = "#assessment-checkbox-div";
@@ -204,34 +213,28 @@ export async function validateHWCSection(loc: Locator, page: Page, sectionParams
   } else if (section === "EQUIPMENT") {
     officerDiv = "#equipment-officer-set-div";
     dateDiv = "#equipment-date-set-div";
-  } else {
-    checkboxDiv = "#prev-educ-checkbox-div";
-    officerDiv = "#prev-educ-outcome-officer-div";
-    dateDiv = "#prev-educ-outcome-date-div";
   }
 
-  if (section === "ASSESSMENT") {
-    if (actionRequired) {
-      await expect(async () => {
-        const $div = page.locator("#action-required-div", { hasText: actionRequired }).first();
-        expect($div).toHaveText(actionRequired);
-      }).toPass();
+  if (section === "ASSESSMENT" && actionRequired) {
+    await expect(async () => {
+      const $div = page.locator("#action-required-div", { hasText: actionRequired }).first();
+      expect($div).toHaveText(actionRequired);
+    }).toPass();
 
-      if (actionRequired === "Yes") {
-        //Verify Fields exist
-        for (let i = 0; i < checkboxes.length; i++) {
-          await expect(async () => {
-            const $div = page.locator(checkboxDiv);
-            expect($div).toHaveText(checkboxes[i]);
-          }).toPass();
-        }
+    if (actionRequired === "Yes") {
+      //Verify Fields exist
+      for (let checkbox of checkboxes) {
+        await expect(async () => {
+          const $div = page.locator(checkboxDiv);
+          expect($div).toHaveText(checkbox);
+        }).toPass();
       }
     }
   } else if (checkboxes) {
-    for (let i = 0; i < checkboxes.length; i++) {
+    for (let checkbox of checkboxes) {
       await expect(async () => {
         const $div = page.locator(checkboxDiv);
-        expect($div).toHaveText(checkboxes[i]);
+        expect($div).toHaveText(checkbox);
       }).toPass();
     }
   }

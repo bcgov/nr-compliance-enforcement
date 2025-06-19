@@ -145,7 +145,7 @@ test.describe("CEEB Complaints can be created and outcome decisions set ", () =>
     await page.locator("#outcome-authroization-authroized-site").clear();
     await page.locator("#outcome-authroization-authroized-site").fill("0000001");
     await page.locator("#outcome-authorization-save-button").click();
-    await waitForSpinner(page);
+    await optionallyWaitForSpinner(page, 'dd[id="authorization-id"]');
     await expect(
       page
         .locator('dd[id="authorization-id"]')
