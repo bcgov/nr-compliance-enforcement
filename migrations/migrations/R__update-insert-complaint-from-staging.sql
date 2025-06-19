@@ -68,7 +68,7 @@ OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier charact
   BEGIN -- Fetch the JSONB data from complaint_staging using the provided identifier
     SELECT sc.complaint_jsonb
     INTO   complaint_data
-    FROM   staging_complaint sc
+    FROM   complaint.staging_complaint sc
     WHERE  sc.complaint_identifier = _complaint_identifier
     AND    sc.staging_status_code = STAGING_STATUS_CODE_PENDING -- meaning that this complaint hasn't yet been moved to the complaint table yet
     AND    sc.staging_activity_code = WEBEOC_UPDATE_TYPE_INSERT; -- this means that we're dealing with a new complaint from webeoc, not an update
@@ -154,15 +154,15 @@ OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier charact
     _cos_reffered_by_txt := left(complaint_data ->> '_cos_reffered_by_txt',120);
 
     SELECT *
-    FROM   insert_and_return_code( _webeoc_cos_reffered_by_lst, 'reprtdbycd' )
+    FROM   complaint.insert_and_return_code( _webeoc_cos_reffered_by_lst, 'reprtdbycd' )
     INTO   _cos_reffered_by_lst;
     
     SELECT *
-    FROM   insert_and_return_code( _webeoc_cos_area_community, 'geoorgutcd' )
+    FROM   complaint.insert_and_return_code( _webeoc_cos_area_community, 'geoorgutcd' )
     INTO   _geo_organization_unit_code;
     
     -- Insert data into 'complaint' table
-    INSERT INTO complaint
+    INSERT INTO complaint.complaint
                 (
                             complaint_identifier,
                             detail_text,
@@ -220,12 +220,12 @@ OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier charact
       -- convert webeoc species to our species code
 	  _webeoc_species := complaint_data ->> 'species';
 	  SELECT *
-	  FROM   insert_and_return_code(_webeoc_species, 'speciescd')
+	  FROM   complaint.insert_and_return_code(_webeoc_species, 'speciescd')
 	  INTO   _species_code;
 	    
 	  _webeoc_hwcr_complaint_nature_code := complaint_data ->> 'nature_of_complaint';
 	  SELECT *
-	  FROM   insert_and_return_code( _webeoc_hwcr_complaint_nature_code, 'cmpltntrcd' )
+	  FROM   complaint.insert_and_return_code( _webeoc_hwcr_complaint_nature_code, 'cmpltntrcd' )
 	  INTO   _hwcr_complaint_nature_code;
     
       -- Prepare data for 'hwcr_complaint' table
@@ -234,7 +234,7 @@ OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier charact
       INTO   generated_uuid;
       
       -- Insert data into 'hwcr_complaint' table
-      INSERT INTO hwcr_complaint
+      INSERT INTO complaint.hwcr_complaint
                   (
                               hwcr_complaint_guid,
                               other_attractants_text,
@@ -266,10 +266,10 @@ OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier charact
       LOOP                                                -- Trim whitespace and check if the item is 'Not Applicable'
         IF trim(attractant_item) <> 'Not Applicable' THEN -- Your insertion logic here
           SELECT *
-          FROM   insert_and_return_code( trim(attractant_item), 'atractntcd' )
+          FROM   complaint.insert_and_return_code( trim(attractant_item), 'atractntcd' )
           INTO   _attractant_code;
           
-          INSERT INTO attractant_hwcr_xref
+          INSERT INTO complaint.attractant_hwcr_xref
                       (
                                   attractant_code,
                                   hwcr_complaint_guid,
@@ -296,10 +296,10 @@ OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier charact
       -- Prepare data for 'gir_complaint' table
       _gir_type_description := complaint_data ->> 'call_type_gir';
       SELECT *
-      FROM   insert_and_return_code( _gir_type_description, 'girtypecd' )
+      FROM   complaint.insert_and_return_code( _gir_type_description, 'girtypecd' )
       INTO   _gir_type_code;
       -- Insert data into 'gir_complaint' table
-      INSERT INTO gir_complaint
+      INSERT INTO complaint.gir_complaint
                   (
                               gir_complaint_guid,
                               create_user_id,
@@ -326,7 +326,7 @@ OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier charact
       _observed_ind := (complaint_data->>'observe_violation');
       _suspect_witnesss_dtl_text := complaint_data->>'suspect_details';
       SELECT *
-      FROM   insert_and_return_code( complaint_data->>'violation_type', 'violatncd' )
+      FROM   complaint.insert_and_return_code( complaint_data->>'violation_type', 'violatncd' )
       INTO   _violation_code;
       
       IF _in_progress_ind = 'Yes' THEN
@@ -341,13 +341,13 @@ OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier charact
       END IF;
 
       IF _violation_code = 'WASTE' OR _violation_code = 'PESTICDE' THEN
-        UPDATE complaint
+        UPDATE complaint.complaint
         SET    owned_by_agency_code = 'EPO', complaint_status_code = 'OPEN'
         WHERE  complaint_identifier = _complaint_identifier;
       END IF;
 
       -- Insert data into 'allegation_complaint' table
-      INSERT INTO allegation_complaint
+      INSERT INTO complaint.allegation_complaint
                   (
                   			  allegation_complaint_guid,
                               in_progress_ind,
@@ -376,7 +376,7 @@ OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier charact
     
     END IF;
    
-    UPDATE complaint 
+    UPDATE complaint.complaint 
     SET comp_mthd_recv_cd_agcy_cd_xref_guid = (
         SELECT comp_mthd_recv_cd_agcy_cd_xref_guid 
         FROM comp_mthd_recv_cd_agcy_cd_xref cmrcacx 
@@ -384,7 +384,7 @@ OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier charact
         AND cmrcacx.agency_code = complaint.owned_by_agency_code
     )
     WHERE complaint_identifier = _complaint_identifier;
-    UPDATE staging_complaint
+    UPDATE complaint.staging_complaint
     SET    staging_status_code = STAGING_STATUS_CODE_SUCCESS
     WHERE  complaint_identifier = _complaint_identifier
     AND    staging_activity_code = WEBEOC_UPDATE_TYPE_INSERT;
@@ -392,7 +392,7 @@ OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier charact
   EXCEPTION
   WHEN OTHERS THEN
     RAISE notice 'An unexpected error occurred: %', SQLERRM;
-    UPDATE staging_complaint
+    UPDATE complaint.staging_complaint
     SET    staging_status_code = STAGING_STATUS_CODE_ERROR
     WHERE  complaint_identifier = _complaint_identifier
     and staging_status_code = STAGING_STATUS_CODE_PENDING

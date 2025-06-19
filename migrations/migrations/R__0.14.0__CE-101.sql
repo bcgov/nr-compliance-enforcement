@@ -1,5 +1,5 @@
 CREATE
-OR REPLACE FUNCTION insert_and_return_code (
+OR REPLACE FUNCTION complaint.insert_and_return_code (
   webeoc_value character varying,
   code_table_type character varying
 ) RETURNS character varying LANGUAGE plpgsql AS $function$
@@ -31,25 +31,25 @@ BEGIN
     -- Resolve the target code table and column name based on code_table_type
     CASE code_table_type
         WHEN 'reprtdbycd' THEN
-            target_code_table := 'reported_by_code';
+            target_code_table := 'complaint.reported_by_code';
             column_name := 'reported_by_code';
         WHEN 'geoorgutcd' THEN
-            target_code_table := 'geo_organization_unit_code';
+            target_code_table := 'complaint.geo_organization_unit_code';
             column_name := 'geo_organization_unit_code';
         WHEN 'speciescd' THEN
-            target_code_table := 'species_code';
+            target_code_table := 'complaint.species_code';
             column_name := 'species_code';
         WHEN 'cmpltntrcd' THEN
-            target_code_table := 'hwcr_complaint_nature_code';
+            target_code_table := 'complaint.hwcr_complaint_nature_code';
             column_name := 'hwcr_complaint_nature_code';
         WHEN 'atractntcd' THEN
-            target_code_table := 'attractant_code';
+            target_code_table := 'complaint.attractant_code';
             column_name := 'attractant_code';
         WHEN 'violatncd' THEN
-            target_code_table := 'violation_code';
+            target_code_table := 'complaint.violation_code';
             column_name := 'violation_code';
         WHEN 'girtypecd' THEN
-            target_code_table := 'gir_type_code';
+            target_code_table := 'complaint.gir_type_code';
             column_name := 'gir_type_code';
 
         ELSE RAISE EXCEPTION 'Invalid code_table_type provided: %', code_table_type;
@@ -57,7 +57,7 @@ BEGIN
     
     -- Check if the code exists in staging_metadata_mapping
     SELECT live_data_value INTO live_code_value
-    FROM staging_metadata_mapping
+    FROM complaint.staging_metadata_mapping
     WHERE staged_data_value = webEOC_value
     AND entity_code = code_table_type;
     
@@ -104,12 +104,12 @@ BEGIN
             USING new_code, truncated_short_description, webeoc_value, current_utc_timestamp, new_display_order, webeoc_user_id;
 
             -- Update configuration_value by 1 to nofity front-end to update
-            UPDATE configuration
+            UPDATE complaint.configuration
             SET    configuration_value = configuration_value::int + 1
             WHERE  configuration_code = 'CDTABLEVER';
 
             -- Insert into staging_metadata_mapping
-            INSERT INTO staging_metadata_mapping (entity_code, staged_data_value, live_data_value, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+            INSERT INTO complaint.staging_metadata_mapping (entity_code, staged_data_value, live_data_value, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
             VALUES (code_table_type, webeoc_value, new_code, webeoc_user_id, current_utc_timestamp, webeoc_user_id, current_utc_timestamp);
 
             RETURN new_code; -- Return the new unique code
@@ -124,7 +124,7 @@ END;
 $function$;
 
 CREATE
-OR REPLACE FUNCTION format_phone_number (phone_number text) RETURNS text LANGUAGE plpgsql AS $function$
+OR REPLACE FUNCTION complaint.format_phone_number (phone_number text) RETURNS text LANGUAGE plpgsql AS $function$
 DECLARE
     formatted_phone_number TEXT;
 BEGIN
@@ -145,7 +145,7 @@ END;
 $function$;
 
 CREATE
-OR REPLACE FUNCTION validate_coordinate_field (coordinate_field text) RETURNS text LANGUAGE plpgsql AS $function$
+OR REPLACE FUNCTION complaint.validate_coordinate_field (coordinate_field text) RETURNS text LANGUAGE plpgsql AS $function$
 DECLARE
     formatted_coordinate_field TEXT;
 BEGIN
