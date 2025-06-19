@@ -200,14 +200,14 @@ export class StagingComplaintService {
   }
 
   async processWebEOCComplaint(complaintIdentifier: string): Promise<any> {
-    await this.repository.manager.query("SELECT complaint.insert_complaint_from_staging($1)", [complaintIdentifier]);
-    await this.repository.manager.query("SELECT complaint.edit_complaint_using_webeoc_complaint($1)", [
+    await this.repository.manager.query('SELECT "complaint".insert_complaint_from_staging($1)', [complaintIdentifier]);
+    await this.repository.manager.query('SELECT "complaint".edit_complaint_using_webeoc_complaint($1)', [
       complaintIdentifier,
     ]);
   }
 
   async processWebEOCComplaintUpdate(complaintIdentifier: string, updateNumber: number): Promise<any> {
-    await this.repository.manager.query("SELECT complaint.insert_complaint_update_from_staging($1, $2)", [
+    await this.repository.manager.query('SELECT "complaint".insert_complaint_update_from_staging($1, $2)', [
       complaintIdentifier,
       updateNumber,
     ]);
