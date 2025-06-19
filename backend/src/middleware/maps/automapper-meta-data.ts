@@ -103,6 +103,7 @@ export const createComplaintMetaData = () => {
     cos_geo_org_unit: Object,
     person_complaint_xref: Object,
     park_guid: String,
+    complaint_type_code: Object,
   });
 
   PojosMetadataMap.create<ComplaintDto>("ComplaintDto", {
@@ -127,6 +128,7 @@ export const createComplaintMetaData = () => {
     organization: Object,
     delegates: Array<DelegateDto>,
     parkGuid: String,
+    type: String,
   });
 };
 

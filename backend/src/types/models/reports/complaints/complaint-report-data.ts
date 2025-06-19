@@ -5,6 +5,7 @@ export interface ComplaintReportData {
   reportTime: string;
 
   id: string;
+  type: string;
   reportedOn: Date | string;
   generatedOn: string;
   updatedOn: Date | string;

@@ -161,6 +161,13 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
       (dest) => dest.park_guid,
       mapFrom((src) => src.parkGuid),
     ),
+    forMember(
+      (dest) => dest.complaint_type_code,
+      mapFrom((src) => {
+        const { type } = src;
+        return type ? { complaint_type_code: type } : null;
+      }),
+    ),
   );
 };
 
@@ -357,6 +364,13 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
       (dest) => dest.complaint_identifier.park_guid,
       mapFrom((src) => src.parkGuid),
     ),
+    forMember(
+      (dest) => dest.complaint_identifier.complaint_type_code,
+      mapFrom((src) => {
+        const { type } = src;
+        return type ? { complaint_type_code: type } : null;
+      }),
+    ),
   );
 };
 
@@ -526,6 +540,13 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (mapper: Mapper) =
       (dest) => dest.complaint_identifier.park_guid,
       mapFrom((src) => src.parkGuid),
     ),
+    forMember(
+      (dest) => dest.complaint_identifier.complaint_type_code,
+      mapFrom((src) => {
+        const { type } = src;
+        return type ? { complaint_type_code: type } : null;
+      }),
+    ),
   );
 };
 
@@ -640,6 +661,13 @@ export const mapGirComplaintDtoToGirComplaint = (mapper: Mapper) => {
     forMember(
       (dest) => dest.complaint_identifier.park_guid,
       mapFrom((src) => src.parkGuid),
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.complaint_type_code,
+      mapFrom((src) => {
+        const { type } = src;
+        return type ? { complaint_type_code: type } : null;
+      }),
     ),
   );
 };

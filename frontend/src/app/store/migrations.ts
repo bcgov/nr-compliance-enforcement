@@ -33,6 +33,7 @@ import { AddParkCache } from "@/app/store/migrations/migration-33";
 import { MultiplePreventions } from "@/app/store/migrations/migration-34";
 import { ExternalAgencies } from "@/app/store/migrations/migration-35";
 import { AddEmailReference } from "@/app/store/migrations/migration-36";
+import { AddSectorComplaints } from "@/app/store/migrations/migration-37";
 const BaseMigration = {
   0: (state: any) => {
     return {
@@ -79,6 +80,7 @@ migration = {
   ...MultiplePreventions,
   ...ExternalAgencies,
   ...AddEmailReference,
+  ...AddSectorComplaints,
 };
 
 export default migration;
