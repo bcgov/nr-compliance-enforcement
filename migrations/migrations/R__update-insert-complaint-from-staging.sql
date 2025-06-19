@@ -1,5 +1,5 @@
 CREATE
-OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier character varying) RETURNS void LANGUAGE plpgsql AS $function$
+OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifier character varying) RETURNS void LANGUAGE plpgsql AS $function$
   declare
     WEBEOC_USER_ID CONSTANT varchar(6) := 'webeoc';
     WEBEOC_UPDATE_TYPE_INSERT CONSTANT varchar(6) := 'INSERT';
@@ -376,12 +376,12 @@ OR REPLACE FUNCTION insert_complaint_from_staging (_complaint_identifier charact
     
     END IF;
    
-    UPDATE complaint.complaint 
+    UPDATE complaint.complaint com
     SET comp_mthd_recv_cd_agcy_cd_xref_guid = (
         SELECT comp_mthd_recv_cd_agcy_cd_xref_guid 
-        FROM comp_mthd_recv_cd_agcy_cd_xref cmrcacx 
+        FROM complaint.comp_mthd_recv_cd_agcy_cd_xref cmrcacx 
         WHERE complaint_method_received_code = METHOD_OF_COMPLAINT_RAPP
-        AND cmrcacx.agency_code = complaint.owned_by_agency_code
+        AND cmrcacx.agency_code = com.owned_by_agency_code
     )
     WHERE complaint_identifier = _complaint_identifier;
     UPDATE complaint.staging_complaint
