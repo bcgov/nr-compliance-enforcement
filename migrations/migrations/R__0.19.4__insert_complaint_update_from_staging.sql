@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION insert_complaint_update_from_staging(_complaint_identifier character varying, _update_number integer)
+CREATE OR REPLACE FUNCTION complaint.insert_complaint_update_from_staging(_complaint_identifier character varying, _update_number integer)
  RETURNS void
  LANGUAGE plpgsql
 AS $function$
@@ -20,7 +20,7 @@ BEGIN
     -- Fetch the JSONB data from complaint_staging using the provided identifier
     SELECT sc.complaint_jsonb
     INTO   update_complaint_data
-    FROM   staging_complaint sc
+    FROM   complaint.staging_complaint sc
     WHERE  sc.complaint_identifier = _complaint_identifier
     AND    (sc.complaint_jsonb ->> UPDATE_NUMBER_TXT)::INT = _update_number
     AND    sc.staging_status_code = STAGING_STATUS_CODE_PENDING -- meaning that this complaint hasn't yet been moved to the complaint table yet
@@ -32,13 +32,13 @@ BEGIN
     END IF;
    
    -- update complaint data based on the incoming webeoc update, if necessary
-   perform update_complaint_using_webeoc_update(_complaint_identifier, update_complaint_data);
+   perform complaint.update_complaint_using_webeoc_update(_complaint_identifier, update_complaint_data);
    
    -- create an update record if required
-   perform log_complaint_update(_complaint_identifier, update_complaint_data);
+   perform complaint.log_complaint_update(_complaint_identifier, update_complaint_data);
 
    -- Update staging_complaint to mark the process as successful
-   UPDATE staging_complaint
+   UPDATE complaint.staging_complaint
    SET    staging_status_code = STAGING_STATUS_CODE_SUCCESS
    WHERE  complaint_identifier = _complaint_identifier
    AND    (complaint_jsonb ->> UPDATE_NUMBER_TXT)::INT = _update_number
@@ -47,7 +47,7 @@ BEGIN
 EXCEPTION
 WHEN OTHERS THEN
     RAISE NOTICE 'An unexpected error occurred: %', SQLERRM;
-    UPDATE staging_complaint
+    UPDATE complaint.staging_complaint
     SET    staging_status_code = STAGING_STATUS_CODE_ERROR
     WHERE  complaint_identifier = _complaint_identifier
     AND    staging_status_code = STAGING_STATUS_CODE_PENDING

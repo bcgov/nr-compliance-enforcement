@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION edit_complaint_using_webeoc_complaint(_complaint_identifier character varying)
+CREATE OR REPLACE FUNCTION complaint.edit_complaint_using_webeoc_complaint(_complaint_identifier character varying)
  RETURNS void
  LANGUAGE plpgsql
 AS $function$
@@ -85,7 +85,7 @@ BEGIN
     -- will contain all previous edits too
    select sc.complaint_jsonb
     into edit_complaint_data
-    from staging_complaint sc 
+    from complaint.staging_complaint sc 
     where sc.complaint_identifier  = _complaint_identifier
     and sc.staging_activity_code  = STAGING_STATUS_CODE_EDIT
     and sc.staging_status_code  = STAGING_STATUS_CODE_PENDING
@@ -133,18 +133,18 @@ BEGIN
     -- Get the codes from our application (inserting if necessary) for the codes retrieved from WebEOC
     SELECT *
     INTO   _edit_cos_reffered_by_lst
-    FROM   insert_and_return_code(_edit_webeoc_reported_by_code, 'reprtdbycd');
+    FROM   complaint.insert_and_return_code(_edit_webeoc_reported_by_code, 'reprtdbycd');
 
    
     -- Get the current state of the complaint
     SELECT *
     INTO   current_complaint_record
-    FROM   complaint
+    FROM   complaint.complaint
     WHERE  complaint_identifier = _complaint_identifier;
 
       -- update the complaint data, if the incoming webeoc contains applicable updates
    if (COALESCE(_edit_detail_text, '') <> COALESCE(current_complaint_record.detail_text, '')) then
-	    UPDATE complaint
+	    UPDATE complaint.complaint
 	    SET detail_text  = _edit_detail_text
 	    WHERE complaint_identifier = _complaint_identifier;
 	
@@ -153,7 +153,7 @@ BEGIN
    
    -- update the complaint data, if the incoming webeoc contains applicable updates
    if (COALESCE(_edit_caller_name, '') <> COALESCE(current_complaint_record.caller_name, '')) then
-	    UPDATE complaint
+	    UPDATE complaint.complaint
 	    SET caller_name = _edit_caller_name
 	    WHERE complaint_identifier = _complaint_identifier;
 	
@@ -163,7 +163,7 @@ BEGIN
   _edit_caller_phone_1 := format_phone_number(_edit_caller_phone_1);
   if (COALESCE(_edit_caller_phone_1, '') <> COALESCE(current_complaint_record.caller_phone_1, '')) then
         
-	    UPDATE complaint
+	    UPDATE complaint.complaint
 	    SET caller_phone_1 = _edit_caller_phone_1
 	    WHERE complaint_identifier = _complaint_identifier;
 	
@@ -173,7 +173,7 @@ BEGIN
   _edit_caller_phone_2 := format_phone_number(_edit_caller_phone_2);
   if (COALESCE(_edit_caller_phone_2, '') <> COALESCE(current_complaint_record.caller_phone_2, '')) then
     	
-	    UPDATE complaint
+	    UPDATE complaint.complaint
 	    SET caller_phone_2 = _edit_caller_phone_2
 	    WHERE complaint_identifier = _complaint_identifier;
 	
@@ -183,70 +183,70 @@ BEGIN
   _edit_caller_phone_3 := format_phone_number(_edit_caller_phone_3);
   if (COALESCE(_edit_caller_phone_3, '') <> COALESCE(current_complaint_record.caller_phone_3, '')) then
     	
-	    UPDATE complaint
+	    UPDATE complaint.complaint
 	    SET caller_phone_3 = _edit_caller_phone_3
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
   
   if (COALESCE(_edit_caller_email, '') <> COALESCE(current_complaint_record.caller_email, '')) then 
-		UPDATE complaint
+		UPDATE complaint.complaint
 		SET caller_email = _edit_caller_email
 		WHERE complaint_identifier = _complaint_identifier;
 		update_edit_ind = true;
   end if;
   
   if (COALESCE(_edit_caller_address, '') <> COALESCE(current_complaint_record.caller_address, '')) then 
-	    UPDATE complaint
+	    UPDATE complaint.complaint
 	    SET caller_address = _edit_caller_address
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
  
   if (COALESCE(_edit_address, '') <> COALESCE(current_complaint_record.location_summary_text, '')) then 
-	    UPDATE complaint
+	    UPDATE complaint.complaint
 	    SET location_summary_text  = _edit_address
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
   
   if (COALESCE(_edit_cos_reffered_by_lst, '') <> COALESCE(current_complaint_record.reported_by_code, '')) then 
-	    UPDATE complaint
+	    UPDATE complaint.complaint
 	    SET reported_by_code = _edit_cos_reffered_by_lst
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
    
   if (COALESCE(_edit_reported_by_other_text, '') <> COALESCE(current_complaint_record.reported_by_other_text, '')) then 
-	    UPDATE complaint
+	    UPDATE complaint.complaint
 	    SET reported_by_other_text = _edit_reported_by_other_text
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
  
   if (COALESCE(_edit_location_detailed_text, '') <> COALESCE(current_complaint_record.location_detailed_text, '')) then 
-	    UPDATE complaint
+	    UPDATE complaint.complaint
 	    SET location_detailed_text  = _edit_location_detailed_text
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
  
   if (_edit_incident_utc_datetime <> current_complaint_record.incident_utc_datetime) then 
-	    UPDATE complaint
+	    UPDATE complaint.complaint
 	    SET incident_utc_datetime  = _edit_incident_utc_datetime
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
  
   if (_edit_incident_reported_utc_timestmp <> current_complaint_record.incident_reported_utc_timestmp) then 
-	    UPDATE complaint
+	    UPDATE complaint.complaint
 	    SET incident_reported_utc_timestmp  = _edit_incident_reported_utc_timestmp
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
 
   if NOT ST_Equals(_edit_location_geometry_point, current_complaint_record.location_geometry_point) then
-	    UPDATE complaint
+	    UPDATE complaint.complaint
 	    SET location_geometry_point  = _edit_location_geometry_point
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
@@ -254,7 +254,7 @@ BEGIN
    
   -- the update caused an edit, set the audit fields
   if (update_edit_ind) then
-	update complaint
+	update complaint.complaint
 	set update_user_id = _edit_update_userid, update_utc_timestamp = _edit_update_utc_timestamp, comp_last_upd_utc_timestamp = _edit_update_utc_timestamp
 	where complaint_identifier = _complaint_identifier;
   end if;
@@ -263,9 +263,9 @@ BEGIN
       update_edit_ind = false;
 	  select hc.hwcr_complaint_guid 
 	  into hwcr_uuid
-	  from hwcr_complaint hc where complaint_identifier  = _complaint_identifier;
+	  from complaint.hwcr_complaint hc where complaint_identifier  = _complaint_identifier;
 	 
-	  update attractant_hwcr_xref
+	  update complaint.attractant_hwcr_xref
 	  set active_ind = false
 	  where hwcr_complaint_guid = hwcr_uuid;
 	 
@@ -276,10 +276,10 @@ BEGIN
       LOOP                                                -- Trim whitespace and check if the item is 'Not Applicable'
         IF trim(attractant_item) <> 'Not Applicable' THEN -- Your insertion logic here
           SELECT *
-          FROM   insert_and_return_code( trim(attractant_item), 'atractntcd' )
+          FROM   complaint.insert_and_return_code( trim(attractant_item), 'atractntcd' )
           INTO   _attractant_code;
           
-          INSERT INTO attractant_hwcr_xref
+          INSERT INTO complaint.attractant_hwcr_xref
                       (
                                   attractant_code,
                                   hwcr_complaint_guid,
@@ -303,24 +303,24 @@ BEGIN
     -- get the code based on the update from WebEOC
     SELECT *
     INTO   _edit_species_code
-    FROM   insert_and_return_code(_edit_webeoc_species, 'speciescd');
+    FROM   complaint.insert_and_return_code(_edit_webeoc_species, 'speciescd');
    
     -- get the current species code
    	SELECT hc.species_code 
    	INTO _current_species_code
-	FROM hwcr_complaint hc 
+	FROM complaint.hwcr_complaint hc 
 	WHERE hc.complaint_identifier = _complaint_identifier;
 
 
     if (_edit_species_code <> _current_species_code) then 
-    	update hwcr_complaint
+    	update complaint.hwcr_complaint
     	set species_code = _edit_species_code
     	where complaint_identifier = _complaint_identifier;
     end if;
    
     -- the update caused an edit, set the audit fields
     if (update_edit_ind) then
-		update hwcr_complaint 
+		update complaint.hwcr_complaint 
 		set update_user_id = _edit_update_userid, update_utc_timestamp = _edit_update_utc_timestamp
 		where complaint_identifier = _complaint_identifier;
     end if;
@@ -349,27 +349,27 @@ BEGIN
      -- Get the current state of the complaint
      SELECT *
      INTO   allegation_complaint_record
-     FROM   allegation_complaint ac
+     FROM   complaint.allegation_complaint ac
      WHERE  complaint_identifier = _complaint_identifier;
 
    
 
      if (_edit_observed_ind_bool != allegation_complaint_record.observed_ind) then 
-	    UPDATE allegation_complaint
+	    UPDATE complaint.allegation_complaint
 	    SET observed_ind  = _edit_observed_ind_bool
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
 	 end if;
 	
      if (_edit_in_progress_ind_bool != allegation_complaint_record.in_progress_ind) then 
-	    UPDATE allegation_complaint
+	    UPDATE complaint.allegation_complaint
 	    SET in_progress_ind  = _edit_in_progress_ind_bool
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
 	 end if;
 	
      if (_edit_suspect_witnesss_dtl_text <> allegation_complaint_record.suspect_witnesss_dtl_text) then 
-	    UPDATE allegation_complaint
+	    UPDATE complaint.allegation_complaint
 	    SET suspect_witnesss_dtl_text  = _edit_suspect_witnesss_dtl_text
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
@@ -377,26 +377,26 @@ BEGIN
 
   
 	 SELECT *
-	 FROM   insert_and_return_code( edit_complaint_data->>'violation_type', 'violatncd' )
+	 FROM   complaint.insert_and_return_code( edit_complaint_data->>'violation_type', 'violatncd' )
 	 INTO   _edit_violation_code;
 	 
      select ac.violation_code
      into _current_violation_type_code
-     from allegation_complaint ac
+     from complaint.allegation_complaint ac
      where ac.complaint_identifier = _complaint_identifier;
 
     if (_edit_violation_code <> _current_violation_type_code) then
 	    if _edit_violation_code = 'WASTE' OR _edit_violation_code = 'PESTICDE' then
-        UPDATE complaint
+        UPDATE complaint.complaint
         SET    owned_by_agency_code = 'EPO'
         WHERE  complaint_identifier = _complaint_identifier;
       else
-        UPDATE complaint
+        UPDATE complaint.complaint
         SET    owned_by_agency_code = 'COS'
         WHERE  complaint_identifier = _complaint_identifier;
       end if;  
 	    
-      update allegation_complaint
+      update complaint.allegation_complaint
       set violation_code  = _edit_violation_code
       where complaint_identifier = _complaint_identifier;
       update_edit_ind = true;
@@ -404,14 +404,14 @@ BEGIN
 
     -- the update caused an edit, set the audit fields
     if (update_edit_ind) then
-		update hwcr_complaint 
+		update complaint.hwcr_complaint 
 		set update_user_id = _edit_update_userid, update_utc_timestamp = _edit_update_utc_timestamp
 		where complaint_identifier = _complaint_identifier;
     end if;
   end if;
  
     -- Update staging_complaint to mark the process as successful
-   UPDATE staging_complaint
+   UPDATE complaint.staging_complaint
    SET    staging_status_code = STAGING_STATUS_CODE_SUCCESS
    WHERE  complaint_identifier = _complaint_identifier
    AND    staging_activity_code = STAGING_STATUS_CODE_EDIT
@@ -420,7 +420,7 @@ BEGIN
 EXCEPTION
 WHEN OTHERS THEN
     RAISE NOTICE 'An unexpected error occurred: %', SQLERRM;
-    UPDATE staging_complaint
+    UPDATE complaint.staging_complaint
     SET    staging_status_code = STAGING_STATUS_CODE_ERROR
     WHERE  complaint_identifier = _complaint_identifier
     AND    staging_status_code = STAGING_STATUS_CODE_PENDING
