@@ -1997,8 +1997,8 @@ export class ComplaintService {
         let record: ComplaintUpdateDto = {
           sequenceId: item.updateSeqNumber,
           description: item.updDetailText,
-          updatedOn: updatedOn,
           updatedAt: updatedAt,
+          updateTime: zonedDate,
           updateOn: `${updatedOn} ${updatedAt}`,
           location: {
             summary: item?.updLocationSummaryText,
@@ -2057,6 +2057,7 @@ export class ComplaintService {
         const record: ComplaintUpdateDto = {
           sequenceId: null,
           updateOn,
+          updateTime: zonedReferralDate,
           updateType: ComplaintUpdateType.REFERRAL,
           referral: {
             previousAgency: item.referred_by_agency_code.long_description,
@@ -2072,19 +2073,7 @@ export class ComplaintService {
         return record;
       });
 
-      const result = [...updates, ...referrals].sort((left, right) => {
-        return new Date(right.updateOn).valueOf() - new Date(left.updateOn).valueOf();
-      });
-
-      for (let index: number = 0; index < result.length; index++) {
-        result[index].sequenceId = result.length - index;
-      }
-
-      return result;
-    };
-
-    const _getActions = async (id: string) => {
-      const result = await this._actionTakenRepository.find({
+      const actionTakenresult = await this._actionTakenRepository.find({
         where: {
           complaintIdentifier: {
             complaint_identifier: id,
@@ -2095,20 +2084,34 @@ export class ComplaintService {
         },
       });
 
-      const actions = result?.map((item) => {
+      const actions = actionTakenresult?.map((item) => {
         const utcDate = toDate(item.actionUtcTimestamp, { timeZone: "UTC" });
         const zonedDate = toZonedTime(utcDate, tz);
-        let updatedOn = format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
-        let updatedAt = format(zonedDate, "HH:mm", { timeZone: tz });
-        let record = {
-          actionDetailsTxt: item.actionDetailsTxt,
-          loggedByTxt: item.loggedByTxt,
-          actionLogged: `${updatedOn} ${updatedAt}`,
+        const updatedOn = format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
+        const updatedAt = format(zonedDate, "HH:mm", { timeZone: tz });
+        const record: ComplaintUpdateDto = {
+          sequenceId: null,
+          updateTime: zonedDate,
+          updateOn: `${updatedOn} ${updatedAt}`,
+          updateType: ComplaintUpdateType.ACTIONTAKEN,
+          actionTaken: {
+            actionDetailsTxt: item.actionDetailsTxt,
+            loggedByTxt: item.loggedByTxt,
+            actionLogged: `${updatedOn} ${updatedAt}`,
+          },
         };
         return record;
       });
 
-      return actions;
+      const result = [...updates, ...referrals, ...actions].sort((left, right) => {
+        return new Date(right.updateTime).valueOf() - new Date(left.updateTime).valueOf();
+      });
+
+      for (let index: number = 0; index < result.length; index++) {
+        result[index].sequenceId = result.length - index;
+      }
+
+      return result;
     };
 
     const _applyTimezone = (input: Date, tz: string, output: "date" | "time" | "datetime"): string => {
@@ -2596,9 +2599,6 @@ export class ComplaintService {
 
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);
-
-      // -- get any webeoc callce tner actions on the complaint
-      data.actions = await _getActions(id);
 
       //-- find the linked complaints
       data.linkedComplaints = data.linkedComplaintIdentifier
