@@ -230,7 +230,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     
       -- Prepare data for 'hwcr_complaint' table
       _other_attractants_text := complaint_data ->> 'attractant_other_text';
-      SELECT uuid_generate_v4()
+      SELECT complaint.uuid_generate_v4()
       INTO   generated_uuid;
       
       -- Insert data into 'hwcr_complaint' table
@@ -311,7 +311,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
                   )
                   VALUES
                   (
-                              uuid_generate_v4(),
+                              complaint.uuid_generate_v4(),
                               _create_userid,
                               _create_utc_timestamp,
                               _create_userid,
@@ -362,7 +362,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
                   )
                   VALUES
                   (
-                  			  uuid_generate_v4(),
+                  			  complaint.uuid_generate_v4(),
                               _in_progress_ind_bool,
                               _observed_ind_bool,
                               _suspect_witnesss_dtl_text,
