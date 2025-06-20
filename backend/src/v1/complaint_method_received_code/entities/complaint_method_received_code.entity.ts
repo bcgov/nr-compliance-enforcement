@@ -3,7 +3,7 @@ import { Column, Entity, Index } from "typeorm";
 @Index("PK_complaint_method_received_code", ["complaint_method_received_code"], {
   unique: true,
 })
-@Entity("complaint_method_received_code", { schema: "public" })
+@Entity("complaint_method_received_code", { schema: "complaint" })
 export class ComplaintMethodReceivedCode {
   @Column("character varying", {
     primary: true,

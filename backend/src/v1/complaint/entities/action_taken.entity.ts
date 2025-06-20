@@ -3,7 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Complaint } from "./complaint.entity";
 
 @Index("action_taken_pk", ["actionTakenGuid"], { unique: true })
-@Entity("action_taken", { schema: "public" })
+@Entity("action_taken", { schema: "complaint" })
 export class ActionTaken {
   @ApiProperty({
     example: "d3b991df-7831-4c75-ab97-8bed38f3cfeb",
