@@ -23,6 +23,10 @@ COPY ../templates /app/templates
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3000
 
+# include entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 # Non-privileged user
 USER app
 # max old space the heap size, 500MB 
