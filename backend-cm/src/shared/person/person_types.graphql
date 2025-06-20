@@ -1,0 +1,8 @@
+type Person {
+  personGuid: String
+  firstName: String
+  middleName: String
+  middleName2: String
+  lastName: String
+  contactMethods: [ContactMethod]
+}

@@ -1,0 +1,10 @@
+type Configuration {
+  configurationCode: String
+  configurationValue: String
+  longDescription: String
+  activeIndicator: Boolean
+}
+
+type Query {
+  configurationCodes(configurationCode: String): [Configuration]!
+}

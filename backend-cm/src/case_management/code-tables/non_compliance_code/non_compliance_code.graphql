@@ -1,0 +1,11 @@
+type NonComplianceCode {
+  nonComplianceCode: String
+  shortDescription: String
+  longDescription: String
+  displayOrder: Int
+  activeIndicator: Boolean
+}
+
+type Query {
+  nonComplianceCodes: [NonComplianceCode]!
+}
