@@ -1,5 +1,5 @@
 # Build
-FROM node:22-slim AS build
+FROM debian:bookworm AS build
 # Install packages, build and keep only prod packages
 USER root
 WORKDIR /app
