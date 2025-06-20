@@ -9,8 +9,7 @@ RUN npm ci --omit=dev && \
     npm run build
 
 # Deployment container
-# Deploy using minimal Distroless image
-FROM gcr.io/distroless/nodejs22-debian12:nonroot
+FROM debian:bookworm-slim
 # Set node to production
 ENV NODE_ENV=production
 
