@@ -7,7 +7,7 @@ import { Team } from "../../team/entities/team.entity";
 @Index("PK_officer_team_xref_guid", ["officer_team_xref_guid"], {
   unique: true,
 })
-@Entity("officer_team_xref", { schema: "public" })
+@Entity("officer_team_xref", { schema: "complaint" })
 export class OfficerTeamXref {
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",

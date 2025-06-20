@@ -4,7 +4,7 @@ import { PersonComplaintXref } from "../../person_complaint_xref/entities/person
 import { Column, Entity, Index, OneToMany, OneToOne } from "typeorm";
 
 @Index("PK_person", ["person_guid"], { unique: true })
-@Entity("person", { schema: "public" })
+@Entity("person", { schema: "complaint" })
 export class Person {
   @Column("uuid", {
     primary: true,

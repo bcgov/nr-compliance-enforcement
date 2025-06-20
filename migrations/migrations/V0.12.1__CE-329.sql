@@ -1,4 +1,4 @@
-CREATE TABLE public.reported_by_code (
+CREATE TABLE reported_by_code (
 	reported_by_code varchar(10) NOT NULL,
 	short_description varchar(50) NOT NULL,
 	long_description varchar(250) NULL,
@@ -60,9 +60,9 @@ INSERT INTO
 SELECT 'SELF', 'Self', 'Self', 12, 'Y', user, now(), user, now()
 ON CONFLICT DO NOTHING;
 
-ALTER TABLE public.complaint DROP CONSTRAINT "FK_complaint_referred_by_agencycode";
-ALTER TABLE public.complaint RENAME COLUMN referred_by_agency_code TO reported_by_code;
-ALTER TABLE public.complaint RENAME COLUMN referred_by_agency_other_text TO reported_by_other_text;
-ALTER TABLE public.complaint ADD CONSTRAINT "FK_complaint_reported_by_code" FOREIGN KEY (reported_by_code) REFERENCES reported_by_code(reported_by_code);
+ALTER TABLE complaint DROP CONSTRAINT "FK_complaint_referred_by_agencycode";
+ALTER TABLE complaint RENAME COLUMN referred_by_agency_code TO reported_by_code;
+ALTER TABLE complaint RENAME COLUMN referred_by_agency_other_text TO reported_by_other_text;
+ALTER TABLE complaint ADD CONSTRAINT "FK_complaint_reported_by_code" FOREIGN KEY (reported_by_code) REFERENCES reported_by_code(reported_by_code);
 
 DELETE FROM agency_code WHERE agency_code in ('DFO', 'BCWF', 'BYLAW', 'CEB', 'LE', 'OTHER');

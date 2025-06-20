@@ -179,11 +179,11 @@ jobs:
           CRUNCHY_PG_PRIMARY_POD_NAME=$(oc get pods -l postgres-operator.crunchydata.com/role=master -o json | jq -r '.items[0].metadata.name')
           echo "${CRUNCHY_PG_PRIMARY_POD_NAME}"
           oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "CREATE SCHEMA IF NOT EXISTS public;"
-          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON SCHEMA public TO \"app-${{ github.event.number }}\";"
-          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO \"app-${{ github.event.number }}\";"
-          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO \"app-${{ github.event.number }}\";"
-          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO \"app-${{ github.event.number }}\";"
-          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO \"app-${{ github.event.number }}\";"
-          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO \"app-${{ github.event.number }}\";"
-          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON FUNCTIONS TO \"app-${{ github.event.number }}\";"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON SCHEMA complaint TO \"app-${{ github.event.number }}\";"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA complaint TO \"app-${{ github.event.number }}\";"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA complaint TO \"app-${{ github.event.number }}\";"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA complaint TO \"app-${{ github.event.number }}\";"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA complaint GRANT ALL PRIVILEGES ON TABLES TO \"app-${{ github.event.number }}\";"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA complaint GRANT ALL PRIVILEGES ON SEQUENCES TO \"app-${{ github.event.number }}\";"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA complaint GRANT ALL PRIVILEGES ON FUNCTIONS TO \"app-${{ github.event.number }}\";"
           # TODO: remove these

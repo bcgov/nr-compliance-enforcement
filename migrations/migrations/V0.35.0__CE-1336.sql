@@ -12,7 +12,7 @@ WHERE
     AND a.live_data_value = b.live_data_value;
 
 -- Add unique constraing on staging_metadata_mapping for entity_code, staged_data_value, live_data_value
-ALTER TABLE public.staging_metadata_mapping ADD CONSTRAINT staging_metadata_mapping_unique UNIQUE (entity_code, staged_data_value, live_data_value);
+ALTER TABLE staging_metadata_mapping ADD CONSTRAINT staging_metadata_mapping_unique UNIQUE (entity_code, staged_data_value, live_data_value);
 
 UPDATE staging_metadata_mapping SET live_data_value = 'LIVPRES' WHERE entity_code = 'cmpltntrcd' AND staged_data_value = 'Livestock/pets - killed/injured - present/recent (Coyote/Bobcat)';
 UPDATE staging_metadata_mapping SET live_data_value = 'LIVPRES' WHERE entity_code = 'cmpltntrcd' AND staged_data_value = 'Livestock/pets - killed/injured - present/recent/suspected (Black/Grizzly Bear, Wolf, Cougar)';

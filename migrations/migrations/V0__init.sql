@@ -1,8 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
 
-
-CREATE TABLE public.agency_code (
+CREATE TABLE agency_code (
 	agency_code varchar(10) NOT NULL,
 	short_description varchar(50) NOT NULL,
     long_description varchar(250) NULL,
@@ -17,7 +16,7 @@ CREATE TABLE public.agency_code (
     CONSTRAINT "PK_agengycode" PRIMARY KEY (agency_code)
 );
 
-CREATE TABLE public.attractant_code (
+CREATE TABLE attractant_code (
 	attractant_code varchar(10) NOT NULL,
 	short_description varchar(50) NOT NULL,
     long_description varchar(250) NULL,
@@ -32,7 +31,7 @@ CREATE TABLE public.attractant_code (
     CONSTRAINT "PK_atractntcd" PRIMARY KEY (attractant_code)
 );
 
-CREATE TABLE public.complaint_status_code (
+CREATE TABLE complaint_status_code (
     complaint_status_code varchar(10) NOT NULL,
     short_description varchar(50) NOT NULL,
     long_description varchar(250) NULL,
@@ -47,7 +46,7 @@ CREATE TABLE public.complaint_status_code (
     CONSTRAINT "PK_cmpntstscd" PRIMARY KEY (complaint_status_code)
 );
 
-CREATE TABLE public.geo_org_unit_type_code (
+CREATE TABLE geo_org_unit_type_code (
     geo_org_unit_type_code varchar(10) NOT NULL,
     short_description varchar(50) NOT NULL,
     long_description varchar(250) NULL,
@@ -62,7 +61,7 @@ CREATE TABLE public.geo_org_unit_type_code (
     CONSTRAINT "PK_gorgtypecd" PRIMARY KEY (geo_org_unit_type_code)
 );
 
-CREATE TABLE public.person (
+CREATE TABLE person (
     person_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
     first_name varchar(32) NOT NULL,
     middle_name_1 varchar(32) NULL,
@@ -77,14 +76,14 @@ CREATE TABLE public.person (
     CONSTRAINT "PK_person" PRIMARY KEY (person_guid)
 );
 
-CREATE TABLE public.users (
+CREATE TABLE users (
     id serial4 NOT NULL,
     "name" varchar NOT NULL,
     email varchar NOT NULL,
     CONSTRAINT "PK_users" PRIMARY KEY (id)
 );
 
-CREATE TABLE public.violation_code (
+CREATE TABLE violation_code (
     violation_code varchar(10) NOT NULL,
     short_description varchar(50) NOT NULL,
     long_description varchar(250) NULL,
@@ -99,7 +98,7 @@ CREATE TABLE public.violation_code (
     CONSTRAINT "PK_violatncd" PRIMARY KEY (violation_code)
 );
 
-CREATE TABLE public.species_code (
+CREATE TABLE species_code (
     species_code varchar(10) NOT NULL,
     short_description varchar(50) NOT NULL,
     long_description varchar(250) NULL,
@@ -115,7 +114,7 @@ CREATE TABLE public.species_code (
     CONSTRAINT "PK_speciescd" PRIMARY KEY (species_code)
 );
 
-CREATE TABLE public.hwcr_complaint_nature_code (
+CREATE TABLE hwcr_complaint_nature_code (
     hwcr_complaint_nature_code varchar(10) NOT NULL,
     short_description varchar(50) NOT NULL,
     long_description varchar(250) NULL,
@@ -131,7 +130,7 @@ CREATE TABLE public.hwcr_complaint_nature_code (
 );
 
 
-CREATE TABLE public.geo_organization_unit_code (
+CREATE TABLE geo_organization_unit_code (
     geo_organization_unit_code varchar(10) NOT NULL,
     short_description varchar(50) NULL,
     long_description varchar(250) NULL,
@@ -145,11 +144,11 @@ CREATE TABLE public.geo_organization_unit_code (
     update_timestamp timestamp NOT NULL,
     geo_org_unit_type_code varchar(10) NULL,
     CONSTRAINT "PK_geoorgutnd" PRIMARY KEY (geo_organization_unit_code),
-    CONSTRAINT "FK_geoorgutnd_gorgtypecd" FOREIGN KEY (geo_org_unit_type_code) REFERENCES public.geo_org_unit_type_code(geo_org_unit_type_code)
+    CONSTRAINT "FK_geoorgutnd_gorgtypecd" FOREIGN KEY (geo_org_unit_type_code) REFERENCES geo_org_unit_type_code(geo_org_unit_type_code)
 );
 
 
-CREATE TABLE public.office (
+CREATE TABLE office (
     office_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
     create_user_id varchar(32) NOT NULL,
     create_user_guid uuid NULL,
@@ -160,11 +159,11 @@ CREATE TABLE public.office (
     geo_organization_unit_code varchar(10) NULL,
     agency_code varchar(6) NULL,
     CONSTRAINT "PK_office" PRIMARY KEY (office_guid),
-    CONSTRAINT "FK_office_geoorgutnd" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code)
+    CONSTRAINT "FK_office_geoorgutnd" FOREIGN KEY (geo_organization_unit_code) REFERENCES geo_organization_unit_code(geo_organization_unit_code)
 );
 
 
-CREATE TABLE public.officer (
+CREATE TABLE officer (
     officer_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
     user_id varchar(32) NOT NULL,
     create_user_id varchar(32) NOT NULL,
@@ -177,11 +176,11 @@ CREATE TABLE public.officer (
     office_guid uuid NULL,
     CONSTRAINT "PK_officer" PRIMARY KEY (officer_guid),
     CONSTRAINT "UQ_officer" UNIQUE (person_guid),
-    CONSTRAINT "FK_officer_person" FOREIGN KEY (person_guid) REFERENCES public.person(person_guid),
-    CONSTRAINT "FK_officer_office" FOREIGN KEY (office_guid) REFERENCES public.office(office_guid)
+    CONSTRAINT "FK_officer_person" FOREIGN KEY (person_guid) REFERENCES person(person_guid),
+    CONSTRAINT "FK_officer_office" FOREIGN KEY (office_guid) REFERENCES office(office_guid)
 );
 
-CREATE TABLE public.complaint (
+CREATE TABLE complaint (
     complaint_identifier varchar(20) NOT NULL,
     detail_text varchar(4000) NULL,
     caller_name varchar(120) NULL,
@@ -205,17 +204,17 @@ CREATE TABLE public.complaint (
     owned_by_agency_code varchar(10) NULL,
     complaint_status_code varchar(10) NULL,
     geo_organization_unit_code varchar(10) NULL,
-    location_geometry_point public.geometry NULL,
+    location_geometry_point geometry NULL,
     CONSTRAINT "PK_complaint" PRIMARY KEY (complaint_identifier),
-    CONSTRAINT "FK_complaint_geoorgutnd" FOREIGN KEY (geo_organization_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
-    CONSTRAINT "FK_complaint_owned_by_agencycode" FOREIGN KEY (owned_by_agency_code) REFERENCES public.agency_code(agency_code),
-    CONSTRAINT "FK_complaint_compntstscd" FOREIGN KEY (complaint_status_code) REFERENCES public.complaint_status_code(complaint_status_code),
-    CONSTRAINT "FK_complaint_referred_by_agencycode" FOREIGN KEY (referred_by_agency_code) REFERENCES public.agency_code(agency_code)
+    CONSTRAINT "FK_complaint_geoorgutnd" FOREIGN KEY (geo_organization_unit_code) REFERENCES geo_organization_unit_code(geo_organization_unit_code),
+    CONSTRAINT "FK_complaint_owned_by_agencycode" FOREIGN KEY (owned_by_agency_code) REFERENCES agency_code(agency_code),
+    CONSTRAINT "FK_complaint_compntstscd" FOREIGN KEY (complaint_status_code) REFERENCES complaint_status_code(complaint_status_code),
+    CONSTRAINT "FK_complaint_referred_by_agencycode" FOREIGN KEY (referred_by_agency_code) REFERENCES agency_code(agency_code)
 );
-CREATE INDEX "IDX_adbfa452bdecec83d2daf17d18" ON public.complaint USING gist (location_geometry_point);
+CREATE INDEX "IDX_adbfa452bdecec83d2daf17d18" ON complaint USING gist (location_geometry_point);
 
 
-CREATE TABLE public.geo_org_unit_structure (
+CREATE TABLE geo_org_unit_structure (
     geo_org_unit_structure_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
     effective_date timestamp NOT NULL,
     expiry_date timestamp NULL,
@@ -230,13 +229,13 @@ CREATE TABLE public.geo_org_unit_structure (
     child_geo_org_unit_code varchar(10) NULL,
     CONSTRAINT "PK_gorgustrct" PRIMARY KEY (geo_org_unit_structure_guid),
     CONSTRAINT "UQ_gorgustrct" UNIQUE (parent_geo_org_unit_code, child_geo_org_unit_code),
-    CONSTRAINT "FK_gorgustrct_parent_geoorgutcd" FOREIGN KEY (parent_geo_org_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
-    CONSTRAINT "FK_gorgustrct_child_geoorgutcd" FOREIGN KEY (child_geo_org_unit_code) REFERENCES public.geo_organization_unit_code(geo_organization_unit_code),
-    CONSTRAINT "FK_gorgustrct_agencycode" FOREIGN KEY (agency_code) REFERENCES public.agency_code(agency_code)
+    CONSTRAINT "FK_gorgustrct_parent_geoorgutcd" FOREIGN KEY (parent_geo_org_unit_code) REFERENCES geo_organization_unit_code(geo_organization_unit_code),
+    CONSTRAINT "FK_gorgustrct_child_geoorgutcd" FOREIGN KEY (child_geo_org_unit_code) REFERENCES geo_organization_unit_code(geo_organization_unit_code),
+    CONSTRAINT "FK_gorgustrct_agencycode" FOREIGN KEY (agency_code) REFERENCES agency_code(agency_code)
 );
 
 
-CREATE TABLE public.allegation_complaint (
+CREATE TABLE allegation_complaint (
     allegation_complaint_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
     in_progress_ind bool NOT NULL,
     observed_ind bool NOT NULL,
@@ -251,11 +250,11 @@ CREATE TABLE public.allegation_complaint (
     violation_code varchar(10) NULL,
     CONSTRAINT "PK_algtncmplt" PRIMARY KEY (allegation_complaint_guid),
     CONSTRAINT "UQ_algtncmplt" UNIQUE (complaint_identifier),
-    CONSTRAINT "FK_algtncmplt_complaint" FOREIGN KEY (complaint_identifier) REFERENCES public.complaint(complaint_identifier),
-    CONSTRAINT "FK_algtncmplt_violatncd" FOREIGN KEY (violation_code) REFERENCES public.violation_code(violation_code)
+    CONSTRAINT "FK_algtncmplt_complaint" FOREIGN KEY (complaint_identifier) REFERENCES complaint(complaint_identifier),
+    CONSTRAINT "FK_algtncmplt_violatncd" FOREIGN KEY (violation_code) REFERENCES violation_code(violation_code)
 );
 
-CREATE TABLE public.hwcr_complaint (
+CREATE TABLE hwcr_complaint (
     hwcr_complaint_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
     other_attractants_text varchar(4000) NULL,
     create_user_id varchar(32) NOT NULL,
@@ -269,12 +268,12 @@ CREATE TABLE public.hwcr_complaint (
     hwcr_complaint_nature_code varchar(10) NULL,
     CONSTRAINT "PK_hwcrcmplnt" PRIMARY KEY (hwcr_complaint_guid),
     CONSTRAINT "UQ_hwcrcmplnt" UNIQUE (complaint_identifier),
-    CONSTRAINT "FK_hwcrcmplnt_complaint" FOREIGN KEY (complaint_identifier) REFERENCES public.complaint(complaint_identifier),
-    CONSTRAINT "FK_hwcrcmplnt_speciescd" FOREIGN KEY (species_code) REFERENCES public.species_code(species_code),
-    CONSTRAINT "FK_hwcrcmplnt_cmpltntrcd" FOREIGN KEY (hwcr_complaint_nature_code) REFERENCES public.hwcr_complaint_nature_code(hwcr_complaint_nature_code)
+    CONSTRAINT "FK_hwcrcmplnt_complaint" FOREIGN KEY (complaint_identifier) REFERENCES complaint(complaint_identifier),
+    CONSTRAINT "FK_hwcrcmplnt_speciescd" FOREIGN KEY (species_code) REFERENCES species_code(species_code),
+    CONSTRAINT "FK_hwcrcmplnt_cmpltntrcd" FOREIGN KEY (hwcr_complaint_nature_code) REFERENCES hwcr_complaint_nature_code(hwcr_complaint_nature_code)
 );
 
-CREATE TABLE public.attractant_hwcr_xref (
+CREATE TABLE attractant_hwcr_xref (
     attractant_hwcr_xref_guid uuid NOT NULL DEFAULT uuid_generate_v4(),
     attractant_code varchar(10) NOT NULL,
     hwcr_complaint_guid uuid NOT NULL,
@@ -285,8 +284,8 @@ CREATE TABLE public.attractant_hwcr_xref (
     update_user_guid uuid NULL,
     update_timestamp timestamp NOT NULL,
     CONSTRAINT "PK_attrhwcrx" PRIMARY KEY (attractant_hwcr_xref_guid),
-    CONSTRAINT "FK_attrhwcrx_atractntcd" FOREIGN KEY (attractant_code) REFERENCES public.attractant_code(attractant_code),
-    CONSTRAINT "FK_attrhwcrx_hwcrcmplnt" FOREIGN KEY (hwcr_complaint_guid) REFERENCES public.hwcr_complaint(hwcr_complaint_guid)
+    CONSTRAINT "FK_attrhwcrx_atractntcd" FOREIGN KEY (attractant_code) REFERENCES attractant_code(attractant_code),
+    CONSTRAINT "FK_attrhwcrx_hwcrcmplnt" FOREIGN KEY (hwcr_complaint_guid) REFERENCES hwcr_complaint(hwcr_complaint_guid)
 );
 
 
@@ -2486,220 +2485,220 @@ values (now(), null, user, null, now(), user, null, now(), 'COS','KTNY','CLMBAKT
 
 
 -- comments
-comment on table public.agency_code is 'An agency is an organized and named grouping of people that interacts in some way with the Ministry.';
-comment on table public.geo_org_unit_structure is 'A geographical organization unit structure is a parent/child relationship between two geographical organization units.';
-comment on table public.geo_organization_unit_code is 'A geographical organization unit is a named geographical boundary that represents a physical location.   The level of granularity can vary with Regions being the highest level - for example Okanagan, and Areas being the lowest level - for example Big White';
-comment on table public.geo_org_unit_type_code is 'A geographical organization unit type describes the level of granularity for a given geographical organization unit. Supported geographical organization unit types are (ZONE = Zone; REGION = Region; OFFLOC = Office Location; AREA = Area).  ';
-comment on table public.office is 'An office is a physical location that serves as a central organization point for groups of users of the system.   ';
-comment on table public.person is 'A person is an individual that is being tracked explicitly within the system.  The criteria for being included as a trackable individual is the possession of a unique identifier that can be used for dealiasing.  For example an IDIR or a BC Drivers Licence.';
-comment on table public.officer is 'An officer is a subtype of a person who can be identified through their IDIR.';
-comment on table public.complaint_status_code is 'The status of a Complaint.  Values include OPEN = Open and CLOSED = Closed.';
-comment on table public.complaint is 'Initial information provided on a potential incident.';
-comment on table public.violation_code is 'The alleged violation involved in the complaint.   (E.g. ORV = Off Road Vehicles; PESTICDE = Pesticide)';
-comment on table public.allegation_complaint is 'A complaint for which a caller believes that a Violation has occurred and should be investigated.';
-comment on table public.attractant_code is 'A human factor contributing to a Human Wildlife Conflict (E.g. RESFRUIT = Residential Fruit/Berries; LVSFEED = Livestock Feed)';
-comment on table public.attractant_hwcr_xref is 'Cross reference table for linking attractants to HWCR Complaints.';
-comment on table public.hwcr_complaint is 'A complaint that a caller believes could involve a conflict between Humans and Wildlife.';
-comment on table public.species_code is 'The species involved in a Human Wildlife Conflict (E.g. BLKBEAR = Black Bear; WOLVERN = Wolverine)';
-comment on table public.hwcr_complaint_nature_code is 'Modifier that further describes the nature of Human Wildlife Conflict complaints.   (E.g. DEADNV = Dead wildlife - no violation suspected; TRAP = Wildlife in trap)';
+comment on table agency_code is 'An agency is an organized and named grouping of people that interacts in some way with the Ministry.';
+comment on table geo_org_unit_structure is 'A geographical organization unit structure is a parent/child relationship between two geographical organization units.';
+comment on table geo_organization_unit_code is 'A geographical organization unit is a named geographical boundary that represents a physical location.   The level of granularity can vary with Regions being the highest level - for example Okanagan, and Areas being the lowest level - for example Big White';
+comment on table geo_org_unit_type_code is 'A geographical organization unit type describes the level of granularity for a given geographical organization unit. Supported geographical organization unit types are (ZONE = Zone; REGION = Region; OFFLOC = Office Location; AREA = Area).  ';
+comment on table office is 'An office is a physical location that serves as a central organization point for groups of users of the system.   ';
+comment on table person is 'A person is an individual that is being tracked explicitly within the system.  The criteria for being included as a trackable individual is the possession of a unique identifier that can be used for dealiasing.  For example an IDIR or a BC Drivers Licence.';
+comment on table officer is 'An officer is a subtype of a person who can be identified through their IDIR.';
+comment on table complaint_status_code is 'The status of a   Values include OPEN = Open and CLOSED = Closed.';
+comment on table complaint is 'Initial information provided on a potential incident.';
+comment on table violation_code is 'The alleged violation involved in the    (E.g. ORV = Off Road Vehicles; PESTICDE = Pesticide)';
+comment on table allegation_complaint is 'A complaint for which a caller believes that a Violation has occurred and should be investigated.';
+comment on table attractant_code is 'A human factor contributing to a Human Wildlife Conflict (E.g. RESFRUIT = Residential Fruit/Berries; LVSFEED = Livestock Feed)';
+comment on table attractant_hwcr_xref is 'Cross reference table for linking attractants to HWCR Complaints.';
+comment on table hwcr_complaint is 'A complaint that a caller believes could involve a conflict between Humans and Wildlife.';
+comment on table species_code is 'The species involved in a Human Wildlife Conflict (E.g. BLKBEAR = Black Bear; WOLVERN = Wolverine)';
+comment on table hwcr_complaint_nature_code is 'Modifier that further describes the nature of Human Wildlife Conflict complaints.   (E.g. DEADNV = Dead wildlife - no violation suspected; TRAP = Wildlife in trap)';
 
-comment on column public.agency_code.agency_code is 'A human readable code used to identify an agency.';
-comment on column public.agency_code.short_description is 'The short description of the agency code.';
-comment on column public.agency_code.long_description is 'The long description of the agency code.';
-comment on column public.agency_code.display_order is 'The order in which the values of the agency code table should be displayed when presented to a user in a list.';
-comment on column public.agency_code.active_ind is 'A boolean indicator to determine if the agency code is active.';
-comment on column public.agency_code.create_user_id is 'The id of the user that created the agency code.';
-comment on column public.agency_code.create_user_guid is 'The unique guid of the user that created the agency code.';
-comment on column public.agency_code.create_timestamp is 'The timestamp when the agency was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.agency_code.update_user_id is 'The id of the user that updated the agency code.';
-comment on column public.agency_code.update_user_guid is 'The unique guid of the user that updated the agency code.';
-comment on column public.agency_code.update_timestamp is 'The timestamp when the agency was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column agency_code.agency_code is 'A human readable code used to identify an agency.';
+comment on column agency_code.short_description is 'The short description of the agency code.';
+comment on column agency_code.long_description is 'The long description of the agency code.';
+comment on column agency_code.display_order is 'The order in which the values of the agency code table should be displayed when presented to a user in a list.';
+comment on column agency_code.active_ind is 'A boolean indicator to determine if the agency code is active.';
+comment on column agency_code.create_user_id is 'The id of the user that created the agency code.';
+comment on column agency_code.create_user_guid is 'The unique guid of the user that created the agency code.';
+comment on column agency_code.create_timestamp is 'The timestamp when the agency was created.  The timestamp is stored in UTC with no Offset.';
+comment on column agency_code.update_user_id is 'The id of the user that updated the agency code.';
+comment on column agency_code.update_user_guid is 'The unique guid of the user that updated the agency code.';
+comment on column agency_code.update_timestamp is 'The timestamp when the agency was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.geo_org_unit_structure.geo_org_unit_structure_guid is 'System generated unique key for a geographical organization unit structure. This key should never be exposed to users via any system utilizing the tables.';
-comment on column public.geo_org_unit_structure.agency_code is 'A human readable code used to identify an agency.  The agency that defines the geographical organization unit structural relationship.';
-comment on column public.geo_org_unit_structure.parent_geo_org_unit_code is 'The geographical organization that contains the child geographical organization unit.';
-comment on column public.geo_org_unit_structure.child_geo_org_unit_code is 'The geographical organization that is contained by the parent geographical organization unit.';
-comment on column public.geo_org_unit_structure.effective_date is 'The date the Geographical Organizational Unit Structure becomes effective as a valid relationship within the Ministry organizational structure.';
-comment on column public.geo_org_unit_structure.expiry_date is 'The date the Geographical Organizational Unit Structure is no longer recognized as a valid relationship within the Ministry organizational structure.';
-comment on column public.geo_org_unit_structure.create_user_id is 'The id of the user that created the geographical organization unit structure.';
-comment on column public.geo_org_unit_structure.create_user_guid is 'The unique guid of the user that created the geographical organization unit structure.';
-comment on column public.geo_org_unit_structure.create_timestamp is 'The timestamp when the geographical organization unit structure was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.geo_org_unit_structure.update_user_id is 'The id of the user that updated the geographical organization unit structure.';
-comment on column public.geo_org_unit_structure.update_user_guid is 'The unique guid of the user that updated the geographical organization unit structure.';
-comment on column public.geo_org_unit_structure.update_timestamp is 'The timestamp when the geographical organization unit structure was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column geo_org_unit_structure.geo_org_unit_structure_guid is 'System generated unique key for a geographical organization unit structure. This key should never be exposed to users via any system utilizing the tables.';
+comment on column geo_org_unit_structure.agency_code is 'A human readable code used to identify an agency.  The agency that defines the geographical organization unit structural relationship.';
+comment on column geo_org_unit_structure.parent_geo_org_unit_code is 'The geographical organization that contains the child geographical organization unit.';
+comment on column geo_org_unit_structure.child_geo_org_unit_code is 'The geographical organization that is contained by the parent geographical organization unit.';
+comment on column geo_org_unit_structure.effective_date is 'The date the Geographical Organizational Unit Structure becomes effective as a valid relationship within the Ministry organizational structure.';
+comment on column geo_org_unit_structure.expiry_date is 'The date the Geographical Organizational Unit Structure is no longer recognized as a valid relationship within the Ministry organizational structure.';
+comment on column geo_org_unit_structure.create_user_id is 'The id of the user that created the geographical organization unit structure.';
+comment on column geo_org_unit_structure.create_user_guid is 'The unique guid of the user that created the geographical organization unit structure.';
+comment on column geo_org_unit_structure.create_timestamp is 'The timestamp when the geographical organization unit structure was created.  The timestamp is stored in UTC with no Offset.';
+comment on column geo_org_unit_structure.update_user_id is 'The id of the user that updated the geographical organization unit structure.';
+comment on column geo_org_unit_structure.update_user_guid is 'The unique guid of the user that updated the geographical organization unit structure.';
+comment on column geo_org_unit_structure.update_timestamp is 'The timestamp when the geographical organization unit structure was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.geo_organization_unit_code.geo_organization_unit_code is 'A human readable code used to identify a geographical organization unit.';
-comment on column public.geo_organization_unit_code.geo_org_unit_type_code is 'A human readable code used to identify a geographical organization unit type.';
-comment on column public.geo_organization_unit_code.short_description is 'The short description of the geographical organization unit code.';
-comment on column public.geo_organization_unit_code.long_description is 'The long description of the geographical organization unit code.';
-comment on column public.geo_organization_unit_code.effective_date is 'The date the Geographical Organizational Unit becomes effective as a boundaried physical location within the Ministry organizational structure.';
-comment on column public.geo_organization_unit_code.expiry_date is 'The date the Geographical Organizational Unit is no longer recognized as a valid physical location within the Ministry organizational structure.';
-comment on column public.geo_organization_unit_code.create_user_id is 'The id of the user that created the geographical organization unit code.';
-comment on column public.geo_organization_unit_code.create_user_guid is 'The unique guid of the user that created the geographical organization unit code.';
-comment on column public.geo_organization_unit_code.create_timestamp is 'The timestamp when the geographical organization unit code was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.geo_organization_unit_code.update_user_id is 'The id of the user that updated the geographical organization unit code.';
-comment on column public.geo_organization_unit_code.update_user_guid is 'The unique guid of the user that updated the geographical organization unit code.';
-comment on column public.geo_organization_unit_code.update_timestamp is 'The timestamp when the geographical organization unit code was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column geo_organization_unit_code.geo_organization_unit_code is 'A human readable code used to identify a geographical organization unit.';
+comment on column geo_organization_unit_code.geo_org_unit_type_code is 'A human readable code used to identify a geographical organization unit type.';
+comment on column geo_organization_unit_code.short_description is 'The short description of the geographical organization unit code.';
+comment on column geo_organization_unit_code.long_description is 'The long description of the geographical organization unit code.';
+comment on column geo_organization_unit_code.effective_date is 'The date the Geographical Organizational Unit becomes effective as a boundaried physical location within the Ministry organizational structure.';
+comment on column geo_organization_unit_code.expiry_date is 'The date the Geographical Organizational Unit is no longer recognized as a valid physical location within the Ministry organizational structure.';
+comment on column geo_organization_unit_code.create_user_id is 'The id of the user that created the geographical organization unit code.';
+comment on column geo_organization_unit_code.create_user_guid is 'The unique guid of the user that created the geographical organization unit code.';
+comment on column geo_organization_unit_code.create_timestamp is 'The timestamp when the geographical organization unit code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column geo_organization_unit_code.update_user_id is 'The id of the user that updated the geographical organization unit code.';
+comment on column geo_organization_unit_code.update_user_guid is 'The unique guid of the user that updated the geographical organization unit code.';
+comment on column geo_organization_unit_code.update_timestamp is 'The timestamp when the geographical organization unit code was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.geo_org_unit_type_code.geo_org_unit_type_code is 'A human readable code used to identify a geographical organization unit type.';
-comment on column public.geo_org_unit_type_code.short_description is 'The short description of the geographical organization unit type code.';
-comment on column public.geo_org_unit_type_code.long_description is 'The long description of the geographical organization unit type code.';
-comment on column public.geo_org_unit_type_code.display_order is 'The order in which the values of the geographical organization unit type code table should be displayed when presented to a user in a list.';
-comment on column public.geo_org_unit_type_code.active_ind is 'A boolean indicator to determine if the geographical organization unit type code is active.';
-comment on column public.geo_org_unit_type_code.create_user_id is 'The id of the user that created the geographical organization unit type code.';
-comment on column public.geo_org_unit_type_code.create_user_guid is 'The unique guid of the user that created the geographical organization unit type code.';
-comment on column public.geo_org_unit_type_code.create_timestamp is 'The timestamp when the geographical organization unit type code was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.geo_org_unit_type_code.update_user_id is 'The id of the user that updated the geographical organization unit type code.';
-comment on column public.geo_org_unit_type_code.update_user_guid is 'The unique guid of the user that updated the geographical organization unit type code.';
-comment on column public.geo_org_unit_type_code.update_timestamp is 'The timestamp when the geographical organization unit type code was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column geo_org_unit_type_code.geo_org_unit_type_code is 'A human readable code used to identify a geographical organization unit type.';
+comment on column geo_org_unit_type_code.short_description is 'The short description of the geographical organization unit type code.';
+comment on column geo_org_unit_type_code.long_description is 'The long description of the geographical organization unit type code.';
+comment on column geo_org_unit_type_code.display_order is 'The order in which the values of the geographical organization unit type code table should be displayed when presented to a user in a list.';
+comment on column geo_org_unit_type_code.active_ind is 'A boolean indicator to determine if the geographical organization unit type code is active.';
+comment on column geo_org_unit_type_code.create_user_id is 'The id of the user that created the geographical organization unit type code.';
+comment on column geo_org_unit_type_code.create_user_guid is 'The unique guid of the user that created the geographical organization unit type code.';
+comment on column geo_org_unit_type_code.create_timestamp is 'The timestamp when the geographical organization unit type code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column geo_org_unit_type_code.update_user_id is 'The id of the user that updated the geographical organization unit type code.';
+comment on column geo_org_unit_type_code.update_user_guid is 'The unique guid of the user that updated the geographical organization unit type code.';
+comment on column geo_org_unit_type_code.update_timestamp is 'The timestamp when the geographical organization unit type code was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.office.office_guid is 'System generated unique key for an office. This key should never be exposed to users via any system utilizing the tables.';
-comment on column public.office.geo_organization_unit_code is 'A human readable code used to identify a geographical organization unit.  The geographical unit where the office is located.   This might not necessarily be the lowest level in the geographical organizational unit hierarchy.';
-comment on column public.office.agency_code is 'A human readable code used to identify an agency.  The agency that owns the office.';
-comment on column public.office.create_user_id is 'The id of the user that created the office.';
-comment on column public.office.create_user_guid is 'The unique guid of the user that created the the office.';
-comment on column public.office.create_timestamp is 'The timestamp when the office was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.office.update_user_id is 'The id of the user that updated the office.';
-comment on column public.office.update_user_guid is 'The unique guid of the user that updated the office.';
-comment on column public.office.update_timestamp is 'The timestamp when the office was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column office.office_guid is 'System generated unique key for an office. This key should never be exposed to users via any system utilizing the tables.';
+comment on column office.geo_organization_unit_code is 'A human readable code used to identify a geographical organization unit.  The geographical unit where the office is located.   This might not necessarily be the lowest level in the geographical organizational unit hierarchy.';
+comment on column office.agency_code is 'A human readable code used to identify an agency.  The agency that owns the office.';
+comment on column office.create_user_id is 'The id of the user that created the office.';
+comment on column office.create_user_guid is 'The unique guid of the user that created the the office.';
+comment on column office.create_timestamp is 'The timestamp when the office was created.  The timestamp is stored in UTC with no Offset.';
+comment on column office.update_user_id is 'The id of the user that updated the office.';
+comment on column office.update_user_guid is 'The unique guid of the user that updated the office.';
+comment on column office.update_timestamp is 'The timestamp when the office was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.person.person_guid is 'System generated unique key for an person. This key should never be exposed to users via any system utilizing the tables.';
-comment on column public.person.first_name is 'The first name of a person.';
-comment on column public.person.middle_name_1 is 'The first middle name of a person.';
-comment on column public.person.middle_name_2 is 'Any remaining middle names beyond the first of a person.';
-comment on column public.person.last_name is 'The last name of a person.';
-comment on column public.person.create_user_id is 'The id of the user that created the person.';
-comment on column public.person.create_user_guid is 'The unique guid of the user that created the person.';
-comment on column public.person.create_timestamp is 'The timestamp when the person was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.person.update_user_id is 'The id of the user that updated the person.';
-comment on column public.person.update_user_guid is 'The unique guid of the user that updated the person.';
-comment on column public.person.update_timestamp is 'The timestamp when the person was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column person.person_guid is 'System generated unique key for an person. This key should never be exposed to users via any system utilizing the tables.';
+comment on column person.first_name is 'The first name of a person.';
+comment on column person.middle_name_1 is 'The first middle name of a person.';
+comment on column person.middle_name_2 is 'Any remaining middle names beyond the first of a person.';
+comment on column person.last_name is 'The last name of a person.';
+comment on column person.create_user_id is 'The id of the user that created the person.';
+comment on column person.create_user_guid is 'The unique guid of the user that created the person.';
+comment on column person.create_timestamp is 'The timestamp when the person was created.  The timestamp is stored in UTC with no Offset.';
+comment on column person.update_user_id is 'The id of the user that updated the person.';
+comment on column person.update_user_guid is 'The unique guid of the user that updated the person.';
+comment on column person.update_timestamp is 'The timestamp when the person was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.officer.officer_guid is 'System generated unique key for an officer. This key should never be exposed to users via any system utilizing the tables.';
-comment on column public.officer.person_guid is 'System generated unique key for an person.';
-comment on column public.officer.office_guid is 'System generated unique key for an office. The primary office an officer is assigned to.';
-comment on column public.officer.user_id is 'The IDIR ID issued to the user by the Government of British Columbia as part of their employment.';
-comment on column public.officer.create_user_id is 'The id of the user that created the officer.';
-comment on column public.officer.create_user_guid is 'The unique guid of the user that created the the officer.';
-comment on column public.officer.create_timestamp is 'The timestamp when the officer was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.officer.update_user_id is 'The id of the user that updated the officer.';
-comment on column public.officer.update_user_guid is 'The unique guid of the user that updated the officer.';
-comment on column public.officer.update_timestamp is 'The timestamp when the officer was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column officer.officer_guid is 'System generated unique key for an officer. This key should never be exposed to users via any system utilizing the tables.';
+comment on column officer.person_guid is 'System generated unique key for an person.';
+comment on column officer.office_guid is 'System generated unique key for an office. The primary office an officer is assigned to.';
+comment on column officer.user_id is 'The IDIR ID issued to the user by the Government of British Columbia as part of their employment.';
+comment on column officer.create_user_id is 'The id of the user that created the officer.';
+comment on column officer.create_user_guid is 'The unique guid of the user that created the the officer.';
+comment on column officer.create_timestamp is 'The timestamp when the officer was created.  The timestamp is stored in UTC with no Offset.';
+comment on column officer.update_user_id is 'The id of the user that updated the officer.';
+comment on column officer.update_user_guid is 'The unique guid of the user that updated the officer.';
+comment on column officer.update_timestamp is 'The timestamp when the officer was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.complaint_status_code.complaint_status_code is 'A human readable code used to identify a complaint status.';
-comment on column public.complaint_status_code.short_description is 'The short description of the complaint status code.';
-comment on column public.complaint_status_code.long_description is 'The long description of the complaint status code.';
-comment on column public.complaint_status_code.display_order is 'The order in which the values of the complaint status code table should be displayed when presented to a user in a list.';
-comment on column public.complaint_status_code.active_ind is 'A boolean indicator to determine if the complaint status code is active.';
-comment on column public.complaint_status_code.create_user_id is 'The id of the user that created the complaint status code.';
-comment on column public.complaint_status_code.create_user_guid is 'The unique guid of the user that created the complaint status code.';
-comment on column public.complaint_status_code.create_timestamp is 'The timestamp when the  complaint status code was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.complaint_status_code.update_user_id is 'The id of the user that updated the complaint status code.';
-comment on column public.complaint_status_code.update_user_guid is 'The unique guid of the user that updated the complaint status code.';
-comment on column public.complaint_status_code.update_timestamp is 'The timestamp when the complaint status code was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column complaint_status_code.complaint_status_code is 'A human readable code used to identify a complaint status.';
+comment on column complaint_status_code.short_description is 'The short description of the complaint status code.';
+comment on column complaint_status_code.long_description is 'The long description of the complaint status code.';
+comment on column complaint_status_code.display_order is 'The order in which the values of the complaint status code table should be displayed when presented to a user in a list.';
+comment on column complaint_status_code.active_ind is 'A boolean indicator to determine if the complaint status code is active.';
+comment on column complaint_status_code.create_user_id is 'The id of the user that created the complaint status code.';
+comment on column complaint_status_code.create_user_guid is 'The unique guid of the user that created the complaint status code.';
+comment on column complaint_status_code.create_timestamp is 'The timestamp when the  complaint status code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column complaint_status_code.update_user_id is 'The id of the user that updated the complaint status code.';
+comment on column complaint_status_code.update_user_guid is 'The unique guid of the user that updated the complaint status code.';
+comment on column complaint_status_code.update_timestamp is 'The timestamp when the complaint status code was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.complaint.referred_by_agency_code is 'A human readable code used to identify an agency.  The agency that originally referred the complaint.';
-comment on column public.complaint.owned_by_agency_code is 'A human readable code used to identify an agency.  The agency that currently owns the complaint.';
-comment on column public.complaint.complaint_status_code is 'A human readable code used to identify a complaint status.';
-comment on column public.complaint.geo_organization_unit_code is 'A human readable code used to identify a geographical organization unit.   The finest known grain geographical organization unit where the complaint occurred.  ';
-comment on column public.complaint.detail_text is 'Verbatim details of the complaint as recorded by the call centre or through the web form.';
-comment on column public.complaint.caller_name is 'The name provided by the caller to the call centre or entered onto the web form.';
-comment on column public.complaint.caller_address is 'The address provided by the caller to the call centre or entered onto the web form.';
-comment on column public.complaint.caller_email is 'The email address provided by the caller to the call centre or entered onto the web form.';
-comment on column public.complaint.caller_phone_1 is 'The primary phone number provided by the caller to the call centre or entered onto the web form.';
-comment on column public.complaint.caller_phone_2 is 'An alternate phone number provided by the caller to the call centre or entered onto the web form.';
-comment on column public.complaint.caller_phone_3 is 'An alternate phone number provided by the caller to the call centre or entered onto the web form.';
-comment on column public.complaint.incident_datetime is 'The date and time at which the complaint occurred.';
-comment on column public.complaint.incident_reported_datetime is 'The date and time at which the complaint was reported.';
-comment on column public.complaint.location_geometry_point is 'The closest approximation to where the incident occurred. Stored as a geometric point using the EPSG:3005 Projected Coordinate System (BC Albers)';
-comment on column public.complaint.location_summary_text is 'A brief summary of the location of the complaint.';
-comment on column public.complaint.location_detailed_text is 'A more detailed description of the location of the complaint.';
-comment on column public.complaint.referred_by_agency_other_text is 'Provides a more detailed description when the referred by Agency is of type "OTHER" ';
-comment on column public.complaint.create_user_id is 'The id of the user that created the complaint.';
-comment on column public.complaint.create_user_guid is 'The unique guid of the user that created the complaint.';
-comment on column public.complaint.create_timestamp is 'The timestamp when the complaint was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.complaint.update_user_id is 'The id of the user that updated the complaint.';
-comment on column public.complaint.update_user_guid is 'The unique guid of the user that updated the complaint.';
-comment on column public.complaint.update_timestamp is 'The timestamp when the complaint was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column complaint.referred_by_agency_code is 'A human readable code used to identify an agency.  The agency that originally referred the complaint.';
+comment on column complaint.owned_by_agency_code is 'A human readable code used to identify an agency.  The agency that currently owns the complaint.';
+comment on column complaint.complaint_status_code is 'A human readable code used to identify a complaint status.';
+comment on column complaint.geo_organization_unit_code is 'A human readable code used to identify a geographical organization unit.   The finest known grain geographical organization unit where the complaint occurred.  ';
+comment on column complaint.detail_text is 'Verbatim details of the complaint as recorded by the call centre or through the web form.';
+comment on column complaint.caller_name is 'The name provided by the caller to the call centre or entered onto the web form.';
+comment on column complaint.caller_address is 'The address provided by the caller to the call centre or entered onto the web form.';
+comment on column complaint.caller_email is 'The email address provided by the caller to the call centre or entered onto the web form.';
+comment on column complaint.caller_phone_1 is 'The primary phone number provided by the caller to the call centre or entered onto the web form.';
+comment on column complaint.caller_phone_2 is 'An alternate phone number provided by the caller to the call centre or entered onto the web form.';
+comment on column complaint.caller_phone_3 is 'An alternate phone number provided by the caller to the call centre or entered onto the web form.';
+comment on column complaint.incident_datetime is 'The date and time at which the complaint occurred.';
+comment on column complaint.incident_reported_datetime is 'The date and time at which the complaint was reported.';
+comment on column complaint.location_geometry_point is 'The closest approximation to where the incident occurred. Stored as a geometric point using the EPSG:3005 Projected Coordinate System (BC Albers)';
+comment on column complaint.location_summary_text is 'A brief summary of the location of the complaint.';
+comment on column complaint.location_detailed_text is 'A more detailed description of the location of the complaint.';
+comment on column complaint.referred_by_agency_other_text is 'Provides a more detailed description when the referred by Agency is of type "OTHER" ';
+comment on column complaint.create_user_id is 'The id of the user that created the complaint.';
+comment on column complaint.create_user_guid is 'The unique guid of the user that created the complaint.';
+comment on column complaint.create_timestamp is 'The timestamp when the complaint was created.  The timestamp is stored in UTC with no Offset.';
+comment on column complaint.update_user_id is 'The id of the user that updated the complaint.';
+comment on column complaint.update_user_guid is 'The unique guid of the user that updated the complaint.';
+comment on column complaint.update_timestamp is 'The timestamp when the complaint was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.violation_code.violation_code is 'A human readable code used to identify a violation.';
-comment on column public.violation_code.short_description is 'The short description of the violation code.';
-comment on column public.violation_code.long_description is 'The long description of the violation code.';
-comment on column public.violation_code.display_order is 'The order in which the values of the violation code table should be displayed when presented to a user in a list.';
-comment on column public.violation_code.active_ind is 'A boolean indicator to determine if the violation code is active.';
-comment on column public.violation_code.create_user_id is 'The id of the user that created the violation code.';
-comment on column public.violation_code.create_user_guid is 'The unique guid of the user that created the violation code.';
-comment on column public.violation_code.create_timestamp is 'The timestamp when the violation code was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.violation_code.update_user_id is 'The id of the user that updated the violation code.';
-comment on column public.violation_code.update_user_guid is 'The unique guid of the user that updated the violation code.';
-comment on column public.violation_code.update_timestamp is 'The timestamp when the violation code was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column violation_code.violation_code is 'A human readable code used to identify a violation.';
+comment on column violation_code.short_description is 'The short description of the violation code.';
+comment on column violation_code.long_description is 'The long description of the violation code.';
+comment on column violation_code.display_order is 'The order in which the values of the violation code table should be displayed when presented to a user in a list.';
+comment on column violation_code.active_ind is 'A boolean indicator to determine if the violation code is active.';
+comment on column violation_code.create_user_id is 'The id of the user that created the violation code.';
+comment on column violation_code.create_user_guid is 'The unique guid of the user that created the violation code.';
+comment on column violation_code.create_timestamp is 'The timestamp when the violation code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column violation_code.update_user_id is 'The id of the user that updated the violation code.';
+comment on column violation_code.update_user_guid is 'The unique guid of the user that updated the violation code.';
+comment on column violation_code.update_timestamp is 'The timestamp when the violation code was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.allegation_complaint.allegation_complaint_guid is 'System generated unique key for an allegation complaint. This key should never be exposed to users via any system utilizing the tables.';
-comment on column public.allegation_complaint.violation_code is 'A human readable code used to identify a violation.';
-comment on column public.allegation_complaint.in_progress_ind is 'True if the alleged violation is currently described as being in progress.  False otherwise.';
-comment on column public.allegation_complaint.observed_ind is 'True if the alleged violation was observed first hand.  False otherwise.';
-comment on column public.allegation_complaint.create_user_id is 'The id of the user that created the allegation complaint.';
-comment on column public.allegation_complaint.create_user_guid is 'The unique guid of the user that created the allegation complaint.';
-comment on column public.allegation_complaint.create_timestamp is 'The timestamp when the allegation complaint was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.allegation_complaint.update_user_id is 'The id of the user that updated the allegation complaint.';
-comment on column public.allegation_complaint.update_user_guid is 'The unique guid of the user that updated the allegation complaint.';
-comment on column public.allegation_complaint.update_timestamp is 'The timestamp when the allegation complaint was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column allegation_complaint.allegation_complaint_guid is 'System generated unique key for an allegation complaint. This key should never be exposed to users via any system utilizing the tables.';
+comment on column allegation_complaint.violation_code is 'A human readable code used to identify a violation.';
+comment on column allegation_complaint.in_progress_ind is 'True if the alleged violation is currently described as being in progress.  False otherwise.';
+comment on column allegation_complaint.observed_ind is 'True if the alleged violation was observed first hand.  False otherwise.';
+comment on column allegation_complaint.create_user_id is 'The id of the user that created the allegation complaint.';
+comment on column allegation_complaint.create_user_guid is 'The unique guid of the user that created the allegation complaint.';
+comment on column allegation_complaint.create_timestamp is 'The timestamp when the allegation complaint was created.  The timestamp is stored in UTC with no Offset.';
+comment on column allegation_complaint.update_user_id is 'The id of the user that updated the allegation complaint.';
+comment on column allegation_complaint.update_user_guid is 'The unique guid of the user that updated the allegation complaint.';
+comment on column allegation_complaint.update_timestamp is 'The timestamp when the allegation complaint was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.hwcr_complaint_nature_code.hwcr_complaint_nature_code is 'A human readable code used to identify the nature of the Human Wildlife Conflict.';
-comment on column public.hwcr_complaint_nature_code.short_description is 'The short description of the nature of the Human Wildlife Conflict code.';
-comment on column public.hwcr_complaint_nature_code.long_description is 'The long description of the nature of the Human Wildlife Conflict code.';
-comment on column public.hwcr_complaint_nature_code.display_order is 'The order in which the values of the nature of the Human Wildlife Conflict code table should be displayed when presented to a user in a list.';
-comment on column public.hwcr_complaint_nature_code.active_ind is 'A boolean indicator to determine if the nature of the Human Wildlife Conflict code is active.';
-comment on column public.hwcr_complaint_nature_code.create_user_id is 'The id of the user that created the human wildlife conflict nature code.';
-comment on column public.hwcr_complaint_nature_code.create_user_guid is 'The unique guid of the user that created the human wildlife conflict nature code.';
-comment on column public.hwcr_complaint_nature_code.create_timestamp is 'The timestamp when the human wildlife conflict nature code was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.hwcr_complaint_nature_code.update_user_id is 'The id of the user that updated the human wildlife conflict nature code.';
-comment on column public.hwcr_complaint_nature_code.update_user_guid is 'The unique guid of the user that updated the human wildlife conflict nature code.';
-comment on column public.hwcr_complaint_nature_code.update_timestamp is 'The timestamp when the human wildlife conflict nature code was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column hwcr_complaint_nature_code.hwcr_complaint_nature_code is 'A human readable code used to identify the nature of the Human Wildlife Conflict.';
+comment on column hwcr_complaint_nature_code.short_description is 'The short description of the nature of the Human Wildlife Conflict code.';
+comment on column hwcr_complaint_nature_code.long_description is 'The long description of the nature of the Human Wildlife Conflict code.';
+comment on column hwcr_complaint_nature_code.display_order is 'The order in which the values of the nature of the Human Wildlife Conflict code table should be displayed when presented to a user in a list.';
+comment on column hwcr_complaint_nature_code.active_ind is 'A boolean indicator to determine if the nature of the Human Wildlife Conflict code is active.';
+comment on column hwcr_complaint_nature_code.create_user_id is 'The id of the user that created the human wildlife conflict nature code.';
+comment on column hwcr_complaint_nature_code.create_user_guid is 'The unique guid of the user that created the human wildlife conflict nature code.';
+comment on column hwcr_complaint_nature_code.create_timestamp is 'The timestamp when the human wildlife conflict nature code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column hwcr_complaint_nature_code.update_user_id is 'The id of the user that updated the human wildlife conflict nature code.';
+comment on column hwcr_complaint_nature_code.update_user_guid is 'The unique guid of the user that updated the human wildlife conflict nature code.';
+comment on column hwcr_complaint_nature_code.update_timestamp is 'The timestamp when the human wildlife conflict nature code was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.attractant_code.attractant_code is 'A human readable code used to identify an attractant.';
-comment on column public.attractant_code.short_description is 'The short description of the attractant code.';
-comment on column public.attractant_code.long_description is 'The long description of the attractant code.';
-comment on column public.attractant_code.display_order is 'The order in which the values of the attractant code table should be displayed when presented to a user in a list.';
-comment on column public.attractant_code.active_ind is 'A boolean indicator to determine if the attractant code is active.';
-comment on column public.attractant_code.create_user_id is 'The id of the user that created the attractant code.';
-comment on column public.attractant_code.create_user_guid is 'The unique guid of the user that created the attractant code.';
-comment on column public.attractant_code.create_timestamp is 'The timestamp when the attractant code was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.attractant_code.update_user_id is 'The id of the user that updated the attractant code.';
-comment on column public.attractant_code.update_user_guid is 'The unique guid of the user that updated the attractant code.';
-comment on column public.attractant_code.update_timestamp is 'The timestamp when the attractant code was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column attractant_code.attractant_code is 'A human readable code used to identify an attractant.';
+comment on column attractant_code.short_description is 'The short description of the attractant code.';
+comment on column attractant_code.long_description is 'The long description of the attractant code.';
+comment on column attractant_code.display_order is 'The order in which the values of the attractant code table should be displayed when presented to a user in a list.';
+comment on column attractant_code.active_ind is 'A boolean indicator to determine if the attractant code is active.';
+comment on column attractant_code.create_user_id is 'The id of the user that created the attractant code.';
+comment on column attractant_code.create_user_guid is 'The unique guid of the user that created the attractant code.';
+comment on column attractant_code.create_timestamp is 'The timestamp when the attractant code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column attractant_code.update_user_id is 'The id of the user that updated the attractant code.';
+comment on column attractant_code.update_user_guid is 'The unique guid of the user that updated the attractant code.';
+comment on column attractant_code.update_timestamp is 'The timestamp when the attractant code was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.species_code.species_code is 'A human readable code used to identify a wildlife species.';
-comment on column public.species_code.short_description is 'The short description of the species code.';
-comment on column public.species_code.long_description is 'The long description of the species code.';
-comment on column public.species_code.display_order is 'The order in which the values of the species code table should be displayed when presented to a user in a list.';
-comment on column public.species_code.active_ind is 'A boolean indicator to determine if the species code is active.';
-comment on column public.species_code.legacy_code is 'The code for the species from the CORS_SPECIES_CODE table in the COORS database.   ';
-comment on column public.species_code.create_user_id is 'The id of the user that created the species code.';
-comment on column public.species_code.create_user_guid is 'The unique guid of the user that created the species code.';
-comment on column public.species_code.create_timestamp is 'The timestamp when the species code was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.species_code.update_user_id is 'The id of the user that updated the species code.';
-comment on column public.species_code.update_user_guid is 'The unique guid of the user that updated the species code.';
-comment on column public.species_code.update_timestamp is 'The timestamp when the species code was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column species_code.species_code is 'A human readable code used to identify a wildlife species.';
+comment on column species_code.short_description is 'The short description of the species code.';
+comment on column species_code.long_description is 'The long description of the species code.';
+comment on column species_code.display_order is 'The order in which the values of the species code table should be displayed when presented to a user in a list.';
+comment on column species_code.active_ind is 'A boolean indicator to determine if the species code is active.';
+comment on column species_code.legacy_code is 'The code for the species from the CORS_SPECIES_CODE table in the COORS database.   ';
+comment on column species_code.create_user_id is 'The id of the user that created the species code.';
+comment on column species_code.create_user_guid is 'The unique guid of the user that created the species code.';
+comment on column species_code.create_timestamp is 'The timestamp when the species code was created.  The timestamp is stored in UTC with no Offset.';
+comment on column species_code.update_user_id is 'The id of the user that updated the species code.';
+comment on column species_code.update_user_guid is 'The unique guid of the user that updated the species code.';
+comment on column species_code.update_timestamp is 'The timestamp when the species code was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.attractant_hwcr_xref.attractant_hwcr_xref_guid is 'System generated unique key for an attractant hwcr relationship. This key should never be exposed to users via any system utilizing the tables.';
-comment on column public.attractant_hwcr_xref.attractant_code is 'A human readable code used to identify an attractant.';
-comment on column public.attractant_hwcr_xref.hwcr_complaint_guid is 'System generated unique key for a hwcr complaint.';
-comment on column public.attractant_hwcr_xref.create_user_id is 'The id of the user that created the attractant hwcr cross reference.';
-comment on column public.attractant_hwcr_xref.create_user_guid is 'The unique guid of the user that created the attractant hwcr cross reference.';
-comment on column public.attractant_hwcr_xref.create_timestamp is 'The timestamp when the attractant hwcr cross reference was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.attractant_hwcr_xref.update_user_id is 'The id of the user that updated the attractant hwcr cross reference.';
-comment on column public.attractant_hwcr_xref.update_user_guid is 'The unique guid of the user that updated the attractant hwcr cross reference.';
-comment on column public.attractant_hwcr_xref.update_timestamp is 'The timestamp when the attractant hwcr cross reference was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column attractant_hwcr_xref.attractant_hwcr_xref_guid is 'System generated unique key for an attractant hwcr relationship. This key should never be exposed to users via any system utilizing the tables.';
+comment on column attractant_hwcr_xref.attractant_code is 'A human readable code used to identify an attractant.';
+comment on column attractant_hwcr_xref.hwcr_complaint_guid is 'System generated unique key for a hwcr complaint.';
+comment on column attractant_hwcr_xref.create_user_id is 'The id of the user that created the attractant hwcr cross reference.';
+comment on column attractant_hwcr_xref.create_user_guid is 'The unique guid of the user that created the attractant hwcr cross reference.';
+comment on column attractant_hwcr_xref.create_timestamp is 'The timestamp when the attractant hwcr cross reference was created.  The timestamp is stored in UTC with no Offset.';
+comment on column attractant_hwcr_xref.update_user_id is 'The id of the user that updated the attractant hwcr cross reference.';
+comment on column attractant_hwcr_xref.update_user_guid is 'The unique guid of the user that updated the attractant hwcr cross reference.';
+comment on column attractant_hwcr_xref.update_timestamp is 'The timestamp when the attractant hwcr cross reference was updated.  The timestamp is stored in UTC with no Offset.';
 
-comment on column public.hwcr_complaint.hwcr_complaint_guid is 'System generated unique key for a hwcr complaint. This key should never be exposed to users via any system utilizing the tables.';
-comment on column public.hwcr_complaint.complaint_identifier is 'Natural key for a complaint generated by webEOC.';
-comment on column public.hwcr_complaint.species_code is 'A human readable code used to identify a wildlife species.';
-comment on column public.hwcr_complaint.hwcr_complaint_nature_code is 'A human readable code used to identify the nature of the Human Wildlife Conflict.';
-comment on column public.hwcr_complaint.other_attractants_text is 'Provides a more detailed description when the attractant of type "OTHER" is included.';
-comment on column public.hwcr_complaint.create_user_id is 'The id of the user that created the HWCR complaint.';
-comment on column public.hwcr_complaint.create_user_guid is 'The unique guid of the user that created the HWCR complaint.';
-comment on column public.hwcr_complaint.create_timestamp is 'The timestamp when the HWCR complaint was created.  The timestamp is stored in UTC with no Offset.';
-comment on column public.hwcr_complaint.update_user_id is 'The id of the user that updated the HWCR complaint.';
-comment on column public.hwcr_complaint.update_user_guid is 'The unique guid of the user that updated the HWCR complaint.';
-comment on column public.hwcr_complaint.update_timestamp is 'The timestamp when the HWCR complaint was updated.  The timestamp is stored in UTC with no Offset.';
+comment on column hwcr_complaint.hwcr_complaint_guid is 'System generated unique key for a hwcr complaint. This key should never be exposed to users via any system utilizing the tables.';
+comment on column hwcr_complaint.complaint_identifier is 'Natural key for a complaint generated by webEOC.';
+comment on column hwcr_complaint.species_code is 'A human readable code used to identify a wildlife species.';
+comment on column hwcr_complaint.hwcr_complaint_nature_code is 'A human readable code used to identify the nature of the Human Wildlife Conflict.';
+comment on column hwcr_complaint.other_attractants_text is 'Provides a more detailed description when the attractant of type "OTHER" is included.';
+comment on column hwcr_complaint.create_user_id is 'The id of the user that created the HWCR complaint.';
+comment on column hwcr_complaint.create_user_guid is 'The unique guid of the user that created the HWCR complaint.';
+comment on column hwcr_complaint.create_timestamp is 'The timestamp when the HWCR complaint was created.  The timestamp is stored in UTC with no Offset.';
+comment on column hwcr_complaint.update_user_id is 'The id of the user that updated the HWCR complaint.';
+comment on column hwcr_complaint.update_user_guid is 'The unique guid of the user that updated the HWCR complaint.';
+comment on column hwcr_complaint.update_timestamp is 'The timestamp when the HWCR complaint was updated.  The timestamp is stored in UTC with no Offset.';

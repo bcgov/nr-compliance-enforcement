@@ -3,7 +3,7 @@
 -------------------------
 TRUNCATE email_reference;
 INSERT INTO
-  public.email_reference (
+  email_reference (
     email_address,
     agency_code,
     geo_organization_unit_code,

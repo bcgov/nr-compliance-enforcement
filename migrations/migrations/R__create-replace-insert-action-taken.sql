@@ -1,6 +1,6 @@
--- DROP FUNCTION public.process_staging_activity_taken(uuid, varchar);
+-- DROP FUNCTION process_staging_activity_taken(uuid, varchar);
 CREATE
-OR REPLACE FUNCTION public.process_staging_activity_taken (
+OR REPLACE FUNCTION complaint.process_staging_activity_taken (
   staging_id uuid,
   action_taken_type character varying
 ) RETURNS void LANGUAGE plpgsql AS $function$
@@ -29,7 +29,7 @@ RAISE notice 'EXECUTING FUNCTION';
 
   SELECT sc.complaint_jsonb
   INTO   staged_data
-  FROM   staging_complaint sc
+  FROM   complaint.staging_complaint sc
   WHERE  sc.staging_complaint_guid = staging_id
   AND    sc.staging_status_code = STAGING_STATUS_CODE_PENDING 
   AND    sc.staging_activity_code = action_taken_type; 
@@ -48,7 +48,7 @@ RAISE notice 'EXECUTING FUNCTION';
   _is_update := staged_data ->> 'isUpdate';
 
   -- insert new action-taken
-  INSERT INTO public.action_taken (
+  INSERT INTO complaint.action_taken (
     action_taken_guid, 
     complaint_identifier, 
     complaint_update_guid, 
@@ -67,7 +67,7 @@ RAISE notice 'EXECUTING FUNCTION';
   );
 
   -- update the staging table
-  UPDATE staging_complaint
+  UPDATE complaint.staging_complaint
   SET    staging_status_code = STAGING_STATUS_CODE_SUCCESS
   WHERE  staging_complaint_guid = staging_id
   AND    staging_status_code = STAGING_STATUS_CODE_PENDING 
@@ -76,7 +76,7 @@ RAISE notice 'EXECUTING FUNCTION';
   EXCEPTION
   WHEN OTHERS THEN
     RAISE notice 'An unexpected error occurred: %', SQLERRM;
-    UPDATE staging_complaint
+    UPDATE complaint.staging_complaint
     SET    staging_status_code = STAGING_STATUS_CODE_ERROR
     WHERE  staging_complaint_guid = staging_id
     AND    staging_status_code = STAGING_STATUS_CODE_PENDING 

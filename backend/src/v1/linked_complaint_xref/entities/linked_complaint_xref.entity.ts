@@ -5,7 +5,7 @@ import { UUID } from "crypto";
 @Index("PK_linked_complaint_xref_guid", ["linkedComplaintXrefGuid"], {
   unique: true,
 })
-@Entity("linked_complaint_xref", { schema: "public" })
+@Entity("linked_complaint_xref", { schema: "complaint" })
 export class LinkedComplaintXref {
   @Column("uuid", {
     primary: true,

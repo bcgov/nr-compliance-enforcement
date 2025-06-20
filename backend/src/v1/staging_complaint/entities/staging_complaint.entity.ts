@@ -3,7 +3,7 @@ import { StagingActivityCode } from "../../staging_activity_code/entities/stagin
 import { StagingStatusCode } from "../../staging_status_code/entities/staging_status_code.entity";
 
 @Index("PK_staging_complaint", ["stagingComplaintGuid"], { unique: true })
-@Entity("staging_complaint", { schema: "public" })
+@Entity("staging_complaint", { schema: "complaint" })
 export class StagingComplaint {
   @Column("uuid", {
     primary: true,
