@@ -31,25 +31,25 @@ BEGIN
     -- Resolve the target code table and column name based on code_table_type
     CASE code_table_type
         WHEN 'reprtdbycd' THEN
-            target_code_table := 'complaint.reported_by_code';
+            target_code_table := 'reported_by_code';
             column_name := 'reported_by_code';
         WHEN 'geoorgutcd' THEN
-            target_code_table := 'complaint.geo_organization_unit_code';
+            target_code_table := 'geo_organization_unit_code';
             column_name := 'geo_organization_unit_code';
         WHEN 'speciescd' THEN
-            target_code_table := 'complaint.species_code';
+            target_code_table := 'species_code';
             column_name := 'species_code';
         WHEN 'cmpltntrcd' THEN
-            target_code_table := 'complaint.hwcr_complaint_nature_code';
+            target_code_table := 'hwcr_complaint_nature_code';
             column_name := 'hwcr_complaint_nature_code';
         WHEN 'atractntcd' THEN
-            target_code_table := 'complaint.attractant_code';
+            target_code_table := 'attractant_code';
             column_name := 'attractant_code';
         WHEN 'violatncd' THEN
-            target_code_table := 'complaint.violation_code';
+            target_code_table := 'violation_code';
             column_name := 'violation_code';
         WHEN 'girtypecd' THEN
-            target_code_table := 'complaint.gir_type_code';
+            target_code_table := 'gir_type_code';
             column_name := 'gir_type_code';
 
         ELSE RAISE EXCEPTION 'Invalid code_table_type provided: %', code_table_type;
@@ -84,23 +84,23 @@ BEGIN
         new_code := truncated_code || suffix;
         
         -- Check if the new_code exists in the specific code table
-        EXECUTE format('SELECT EXISTS(SELECT 1 FROM %I WHERE %I = $1)', target_code_table, column_name)
+        EXECUTE format('SELECT EXISTS(SELECT 1 FROM "complaint".%I WHERE %I = $1)', target_code_table, column_name)
         INTO code_exists
         USING new_code;
         
         IF NOT code_exists then
         
         	-- Determine the correct display_order for the new code
-            EXECUTE format('SELECT COALESCE(MAX(display_order) + 1, 1) FROM %I WHERE %I < $1', target_code_table, column_name)
+            EXECUTE format('SELECT COALESCE(MAX(display_order) + 1, 1) FROM "complaint".%I WHERE %I < $1', target_code_table, column_name)
             INTO new_display_order
             USING new_code;
            
 			-- Re-index the display_orders
-            EXECUTE format('UPDATE %I SET display_order = display_order + 1 WHERE display_order >= $1', target_code_table)
+            EXECUTE format('UPDATE "complaint".%I SET display_order = display_order + 1 WHERE display_order >= $1', target_code_table)
             USING new_display_order;
            
             -- Insert new code into the specific code table
-            EXECUTE format('INSERT INTO %I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', $6, $4, $6, $4, $5)', target_code_table, column_name)
+            EXECUTE format('INSERT INTO "complaint".%I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', $6, $4, $6, $4, $5)', target_code_table, column_name)
             USING new_code, truncated_short_description, webeoc_value, current_utc_timestamp, new_display_order, webeoc_user_id;
 
             -- Update configuration_value by 1 to nofity front-end to update
