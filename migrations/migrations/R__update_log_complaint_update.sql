@@ -96,9 +96,9 @@ BEGIN
     FROM   complaint.insert_and_return_code(_upd_reported_by_code, 'reprtdbycd');
 
     -- Format Phone Numbers
-    _upd_caller_phone_1 := format_phone_number(_upd_caller_phone_1);
-    _upd_caller_phone_2 := format_phone_number(_upd_caller_phone_2);
-    _upd_caller_phone_3 := format_phone_number(_upd_caller_phone_3);
+    _upd_caller_phone_1 := complaint.format_phone_number(_upd_caller_phone_1);
+    _upd_caller_phone_2 := complaint.format_phone_number(_upd_caller_phone_2);
+    _upd_caller_phone_3 := complaint.format_phone_number(_upd_caller_phone_3);
 
     -- Create a geometry point based on the latitude and longitude
     IF _update_address_coordinates_lat IS NOT NULL AND _update_address_coordinates_lat <> '' AND

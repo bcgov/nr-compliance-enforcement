@@ -95,9 +95,9 @@ BEGIN
     -- These fields are retrieved to potentially update an existing complaint record
 	_edit_detail_text := edit_complaint_data ->> 'cos_call_details';
     _edit_caller_name := edit_complaint_data ->> 'cos_caller_name';
-    _edit_caller_phone_1 := format_phone_number(edit_complaint_data ->> 'cos_primary_phone');
-    _edit_caller_phone_2 := format_phone_number(edit_complaint_data ->> 'cos_alt_phone');
-    _edit_caller_phone_3 := format_phone_number(edit_complaint_data ->> 'cos_alt_phone_2');
+    _edit_caller_phone_1 := complaint.format_phone_number(edit_complaint_data ->> 'cos_primary_phone');
+    _edit_caller_phone_2 := complaint.format_phone_number(edit_complaint_data ->> 'cos_alt_phone');
+    _edit_caller_phone_3 := complaint.format_phone_number(edit_complaint_data ->> 'cos_alt_phone_2');
     _edit_caller_email := edit_complaint_data ->> 'cos_caller_email';
     _edit_caller_address := edit_complaint_data ->> 'caller_address';
     _edit_address := edit_complaint_data ->> 'address';
@@ -111,8 +111,8 @@ BEGIN
     _edit_location_detailed_text := edit_complaint_data ->> 'cos_location_description';
     _edit_incident_utc_datetime := ( edit_complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _edit_incident_reported_utc_timestmp := ( edit_complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-	_edit_address_coordinates_lat := validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_lat');
-    _edit_address_coordinates_long := validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_long');
+	_edit_address_coordinates_lat := complaint.validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_lat');
+    _edit_address_coordinates_long := complaint.validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_long');
    
     -- Create a geometry point based on the latitude and longitude
     IF _edit_address_coordinates_lat IS NOT NULL AND _edit_address_coordinates_lat <> '' AND
@@ -160,7 +160,7 @@ BEGIN
 	    update_edit_ind = true;
   end if;
   
-  _edit_caller_phone_1 := format_phone_number(_edit_caller_phone_1);
+  _edit_caller_phone_1 := complaint.format_phone_number(_edit_caller_phone_1);
   if (COALESCE(_edit_caller_phone_1, '') <> COALESCE(current_complaint_record.caller_phone_1, '')) then
         
 	    UPDATE complaint.complaint
@@ -170,7 +170,7 @@ BEGIN
 	    update_edit_ind = true;
   end if;
   
-  _edit_caller_phone_2 := format_phone_number(_edit_caller_phone_2);
+  _edit_caller_phone_2 := complaint.format_phone_number(_edit_caller_phone_2);
   if (COALESCE(_edit_caller_phone_2, '') <> COALESCE(current_complaint_record.caller_phone_2, '')) then
     	
 	    UPDATE complaint.complaint
@@ -180,7 +180,7 @@ BEGIN
 	    update_edit_ind = true;
   end if;
   
-  _edit_caller_phone_3 := format_phone_number(_edit_caller_phone_3);
+  _edit_caller_phone_3 := complaint.format_phone_number(_edit_caller_phone_3);
   if (COALESCE(_edit_caller_phone_3, '') <> COALESCE(current_complaint_record.caller_phone_3, '')) then
     	
 	    UPDATE complaint.complaint

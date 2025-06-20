@@ -114,9 +114,9 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     -- If the numbers from webeoc contain non-numeric characters, strip those and 
     -- add the + (or +1) prefix
    
-	_caller_phone_1 := format_phone_number(complaint_data ->> jsonb_cos_primary_phone);
-	_caller_phone_2 := format_phone_number(complaint_data ->> jsonb_cos_alt_phone);
-	_caller_phone_3 := format_phone_number(complaint_data ->> jsonb_cos_alt_phone_2);
+	_caller_phone_1 := complaint.format_phone_number(complaint_data ->> jsonb_cos_primary_phone);
+	_caller_phone_2 := complaint.format_phone_number(complaint_data ->> jsonb_cos_alt_phone);
+	_caller_phone_3 := complaint.format_phone_number(complaint_data ->> jsonb_cos_alt_phone_2);
   _complaint_status_code := UPPER(complaint_data ->> 'status');
 	   
     _location_summary_text := left(complaint_data ->> 'address', 100)
@@ -130,8 +130,8 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     _location_detailed_text := complaint_data ->> 'cos_location_description';
     _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
-	_address_coordinates_lat := validate_coordinate_field(complaint_data ->> 'address_coordinates_lat');
-    _address_coordinates_long := validate_coordinate_field(complaint_data ->> 'address_coordinates_long');
+	_address_coordinates_lat := complaint.validate_coordinate_field(complaint_data ->> 'address_coordinates_lat');
+    _address_coordinates_long := complaint.validate_coordinate_field(complaint_data ->> 'address_coordinates_long');
    
     -- Create a geometry point based on the latitude and longitude
     IF _address_coordinates_lat IS NOT NULL AND _address_coordinates_lat <> '' AND
