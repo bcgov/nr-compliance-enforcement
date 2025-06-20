@@ -9,8 +9,7 @@ RUN npm ci --omit=dev && \
     npm run build
 
 # Deployment container
-# Deploy using minimal Distroless image
-FROM gcr.io/distroless/nodejs22-debian12:nonroot
+FROM debian:bookworm-slim
 # Set node to production
 ENV NODE_ENV=production
 
@@ -23,6 +22,10 @@ COPY ../templates /app/templates
 # Port and health check
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3000
+
+# include entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 # Non-privileged user
 USER app
