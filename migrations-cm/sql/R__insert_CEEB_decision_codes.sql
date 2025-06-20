@@ -1,3 +1,0 @@
--- 
--- Moved to R__code-table-data.sql
---

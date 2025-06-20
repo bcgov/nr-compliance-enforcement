@@ -1,4 +1,0 @@
-type Query {
-  HWCRAssessmentActions: [CaseFileAction]!
-  HWCRAssessmentCat1Actions: [CaseFileAction]!
-}

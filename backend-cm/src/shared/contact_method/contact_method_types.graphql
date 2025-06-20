@@ -1,5 +1,0 @@
-type ContactMethod {
-  typeCode: String
-  typeDescription: String
-  value: String
-}
