@@ -13566,7 +13566,7 @@ VALUES
   (
     uuid_generate_v4 (),
     'geoorgutcd',
-    'Mount Robison',
+    'Mount Robson',
     'MOUNTROB',
     'FLYWAY',
     CURRENT_TIMESTAMP,
