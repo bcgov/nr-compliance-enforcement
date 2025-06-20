@@ -1,0 +1,10 @@
+input ParkInput {
+  externalId: String!
+  name: String!
+  legalName: String
+  parkAreas: [ParkAreaInput!]
+}
+
+input ParkAreaInput {
+  parkAreaGuid: String!
+}
