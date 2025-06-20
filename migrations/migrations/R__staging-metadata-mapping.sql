@@ -24759,11 +24759,13 @@ DELETE FROM staging_metadata_mapping WHERE live_data_value='BRKHES-W';
 UPDATE geo_organization_unit_code
 SET short_description = 'Mount Robson', 
     long_description = 'Mount Robson'
-WHERE geo_organization_unit_code = 'MOUNTROB';
+WHERE geo_organization_unit_code = 'MOUNTROB'
+on conflict do nothing;
 
 UPDATE staging_metadata_mapping 
 SET staged_data_value = 'Mount Robson' 
-WHERE live_data_value = 'MOUNTROB';
+WHERE live_data_value = 'MOUNTROB'
+on conflict do nothing;
 
 --------------------------
 -- New Changes above this line
