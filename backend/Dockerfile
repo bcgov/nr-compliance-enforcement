@@ -29,5 +29,8 @@ RUN chmod +x /app/entrypoint.sh
 
 # Non-privileged user
 USER app
+
+# Explicit entrypoint for image
+ENTRYPOINT [ "node" ]
 # max old space the heap size, 500MB 
 CMD ["--max-old-space-size=500", "/app/dist/main"]
