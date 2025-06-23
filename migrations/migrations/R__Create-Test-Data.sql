@@ -11468,6 +11468,11 @@ SELECT
   now() ON CONFLICT
 DO NOTHING;
 
+-------------------------
+-- Move New Westminster in Location Hierarchy
+-------------------------
+UPDATE geo_org_unit_structure SET parent_geo_org_unit_code = 'SQMSHWHS' WHERE child_geo_org_unit_code  = 'NEWWEST';
+
 --------------------------
 -- New Changes above this line
 -------------------------
