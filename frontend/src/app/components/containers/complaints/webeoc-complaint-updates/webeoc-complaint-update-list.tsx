@@ -115,7 +115,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
       });
       setAllUpdates(allUpdatesArr);
     } else setAllUpdates([]);
-  }, [updates.length, actions.length, referrals.length]);
+  }, [updates, actions, referrals]);
 
   return (
     <>
