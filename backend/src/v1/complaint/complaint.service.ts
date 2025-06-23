@@ -1324,8 +1324,6 @@ export class ComplaintService {
       ],
     );
 
-    this.logger.error(referralComplaints);
-
     // Set the issueType for each item based on its type and the fetched complaints
     for (const item of items) {
       // Set referral agency codes
