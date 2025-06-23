@@ -1,4 +1,4 @@
-import { DelegateDto } from "../people/delegate";
+import { DelegateDto } from "../../people/delegate";
 import { BaseComplaint } from "nrs-ce-common-types";
 
 export interface ComplaintDto extends BaseComplaint {

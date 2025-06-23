@@ -1,7 +1,7 @@
 import { map } from "lodash";
 import { HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException, Scope } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
+import { Brackets, DataSource, In, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { caseFileQueryFields, get } from "../../external_api/shared_data";
@@ -12,6 +12,7 @@ import {
   applyAllegationComplaintMap,
   applyGeneralInfomationComplaintMap,
   applyWildlifeComplaintMap,
+  applySectorComplaintMap,
   complaintToComplaintDtoMap,
   mapAllegationReport,
   mapGeneralIncidentReport,
@@ -20,18 +21,18 @@ import {
 
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
-import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
-import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
+import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
+import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
 ///
 import { Complaint } from "./entities/complaint.entity";
-import { UpdateComplaintDto } from "../../types/models/complaints/update-complaint.dto";
+import { UpdateComplaintDto } from "../../types/models/complaints/dtos/update-complaint";
 
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 
-import { ComplaintDto } from "../../types/models/complaints/complaint";
+import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { CodeTableService } from "../code-table/code-table.service";
 import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
 import {
@@ -40,6 +41,7 @@ import {
   mapComplaintDtoToComplaint,
   mapWildlifeComplaintDtoToHwcrComplaint,
   mapGirComplaintDtoToGirComplaint,
+  mapSectorComplaintDtoToSectorComplaint,
 } from "../../middleware/maps/automapper-dto-to-entity-maps";
 
 import {
@@ -66,11 +68,12 @@ import { UUID, randomUUID } from "crypto";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { toDate, toZonedTime, format } from "date-fns-tz";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
-import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
+import { GeneralIncidentComplaintDto } from "../../types/models/complaints/dtos/gir-complaint";
+import { SectorComplaintDto } from "../../types/models/complaints/dtos/sector-complaint";
 import { ComplaintUpdateDto, ComplaintUpdateType } from "../../types/models/complaint-updates/complaint-update-dto";
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
-import { RelatedDataDto } from "src/types/models/complaints/related-data";
+import { RelatedDataDto } from "src/types/models/complaints/dtos/related-data";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { OfficerService } from "../officer/officer.service";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
@@ -80,7 +83,7 @@ import { formatPhonenumber, getFileType } from "../../common/methods";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
 import { Role } from "../../enum/role.enum";
-import { dtoAlias } from "src/types/models/complaints/dtoAlias-type";
+import { dtoAlias } from "src/types/models/complaints/dtos/dtoAlias-type";
 import { ParkDto } from "../shared_data/dto/park.dto";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 
@@ -134,12 +137,14 @@ export class ComplaintService {
     applyWildlifeComplaintMap(mapper);
     applyAllegationComplaintMap(mapper);
     applyGeneralInfomationComplaintMap(mapper);
+    applySectorComplaintMap(mapper);
 
     //-- DTO -> ENTITY
     mapComplaintDtoToComplaint(mapper);
     mapWildlifeComplaintDtoToHwcrComplaint(mapper);
     mapGirComplaintDtoToGirComplaint(mapper);
     mapAllegationComplaintDtoToAllegationComplaint(mapper);
+    mapSectorComplaintDtoToSectorComplaint(mapper);
     mapComplaintDtoToComplaintTable(mapper);
     mapDelegateDtoToPersonComplaintXrefTable(mapper);
     mapAttractantXrefDtoToAttractantHwcrXref(mapper);
@@ -1078,6 +1083,7 @@ export class ComplaintService {
     builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     status?: string,
     agencies?: string[],
+    complaintType?: COMPLAINT_TYPE,
   ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
     // Special handling for referral status
     if (status === "REFERRED") {
@@ -1089,12 +1095,14 @@ export class ComplaintService {
     // search for complaints based on the user's role
     if (agencies.length > 0) {
       if (!status) {
-        builder.andWhere(
-          "(complaint.owned_by_agency_code.agency_code IN (:...agency_codes) OR (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
-          {
-            agency_codes: agencies,
-          },
-        );
+        if (complaintType !== "SECTOR") {
+          builder.andWhere(
+            "(complaint.owned_by_agency_code.agency_code IN (:...agency_codes) OR (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
+            {
+              agency_codes: agencies,
+            },
+          );
+        }
       } else if (status === "REFERRED") {
         builder.andWhere(
           "(complaint.owned_by_agency_code.agency_code NOT IN (:...agency_codes) AND (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
@@ -1103,9 +1111,11 @@ export class ComplaintService {
           },
         );
       } else {
-        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
-          agency_codes: agencies,
-        });
+        if (complaintType !== "SECTOR") {
+          builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
+            agency_codes: agencies,
+          });
+        }
       }
     } else {
       builder.andWhere("1 = 0"); // In case of no agency, no rows will be returned
@@ -1138,7 +1148,7 @@ export class ComplaintService {
       if (Object.keys(filters).length !== 0) {
         builder = this._applyFilters(builder, filters as ComplaintFilterParameters, complaintType);
       }
-      builder = this._applyReferralFilters(builder, filters?.status, agencies);
+      builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (agencies.includes("EPO") && filters.actionTaken) {
@@ -1260,11 +1270,12 @@ export class ComplaintService {
         }
         case "SECTOR":
         default: {
-          const items = this.mapper.mapArray<Complaint, ComplaintDto>(
+          const items = this.mapper.mapArray<Complaint, SectorComplaintDto>(
             complaints as Array<Complaint>,
             "Complaint",
-            "ComplaintDto",
+            "SectorComplaintDto",
           );
+          await this.setSectorComplaintIssueType(items);
           results.complaints = items;
           break;
         }
@@ -1274,6 +1285,69 @@ export class ComplaintService {
     } catch (error) {
       this.logger.error(error);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
+    }
+  };
+
+  setSectorComplaintIssueType = async (items: SectorComplaintDto[]): Promise<void> => {
+    // This function gets all of the complaints that are in the items array for a given type
+    const getComplaintsByType = (type: string) => {
+      const builder = this._generateQueryBuilder(type as COMPLAINT_TYPE);
+      const complaintIds: string[] = items.filter((item) => item.type === type).map((item) => item.id);
+      builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+        complaint_identifiers: complaintIds,
+      });
+      return (complaintIds.length > 0 && builder.getMany()) || Promise.resolve([]);
+    };
+
+    const getReferralsByIds = async () =>
+      this._complaintReferralRepository.find({
+        where: {
+          complaint_identifier: In(items.map((item) => item.id)),
+        },
+        relations: {
+          referred_by_agency_code: true,
+        },
+        select: {
+          referred_by_agency_code: {
+            agency_code: true,
+          },
+        },
+      });
+
+    // Fetch all complaints by type concurrently
+    const [referralComplaints, wildlifeComplaints, allegationComplaints, generalIncidentComplaints] = await Promise.all(
+      [
+        getReferralsByIds(),
+        getComplaintsByType("HWCR") as Promise<HwcrComplaint[]>,
+        getComplaintsByType("ERS") as Promise<AllegationComplaint[]>,
+        getComplaintsByType("GIR") as Promise<GirComplaint[]>,
+      ],
+    );
+
+    this.logger.error(referralComplaints);
+
+    // Set the issueType for each item based on its type and the fetched complaints
+    for (const item of items) {
+      // Set referral agency codes
+      const referrals = referralComplaints.filter((referral) => referral.complaint_identifier === item.id);
+      if (referrals.length > 0) {
+        item.referralAgency = referrals.map((referral) => referral.referred_by_agency_code.agency_code);
+      }
+
+      // Set issueType based on the complaint type
+      if (item.type === "HWCR") {
+        item.issueType = wildlifeComplaints.find(
+          (c) => c.complaint_identifier.complaint_identifier === item.id,
+        )?.hwcr_complaint_nature_code.hwcr_complaint_nature_code;
+      } else if (item.type === "ERS") {
+        item.issueType = allegationComplaints.find(
+          (c) => c.complaint_identifier.complaint_identifier === item.id,
+        )?.violation_code.violation_code;
+      } else if (item.type === "GIR") {
+        item.issueType = generalIncidentComplaints.find(
+          (c) => c.complaint_identifier.complaint_identifier === item.id,
+        )?.gir_type_code.gir_type_code;
+      }
     }
   };
 
@@ -1313,7 +1387,7 @@ export class ComplaintService {
       if (query) {
         builder = await this._applySearch(builder, complaintType, query, token);
       }
-      builder = this._applyReferralFilters(builder, filters?.status, agencies);
+      builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (agencies.includes("EPO") && filters.actionTaken) {

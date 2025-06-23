@@ -1,6 +1,6 @@
 import { UUID } from "crypto";
 import { ComplaintDto } from "./complaint";
-import { AttractantXrefDto } from "./attractant-ref";
+import { AttractantXrefDto } from "../attractant-ref";
 
 export interface WildlifeComplaintDto extends ComplaintDto {
   hwcrId: UUID;

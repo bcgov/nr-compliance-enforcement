@@ -7,12 +7,13 @@ import { AllegationComplaint } from "../../v1/allegation_complaint/entities/alle
 import { AttractantHwcrXref } from "../../v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 
 //-- dto
-import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
-import { ComplaintDto } from "../../types/models/complaints/complaint";
+import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
+import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
-import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
-import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
+import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
+import { GeneralIncidentComplaintDto } from "../../types/models/complaints/dtos/gir-complaint";
 import { GirComplaint } from "../../v1/gir_complaint/entities/gir_complaint.entity";
+import { SectorComplaintDto } from "../../types/models/complaints/dtos/sector-complaint";
 
 export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
   createMap<ComplaintDto, Complaint>(
@@ -664,6 +665,124 @@ export const mapGirComplaintDtoToGirComplaint = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.complaint_identifier.complaint_type_code,
+      mapFrom((src) => {
+        const { type } = src;
+        return type ? { complaint_type_code: type } : null;
+      }),
+    ),
+  );
+};
+
+export const mapSectorComplaintDtoToSectorComplaint = (mapper: Mapper) => {
+  createMap<SectorComplaintDto, Complaint>(
+    mapper,
+    "SectorComplaintDto",
+    "Complaint",
+    forMember(
+      (dest) => dest.complaint_identifier,
+      mapFrom((src) => src.id),
+    ),
+    forMember(
+      (dest) => dest.detail_text,
+      mapFrom((src) => src.details),
+    ),
+    forMember(
+      (dest) => dest.caller_name,
+      mapFrom((src) => src.name),
+    ),
+    forMember(
+      (dest) => dest.caller_address,
+      mapFrom((src) => src.address),
+    ),
+    forMember(
+      (dest) => dest.caller_email,
+      mapFrom((src) => src.email),
+    ),
+    forMember(
+      (dest) => dest.caller_phone_1,
+      mapFrom((src) => src.phone1),
+    ),
+    forMember(
+      (dest) => dest.caller_phone_2,
+      mapFrom((src) => src.phone2),
+    ),
+    forMember(
+      (dest) => dest.caller_phone_3,
+      mapFrom((src) => src.phone3),
+    ),
+    forMember(
+      (dest) => dest.location_geometry_point,
+      mapFrom((src) => src.location),
+    ),
+    forMember(
+      (dest) => dest.location_summary_text,
+      mapFrom((src) => src.locationSummary),
+    ),
+    forMember(
+      (dest) => dest.location_detailed_text,
+      mapFrom((src) => src.locationDetail),
+    ),
+    forMember(
+      (dest) => dest.reported_by_other_text,
+      mapFrom((src) => src.reportedByOther),
+    ),
+    forMember(
+      (dest) => dest.incident_utc_datetime,
+      mapFrom((src) => src.incidentDateTime),
+    ),
+    forMember(
+      (dest) => dest.incident_reported_utc_timestmp,
+      mapFrom((src) => src.reportedOn),
+    ),
+    forMember(
+      (dest) => dest.cos_geo_org_unit,
+      mapFrom((src) => {
+        const { area, zone, region } = src.organization;
+        return { area_code: area, zone_code: zone, region_code: region };
+      }),
+    ),
+    forMember(
+      (dest) => dest.geo_organization_unit_code,
+      mapFrom((src) => {
+        const { area } = src.organization;
+        return { geo_organization_unit_code: area };
+      }),
+    ),
+    forMember(
+      (dest) => dest.owned_by_agency_code,
+      mapFrom((src) => {
+        const { ownedBy } = src || null;
+        return ownedBy ? { agency_code: ownedBy } : null;
+      }),
+    ),
+    forMember(
+      (dest) => dest.reported_by_code,
+      mapFrom((src) => {
+        const { reportedBy } = src || null;
+        return reportedBy ? { reported_by_code: reportedBy } : null;
+      }),
+    ),
+    forMember(
+      (dest) => dest.complaint_status_code,
+      mapFrom((src) => {
+        const { status } = src;
+        return { complaint_status_code: status };
+      }),
+    ),
+    forMember(
+      (dest) => dest.is_privacy_requested,
+      mapFrom((src) => src.isPrivacyRequested),
+    ),
+    forMember(
+      (dest) => dest.comp_last_upd_utc_timestamp,
+      mapFrom((src) => src.updatedOn),
+    ),
+    forMember(
+      (dest) => dest.park_guid,
+      mapFrom((src) => src.parkGuid),
+    ),
+    forMember(
+      (dest) => dest.complaint_type_code,
       mapFrom((src) => {
         const { type } = src;
         return type ? { complaint_type_code: type } : null;

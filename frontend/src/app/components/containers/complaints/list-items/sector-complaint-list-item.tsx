@@ -17,6 +17,9 @@ type Props = {
 export const SectorComplaintListItem: FC<Props> = ({ complaint }) => {
   const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
+  const natureOfComplaints = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.NATURE_OF_COMPLAINT));
+  const girTypeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GIR_TYPE));
+  const violationCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.VIOLATIONS));
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
@@ -33,10 +36,13 @@ export const SectorComplaintListItem: FC<Props> = ({ complaint }) => {
     locationDetail,
     locationSummary,
     organization: { area: locationCode },
+    issueType,
+    referralAgency,
   } = complaint;
 
   const userAgency = getUserAgency();
-  const derivedGeneralStatus = ownedBy !== userAgency ? "Referred" : status;
+  const derivedGeneralStatus =
+    ownedBy !== userAgency && referralAgency.find((agency: string) => agency === userAgency) ? "Referred" : status;
 
   const getLocationName = (input: string): string => {
     const code = areaCodes.find((item) => item.area === input);
@@ -77,6 +83,21 @@ export const SectorComplaintListItem: FC<Props> = ({ complaint }) => {
   const truncatedComplaintDetailText = truncateString(details, 185);
   const truncatedLocationDetailedText = truncateString(locationDetail, 220);
 
+  const getNatureOfComplaint = (input: string): string => {
+    const code = natureOfComplaints.find((item) => item.natureOfComplaint === input);
+    return code.longDescription;
+  };
+
+  const getGirTypeDescription = (input: string): string => {
+    const code = girTypeCodes.find((item) => item.girType === input);
+    return code.longDescription;
+  };
+
+  const getViolationDescription = (input: string): string => {
+    const code = violationCodes.find((item) => item.violation === input);
+    return code.longDescription;
+  };
+
   return (
     <>
       <tr
@@ -88,7 +109,7 @@ export const SectorComplaintListItem: FC<Props> = ({ complaint }) => {
           onClick={toggleExpand}
         >
           <Link
-            to={`/complaint/SECTOR/${id}`}
+            to={`/complaint/${type}/${id}`}
             id={id}
           >
             {id}
@@ -116,7 +137,9 @@ export const SectorComplaintListItem: FC<Props> = ({ complaint }) => {
           className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          TYPE
+          {type === "HWCR" && getNatureOfComplaint(issueType)}
+          {type === "GIR" && getGirTypeDescription(issueType)}
+          {type === "ERS" && getViolationDescription(issueType)}
         </td>
         <td
           className={`sortableHeader ${isExpandedClass}`}

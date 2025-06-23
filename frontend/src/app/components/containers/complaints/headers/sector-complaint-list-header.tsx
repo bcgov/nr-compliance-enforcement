@@ -46,13 +46,9 @@ export const SectorComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sort
           sortDirection={sortDirection}
         />
 
-        <SortableHeader
-          title="Type of issue"
-          sortFnc={handleSort}
-          sortKey="issue_type"
-          currentSort={sortKey}
-          sortDirection={sortDirection}
-        />
+        <th className="unsortable-header">
+          <div className="header-label">Type of issue</div>
+        </th>
 
         <SortableHeader
           title="Community"
