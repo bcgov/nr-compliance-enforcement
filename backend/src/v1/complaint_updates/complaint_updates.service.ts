@@ -8,7 +8,6 @@ import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { RelatedDataDto } from "src/types/models/complaints/related-data";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 import { ComplaintReferralEmailLogService } from "../complaint_referral_email_log/complaint_referral_email_log.service";
-import { UUID } from "crypto";
 
 @Injectable()
 export class ComplaintUpdatesService {
