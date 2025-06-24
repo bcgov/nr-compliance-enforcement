@@ -102,7 +102,6 @@ export const ComplaintDetailsEdit: FC = () => {
   //-- selectors
   const data = useAppSelector(selectComplaint);
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
-  const enablePrivacyFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.PRIV_REQ));
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const {
@@ -138,6 +137,8 @@ export const ComplaintDetailsEdit: FC = () => {
     ownedByAgencyCode,
     isPrivacyRequested,
   } = useAppSelector(selectComplaintCallerInformation);
+
+  const enablePrivacyFeature = ownedByAgencyCode?.agency && ownedByAgencyCode?.agency === "EPO";
 
   // Get the code table lists to populate the Selects
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
@@ -782,6 +783,7 @@ export const ComplaintDetailsEdit: FC = () => {
     }
     setMapElements(mapElements);
   }, [equipmentList, parentCoordinates]);
+
   return (
     <div className="comp-complaint-details">
       <ToastContainer />
@@ -824,13 +826,10 @@ export const ComplaintDetailsEdit: FC = () => {
         <div className="comp-details-view">
           {/* Call Details */}
           {readOnly && <CallDetails complaintType={complaintType} />}
-
           {/* Suspect / Witness Details */}
           {readOnly && complaintType === COMPLAINT_TYPES.ERS && <SuspectWitnessDetails />}
-
           {/* Caller Information */}
-          {readOnly && <CallerInformation />}
-
+          {readOnly && <CallerInformation complaintOwner={ownedByAgencyCode?.agency} />}
           {/* Attachments */}
           {readOnly && (
             <section id="complaint_attachments_div_id">
@@ -848,7 +847,6 @@ export const ComplaintDetailsEdit: FC = () => {
               </Card>
             </section>
           )}
-
           {/* Map */}
           {readOnly && (
             <ComplaintLocation

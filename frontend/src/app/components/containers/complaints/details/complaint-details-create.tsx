@@ -100,7 +100,7 @@ export const CreateComplaint: FC = () => {
   ];
 
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
-  const enablePrivacyFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.PRIV_REQ));
+  const enablePrivacyFeature = agency && agency === "EPO";
 
   const currentDate = useMemo(() => new Date(), []);
 
