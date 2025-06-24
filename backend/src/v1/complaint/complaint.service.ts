@@ -1093,32 +1093,41 @@ export class ComplaintService {
     }
 
     // search for complaints based on the user's role
-    if (agencies.length > 0) {
+
+    // No agencies, no results
+    if (!agencies?.length) {
+      builder.andWhere("1 = 0");
+      return builder;
+    }
+
+    // Handle referral status
+    if (status === "REFERRED") {
+      builder.andWhere(
+        `complaint.owned_by_agency_code.agency_code NOT IN (:...agency_codes)
+       AND complaint_referral.referred_by_agency_code.agency_code IS NOT NULL
+       AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)`,
+        { agency_codes: agencies },
+      );
+      return builder;
+    }
+
+    // Handle non-sector complaints
+    if (complaintType !== "SECTOR") {
       if (!status) {
-        if (complaintType !== "SECTOR") {
-          builder.andWhere(
-            "(complaint.owned_by_agency_code.agency_code IN (:...agency_codes) OR (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
-            {
-              agency_codes: agencies,
-            },
-          );
-        }
-      } else if (status === "REFERRED") {
         builder.andWhere(
-          "(complaint.owned_by_agency_code.agency_code NOT IN (:...agency_codes) AND (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
-          {
-            agency_codes: agencies,
-          },
+          `(complaint.owned_by_agency_code.agency_code IN (:...agency_codes)
+        OR (
+          complaint_referral.referred_by_agency_code.agency_code IS NOT NULL
+          AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)
+        )
+        )`,
+          { agency_codes: agencies },
         );
       } else {
-        if (complaintType !== "SECTOR") {
-          builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
-            agency_codes: agencies,
-          });
-        }
+        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
+          agency_codes: agencies,
+        });
       }
-    } else {
-      builder.andWhere("1 = 0"); // In case of no agency, no rows will be returned
     }
 
     return builder;
