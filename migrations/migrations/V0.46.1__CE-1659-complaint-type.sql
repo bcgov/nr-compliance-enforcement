@@ -1,8 +1,8 @@
-ALTER TABLE public.complaint ADD COLUMN complaint_type_code VARCHAR(10) REFERENCES public.complaint_type_code(complaint_type_code);
+ALTER TABLE complaint ADD COLUMN complaint_type_code VARCHAR(10) REFERENCES complaint_type_code(complaint_type_code);
 
-comment on column public.complaint.complaint_type_code is 'The type of the complaint, such as HWCR, GIR, or ERS.';
+comment on column complaint.complaint_type_code is 'The type of the complaint, such as HWCR, GIR, or ERS.';
 
-UPDATE public.complaint c1 SET complaint_type_code = 
+UPDATE complaint c1 SET complaint_type_code = 
 CASE WHEN a.allegation_complaint_guid IS NOT NULL THEN 'ERS'
 	 WHEN hc.hwcr_complaint_guid IS NOT NULL THEN 'HWCR'
 	 WHEN gc.gir_complaint_guid IS NOT NULL THEN 'GIR'

@@ -9,7 +9,6 @@ import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
 import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
 import { GeneralIncidentComplaintDto } from "../../types/models/complaints/dtos/gir-complaint";
-import { SectorComplaintDto } from "src/types/models/complaints/dtos/sector-complaint";
 import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import {
   ComplaintSearchParameters,
@@ -21,7 +20,7 @@ import { ApiKeyGuard } from "../../auth/apikey.guard";
 import { ActionTaken } from "../../types/models/complaints/action-taken";
 import { Public } from "../../auth/decorators/public.decorator";
 import { StagingComplaintService } from "../staging_complaint/staging_complaint.service";
-import { dtoAlias } from "../../types/models/complaints/dtos/dtoAlias-type";
+import { ComplaintDtoAlias } from "../../types/models/complaints/dtos/complaint-dto-alias";
 
 import { RelatedDataDto } from "../../types/models/complaints/dtos/related-data";
 import { ACTION_TAKEN_ACTION_TYPES } from "../../types/constants";
@@ -108,8 +107,8 @@ export class ComplaintController {
   async updateComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
-    @Body() model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
-  ): Promise<dtoAlias> {
+    @Body() model: ComplaintDtoAlias,
+  ): Promise<ComplaintDtoAlias> {
     return await this.service.updateComplaintById(id, complaintType, model);
   }
 
@@ -124,8 +123,8 @@ export class ComplaintController {
   async findComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
-  ): Promise<dtoAlias> {
-    return (await this.service.findById(id, complaintType)) as dtoAlias;
+  ): Promise<ComplaintDtoAlias> {
+    return (await this.service.findById(id, complaintType)) as ComplaintDtoAlias;
   }
   @Get("/related-data/:id")
   @Roles(coreRoles)
@@ -135,7 +134,10 @@ export class ComplaintController {
 
   @Post("/create/:complaintType")
   @Roles(coreRoles)
-  async create(@Param("complaintType") complaintType: COMPLAINT_TYPE, @Body() model: dtoAlias): Promise<dtoAlias> {
+  async create(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Body() model: ComplaintDtoAlias,
+  ): Promise<ComplaintDtoAlias> {
     return await this.service.create(complaintType, model);
   }
 

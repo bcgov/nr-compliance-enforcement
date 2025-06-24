@@ -734,7 +734,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
 
         if (xref) {
           const { complaint_method_received_code } = xref;
-          return complaint_method_received_code?.complaint_method_received_code || null;
+          return complaint_method_received_code?.complaint_method_received_code ?? null;
         }
 
         return null;
@@ -983,7 +983,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
 
         if (comp_mthd_recv_cd_agcy_cd_xref) {
           const { complaint_method_received_code } = comp_mthd_recv_cd_agcy_cd_xref;
-          return complaint_method_received_code?.complaint_method_received_code || null;
+          return complaint_method_received_code?.complaint_method_received_code ?? null;
         }
 
         return null;
@@ -1212,7 +1212,7 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
 
         const { complaint_method_received_code } = comp_mthd_recv_cd_agcy_cd_xref || {};
 
-        return complaint_method_received_code?.complaint_method_received_code || null;
+        return complaint_method_received_code?.complaint_method_received_code ?? null;
       }),
     ),
     forMember(
@@ -1403,7 +1403,7 @@ export const applySectorComplaintMap = (mapper: Mapper) => {
 
         const { complaint_method_received_code } = comp_mthd_recv_cd_agcy_cd_xref || {};
 
-        return complaint_method_received_code?.complaint_method_received_code || null;
+        return complaint_method_received_code?.complaint_method_received_code ?? null;
       }),
     ),
     forMember(

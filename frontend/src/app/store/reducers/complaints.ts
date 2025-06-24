@@ -45,7 +45,7 @@ import { Collaborator } from "@apptypes/app/complaints/collaborator";
 import { generateExportComplaintInputParams } from "@/app/store/reducers/documents-thunks";
 import { CodeTableState } from "@/app/types/state/code-table-state";
 
-type dtoAlias = WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint;
+type ComplaintDtoAlias = WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint;
 
 const initialState: ComplaintState = {
   complaintSearchParameters: {
@@ -108,9 +108,12 @@ export const complaintSlice = createSlice({
         case COMPLAINT_TYPES.GIR:
           update = { ...complaintItems, general: data };
           break;
-        default:
+        case COMPLAINT_TYPES.SECTOR:
           update = { ...complaintItems, sector: data };
           break;
+        default:
+          console.error(`Unknown complaint type: ${type}`);
+          return state; // No change if the type is unknown
       }
       return { ...state, complaintItems: update };
     },
@@ -538,7 +541,7 @@ export const updateWildlifeComplaintStatus =
 
       const response = await get<WildlifeComplaint>(dispatch, parameters);
 
-      dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaint));
+      dispatch(updateWildlifeComplaintByRow(response));
       const result = response;
 
       dispatch(setComplaint({ ...result }));
@@ -589,10 +592,7 @@ export const updateGeneralIncidentComplaintStatus =
   };
 
 export const updateComplaintById =
-  (
-    complaint: Complaint | WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint,
-    complaintType: string,
-  ): AppThunk =>
+  (complaint: ComplaintDtoAlias, complaintType: string): AppThunk =>
   async (dispatch) => {
     try {
       const { id } = complaint;
@@ -602,7 +602,7 @@ export const updateComplaintById =
         complaint,
       );
 
-      await patch<dtoAlias>(dispatch, updateParams);
+      await patch<ComplaintDtoAlias>(dispatch, updateParams);
 
       ToggleSuccess("Updates have been saved");
     } catch (error) {
@@ -666,7 +666,7 @@ export const getComplaintById =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
       );
-      const response = await get<dtoAlias>(dispatch, parameters);
+      const response = await get<ComplaintDtoAlias>(dispatch, parameters);
 
       dispatch(setComplaint({ ...response }));
     } catch (error) {
@@ -759,7 +759,7 @@ export const getLinkedComplaints =
 export const createComplaint =
   (
     complaintType: string,
-    complaint: Complaint | WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint,
+    complaint: ComplaintDtoAlias,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {

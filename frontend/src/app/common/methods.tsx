@@ -16,7 +16,6 @@ import { GirType } from "@apptypes/app/code-tables/gir-type";
 import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
 import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
-import { Complaint } from "@apptypes/app/complaints/complaint";
 import { ToggleError } from "./toast";
 let utmObj = require("utm-latlng");
 

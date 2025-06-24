@@ -56,7 +56,7 @@ import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
-import { Complaint as Complaint } from "@apptypes/app/complaints/complaint";
+import { Complaint } from "@apptypes/app/complaints/complaint";
 import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
 import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";

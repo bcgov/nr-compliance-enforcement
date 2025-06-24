@@ -83,7 +83,7 @@ import { formatPhonenumber, getFileType } from "../../common/methods";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
 import { Role } from "../../enum/role.enum";
-import { dtoAlias } from "src/types/models/complaints/dtos/dtoAlias-type";
+import { ComplaintDtoAlias } from "src/types/models/complaints/dtos/complaint-dto-alias";
 import { ParkDto } from "../shared_data/dto/park.dto";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 
@@ -1643,8 +1643,8 @@ export class ComplaintService {
   updateComplaintById = async (
     id: string,
     complaintType: string,
-    model: ComplaintDto | dtoAlias,
-  ): Promise<dtoAlias> => {
+    model: ComplaintDtoAlias,
+  ): Promise<ComplaintDtoAlias> => {
     const agencyCode = model.ownedBy;
     const hasAssignees = (delegates: Array<DelegateDto>): boolean => {
       if (delegates && delegates.length > 0) {
@@ -1841,7 +1841,11 @@ export class ComplaintService {
     }
   };
 
-  create = async (complaintType: COMPLAINT_TYPE, model: dtoAlias, webeocInd?: boolean): Promise<dtoAlias> => {
+  create = async (
+    complaintType: COMPLAINT_TYPE,
+    model: ComplaintDtoAlias,
+    webeocInd?: boolean,
+  ): Promise<ComplaintDtoAlias> => {
     this.logger.debug("Creating new complaint");
     const generateComplaintId = async (queryRunner: QueryRunner): Promise<string> => {
       let sequence;
