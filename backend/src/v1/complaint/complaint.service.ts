@@ -1858,7 +1858,7 @@ export class ComplaintService {
     this.logger.debug("Creating new complaint");
     const generateComplaintId = async (queryRunner: QueryRunner): Promise<string> => {
       let sequence;
-      await queryRunner.manager.query("SELECT nextval('complaint_sequence')").then(function (returnData) {
+      await queryRunner.manager.query("SELECT nextval('complaint.complaint_sequence')").then(function (returnData) {
         sequence = map(returnData, "nextval");
       });
       const prefix = format(new Date(), "yy");

@@ -208,7 +208,7 @@ const generateBulkData = (year, num, startingRecord) => {
 const insertData = async (data) => {
   // Create an insert query with placeholders for each value 
   const insertQuery = `
-    INSERT INTO staging_complaint (
+    INSERT INTO complaint.staging_complaint (
       staging_complaint_guid, 
       staging_status_code, 
       staging_activity_code,
@@ -257,11 +257,11 @@ const processPendingComplaints = async () => {
       -- Loop through each pending complaint
       FOR complaint_record IN
           SELECT complaint_identifier
-          FROM staging_complaint
+          FROM complaint.staging_complaint
           WHERE staging_status_code = 'PENDING'
       LOOP
           -- Call the insert_complaint_from_staging function for each complaint
-          PERFORM public.insert_complaint_from_staging(complaint_record.complaint_identifier);
+          PERFORM complaint.insert_complaint_from_staging(complaint_record.complaint_identifier);
       END LOOP;
     
       TRUNCATE TABLE staging_complaint;

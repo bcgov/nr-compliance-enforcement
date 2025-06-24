@@ -1,12 +1,12 @@
 CREATE
-OR REPLACE FUNCTION public.log_complaint_update (
+OR REPLACE FUNCTION complaint.log_complaint_update (
     _complaint_identifier character varying,
     update_complaint_data jsonb
 ) RETURNS void LANGUAGE plpgsql AS $function$
 DECLARE
     -- Variables for the current complaint record and the previous update record
-    current_complaint_record PUBLIC.complaint;
-    prev_complaint_update_record PUBLIC.complaint_update;
+    current_complaint_record complaint;
+    prev_complaint_update_record complaint_update;
 
     -- Variables for 'complaint_update' table
     _upd_detail_text TEXT;
@@ -55,20 +55,20 @@ BEGIN
     -- Get the current state of the complaint
     SELECT *
     INTO current_complaint_record
-    FROM PUBLIC.complaint
+    FROM complaint.complaint
     WHERE complaint_identifier = _complaint_identifier;
 
     -- Get the previous update, if any
     SELECT *
     INTO prev_complaint_update_record
-    FROM PUBLIC.complaint_update
+    FROM complaint.complaint_update
     WHERE complaint_identifier = _complaint_identifier
     ORDER BY update_seq_number DESC
     LIMIT 1;
    
    select exists (
      select 1
-     from PUBLIC.complaint_update cu
+     from complaint.complaint_update cu
 	 where complaint_identifier = _complaint_identifier and update_seq_number = _update_number
    ) into _update_number_exists;
 
@@ -93,12 +93,12 @@ BEGIN
     -- Get the codes from our application (inserting if necessary) for the codes retrieved from WebEOC
     SELECT *
     INTO   _upd_reported_by_code
-    FROM   PUBLIC.insert_and_return_code(_upd_reported_by_code, 'reprtdbycd');
+    FROM   complaint.insert_and_return_code(_upd_reported_by_code, 'reprtdbycd');
 
     -- Format Phone Numbers
-    _upd_caller_phone_1 := format_phone_number(_upd_caller_phone_1);
-    _upd_caller_phone_2 := format_phone_number(_upd_caller_phone_2);
-    _upd_caller_phone_3 := format_phone_number(_upd_caller_phone_3);
+    _upd_caller_phone_1 := complaint.format_phone_number(_upd_caller_phone_1);
+    _upd_caller_phone_2 := complaint.format_phone_number(_upd_caller_phone_2);
+    _upd_caller_phone_3 := complaint.format_phone_number(_upd_caller_phone_3);
 
     -- Create a geometry point based on the latitude and longitude
     IF _update_address_coordinates_lat IS NOT NULL AND _update_address_coordinates_lat <> '' AND
@@ -248,7 +248,7 @@ BEGIN
     -- Insert the record if there are any differences, either log the complaint or update the previously existing complaint
     IF has_difference then
     	if _update_number_exists then
-	    	UPDATE PUBLIC.complaint_update 
+	    	UPDATE complaint.complaint_update 
 	    		set upd_detail_text = insert_upd_detail_text,
 		            upd_location_summary_text = insert_upd_location_summary_text,
 		            upd_location_detailed_text = insert_upd_location_detailed_text,
@@ -266,7 +266,7 @@ BEGIN
 		   where complaint_identifier = _complaint_identifier and update_seq_number = _update_number;
     	else
     	
-	        INSERT INTO PUBLIC.complaint_update (
+	        INSERT INTO complaint.complaint_update (
 	            complaint_identifier,
 	            update_seq_number,
 	            upd_detail_text,
@@ -310,7 +310,7 @@ BEGIN
        end if;
        
        -- Update timestamp to latest
-       UPDATE PUBLIC.complaint
+       UPDATE complaint.complaint
        SET    update_utc_timestamp = _update_utc_timestamp, update_user_id = _update_userid
        WHERE  complaint_identifier = _complaint_identifier;
     END IF;
