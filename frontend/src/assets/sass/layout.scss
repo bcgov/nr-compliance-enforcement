@@ -485,6 +485,26 @@ button.modal-buttons {
   flex-grow: 0;
 }
 
+.refer-complaint-modal-alert {
+  margin-bottom: 0px;
+  padding: 8px;
+}
+
+.refer-complaint-modal-subtitle {
+  padding-top: 3px;
+  font-size: 16px;
+  margin-bottom: 0px;
+}
+
+.refer-complaint-modal-alert-item {
+  padding-bottom: 5px;
+  color: rgba(149, 125, 49);
+}
+
+.refer-complaint-modal-alert-list {
+  margin-bottom: 0px;
+}
+
 // PAGINATION CONTAINER
 .pagination_container {
   display: flex;
