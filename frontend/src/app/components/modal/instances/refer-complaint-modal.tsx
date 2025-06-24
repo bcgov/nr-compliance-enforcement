@@ -225,7 +225,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
     <div style={{ maxHeight: "90vh", overflow: "hidden" }}>
       {title && (
         <Modal.Header
-          style={{ paddingBottom: 0 }}
+          style={{ paddingBottom: 0, marginBottom: -10 }}
           closeButton={true}
         >
           <Modal.Title as="h3">
