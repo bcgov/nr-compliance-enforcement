@@ -5,6 +5,9 @@ import { ComplaintUpdate } from "./entities/complaint_updates.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
+import { ComplaintReferralEmailLogService } from "../complaint_referral_email_log/complaint_referral_email_log.service";
+import { MockComplaintReferralEmailLogRepository } from "../../../test/mocks/mock-complaints-repositories";
+import { ComplaintReferralEmailLog } from "../complaint_referral_email_log/entities/complaint_referral_email_log.entity";
 
 describe("ConfigurationService", () => {
   let service: ComplaintUpdatesService;
@@ -28,6 +31,11 @@ describe("ConfigurationService", () => {
         {
           provide: getRepositoryToken(ComplaintReferral),
           useValue: {},
+        },
+        ComplaintReferralEmailLogService,
+        {
+          provide: getRepositoryToken(ComplaintReferralEmailLog),
+          useValue: MockComplaintReferralEmailLogRepository,
         },
       ],
     }).compile();
