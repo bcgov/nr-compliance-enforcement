@@ -178,7 +178,7 @@ jobs:
           # get primary crunchy pod and remove the role and db
           CRUNCHY_PG_PRIMARY_POD_NAME=$(oc get pods -l postgres-operator.crunchydata.com/role=master -o json | jq -r '.items[0].metadata.name')
           echo "${CRUNCHY_PG_PRIMARY_POD_NAME}"
-          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "CREATE SCHEMA IF NOT EXISTS public;"
+          oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "CREATE SCHEMA IF NOT EXISTS complaint;"
           oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON SCHEMA complaint TO \"app-${{ github.event.number }}\";"
           oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA complaint TO \"app-${{ github.event.number }}\";"
           oc exec "${CRUNCHY_PG_PRIMARY_POD_NAME}" -- psql -d "app-${{ github.event.number }}" -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA complaint TO \"app-${{ github.event.number }}\";"
