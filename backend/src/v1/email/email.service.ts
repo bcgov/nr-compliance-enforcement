@@ -171,7 +171,7 @@ export class EmailService {
 
       const emailBody = generateReferralEmailBody(generateReferralEmailParams);
 
-      return await this._chesService.sendEmail(
+      await this._chesService.sendEmail(
         senderEmailAddress,
         senderName,
         emailSubject,
@@ -180,6 +180,8 @@ export class EmailService {
         [senderEmailAddress],
         emailAttachments,
       );
+
+      return recipientList;
     } catch (error) {
       this.logger.error(`Failed to send referral email: ${error.message}`);
       throw error;

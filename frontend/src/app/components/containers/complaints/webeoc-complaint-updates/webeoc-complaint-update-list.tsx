@@ -7,6 +7,7 @@ import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 import { ComplaintReferral } from "@/app/types/app/complaints/complaint-referral";
 import { UUID } from "crypto";
 import { formatPhoneNumber } from "react-phone-number-input/input";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 type Props = {
   complaintIdentifier: string;
@@ -115,7 +116,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
       });
       setAllUpdates(allUpdatesArr);
     } else setAllUpdates([]);
-  }, [updates.length, actions.length, referrals.length]);
+  }, [updates, actions, referrals]);
 
   return (
     <>
@@ -130,6 +131,22 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
           </div>
 
           {allUpdates.map((update: UpdateItem, index: number) => {
+            const emailListTooltip = (props: any) => (
+              <Tooltip
+                id="email-list-tooltip"
+                className="comp-complaint-update-email-list-tooltip"
+                {...props}
+              >
+                <div>
+                  <strong>Notifications sent to:</strong>
+                  {(update.content as ComplaintReferral).referral_email_logs?.map((emailLog) => (
+                    <div>
+                      <span>{emailLog.email_address}</span>
+                    </div>
+                  ))}
+                </div>
+              </Tooltip>
+            );
             return (
               <div
                 className={`comp-complaint-update-item ${update.type === "referral" ? "referral-update" : "webeoc-update"}`}
@@ -176,7 +193,14 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                   <div className="complaint-description-section">
                     <div className="comp-complaint-update-label">New lead agency:</div>
                     <div className="complaint-description-text">
-                      <strong>{(update.content as ComplaintReferral).referred_to_agency_code.long_description}</strong>
+                      <strong>{(update.content as ComplaintReferral).referred_to_agency_code.long_description}</strong>{" "}
+                      <OverlayTrigger
+                        placement="bottom"
+                        delay={{ show: 250, hide: 400 }}
+                        overlay={emailListTooltip}
+                      >
+                        <i className="bi bi-envelope-fill"></i>
+                      </OverlayTrigger>
                     </div>
                   </div>
                 )}
