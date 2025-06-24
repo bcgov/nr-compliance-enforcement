@@ -1,5 +1,5 @@
 # Build
-FROM debian:bookworm AS build
+FROM node:22-slim AS build
 # Install packages, build and keep only prod packages
 USER root
 WORKDIR /app
@@ -10,8 +10,7 @@ RUN npm ci --omit=dev --ignore-scripts && \
     npm run build
 
 # Deployment container
-# Deploy using minimal Distroless image
-FROM gcr.io/distroless/nodejs22-debian12:nonroot
+FROM debian:bookworm-slim
 # Set node to production
 ENV NODE_EN=production
 
