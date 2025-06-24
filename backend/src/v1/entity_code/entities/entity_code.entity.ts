@@ -2,7 +2,7 @@ import { Column, Entity, Index, OneToMany } from "typeorm";
 import { StagingMetadataMapping } from "../../staging_meta_data_mapping/entities/staging_meta_data_mapping.entity";
 
 @Index("PK_entity_code", ["entityCode"], { unique: true })
-@Entity("entity_code", { schema: "public" })
+@Entity("entity_code", { schema: "complaint" })
 export class EntityCode {
   @Column("character varying", {
     primary: true,
