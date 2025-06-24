@@ -2,7 +2,7 @@ import { Column, Entity, Index, OneToMany } from "typeorm";
 import { StagingComplaint } from "../../staging_complaint/entities/staging_complaint.entity";
 
 @Index("PK_staging_status_code", ["stagingStatusCode"], { unique: true })
-@Entity("staging_status_code", { schema: "public" })
+@Entity("staging_status_code", { schema: "complaint" })
 export class StagingStatusCode {
   @Column("character varying", {
     primary: true,

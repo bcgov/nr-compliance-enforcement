@@ -5,7 +5,7 @@ import { Entity, Column, ManyToOne, JoinColumn, Index } from "typeorm";
 @Index("PK_refemailog", ["complaint_referral_email_log_guid"], {
   unique: true,
 })
-@Entity({ name: "complaint_referral_email_log", schema: "public" })
+@Entity({ name: "complaint_referral_email_log", schema: "complaint" })
 export class ComplaintReferralEmailLog {
   @Column("uuid", {
     primary: true,
