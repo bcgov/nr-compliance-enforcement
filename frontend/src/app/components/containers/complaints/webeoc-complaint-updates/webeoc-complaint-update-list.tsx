@@ -140,7 +140,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                 <div>
                   <strong>Notifications sent to:</strong>
                   {(update.content as ComplaintReferral).referral_email_logs?.map((emailLog) => (
-                    <div>
+                    <div key={emailLog.email_address}>
                       <span>{emailLog.email_address}</span>
                     </div>
                   ))}

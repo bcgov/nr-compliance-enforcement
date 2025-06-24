@@ -98,7 +98,7 @@ export class ComplaintUpdatesService {
     const actions = await this.findActionsByComplaintId(id);
     const referrals = await this.findReferralUpdatesByComplaintId(id);
     const referral_email_logs = await this._complaintReferralEmailLogService.findByComplaintReferralGuids(
-      referrals.map((ref) => ref.complaint_referral_guid as UUID),
+      referrals.map((ref) => ref.complaint_referral_guid),
     );
 
     let fullResults: RelatedDataDto = {
