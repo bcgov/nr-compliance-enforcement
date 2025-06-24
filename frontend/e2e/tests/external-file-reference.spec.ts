@@ -88,7 +88,7 @@ complaintTypes.forEach((type) => {
     test(`Can edit an external reference number: ${type}`, async ({ page }) => {
       //navigatetoComplaint
       await navigateToComplaint(page, type);
-      await waitForSpinner(page);
+      await timedWaitForSpinner(page);
 
       //press Edit
       await page.locator("#external-file-reference-edit-button").click();
@@ -143,7 +143,7 @@ complaintTypes.forEach((type) => {
     test(`Will not accept a reference file number with letters: ${type}`, async ({ page }) => {
       //navigatetoComplaint
       await navigateToComplaint(page, type);
-      await waitForSpinner(page);
+      await timedWaitForSpinner(page);
 
       //make sure that there isn't an old one there from a failed run
       await deleteReferenceNumber(page);
