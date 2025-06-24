@@ -2,12 +2,7 @@ import { expect, Locator, Page } from "@playwright/test";
 
 export const slowExpect = expect.configure({ timeout: 30000 });
 
-export async function waitForSpinner(page: Page) {
-  await slowExpect(page.locator(".comp-loader-overlay")).toBeVisible();
-  await slowExpect(page.locator(".comp-loader-overlay")).not.toBeVisible();
-}
-
-export async function timedWaitForSpinner(page: Page, timeBeforeContinuing: number = 6000) {
+export async function waitForSpinner(page: Page, timeBeforeContinuing: number = 6000) {
   const foundSpinner = await Promise.race([
     page
       .locator(".comp-loader-overlay")
