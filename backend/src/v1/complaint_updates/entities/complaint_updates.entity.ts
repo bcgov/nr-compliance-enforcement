@@ -4,7 +4,7 @@ import { Complaint } from "../../../v1/complaint/entities/complaint.entity";
 import { ReportedByCode } from "../../reported_by_code/entities/reported_by_code.entity";
 
 @Index("complaint_update_pk", ["complaintUpdateGuid"], { unique: true })
-@Entity("complaint_update", { schema: "public" })
+@Entity("complaint_update", { schema: "complaint" })
 export class ComplaintUpdate {
   @ApiProperty({
     example: "d3b991df-7831-4c75-ab97-8bed38f3cfeb",

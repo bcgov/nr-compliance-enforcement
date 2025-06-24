@@ -200,14 +200,14 @@ export class StagingComplaintService {
   }
 
   async processWebEOCComplaint(complaintIdentifier: string): Promise<any> {
-    await this.repository.manager.query("SELECT public.insert_complaint_from_staging($1)", [complaintIdentifier]);
-    await this.repository.manager.query("SELECT public.edit_complaint_using_webeoc_complaint($1)", [
+    await this.repository.manager.query('SELECT "complaint".insert_complaint_from_staging($1)', [complaintIdentifier]);
+    await this.repository.manager.query('SELECT "complaint".edit_complaint_using_webeoc_complaint($1)', [
       complaintIdentifier,
     ]);
   }
 
   async processWebEOCComplaintUpdate(complaintIdentifier: string, updateNumber: number): Promise<any> {
-    await this.repository.manager.query("SELECT public.insert_complaint_update_from_staging($1, $2)", [
+    await this.repository.manager.query('SELECT "complaint".insert_complaint_update_from_staging($1, $2)', [
       complaintIdentifier,
       updateNumber,
     ]);
@@ -396,7 +396,7 @@ export class StagingComplaintService {
     let stagingId = await this._findActionTakenStagingIdByWebeocId(webeocId, dataid);
 
     if (stagingId !== undefined) {
-      await this.repository.manager.query("SELECT public.process_staging_activity_taken($1, $2)", [stagingId, type]);
+      await this.repository.manager.query("SELECT process_staging_activity_taken($1, $2)", [stagingId, type]);
     } else {
       this.logger.error(`unable to find staging object for webeocid: ${webeocId} - ${type}`);
     }
