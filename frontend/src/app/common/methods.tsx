@@ -7,7 +7,7 @@ import { Violation } from "@apptypes/app/code-tables/violation";
 import { Species } from "@apptypes/app/code-tables/species";
 import { NatureOfComplaint } from "@apptypes/app/code-tables/nature-of-complaint";
 import { UUID } from "crypto";
-import { Complaint as ComplaintDto } from "@apptypes/app/complaints/complaint";
+import { Complaint } from "@apptypes/app/complaints/complaint";
 import { GifReader } from "omggif";
 import { fromImage } from "imtool";
 import AttachmentEnum from "@constants/attachment-enum";
@@ -79,7 +79,7 @@ export const getSelectedItem = (value: string, options: Option[]): Option => {
 export const getSelectedOfficer = (
   officers: Option[],
   personGuid: UUID | string,
-  update: ComplaintDto | undefined,
+  update: Complaint | undefined,
 ): any => {
   if (update && personGuid) {
     const { delegates } = update;
