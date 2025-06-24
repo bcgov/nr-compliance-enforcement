@@ -11386,10 +11386,14 @@ ON CONFLICT DO NOTHING;
 UPDATE geo_org_unit_structure SET parent_geo_org_unit_code = 'SQMSHWHS' WHERE child_geo_org_unit_code  = 'NEWWEST';
 
 -------------------------
--- Remove Privacy Requested Feature Flag
+-- Remove Unused Feature Flags
 -------------------------
 DELETE from feature_agency_xref where feature_code = 'PRIV_REQ';
 DELETE from feature_code where feature_code = 'PRIV_REQ';
+DELETE from feature_agency_xref where feature_code = 'ENBL_OFF';
+DELETE from feature_code where feature_code = 'ENBL_OFF';
+DELETE from feature_agency_xref where feature_code = 'EXTRNALREF';
+DELETE from feature_code where feature_code = 'EXTRNALREF';
 
 --------------------------
 -- New Changes above this line
