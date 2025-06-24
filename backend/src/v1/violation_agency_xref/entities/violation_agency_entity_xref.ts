@@ -5,7 +5,7 @@ import { ViolationCode } from "../../violation_code/entities/violation_code.enti
 @Index("PK_violation_agency_xref_guid", ["violation_agency_xref_guid"], {
   unique: true,
 })
-@Entity("violation_agency_xref", { schema: "public" })
+@Entity("violation_agency_xref", { schema: "complaint" })
 export class ViolationAgencyXref {
   @Column("uuid", {
     primary: true,

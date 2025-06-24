@@ -1,4 +1,4 @@
-CREATE TABLE public.complaint_type_code (
+CREATE TABLE complaint_type_code (
 	complaint_type_code varchar(10) NOT NULL,
 	short_description varchar(50) NOT NULL,
     long_description varchar(250) NULL,

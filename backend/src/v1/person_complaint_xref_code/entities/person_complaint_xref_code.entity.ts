@@ -5,7 +5,7 @@ import { Column, Entity, Index, OneToMany } from "typeorm";
 @Index("PK_person_complaint_xref_code", ["person_complaint_xref_code"], {
   unique: true,
 })
-@Entity("person_complaint_xref_code", { schema: "public" })
+@Entity("person_complaint_xref_code", { schema: "complaint" })
 export class PersonComplaintXrefCode {
   @Column("character varying", {
     primary: true,
