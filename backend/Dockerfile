@@ -9,7 +9,7 @@ RUN npm ci --omit=dev && \
     npm run build
 
 # Deployment container
-FROM debian:bookworm-slim
+FROM node:22-bookworm-slim
 # Set node to production
 ENV NODE_ENV=production
 
