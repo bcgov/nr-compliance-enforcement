@@ -268,8 +268,14 @@ export const complaintSlice = createSlice({
     },
     setRelatedData: (state, action) => {
       const {
-        payload: { updates: webeocUpdates, actions, referrals },
+        payload: { updates: webeocUpdates, actions, referrals, referral_email_logs },
       } = action;
+      for (const referral of referrals) {
+        referral.referral_email_logs = referral_email_logs.filter(
+          (emailLog: any) =>
+            emailLog.complaint_referral_guid.complaint_referral_guid === referral.complaint_referral_guid,
+        );
+      }
       return { ...state, webeocUpdates, actions, referrals };
     },
     setActions: (state, action: PayloadAction<ActionTaken[]>) => {

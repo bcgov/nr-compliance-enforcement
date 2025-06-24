@@ -3,7 +3,6 @@ import { Modal, Button, Alert } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
 import { CompSelect } from "@components/common/comp-select";
-import DatePicker from "react-datepicker";
 import { selectOfficerListByAgency, selectOfficers, selectCurrentOfficer } from "@store/reducers/officer";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { AgencyBanner } from "@components/containers/layout/agency-banner";
@@ -17,6 +16,7 @@ import { Officer } from "@/app/types/person/person";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { isValidEmail } from "@/app/common/validate-email";
+import { formatDate } from "@/app/common/methods";
 
 type ReferComplaintModalProps = {
   close: () => void;
@@ -224,54 +224,30 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
   return (
     <div style={{ maxHeight: "90vh", overflow: "hidden" }}>
       {title && (
-        <Modal.Header closeButton={true}>
-          <Modal.Title as="h3">{`${title} #${id}`}</Modal.Title>
+        <Modal.Header
+          style={{ paddingBottom: 0, marginBottom: -10 }}
+          closeButton={true}
+        >
+          <Modal.Title as="h3">
+            {`${title} #${id}`}
+            <p className="text-muted refer-complaint-modal-subtitle">{`${complaintAgency?.agency}\u2002•\u2002 ${complaint_type}\u2002•\u2002${formatDate(currentDate?.toString())}`}</p>
+          </Modal.Title>
         </Modal.Header>
       )}
       <Modal.Body style={{ maxHeight: "75vh", overflowY: "auto" }}>
         <Alert
           variant="warning"
-          className="comp-complaint-details-alert"
+          className="comp-complaint-details-alert refer-complaint-modal-alert"
           id="comp-complaint-refer-alert"
         >
-          <div>
-            <i className="bi bi-exclamation-triangle-fill"></i>
-            <span>{` Your organization will not have the ability to edit the complaint after it is referred.`}</span>
-          </div>
+          <ul className="refer-complaint-modal-alert-list">
+            <FeatureFlag feature={FEATURE_TYPES.REFERRAL_EMAILS}>
+              <li className="refer-complaint-modal-alert-item">{`Clicking ‘Refer’ will send an email on your behalf to notify the recipient of this referral.`}</li>
+            </FeatureFlag>
+            <li className="refer-complaint-modal-alert-item">{`You will no longer have the ability to edit this complaint.`}</li>
+          </ul>
         </Alert>
-        <FeatureFlag feature={FEATURE_TYPES.REFERRAL_EMAILS}>
-          <Alert
-            variant="warning"
-            className="comp-complaint-details-alert"
-            id="comp-complaint-refer-alert"
-          >
-            <div>
-              <i className="bi bi-exclamation-triangle-fill"></i>
-              <span>{` Clicking ‘Refer’ will send an email on your behalf to notify the user of this referral. `}</span>
-            </div>
-          </Alert>
-        </FeatureFlag>
-
         <div className="comp-details-form">
-          <div className="comp-details-form-row--refer refer-complaint-agency">
-            <label htmlFor="refer-complaint-from">Previous agency</label>
-            <div className="comp-details-input full-width">
-              <CompSelect
-                id="refer-complaint-from"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                isDisabled={true}
-                enableValidation={false}
-                showInactive={true}
-                value={{
-                  label: complaintAgency?.longDescription,
-                  labelElement: <AgencyBanner agency={complaintData?.ownedBy} />,
-                  value: complaintData?.ownedBy,
-                  isActive: true,
-                }}
-              />
-            </div>
-          </div>
           <div className="comp-details-form-row--refer refer-complaint-agency--new">
             <label htmlFor="refer-complaint-to">
               New lead agency<span className="required-ind">*</span>
@@ -432,35 +408,6 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
             </div>
           )}
           <div className="comp-details-form-row--refer">
-            <label htmlFor="refer-complaint-type-select">Complaint type</label>
-            <div className="comp-details-input full-width">
-              <CompSelect
-                id="refer-complaint-type-select"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                isDisabled={true}
-                enableValidation={false}
-                showInactive={true}
-                value={{ label: complaint_type, value: complaint_type }}
-              />
-            </div>
-          </div>
-
-          <div className="comp-details-form-row--refer">
-            <label htmlFor="refer-complaint-date-select">Date of referral</label>
-            <div className="comp-details-input full-width">
-              <DatePicker
-                id="refer-complaint-date-select"
-                onChange={() => {}}
-                dateFormat="yyyy-MM-dd"
-                wrapperClassName="comp-details-edit-calendar-input datepicker-disabled"
-                readOnly
-                showIcon
-                selected={currentDate}
-              />
-            </div>
-          </div>
-          <div className="comp-details-form-row--refer">
             <label htmlFor="refer-complaint-officer">
               Referring officer<span className="required-ind">*</span>
             </label>
@@ -487,7 +434,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
               <ValidationTextArea
                 className="comp-form-control"
                 id="refer-complaint-reason"
-                rows={4}
+                rows={2}
                 errMsg={referralReasonError}
                 onChange={handleReferralReasonChange}
                 maxLength={500}

@@ -1360,10 +1360,10 @@ export class ComplaintService {
 
   findRelatedDataById = async (id: string): Promise<RelatedDataDto> => {
     try {
-      const udpates = await this._compliantUpdatesService.findByComplaintId(id);
+      const updates = await this._compliantUpdatesService.findByComplaintId(id);
       const actions = await this._compliantUpdatesService.findActionsByComplaintId(id);
 
-      let fullResults: RelatedDataDto = { updates: udpates, actions: actions };
+      let fullResults: RelatedDataDto = { updates: updates, actions: actions };
       return fullResults;
     } catch (error) {
       this.logger.error(error);
