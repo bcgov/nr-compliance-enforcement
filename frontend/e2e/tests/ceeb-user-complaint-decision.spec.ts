@@ -141,6 +141,7 @@ test.describe("CEEB Complaints can be created and outcome decisions set ", () =>
     } else {
       console.log("The delete button is not visible, skipping the click actions.");
     }
+    await waitForSpinner(page);
     await page.locator("#outcome-authroization-authroized-site").click();
     await page.locator("#outcome-authroization-authroized-site").clear();
     await page.locator("#outcome-authroization-authroized-site").fill("0000001");
