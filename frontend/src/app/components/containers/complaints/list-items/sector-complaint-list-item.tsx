@@ -125,7 +125,7 @@ export const SectorComplaintListItem: FC<Props> = ({ complaint }) => {
           className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          {AgencyNames[ownedBy as keyof typeof AgencyNames].long}
+          {AgencyNames[ownedBy as keyof typeof AgencyNames]?.long}
         </td>
         <td
           className={`${isExpandedClass}`}

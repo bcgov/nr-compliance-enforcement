@@ -24,7 +24,7 @@ import {
 import { ComplaintMapWithServerSideClustering } from "./complaint-map-with-server-side-clustering";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
-import { COMPLAINT_TYPES, CEEB_TYPES, HWCR_ONLY_TYPES } from "@apptypes/app/complaint-types";
+import { COMPLAINT_TYPES, CEEB_TYPES, HWCR_ONLY_TYPES, SECTOR_TYPES } from "@apptypes/app/complaint-types";
 import { selectCurrentOfficer } from "@store/reducers/officer";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
@@ -32,8 +32,6 @@ import Option from "@apptypes/app/option";
 import { resetComplaintSearchParameters, selectComplaintSearchParameters } from "@/app/store/reducers/complaints";
 import { AgencyType } from "@/app/types/app/agency-types";
 import { DropdownOption } from "@/app/types/app/drop-down-option";
-import { isFeatureActive } from "@store/reducers/app";
-import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
 type Props = {
   defaultComplaintType: string;
@@ -44,7 +42,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const showSectorView = useAppSelector(isFeatureActive(FEATURE_TYPES.SECTOR_VIEW));
+  const showSectorView = UserService.hasRole(Roles.SECTOR);
 
   //-- Check global state for active tab and set it to default if it was not set there.
   const storedComplaintType = useAppSelector(selectActiveTab);
@@ -224,7 +222,9 @@ const getComplaintTypes = (showSectorView: boolean) => {
     case UserService.hasRole(Roles.HWCR_ONLY):
       returnTypes = HWCR_ONLY_TYPES;
       break;
-
+    case UserService.hasRole(Roles.SECTOR):
+      returnTypes = SECTOR_TYPES;
+      break;
     default:
       returnTypes = COMPLAINT_TYPES;
       if (!showSectorView) {
