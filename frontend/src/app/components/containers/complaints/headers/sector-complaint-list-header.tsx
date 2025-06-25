@@ -33,7 +33,7 @@ export const SectorComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sort
         <SortableHeader
           title="Agency"
           sortFnc={handleSort}
-          sortKey="lead_agency"
+          sortKey="owned_by_agency_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
         />
@@ -41,7 +41,7 @@ export const SectorComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sort
         <SortableHeader
           title="Complaint type"
           sortFnc={handleSort}
-          sortKey="complaint_type"
+          sortKey="complaint_type_code"
           currentSort={sortKey}
           sortDirection={sortDirection}
         />
