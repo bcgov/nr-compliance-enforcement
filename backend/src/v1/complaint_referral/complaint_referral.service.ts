@@ -81,14 +81,10 @@ export class ComplaintReferralService {
     this._personService.clearAssignedOfficer(createComplaintReferralDto.complaint_identifier);
 
     if (sendEmail) {
-      const recipientList = await this._emailService.sendReferralEmail(
-        createComplaintReferralDto,
-        user,
-        complaintExport,
-      );
+      await this._emailService.sendReferralEmail(createComplaintReferralDto, user, complaintExport);
 
-      // Log the email recipients
-      const createPromises = recipientList.map((emailAddress) => {
+      // Log the additional emails
+      const createPromises = createComplaintReferralDto.additionalEmailRecipients.map((emailAddress) => {
         const emailReferralLog: CreateComplaintReferralEmailLogDto = {
           complaint_referral_email_log_guid: uuidv4(),
           email_address: emailAddress,
