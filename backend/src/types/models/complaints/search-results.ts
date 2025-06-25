@@ -1,8 +1,6 @@
-import { WildlifeComplaintDto } from "./wildlife-complaint";
-import { AllegationComplaintDto } from "./allegation-complaint";
-import { GeneralIncidentComplaintDto } from "./gir-complaint";
+import { ComplaintDtoAlias } from "src/types/models/complaints/dtos/complaint-dto-alias";
 
 export interface SearchResults {
-  complaints: Array<WildlifeComplaintDto> | Array<AllegationComplaintDto> | Array<GeneralIncidentComplaintDto>;
+  complaints: Array<ComplaintDtoAlias>;
   totalCount: number;
 }

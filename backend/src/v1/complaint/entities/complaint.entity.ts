@@ -12,6 +12,7 @@ import { LinkedComplaintXref } from "../../linked_complaint_xref/entities/linked
 import { ComplaintUpdate } from "../../complaint_updates/entities/complaint_updates.entity";
 import { ActionTaken } from "./action_taken.entity";
 import { ComplaintReferral } from "../../complaint_referral/entities/complaint_referral.entity";
+import { ComplaintTypeCode } from "../../complaint_type_code/entities/complaint_type_code.entity";
 
 @Entity()
 export class Complaint {
@@ -261,6 +262,14 @@ export class Complaint {
   @Column({ length: 32, nullable: true })
   park_guid: string;
 
+  @ApiProperty({
+    example: "HWCR",
+    description: "The complaint type code",
+  })
+  @ManyToOne(() => ComplaintTypeCode)
+  @JoinColumn({ name: "complaint_type_code" })
+  complaint_type_code: ComplaintTypeCode;
+
   constructor(
     detail_text?: string,
     caller_name?: string,
@@ -296,6 +305,7 @@ export class Complaint {
     comp_last_upd_utc_timestamp?: Date,
     complaint_referral?: ComplaintReferral[],
     park_guid?: string,
+    complaint_type_code?: ComplaintTypeCode,
   ) {
     this.detail_text = detail_text;
     this.caller_name = caller_name;
@@ -331,5 +341,6 @@ export class Complaint {
     this.comp_last_upd_utc_timestamp = comp_last_upd_utc_timestamp;
     this.complaint_referral = complaint_referral;
     this.park_guid = park_guid;
+    this.complaint_type_code = complaint_type_code;
   }
 }
