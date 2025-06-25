@@ -1244,10 +1244,10 @@ export class ComplaintService {
 
   findRelatedDataById = async (id: string): Promise<RelatedDataDto> => {
     try {
-      const udpates = await this._compliantUpdatesService.findByComplaintId(id);
+      const updates = await this._compliantUpdatesService.findByComplaintId(id);
       const actions = await this._compliantUpdatesService.findActionsByComplaintId(id);
 
-      let fullResults: RelatedDataDto = { updates: udpates, actions: actions };
+      let fullResults: RelatedDataDto = { updates: updates, actions: actions };
       return fullResults;
     } catch (error) {
       this.logger.error(error);
@@ -1738,7 +1738,7 @@ export class ComplaintService {
     this.logger.debug("Creating new complaint");
     const generateComplaintId = async (queryRunner: QueryRunner): Promise<string> => {
       let sequence;
-      await queryRunner.manager.query("SELECT nextval('complaint_sequence')").then(function (returnData) {
+      await queryRunner.manager.query("SELECT nextval('complaint.complaint_sequence')").then(function (returnData) {
         sequence = map(returnData, "nextval");
       });
       const prefix = format(new Date(), "yy");

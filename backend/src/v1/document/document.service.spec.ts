@@ -29,6 +29,7 @@ import {
   MockComplaintsRepositoryV2,
   MockComplaintsAgencyRepository,
   MockComplaintsOfficerRepository,
+  MockComplaintReferralEmailLogRepository,
 } from "../../../test/mocks/mock-complaints-repositories";
 import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/mock-wildlife-conflict-complaint-repository";
 import { DataSource } from "typeorm";
@@ -80,6 +81,8 @@ import { CacheModule } from "@nestjs/cache-manager";
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 import { EmailReference } from "../email_reference/entities/email_reference.entity";
+import { ComplaintReferralEmailLogService } from "../complaint_referral_email_log/complaint_referral_email_log.service";
+import { ComplaintReferralEmailLog } from "../complaint_referral_email_log/entities/complaint_referral_email_log.entity";
 
 describe("DocumentService", () => {
   let service: DocumentService;
@@ -256,6 +259,11 @@ describe("DocumentService", () => {
         {
           provide: getRepositoryToken(ComplaintReferral),
           useValue: {},
+        },
+        ComplaintReferralEmailLogService,
+        {
+          provide: getRepositoryToken(ComplaintReferralEmailLog),
+          useValue: MockComplaintReferralEmailLogRepository,
         },
       ],
     }).compile();

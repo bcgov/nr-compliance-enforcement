@@ -5,5 +5,5 @@ metadata:
   name: {{ template "crunchy-postgres.fullname" . }}
   labels: {{ include "crunchy-postgres.labels" . | nindent 4 }}
 data:
-    bootstrap.sql: |
-        CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
+  bootstrap.sql: |
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA complaint;
