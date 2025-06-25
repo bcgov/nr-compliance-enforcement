@@ -1,4 +1,4 @@
-import { DelegateDto } from "../people/delegate";
+import { DelegateDto } from "../../people/delegate";
 import { BaseComplaint } from "nrs-ce-common-types";
 
 export interface ComplaintDto extends BaseComplaint {
@@ -9,5 +9,6 @@ export interface ComplaintDto extends BaseComplaint {
     officeLocation?: string;
   };
   delegates: Array<DelegateDto>;
-  parkGuid: string;
+  type: string;
+  parkGuid?: string;
 }

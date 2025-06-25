@@ -1240,11 +1240,13 @@ ON CONFLICT DO NOTHING;
 
 -- add complaints to Omenica region
 INSERT INTO hwcr_complaint (other_attractants_text,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp,complaint_identifier,species_code,hwcr_complaint_nature_code) VALUES
+	 (NULL,'FLYWAY','2023-07-26 19:25:34.66322','FLYWAY','2023-07-26 19:25:34.66322','23-007000','ELK','INJNP'),
 	 (NULL,'FLYWAY','2023-07-26 19:25:34.66322','FLYWAY','2023-07-26 19:25:34.66322','23-007001','DEER','INJNP'),
 	 (NULL,'FLYWAY','2023-07-26 19:25:34.66322','FLYWAY','2023-07-26 19:25:34.66322','23-007002','ELK','INJNP'),
 	 (NULL,'FLYWAY','2023-07-26 19:25:34.66322','FLYWAY','2023-07-26 19:25:34.66322','23-007003','MOOSE','INJNP'),
 	 (NULL,'FLYWAY','2023-07-26 19:25:34.66322','FLYWAY','2023-07-26 19:25:34.66322','23-007004','UNKNOWN','LIVNCOU')
      ON CONFLICT DO NOTHING;
+     
 INSERT INTO allegation_complaint (in_progress_ind,observed_ind,suspect_witnesss_dtl_text,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp,complaint_identifier,violation_code) VALUES
 	 (false,true,NULL,'FLYWAY','2023-07-26 19:25:34.66322','FLYWAY','2023-07-26 19:25:34.66322','23-007005','WILDLIFE'),
 	 (true,false,NULL,'FLYWAY','2023-07-26 19:25:34.66322','FLYWAY','2023-07-26 19:25:34.66322','23-007006','WILDLIFE'),
@@ -2013,6 +2015,14 @@ UPDATE feature_agency_xref
 SET active_ind = 'N'
 WHERE feature_code = 'COLEMAIL';
 
+---------------------
+-- Disable sector view in dev/test for all users
+---------------------
+
+UPDATE feature_agency_xref
+SET active_ind = 'N'
+WHERE feature_code = 'SECTORVIEW';
+
 -----------------------
 -- Default users with a null agency to COS 
 -- This really only affects the Dev environment as everyone in test has already been set
@@ -2022,3 +2032,20 @@ WHERE feature_code = 'COLEMAIL';
 UPDATE officer 
 SET agency_code = 'COS'
 WHERE agency_code is null;
+
+---------------------
+-- Update complaint_type_code for test data
+---------------------
+
+UPDATE complaint c1 SET complaint_type_code = 
+CASE WHEN a.allegation_complaint_guid IS NOT NULL THEN 'ERS'
+	 WHEN hc.hwcr_complaint_guid IS NOT NULL THEN 'HWCR'
+	 WHEN gc.gir_complaint_guid IS NOT NULL THEN 'GIR'
+END
+FROM complaint c2
+LEFT JOIN allegation_complaint a ON c2.complaint_identifier = a.complaint_identifier
+LEFT JOIN hwcr_complaint hc ON c2.complaint_identifier = hc.complaint_identifier
+LEFT JOIN gir_complaint gc ON c2.complaint_identifier = gc.complaint_identifier
+WHERE c1.complaint_identifier = c2.complaint_identifier;
+
+UPDATE complaint SET complaint_type_code = 'HWCR' WHERE complaint_identifier = '23-007000';
