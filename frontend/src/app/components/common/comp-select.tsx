@@ -105,11 +105,11 @@ export const CompSelect: FC<Props> = ({
         classNamePrefix={classNamePrefix}
         defaultValue={defaultOption}
         isDisabled={isDisabled}
-        menuPlacement={menuPlacement ? menuPlacement : "auto"}
+        menuPlacement={menuPlacement ?? "auto"}
         filterOption={customFilterOption}
         components={{ Option: CustomOption }}
         isClearable={isClearable ?? false}
-        maxMenuHeight={maxMenuHeight ? maxMenuHeight : undefined}
+        maxMenuHeight={maxMenuHeight ?? undefined}
       />
       {enableValidation && <div className="error-message">{errorMessage}</div>}
     </div>
