@@ -165,6 +165,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     INSERT INTO complaint.complaint
                 (
                             complaint_identifier,
+                            complaint_type_code,
                             detail_text,
                             caller_name,
                             caller_address,
@@ -191,6 +192,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
                 VALUES
                 (
                             _complaint_identifier,
+                            _report_type,
                             _detail_text,
                             _caller_name,
                             _caller_address,
