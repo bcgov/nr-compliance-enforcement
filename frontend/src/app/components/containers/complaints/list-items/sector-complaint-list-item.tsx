@@ -8,7 +8,6 @@ import { getUserAgency } from "@/app/service/user-service";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { complaintTypeToName } from "@apptypes/app/complaint-types";
-import { AgencyNames } from "@/app/types/app/agency-types";
 
 type Props = {
   complaint: any;
@@ -20,6 +19,7 @@ export const SectorComplaintListItem: FC<Props> = ({ complaint }) => {
   const natureOfComplaints = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.NATURE_OF_COMPLAINT));
   const girTypeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GIR_TYPE));
   const violationCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.VIOLATIONS));
+  const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
@@ -125,7 +125,7 @@ export const SectorComplaintListItem: FC<Props> = ({ complaint }) => {
           className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          {AgencyNames[ownedBy as keyof typeof AgencyNames].long}
+          {agencies?.length > 0 && agencies.filter((agency: any) => agency.agency === ownedBy)[0]?.longDescription}
         </td>
         <td
           className={`${isExpandedClass}`}
