@@ -1399,9 +1399,9 @@ export const applySectorComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.complaintMethodReceivedCode,
       mapFrom((source) => {
-        const { comp_mthd_recv_cd_agcy_cd_xref } = source || {};
+        const { comp_mthd_recv_cd_agcy_cd_xref } = source ?? {};
 
-        const { complaint_method_received_code } = comp_mthd_recv_cd_agcy_cd_xref || {};
+        const { complaint_method_received_code } = comp_mthd_recv_cd_agcy_cd_xref ?? {};
 
         return complaint_method_received_code?.complaint_method_received_code ?? null;
       }),

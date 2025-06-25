@@ -8,7 +8,6 @@ import { ApiTags } from "@nestjs/swagger";
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
 import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
-import { GeneralIncidentComplaintDto } from "../../types/models/complaints/dtos/gir-complaint";
 import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import {
   ComplaintSearchParameters,

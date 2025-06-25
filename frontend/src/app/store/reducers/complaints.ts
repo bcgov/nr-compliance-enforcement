@@ -97,7 +97,7 @@ export const complaintSlice = createSlice({
       } = action;
       const { complaintItems } = state;
 
-      let update: ComplaintCollection = { wildlife: [], allegations: [], general: [], sector: [] };
+      let update: ComplaintCollection;
       switch (type) {
         case COMPLAINT_TYPES.ERS:
           update = { ...complaintItems, allegations: data };
