@@ -11,7 +11,7 @@ import { ValidationPhoneInput } from "@common/validation-phone-input";
 import Option from "@apptypes/app/option";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { openModal, selectActiveTab, userId, isFeatureActive } from "@store/reducers/app";
+import { openModal, selectActiveTab, userId } from "@store/reducers/app";
 import notificationInvalid from "@assets/images/notification-invalid.png";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 
@@ -58,6 +58,7 @@ import { Roles } from "@/app/types/app/roles";
 import { RootState } from "@/app/store/store";
 import { ParkSelect } from "@/app/components/common/park-select";
 import { isValidEmail } from "@/app/common/validate-email";
+import { AgencyType } from "@/app/types/app/agency-types";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -100,16 +101,17 @@ export const CreateComplaint: FC = () => {
   ];
 
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
-  const enablePrivacyFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.PRIV_REQ));
+  const enablePrivacyFeature = agency && agency === AgencyType.CEEB;
+  const enableOfficeFeature = agency && agency !== AgencyType.CEEB;
 
   const currentDate = useMemo(() => new Date(), []);
 
   const [complaintData, applyComplaintData] = useState<ComplaintAlias>();
 
   let initialComplaintType: string = COMPLAINT_TYPES.HWCR;
-  if (agency === "EPO") {
+  if (agency === AgencyType.CEEB) {
     initialComplaintType = COMPLAINT_TYPES.ERS;
-  } else if (agency === "COS" || agency === "PARKS") {
+  } else if (agency === AgencyType.COS || agency === AgencyType.PARKS) {
     switch (activeTab) {
       case COMPLAINT_TYPES.ERS:
         initialComplaintType = COMPLAINT_TYPES.ERS;
@@ -1068,7 +1070,7 @@ export const CreateComplaint: FC = () => {
               />
             </div>
           </div>
-          <FeatureFlag feature={FEATURE_TYPES.ENABLE_OFFICE}>
+          {enableOfficeFeature && (
             <div
               className="comp-details-form-row"
               id="office-pair-id"
@@ -1083,7 +1085,7 @@ export const CreateComplaint: FC = () => {
                 />
               </div>
             </div>
-          </FeatureFlag>
+          )}
           <div
             className="comp-details-form-row"
             id="zone-pair-id"
