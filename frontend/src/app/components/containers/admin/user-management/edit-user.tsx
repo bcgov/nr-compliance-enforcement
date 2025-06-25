@@ -561,9 +561,13 @@ export const EditUser: FC<EditUserProps> = ({
               options={agencyDropdownWithSector}
               placeholder="Select"
               enableValidation={true}
-              value={agencyDropdownWithSector.find(
-                (opt) => String(opt.value ?? "") === String(currentAgency?.value ?? selectedAgency?.value ?? ""),
-              )}
+              value={
+                !currentAgency && !selectedAgency
+                  ? null // If we are on the add screen leave value null to start
+                  : agencyDropdownWithSector.find(
+                      (opt) => String(opt.value ?? "") === String(currentAgency?.value ?? selectedAgency?.value ?? ""), //otherwise find the value if it can't be found it's the sector value
+                    )
+              }
               isDisabled={officerData?.deactivate_ind}
             />
           </div>
