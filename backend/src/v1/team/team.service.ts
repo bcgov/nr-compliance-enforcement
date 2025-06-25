@@ -82,7 +82,13 @@ export class TeamService {
     const { teamCode, agencyCode, userIdir, roles: updateRoles, adminIdirUsername } = updateTeamData;
     try {
       // Update the officers agency
-      await this.officerRepository.update({ officer_guid: officerGuid }, { agency_code: { agency_code: agencyCode } });
+      await this.officerRepository.update(
+        { officer_guid: officerGuid },
+        {
+          agency_code: agencyCode ? { agency_code: agencyCode } : null,
+        },
+      );
+
       //Update team
       //Assume one officer belong to one team for now
       //If user's team is null -> remove any current team user is in

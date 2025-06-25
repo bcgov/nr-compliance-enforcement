@@ -11,6 +11,7 @@ export const ROLE_OPTIONS: Array<Option> = [
   { value: "Inspector", label: "Inspector" },
   { value: "Province-wide", label: "Province-wide" },
   { value: "HWCR only", label: "HWCR only" },
+  { value: "SECTOR", label: "SECTOR" },
 ];
 
 export const CEEB_ROLE_OPTIONS: Array<Option> = [
@@ -34,4 +35,9 @@ export const PARKS_ROLE_OPTIONS: Array<Option> = [
   { value: "PARKS", label: "PARKS" },
   { value: "READ ONLY", label: "Read Only" },
   { value: "Province-wide", label: "Province-wide" },
+];
+
+export const SECTOR_ROLE_OPTIONS: Array<Option> = [
+  { value: "SECTOR", label: "SECTOR" },
+  { value: "READ ONLY", label: "Read Only" },
 ];

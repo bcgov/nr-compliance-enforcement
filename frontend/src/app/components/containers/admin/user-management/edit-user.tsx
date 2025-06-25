@@ -21,7 +21,13 @@ import {
   userId,
 } from "@store/reducers/app";
 import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
-import { CEEB_ROLE_OPTIONS, COS_ROLE_OPTIONS, PARKS_ROLE_OPTIONS, ROLE_OPTIONS } from "@constants/ceeb-roles";
+import {
+  CEEB_ROLE_OPTIONS,
+  COS_ROLE_OPTIONS,
+  PARKS_ROLE_OPTIONS,
+  ROLE_OPTIONS,
+  SECTOR_ROLE_OPTIONS,
+} from "@constants/ceeb-roles";
 import { generateApiParameters, get, patch } from "@common/api";
 import config from "@/config";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
@@ -77,6 +83,16 @@ export const EditUser: FC<EditUserProps> = ({
   const [offices, setOffices] = useState<Array<Option>>([]);
   const [roleList, setRoleList] = useState<Array<Option>>([]);
 
+  // Add Sector to agency drop down
+  const agencyDropdownWithSector = [
+    ...agency,
+    {
+      label: "Natural Resource Sector",
+      value: "",
+      isActive: true,
+    },
+  ];
+
   useEffect(() => {
     if (officeAssignments) {
       dispatch(fetchOfficeAssignments());
@@ -118,6 +134,7 @@ export const EditUser: FC<EditUserProps> = ({
         let currentAgency;
         const hasCEEBRole = officerData.user_roles.some((role: any) => role.includes("CEEB"));
         const hasCOSRole = officerData.user_roles.some((role: any) => role.includes("COS"));
+        const hasParksRole = officerData.user_roles.some((role: any) => role.includes("PARKS"));
         if (hasCEEBRole) {
           currentAgency = mapValueToDropdownList(AgencyType.CEEB, agency);
           const currentTeam = await getUserCurrentTeam(officerData.officer_guid);
@@ -132,12 +149,14 @@ export const EditUser: FC<EditUserProps> = ({
             const currentOffice = mapValueToDropdownList(officerData.office_guid.office_guid, offices);
             setSelectedOffice(currentOffice);
           }
-        } else {
+        } else if (hasParksRole) {
           if (officerData.park_area_guid) {
             const currentParkArea = mapValueToDropdownList(officerData.park_area_guid, parkAreasList);
             setSelectedParkArea(currentParkArea);
           }
           currentAgency = mapValueToDropdownList(AgencyType.PARKS, agency);
+        } else {
+          currentAgency = { label: "Natural Resource Sector", value: "" };
         }
         setCurrentAgency(currentAgency);
       }
@@ -166,8 +185,10 @@ export const EditUser: FC<EditUserProps> = ({
         setRoleList(COS_ROLE_OPTIONS);
         break;
       case AgencyType.PARKS:
-      default:
         setRoleList(PARKS_ROLE_OPTIONS);
+        break;
+      default:
+        setRoleList(SECTOR_ROLE_OPTIONS);
         break;
     }
   }, [selectedAgency, currentAgency]);
@@ -221,9 +242,8 @@ export const EditUser: FC<EditUserProps> = ({
           return record;
         });
       setOffices(filtered);
-
-      setSelectedAgency(input);
     }
+    setSelectedAgency(input);
   };
 
   const handleOfficeChange = (input: any) => {
@@ -353,7 +373,7 @@ export const EditUser: FC<EditUserProps> = ({
         const officer_guid = officerData?.officer_guid;
         //Update park_area_guid
         if (officer_guid && selectedParkArea) {
-          dispatch(updateOfficerReducer(officer_guid, { park_area_guid: selectedParkArea?.value }));
+          await dispatch(updateOfficerReducer(officer_guid, { park_area_guid: selectedParkArea?.value }));
         }
         //Update roles
         let res = await updateTeamRole(
@@ -369,7 +389,7 @@ export const EditUser: FC<EditUserProps> = ({
       default: {
         const officerId = officer?.value ? officer.value : "";
         const officeId = selectedOffice?.value ? selectedOffice.value : "";
-        dispatch(assignOfficerToOffice(officerId, officeId));
+        await dispatch(assignOfficerToOffice(officerId, officeId));
         let res = await updateTeamRole(
           selectedUserIdir,
           officerData?.officer_guid,
@@ -538,10 +558,12 @@ export const EditUser: FC<EditUserProps> = ({
               classNames={{
                 menu: () => "top-layer-select",
               }}
-              options={agency}
+              options={agencyDropdownWithSector}
               placeholder="Select"
               enableValidation={true}
-              value={currentAgency ?? selectedAgency}
+              value={agencyDropdownWithSector.find(
+                (opt) => String(opt.value ?? "") === String(currentAgency?.value ?? selectedAgency?.value ?? ""),
+              )}
               isDisabled={officerData?.deactivate_ind}
             />
           </div>
