@@ -49,9 +49,15 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   useEffect(() => {
     if (!storedComplaintType) dispatch(setActiveTab(defaultComplaintType));
   }, [storedComplaintType, dispatch, defaultComplaintType]);
-  const [complaintType, setComplaintType] = useState(
-    UserService.hasRole([Roles.CEEB]) ? CEEB_TYPES.ERS : storedComplaintType ?? defaultComplaintType,
-  );
+  const [complaintType, setComplaintType] = useState(() => {
+    if (UserService.hasRole([Roles.CEEB])) {
+      return CEEB_TYPES.ERS;
+    } else if (UserService.hasRole([Roles.SECTOR])) {
+      return SECTOR_TYPES.SECTOR;
+    } else {
+      return storedComplaintType ?? defaultComplaintType;
+    }
+  });
 
   const storedComplaintViewType = useAppSelector(selectActiveComplaintsViewType);
   useEffect(() => {
@@ -252,7 +258,11 @@ const getFilters = (
   }
 
   // Province-wide, HWCR only and Parks role defaults to only "Open" so skip the other checks
-  if (UserService.hasRole(Roles.PROVINCE_WIDE) || UserService.hasRole(Roles.HWCR_ONLY)) {
+  if (
+    UserService.hasRole(Roles.PROVINCE_WIDE) ||
+    UserService.hasRole(Roles.HWCR_ONLY) ||
+    UserService.hasRole(Roles.SECTOR)
+  ) {
     return filters;
   }
 
