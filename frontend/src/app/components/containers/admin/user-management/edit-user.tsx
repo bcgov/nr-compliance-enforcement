@@ -125,43 +125,59 @@ export const EditUser: FC<EditUserProps> = ({
         return response;
       };
 
-      if (officerData?.user_roles && officerData.user_roles.length > 0 && selectedAgency === null) {
-        //map current user's roles
-        const currentRoles = mapRolesDropdown(officerData.user_roles);
-        setSelectedRoles(currentRoles);
+      const userRoles = officerData?.user_roles;
+      if (!userRoles || userRoles.length === 0 || selectedAgency !== null) return;
 
-        //map current user's agency based on roles
-        let currentAgency;
-        const hasCEEBRole = officerData.user_roles.some((role: any) => role.includes("CEEB"));
-        const hasCOSRole = officerData.user_roles.some((role: any) => role.includes("COS"));
-        const hasParksRole = officerData.user_roles.some((role: any) => role.includes("PARKS"));
-        if (hasCEEBRole) {
-          currentAgency = mapValueToDropdownList(AgencyType.CEEB, agency);
-          const currentTeam = await getUserCurrentTeam(officerData.officer_guid);
-          if (currentTeam?.team_guid) {
-            const currentTeamMapped = mapValueToDropdownList(currentTeam.team_guid.team_code.team_code, teams);
-            setSelectedTeam(currentTeamMapped);
-          }
-        } else if (hasCOSRole) {
-          currentAgency = mapValueToDropdownList(AgencyType.COS, agency);
-          //map current user's office if agency is COS
-          if (officerData.office_guid) {
-            const currentOffice = mapValueToDropdownList(officerData.office_guid.office_guid, offices);
-            setSelectedOffice(currentOffice);
-          }
-        } else if (hasParksRole) {
-          if (officerData.park_area_guid) {
-            const currentParkArea = mapValueToDropdownList(officerData.park_area_guid, parkAreasList);
-            setSelectedParkArea(currentParkArea);
-          }
-          currentAgency = mapValueToDropdownList(AgencyType.PARKS, agency);
-        } else {
-          currentAgency = { label: "Natural Resource Sector", value: "" };
+      const currentRoles = mapRolesDropdown(userRoles);
+      setSelectedRoles(currentRoles);
+
+      const hasCEEBRole = userRoles.some((role: any) => role.includes("CEEB"));
+      const hasCOSRole = userRoles.some((role: any) => role.includes("COS"));
+      const hasParksRole = userRoles.some((role: any) => role.includes("PARKS"));
+
+      let currentAgency;
+
+      if (hasCEEBRole) {
+        currentAgency = mapValueToDropdownList(AgencyType.CEEB, agency);
+
+        const currentTeam = await getUserCurrentTeam(officerData.officer_guid);
+        if (currentTeam?.team_guid) {
+          const currentTeamMapped = mapValueToDropdownList(currentTeam.team_guid.team_code.team_code, teams);
+          setSelectedTeam(currentTeamMapped);
         }
+
         setCurrentAgency(currentAgency);
+        return;
       }
+
+      if (hasCOSRole) {
+        currentAgency = mapValueToDropdownList(AgencyType.COS, agency);
+
+        if (officerData.office_guid) {
+          const currentOffice = mapValueToDropdownList(officerData.office_guid.office_guid, offices);
+          setSelectedOffice(currentOffice);
+        }
+
+        setCurrentAgency(currentAgency);
+        return;
+      }
+
+      if (hasParksRole) {
+        if (officerData.park_area_guid) {
+          const currentParkArea = mapValueToDropdownList(officerData.park_area_guid, parkAreasList);
+          setSelectedParkArea(currentParkArea);
+        }
+
+        currentAgency = mapValueToDropdownList(AgencyType.PARKS, agency);
+        setCurrentAgency(currentAgency);
+        return;
+      }
+
+      // Fallback if no matching role
+      currentAgency = { label: "Natural Resource Sector", value: "" };
+      setCurrentAgency(currentAgency);
     })();
-  }, [officerData, offices, selectedAgency, agency, teams, dispatch]);
+  }, [officerData, offices, selectedAgency, agency, teams, dispatch, parkAreasList]);
 
   useEffect(() => {
     if (newUser && !officerData) {

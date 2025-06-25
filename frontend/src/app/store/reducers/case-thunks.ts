@@ -49,7 +49,6 @@ import { UpdateDecisionInput } from "@apptypes/app/case-files/ceeb/decision/upda
 import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
 import { CreateAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/create-authorization-outcome-input";
 import { UpdateAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/update-authorization-outcome-input";
-import { getUserAgency } from "@service/user-service";
 import { DeleteAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/delete-authorization-outcome-input";
 import { Note } from "@/app/types/outcomes/note";
 import { AssessmentDto } from "@/app/types/app/case-files/assessment/assessment";
