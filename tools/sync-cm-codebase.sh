@@ -73,11 +73,10 @@ if git diff --cached --quiet; then
   echo "No changes to commit"
 else
   echo "Committing changes"
-  git commit -m "Sync: Update *-cm services from nr-compliance-enforcement-cm ($SOURCE_BRANCH_CM)"
+  git commit -m "chore: Update all cm codes from nr-compliance-enforcement-cm ($SOURCE_BRANCH_CM)"
   echo "Pushing changes to $DEST_BRANCH"
   git push origin "$DEST_BRANCH"
   echo "Changes pushed to $DEST_REPO branch $DEST_BRANCH"
-  echo "Create a PR from $DEST_BRANCH to CE-1724 to merge changes"
 fi
 
 # Clean up
