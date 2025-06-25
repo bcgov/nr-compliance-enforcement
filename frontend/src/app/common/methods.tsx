@@ -275,8 +275,6 @@ export const parseCoordinates = (coordinates: Coordinate, coordinateType: Coordi
 export const getComplaintType = (
   complaint: WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint | null,
 ): string => {
-  // TODO: Can't we determinte it from the object type? Maybe refactor?
-
   if (!complaint) {
     return "Unknown";
   }
