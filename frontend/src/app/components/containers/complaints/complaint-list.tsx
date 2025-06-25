@@ -176,7 +176,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
     return () => {
-      dispatch(setComplaints({ type: { type }, data: [] }));
+      dispatch(setComplaints({ type: type, data: [] }));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

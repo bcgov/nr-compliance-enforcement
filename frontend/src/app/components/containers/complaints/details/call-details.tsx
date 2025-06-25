@@ -5,16 +5,16 @@ import { formatDate, formatTime } from "@common/methods";
 import { ComplaintDetailsAttractant } from "@apptypes/complaints/details/complaint-attactant";
 import { selectComplaintDetails } from "@store/reducers/complaints";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
-import { FEATURE_TYPES } from "@constants/feature-flag-types";
-import { FeatureFlag } from "@components/common/feature-flag";
 import { CompLocationInfo } from "@components/common/comp-location-info";
 import { usePark } from "@/app/hooks/usePark";
+import { AgencyType } from "@/app/types/app/agency-types";
 
 interface ComplaintHeaderProps {
+  complaintOwner: string;
   complaintType: string;
 }
 
-export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
+export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintOwner, complaintType }) => {
   const {
     details,
     location,
@@ -33,6 +33,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
   } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
   const park = usePark(parkGuid);
+  const enableOfficeFeature = complaintOwner && complaintOwner !== AgencyType.CEEB;
 
   return (
     <section className="comp-details-section">
@@ -137,12 +138,12 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintType }) => {
               <dt>Community</dt>
               <dd id="comp-details-community">{area}</dd>
             </div>
-            <FeatureFlag feature={FEATURE_TYPES.ENABLE_OFFICE}>
+            {enableOfficeFeature && (
               <div>
                 <dt>Office</dt>
                 <dd id="comp-details-office">{office}</dd>
               </div>
-            </FeatureFlag>
+            )}
             <div>
               <dt>Zone</dt>
               <dd id="comp-details-zone">{zone}</dd>

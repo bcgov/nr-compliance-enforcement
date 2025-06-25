@@ -44,7 +44,7 @@ import notificationInvalid from "@assets/images/notification-invalid.png";
 import { CompSelect } from "@components/common/comp-select";
 import { CompInput } from "@components/common/comp-input";
 import { from } from "linq-to-typescript";
-import { openModal, isFeatureActive } from "@store/reducers/app";
+import { openModal } from "@store/reducers/app";
 import { useParams } from "react-router-dom";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { ToggleError } from "@common/toast";
@@ -102,7 +102,6 @@ export const ComplaintDetailsEdit: FC = () => {
   //-- selectors
   const data = useAppSelector(selectComplaint);
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
-  const enablePrivacyFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.PRIV_REQ));
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const {
@@ -139,6 +138,9 @@ export const ComplaintDetailsEdit: FC = () => {
     isPrivacyRequested,
   } = useAppSelector(selectComplaintCallerInformation);
 
+  const enablePrivacyFeature = ownedByAgencyCode?.agency && ownedByAgencyCode?.agency === AgencyType.CEEB;
+  const enableOfficeFeature = ownedByAgencyCode?.agency && ownedByAgencyCode?.agency !== AgencyType.CEEB;
+
   // Get the code table lists to populate the Selects
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
@@ -149,8 +151,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
   const complaintMethodReceivedCodes = useSelector(selectComplaintReceivedMethodDropdown) as Option[];
 
-  const agency = getUserAgency();
-  const violationTypeCodes = useSelector(selectViolationCodeDropdown(agency)) as Option[];
+  const violationTypeCodes = useSelector(selectViolationCodeDropdown(ownedByAgencyCode?.agency)) as Option[];
   const girTypeCodes = useSelector(selectGirTypeCodeDropdown) as Option[];
 
   const officersInAgencyList = useSelector((state: RootState) =>
@@ -782,6 +783,7 @@ export const ComplaintDetailsEdit: FC = () => {
     }
     setMapElements(mapElements);
   }, [equipmentList, parentCoordinates]);
+
   return (
     <div className="comp-complaint-details">
       <ToastContainer />
@@ -823,14 +825,16 @@ export const ComplaintDetailsEdit: FC = () => {
         {/* Complaints Details (View) */}
         <div className="comp-details-view">
           {/* Call Details */}
-          {readOnly && <CallDetails complaintType={complaintType} />}
-
+          {readOnly && (
+            <CallDetails
+              complaintOwner={ownedByAgencyCode?.agency}
+              complaintType={complaintType}
+            />
+          )}
           {/* Suspect / Witness Details */}
           {readOnly && complaintType === COMPLAINT_TYPES.ERS && <SuspectWitnessDetails />}
-
           {/* Caller Information */}
-          {readOnly && <CallerInformation />}
-
+          {readOnly && <CallerInformation complaintOwner={ownedByAgencyCode?.agency} />}
           {/* Attachments */}
           {readOnly && (
             <section id="complaint_attachments_div_id">
@@ -848,7 +852,6 @@ export const ComplaintDetailsEdit: FC = () => {
               </Card>
             </section>
           )}
-
           {/* Map */}
           {readOnly && (
             <ComplaintLocation
@@ -1190,7 +1193,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   />
                 </div>
               </div>
-              <FeatureFlag feature={FEATURE_TYPES.ENABLE_OFFICE}>
+              {enableOfficeFeature && (
                 <div
                   className="comp-details-form-row"
                   id="office-pair-id"
@@ -1204,7 +1207,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     defaultValue={office}
                   />
                 </div>
-              </FeatureFlag>
+              )}
               <div
                 className="comp-details-form-row"
                 id="zone-pair-id"
@@ -1509,26 +1512,19 @@ export const ComplaintDetailsEdit: FC = () => {
       </section>
 
       {/* HWCR Outcome Report and File Linkage */}
-      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && (
-        <>
-          <HWCROutcomeReport />
-          <FeatureFlag feature={FEATURE_TYPES.EXTERNAL_FILE_REFERENCE}>
-            <ExternalFileReference />
-          </FeatureFlag>
-        </>
-      )}
+      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
 
       {/* CEEB ERS Outcome Report */}
-      {readOnly && complaintType === COMPLAINT_TYPES.ERS && agency === AgencyType.CEEB && <CeebOutcomeReport />}
-
-      {/* COS ERS File Linkage */}
-      {readOnly && complaintType === COMPLAINT_TYPES.ERS && (
-        <FeatureFlag feature={FEATURE_TYPES.EXTERNAL_FILE_REFERENCE}>
-          <ExternalFileReference />
-        </FeatureFlag>
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && ownedByAgencyCode?.agency === AgencyType.CEEB && (
+        <CeebOutcomeReport />
       )}
 
       {readOnly && complaintType === COMPLAINT_TYPES.GIR && <GIROutcomeReport />}
+
+      {/* COS ERS File Linkage */}
+      {readOnly && complaintType !== COMPLAINT_TYPES.GIR && ownedByAgencyCode?.agency !== AgencyType.CEEB && (
+        <ExternalFileReference />
+      )}
     </div>
   );
 };
