@@ -222,6 +222,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="25" name="reference_number" nullable="true" remarks="Allows users to link complaints to files in external systems.   Currently labeled in the system as COORS reference number and initially only used for COORS linkages." size="20" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="26" name="comp_last_upd_utc_timestamp" nullable="true" remarks="The time the complaint was last updated, or null if the complaint has never been touched.  This value might also be updated by business logic that touches sub-tables to indicate that the business object complaint has been updated." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="27" name="park_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="28" name="complaint_type_code" nullable="true" remarks="The type of the complaint, such as HWCR, GIR, or ERS." size="10" type="varchar" typeCode="12">
+            <parent column="complaint_type_code" foreignKey="complaint_complaint_type_code_fkey" implied="false" onDeleteCascade="false" schema="complaint" table="complaint_type_code"/>
+         </column>
          <primaryKey column="complaint_identifier" sequenceNumberInPK="1"/>
          <index name="PK_complaint" unique="true">
             <column ascending="true" name="complaint_identifier"/>
@@ -323,7 +326,9 @@
          </index>
       </table>
       <table name="complaint_type_code" remarks="" schema="complaint" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="complaint_type_code" nullable="false" remarks="" size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="complaint_type_code" nullable="false" remarks="" size="10" type="varchar" typeCode="12">
+            <child column="complaint_type_code" foreignKey="complaint_complaint_type_code_fkey" implied="false" onDeleteCascade="false" schema="complaint" table="complaint"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="" size="250" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>

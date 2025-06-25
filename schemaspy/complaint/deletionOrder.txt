@@ -28,7 +28,6 @@ attractant_hwcr_xref
 allegation_complaint
 action_taken
 staging_metadata_mapping
-complaint_type_code
 complaint_referral_email_log
 complaint_referral
 hwcr_complaint
@@ -38,6 +37,7 @@ officer
 complaint
 office
 comp_mthd_recv_cd_agcy_cd_xref
+complaint_type_code
 geo_organization_unit_code
 team_code
 staging_status_code
