@@ -132,7 +132,7 @@ services:
     volumes:
       - ./webeoc:/app:z
       - /app/node_modules
-      - ./webeoc/logs:/mnt/data  # this is just for the developer webeoc logging
+      - ./webeoc/logs:/mnt/data # this is just for the developer webeoc logging
     user: root
     working_dir: "/app"
 
@@ -142,8 +142,8 @@ services:
     environment:
       <<: *postgres-vars
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", *POSTGRES_USER ]
-    ports: [ "5433:5432" ]
+      test: ["CMD", "pg_isready", "-U", *POSTGRES_USER]
+    ports: ["5433:5432"]
 
   migrations-cm:
     image: flyway/flyway:9.22-alpine
@@ -175,19 +175,17 @@ services:
     environment:
       <<: *postgres-vars
       NODE_ENV: development
-      POSTGRESQL_URL: "postgresql://postgres:default@cm-database:5432/postgres?schema=case_management"
+      POSTGRESQL_URL: "postgresql://postgres:{POSTGRES_PASSWORD}@cm-database:5432/postgres?schema=case_management"
       BACKEND_PORT: "3000"
       KEYCLOCK_CLIENT_ID: compliance-and-enforcement-digital-services-web-4794
       JWKS_URI: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs
       JWT_ISSUER: https://dev.loginproxy.gov.bc.ca/auth/realms/standard
     image: node:20-bullseye
-    ports: [ "3003:3000" ]
-    volumes: [ "./backend-cm:/app", "/app/node_modules" ]
+    ports: ["3003:3000"]
+    volumes: ["./backend-cm:/app", "/app/node_modules"]
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:3000/api" ]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api"]
     working_dir: "/app"
     depends_on:
       migrations-cm:
         condition: service_completed_successfully
-
-
