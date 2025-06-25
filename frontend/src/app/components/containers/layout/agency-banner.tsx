@@ -10,13 +10,13 @@ type Props = {
 };
 
 export const AgencyBanner: FC<Props> = ({ agency }) => {
-  const defaultAgencyCode = "COS";
-  const defaultDescription = "Conservation Officer Service";
+  const defaultAgencyCode = "NRS";
+  const defaultDescription = "Natural Resource Sector";
 
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
-  const selectedAgency = agency || UserService.getUserAgency();
+  const selectedAgency = agency ?? UserService.getUserAgency();
 
-  const selected = agencies.find((item) => item.agency === selectedAgency) || {
+  const selected = agencies.find((item) => item.agency === selectedAgency) ?? {
     agency: defaultAgencyCode,
     shortDescription: defaultDescription,
     longDescription: defaultDescription,

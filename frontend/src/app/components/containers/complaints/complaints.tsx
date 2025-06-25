@@ -109,7 +109,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       <div className="comp-page-header">
         <div className="comp-page-title-container">
           <h1>Complaints</h1>
-          <Button onClick={() => handleCreateClick()}>Create complaint</Button>
+          {!UserService.hasRole(Roles.SECTOR) && <Button onClick={() => handleCreateClick()}>Create complaint</Button>}
         </div>
         {/* <!-- create list of complaint types --> */}
 
