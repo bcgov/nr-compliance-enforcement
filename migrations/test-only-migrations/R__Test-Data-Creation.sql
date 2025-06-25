@@ -2017,7 +2017,7 @@ WHERE feature_code = 'COLEMAIL';
 -- Disable sector view in dev/test for all users
 ---------------------
 
-UPDATE public.feature_agency_xref
+UPDATE feature_agency_xref
 SET active_ind = 'N'
 WHERE feature_code = 'SECTORVIEW';
 
