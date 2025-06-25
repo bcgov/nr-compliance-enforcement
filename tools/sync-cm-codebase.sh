@@ -66,10 +66,6 @@ for SERVICE in "${SERVICES[@]}"; do
     "$WORK_DIR/$SOURCE_DIR/$SERVICE/" "$WORK_DIR/$DEST_DIR/$SERVICE-cm/"
 done
 
-# Optionally copy docker-compose.yml (uncomment if needed)
-# echo "Copying docker-compose.yml"
-# cp "$WORK_DIR/$SOURCE_DIR/docker-compose.yml" "$WORK_DIR/$DEST_DIR/docker-compose.yml"
-
 # Commit changes
 cd "$WORK_DIR/$DEST_DIR"
 git add .
