@@ -56,10 +56,10 @@ import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
-import { Complaint as ComplaintDto } from "@apptypes/app/complaints/complaint";
-import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
-import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
-import { GeneralIncidentComplaint as GeneralInformationComplaintDto } from "@apptypes/app/complaints/general-complaint";
+import { Complaint } from "@apptypes/app/complaints/complaint";
+import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
+import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
+import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 import { UUID } from "crypto";
 import { Delegate } from "@apptypes/app/people/delegate";
 import { AttractantXref } from "@apptypes/app/complaints/attractant-xref";
@@ -185,7 +185,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   //-- complaint update object
   const [complaintUpdate, applyComplaintUpdate] = useState<
-    ComplaintDto | AllegationComplaintDto | WildlifeComplaintDto | GeneralInformationComplaintDto
+    Complaint | AllegationComplaint | WildlifeComplaint | GeneralIncidentComplaint
   >();
 
   // files to add to COMS when complaint is saved
@@ -375,7 +375,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const selectedReportedByCode = reportedByCodes.find((option) => option.value === reportedByCode?.reportedBy);
 
   const hasAssignedOfficer = (): boolean => {
-    const { delegates } = complaintUpdate as ComplaintDto;
+    const { delegates } = complaintUpdate as Complaint;
 
     return from(delegates).any(({ type, isActive }) => type === "ASSIGNEE" && isActive);
   };
@@ -424,7 +424,7 @@ export const ComplaintDetailsEdit: FC = () => {
       setGeneralIncidentTypeErrorMsg("Required");
     }
 
-    let updatedComplaint = { ...complaintUpdate, girType: value } as GeneralInformationComplaintDto;
+    let updatedComplaint = { ...complaintUpdate, girType: value } as GeneralIncidentComplaint;
     applyComplaintUpdate(updatedComplaint);
   };
   //-- wildlife complaint updates
@@ -437,7 +437,7 @@ export const ComplaintDetailsEdit: FC = () => {
       setNatureOfComplaintError("Required");
     }
 
-    let updatedComplaint = { ...complaintUpdate, natureOfComplaint: value } as WildlifeComplaintDto;
+    let updatedComplaint = { ...complaintUpdate, natureOfComplaint: value } as WildlifeComplaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -450,7 +450,7 @@ export const ComplaintDetailsEdit: FC = () => {
       setSpeciesError("Required");
     }
 
-    let updatedComplaint = { ...complaintUpdate, species: value } as WildlifeComplaintDto;
+    let updatedComplaint = { ...complaintUpdate, species: value } as WildlifeComplaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -464,7 +464,7 @@ export const ComplaintDetailsEdit: FC = () => {
       setViolationTypeErrorMsg("Required");
     }
 
-    let updatedComplaint = { ...complaintUpdate, violation: value } as AllegationComplaintDto;
+    let updatedComplaint = { ...complaintUpdate, violation: value } as AllegationComplaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -473,7 +473,7 @@ export const ComplaintDetailsEdit: FC = () => {
       const { value } = selected;
 
       const isInProgress = value?.toUpperCase() === "YES";
-      let updatedComplaint = { ...complaintUpdate, isInProgress } as AllegationComplaintDto;
+      let updatedComplaint = { ...complaintUpdate, isInProgress } as AllegationComplaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -483,18 +483,18 @@ export const ComplaintDetailsEdit: FC = () => {
       const { value } = selected;
 
       const wasObserved = value?.toUpperCase() === "YES";
-      let updatedComplaint = { ...complaintUpdate, wasObserved } as AllegationComplaintDto;
+      let updatedComplaint = { ...complaintUpdate, wasObserved } as AllegationComplaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
 
   const handleSuspectDetailsChange = (value: string) => {
-    let updatedComplaint = { ...complaintUpdate, violationDetails: value } as AllegationComplaintDto;
+    let updatedComplaint = { ...complaintUpdate, violationDetails: value } as AllegationComplaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
   const handleAssignedOfficerChange = (selected: Option | null) => {
-    let { delegates } = complaintUpdate as ComplaintDto;
+    let { delegates } = complaintUpdate as Complaint;
     if (selected) {
       const { value } = selected;
       let existing = delegates.filter(({ type }) => type !== "ASSIGNEE");
@@ -533,7 +533,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
         updatedDelegates = [...updatedDelegates, ...existing, delegate];
 
-        let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as ComplaintDto;
+        let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as Complaint;
         applyComplaintUpdate(updatedComplaint);
       } else if (from(delegates).any() && from(delegates).any((item) => item.type === "ASSIGNEE")) {
         let delegate = delegates.find((item) => item.type === "ASSIGNEE");
@@ -541,12 +541,12 @@ export const ComplaintDetailsEdit: FC = () => {
 
         updatedDelegates = [updatedDelegate];
 
-        let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as ComplaintDto;
+        let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as Complaint;
         applyComplaintUpdate(updatedComplaint);
       }
     } else {
       let updatedDelegates = delegates.filter(({ type }) => type !== "ASSIGNEE");
-      let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as ComplaintDto;
+      let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -557,7 +557,7 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setComplaintDescriptionError("");
 
-      const updatedComplaint = { ...complaintUpdate, details: value } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, details: value } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -565,12 +565,12 @@ export const ComplaintDetailsEdit: FC = () => {
   const handleIncidentDateTimeChange = (date: Date) => {
     setSelectedIncidentDateTime(date);
 
-    const updatedComplaint = { ...complaintUpdate, incidentDateTime: date } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, incidentDateTime: date } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
   const handleAttractantsChange = async (options: Option[] | null) => {
-    const { attractants } = complaintUpdate as WildlifeComplaintDto;
+    const { attractants } = complaintUpdate as WildlifeComplaint;
     let updates: Array<AttractantXref> = [];
 
     if (options && options.length > 0) {
@@ -596,22 +596,22 @@ export const ComplaintDetailsEdit: FC = () => {
       });
     }
 
-    const model = { ...complaintUpdate, attractants: updates } as WildlifeComplaintDto;
+    const model = { ...complaintUpdate, attractants: updates } as WildlifeComplaint;
     applyComplaintUpdate(model);
   };
 
   const handleLocationChange = (value: string) => {
-    const updatedComplaint = { ...complaintUpdate, locationSummary: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, locationSummary: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
   const handleLocationDescriptionChange = (value: string) => {
-    const updatedComplaint = { ...complaintUpdate, locationDetail: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, locationDetail: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
   const handleParkChange = (value?: string) => {
-    const updatedComplaint = { ...complaintUpdate, parkGuid: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, parkGuid: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -623,15 +623,15 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setCommunityError("Required");
     }
-    const { organization } = complaintUpdate as ComplaintDto;
+    const { organization } = complaintUpdate as Complaint;
     const updatedOrganization = { ...organization, area: value };
 
-    const updatedComplaint = { ...complaintUpdate, organization: updatedOrganization } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, organization: updatedOrganization } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
   const handleNameChange = (value: string) => {
-    const updatedComplaint = { ...complaintUpdate, name: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, name: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -643,7 +643,7 @@ export const ComplaintDetailsEdit: FC = () => {
     let updatedComplaint = {
       ...complaintUpdate,
       isPrivacyRequested: value,
-    } as ComplaintDto;
+    } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -655,7 +655,7 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setPrimaryPhoneMsg("");
 
-      const updatedComplaint = { ...complaintUpdate, phone1: value ?? "" } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, phone1: value ?? "" } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -668,7 +668,7 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setSecondaryPhoneMsg("");
 
-      const updatedComplaint = { ...complaintUpdate, phone2: value ?? "" } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, phone2: value ?? "" } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -681,13 +681,13 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setAlternatePhoneMsg("");
 
-      const updatedComplaint = { ...complaintUpdate, phone3: value ?? "" } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, phone3: value ?? "" } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
 
   const handleAddressChange = (value: string) => {
-    const updatedComplaint = { ...complaintUpdate, address: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, address: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -697,7 +697,7 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setEmailMsg("");
 
-      const updatedComplaint = { ...complaintUpdate, email: value } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, email: value } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   }
@@ -707,7 +707,7 @@ export const ComplaintDetailsEdit: FC = () => {
     if (selected) {
       value = selected.value;
     }
-    const updatedComplaint = { ...complaintUpdate, reportedBy: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, reportedBy: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -716,7 +716,7 @@ export const ComplaintDetailsEdit: FC = () => {
     if (selected) {
       value = selected.value;
     }
-    const updatedComplaint = { ...complaintUpdate, complaintMethodReceivedCode: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, complaintMethodReceivedCode: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -735,12 +735,12 @@ export const ComplaintDetailsEdit: FC = () => {
         ],
       };
 
-      const updatedComplaint = { ...complaintUpdate, location } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, location } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     } else if (yCoordinate === "" && xCoordinate === "") {
       const location = { type: "point", coordinates: [0, 0] };
 
-      const updatedComplaint = { ...complaintUpdate, location } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, location } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };

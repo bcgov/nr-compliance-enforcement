@@ -5,7 +5,7 @@ import { ComplaintUpdate } from "./entities/complaint_updates.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 import { ComplaintChangeCount } from "./entities/complaint_change_count";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
-import { RelatedDataDto } from "src/types/models/complaints/related-data";
+import { RelatedDataDto } from "src/types/models/complaints/dtos/related-data";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 import { ComplaintReferralEmailLogService } from "../complaint_referral_email_log/complaint_referral_email_log.service";
 
