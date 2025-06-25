@@ -1,9 +1,10 @@
 import { Feature } from "@apptypes/maps/bcGeocoderType";
 import { ZoneAtAGlanceState } from "./zone-at-a-glance-state";
 
-import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
-import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
-import { GeneralIncidentComplaint as GeneralInformationComplaintDto } from "@apptypes/app/complaints/general-complaint";
+import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
+import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
+import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
+import { Complaint } from "@apptypes/app/complaints/complaint";
 import { WebEOCComplaintUpdateDTO } from "@apptypes/app/complaints/webeoc-complaint-update";
 import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 import { ComplaintFilters } from "@apptypes/complaints/complaint-filters";
@@ -14,7 +15,7 @@ export interface ComplaintState {
   complaintSearchParameters: ComplaintFilters;
   complaintItems: ComplaintCollection;
   totalCount: number;
-  complaint: WildlifeComplaintDto | AllegationComplaintDto | GeneralInformationComplaintDto | null;
+  complaint: WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint | null;
   complaintCollaborators: Collaborator[];
   zoneAtGlance: ZoneAtAGlanceState;
   complaintLocation: Feature | null;
@@ -28,9 +29,10 @@ export interface ComplaintState {
 }
 
 export interface ComplaintCollection {
-  wildlife: Array<WildlifeComplaintDto>;
-  allegations: Array<AllegationComplaintDto>;
-  general: Array<GeneralInformationComplaintDto>;
+  wildlife: Array<WildlifeComplaint>;
+  allegations: Array<AllegationComplaint>;
+  general: Array<GeneralIncidentComplaint>;
+  sector: Array<Complaint>;
 }
 
 export interface MappedComplaintsCountState {

@@ -264,6 +264,8 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
                 errorMessage={selectedAgencyError}
                 value={selectedAgency}
                 onChange={handleSelectedAgencyChange}
+                maxMenuHeight={170}
+                menuPlacement="bottom"
               />
             </div>
           </div>
@@ -423,6 +425,8 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
                 value={selectedOfficer}
                 placeholder="Select "
                 onChange={handleSelectedOfficerChange}
+                maxMenuHeight={120}
+                menuPlacement="bottom"
               />
             </div>
           </div>

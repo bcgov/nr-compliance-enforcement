@@ -10,12 +10,14 @@ export const COMPLAINT_TYPE_EXTERNAL_AGENCY_MAPPING = {
   HWCR: false,
   GIR: true,
   ERS: true,
+  SECTOR: false,
 };
 
 export const COMPLAINT_TYPES = {
   HWCR: "HWCR",
   ERS: "ERS",
   GIR: "GIR",
+  SECTOR: "SECTOR",
 };
 export const CEEB_TYPES = {
   ERS: "ERS",
@@ -32,6 +34,8 @@ export const complaintTypeToName = (complaintType: string | undefined | null, si
       return singular ? "Human Wildlife Conflict" : "Human Wildlife Conflicts";
     case COMPLAINT_TYPES.GIR:
       return singular ? "General Incident" : "General Incidents";
+    case COMPLAINT_TYPES.SECTOR:
+      return singular ? "Sector Complaint" : "Sector Complaints";
     default:
       return "";
   }
