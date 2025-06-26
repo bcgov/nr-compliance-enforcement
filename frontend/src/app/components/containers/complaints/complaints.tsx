@@ -243,6 +243,11 @@ const getComplaintTypes = (showSectorView: boolean) => {
       break;
   }
 
+  if (!showSectorView && returnTypes.hasOwnProperty("SECTOR")) {
+    const { SECTOR, ...rest } = returnTypes as any;
+    returnTypes = rest; // Remove SECTOR type if the feature is not active
+  }
+
   return returnTypes;
 };
 
