@@ -35,6 +35,7 @@ import { DropdownOption } from "@/app/types/app/drop-down-option";
 import { isFeatureActive } from "@store/reducers/app";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
+
 type Props = {
   defaultComplaintType: string;
 };
