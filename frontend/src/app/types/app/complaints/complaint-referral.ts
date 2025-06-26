@@ -20,4 +20,8 @@ export interface ComplaintReferral {
   };
   referral_reason: string;
   referral_date: string;
+  referral_email_logs?: Array<{
+    email_address: string;
+    email_sent_utc_timestamp: Date;
+  }>;
 }

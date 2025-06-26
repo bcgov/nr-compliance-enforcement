@@ -3,14 +3,14 @@ import { ChesService } from "../../external_api/ches/ches.service";
 import { generateReferralEmailBody, GenerateReferralEmailParams } from "../../email_templates/referrals";
 import { EmailReferenceService } from "../../v1/email_reference/email_reference.service";
 import { ComplaintService } from "../../v1/complaint/complaint.service";
-import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
+import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
 import { SpeciesCodeService } from "../../v1/species_code/species_code.service";
 import { HwcrComplaintNatureCodeService } from "../../v1/hwcr_complaint_nature_code/hwcr_complaint_nature_code.service";
-import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
+import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
 import { GeoOrganizationUnitCodeService } from "../../v1/geo_organization_unit_code/geo_organization_unit_code.service";
 import { AgencyCodeService } from "../../v1/agency_code/agency_code.service";
 import { ViolationCodeService } from "../../v1/violation_code/violation_code.service";
-import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
+import { GeneralIncidentComplaintDto } from "../../types/models/complaints/dtos/gir-complaint";
 import { GirTypeCodeService } from "../../v1/gir_type_code/gir_type_code.service";
 import { GenerateCollaboratorEmailParams, generateCollaboratorEmailBody } from "../../email_templates/collaborator";
 import { CssService } from "../../external_api/css/css.service";
@@ -171,7 +171,7 @@ export class EmailService {
 
       const emailBody = generateReferralEmailBody(generateReferralEmailParams);
 
-      return await this._chesService.sendEmail(
+      await this._chesService.sendEmail(
         senderEmailAddress,
         senderName,
         emailSubject,
@@ -180,6 +180,8 @@ export class EmailService {
         [senderEmailAddress],
         emailAttachments,
       );
+
+      return recipientList;
     } catch (error) {
       this.logger.error(`Failed to send referral email: ${error.message}`);
       throw error;

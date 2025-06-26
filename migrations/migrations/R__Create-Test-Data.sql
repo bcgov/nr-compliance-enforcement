@@ -17,7 +17,7 @@
 -- Insert OFFICE records
 -------------------------
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -39,7 +39,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -61,7 +61,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -83,7 +83,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -105,7 +105,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -127,7 +127,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -149,7 +149,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -171,7 +171,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -193,7 +193,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -215,7 +215,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -237,7 +237,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -259,7 +259,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -281,7 +281,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -303,7 +303,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -325,7 +325,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -347,7 +347,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -369,7 +369,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -391,7 +391,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -413,7 +413,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -435,7 +435,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -457,7 +457,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -479,7 +479,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -501,7 +501,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -523,7 +523,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -545,7 +545,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -567,7 +567,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -589,7 +589,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -611,7 +611,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -633,7 +633,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -655,7 +655,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -677,7 +677,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -699,7 +699,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -721,7 +721,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -743,7 +743,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -765,7 +765,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -787,7 +787,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -809,7 +809,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -831,7 +831,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -853,7 +853,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -875,7 +875,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -897,7 +897,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -919,7 +919,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -941,7 +941,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -963,7 +963,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -985,7 +985,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -1011,7 +1011,7 @@ DO NOTHING;
 -------------------------
 -- COS HQ / Application Team --
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1037,7 +1037,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1063,7 +1063,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1089,7 +1089,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1115,7 +1115,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1141,7 +1141,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1167,7 +1167,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1193,7 +1193,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1219,7 +1219,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1245,7 +1245,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1271,7 +1271,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1297,7 +1297,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1323,7 +1323,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1349,7 +1349,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1376,7 +1376,7 @@ DO NOTHING;
 
 -- Peace Pilot Users: Fort St. John --
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1402,7 +1402,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1428,7 +1428,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1454,7 +1454,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1480,7 +1480,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1506,7 +1506,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1532,7 +1532,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1559,7 +1559,7 @@ DO NOTHING;
 
 -- Peace Pilot Users: Fort Nelson --
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1585,7 +1585,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1612,7 +1612,7 @@ DO NOTHING;
 
 -- Peace Pilot Users: Dawson Creek --
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1638,7 +1638,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1664,7 +1664,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1690,7 +1690,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1716,7 +1716,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -1776,7 +1776,7 @@ values
 DO NOTHING;
 
 INSERT INTO
-  public.office (
+  office (
     office_guid,
     create_user_id,
     create_utc_timestamp,
@@ -1825,7 +1825,7 @@ DO NOTHING;
 
 -- COS HQ / Application Team --
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -1851,7 +1851,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -1877,7 +1877,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -1903,7 +1903,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -1929,7 +1929,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -1955,7 +1955,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -1981,7 +1981,7 @@ VALUES
 DO NOTHING;
 -- Fix keycloak name
 UPDATE
-  public.officer
+  officer
 SET
   user_id = 'JONFUNK'
 WHERE
@@ -1991,7 +1991,7 @@ WHERE
   );
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2015,7 +2015,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2039,7 +2039,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2063,7 +2063,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2087,7 +2087,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2113,7 +2113,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2139,7 +2139,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2164,7 +2164,7 @@ DO NOTHING;
 
 -- Peace Pilot Users: Fort St. John --
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2188,7 +2188,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2212,7 +2212,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2236,7 +2236,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2260,7 +2260,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2284,7 +2284,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2308,7 +2308,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2333,7 +2333,7 @@ DO NOTHING;
 
 -- Peace Pilot Users: Fort Nelson --
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2357,7 +2357,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2382,7 +2382,7 @@ DO NOTHING;
 
 -- Peace Pilot Users: Dawson Creek --
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2406,7 +2406,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2430,7 +2430,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2454,7 +2454,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2478,7 +2478,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -2504,52 +2504,52 @@ VALUES
 DO NOTHING;
 
 -- Reset offices to nr-compliance-enforcement values
-UPDATE public.officer
+UPDATE officer
 SET
   office_guid = 'cdd9964e-7878-44c1-b4a2-0290c6345dec'
 WHERE
   office_guid = '914f8725-7100-4f56-a39b-1c18b0eccb55';
 
-UPDATE public.officer
+UPDATE officer
 SET
   office_guid = 'b494082e-35a3-468f-8955-4aa002066b36'
 WHERE
   office_guid = '39e7ad0a-20b1-48b4-be70-dfcc5bc01c3c';
 
-UPDATE public.officer
+UPDATE officer
 SET
   office_guid = 'b494082e-35a3-468f-8955-4aa002066b36'
 WHERE
   office_guid = '05633ab9-1502-4566-9364-4b3dac7c1354';
 
-UPDATE public.officer
+UPDATE officer
 SET
   office_guid = 'b494082e-35a3-468f-8955-4aa002066b36'
 WHERE
   office_guid = '7da19946-4525-43ff-b4b6-d243a2addaaa';
 
-UPDATE public.officer
+UPDATE officer
 SET
   office_guid = 'b494082e-35a3-468f-8955-4aa002066b36'
 WHERE
   office_guid = '4b3a8974-1975-4aaf-9e0a-2d3f5d217805';
 
 -- Fixing spelling issue
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   long_description = 'Barbeque'
 WHERE
   short_description = 'BBQ'
   AND attractant_code = 'BBQ';
 
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   short_description = 'Fruit/Berries'
 WHERE
   long_description = 'Residential Fruit/Berries'
   AND attractant_code = 'RESFRUIT';
 
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   short_description = 'Hunter Kill'
 WHERE
@@ -2557,73 +2557,73 @@ WHERE
   AND attractant_code = 'WLDLFEHK';
 
 -- Changing display order of attractants
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   display_order = 8
 WHERE
   attractant_code = 'RESFRUIT';
 
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   display_order = 9
 WHERE
   attractant_code = 'GARBAGE';
 
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   display_order = 10
 WHERE
   attractant_code = 'WLDLFEHK';
 
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   display_order = 11
 WHERE
   attractant_code = 'INDCAMP';
 
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   display_order = 12
 WHERE
   attractant_code = 'LIVESTCK';
 
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   display_order = 13
 WHERE
   attractant_code = 'LVSFEED';
 
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   display_order = 14
 WHERE
   attractant_code = 'NA';
 
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   display_order = 15
 WHERE
   attractant_code = 'OTHER';
 
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   display_order = 16
 WHERE
   attractant_code = 'PETFOOD';
 
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   display_order = 17
 WHERE
   attractant_code = 'PETS';
 
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   display_order = 18
 WHERE
   attractant_code = 'VEGGARD';
 
-UPDATE public.attractant_code
+UPDATE attractant_code
 SET
   display_order = 19
 WHERE
@@ -2827,7 +2827,7 @@ UPDATE species_code SET display_order = 240 WHERE species_code = 'WOLVERN';
 -- Staging Activities for webEOC load
 -------------------------
 insert into
-  public.staging_activity_code (
+  staging_activity_code (
     staging_activity_code,
     short_description,
     long_description,
@@ -2878,7 +2878,7 @@ do nothing;
 -- Staging Status for webEOC load
 -------------------------
 insert into
-  public.staging_status_code (
+  staging_status_code (
     staging_status_code,
     short_description,
     long_description,
@@ -2929,7 +2929,7 @@ do nothing;
 -- Table entities for webEOC load
 -------------------------
 insert into
-  public.entity_code (
+  entity_code (
     entity_code,
     short_description,
     long_description,
@@ -3605,7 +3605,7 @@ WHERE
 ------------------------------
 -- Update Administrative Office Indicator for COS HQ office
 ------------------------------
-update public.geo_organization_unit_code
+update geo_organization_unit_code
 set
   administrative_office_ind = true
 where
@@ -3942,7 +3942,7 @@ where
   display_order = 5;
 
 insert into
-  public.entity_code (
+  entity_code (
     entity_code,
     short_description,
     long_description,
@@ -5689,7 +5689,7 @@ DO NOTHING;
 -- Insert Team Codes
 -------------------------
 insert into
-  public.team_code (
+  team_code (
     team_code,
     short_description,
     long_description,
@@ -5715,7 +5715,7 @@ values
 DO NOTHING;
 
 insert into
-  public.team_code (
+  team_code (
     team_code,
     short_description,
     long_description,
@@ -5741,7 +5741,7 @@ values
 DO NOTHING;
 
 insert into
-  public.team_code (
+  team_code (
     team_code,
     short_description,
     long_description,
@@ -5767,7 +5767,7 @@ values
 DO NOTHING;
 
 insert into
-  public.team_code (
+  team_code (
     team_code,
     short_description,
     long_description,
@@ -5793,7 +5793,7 @@ values
 DO NOTHING;
 
 insert into
-  public.team_code (
+  team_code (
     team_code,
     short_description,
     long_description,
@@ -5819,7 +5819,7 @@ values
 DO NOTHING;
 
 insert into
-  public.team_code (
+  team_code (
     team_code,
     short_description,
     long_description,
@@ -5846,7 +5846,7 @@ DO NOTHING;
 
 
 insert into
-  public.team (
+  team (
     team_code,
     agency_code,
     active_ind,
@@ -5868,7 +5868,7 @@ values
 DO NOTHING;
 
 insert into
-  public.team (
+  team (
     team_code,
     agency_code,
     active_ind,
@@ -5890,7 +5890,7 @@ values
 DO NOTHING;
 
 insert into
-  public.team (
+  team (
     team_code,
     agency_code,
     active_ind,
@@ -5912,7 +5912,7 @@ values
 DO NOTHING;
 
 insert into
-  public.team (
+  team (
     team_code,
     agency_code,
     active_ind,
@@ -5934,7 +5934,7 @@ values
 DO NOTHING;
 
 insert into
-  public.team (
+  team (
     team_code,
     agency_code,
     active_ind,
@@ -5956,7 +5956,7 @@ values
 DO NOTHING;
 
 insert into
-  public.team (
+  team (
     team_code,
     agency_code,
     active_ind,
@@ -5981,7 +5981,7 @@ DO NOTHING;
 -- Table entities for method_complaint_received_code load
 -------------------------
 insert into
-  public.complaint_method_received_code (
+  complaint_method_received_code (
     complaint_method_received_code,
     short_description,
     long_description,
@@ -6073,7 +6073,7 @@ values
 do nothing;
 
 INSERT INTO
-  public.comp_mthd_recv_cd_agcy_cd_xref (
+  comp_mthd_recv_cd_agcy_cd_xref (
     agency_code,
     complaint_method_received_code,
     active_ind,
@@ -6095,7 +6095,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.comp_mthd_recv_cd_agcy_cd_xref (
+  comp_mthd_recv_cd_agcy_cd_xref (
     agency_code,
     complaint_method_received_code,
     active_ind,
@@ -6117,7 +6117,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.comp_mthd_recv_cd_agcy_cd_xref (
+  comp_mthd_recv_cd_agcy_cd_xref (
     agency_code,
     complaint_method_received_code,
     active_ind,
@@ -6139,7 +6139,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.comp_mthd_recv_cd_agcy_cd_xref (
+  comp_mthd_recv_cd_agcy_cd_xref (
     agency_code,
     complaint_method_received_code,
     active_ind,
@@ -6161,7 +6161,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.comp_mthd_recv_cd_agcy_cd_xref (
+  comp_mthd_recv_cd_agcy_cd_xref (
     agency_code,
     complaint_method_received_code,
     active_ind,
@@ -6183,7 +6183,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.comp_mthd_recv_cd_agcy_cd_xref (
+  comp_mthd_recv_cd_agcy_cd_xref (
     agency_code,
     complaint_method_received_code,
     active_ind,
@@ -6205,7 +6205,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.comp_mthd_recv_cd_agcy_cd_xref (
+  comp_mthd_recv_cd_agcy_cd_xref (
     agency_code,
     complaint_method_received_code,
     active_ind,
@@ -6227,7 +6227,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.comp_mthd_recv_cd_agcy_cd_xref (
+  comp_mthd_recv_cd_agcy_cd_xref (
     agency_code,
     complaint_method_received_code,
     active_ind,
@@ -6249,7 +6249,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.comp_mthd_recv_cd_agcy_cd_xref (
+  comp_mthd_recv_cd_agcy_cd_xref (
     agency_code,
     complaint_method_received_code,
     active_ind,
@@ -6271,7 +6271,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.comp_mthd_recv_cd_agcy_cd_xref (
+  comp_mthd_recv_cd_agcy_cd_xref (
     agency_code,
     complaint_method_received_code,
     active_ind,
@@ -6387,7 +6387,7 @@ DO NOTHING;
 -------------------------
 -- Person Records
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6413,7 +6413,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6439,7 +6439,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6465,7 +6465,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6491,7 +6491,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6517,7 +6517,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6543,7 +6543,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6569,7 +6569,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6595,7 +6595,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6621,7 +6621,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6647,7 +6647,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6673,7 +6673,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6699,7 +6699,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6725,7 +6725,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6751,7 +6751,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6777,7 +6777,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6803,7 +6803,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6829,7 +6829,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6855,7 +6855,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6881,7 +6881,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6907,7 +6907,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6933,7 +6933,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6959,7 +6959,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -6985,7 +6985,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7011,7 +7011,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7037,7 +7037,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7063,7 +7063,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7089,7 +7089,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7115,7 +7115,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7141,7 +7141,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7167,7 +7167,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7193,7 +7193,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7219,7 +7219,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7245,7 +7245,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7271,7 +7271,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7297,7 +7297,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7323,7 +7323,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7349,7 +7349,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7375,7 +7375,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7401,7 +7401,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7427,7 +7427,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7453,7 +7453,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7479,7 +7479,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7505,7 +7505,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.person (
+  person (
     person_guid,
     first_name,
     middle_name_1,
@@ -7532,7 +7532,7 @@ DO NOTHING;
 
 -- Officer Records
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7558,7 +7558,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7584,7 +7584,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7610,7 +7610,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7636,7 +7636,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7662,7 +7662,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7688,7 +7688,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7714,7 +7714,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7740,7 +7740,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7766,7 +7766,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7792,7 +7792,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7818,7 +7818,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7844,7 +7844,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7870,7 +7870,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7896,7 +7896,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7922,7 +7922,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7948,7 +7948,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -7974,7 +7974,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8000,7 +8000,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8026,7 +8026,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8052,7 +8052,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8078,7 +8078,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8104,7 +8104,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8130,7 +8130,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8156,7 +8156,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8182,7 +8182,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8208,7 +8208,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8234,7 +8234,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8260,7 +8260,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8286,7 +8286,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8312,7 +8312,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8338,7 +8338,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8364,7 +8364,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8390,7 +8390,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8416,7 +8416,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8442,7 +8442,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8468,7 +8468,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8494,7 +8494,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8520,7 +8520,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8546,7 +8546,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8572,7 +8572,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8598,7 +8598,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8624,7 +8624,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8650,7 +8650,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer (
+  officer (
     officer_guid,
     user_id,
     create_user_id,
@@ -8677,7 +8677,7 @@ DO NOTHING;
 
 -- Teams
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -8695,7 +8695,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'REACTIVE'
         and active_ind = 'Y'
@@ -8709,7 +8709,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -8727,7 +8727,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'REACTIVE'
         and active_ind = 'Y'
@@ -8741,7 +8741,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -8759,7 +8759,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'REACTIVE'
         and active_ind = 'Y'
@@ -8773,7 +8773,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -8791,7 +8791,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'REACTIVE'
         and active_ind = 'Y'
@@ -8805,7 +8805,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -8823,7 +8823,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'REACTIVE'
         and active_ind = 'Y'
@@ -8837,7 +8837,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -8855,7 +8855,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'REACTIVE'
         and active_ind = 'Y'
@@ -8869,7 +8869,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -8887,7 +8887,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'REACTIVE'
         and active_ind = 'Y'
@@ -8901,7 +8901,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -8919,7 +8919,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'REACTIVE'
         and active_ind = 'Y'
@@ -8933,7 +8933,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -8951,7 +8951,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'REACTIVE'
         and active_ind = 'Y'
@@ -8965,7 +8965,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -8983,7 +8983,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'REACTIVE'
         and active_ind = 'Y'
@@ -8997,7 +8997,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9015,7 +9015,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'RIPM'
         and active_ind = 'Y'
@@ -9029,7 +9029,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9047,7 +9047,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'RIPM'
         and active_ind = 'Y'
@@ -9061,7 +9061,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9079,7 +9079,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'RIPM'
         and active_ind = 'Y'
@@ -9093,7 +9093,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9111,7 +9111,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'RIPM'
         and active_ind = 'Y'
@@ -9125,7 +9125,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9143,7 +9143,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'PLAN'
         and active_ind = 'Y'
@@ -9157,7 +9157,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9175,7 +9175,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'PLAN'
         and active_ind = 'Y'
@@ -9189,7 +9189,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9207,7 +9207,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'PLAN'
         and active_ind = 'Y'
@@ -9221,7 +9221,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9239,7 +9239,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'PLAN'
         and active_ind = 'Y'
@@ -9253,7 +9253,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9271,7 +9271,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'PLAN'
         and active_ind = 'Y'
@@ -9285,7 +9285,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9303,7 +9303,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'PLAN'
         and active_ind = 'Y'
@@ -9317,7 +9317,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9335,7 +9335,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'PLAN'
         and active_ind = 'Y'
@@ -9349,7 +9349,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9367,7 +9367,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'PLAN'
         and active_ind = 'Y'
@@ -9381,7 +9381,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9399,7 +9399,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'PLAN'
         and active_ind = 'Y'
@@ -9413,7 +9413,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9431,7 +9431,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'PLAN'
         and active_ind = 'Y'
@@ -9445,7 +9445,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9463,7 +9463,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'PLAN'
         and active_ind = 'Y'
@@ -9477,7 +9477,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9495,7 +9495,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'PLAN'
         and active_ind = 'Y'
@@ -9509,7 +9509,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9527,7 +9527,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'HI'
         and active_ind = 'Y'
@@ -9541,7 +9541,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9559,7 +9559,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'HI'
         and active_ind = 'Y'
@@ -9573,7 +9573,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9591,7 +9591,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'HI'
         and active_ind = 'Y'
@@ -9605,7 +9605,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9623,7 +9623,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'HI'
         and active_ind = 'Y'
@@ -9637,7 +9637,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9655,7 +9655,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'HI'
         and active_ind = 'Y'
@@ -9669,7 +9669,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9687,7 +9687,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'HI'
         and active_ind = 'Y'
@@ -9701,7 +9701,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9719,7 +9719,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'HI'
         and active_ind = 'Y'
@@ -9733,7 +9733,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9751,7 +9751,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'HI'
         and active_ind = 'Y'
@@ -9765,7 +9765,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9783,7 +9783,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'HI'
         and active_ind = 'Y'
@@ -9797,7 +9797,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9815,7 +9815,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'OPS'
         and active_ind = 'Y'
@@ -9829,7 +9829,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9847,7 +9847,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'OPS'
         and active_ind = 'Y'
@@ -9861,7 +9861,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9879,7 +9879,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'OPS'
         and active_ind = 'Y'
@@ -9893,7 +9893,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9911,7 +9911,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'OPS'
         and active_ind = 'Y'
@@ -9925,7 +9925,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9943,7 +9943,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'OPS'
         and active_ind = 'Y'
@@ -9957,7 +9957,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -9975,7 +9975,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'OPS'
         and active_ind = 'Y'
@@ -9989,7 +9989,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -10007,7 +10007,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'OPS'
         and active_ind = 'Y'
@@ -10021,7 +10021,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -10039,7 +10039,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'OPS'
         and active_ind = 'Y'
@@ -10053,7 +10053,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -10071,7 +10071,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'OPS'
         and active_ind = 'Y'
@@ -10085,7 +10085,7 @@ VALUES
 DO NOTHING;
 
 INSERT INTO
-  public.officer_team_xref (
+  officer_team_xref (
     officer_team_xref_guid,
     officer_guid,
     team_guid,
@@ -10103,7 +10103,7 @@ VALUES
       SELECT
         team_guid
       from
-        public.team
+        team
       where
         team_code = 'OPS'
         and active_ind = 'Y'
@@ -11379,6 +11379,109 @@ values ('REFEMAIL','DFO','N',user,now(),user,now()),
 ('REFEMAIL','NROS','N',user,now(),user,now()),
 ('REFEMAIL','OTH','N',user,now(),user,now())
 ON CONFLICT DO NOTHING;
+
+---------------------------
+-- CE-1659 Sector View of Complaints
+---------------------------
+
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'SECTORVIEW',
+  'Enable Sector View of Complaints',
+  'Enables a Sector View of all NatCom complaints in one single view.',
+  300,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'SECTORVIEW',
+  'COS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'SECTORVIEW',
+  'PARKS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'SECTORVIEW',
+  'EPO',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+-------------------------
+-- Move New Westminster in Location Hierarchy
+-------------------------
+UPDATE geo_org_unit_structure SET parent_geo_org_unit_code = 'SQMSHWHS' WHERE child_geo_org_unit_code  = 'NEWWEST';
+
+-------------------------
+-- Remove Unused Feature Flags
+-------------------------
+DELETE from feature_agency_xref where feature_code = 'PRIV_REQ';
+DELETE from feature_code where feature_code = 'PRIV_REQ';
+DELETE from feature_agency_xref where feature_code = 'ENBL_OFF';
+DELETE from feature_code where feature_code = 'ENBL_OFF';
+DELETE from feature_agency_xref where feature_code = 'EXTRNALREF';
+DELETE from feature_code where feature_code = 'EXTRNALREF';
 
 --------------------------
 -- New Changes above this line

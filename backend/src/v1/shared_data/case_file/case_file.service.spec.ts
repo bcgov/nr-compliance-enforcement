@@ -9,6 +9,7 @@ import { dataSourceMockFactory } from "../../../../test/mocks/datasource";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { Complaint } from "../../complaint/entities/complaint.entity";
 import {
+  MockComplaintReferralEmailLogRepository,
   MockComplaintsAgencyRepository,
   MockComplaintsOfficerRepository,
   MockComplaintsRepositoryV2,
@@ -79,6 +80,8 @@ import { CacheModule } from "@nestjs/cache-manager";
 import { ViolationAgencyXref } from "../../violation_agency_xref/entities/violation_agency_entity_xref";
 import { ComplaintReferral } from "../../complaint_referral/entities/complaint_referral.entity";
 import { EmailReference } from "../../email_reference/entities/email_reference.entity";
+import { ComplaintReferralEmailLogService } from "../../complaint_referral_email_log/complaint_referral_email_log.service";
+import { ComplaintReferralEmailLog } from "../../complaint_referral_email_log/entities/complaint_referral_email_log.entity";
 
 describe("Testing: Case File Service", () => {
   let service: CaseFileService;
@@ -258,6 +261,11 @@ describe("Testing: Case File Service", () => {
         {
           provide: getRepositoryToken(ComplaintUpdate),
           useValue: {},
+        },
+        ComplaintReferralEmailLogService,
+        {
+          provide: getRepositoryToken(ComplaintReferralEmailLog),
+          useValue: MockComplaintReferralEmailLogRepository,
         },
       ],
     }).compile();

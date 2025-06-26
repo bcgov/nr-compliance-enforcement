@@ -1,5 +1,5 @@
 CREATE
-OR REPLACE FUNCTION public.insert_and_return_code (
+OR REPLACE FUNCTION complaint.insert_and_return_code (
   webeoc_value character varying,
   code_table_type character varying
 ) RETURNS character varying LANGUAGE plpgsql AS $function$
@@ -57,7 +57,7 @@ BEGIN
     
     -- Check if the code exists in staging_metadata_mapping
     SELECT live_data_value INTO live_code_value
-    FROM staging_metadata_mapping
+    FROM complaint.staging_metadata_mapping
     WHERE staged_data_value = webEOC_value
     AND entity_code = code_table_type;
     
@@ -84,32 +84,32 @@ BEGIN
         new_code := truncated_code || suffix;
         
         -- Check if the new_code exists in the specific code table
-        EXECUTE format('SELECT EXISTS(SELECT 1 FROM %I WHERE %I = $1)', target_code_table, column_name)
+        EXECUTE format('SELECT EXISTS(SELECT 1 FROM "complaint".%I WHERE %I = $1)', target_code_table, column_name)
         INTO code_exists
         USING new_code;
         
         IF NOT code_exists then
         
         	-- Determine the correct display_order for the new code
-            EXECUTE format('SELECT COALESCE(MAX(display_order) + 1, 1) FROM %I WHERE %I < $1', target_code_table, column_name)
+            EXECUTE format('SELECT COALESCE(MAX(display_order) + 1, 1) FROM "complaint".%I WHERE %I < $1', target_code_table, column_name)
             INTO new_display_order
             USING new_code;
            
 			-- Re-index the display_orders
-            EXECUTE format('UPDATE %I SET display_order = display_order + 1 WHERE display_order >= $1', target_code_table)
+            EXECUTE format('UPDATE "complaint".%I SET display_order = display_order + 1 WHERE display_order >= $1', target_code_table)
             USING new_display_order;
            
             -- Insert new code into the specific code table
-            EXECUTE format('INSERT INTO %I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', $6, $4, $6, $4, $5)', target_code_table, column_name)
+            EXECUTE format('INSERT INTO "complaint".%I (%I, short_description, long_description, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, display_order) VALUES ($1, $2, $3, ''Y'', $6, $4, $6, $4, $5)', target_code_table, column_name)
             USING new_code, truncated_short_description, webeoc_value, current_utc_timestamp, new_display_order, webeoc_user_id;
 
             -- Update configuration_value by 1 to nofity front-end to update
-            UPDATE configuration
+            UPDATE complaint.configuration
             SET    configuration_value = configuration_value::int + 1
             WHERE  configuration_code = 'CDTABLEVER';
 
             -- Insert into staging_metadata_mapping
-            INSERT INTO staging_metadata_mapping (entity_code, staged_data_value, live_data_value, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+            INSERT INTO complaint.staging_metadata_mapping (entity_code, staged_data_value, live_data_value, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
             VALUES (code_table_type, webeoc_value, new_code, webeoc_user_id, current_utc_timestamp, webeoc_user_id, current_utc_timestamp);
 
             RETURN new_code; -- Return the new unique code
@@ -124,7 +124,7 @@ END;
 $function$;
 
 CREATE
-OR REPLACE FUNCTION public.format_phone_number (phone_number text) RETURNS text LANGUAGE plpgsql AS $function$
+OR REPLACE FUNCTION complaint.format_phone_number (phone_number text) RETURNS text LANGUAGE plpgsql AS $function$
 DECLARE
     formatted_phone_number TEXT;
 BEGIN
@@ -145,7 +145,7 @@ END;
 $function$;
 
 CREATE
-OR REPLACE FUNCTION public.validate_coordinate_field (coordinate_field text) RETURNS text LANGUAGE plpgsql AS $function$
+OR REPLACE FUNCTION complaint.validate_coordinate_field (coordinate_field text) RETURNS text LANGUAGE plpgsql AS $function$
 DECLARE
     formatted_coordinate_field TEXT;
 BEGIN

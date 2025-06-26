@@ -799,4 +799,10 @@ export const MockComplaintUpdatesRepository = () => ({
     orderBy: jest.fn().mockReturnThis(),
   })),
 });
+
+export const MockComplaintReferralEmailLogRepository = () => ({
+  create: jest.fn(),
+  save: jest.fn(),
+});
+
 // @SONAR_START@
