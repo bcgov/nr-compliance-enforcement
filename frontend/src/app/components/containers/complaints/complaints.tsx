@@ -35,7 +35,6 @@ import { DropdownOption } from "@/app/types/app/drop-down-option";
 import { isFeatureActive } from "@store/reducers/app";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
-
 type Props = {
   defaultComplaintType: string;
 };
@@ -241,11 +240,6 @@ const getComplaintTypes = (showSectorView: boolean) => {
         returnTypes = rest; // Remove SECTOR type if the feature is not active
       }
       break;
-  }
-
-  if (!showSectorView && returnTypes.hasOwnProperty("SECTOR")) {
-    const { SECTOR, ...rest } = returnTypes as any;
-    returnTypes = rest; // Remove SECTOR type if the feature is not active
   }
 
   return returnTypes;
