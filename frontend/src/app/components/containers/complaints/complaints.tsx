@@ -224,8 +224,13 @@ const getComplaintTypes = (showSectorView: boolean) => {
     case UserService.hasRole(Roles.HWCR_ONLY):
       returnTypes = HWCR_ONLY_TYPES;
       break;
+
     default:
       returnTypes = COMPLAINT_TYPES;
+      if (!showSectorView) {
+        const { SECTOR, ...rest } = returnTypes;
+        returnTypes = rest; // Remove SECTOR type if the feature is not active
+      }
       break;
   }
 
