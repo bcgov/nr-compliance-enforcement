@@ -32,6 +32,8 @@ import Option from "@apptypes/app/option";
 import { resetComplaintSearchParameters, selectComplaintSearchParameters } from "@/app/store/reducers/complaints";
 import { AgencyType } from "@/app/types/app/agency-types";
 import { DropdownOption } from "@/app/types/app/drop-down-option";
+import { isFeatureActive } from "@store/reducers/app";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 type Props = {
   defaultComplaintType: string;
@@ -42,7 +44,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const showSectorView = UserService.hasRole(Roles.SECTOR);
+  const showSectorView = useAppSelector(isFeatureActive(FEATURE_TYPES.SECTOR_VIEW));
 
   //-- Check global state for active tab and set it to default if it was not set there.
   const storedComplaintType = useAppSelector(selectActiveTab);
