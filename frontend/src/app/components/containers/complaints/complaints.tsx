@@ -44,7 +44,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const showSectorView = useAppSelector(isFeatureActive(FEATURE_TYPES.SECTOR_VIEW));
+  const showSectorView =
+    useAppSelector(isFeatureActive(FEATURE_TYPES.SECTOR_VIEW)) || UserService.hasRole(Roles.SECTOR);
 
   //-- Check global state for active tab and set it to default if it was not set there.
   const storedComplaintType = useAppSelector(selectActiveTab);
@@ -240,6 +241,11 @@ const getComplaintTypes = (showSectorView: boolean) => {
         returnTypes = rest; // Remove SECTOR type if the feature is not active
       }
       break;
+  }
+
+  if (!showSectorView && returnTypes.hasOwnProperty("SECTOR")) {
+    const { SECTOR, ...rest } = returnTypes as any;
+    returnTypes = rest; // Remove SECTOR type if the feature is not active
   }
 
   return returnTypes;
