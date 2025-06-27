@@ -20,9 +20,9 @@ import { from } from "linq-to-typescript";
 import { NewPersonComplaintXref } from "@apptypes/api-params/new-person-complaint-xref";
 import Option from "@apptypes/app/option";
 import { toggleNotification } from "./app";
-import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
-import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
-import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
+import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
+import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
+import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 import { Roles } from "@apptypes/app/roles";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { Collaborator } from "@/app/types/app/complaints/collaborator";
@@ -142,18 +142,18 @@ export const updateComplaintAssignee =
         const parameters = generateApiParameters(
           `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaint_type}/${complaint_identifier}`,
         );
-        const response = await get<WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto>(
+        const response = await get<WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint>(
           dispatch,
           parameters,
         );
 
         // refresh complaints.  Note we should just update the changed record instead of the entire list of complaints
         if (COMPLAINT_TYPES.HWCR === complaint_type) {
-          dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaintDto));
+          dispatch(updateWildlifeComplaintByRow(response as WildlifeComplaint));
         } else if (COMPLAINT_TYPES.GIR === complaint_type) {
-          dispatch(updateGeneralComplaintByRow(response as GeneralIncidentComplaintDto));
+          dispatch(updateGeneralComplaintByRow(response as GeneralIncidentComplaint));
         } else {
-          dispatch(updateAllegationComplaintByRow(response as AllegationComplaintDto));
+          dispatch(updateAllegationComplaintByRow(response as AllegationComplaint));
         }
       } else {
         // Thunk was called via complaint header, refresh complaint to view the changes

@@ -3,12 +3,7 @@ import { ComplaintReferralEmailLogService } from "./complaint_referral_email_log
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { ComplaintReferralEmailLog } from "./entities/complaint_referral_email_log.entity";
 import { Logger } from "@nestjs/common";
-
-// Mocking the repository to avoid database interactions
-const mockComplaintReferralEmailLogRepository = {
-  create: jest.fn(),
-  save: jest.fn(),
-};
+import { MockComplaintReferralEmailLogRepository } from "../../../test/mocks/mock-complaints-repositories";
 
 describe("ComplaintReferralEmailLogService", () => {
   let service: ComplaintReferralEmailLogService;
@@ -19,7 +14,7 @@ describe("ComplaintReferralEmailLogService", () => {
         ComplaintReferralEmailLogService,
         {
           provide: getRepositoryToken(ComplaintReferralEmailLog),
-          useValue: mockComplaintReferralEmailLogRepository,
+          useValue: MockComplaintReferralEmailLogRepository,
         },
         Logger,
       ],
