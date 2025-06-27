@@ -1,0 +1,200 @@
+@import '@/scss/common.scss';
+
+// APP CONTAINER
+.app-container {
+  display: flex;
+  height: 100vh;
+  height: 100svh; // iOS devices
+  flex-direction: column;
+  margin: 0;
+}
+
+.body-container {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow-x: hidden;
+  padding: 24px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+// HEADER
+.environment-banner {
+  display: flex;
+  background-color: #eac448;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 16px;
+  height: 36px;
+  color: $bc-gov-primary-700;
+}
+
+.header {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 0 24px;
+  color: $white;
+  background: $bc-gov-primary;
+
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: -12px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $white;
+    text-decoration: none;
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .header-right {
+      align-items: center;
+      display: flex;
+      margin-left: auto;
+    }
+  }
+}
+
+// SIDEBAR
+.sidebar {
+  background-color: $gray-110;
+  width: 220px;
+  padding: 16px;
+  overflow: hidden;
+
+  .sidebar-toggle {
+    background-color: transparent !important;
+    border: none;
+  }
+
+  .sidebar-toggle > i {
+    float: right;
+    cursor: pointer;
+  }
+
+  .sidenav-list {
+    gap: 4px;
+    margin-left: -8px;
+    margin-right: -8px;
+  }
+
+  &.collapsed {
+    align-items: center;
+    width: 72px;
+
+    .sidenav-list {
+      gap: 8px;
+    }
+  }
+
+  &.collapsed > span > span.organization-nav-name {
+    display: none;
+  }
+
+  &.collapsed > span > span.organization-nav-long-name {
+    display: none;
+  }
+
+  &.collapsed > button.sidebar-toggle > i {
+    float: none;
+    margin-left: 25%;
+  }
+}
+
+// SIDE NAVIGATION
+
+.sidenav-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+
+  li {
+    margin: 0;
+  }
+}
+
+.sidenav-item {
+  display: flex;
+  flex-wrap: nowrap;
+  border-radius: 6px;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition: all ease-out 0.2s;
+
+  &:hover {
+    color: $bc-brand-links;
+    background-color: #c1d9f2;
+  }
+
+  &:active {
+    background-color: #c1d9f2;
+    outline-color: $bc-brand-links;
+  }
+
+  &:focus-visible {
+    outline-color: $bc-brand-links;
+  }
+
+  &-lg {
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    text-decoration: none;
+  }
+
+  &-sm {
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    i.bi {
+      font-size: 24px;
+    }
+  }
+}
+
+// ORGANIZATION LOGO
+.organization-nav-logo {
+  padding-right: 12px;
+}
+
+.organization-nav-name {
+  font-size: 1rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.0064em;
+  font-weight: 700;
+  color: $bc-gov-primary;
+}
+
+.organization-nav-long-name {
+  font-size: 14px;
+  line-height: 14px;
+  letter-spacing: -0.0064em;
+  font-weight: 700;
+  color: $bc-gov-primary;
+}

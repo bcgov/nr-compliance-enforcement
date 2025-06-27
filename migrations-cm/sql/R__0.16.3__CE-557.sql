@@ -1,0 +1,1 @@
+update case_management.equipment_code set is_trap_ind = false where equipment_code = 'SIGNG' or equipment_code = 'TRCAM'

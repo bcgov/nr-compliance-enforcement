@@ -1,0 +1,12 @@
+input PersonInput {
+  firstName: String!
+  middleName: String
+  middleName2: String
+  lastName: String!
+  contactMethods: [ContactMethodInput]
+}
+
+input ContactMethodInput {
+  typeCode: String!
+  value: String!
+}
