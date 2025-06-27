@@ -27,6 +27,10 @@ export const HWCR_ONLY_TYPES = {
   HWCR: "HWCR",
 };
 
+export const SECTOR_TYPES = {
+  SECTOR: "SECTOR",
+};
+
 export const complaintTypeToName = (complaintType: string | undefined | null, singular?: boolean) => {
   switch (complaintType) {
     case COMPLAINT_TYPES.ERS:

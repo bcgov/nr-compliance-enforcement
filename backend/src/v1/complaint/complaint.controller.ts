@@ -150,7 +150,7 @@ export class ComplaintController {
   }
 
   @Get("/linked-complaints/:complaint_id")
-  @Roles(Role.COS, Role.PARKS) // Might want to expose this to others in the future instead of just making it coupled to HWCRs
+  @Roles(coreRoles)
   async findLinkedComplaintsById(@Param("complaint_id") complaintId: string) {
     const childComplaints = await this.linkedComplaintXrefService.findChildComplaints(complaintId);
     if (childComplaints.length > 0) return childComplaints;
