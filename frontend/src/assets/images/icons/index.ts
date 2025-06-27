@@ -7,6 +7,7 @@ const agencyIcons: { [key: string]: any } = {
   COS: COS,
   PARKS: PARKS,
   EPO: EPO,
+  NRS: EXTERNAL,
   DFO: EXTERNAL,
   ECCC: EXTERNAL,
   POL: EXTERNAL,

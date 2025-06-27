@@ -4,19 +4,20 @@ import agencyIcons from "@assets/images/icons";
 import { selectCodeTable } from "@store/reducers/code-table";
 import UserService from "@service/user-service";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
+import { AgencyNames, AgencyType } from "@/app/types/app/agency-types";
 
 type Props = {
   agency?: string;
 };
 
 export const AgencyBanner: FC<Props> = ({ agency }) => {
-  const defaultAgencyCode = "COS";
-  const defaultDescription = "Conservation Officer Service";
+  const defaultAgencyCode = AgencyType.SECTOR;
+  const defaultDescription = AgencyNames[AgencyType.SECTOR as keyof typeof AgencyNames].short;
 
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
-  const selectedAgency = agency || UserService.getUserAgency();
+  const selectedAgency = agency ?? UserService.getUserAgency();
 
-  const selected = agencies.find((item) => item.agency === selectedAgency) || {
+  const selected = agencies.find((item) => item.agency === selectedAgency) ?? {
     agency: defaultAgencyCode,
     shortDescription: defaultDescription,
     longDescription: defaultDescription,
