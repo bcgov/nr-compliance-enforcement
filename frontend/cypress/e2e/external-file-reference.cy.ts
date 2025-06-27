@@ -136,7 +136,7 @@ describe("External File Reference", () => {
     validateFormIsEmpty();
   });
 
-  it("Will not accept a reference file number with letters", () => {
+  it("Will accept a alphanumeric reference file number with dashes", () => {
     //navigatetoComplaint
     navigateToComplaint(1);
 
@@ -144,9 +144,29 @@ describe("External File Reference", () => {
     deleteReferenceNumber();
 
     //enter the number
-    enterReferenceNumber("444BADNUMBER44", true);
+    enterReferenceNumber("ABC-123-DEF", true);
 
-    //validate the error message
+    //validate the number
+    cy.get("#external-file-reference-number").should("have.text", "ABC-123-DEF");
+
+    // ERS for COS close when saved, so needs to be reopened for the next tests tests
+    setStatusOpen();
+  });
+
+  it("Will not accept a reference file number with other special characters", () => {
+    //navigatetoComplaint
+    navigateToComplaint(1);
+
+    //make sure that there isn't an old one there from a failed run
+    deleteReferenceNumber();
+
+    //enter the number
+    enterReferenceNumber("444@BAD#NUMBER$44", false);
+
+    //click save to trigger validation
+    cy.get("#external-file-reference-save-button").click({ force: true });
+
+    //validate the error message appears
     cy.hasErrorMessage(["#external-file-reference-number-div"]);
   });
 });

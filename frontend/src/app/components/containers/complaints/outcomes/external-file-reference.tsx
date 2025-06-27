@@ -73,8 +73,8 @@ export const ExternalFileReference: FC = () => {
       return false;
     }
 
-    if (!/^\d{1,20}$/.test(referenceNumber)) {
-      setReferenceNumberError("Invalid format. Please only include numbers.");
+    if (!/^[a-zA-Z0-9-]{1,20}$/.test(referenceNumber)) {
+      setReferenceNumberError("Invalid format. Please only include letters, numbers, and dashes.");
       return false;
     }
 
