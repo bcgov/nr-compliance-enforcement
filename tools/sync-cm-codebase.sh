@@ -9,7 +9,7 @@ SOURCE_DIR="nr-compliance-enforcement-cm"
 DEST_DIR="nr-compliance-enforcement"
 SERVICES=("migrations" "backend" "frontend")
 DEST_BRANCH_PREFIX="sync-cm"
-DEST_BRANCH="${DEST_BRANCH_PREFIX}-$(date +%Y%m%d)"
+DEST_BRANCH="${DEST_BRANCH_PREFIX}-$(date +%Y%m%d)_$(date +%H%M)"
 SOURCE_BRANCH_COMPLAINT="${1:-main}"
 SOURCE_BRANCH_CM="${2:-main}"
 

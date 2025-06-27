@@ -136,15 +136,6 @@ services:
     user: root
     working_dir: "/app"
 
-  database-cm:
-    image: postgis/postgis:16-3.4
-    container_name: database-cm
-    environment:
-      <<: *postgres-vars
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", *POSTGRES_USER]
-    ports: ["5433:5432"]
-
   migrations-cm:
     image: flyway/flyway:9.22-alpine
     container_name: migrations-cm
@@ -156,7 +147,7 @@ services:
       - "./migrations-cm/sql:/flyway/sql:ro"
       - "./migrations-cm/test-only-migrations:/flyway/sql-test:ro"
     environment:
-      FLYWAY_URL: jdbc:postgresql://database-cm:5432/postgres
+      FLYWAY_URL: jdbc:postgresql://database:5432/postgres
       FLYWAY_USER: *POSTGRES_USER
       FLYWAY_PASSWORD: *POSTGRES_PASSWORD
       FLYWAY_PLACEHOLDERS_SHARED_PASSWORD: *SHARED_PASSWORD
@@ -166,7 +157,7 @@ services:
       FLYWAY_DEFAULT_SCHEMA: case_management
       FLYWAY_LOCATIONS: filesystem:./sql, filesystem:./sql-test
     depends_on:
-      database-cm:
+      database:
         condition: service_healthy
 
   backend-cm:
