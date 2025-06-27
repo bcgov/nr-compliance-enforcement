@@ -21,6 +21,7 @@ export const COMPLAINT_TYPES = {
 };
 export const CEEB_TYPES = {
   ERS: "ERS",
+  SECTOR: "SECTOR",
 };
 export const HWCR_ONLY_TYPES = {
   HWCR: "HWCR",
