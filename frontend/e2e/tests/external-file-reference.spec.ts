@@ -22,10 +22,10 @@ async function navigateToComplaint(page: Page, type) {
   }
 }
 async function deleteReferenceNumber(page: Page) {
-  const $externalref = await page.locator("#external-file-reference");
-  if (await $externalref.locator("#external-file-reference-delete-button").count()) {
+  if (await page.locator("#external-file-reference-delete-button").isVisible()) {
     await page.locator("#external-file-reference-delete-button").click();
     await page.locator(".modal-footer > .btn-primary").click();
+    await waitForSpinner(page);
   } else {
     console.log("No reference number to delete");
   }
@@ -57,6 +57,7 @@ complaintTypes.forEach((type) => {
     test(`Can enter an external reference number: ${type}`, async ({ page }) => {
       //navigatetoComplaint
       await navigateToComplaint(page, type);
+      await waitForSpinner(page);
 
       // ERS for COS need to be assigned before a COORS number can be saved
       if (type === COMPLAINT_TYPES.ERS) {

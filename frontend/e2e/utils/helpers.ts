@@ -67,6 +67,7 @@ export async function navigateToDetailsScreen(
     await expect(await page.locator("#complaint-list").locator("tr").count()).toBeGreaterThan(0);
     await page.locator("#complaint-list > tbody > tr").getByText(complaintIdentifier).first().click();
   }
+  await waitForSpinner(page);
 }
 
 export async function navigateToEditScreen(
@@ -98,13 +99,11 @@ export async function hasErrorMessage(page: Page, inputs: Array<string>, toastTe
 }
 
 export async function typeAndTriggerChange(locatorValue, value, page: Page) {
-  const element = await page.locator(locatorValue)[0];
-
-  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
-
-  nativeInputValueSetter?.call(element, value);
-  element.dispatchEvent(new Event("input", { bubbles: true }));
-  element.dispatchEvent(new Event("change", { bubbles: true }));
+  // const foundItems = await page.locator(locatorValue);
+  // if (foundItems[0]) {
+  //   await foundItems[0].fill(value);
+  // }
+  await locatorValue.fill(value);
 }
 
 export async function selectItemById(selectId: string, optionText: string, page: Page) {
@@ -127,7 +126,7 @@ export async function enterDateTimeInDatePicker(
   // Locate the time input field and click it to open the time picker
   if (hour && minute) {
     await page.locator(`#${datePickerId}`).click();
-    await page.locator(".react-datepicker-time__input").locator("input:scope").click();
+    // await page.locator(".react-datepicker-time__input").locator("input:scope").click();
     await page.locator(".react-datepicker-time__input").locator("input:scope").fill(`${hour}:${minute}`);
   }
 }
@@ -264,7 +263,8 @@ export async function validateHWCSection(loc: Locator, page: Page, sectionParams
 }
 
 export async function navigateToCreateScreen(page: Page) {
-  await page.goto("/");
+  await page.goto("/complaint/createComplaint");
   await waitForSpinner(page);
-  await page.locator("#create-complaints-link").click();
+  // await page.locator("#create-complaints-link").click();
+  // await waitForSpinner(page);
 }
