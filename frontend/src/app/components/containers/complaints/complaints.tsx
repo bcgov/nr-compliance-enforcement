@@ -44,8 +44,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const showSectorView =
-    useAppSelector(isFeatureActive(FEATURE_TYPES.SECTOR_VIEW)) || UserService.hasRole(Roles.SECTOR);
+  const showSectorView = useAppSelector(isFeatureActive(FEATURE_TYPES.SECTOR_VIEW));
 
   //-- Check global state for active tab and set it to default if it was not set there.
   const storedComplaintType = useAppSelector(selectActiveTab);

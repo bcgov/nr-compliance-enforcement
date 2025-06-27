@@ -83,16 +83,6 @@ export const EditUser: FC<EditUserProps> = ({
   const [offices, setOffices] = useState<Array<Option>>([]);
   const [roleList, setRoleList] = useState<Array<Option>>([]);
 
-  // Add Sector to agency drop down
-  const agencyDropdownWithSector = [
-    ...agency,
-    {
-      label: "Natural Resource Sector",
-      value: "",
-      isActive: true,
-    },
-  ];
-
   useEffect(() => {
     if (officeAssignments) {
       dispatch(fetchOfficeAssignments());
@@ -173,8 +163,8 @@ export const EditUser: FC<EditUserProps> = ({
         return;
       }
 
-      // Fallback if no matching role
-      currentAgency = { label: "Natural Resource Sector", value: "" };
+      // Fallback to NRS if no matching role
+      currentAgency = mapValueToDropdownList(AgencyType.SECTOR, agency);
       setCurrentAgency(currentAgency);
     })();
   }, [officerData, offices, selectedAgency, agency, teams, dispatch, parkAreasList]);
@@ -574,16 +564,10 @@ export const EditUser: FC<EditUserProps> = ({
               classNames={{
                 menu: () => "top-layer-select",
               }}
-              options={agencyDropdownWithSector}
+              options={agency}
               placeholder="Select"
               enableValidation={true}
-              value={
-                !currentAgency && !selectedAgency
-                  ? null // If we are on the add screen leave value null to start
-                  : agencyDropdownWithSector.find(
-                      (opt) => String(opt.value ?? "") === String(currentAgency?.value ?? selectedAgency?.value ?? ""), //otherwise find the value if it can't be found it's the sector value
-                    )
-              }
+              value={currentAgency ?? selectedAgency}
               isDisabled={officerData?.deactivate_ind}
             />
           </div>

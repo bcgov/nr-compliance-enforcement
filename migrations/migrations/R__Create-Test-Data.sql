@@ -11483,6 +11483,33 @@ DELETE from feature_code where feature_code = 'ENBL_OFF';
 DELETE from feature_agency_xref where feature_code = 'EXTRNALREF';
 DELETE from feature_code where feature_code = 'EXTRNALREF';
 
+-------------------------
+-- Add Sector Agency Type and enable filters
+-------------------------
+
+insert into agency_code (agency_code, short_description, long_description, display_order, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, external_agency_ind)
+values ('NRS', 'Natural Resource Sector', 'Natural Resource Sector', 35, true, user, now(), user, now(), 'N')
+on conflict do nothing;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+VALUES 
+('REG_FLTR', 'NRS', 'Y', user, now(), user, now()),
+('ZONE_FLTR', 'NRS', 'Y', user, now(), user, now()),
+('COM_FLTR', 'NRS', 'Y', user, now(), user, now()),
+('D_L_FLTR', 'NRS', 'Y', user, now(), user, now()),
+('STAT_FLTR', 'NRS', 'Y', user, now(), user, now()),
+('SECTORVIEW', 'NRS', 'Y', user, now(), user, now())
+ ON CONFLICT DO NOTHING;
+
 --------------------------
 -- New Changes above this line
 -------------------------

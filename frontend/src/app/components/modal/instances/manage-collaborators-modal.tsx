@@ -21,6 +21,7 @@ import {
 import { getAvatarInitials } from "@/app/common/methods";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
+import { AgencyType } from "@/app/types/app/agency-types";
 
 type ManageCollaboratorsModalProps = {
   close: () => void;
@@ -66,7 +67,10 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
   }, [selectedAgency, complaintType, allOfficers, collaborators]);
 
   const agencyOptions = agencies
-    .filter((agency) => !agency.externalAgencyInd && agency.agency !== complaintData?.ownedBy)
+    .filter(
+      (agency) =>
+        !agency.externalAgencyInd && agency.agency !== complaintData?.ownedBy && agency.agency !== AgencyType.SECTOR,
+    )
     .map((agency) => ({
       label: agency.longDescription,
       labelElement: <AgencyBanner agency={agency.agency} />,

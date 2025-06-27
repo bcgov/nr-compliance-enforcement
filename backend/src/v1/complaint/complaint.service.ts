@@ -1094,6 +1094,12 @@ export class ComplaintService {
 
     // search for complaints based on the user's role
 
+    // No agencies, no results
+    if (!agencies?.length) {
+      builder.andWhere("1 = 0");
+      return builder;
+    }
+
     // Handle referral status
     if (status === "REFERRED") {
       builder.andWhere(
