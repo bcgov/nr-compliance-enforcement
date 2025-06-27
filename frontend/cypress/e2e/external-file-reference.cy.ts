@@ -158,9 +158,12 @@ describe("External File Reference", () => {
     deleteReferenceNumber();
 
     //enter the number
-    enterReferenceNumber("444-BAD-NUMBER-44", true);
+    enterReferenceNumber("444-BAD-NUMBER-44", false);
 
-    //validate the error message
+    //click save to trigger validation
+    cy.get("#external-file-reference-save-button").click({ force: true });
+
+    //validate the error message appears
     cy.hasErrorMessage(["#external-file-reference-number-div"]);
   });
 });
