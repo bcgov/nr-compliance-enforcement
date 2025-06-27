@@ -148,6 +148,9 @@ describe("External File Reference", () => {
 
     //validate the number
     cy.get("#external-file-reference-number").should("have.text", "ABC123DEF");
+
+    // ERS for COS close when saved, so needs to be reopened for the next tests tests
+    setStatusOpen();
   });
 
   it("Will not accept a reference file number with special characters", () => {
