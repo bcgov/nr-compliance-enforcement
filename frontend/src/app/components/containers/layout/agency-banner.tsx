@@ -4,14 +4,15 @@ import agencyIcons from "@assets/images/icons";
 import { selectCodeTable } from "@store/reducers/code-table";
 import UserService from "@service/user-service";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
+import { AgencyNames, AgencyType } from "@/app/types/app/agency-types";
 
 type Props = {
   agency?: string;
 };
 
 export const AgencyBanner: FC<Props> = ({ agency }) => {
-  const defaultAgencyCode = "NRS";
-  const defaultDescription = "Natural Resource Sector";
+  const defaultAgencyCode = AgencyType.SECTOR;
+  const defaultDescription = AgencyNames[AgencyType.SECTOR as keyof typeof AgencyNames].short;
 
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
   const selectedAgency = agency ?? UserService.getUserAgency();

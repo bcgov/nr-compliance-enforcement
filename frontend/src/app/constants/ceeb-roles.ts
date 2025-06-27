@@ -37,7 +37,4 @@ export const PARKS_ROLE_OPTIONS: Array<Option> = [
   { value: "Province-wide", label: "Province-wide" },
 ];
 
-export const SECTOR_ROLE_OPTIONS: Array<Option> = [
-  { value: "SECTOR", label: "SECTOR" },
-  { value: "READ ONLY", label: "Read Only" },
-];
+export const SECTOR_ROLE_OPTIONS: Array<Option> = [{ value: "SECTOR", label: "SECTOR" }];

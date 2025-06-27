@@ -83,7 +83,6 @@ export class TeamService {
     try {
       // Update the officers agency
       await this.officerRepository.update({ officer_guid: officerGuid }, { agency_code: { agency_code: agencyCode } });
-
       //Update team
       //Assume one officer belong to one team for now
       //If user's team is null -> remove any current team user is in
