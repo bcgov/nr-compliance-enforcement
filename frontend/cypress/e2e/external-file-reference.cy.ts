@@ -136,7 +136,7 @@ describe("External File Reference", () => {
     validateFormIsEmpty();
   });
 
-  it("Will not accept a reference file number with letters", () => {
+  it("Will accept a reference file number with alphanumeric characters", () => {
     //navigatetoComplaint
     navigateToComplaint(1);
 
@@ -144,7 +144,21 @@ describe("External File Reference", () => {
     deleteReferenceNumber();
 
     //enter the number
-    enterReferenceNumber("444BADNUMBER44", true);
+    enterReferenceNumber("ABC123DEF", true);
+
+    //validate the number
+    cy.get("#external-file-reference-number").should("have.text", "ABC123DEF");
+  });
+
+  it("Will not accept a reference file number with special characters", () => {
+    //navigatetoComplaint
+    navigateToComplaint(1);
+
+    //make sure that there isn't an old one there from a failed run
+    deleteReferenceNumber();
+
+    //enter the number
+    enterReferenceNumber("444-BAD-NUMBER-44", true);
 
     //validate the error message
     cy.hasErrorMessage(["#external-file-reference-number-div"]);
