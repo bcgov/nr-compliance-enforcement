@@ -1246,7 +1246,7 @@ INSERT INTO hwcr_complaint (other_attractants_text,create_user_id,create_utc_tim
 	 (NULL,'FLYWAY','2023-07-26 19:25:34.66322','FLYWAY','2023-07-26 19:25:34.66322','23-007003','MOOSE','INJNP'),
 	 (NULL,'FLYWAY','2023-07-26 19:25:34.66322','FLYWAY','2023-07-26 19:25:34.66322','23-007004','UNKNOWN','LIVNCOU')
      ON CONFLICT DO NOTHING;
-     
+
 INSERT INTO allegation_complaint (in_progress_ind,observed_ind,suspect_witnesss_dtl_text,create_user_id,create_utc_timestamp,update_user_id,update_utc_timestamp,complaint_identifier,violation_code) VALUES
 	 (false,true,NULL,'FLYWAY','2023-07-26 19:25:34.66322','FLYWAY','2023-07-26 19:25:34.66322','23-007005','WILDLIFE'),
 	 (true,false,NULL,'FLYWAY','2023-07-26 19:25:34.66322','FLYWAY','2023-07-26 19:25:34.66322','23-007006','WILDLIFE'),
