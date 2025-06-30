@@ -1,4 +1,4 @@
-import { FC, useState, useContext, useCallback, useEffect } from "react";
+import { FC, useState, useContext, useCallback, useEffect, useMemo } from "react";
 import { shallowEqual } from "react-redux";
 import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
@@ -24,7 +24,7 @@ import {
 import { ComplaintMapWithServerSideClustering } from "./complaint-map-with-server-side-clustering";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
-import { COMPLAINT_TYPES, CEEB_TYPES, HWCR_ONLY_TYPES } from "@apptypes/app/complaint-types";
+import { COMPLAINT_TYPES, CEEB_TYPES, HWCR_ONLY_TYPES, SECTOR_TYPES } from "@apptypes/app/complaint-types";
 import { selectCurrentOfficer } from "@store/reducers/officer";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
@@ -32,6 +32,8 @@ import Option from "@apptypes/app/option";
 import { resetComplaintSearchParameters, selectComplaintSearchParameters } from "@/app/store/reducers/complaints";
 import { AgencyType } from "@/app/types/app/agency-types";
 import { DropdownOption } from "@/app/types/app/drop-down-option";
+import { isFeatureActive } from "@store/reducers/app";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 type Props = {
   defaultComplaintType: string;
@@ -42,15 +44,22 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const showSectorView = useAppSelector(isFeatureActive(FEATURE_TYPES.SECTOR_VIEW));
 
   //-- Check global state for active tab and set it to default if it was not set there.
   const storedComplaintType = useAppSelector(selectActiveTab);
   useEffect(() => {
     if (!storedComplaintType) dispatch(setActiveTab(defaultComplaintType));
   }, [storedComplaintType, dispatch, defaultComplaintType]);
-  const [complaintType, setComplaintType] = useState(
-    UserService.hasRole([Roles.CEEB]) ? CEEB_TYPES.ERS : storedComplaintType ?? defaultComplaintType,
-  );
+  const [complaintType, setComplaintType] = useState(() => {
+    if (UserService.hasRole([Roles.CEEB])) {
+      return CEEB_TYPES.ERS;
+    } else if (UserService.hasRole([Roles.SECTOR])) {
+      return SECTOR_TYPES.SECTOR;
+    } else {
+      return storedComplaintType ?? defaultComplaintType;
+    }
+  });
 
   const storedComplaintViewType = useAppSelector(selectActiveComplaintsViewType);
   useEffect(() => {
@@ -103,20 +112,22 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   const [open, setOpen] = useState(false);
   const toggleShowDesktopFilters = useCallback(() => setOpen((prevShow) => !prevShow), []);
 
+  const complaintTypes = useMemo(() => Object.keys(getComplaintTypes(showSectorView)), [showSectorView]);
+
   return (
     <div className="comp-page-container comp-page-container--noscroll">
       <ToastContainer />
       <div className="comp-page-header">
         <div className="comp-page-title-container">
           <h1>Complaints</h1>
-          <Button onClick={() => handleCreateClick()}>Create complaint</Button>
+          {!UserService.hasRole(Roles.SECTOR) && <Button onClick={() => handleCreateClick()}>Create complaint</Button>}
         </div>
         {/* <!-- create list of complaint types --> */}
 
         <ComplaintListTabs
           complaintType={complaintType}
           viewType={viewType}
-          complaintTypes={Object.keys(getComplaintTypes())}
+          complaintTypes={complaintTypes}
           onTabChange={handleComplaintTabChange}
         />
 
@@ -210,7 +221,7 @@ export const ComplaintsWrapper: FC<Props> = ({ defaultComplaintType }) => {
     </>
   );
 };
-const getComplaintTypes = () => {
+const getComplaintTypes = (showSectorView: boolean) => {
   let returnTypes;
   switch (true) {
     case UserService.hasRole(Roles.CEEB):
@@ -219,9 +230,21 @@ const getComplaintTypes = () => {
     case UserService.hasRole(Roles.HWCR_ONLY):
       returnTypes = HWCR_ONLY_TYPES;
       break;
+    case UserService.hasRole(Roles.SECTOR):
+      returnTypes = SECTOR_TYPES;
+      break;
     default:
       returnTypes = COMPLAINT_TYPES;
+      if (!showSectorView) {
+        const { SECTOR, ...rest } = returnTypes;
+        returnTypes = rest; // Remove SECTOR type if the feature is not active
+      }
       break;
+  }
+
+  if (!showSectorView && returnTypes.hasOwnProperty("SECTOR")) {
+    const { SECTOR, ...rest } = returnTypes as any;
+    returnTypes = rest; // Remove SECTOR type if the feature is not active
   }
 
   return returnTypes;
@@ -242,7 +265,11 @@ const getFilters = (
   }
 
   // Province-wide, HWCR only and Parks role defaults to only "Open" so skip the other checks
-  if (UserService.hasRole(Roles.PROVINCE_WIDE) || UserService.hasRole(Roles.HWCR_ONLY)) {
+  if (
+    UserService.hasRole(Roles.PROVINCE_WIDE) ||
+    UserService.hasRole(Roles.HWCR_ONLY) ||
+    UserService.hasRole(Roles.SECTOR)
+  ) {
     return filters;
   }
 

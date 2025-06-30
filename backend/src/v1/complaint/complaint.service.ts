@@ -1,7 +1,7 @@
 import { map } from "lodash";
 import { HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException, Scope } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Brackets, DataSource, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
+import { Brackets, DataSource, In, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { caseFileQueryFields, get } from "../../external_api/shared_data";
@@ -12,6 +12,7 @@ import {
   applyAllegationComplaintMap,
   applyGeneralInfomationComplaintMap,
   applyWildlifeComplaintMap,
+  applySectorComplaintMap,
   complaintToComplaintDtoMap,
   mapAllegationReport,
   mapGeneralIncidentReport,
@@ -20,18 +21,18 @@ import {
 
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
-import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
-import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
+import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
+import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
 ///
 import { Complaint } from "./entities/complaint.entity";
-import { UpdateComplaintDto } from "../../types/models/complaints/update-complaint.dto";
+import { UpdateComplaintDto } from "../../types/models/complaints/dtos/update-complaint";
 
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 
-import { ComplaintDto } from "../../types/models/complaints/complaint";
+import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { CodeTableService } from "../code-table/code-table.service";
 import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
 import {
@@ -40,6 +41,7 @@ import {
   mapComplaintDtoToComplaint,
   mapWildlifeComplaintDtoToHwcrComplaint,
   mapGirComplaintDtoToGirComplaint,
+  mapSectorComplaintDtoToSectorComplaint,
 } from "../../middleware/maps/automapper-dto-to-entity-maps";
 
 import {
@@ -66,11 +68,12 @@ import { UUID, randomUUID } from "crypto";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { toDate, toZonedTime, format } from "date-fns-tz";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
-import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
+import { GeneralIncidentComplaintDto } from "../../types/models/complaints/dtos/gir-complaint";
+import { SectorComplaintDto } from "../../types/models/complaints/dtos/sector-complaint";
 import { ComplaintUpdateDto, ComplaintUpdateType } from "../../types/models/complaint-updates/complaint-update-dto";
 import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife-report-data";
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
-import { RelatedDataDto } from "src/types/models/complaints/related-data";
+import { RelatedDataDto } from "src/types/models/complaints/dtos/related-data";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { OfficerService } from "../officer/officer.service";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
@@ -80,7 +83,7 @@ import { formatPhonenumber, getFileType } from "../../common/methods";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
 import { Role } from "../../enum/role.enum";
-import { dtoAlias } from "src/types/models/complaints/dtoAlias-type";
+import { ComplaintDtoAlias } from "src/types/models/complaints/dtos/complaint-dto-alias";
 import { ParkDto } from "../shared_data/dto/park.dto";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 
@@ -134,12 +137,14 @@ export class ComplaintService {
     applyWildlifeComplaintMap(mapper);
     applyAllegationComplaintMap(mapper);
     applyGeneralInfomationComplaintMap(mapper);
+    applySectorComplaintMap(mapper);
 
     //-- DTO -> ENTITY
     mapComplaintDtoToComplaint(mapper);
     mapWildlifeComplaintDtoToHwcrComplaint(mapper);
     mapGirComplaintDtoToGirComplaint(mapper);
     mapAllegationComplaintDtoToAllegationComplaint(mapper);
+    mapSectorComplaintDtoToSectorComplaint(mapper);
     mapComplaintDtoToComplaintTable(mapper);
     mapDelegateDtoToPersonComplaintXrefTable(mapper);
     mapAttractantXrefDtoToAttractantHwcrXref(mapper);
@@ -190,8 +195,8 @@ export class ComplaintService {
     type: COMPLAINT_TYPE,
     includeCosOrganization: boolean,
     count: boolean,
-  ): SelectQueryBuilder<complaintAlias> => {
-    let builder: SelectQueryBuilder<complaintAlias>;
+  ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
+    let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
 
     switch (type) {
       case "ERS":
@@ -207,7 +212,6 @@ export class ComplaintService {
           .leftJoin("general.gir_type_code", "gir");
         break;
       case "HWCR":
-      default:
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife")
           .leftJoin("wildlife.complaint_identifier", "complaint")
@@ -215,6 +219,10 @@ export class ComplaintService {
           .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
           .leftJoin("wildlife.attractant_hwcr_xref", "attractants", "attractants.active_ind = true")
           .leftJoin("attractants.attractant_code", "attractant_code");
+        break;
+      case "SECTOR":
+      default:
+        builder = this.complaintsRepository.createQueryBuilder("complaint");
         break;
     }
 
@@ -230,6 +238,7 @@ export class ComplaintService {
 
     builder
       .leftJoin("complaint.complaint_status_code", "complaint_status")
+      .leftJoin("complaint.complaint_type_code", "complaint_type")
       .leftJoin("complaint.reported_by_code", "reported_by")
       .leftJoin("complaint.complaint_update", "complaint_update")
       .leftJoin("complaint.action_taken", "action_taken")
@@ -247,8 +256,10 @@ export class ComplaintService {
     return builder;
   };
 
-  private readonly _generateQueryBuilder = (type: COMPLAINT_TYPE): SelectQueryBuilder<complaintAlias> => {
-    let builder: SelectQueryBuilder<complaintAlias>;
+  private readonly _generateQueryBuilder = (
+    type: COMPLAINT_TYPE,
+  ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
+    let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
     switch (type) {
       case "ERS":
         builder = this._allegationComplaintRepository
@@ -272,7 +283,6 @@ export class ComplaintService {
           .addSelect(["gir.gir_type_code", "gir.short_description", "gir.long_description"]);
         break;
       case "HWCR":
-      default:
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
           .leftJoinAndSelect("wildlife.complaint_identifier", "complaint")
@@ -301,6 +311,10 @@ export class ComplaintService {
             "attractant_code.long_description",
           ]);
         break;
+      case "SECTOR":
+      default:
+        builder = this.complaintsRepository.createQueryBuilder("complaint");
+        break;
     }
 
     builder
@@ -309,6 +323,12 @@ export class ComplaintService {
         "complaint_status.complaint_status_code",
         "complaint_status.short_description",
         "complaint_status.long_description",
+      ])
+      .leftJoin("complaint.complaint_type_code", "complaint_type")
+      .addSelect([
+        "complaint_type.complaint_type_code",
+        "complaint_type.short_description",
+        "complaint_type.long_description",
       ])
       .leftJoin("complaint.reported_by_code", "reported_by")
       .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
@@ -334,7 +354,7 @@ export class ComplaintService {
   };
 
   private _applyFilters(
-    builder: SelectQueryBuilder<complaintAlias>,
+    builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     {
       community,
       zone,
@@ -351,7 +371,7 @@ export class ComplaintService {
       complaintMethod,
     }: ComplaintFilterParameters,
     complaintType: COMPLAINT_TYPE,
-  ): SelectQueryBuilder<complaintAlias> {
+  ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> {
     if (community) {
       builder.andWhere("cos_organization.area_code = :Community", {
         Community: community,
@@ -427,8 +447,7 @@ export class ComplaintService {
         }
         break;
       }
-      case "HWCR":
-      default: {
+      case "HWCR": {
         if (natureOfComplaint) {
           builder.andWhere("wildlife.hwcr_complaint_nature_code = :NatureOfComplaint", {
             NatureOfComplaint: natureOfComplaint,
@@ -442,17 +461,20 @@ export class ComplaintService {
         }
         break;
       }
+      default:
+        // Sector complaints do not have specific fields to filter, so we skip this case
+        break;
     }
 
     return builder;
   }
 
   private async _applySearch(
-    builder: SelectQueryBuilder<complaintAlias>,
+    builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     complaintType: COMPLAINT_TYPE,
     query: string,
     token: string,
-  ): Promise<SelectQueryBuilder<complaintAlias>> {
+  ): Promise<SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>> {
     let caseSearchData = [];
     if (complaintType === "ERS") {
       // Search CM for any case files that may match based on authorization id
@@ -565,8 +587,7 @@ export class ComplaintService {
             });
             break;
           }
-          case "HWCR":
-          default: {
+          case "HWCR": {
             qb.orWhere("wildlife.other_attractants_text ILIKE :query", {
               query: `%${query}%`,
             });
@@ -588,6 +609,11 @@ export class ComplaintService {
             qb.orWhere("attractant_code.long_description ILIKE :query", {
               query: `%${query}%`,
             });
+            break;
+          }
+          case "SECTOR":
+          default: {
+            // Sector complaints do not have specific fields to search, so we skip this case
             break;
           }
         }
@@ -621,8 +647,7 @@ export class ComplaintService {
           .leftJoinAndSelect("allegation.complaint_identifier", "complaint");
         break;
       }
-      case "HWCR":
-      default: {
+      case "HWCR": {
         builder = this._wildlifeComplaintRepository
           .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
           .leftJoinAndSelect("wildlife.complaint_identifier", "complaint");
@@ -993,6 +1018,12 @@ export class ComplaintService {
             "complaint_status.short_description",
             "complaint_status.long_description",
           ])
+          .leftJoin("complaint.complaint_type_code", "complaint_type")
+          .addSelect([
+            "complaint_type.complaint_type_code",
+            "complaint_type.short_description",
+            "complaint_type.long_description",
+          ])
           .leftJoin("complaint.reported_by_code", "reported_by")
           .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
           .leftJoin("complaint.owned_by_agency_code", "owned_by")
@@ -1049,10 +1080,11 @@ export class ComplaintService {
   };
 
   private readonly _applyReferralFilters = (
-    builder: SelectQueryBuilder<complaintAlias>,
+    builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     status?: string,
     agencies?: string[],
-  ): SelectQueryBuilder<complaintAlias> => {
+    complaintType?: COMPLAINT_TYPE,
+  ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
     // Special handling for referral status
     if (status === "REFERRED") {
       builder.innerJoin("complaint.complaint_referral", "complaint_referral");
@@ -1061,28 +1093,41 @@ export class ComplaintService {
     }
 
     // search for complaints based on the user's role
-    if (agencies.length > 0) {
+
+    // No agencies, no results
+    if (!agencies?.length) {
+      builder.andWhere("1 = 0");
+      return builder;
+    }
+
+    // Handle referral status
+    if (status === "REFERRED") {
+      builder.andWhere(
+        `complaint.owned_by_agency_code.agency_code NOT IN (:...agency_codes)
+       AND complaint_referral.referred_by_agency_code.agency_code IS NOT NULL
+       AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)`,
+        { agency_codes: agencies },
+      );
+      return builder;
+    }
+
+    // Handle non-sector complaints
+    if (complaintType !== "SECTOR") {
       if (!status) {
         builder.andWhere(
-          "(complaint.owned_by_agency_code.agency_code IN (:...agency_codes) OR (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
-          {
-            agency_codes: agencies,
-          },
-        );
-      } else if (status === "REFERRED") {
-        builder.andWhere(
-          "(complaint.owned_by_agency_code.agency_code NOT IN (:...agency_codes) AND (complaint_referral.referred_by_agency_code.agency_code IS NOT NULL AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)))",
-          {
-            agency_codes: agencies,
-          },
+          `(complaint.owned_by_agency_code.agency_code IN (:...agency_codes)
+        OR (
+          complaint_referral.referred_by_agency_code.agency_code IS NOT NULL
+          AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)
+        )
+        )`,
+          { agency_codes: agencies },
         );
       } else {
         builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
           agency_codes: agencies,
         });
       }
-    } else {
-      builder.andWhere("1 = 0"); // In case of no agency, no rows will be returned
     }
 
     return builder;
@@ -1112,7 +1157,7 @@ export class ComplaintService {
       if (Object.keys(filters).length !== 0) {
         builder = this._applyFilters(builder, filters as ComplaintFilterParameters, complaintType);
       }
-      builder = this._applyReferralFilters(builder, filters?.status, agencies);
+      builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (agencies.includes("EPO") && filters.actionTaken) {
@@ -1222,14 +1267,24 @@ export class ComplaintService {
           results.complaints = items;
           break;
         }
-        case "HWCR":
-        default: {
+        case "HWCR": {
           const items = this.mapper.mapArray<HwcrComplaint, WildlifeComplaintDto>(
             complaints as Array<HwcrComplaint>,
             "HwcrComplaint",
             "WildlifeComplaintDto",
           );
 
+          results.complaints = items;
+          break;
+        }
+        case "SECTOR":
+        default: {
+          const items = this.mapper.mapArray<Complaint, SectorComplaintDto>(
+            complaints as Array<Complaint>,
+            "Complaint",
+            "SectorComplaintDto",
+          );
+          await this.setSectorComplaintIssueType(items);
           results.complaints = items;
           break;
         }
@@ -1242,12 +1297,73 @@ export class ComplaintService {
     }
   };
 
+  setSectorComplaintIssueType = async (items: SectorComplaintDto[]): Promise<void> => {
+    // This function gets all of the complaints that are in the items array for a given type
+    const getComplaintsByType = (type: string) => {
+      const builder = this._generateQueryBuilder(type as COMPLAINT_TYPE);
+      const complaintIds: string[] = items.filter((item) => item.type === type).map((item) => item.id);
+      builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+        complaint_identifiers: complaintIds,
+      });
+      return (complaintIds.length > 0 && builder.getMany()) || Promise.resolve([]);
+    };
+
+    const getReferralsByIds = async () =>
+      this._complaintReferralRepository.find({
+        where: {
+          complaint_identifier: In(items.map((item) => item.id)),
+        },
+        relations: {
+          referred_by_agency_code: true,
+        },
+        select: {
+          referred_by_agency_code: {
+            agency_code: true,
+          },
+        },
+      });
+
+    // Fetch all complaints by type concurrently
+    const [referralComplaints, wildlifeComplaints, allegationComplaints, generalIncidentComplaints] = await Promise.all(
+      [
+        getReferralsByIds(),
+        getComplaintsByType("HWCR") as Promise<HwcrComplaint[]>,
+        getComplaintsByType("ERS") as Promise<AllegationComplaint[]>,
+        getComplaintsByType("GIR") as Promise<GirComplaint[]>,
+      ],
+    );
+
+    // Set the issueType for each item based on its type and the fetched complaints
+    for (const item of items) {
+      // Set referral agency codes
+      const referrals = referralComplaints.filter((referral) => referral.complaint_identifier === item.id);
+      if (referrals.length > 0) {
+        item.referralAgency = referrals.map((referral) => referral.referred_by_agency_code.agency_code);
+      }
+
+      // Set issueType based on the complaint type
+      if (item.type === "HWCR") {
+        item.issueType = wildlifeComplaints.find(
+          (c) => c.complaint_identifier.complaint_identifier === item.id,
+        )?.hwcr_complaint_nature_code.hwcr_complaint_nature_code;
+      } else if (item.type === "ERS") {
+        item.issueType = allegationComplaints.find(
+          (c) => c.complaint_identifier.complaint_identifier === item.id,
+        )?.violation_code.violation_code;
+      } else if (item.type === "GIR") {
+        item.issueType = generalIncidentComplaints.find(
+          (c) => c.complaint_identifier.complaint_identifier === item.id,
+        )?.gir_type_code.gir_type_code;
+      }
+    }
+  };
+
   findRelatedDataById = async (id: string): Promise<RelatedDataDto> => {
     try {
-      const udpates = await this._compliantUpdatesService.findByComplaintId(id);
+      const updates = await this._compliantUpdatesService.findByComplaintId(id);
       const actions = await this._compliantUpdatesService.findActionsByComplaintId(id);
 
-      let fullResults: RelatedDataDto = { updates: udpates, actions: actions };
+      let fullResults: RelatedDataDto = { updates: updates, actions: actions };
       return fullResults;
     } catch (error) {
       this.logger.error(error);
@@ -1260,7 +1376,7 @@ export class ComplaintService {
     agencies: string[],
     token?: string,
     count: boolean = false,
-  ): Promise<SelectQueryBuilder<complaintAlias>> => {
+  ): Promise<SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>> => {
     const { query, ...filters } = model;
 
     try {
@@ -1278,7 +1394,7 @@ export class ComplaintService {
       if (query) {
         builder = await this._applySearch(builder, complaintType, query, token);
       }
-      builder = this._applyReferralFilters(builder, filters?.status, agencies);
+      builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
       if (agencies.includes("EPO") && filters.actionTaken) {
@@ -1536,8 +1652,8 @@ export class ComplaintService {
   updateComplaintById = async (
     id: string,
     complaintType: string,
-    model: ComplaintDto | dtoAlias,
-  ): Promise<dtoAlias> => {
+    model: ComplaintDtoAlias,
+  ): Promise<ComplaintDtoAlias> => {
     const agencyCode = model.ownedBy;
     const hasAssignees = (delegates: Array<DelegateDto>): boolean => {
       if (delegates && delegates.length > 0) {
@@ -1734,11 +1850,15 @@ export class ComplaintService {
     }
   };
 
-  create = async (complaintType: COMPLAINT_TYPE, model: dtoAlias, webeocInd?: boolean): Promise<dtoAlias> => {
+  create = async (
+    complaintType: COMPLAINT_TYPE,
+    model: ComplaintDtoAlias,
+    webeocInd?: boolean,
+  ): Promise<ComplaintDtoAlias> => {
     this.logger.debug("Creating new complaint");
     const generateComplaintId = async (queryRunner: QueryRunner): Promise<string> => {
       let sequence;
-      await queryRunner.manager.query("SELECT nextval('complaint_sequence')").then(function (returnData) {
+      await queryRunner.manager.query("SELECT nextval('complaint.complaint_sequence')").then(function (returnData) {
         sequence = map(returnData, "nextval");
       });
       const prefix = format(new Date(), "yy");
@@ -1764,9 +1884,9 @@ export class ComplaintService {
       queryRunner.startTransaction();
 
       complaintId = await generateComplaintId(queryRunner);
-
       //-- convert the the dto from the client back into an entity
       //-- so that it can be used to create the comaplaint
+      model.type = complaintType;
       let entity: Complaint = this.mapper.map<ComplaintDto, Complaint>(
         model as ComplaintDto,
         "ComplaintDto",
@@ -1962,8 +2082,8 @@ export class ComplaintService {
         let record: ComplaintUpdateDto = {
           sequenceId: item.updateSeqNumber,
           description: item.updDetailText,
-          updatedOn: updatedOn,
           updatedAt: updatedAt,
+          updateTime: zonedDate,
           updateOn: `${updatedOn} ${updatedAt}`,
           location: {
             summary: item?.updLocationSummaryText,
@@ -2022,6 +2142,7 @@ export class ComplaintService {
         const record: ComplaintUpdateDto = {
           sequenceId: null,
           updateOn,
+          updateTime: zonedReferralDate,
           updateType: ComplaintUpdateType.REFERRAL,
           referral: {
             previousAgency: item.referred_by_agency_code.long_description,
@@ -2037,19 +2158,7 @@ export class ComplaintService {
         return record;
       });
 
-      const result = [...updates, ...referrals].sort((left, right) => {
-        return new Date(right.updateOn).valueOf() - new Date(left.updateOn).valueOf();
-      });
-
-      for (let index: number = 0; index < result.length; index++) {
-        result[index].sequenceId = result.length - index;
-      }
-
-      return result;
-    };
-
-    const _getActions = async (id: string) => {
-      const result = await this._actionTakenRepository.find({
+      const actionTakenresult = await this._actionTakenRepository.find({
         where: {
           complaintIdentifier: {
             complaint_identifier: id,
@@ -2060,20 +2169,34 @@ export class ComplaintService {
         },
       });
 
-      const actions = result?.map((item) => {
+      const actions = actionTakenresult?.map((item) => {
         const utcDate = toDate(item.actionUtcTimestamp, { timeZone: "UTC" });
         const zonedDate = toZonedTime(utcDate, tz);
-        let updatedOn = format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
-        let updatedAt = format(zonedDate, "HH:mm", { timeZone: tz });
-        let record = {
-          actionDetailsTxt: item.actionDetailsTxt,
-          loggedByTxt: item.loggedByTxt,
-          actionLogged: `${updatedOn} ${updatedAt}`,
+        const updatedOn = format(zonedDate, "yyyy-MM-dd", { timeZone: tz });
+        const updatedAt = format(zonedDate, "HH:mm", { timeZone: tz });
+        const record: ComplaintUpdateDto = {
+          sequenceId: null,
+          updateTime: zonedDate,
+          updateOn: `${updatedOn} ${updatedAt}`,
+          updateType: ComplaintUpdateType.ACTIONTAKEN,
+          actionTaken: {
+            actionDetailsTxt: item.actionDetailsTxt,
+            loggedByTxt: item.loggedByTxt,
+            actionLogged: `${updatedOn} ${updatedAt}`,
+          },
         };
         return record;
       });
 
-      return actions;
+      const result = [...updates, ...referrals, ...actions].sort((left, right) => {
+        return new Date(right.updateTime).valueOf() - new Date(left.updateTime).valueOf();
+      });
+
+      for (let index: number = 0; index < result.length; index++) {
+        result[index].sequenceId = result.length - index;
+      }
+
+      return result;
     };
 
     const _applyTimezone = (input: Date, tz: string, output: "date" | "time" | "datetime"): string => {
@@ -2492,6 +2615,12 @@ export class ComplaintService {
             "complaint_status.short_description",
             "complaint_status.long_description",
           ])
+          .leftJoin("complaint.complaint_type_code", "complaint_type")
+          .addSelect([
+            "complaint_type.complaint_type_code",
+            "complaint_type.short_description",
+            "complaint_type.long_description",
+          ])
           .leftJoin("complaint.reported_by_code", "reported_by")
           .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
           .leftJoin("complaint.owned_by_agency_code", "owned_by")
@@ -2555,9 +2684,6 @@ export class ComplaintService {
 
       //-- get any updates a complaint may have
       data.updates = await _getUpdates(id);
-
-      // -- get any webeoc callce tner actions on the complaint
-      data.actions = await _getActions(id);
 
       //-- find the linked complaints
       data.linkedComplaints = data.linkedComplaintIdentifier

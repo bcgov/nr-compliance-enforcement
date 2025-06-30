@@ -1,6 +1,6 @@
 {
   "name": "nr-sample-natcomplaints",
-  "version": "2.0.17",
+  "version": "2.0.29",
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
@@ -67,7 +67,7 @@
     "mapbox-gl-leaflet": "^0.0.16",
     "node": "^21.6.1",
     "npm": "^10.9.1",
-    "nrs-ce-common-types": "^1.0.13",
+    "nrs-ce-common-types": "^1.0.14",
     "omggif": "^1.0.10",
     "os-browserify": "^0.3.0",
     "overlapping-marker-spiderfier-leaflet": "^0.2.7",

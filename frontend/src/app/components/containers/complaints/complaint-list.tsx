@@ -16,9 +16,11 @@ import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filter
 import { WildlifeComplaintListHeader } from "./headers/wildlife-complaint-list-header";
 import { GeneralComplaintListHeader } from "./headers/general-complaint-list-header";
 import { AllegationComplaintListHeader } from "./headers/allegation-complaint-list-header";
+import { SectorComplaintListHeader } from "./headers/sector-complaint-list-header";
 import { selectActiveTab, selectDefaultPageSize } from "@store/reducers/app";
 import { WildlifeComplaintListItem } from "./list-items/wildlife-complaint-list-item";
 import { AllegationComplaintListItem } from "./list-items/allegation-complaint-list-item";
+import { SectorComplaintListItem } from "./list-items/sector-complaint-list-item";
 import ComplaintPagination from "@components/common/complaint-pagination";
 
 //-- new models
@@ -26,6 +28,7 @@ import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complai
 import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { GeneralInformationComplaintListItem } from "./list-items/general-complaint-list-item";
 import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
+import { Complaint } from "@apptypes/app/complaints/complaint";
 
 type Props = {
   type: string;
@@ -95,7 +98,6 @@ export const generateComplaintRequestPayload = (
         actionTakenFilter: actionTaken,
       } as ComplaintRequestPayload;
     case COMPLAINT_TYPES.HWCR:
-    default:
       return {
         ...common,
         speciesCodeFilter: species,
@@ -106,6 +108,11 @@ export const generateComplaintRequestPayload = (
         outcomeActionedByFilter: outcomeActionedBy,
         equipmentStatusFilter: equipmentStatus,
         equipmentTypesFilter: equipmentTypes,
+      } as ComplaintRequestPayload;
+    case COMPLAINT_TYPES.SECTOR:
+    default:
+      return {
+        ...common,
       } as ComplaintRequestPayload;
   }
 };
@@ -169,7 +176,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   useEffect(() => {
     //-- when the component unmounts clear the complaint from redux
     return () => {
-      dispatch(setComplaints({ type: { type }, data: [] }));
+      dispatch(setComplaints({ type: type, data: [] }));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -217,9 +224,17 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
           />
         );
       case COMPLAINT_TYPES.HWCR:
-      default:
         return (
           <WildlifeComplaintListHeader
+            handleSort={handleSort}
+            sortKey={sortKey}
+            sortDirection={sortDirection}
+          />
+        );
+      case COMPLAINT_TYPES.SECTOR:
+      default:
+        return (
+          <SectorComplaintListHeader
             handleSort={handleSort}
             sortKey={sortKey}
             sortDirection={sortDirection}
@@ -274,13 +289,21 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
                     />
                   );
                 }
-                case COMPLAINT_TYPES.HWCR:
-                default: {
+                case COMPLAINT_TYPES.HWCR: {
                   return (
                     <WildlifeComplaintListItem
                       key={id}
                       type={type}
                       complaint={item as WildlifeComplaint}
+                    />
+                  );
+                }
+                case COMPLAINT_TYPES.SECTOR:
+                default: {
+                  return (
+                    <SectorComplaintListItem
+                      key={id}
+                      complaint={item as Complaint}
                     />
                   );
                 }

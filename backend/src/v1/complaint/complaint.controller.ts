@@ -6,22 +6,22 @@ import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { Token } from "../../auth/decorators/token.decorator";
 import { ApiTags } from "@nestjs/swagger";
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
-import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
-import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
-import { ComplaintDto } from "../../types/models/complaints/complaint";
+import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
+import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
+import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import {
   ComplaintSearchParameters,
   ComplaintMapSearchClusteredParameters,
 } from "../../types/models/complaints/complaint-search-parameters";
 import { ZoneAtAGlanceStats } from "../../types/zone_at_a_glance/zone_at_a_glance_stats";
-import { GeneralIncidentComplaintDto } from "../../types/models/complaints/gir-complaint";
+
 import { ApiKeyGuard } from "../../auth/apikey.guard";
 import { ActionTaken } from "../../types/models/complaints/action-taken";
 import { Public } from "../../auth/decorators/public.decorator";
 import { StagingComplaintService } from "../staging_complaint/staging_complaint.service";
-import { dtoAlias } from "../../types/models/complaints/dtoAlias-type";
+import { ComplaintDtoAlias } from "../../types/models/complaints/dtos/complaint-dto-alias";
 
-import { RelatedDataDto } from "../../types/models/complaints/related-data";
+import { RelatedDataDto } from "../../types/models/complaints/dtos/related-data";
 import { ACTION_TAKEN_ACTION_TYPES } from "../../types/constants";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 import { getAgenciesFromRoles } from "../../common/methods";
@@ -29,7 +29,6 @@ import { PersonComplaintXrefService } from "../person_complaint_xref/person_comp
 import { UUID } from "crypto";
 import { SendCollaboratorEmalDto } from "../../v1/email/dto/send_collaborator_email.dto";
 import { User } from "../../auth/decorators/user.decorator";
-
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
 @Controller({
@@ -107,8 +106,8 @@ export class ComplaintController {
   async updateComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
-    @Body() model: ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto,
-  ): Promise<dtoAlias> {
+    @Body() model: ComplaintDtoAlias,
+  ): Promise<ComplaintDtoAlias> {
     return await this.service.updateComplaintById(id, complaintType, model);
   }
 
@@ -123,8 +122,8 @@ export class ComplaintController {
   async findComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
-  ): Promise<dtoAlias> {
-    return (await this.service.findById(id, complaintType)) as dtoAlias;
+  ): Promise<ComplaintDtoAlias> {
+    return (await this.service.findById(id, complaintType)) as ComplaintDtoAlias;
   }
   @Get("/related-data/:id")
   @Roles(coreRoles)
@@ -134,7 +133,10 @@ export class ComplaintController {
 
   @Post("/create/:complaintType")
   @Roles(coreRoles)
-  async create(@Param("complaintType") complaintType: COMPLAINT_TYPE, @Body() model: dtoAlias): Promise<dtoAlias> {
+  async create(
+    @Param("complaintType") complaintType: COMPLAINT_TYPE,
+    @Body() model: ComplaintDtoAlias,
+  ): Promise<ComplaintDtoAlias> {
     return await this.service.create(complaintType, model);
   }
 
@@ -148,7 +150,7 @@ export class ComplaintController {
   }
 
   @Get("/linked-complaints/:complaint_id")
-  @Roles(Role.COS, Role.PARKS) // Might want to expose this to others in the future instead of just making it coupled to HWCRs
+  @Roles(coreRoles)
   async findLinkedComplaintsById(@Param("complaint_id") complaintId: string) {
     const childComplaints = await this.linkedComplaintXrefService.findChildComplaints(complaintId);
     if (childComplaints.length > 0) return childComplaints;

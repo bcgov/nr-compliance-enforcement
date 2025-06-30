@@ -22,4 +22,5 @@ export interface ComplaintTable {
   complaint_status_code: string;
   geo_organization_unit_code: string;
   cos_geo_org_unit: string;
+  complaint_type_code: string;
 }

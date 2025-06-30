@@ -7,7 +7,7 @@ import { Complaint } from "../../complaint/entities/complaint.entity";
 @Index("PK_cmplreferral", ["complaint_referral_guid"], {
   unique: true,
 })
-@Entity("complaint_referral", { schema: "public" })
+@Entity("complaint_referral", { schema: "complaint" })
 export class ComplaintReferral {
   @Column("uuid", {
     primary: true,

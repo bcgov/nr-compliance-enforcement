@@ -16,17 +16,17 @@ import {
   ReportedBy,
 } from "../../types/models/code-tables";
 import { DelegateDto } from "../../types/models/people/delegate";
-import { ComplaintDto } from "../../types/models/complaints/complaint";
+import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { HwcrComplaint } from "../../v1/hwcr_complaint/entities/hwcr_complaint.entity";
 import { AttractantCode } from "../../v1/attractant_code/entities/attractant_code.entity";
-import { WildlifeComplaintDto } from "../../types/models/complaints/wildlife-complaint";
+import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
 import { SpeciesCode } from "../../v1/species_code/entities/species_code.entity";
 import { HwcrComplaintNatureCode } from "../../v1/hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { AttractantHwcrXref } from "../../v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { ViolationCode } from "../../v1/violation_code/entities/violation_code.entity";
 import { AllegationComplaint } from "../../v1/allegation_complaint/entities/allegation_complaint.entity";
-import { AllegationComplaintDto } from "../../types/models/complaints/allegation-complaint";
+import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
 import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
 
 const createOrganizationMetaData = () => {
@@ -103,6 +103,7 @@ export const createComplaintMetaData = () => {
     cos_geo_org_unit: Object,
     person_complaint_xref: Object,
     park_guid: String,
+    complaint_type_code: Object,
   });
 
   PojosMetadataMap.create<ComplaintDto>("ComplaintDto", {
@@ -127,6 +128,7 @@ export const createComplaintMetaData = () => {
     organization: Object,
     delegates: Array<DelegateDto>,
     parkGuid: String,
+    type: String,
   });
 };
 

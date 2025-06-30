@@ -1,7 +1,7 @@
 import { Column, Entity, Index } from "typeorm";
 
 @Index("configuration_pk", ["configurationCode"], { unique: true })
-@Entity("configuration", { schema: "public" })
+@Entity("configuration", { schema: "complaint" })
 export class Configuration {
   @Column("character varying", {
     primary: true,

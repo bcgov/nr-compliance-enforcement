@@ -106,6 +106,7 @@ export const getAgenciesFromRoles = (roles: string[]): string[] => {
     [Role.COS]: "COS",
     [Role.CEEB]: "EPO",
     [Role.PARKS]: "PARKS",
+    [Role.SECTOR]: "NRS",
   };
 
   return Object.keys(roleToAgencyMap)
