@@ -48,7 +48,7 @@ services:
       - "./migrations/migrations:/flyway/sql"
       - "./migrations/test-only-migrations:/flyway/sql-test"
     environment:
-      - FLYWAY_URL=jdbc:postgresql://database:5432/postgres
+      - FLYWAY_URL=jdbc:postgresql://database:5432/postgres?currentSchema=complaint,case_management,public
       - FLYWAY_USER=postgres
       - FLYWAY_PASSWORD=default
       - FLYWAY_BASELINE_ON_MIGRATE=true
@@ -147,7 +147,7 @@ services:
       - "./migrations-cm/sql:/flyway/sql:ro"
       - "./migrations-cm/test-only-migrations:/flyway/sql-test:ro"
     environment:
-      FLYWAY_URL: jdbc:postgresql://database:5432/postgres
+      FLYWAY_URL: jdbc:postgresql://database:5432/postgres?currentSchema=complaint,case_management,public
       FLYWAY_USER: *POSTGRES_USER
       FLYWAY_PASSWORD: *POSTGRES_PASSWORD
       FLYWAY_PLACEHOLDERS_SHARED_PASSWORD: *SHARED_PASSWORD
