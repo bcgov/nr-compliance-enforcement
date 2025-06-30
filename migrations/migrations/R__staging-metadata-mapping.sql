@@ -6299,7 +6299,7 @@ VALUES
     uuid_generate_v4 (),
     'geoorgutcd',
     'Eastgate',
-    'ETHURLOW',
+    'EASTGTE',
     'FLYWAY',
     CURRENT_TIMESTAMP,
     'FLYWAY',
