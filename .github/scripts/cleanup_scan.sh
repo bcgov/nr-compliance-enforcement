@@ -12,6 +12,7 @@
 set -e # failfast
 trap 'echo "Error occurred at line $LINENO while executing function $FUNCNAME"' ERR
 
+
 # ENV:
 # OC_NAMESPACE: namespace to scan
 # SKIP_AUTH: set to true to skip auth and use your existing local kubeconfig
