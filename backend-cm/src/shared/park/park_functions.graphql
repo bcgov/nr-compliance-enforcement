@@ -1,0 +1,16 @@
+type Query {
+  parks(take: Int, skip: Int, search: String): [Park]
+  park(parkGuid: String!): Park
+  parkArea(parkAreaGuid: String!): ParkArea
+  parkAreas: [ParkArea]!
+  getParksByArea(parkAreaGuid: String!): [Park]
+}
+
+type Mutation {
+  createPark(input: ParkInput!): Park!
+  updatePark(personGuid: String!, input: ParkInput!): Park!
+  deletePark(personGuid: String!): Park!
+  createParkArea(input: ParkAreaInput!): ParkArea!
+  updateParkArea(parkAreaGuid: String!, input: ParkAreaInput!): ParkArea!
+  deleteParkArea(parkAreaGuid: String!): ParkArea!
+}
