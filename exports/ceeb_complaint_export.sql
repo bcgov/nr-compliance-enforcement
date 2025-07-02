@@ -1,8 +1,8 @@
 select 
 	cmp.complaint_identifier as "Record ID",
-	agt.short_description as "Referred to agency",
-	agb.short_description as "Referred by agency",
-	to_char(crf.referral_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Los_Angeles', 'YYYY-MM-DD HH24:MI') as "Referral date",
+	-- agt.short_description as "Referred to agency",
+	-- agb.short_description as "Referred by agency",
+	-- to_char(crf.referral_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Los_Angeles', 'YYYY-MM-DD HH24:MI') as "Referral date",
 	-- Try and use the Incident Date if it doesn't exist use the Date Received
 	TO_CHAR(((cmp.incident_reported_utc_timestmp at time zone 'UTC') at time zone 'PDT'), 'YYYY-MM-DD') as "Date Received",
 	CASE 
@@ -54,7 +54,7 @@ left join
 right join 
 	complaint.allegation_complaint ac on ac.complaint_identifier = cmp.complaint_identifier 
 where
-	cmp.owned_by_agency_code = 'EPO' or
-	crf.referred_by_agency_code = 'EPO'
+	cmp.owned_by_agency_code = 'EPO'
+	-- or crf.referred_by_agency_code = 'EPO'
 order by
 	cmp.complaint_identifier asc
