@@ -50,34 +50,34 @@ select distinct
 	per.last_name || ', ' || per.first_name as "Officer Assigned",
 	cmp.reference_number AS "COORS Number"
 from 
-	complaint cmp
+	complaint.complaint cmp
 join 
-	complaint_status_code cst on cst.complaint_status_code = cmp.complaint_status_code 
+	complaint.complaint_status_code cst on cst.complaint_status_code = cmp.complaint_status_code 
 join 
-	geo_organization_unit_code goc on goc.geo_organization_unit_code  = cmp.geo_organization_unit_code 
+	complaint.geo_organization_unit_code goc on goc.geo_organization_unit_code  = cmp.geo_organization_unit_code 
 join 
-	cos_geo_org_unit_flat_mvw gfv on gfv.area_code = goc.geo_organization_unit_code 
+	complaint.cos_geo_org_unit_flat_mvw gfv on gfv.area_code = goc.geo_organization_unit_code 
 left join
-	complaint_referral crf on crf.complaint_identifier = cmp.complaint_identifier 
+	complaint.complaint_referral crf on crf.complaint_identifier = cmp.complaint_identifier 
 left join
-	agency_code agt on agt.agency_code = crf.referred_to_agency_code 
+	complaint.agency_code agt on agt.agency_code = crf.referred_to_agency_code 
 left join
-	agency_code agb on agb.agency_code = crf.referred_by_agency_code 
+	complaint.agency_code agb on agb.agency_code = crf.referred_by_agency_code 
 left join 
-	person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true and pcx.person_complaint_xref_code = 'ASSIGNEE'
+	complaint.person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true and pcx.person_complaint_xref_code = 'ASSIGNEE'
 left join 
-	person per on per.person_guid = pcx.person_guid 
+	complaint.person per on per.person_guid = pcx.person_guid 
 right join
-	allegation_complaint alc on alc.complaint_identifier = cmp.complaint_identifier 
+	complaint.allegation_complaint alc on alc.complaint_identifier = cmp.complaint_identifier 
 left join (
     select complaint_identifier, count(*) as update_count
-    from complaint_update
+    from complaint.complaint_update
     group by complaint_identifier
 ) cup on cup.complaint_identifier = cmp.complaint_identifier
 left join
-   complaint_update cu ON cu.complaint_identifier = cmp.complaint_identifier
+   complaint.complaint_update cu ON cu.complaint_identifier = cmp.complaint_identifier
 left join
-	violation_code vc  on alc.violation_code = vc.violation_code 
+	complaint.violation_code vc  on alc.violation_code = vc.violation_code 
 where
 	cmp.owned_by_agency_code = 'COS' or
 	crf.referred_by_agency_code = 'COS'
