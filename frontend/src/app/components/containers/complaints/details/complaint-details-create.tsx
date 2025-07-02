@@ -204,7 +204,7 @@ export const CreateComplaint: FC = () => {
         updatedBy: userid,
         complaintMethodReceivedCode: "",
         isPrivacyRequested: "U",
-        type: "",
+        // type: "",
       };
 
       applyComplaintData(model);
