@@ -28,31 +28,31 @@ select
 	--ST_X(cmp.location_geometry_point) as "Longitude",
 	ac.suspect_witnesss_dtl_text as "Alleged Contravener"
 from 
-	complaint cmp
+	complaint.complaint cmp
 join 
-	complaint_status_code cst on cst.complaint_status_code = cmp.complaint_status_code 
+	complaint.complaint_status_code cst on cst.complaint_status_code = cmp.complaint_status_code 
 join 
-	geo_organization_unit_code goc on goc.geo_organization_unit_code  = cmp.geo_organization_unit_code 
+	complaint.geo_organization_unit_code goc on goc.geo_organization_unit_code  = cmp.geo_organization_unit_code 
 join 
-	cos_geo_org_unit_flat_mvw gfv on gfv.area_code = goc.geo_organization_unit_code 
+	complaint.cos_geo_org_unit_flat_mvw gfv on gfv.area_code = goc.geo_organization_unit_code 
 left join
-	comp_mthd_recv_cd_agcy_cd_xref cmrcacx on cmrcacx.comp_mthd_recv_cd_agcy_cd_xref_guid = cmp.comp_mthd_recv_cd_agcy_cd_xref_guid
+	complaint.comp_mthd_recv_cd_agcy_cd_xref cmrcacx on cmrcacx.comp_mthd_recv_cd_agcy_cd_xref_guid = cmp.comp_mthd_recv_cd_agcy_cd_xref_guid
 left join 
-	complaint_method_received_code cmrc on cmrc.complaint_method_received_code = cmrcacx.complaint_method_received_code
+	complaint.complaint_method_received_code cmrc on cmrc.complaint_method_received_code = cmrcacx.complaint_method_received_code
 left join
-	complaint_referral crf on crf.complaint_identifier = cmp.complaint_identifier 
+	complaint.complaint_referral crf on crf.complaint_identifier = cmp.complaint_identifier 
 left join
-	agency_code agt on agt.agency_code = crf.referred_to_agency_code 
+	complaint.agency_code agt on agt.agency_code = crf.referred_to_agency_code 
 left join
-	agency_code agb on agb.agency_code = crf.referred_by_agency_code 
+	complaint.agency_code agb on agb.agency_code = crf.referred_by_agency_code 
 left join 
-	person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true and pcx.person_complaint_xref_code = 'ASSIGNEE'
+	complaint.person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true and pcx.person_complaint_xref_code = 'ASSIGNEE'
 left join 
-	person per on per.person_guid = pcx.person_guid 
+	complaint.person per on per.person_guid = pcx.person_guid 
 left join 
-	officer ofc on ofc.person_guid = per.person_guid 
+	complaint.officer ofc on ofc.person_guid = per.person_guid 
 right join 
-	allegation_complaint ac on ac.complaint_identifier = cmp.complaint_identifier 
+	complaint.allegation_complaint ac on ac.complaint_identifier = cmp.complaint_identifier 
 where
 	cmp.owned_by_agency_code = 'EPO' or
 	crf.referred_by_agency_code = 'EPO'
