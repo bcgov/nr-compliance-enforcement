@@ -1,0 +1,11 @@
+type SexCode {
+  sexCode: String
+  shortDescription: String
+  longDescription: String
+  displayOrder: Int
+  activeIndicator: Boolean
+}
+
+type Query {
+  sexCodes: [SexCode]!
+}
