@@ -370,6 +370,26 @@
   z-index: 9000 !important;
 }
 
+.comp-tooltip-dark .tooltip-inner {
+  background-color: $black;
+}
+
+.comp-tooltip-dark.comp-tooltip-right .tooltip-arrow::before {
+  border-right-color: black !important;
+}
+
+.comp-tooltip-dark.comp-tooltip-left .tooltip-arrow::before {
+  border-right-color: black !important;
+}
+
+.comp-tooltip-dark.comp-tooltip-top .tooltip-arrow::before {
+  border-right-color: black !important;
+}
+
+.comp-tooltip-dark.comp-tooltip-bottom .tooltip-arrow::before {
+  border-right-color: black !important;
+}
+
 .comp-tooltip .tooltip-inner {
   background-color: $bc-gov-primary;
 }

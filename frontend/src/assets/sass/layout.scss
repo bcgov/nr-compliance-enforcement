@@ -84,15 +84,11 @@ a {
 }
 
 .comp-sidebar {
-  background-color: $gray-110;
+  background-color: $bc-brand-background-blue;
   width: 220px;
+  height: 100%;
   padding: 16px;
   overflow: hidden;
-
-  .comp-sidebar-toggle > i {
-    float: right;
-    cursor: pointer;
-  }
 
   .comp-sidenav-list {
     gap: 4px;
@@ -117,10 +113,34 @@ a {
     display: none;
   }
 
-  &.collapsed > div.comp-sidebar-toggle > i {
-    float: none;
-    margin-left: 25%;
+  a {
+    color: $white;
   }
+}
+
+.comp-sidebar-toggle-icon {
+  text-shadow:
+    1px 0 currentColor,
+    -1px 0 currentColor,
+    0 1px currentColor,
+    0 -1px currentColor;
+}
+
+.comp-sidebar-toggle {
+  position: fixed;
+  color: $white;
+  top: 72px; /* match header height */
+  left: 220px; /* match expanded sidebar width */
+  z-index: 9000;
+  background-color: $bc-brand-background-blue;
+  padding: 8px;
+  cursor: pointer;
+  transition: left 0.3s ease;
+  border: none;
+}
+
+.comp-sidebar.collapsed + .comp-sidebar-toggle {
+  left: 72px; /* match collapsed width */
 }
 
 // SIDE NAVIGATION
@@ -143,17 +163,17 @@ a {
   transition: all ease-out 0.2s;
 
   &:hover {
-    color: $bc-brand-links;
-    background-color: #c1d9f2;
+    color: $bc-brand-blue;
+    background-color: $bc-gov-secondary;
   }
 
   &:active {
     background-color: #c1d9f2;
-    outline-color: $bc-brand-links;
+    outline-color: $white;
   }
 
   &:focus-visible {
-    outline-color: $bc-brand-links;
+    outline-color: $white;
   }
 
   &-lg {
@@ -184,7 +204,7 @@ a {
   line-height: 1.25rem;
   letter-spacing: -0.0064em;
   font-weight: 700;
-  color: $bc-gov-primary;
+  color: $white;
 }
 
 .comp-organization-nav-long-name {

@@ -72,7 +72,7 @@ export const SideBar: FC = () => {
         overlay={
           <Tooltip
             id={`tt-${id}`}
-            className="comp-tooltip comp-tooltip-right"
+            className="comp-tooltip-dark comp-tooltip-right"
           >
             {name}
           </Tooltip>
@@ -102,35 +102,51 @@ export const SideBar: FC = () => {
   };
 
   return (
-    <div className={`d-flex flex-column flex-shrink-0 comp-sidebar ${(!isOpen ? "collapsed" : "").trim()}`}>
-      {/* <!-- organization name --> */}
-      <AgencyBanner />
+    <>
+      <div className={`d-flex flex-column flex-shrink-0 comp-sidebar ${(!isOpen ? "collapsed" : "").trim()}`}>
+        {/* <!-- organization name --> */}
+        <AgencyBanner />
 
-      {/* <!-- menu items for the organization --> */}
-      <ul className="nav nav-pills flex-column mb-auto comp-sidenav-list">
-        {menueItems.map((item, idx) => {
-          // Check if the user has an excluded role (e.g. hide ZAG)
-          if (item.excludedRoles && UserService.hasRole(item.excludedRoles)) {
-            return null; // Exclude this item if the user has an excluded role
-          }
+        {/* <!-- menu items for the organization --> */}
+        <ul className="nav nav-pills flex-column mb-auto comp-sidenav-list">
+          {menueItems.map((item, idx) => {
+            // Check if the user has an excluded role (e.g. hide ZAG)
+            if (item.excludedRoles && UserService.hasRole(item.excludedRoles)) {
+              return null; // Exclude this item if the user has an excluded role
+            }
 
-          // Check if the item has required roles and if the user has the required role
-          if (item.requiredRoles && !UserService.hasRole(item.requiredRoles)) {
-            return null; // Exclude this item if the user does not have the required role
-          }
+            // Check if the item has required roles and if the user has the required role
+            if (item.requiredRoles && !UserService.hasRole(item.requiredRoles)) {
+              return null; // Exclude this item if the user does not have the required role
+            }
 
-          // If neither excludedRoles nor requiredRoles conditions apply, render the item
-          return renderSideBarMenuItem(idx, item);
-        })}
-      </ul>
-      <div
-        className="comp-sidebar-toggle"
-        onClick={() => {
-          dispatch(toggleSidebar());
-        }}
-      >
-        <i className={`bi ${isOpen ? "bi-chevron-double-left" : "bi-chevron-double-right"}`}></i>
+            // If neither excludedRoles nor requiredRoles conditions apply, render the item
+            return renderSideBarMenuItem(idx, item);
+          })}
+        </ul>
       </div>
-    </div>
+      <OverlayTrigger
+        key={`overlay-sidebar`}
+        placement="right"
+        overlay={
+          <Tooltip
+            id={`tt-sidebar`}
+            className="comp-tooltip-dark comp-tooltip-right"
+          >
+            {isOpen ? "Click to collapse" : "Click to expand"}
+          </Tooltip>
+        }
+      >
+        <button
+          type="button"
+          className="comp-sidebar-toggle"
+          onClick={() => {
+            dispatch(toggleSidebar());
+          }}
+        >
+          <i className={`bi comp-sidebar-toggle-icon ${isOpen ? "bi-chevron-left" : "bi-chevron-right"}`}></i>
+        </button>
+      </OverlayTrigger>
+    </>
   );
 };
