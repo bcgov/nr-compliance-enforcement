@@ -193,6 +193,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_prod_mem_limit" {
     app = "NatCom"
   }
 }
+/*
 resource "sysdig_monitor_alert_v2_prometheus" "nr_database_prod_storage_usage" {
   name = "Prod Database Storage Alert"
   description = "Alert when the database storage usage is too high"
@@ -209,6 +210,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_prod_storage_usage" {
     app = "NatCom"
   }
 }
+*/
 resource "sysdig_monitor_alert_v2_prometheus" "nr_webeoc_prod_storage_usage" {
   name = "Prod Webeoc Custom Log Storage Alert"
   description = "Alert when the PVC storage usage is too high"
