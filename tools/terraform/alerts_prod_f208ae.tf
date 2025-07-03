@@ -240,7 +240,7 @@ resource "sysdig_monitor_alert_v2_event" "nr_events_prod_failedimagepull" {
   scope {
     label = "kube_namespace_name"
     operator = "in"
-    values = ["c1c7ed-prod"]
+    values = ["f208ae-prod"]
   }
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
@@ -260,7 +260,7 @@ resource "sysdig_monitor_alert_v2_event" "nr_events_prod_failedvolumeattach" {
   scope {
     label = "kube_namespace_name"
     operator = "in"
-    values = ["c1c7ed-prod"]
+    values = ["f208ae-prod"]
   }
   notification_channels {
     id = sysdig_monitor_notification_channel_email.prod_environment_alerts.id
