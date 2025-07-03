@@ -20,10 +20,7 @@ test.describe("Complaint Assign Popover spec", () => {
       await waitForSpinner(page);
       await page.locator("#comp-zone-filter").click(); //clear zone filter so we have some complaint is in the list view
       await waitForSpinner(page);
-      await page.locator("td").first().click();
-      await waitForSpinner(page);
-      const quickActionButton = await page.locator("#quick-action-button").first();
-      await quickActionButton.locator("button").first().click();
+      await page.locator("#quick-action-button").first().locator("button").first().click();
       await expect(await page.locator("#update-assignee-menu-item")).toBeVisible(); //Wait for the options to show
       await page.locator("#update-assignee-menu-item").click();
 

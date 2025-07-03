@@ -132,11 +132,11 @@ test.describe("CEEB Complaints can be created and outcome decisions set ", () =>
   test("can save a authorization id on a complaint with a violation type of Waste", async function ({ page }) {
     await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, complaintId, true, page);
     //delete authorization if it exists
-    const $authorization = page.locator("#ceeb-authorization");
+    const $authorization = await page.locator("#ceeb-authorization");
     const deleteBtnLocator = $authorization.locator("#ceeb-authorization-delete-btn").all;
     // Check if the button was found
     if (deleteBtnLocator.length) {
-      await $authorization.locator("#ceeb-authorization-delete-btn").click();
+      await page.locator("#ceeb-authorization-delete-btn").click();
       await $authorization.locator(".modal-footer > .btn-primary").click();
     } else {
       console.log("The delete button is not visible, skipping the click actions.");
