@@ -1976,7 +1976,7 @@ WHERE office_guid is null
 AND agency_code is null;
 
 ---------------------
--- Overwrite all email addresses in dev and test to avoid accidents
+-- Overwrite all referred email addresses in dev and test to avoid accidents
 ---------------------
 UPDATE email_reference
 SET email_address = 'ceds@gov.bc.ca'

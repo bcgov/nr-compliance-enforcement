@@ -1,0 +1,4 @@
+ALTER TABLE case_management.decision ALTER COLUMN non_compliance_decision_matrix_code DROP NOT NULL;
+
+ALTER TABLE case_management.decision
+ADD CONSTRAINT FK_decision__ncdm_code FOREIGN KEY (non_compliance_decision_matrix_code) REFERENCES case_management.non_compliance_decision_matrix_code (non_compliance_decision_matrix_code);

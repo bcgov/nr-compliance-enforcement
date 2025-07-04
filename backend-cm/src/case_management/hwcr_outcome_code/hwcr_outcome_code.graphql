@@ -1,0 +1,11 @@
+type HWCROutcomeCode {
+  hwcrOutcomeCode: String
+  shortDescription: String
+  longDescription: String
+  displayOrder: Int
+  activeIndicator: Boolean
+}
+
+type Query {
+  hwcrOutcomeCodes: [HWCROutcomeCode]!
+}
