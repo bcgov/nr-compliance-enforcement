@@ -79,6 +79,10 @@ a {
 }
 
 // SIDEBAR
+.sidebar-wrapper {
+  position: relative;
+}
+
 .fixed-sidebar .comp-sidebar {
   position: fixed;
 }
@@ -131,9 +135,9 @@ a {
 }
 
 .comp-sidebar-toggle {
-  position: fixed;
+  position: absolute;
   color: $white;
-  top: 72px; /* match header height */
+  top: 0;
   left: 220px; /* match expanded sidebar width */
   z-index: 9000;
   background-color: $bc-brand-background-blue;

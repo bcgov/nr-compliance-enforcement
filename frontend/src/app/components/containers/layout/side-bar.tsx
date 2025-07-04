@@ -102,7 +102,7 @@ export const SideBar: FC = () => {
   };
 
   return (
-    <>
+    <div className="sidebar-wrapper">
       <button
         className={`d-flex flex-column flex-shrink-0 comp-sidebar ${(!isOpen ? "collapsed" : "").trim()}`}
         onClick={(e) => {
@@ -154,6 +154,6 @@ export const SideBar: FC = () => {
           <i className={`bi comp-sidebar-toggle-icon ${isOpen ? "bi-chevron-left" : "bi-chevron-right"}`}></i>
         </button>
       </OverlayTrigger>
-    </>
+    </div>
   );
 };
