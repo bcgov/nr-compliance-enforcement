@@ -175,7 +175,7 @@ export const CreateComplaint: FC = () => {
     //-- when there isn't an active new complaint, create one use
     //-- default values for the complaint
     if (!complaintData) {
-      const model: Complaint = {
+      const model = {
         id: "",
         webeocId: "",
         referenceNumber: "",
