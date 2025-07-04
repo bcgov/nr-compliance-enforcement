@@ -365,7 +365,8 @@
   }
 }
 
-.comp-tooltip {
+.comp-tooltip,
+.comp-tooltip-dark {
   position: fixed;
   z-index: 9000 !important;
 }

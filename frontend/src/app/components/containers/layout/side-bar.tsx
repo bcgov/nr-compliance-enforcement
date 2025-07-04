@@ -103,7 +103,14 @@ export const SideBar: FC = () => {
 
   return (
     <>
-      <div className={`d-flex flex-column flex-shrink-0 comp-sidebar ${(!isOpen ? "collapsed" : "").trim()}`}>
+      <button
+        className={`d-flex flex-column flex-shrink-0 comp-sidebar ${(!isOpen ? "collapsed" : "").trim()}`}
+        onClick={(e) => {
+          if (e.currentTarget === e.target) {
+            dispatch(toggleSidebar());
+          }
+        }}
+      >
         {/* <!-- organization name --> */}
         <AgencyBanner />
 
@@ -124,7 +131,7 @@ export const SideBar: FC = () => {
             return renderSideBarMenuItem(idx, item);
           })}
         </ul>
-      </div>
+      </button>
       <OverlayTrigger
         key={`overlay-sidebar`}
         placement="right"
