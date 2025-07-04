@@ -75,15 +75,6 @@ export const CompSelect: FC<Props> = ({
     }));
   }
 
-  // If "none" is an option, lighten the colour a bit so that it doesn't appear the same as the other selectable options
-  styles = {
-    ...styles,
-    option: (provided, state) => ({
-      ...provided,
-      color: state.label === "None" || state.label === "Unassigned" ? "#a1a1a1" : "black",
-    }),
-  };
-
   //-- pass through the onChange event
   const handleChange = (s: any) => {
     if (onChange) {
