@@ -580,7 +580,7 @@ const initialState: AppState = {
     comsEnrolledInd: null,
     parkAreaGuid: null,
   },
-  isSidebarOpen: true,
+  isSidebarOpen: false,
 
   loading: { isLoading: false },
 

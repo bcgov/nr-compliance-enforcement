@@ -15,7 +15,8 @@ describe("Complaint collaborators", () => {
   it("Add a collaborator from Parks to an HWCR complaint", function () {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, COMPLAINT_ID, true);
 
-    cy.get("#details-screen-manage-collaborators-button").click({ force: true });
+    cy.get("#dropdown-basic").click({ force: true });
+    cy.get("#manage-collaborators-button").click({ force: true });
     cy.selectItemById("select-agency", "Parks");
     cy.selectItemById("select-officer", "TestAcct 3, ENV");
     cy.contains("button", "Add as a collaborator").click({ force: true });
@@ -47,7 +48,8 @@ describe("Complaint collaborators have the correct permissions", () => {
     cy.kcLogout().kcLogin();
 
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, COMPLAINT_ID, true);
-    cy.get("#details-screen-manage-collaborators-button").click({ force: true });
+    cy.get("#dropdown-basic").click({ force: true });
+    cy.get("#manage-collaborators-button").click({ force: true });
     cy.contains("button", "Remove user").click({ force: true });
     cy.contains("button", "Close").click({ force: true });
   });
