@@ -211,8 +211,8 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_silver_test_storage_u
   }
 }
 */
-resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_up" {
-  name = "Test Database Up Alert"
+resource "sysdig_monitor_alert_v2_prometheus" "nr_database_silver_test_up" {
+  name = "SILVER TEST - Database Up Alert"
   description = "Alert when the database is not returning up"
   severity = "high"
   query = "min(pg_up{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-test\",container_name=\"database\"}) == 0"
@@ -227,8 +227,8 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_up" {
     app = "NatCom"
   }
 }
-resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_replication_lag" {
-  name = "Test Database Replication Lag Alert"
+resource "sysdig_monitor_alert_v2_prometheus" "nr_database_silver_test_replication_lag" {
+  name = "SILVER TEST - Database Replication Lag Alert"
   description = "Alert when the database replication lag is presistantly high"
   severity = "high"
   query = "pg_replication_lag_seconds{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-test\",container_name=\"database\"} > 3"
@@ -243,8 +243,8 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_replication_lag"
     app = "NatCom"
   }
 }
-resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_replication_lag" {
-  name = "Test Database Replication Lag Alert"
+resource "sysdig_monitor_alert_v2_prometheus" "nr_database_silver_test_replication_lag" {
+  name = "SILVER TEST - Database Replication Lag Alert"
   description = "Alert when the database replication lag is presistantly high"
   severity = "high"
   query = "pg_replication_lag_seconds{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-test\",container_name=\"database\"} > 3"
@@ -259,8 +259,8 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_replication_lag"
     app = "NatCom"
   }
 }
-resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_wal_size" {
-  name = "Test Database WAL Size Alert"
+resource "sysdig_monitor_alert_v2_prometheus" "nr_database_silver_test_wal_size" {
+  name = "SILVER TEST - Database WAL Size Alert"
   description = "Alert when the database WAL file is presistantly high"
   severity = "high"
   query = "max(pg_wal_size_bytes{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-test\",container_name=\"database\"}) > 300000000"
@@ -275,8 +275,8 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_wal_size" {
     app = "NatCom"
   }
 }
-resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_deadlocks" {
-  name = "Test Database Deadlock Alert"
+resource "sysdig_monitor_alert_v2_prometheus" "nr_database_silver_test_deadlocks" {
+  name = "SILVER TEST - Database Deadlock Alert"
   description = "Alert when the database has unresolved deadlocks"
   severity = "high"
   query = "max(pg_stat_database_deadlocks{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-test\",container_name=\"database\"}) >= 1"
@@ -291,8 +291,8 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_deadlocks" {
     app = "NatCom"
   }
 }
-resource "sysdig_monitor_alert_v2_prometheus" "nr_database_test_lockcount" {
-  name = "Test Database Lock Count Alert"
+resource "sysdig_monitor_alert_v2_prometheus" "nr_database_silver_test_lockcount" {
+  name = "SILVER TEST - Database Lock Count Alert"
   description = "Alert when the database has a high number of locks"
   severity = "high"
   query = "max(pg_locks_count{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-test\",container_name=\"database\"}) >= 20"
