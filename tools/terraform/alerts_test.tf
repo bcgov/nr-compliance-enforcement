@@ -278,7 +278,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_silver_test_deadlocks
 resource "sysdig_monitor_alert_v2_prometheus" "nr_database_silver_test_lockcount" {
   name = "SILVER TEST - Database Lock Count Alert"
   description = "Alert when the database has a high number of locks"
-  severity = "high"
+  severity = "medium"
   query = "max(pg_locks_count{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-test\",container_name=\"database\"}) >= 20"
   enabled = true
   duration_seconds = 300
