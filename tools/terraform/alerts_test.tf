@@ -247,7 +247,7 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_silver_test_wal_size"
   name = "SILVER TEST - Database WAL Size Alert"
   description = "Alert when the database WAL file is presistantly high"
   severity = "high"
-  query = "max(pg_wal_size_bytes{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-test\",container_name=\"database\"}) > 300000000"
+  query = "max(pg_wal_size_bytes{kube_cluster_name=\"silver\",kube_namespace_name=\"c1c7ed-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"postgres-crunchy-test\",container_name=\"database\"}) > 800000000"
   enabled = true
   duration_seconds = 300
   notification_channels {
