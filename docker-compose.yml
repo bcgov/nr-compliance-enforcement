@@ -93,8 +93,8 @@ services:
       - "chown -R root . && npm ci && npm run start"
     environment:
       NODE_ENV: development
-      REACT_APP_API_URL: http://localhost:3001/api
-      REACT_APP_ENVIRONMENT_NAME: DEVELOPMENT
+      VITE_API_URL: http://localhost:3001/api
+      VITE_ENVIRONMENT_NAME: DEVELOPMENT
     hostname: frontend
     image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
     links:

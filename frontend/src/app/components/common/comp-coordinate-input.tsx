@@ -7,7 +7,7 @@ import { Button } from "react-bootstrap";
 import { useAppDispatch } from "@hooks/hooks";
 import { openModal } from "@store/reducers/app";
 import { MAP_MODAL } from "@apptypes/modal/modal-types";
-let utmObj = require("utm-latlng");
+import utmObj from "utm-latlng";
 
 type Props = {
   id?: string;
@@ -193,16 +193,26 @@ export const CompCoordinateInput: FC<Props> = ({
       }
 
       if (!hasErrors && easting && !Number.isNaN(easting) && northing && !Number.isNaN(northing)) {
-        const latLongCoordinates = utm.convertUtmToLatLng(easting, northing, zone, "N");
+        const latLongCoordinates = utm.convertUtmToLatLng(
+          parseFloat(easting),
+          parseFloat(northing),
+          parseInt(zone),
+          "N",
+        );
+
+        if (typeof latLongCoordinates === "string") {
+          throw new Error(`UTM conversion failed: ${latLongCoordinates}`);
+        }
+
         lat = latLongCoordinates.lat.toFixed(7);
         lng = latLongCoordinates.lng.toFixed(7);
 
-        if (lat < bcBoundaries.minLatitude || lat > bcBoundaries.maxLatitude) {
+        if (parseFloat(lat) < bcBoundaries.minLatitude || parseFloat(lat) > bcBoundaries.maxLatitude) {
           setNorthingCoordinateErrorMsg(northingErrorText);
           hasErrors = true;
         }
 
-        if (lng < bcBoundaries.minLongitude || lng > bcBoundaries.maxLongitude) {
+        if (parseFloat(lng) < bcBoundaries.minLongitude || parseFloat(lng) > bcBoundaries.maxLongitude) {
           setEastingCoordinateErrorMsg(eastingErrorText);
           hasErrors = true;
         } else {
@@ -231,11 +241,16 @@ export const CompCoordinateInput: FC<Props> = ({
         if (eastingCoordinate && northingCoordinate && zoneCoordinate?.value) {
           let utm = new utmObj();
           const latLongCoordinates = utm.convertUtmToLatLng(
-            eastingCoordinate,
-            northingCoordinate,
-            zoneCoordinate?.value,
+            parseFloat(eastingCoordinate),
+            parseFloat(northingCoordinate),
+            parseInt(zoneCoordinate?.value),
             "N",
           );
+
+          if (typeof latLongCoordinates === "string") {
+            throw new Error(`UTM conversion failed: ${latLongCoordinates}`);
+          }
+
           const lat = formatLatLongCoordinate(latLongCoordinates.lat.toString());
           const lng = formatLatLongCoordinate(latLongCoordinates.lng.toString());
 
@@ -250,12 +265,24 @@ export const CompCoordinateInput: FC<Props> = ({
 
   const updateUtmFields = (lat: string, lng: string): { easting: string; northing: string; zone: string } => {
     let utm = new utmObj();
-    const utmCoordinates = utm.convertLatLngToUtm(lat, lng, 3);
-    setEastingCoordinate(utmCoordinates.Easting);
-    setNorthingCoordinate(utmCoordinates.Northing);
-    setZoneCoordinate({ label: utmCoordinates.ZoneNumber, value: utmCoordinates.ZoneNumber } as Option);
+    const utmCoordinates = (utm as any).convertLatLngToUtm(parseFloat(lat), parseFloat(lng), 3);
 
-    return { easting: utmCoordinates.Easting, northing: utmCoordinates.Northing, zone: utmCoordinates.ZoneNumber };
+    if (typeof utmCoordinates === "string") {
+      throw new Error(`UTM conversion failed: ${utmCoordinates}`);
+    }
+
+    setEastingCoordinate(utmCoordinates.Easting.toFixed(0));
+    setNorthingCoordinate(utmCoordinates.Northing.toFixed(0));
+    setZoneCoordinate({
+      label: utmCoordinates.ZoneNumber?.toString() ?? "",
+      value: utmCoordinates.ZoneNumber?.toString() ?? "",
+    } as Option);
+
+    return {
+      easting: utmCoordinates.Easting.toFixed(0),
+      northing: utmCoordinates.Northing.toFixed(0),
+      zone: utmCoordinates.ZoneNumber?.toString() ?? "",
+    };
   };
 
   useEffect(() => {
