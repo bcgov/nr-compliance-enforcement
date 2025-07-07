@@ -6,13 +6,49 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: "build-html",
+      apply: "build",
+      transformIndexHtml: (html) => {
+        return {
+          html,
+          tags: [
+            {
+              tag: "script",
+              attrs: {
+                src: "/config.js",
+              },
+              injectTo: "head",
+            },
+          ],
+        };
+      },
+    },
+  ],
   server: {
     port: 3000,
     open: true,
   },
   build: {
-    outDir: "build",
+    // Build Target
+    // https://vitejs.dev/config/build-options.html#build-target
+    target: "esnext",
+    // Minify option
+    // https://vitejs.dev/config/build-options.html#build-minify
+    minify: "esbuild",
+    // Rollup Options
+    // https://vitejs.dev/config/build-options.html#build-rollupoptions
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Split external library from transpiled code.
+          react: ["react", "react-dom"],
+          axios: ["axios"],
+        },
+      },
+    },
   },
   resolve: {
     alias: {
