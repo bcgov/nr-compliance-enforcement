@@ -280,6 +280,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       {complaintType === "HWCR" && (
                         <Dropdown.Item
                           as="button"
+                          id="quick-close-button"
                           onClick={openQuickCloseModal}
                           disabled={isReadOnly}
                         >
@@ -289,6 +290,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       )}
                       <Dropdown.Item
                         as="button"
+                        id="assign-button"
                         onClick={openAsignOfficerModal}
                         disabled={isReadOnly}
                       >
@@ -297,6 +299,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       </Dropdown.Item>
                       <Dropdown.Item
                         as="button"
+                        id="update-status-button"
                         onClick={openStatusChangeModal}
                         disabled={complaintAgency !== userAgency}
                       >
@@ -306,8 +309,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       {showComplaintReferrals && (
                         <Dropdown.Item
                           as="button"
+                          id="refer-button"
                           onClick={openReferModal}
-                          disabled={status !== " Open" || complaintAgency !== userAgency}
+                          disabled={status !== "Open" || complaintAgency !== userAgency}
                         >
                           <i className="bi bi-send"></i>
                           <span>Refer</span>
@@ -317,6 +321,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       {showComplaintCollaboration && (
                         <Dropdown.Item
                           as="button"
+                          id="manage-collaborators-button"
                           onClick={openManageCollaboratorsModal}
                           disabled={complaintAgency !== userAgency}
                         >
@@ -326,6 +331,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       )}
                       <Dropdown.Item
                         as="button"
+                        id="export-pdf-button"
                         onClick={() => exportComplaintToPdf()}
                         disabled={complaintAgency !== userAgency}
                       >
@@ -371,6 +377,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       {complaintType === "HWCR" && (
                         <Dropdown.Item
                           as="button"
+                          id="quick-close-button"
                           onClick={openQuickCloseModal}
                           disabled={isReadOnly}
                         >
@@ -381,6 +388,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       {showComplaintReferrals && (
                         <Dropdown.Item
                           as="button"
+                          id="refer-button"
                           onClick={openReferModal}
                           disabled={status !== "Open" || complaintAgency !== userAgency}
                         >
@@ -392,6 +400,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       {showComplaintCollaboration && (
                         <Dropdown.Item
                           as="button"
+                          id="manage-collaborators-button"
                           onClick={openManageCollaboratorsModal}
                           disabled={complaintAgency !== userAgency}
                         >
@@ -401,6 +410,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       )}
                       <Dropdown.Item
                         as="button"
+                        id="export-pdf-button"
                         onClick={() => exportComplaintToPdf()}
                         disabled={complaintAgency !== userAgency}
                       >
