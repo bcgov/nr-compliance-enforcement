@@ -218,6 +218,53 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     </OverlayTrigger>
   );
 
+  const renderCommonDropdownItems = () => (
+    <>
+      {complaintType === "HWCR" && (
+        <Dropdown.Item
+          as="button"
+          id="quick-close-button"
+          onClick={openQuickCloseModal}
+          disabled={isReadOnly}
+        >
+          <i className="bi bi-journal-x"></i>
+          <span>Quick close</span>
+        </Dropdown.Item>
+      )}
+      {showComplaintReferrals && (
+        <Dropdown.Item
+          as="button"
+          id="refer-button"
+          onClick={openReferModal}
+          disabled={status !== "Open" || complaintAgency !== userAgency}
+        >
+          <i className="bi bi-send"></i>
+          <span>Refer</span>
+        </Dropdown.Item>
+      )}
+      {showComplaintCollaboration && (
+        <Dropdown.Item
+          as="button"
+          id="manage-collaborators-button"
+          onClick={openManageCollaboratorsModal}
+          disabled={complaintAgency !== userAgency}
+        >
+          <i className="bi bi-people"></i>
+          <span>Manage collaborators</span>
+        </Dropdown.Item>
+      )}
+      <Dropdown.Item
+        as="button"
+        id="export-pdf-button"
+        onClick={() => exportComplaintToPdf()}
+        disabled={complaintAgency !== userAgency}
+      >
+        <i className="bi bi-file-earmark-pdf"></i>
+        <span>Export</span>
+      </Dropdown.Item>
+    </>
+  );
+
   return (
     <>
       <div className="comp-details-header">
@@ -277,17 +324,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       <i className="bi bi-three-dots-vertical"></i>
                     </Dropdown.Toggle>
                     <Dropdown.Menu align="end">
-                      {complaintType === "HWCR" && (
-                        <Dropdown.Item
-                          as="button"
-                          id="quick-close-button"
-                          onClick={openQuickCloseModal}
-                          disabled={isReadOnly}
-                        >
-                          <i className="bi bi-journal-x"></i>
-                          <span>Quick close</span>
-                        </Dropdown.Item>
-                      )}
+                      {/* Mobile includes assign and update status in dropdown */}
                       <Dropdown.Item
                         as="button"
                         id="assign-button"
@@ -306,38 +343,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                         <i className="bi bi-arrow-repeat"></i>
                         <span>Update Status</span>
                       </Dropdown.Item>
-                      {showComplaintReferrals && (
-                        <Dropdown.Item
-                          as="button"
-                          id="refer-button"
-                          onClick={openReferModal}
-                          disabled={status !== "Open" || complaintAgency !== userAgency}
-                        >
-                          <i className="bi bi-send"></i>
-                          <span>Refer</span>
-                        </Dropdown.Item>
-                      )}
-                      {/* Collaboration button  */}
-                      {showComplaintCollaboration && (
-                        <Dropdown.Item
-                          as="button"
-                          id="manage-collaborators-button"
-                          onClick={openManageCollaboratorsModal}
-                          disabled={complaintAgency !== userAgency}
-                        >
-                          <i className="bi bi-people"></i>
-                          <span>Manage collaborators</span>
-                        </Dropdown.Item>
-                      )}
-                      <Dropdown.Item
-                        as="button"
-                        id="export-pdf-button"
-                        onClick={() => exportComplaintToPdf()}
-                        disabled={complaintAgency !== userAgency}
-                      >
-                        <i className="bi bi-file-earmark-pdf"></i>
-                        <span>Export</span>
-                      </Dropdown.Item>
+                      {renderCommonDropdownItems()}
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
@@ -373,51 +379,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     >
                       <i className="bi bi-three-dots-vertical"></i>
                     </Dropdown.Toggle>
-                    <Dropdown.Menu align="end">
-                      {complaintType === "HWCR" && (
-                        <Dropdown.Item
-                          as="button"
-                          id="quick-close-button"
-                          onClick={openQuickCloseModal}
-                          disabled={isReadOnly}
-                        >
-                          <i className="bi bi-journal-x"></i>
-                          <span>Quick close</span>
-                        </Dropdown.Item>
-                      )}
-                      {showComplaintReferrals && (
-                        <Dropdown.Item
-                          as="button"
-                          id="refer-button"
-                          onClick={openReferModal}
-                          disabled={status !== "Open" || complaintAgency !== userAgency}
-                        >
-                          <i className="bi bi-send"></i>
-                          <span>Refer</span>
-                        </Dropdown.Item>
-                      )}
-                      {/* Collaboration button  */}
-                      {showComplaintCollaboration && (
-                        <Dropdown.Item
-                          as="button"
-                          id="manage-collaborators-button"
-                          onClick={openManageCollaboratorsModal}
-                          disabled={complaintAgency !== userAgency}
-                        >
-                          <i className="bi bi-people"></i>
-                          <span>Manage collaborators</span>
-                        </Dropdown.Item>
-                      )}
-                      <Dropdown.Item
-                        as="button"
-                        id="export-pdf-button"
-                        onClick={() => exportComplaintToPdf()}
-                        disabled={complaintAgency !== userAgency}
-                      >
-                        <i className="bi bi-file-earmark-pdf"></i>
-                        <span>Export</span>
-                      </Dropdown.Item>
-                    </Dropdown.Menu>
+                    <Dropdown.Menu align="end">{renderCommonDropdownItems()}</Dropdown.Menu>
                   </Dropdown>
                 </div>
               </div>
