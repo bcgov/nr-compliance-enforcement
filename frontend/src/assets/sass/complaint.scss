@@ -456,23 +456,44 @@
   grid-template-columns: 50% 50%;
   row-gap: 6px;
   margin: -0.5rem;
+  align-items: start;
+
   dl {
     margin-bottom: 0;
     padding: 0.5rem;
+    align-self: start;
   }
 
   dt {
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     white-space: nowrap;
     font-weight: 700;
   }
 
   dd {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     margin: 0;
-    height: 32px;
+    min-height: 32px;
     white-space: nowrap;
+
+    .comp-lead-agency {
+      white-space: normal;
+    }
+
+    .comp-avatar {
+      white-space: normal;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      align-items: flex-start;
+
+      span {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 20ch;
+      }
+    }
   }
 }
 
@@ -482,9 +503,9 @@
   }
 }
 
-@container detail-container (min-width: 900px) {
+@container detail-container (min-width: 800px) {
   .comp-details-status {
-    grid-template-columns: auto auto auto auto;
+    grid-template-columns: auto auto auto auto auto;
   }
 }
 
@@ -523,14 +544,44 @@
 .comp-date-time-value {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 4px;
-  white-space: nowrap;
+
   div {
     display: flex;
+    align-items: center;
     gap: 8px;
+    white-space: nowrap;
   }
-  div + div {
-    margin-left: 8px;
+
+  // Add spacing after the first div (date) instead of before the second div (time)
+  div:first-child {
+    margin-right: 8px;
+  }
+}
+
+// LEAD AGENCY DISPLAY
+.comp-lead-agency {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+
+  .bi-building {
+    flex-shrink: 0;
+    color: $gray-600;
+  }
+
+  .comp-lead-agency-name {
+    font-weight: 500;
+    color: $gray-900;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    line-height: 1.3;
+    max-width: 20ch;
+    white-space: normal;
+    flex: 1 1 auto;
   }
 }
 
