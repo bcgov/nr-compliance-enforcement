@@ -28,8 +28,9 @@ export default defineConfig({
     },
   ],
   server: {
+    host: "0.0.0.0", // This fixes the "use --host to expose" issue
     port: 3000,
-    open: true,
+    open: false, // This fixes the xdg-open error
   },
   build: {
     // Build Target
