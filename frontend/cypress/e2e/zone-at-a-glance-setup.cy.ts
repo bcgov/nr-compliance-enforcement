@@ -36,7 +36,7 @@ describe("COMPENF-137 Zone at a Glance - Page Set Up", () => {
     cy.visit("/");
 
     //-- navigate to the zone at a glance
-    cy.get("#zone-at-a-glance-link").click();
+    cy.get("#icon-zone-at-a-glance-link").click();
 
     cy.waitForSpinner();
 
@@ -44,7 +44,7 @@ describe("COMPENF-137 Zone at a Glance - Page Set Up", () => {
     cy.get(".comp-main-content").contains("Zone at a glance");
 
     //-- navigate back to complaints
-    cy.get("#complaints-link").click();
+    cy.get("#icon-complaints-link").click();
 
     cy.waitForSpinner();
 
