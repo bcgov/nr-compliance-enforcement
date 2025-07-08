@@ -211,6 +211,86 @@ resource "sysdig_monitor_alert_v2_prometheus" "nr_database_emerald_test_storage_
   }
 }
 */
+resource "sysdig_monitor_alert_v2_prometheus" "nr_database_emerald_test_up" {
+  name = "EMERALD TEST - Database Up Alert"
+  description = "Alert when the database is not returning up"
+  severity = "high"
+  query = "min(pg_up{kube_cluster_name=\"emerald\",kube_namespace_name=\"f208ae-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"f208ae-test-crunchy\"}) == 0"
+  enabled = true
+  duration_seconds = 300
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
+    renotify_every_minutes = 1440
+  }
+  labels = {
+    service = "NatCom Database"
+    app = "NatCom"
+  }
+}
+resource "sysdig_monitor_alert_v2_prometheus" "nr_database_emerald_test_replication_lag" {
+  name = "EMERALD TEST - Database Replication Lag Alert"
+  description = "Alert when the database replication lag is presistantly high"
+  severity = "high"
+  query = "pg_replication_lag_seconds{kube_cluster_name=\"emerald\",kube_namespace_name=\"f208ae-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"f208ae-test-crunchy\"} > 3"
+  enabled = true
+  duration_seconds = 300
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
+    renotify_every_minutes = 1440
+  }
+  labels = {
+    service = "NatCom Database"
+    app = "NatCom"
+  }
+}
+resource "sysdig_monitor_alert_v2_prometheus" "nr_database_emerald_test_wal_size" {
+  name = "EMERALD TEST - Database WAL Size Alert"
+  description = "Alert when the database WAL file is presistantly high"
+  severity = "high"
+  query = "max(pg_wal_size_bytes{kube_cluster_name=\"emerald\",kube_namespace_name=\"f208ae-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"f208ae-test-crunchy\"}) > 800000000"
+  enabled = true
+  duration_seconds = 300
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
+    renotify_every_minutes = 1440
+  }
+  labels = {
+    service = "NatCom Database"
+    app = "NatCom"
+  }
+}
+resource "sysdig_monitor_alert_v2_prometheus" "nr_database_emerald_test_deadlocks" {
+  name = "EMERALD TEST - Database Deadlock Alert"
+  description = "Alert when the database has unresolved deadlocks"
+  severity = "high"
+  query = "max(pg_stat_database_deadlocks{kube_cluster_name=\"emerald\",kube_namespace_name=\"f208ae-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"f208ae-test-crunchy\"}) >= 1"
+  enabled = true
+  duration_seconds = 300
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
+    renotify_every_minutes = 1440
+  }
+  labels = {
+    service = "NatCom Database"
+    app = "NatCom"
+  }
+}
+resource "sysdig_monitor_alert_v2_prometheus" "nr_database_emerald_test_lockcount" {
+  name = "EMERALD TEST - Database Lock Count Alert"
+  description = "Alert when the database has a high number of locks"
+  severity = "medium"
+  query = "max(pg_locks_count{kube_cluster_name=\"emerald\",kube_namespace_name=\"f208ae-test\",kube_statefulset_label_postgres_operator_crunchydata_com_cluster=\"f208ae-test-crunchy\"}) >= 20"
+  enabled = true
+  duration_seconds = 300
+  notification_channels {
+    id = sysdig_monitor_notification_channel_email.test_environment_alerts.id
+    renotify_every_minutes = 1440
+  }
+  labels = {
+    service = "NatCom Database"
+    app = "NatCom"
+  }
+}
 resource "sysdig_monitor_alert_v2_prometheus" "nr_webeoc_emerald_test_storage_usage" {
   name = "EMERALD TEST - Webeoc Custom Log Storage Alert"
   description = "Alert when the PVC storage usage is too high"
