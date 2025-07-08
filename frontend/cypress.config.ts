@@ -3,9 +3,6 @@ import dotenv from "dotenv";
 import { Roles } from "./src/app/types/app/roles";
 dotenv.config({ path: "./.env" });
 
-const { isFileExist } = require("cy-verify-downloads");
-const { removeDirectory } = require("cypress-delete-downloads-folder");
-
 export default defineConfig({
   defaultCommandTimeout: 40000,
   e2e: {
@@ -16,13 +13,22 @@ export default defineConfig({
       on("task", {
         log(message) {
           console.log(message);
-
           return null;
         },
       });
 
-      on("task", { isFileExist });
-      on("task", { removeDirectory });
+      // Dynamic imports with correct destructuring
+      on("task", {
+        async isFileExist(filename) {
+          const cyVerifyDownloads = await import("cy-verify-downloads");
+          return cyVerifyDownloads.verifyDownloadTasks.isFileExist(filename);
+        },
+        removeDirectory(folderName) {
+          // Use require for the problematic module
+          const { removeDirectory } = require("cypress-delete-downloads-folder");
+          return removeDirectory(folderName);
+        },
+      });
     },
     experimentalWebKitSupport: true,
     experimentalRunAllSpecs: true,
