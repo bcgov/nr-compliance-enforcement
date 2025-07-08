@@ -450,6 +450,27 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         <section className="comp-details-body comp-container">
           <div className="comp-header-status-container">
             <div className="comp-details-status">
+              <dl>
+                <dt>Lead agency</dt>
+                <dd>
+                  <div className="comp-lead-agency">
+                    <i className="bi bi-building"></i>
+                    <span
+                      id="comp-details-lead-agency-text-id"
+                      className="comp-lead-agency-name"
+                      title={
+                        complaintAgency && Object.keys(AgencyNames).includes(complaintAgency)
+                          ? AgencyNames[complaintAgency as keyof typeof AgencyNames].long
+                          : complaintAgency || "Unknown Agency"
+                      }
+                    >
+                      {complaintAgency && Object.keys(AgencyNames).includes(complaintAgency)
+                        ? AgencyNames[complaintAgency as keyof typeof AgencyNames].long
+                        : complaintAgency || "Unknown Agency"}
+                    </span>
+                  </div>
+                </dd>
+              </dl>
               <dl className="comp-details-date-logged">
                 <dt>Date logged</dt>
                 <dd className="comp-date-time-value">
