@@ -226,41 +226,53 @@ export const CompCoordinateInput: FC<Props> = ({
 
   const handleChangeCoordinateType = (coordinateType: string) => {
     if (coordinateType === COORDINATE_TYPES.UTM) {
-      if ([xCoordinateErrorMsg, yCoordinateErrorMsg].every((element) => element === "")) {
-        if (yCoordinate && xCoordinate) {
-          updateUtmFields(yCoordinate, xCoordinate);
-        } else {
-          setEastingCoordinate("");
-          setNorthingCoordinate("");
-          setZoneCoordinate(undefined);
-        }
-        setCoordinateType(coordinateType);
-      }
+      handleUtmTypeChange();
     } else if (coordinateType === COORDINATE_TYPES.LatLong) {
-      if ([eastingCoordinateErrorMsg, northingCoordinateErrorMsg, zoneErrorMsg].every((element) => element === "")) {
-        if (eastingCoordinate && northingCoordinate && zoneCoordinate?.value) {
-          let utm = new utmObj();
-          const latLongCoordinates = utm.convertUtmToLatLng(
-            parseFloat(eastingCoordinate),
-            parseFloat(northingCoordinate),
-            parseInt(zoneCoordinate?.value),
-            "N",
-          );
-
-          if (typeof latLongCoordinates === "string") {
-            throw new Error(`UTM conversion failed: ${latLongCoordinates}`);
-          }
-
-          const lat = formatLatLongCoordinate(latLongCoordinates.lat.toString());
-          const lng = formatLatLongCoordinate(latLongCoordinates.lng.toString());
-
-          setYCoordinate(lat);
-          setXCoordinate(lng);
-          syncCoordinates(lat, lng);
-        }
-        setCoordinateType(coordinateType);
-      }
+      handleLatLongTypeChange();
     }
+  };
+
+  const handleUtmTypeChange = () => {
+    if (![xCoordinateErrorMsg, yCoordinateErrorMsg].every((element) => element === "")) {
+      return;
+    }
+
+    if (yCoordinate && xCoordinate) {
+      updateUtmFields(yCoordinate, xCoordinate);
+    } else {
+      setEastingCoordinate("");
+      setNorthingCoordinate("");
+      setZoneCoordinate(undefined);
+    }
+    setCoordinateType(COORDINATE_TYPES.UTM);
+  };
+
+  const handleLatLongTypeChange = () => {
+    if (![eastingCoordinateErrorMsg, northingCoordinateErrorMsg, zoneErrorMsg].every((element) => element === "")) {
+      return;
+    }
+
+    if (eastingCoordinate && northingCoordinate && zoneCoordinate?.value) {
+      let utm = new utmObj();
+      const latLongCoordinates = utm.convertUtmToLatLng(
+        parseFloat(eastingCoordinate),
+        parseFloat(northingCoordinate),
+        parseInt(zoneCoordinate?.value),
+        "N",
+      );
+
+      if (typeof latLongCoordinates === "string") {
+        throw new Error(`UTM conversion failed: ${latLongCoordinates}`);
+      }
+
+      const lat = formatLatLongCoordinate(latLongCoordinates.lat.toString());
+      const lng = formatLatLongCoordinate(latLongCoordinates.lng.toString());
+
+      setYCoordinate(lat);
+      setXCoordinate(lng);
+      syncCoordinates(lat, lng);
+    }
+    setCoordinateType(COORDINATE_TYPES.LatLong);
   };
 
   const updateUtmFields = (lat: string, lng: string): { easting: string; northing: string; zone: string } => {
