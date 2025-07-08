@@ -17,7 +17,7 @@
       Content-Type text/javascript
     }
     respond `window.VITE_KEYCLOAK_URL="{$KEYCLOAK_URL}";
-             window.VITE__KEYCLOAK_REALM="standard";
+             window.VITE_KEYCLOAK_REALM="standard";
              window.VITE_KEYCLOAK_CLIENT_ID="compliance-and-enforcement-digital-services-web-4794";
              window.VITE_API_URL="/api";
              window.VITE_COMS_URL="{$COMS_URL}";
