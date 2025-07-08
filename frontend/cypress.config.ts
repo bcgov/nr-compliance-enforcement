@@ -2,6 +2,8 @@ import { defineConfig } from "cypress";
 import dotenv from "dotenv";
 import { Roles } from "./src/app/types/app/roles";
 dotenv.config({ path: "./.env" });
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 
 export default defineConfig({
   defaultCommandTimeout: 40000,
@@ -16,15 +18,12 @@ export default defineConfig({
           return null;
         },
       });
-
-      // Dynamic imports with correct destructuring
       on("task", {
         async isFileExist(filename) {
           const cyVerifyDownloads = await import("cy-verify-downloads");
-          return cyVerifyDownloads.verifyDownloadTasks.isFileExist(filename);
+          return cyVerifyDownloads.default.verifyDownloadTasks.isFileExist(filename);
         },
         removeDirectory(folderName) {
-          // Use require for the problematic module
           const { removeDirectory } = require("cypress-delete-downloads-folder");
           return removeDirectory(folderName);
         },
