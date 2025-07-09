@@ -372,11 +372,12 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                   <Dropdown className="comp-header-kebab-menu">
                     <Dropdown.Toggle
                       aria-label="Actions Menu"
-                      variant="outline-primary"
-                      className="icon-btn"
+                      variant="outline-light"
+                      className="kebab-btn"
                       id="dropdown-basic"
                     >
                       <i className="bi bi-three-dots-vertical"></i>
+                      <span>More actions</span>
                     </Dropdown.Toggle>
                     <Dropdown.Menu align="end">{renderCommonDropdownItems()}</Dropdown.Menu>
                   </Dropdown>
