@@ -26,7 +26,6 @@ import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { setIsInEdit } from "@store/reducers/cases";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { getUserAgency } from "@/app/service/user-service";
-import { AgencyNames } from "@/app/types/app/agency-types";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -69,7 +68,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const userAgency = getUserAgency();
   const relatedData = useAppSelector(selectRelatedData);
   let referrals = relatedData.referrals ?? [];
-
+  const agencyCodes = useAppSelector((state) => state.codeTables.agency);
   const dispatch = useAppDispatch();
 
   const [userIsCollaborator, setUserIsCollaborator] = useState<boolean>(false);
@@ -435,9 +434,13 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               will need to be updated to pull the agency off of the collaborator person_complaint_xref records
               creator, but for now the owning agency is sufficient.
             */}
-            {complaintAgency && Object.keys(AgencyNames).includes(complaintAgency) && (
+            {complaintAgency && (
               <>
-                <span className="fw-bold">{AgencyNames[complaintAgency as keyof typeof AgencyNames].short}</span>
+                <span className="fw-bold">
+                  {agencyCodes?.find(({ agency }) => agency === complaintAgency)?.shortDescription ||
+                    complaintAgency ||
+                    "Unknown Agency"}
+                </span>
                 {" added you to this complaint as a collaborator."}
               </>
             )}
@@ -458,15 +461,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     <span
                       id="comp-details-lead-agency-text-id"
                       className="comp-lead-agency-name"
-                      title={
-                        complaintAgency && Object.keys(AgencyNames).includes(complaintAgency)
-                          ? AgencyNames[complaintAgency as keyof typeof AgencyNames].long
-                          : complaintAgency || "Unknown Agency"
-                      }
                     >
-                      {complaintAgency && Object.keys(AgencyNames).includes(complaintAgency)
-                        ? AgencyNames[complaintAgency as keyof typeof AgencyNames].long
-                        : complaintAgency || "Unknown Agency"}
+                      {agencyCodes?.find(({ agency }) => agency === complaintAgency)?.longDescription ||
+                        complaintAgency ||
+                        "Unknown Agency"}
                     </span>
                   </div>
                 </dd>
