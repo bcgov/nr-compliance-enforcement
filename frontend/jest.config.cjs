@@ -9,7 +9,7 @@ module.exports = {
 };
 
 process.env = Object.assign(process.env, {
-  REACT_APP_KC_URL: "https://dev.any-keycloak-server.com/auth",
-  REACT_APP_KC_REALM: "default",
-  REACT_APP_KC_CLIENT_ID: "test-client-id",
+  VITE_KC_URL: "https://dev.any-keycloak-server.com/auth",
+  VITE_KC_REALM: "default",
+  VITE_KC_CLIENT_ID: "test-client-id",
 });

@@ -11,6 +11,7 @@ import "./assets/sass/app.scss";
 import reportWebVitals from "./reportWebVitals";
 import { PersistGate } from "redux-persist/integration/react";
 import { ErrorBoundaryContext } from "./app/hooks/error-boundary";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
