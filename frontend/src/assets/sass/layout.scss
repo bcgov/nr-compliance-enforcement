@@ -96,6 +96,10 @@ a {
   border: none;
   text-align: left;
 
+  .comp-organization-nav-name {
+    color: $white;
+  }
+
   .comp-sidenav-list {
     gap: 4px;
     margin-left: -8px;
@@ -212,7 +216,7 @@ a {
   line-height: 1.25rem;
   letter-spacing: -0.0064em;
   font-weight: 700;
-  color: $white;
+  color: $bc-gov-primary;
 }
 
 .comp-organization-nav-long-name {
@@ -732,6 +736,12 @@ p {
 
 // DROPDOWN MENU
 .icon-btn.dropdown-toggle {
+  &::after {
+    display: none;
+  }
+}
+
+.kebab-btn.dropdown-toggle {
   &::after {
     display: none;
   }
