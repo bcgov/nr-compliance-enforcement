@@ -6184,7 +6184,7 @@ VALUES
     uuid_generate_v4 (),
     'geoorgutcd',
     'East Pine',
-    'EASTGTE',
+    'EASTPINE',
     'FLYWAY',
     CURRENT_TIMESTAMP,
     'FLYWAY',
