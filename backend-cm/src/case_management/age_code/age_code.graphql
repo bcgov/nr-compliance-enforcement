@@ -1,0 +1,11 @@
+type AgeCode {
+  ageCode: String
+  shortDescription: String
+  longDescription: String
+  displayOrder: Int
+  activeIndicator: Boolean
+}
+
+type Query {
+  ageCodes: [AgeCode]!
+}

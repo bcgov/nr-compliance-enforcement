@@ -381,7 +381,7 @@ export const DecisionForm: FC<props> = ({
                 updateModel("sector", evt?.value);
               }}
               isDisabled={isReadOnly}
-              value={getDropdownOption(data.sector, sectorsOptions)}
+              value={data.sector ? getDropdownOption(data.sector, sectorsOptions) : null}
               isClearable={true}
             />
           </div>

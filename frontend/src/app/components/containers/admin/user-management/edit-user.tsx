@@ -21,7 +21,13 @@ import {
   userId,
 } from "@store/reducers/app";
 import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
-import { CEEB_ROLE_OPTIONS, COS_ROLE_OPTIONS, PARKS_ROLE_OPTIONS, ROLE_OPTIONS } from "@constants/ceeb-roles";
+import {
+  CEEB_ROLE_OPTIONS,
+  COS_ROLE_OPTIONS,
+  PARKS_ROLE_OPTIONS,
+  ROLE_OPTIONS,
+  SECTOR_ROLE_OPTIONS,
+} from "@constants/ceeb-roles";
 import { generateApiParameters, get, patch } from "@common/api";
 import config from "@/config";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
@@ -109,40 +115,59 @@ export const EditUser: FC<EditUserProps> = ({
         return response;
       };
 
-      if (officerData?.user_roles && officerData.user_roles.length > 0 && selectedAgency === null) {
-        //map current user's roles
-        const currentRoles = mapRolesDropdown(officerData.user_roles);
-        setSelectedRoles(currentRoles);
+      const userRoles = officerData?.user_roles;
+      if (!userRoles || userRoles.length === 0 || selectedAgency !== null) return;
 
-        //map current user's agency based on roles
-        let currentAgency;
-        const hasCEEBRole = officerData.user_roles.some((role: any) => role.includes("CEEB"));
-        const hasCOSRole = officerData.user_roles.some((role: any) => role.includes("COS"));
-        if (hasCEEBRole) {
-          currentAgency = mapValueToDropdownList(AgencyType.CEEB, agency);
-          const currentTeam = await getUserCurrentTeam(officerData.officer_guid);
-          if (currentTeam?.team_guid) {
-            const currentTeamMapped = mapValueToDropdownList(currentTeam.team_guid.team_code.team_code, teams);
-            setSelectedTeam(currentTeamMapped);
-          }
-        } else if (hasCOSRole) {
-          currentAgency = mapValueToDropdownList(AgencyType.COS, agency);
-          //map current user's office if agency is COS
-          if (officerData.office_guid) {
-            const currentOffice = mapValueToDropdownList(officerData.office_guid.office_guid, offices);
-            setSelectedOffice(currentOffice);
-          }
-        } else {
-          if (officerData.park_area_guid) {
-            const currentParkArea = mapValueToDropdownList(officerData.park_area_guid, parkAreasList);
-            setSelectedParkArea(currentParkArea);
-          }
-          currentAgency = mapValueToDropdownList(AgencyType.PARKS, agency);
+      const currentRoles = mapRolesDropdown(userRoles);
+      setSelectedRoles(currentRoles);
+
+      const hasCEEBRole = userRoles.some((role: any) => role.includes("CEEB"));
+      const hasCOSRole = userRoles.some((role: any) => role.includes("COS"));
+      const hasParksRole = userRoles.some((role: any) => role.includes("PARKS"));
+
+      let currentAgency;
+
+      if (hasCEEBRole) {
+        currentAgency = mapValueToDropdownList(AgencyType.CEEB, agency);
+
+        const currentTeam = await getUserCurrentTeam(officerData.officer_guid);
+        if (currentTeam?.team_guid) {
+          const currentTeamMapped = mapValueToDropdownList(currentTeam.team_guid.team_code.team_code, teams);
+          setSelectedTeam(currentTeamMapped);
         }
+
         setCurrentAgency(currentAgency);
+        return;
       }
+
+      if (hasCOSRole) {
+        currentAgency = mapValueToDropdownList(AgencyType.COS, agency);
+
+        if (officerData.office_guid) {
+          const currentOffice = mapValueToDropdownList(officerData.office_guid.office_guid, offices);
+          setSelectedOffice(currentOffice);
+        }
+
+        setCurrentAgency(currentAgency);
+        return;
+      }
+
+      if (hasParksRole) {
+        if (officerData.park_area_guid) {
+          const currentParkArea = mapValueToDropdownList(officerData.park_area_guid, parkAreasList);
+          setSelectedParkArea(currentParkArea);
+        }
+
+        currentAgency = mapValueToDropdownList(AgencyType.PARKS, agency);
+        setCurrentAgency(currentAgency);
+        return;
+      }
+
+      // Fallback to NRS if no matching role
+      currentAgency = mapValueToDropdownList(AgencyType.SECTOR, agency);
+      setCurrentAgency(currentAgency);
     })();
-  }, [officerData, offices, selectedAgency, agency, teams, dispatch]);
+  }, [officerData, offices, selectedAgency, agency, teams, dispatch, parkAreasList]);
 
   useEffect(() => {
     if (newUser && !officerData) {
@@ -166,8 +191,10 @@ export const EditUser: FC<EditUserProps> = ({
         setRoleList(COS_ROLE_OPTIONS);
         break;
       case AgencyType.PARKS:
-      default:
         setRoleList(PARKS_ROLE_OPTIONS);
+        break;
+      default:
+        setRoleList(SECTOR_ROLE_OPTIONS);
         break;
     }
   }, [selectedAgency, currentAgency]);
@@ -221,9 +248,8 @@ export const EditUser: FC<EditUserProps> = ({
           return record;
         });
       setOffices(filtered);
-
-      setSelectedAgency(input);
     }
+    setSelectedAgency(input);
   };
 
   const handleOfficeChange = (input: any) => {
@@ -353,7 +379,7 @@ export const EditUser: FC<EditUserProps> = ({
         const officer_guid = officerData?.officer_guid;
         //Update park_area_guid
         if (officer_guid && selectedParkArea) {
-          dispatch(updateOfficerReducer(officer_guid, { park_area_guid: selectedParkArea?.value }));
+          await dispatch(updateOfficerReducer(officer_guid, { park_area_guid: selectedParkArea?.value }));
         }
         //Update roles
         let res = await updateTeamRole(
@@ -369,7 +395,7 @@ export const EditUser: FC<EditUserProps> = ({
       default: {
         const officerId = officer?.value ? officer.value : "";
         const officeId = selectedOffice?.value ? selectedOffice.value : "";
-        dispatch(assignOfficerToOffice(officerId, officeId));
+        await dispatch(assignOfficerToOffice(officerId, officeId));
         let res = await updateTeamRole(
           selectedUserIdir,
           officerData?.officer_guid,

@@ -9,8 +9,7 @@ RUN npm ci --omit=dev && \
     npm run build
 
 # Deployment container
-# Deploy using minimal Distroless image
-FROM gcr.io/distroless/nodejs22-debian12:nonroot
+FROM node:22-bookworm-slim
 # Set node to production
 ENV NODE_ENV=production
 
@@ -26,5 +25,8 @@ HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3000
 
 # Non-privileged user
 USER app
+
+# Explicit entrypoint for image
+ENTRYPOINT [ "node" ]
 # max old space the heap size, 500MB 
 CMD ["--max-old-space-size=500", "/app/dist/main"]

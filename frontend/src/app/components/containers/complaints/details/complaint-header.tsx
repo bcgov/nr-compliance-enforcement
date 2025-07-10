@@ -26,7 +26,6 @@ import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { setIsInEdit } from "@store/reducers/cases";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { getUserAgency } from "@/app/service/user-service";
-import { AgencyNames } from "@/app/types/app/agency-types";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -69,7 +68,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const userAgency = getUserAgency();
   const relatedData = useAppSelector(selectRelatedData);
   let referrals = relatedData.referrals ?? [];
-
+  const agencyCodes = useAppSelector((state) => state.codeTables.agency);
   const dispatch = useAppDispatch();
 
   const [userIsCollaborator, setUserIsCollaborator] = useState<boolean>(false);
@@ -218,6 +217,53 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     </OverlayTrigger>
   );
 
+  const renderCommonDropdownItems = () => (
+    <>
+      {complaintType === "HWCR" && (
+        <Dropdown.Item
+          as="button"
+          id="quick-close-button"
+          onClick={openQuickCloseModal}
+          disabled={isReadOnly}
+        >
+          <i className="bi bi-journal-x"></i>
+          <span>Quick close</span>
+        </Dropdown.Item>
+      )}
+      {showComplaintReferrals && (
+        <Dropdown.Item
+          as="button"
+          id="refer-button"
+          onClick={openReferModal}
+          disabled={status !== "Open" || complaintAgency !== userAgency}
+        >
+          <i className="bi bi-send"></i>
+          <span>Refer</span>
+        </Dropdown.Item>
+      )}
+      {showComplaintCollaboration && (
+        <Dropdown.Item
+          as="button"
+          id="manage-collaborators-button"
+          onClick={openManageCollaboratorsModal}
+          disabled={complaintAgency !== userAgency}
+        >
+          <i className="bi bi-people"></i>
+          <span>Manage collaborators</span>
+        </Dropdown.Item>
+      )}
+      <Dropdown.Item
+        as="button"
+        id="export-pdf-button"
+        onClick={() => exportComplaintToPdf()}
+        disabled={complaintAgency !== userAgency}
+      >
+        <i className="bi bi-file-earmark-pdf"></i>
+        <span>Export</span>
+      </Dropdown.Item>
+    </>
+  );
+
   return (
     <>
       <div className="comp-details-header">
@@ -277,18 +323,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       <i className="bi bi-three-dots-vertical"></i>
                     </Dropdown.Toggle>
                     <Dropdown.Menu align="end">
-                      {complaintType === "HWCR" && (
-                        <Dropdown.Item
-                          as="button"
-                          onClick={openQuickCloseModal}
-                          disabled={isReadOnly}
-                        >
-                          <i className="bi bi-journal-x"></i>
-                          <span>Quick close</span>
-                        </Dropdown.Item>
-                      )}
+                      {/* Mobile includes assign and update status in dropdown */}
                       <Dropdown.Item
                         as="button"
+                        id="assign-button"
                         onClick={openAsignOfficerModal}
                         disabled={isReadOnly}
                       >
@@ -297,57 +335,18 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       </Dropdown.Item>
                       <Dropdown.Item
                         as="button"
+                        id="update-status-button"
                         onClick={openStatusChangeModal}
                         disabled={complaintAgency !== userAgency}
                       >
                         <i className="bi bi-arrow-repeat"></i>
                         <span>Update Status</span>
                       </Dropdown.Item>
-                      {showComplaintReferrals && (
-                        <Dropdown.Item
-                          as="button"
-                          onClick={openReferModal}
-                          disabled={status !== " Open" || complaintAgency !== userAgency}
-                        >
-                          <i className="bi bi-send"></i>
-                          <span>Refer</span>
-                        </Dropdown.Item>
-                      )}
-                      {/* Collaboration button  */}
-                      {showComplaintCollaboration && (
-                        <Dropdown.Item
-                          as="button"
-                          onClick={openManageCollaboratorsModal}
-                          disabled={complaintAgency !== userAgency}
-                        >
-                          <i className="bi bi-people"></i>
-                          <span>Manage collaborators</span>
-                        </Dropdown.Item>
-                      )}
-                      <Dropdown.Item
-                        as="button"
-                        onClick={() => exportComplaintToPdf()}
-                        disabled={complaintAgency !== userAgency}
-                      >
-                        <i className="bi bi-file-earmark-pdf"></i>
-                        <span>Export</span>
-                      </Dropdown.Item>
+                      {renderCommonDropdownItems()}
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
                 <div className="comp-header-actions-desktop">
-                  {complaintType === "HWCR" && (
-                    <Button
-                      id="details-screen-close-button"
-                      title="Quick close"
-                      variant="outline-light"
-                      onClick={openQuickCloseModal}
-                      disabled={isReadOnly}
-                    >
-                      <i className="bi bi-journal-x"></i>
-                      <span>Quick close</span>
-                    </Button>
-                  )}
                   <Button
                     id="details-screen-assign-button"
                     title="Assign to officer"
@@ -358,6 +357,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     <i className="bi bi-person-plus"></i>
                     <span>{assignText}</span>
                   </Button>
+
                   <Button
                     id="details-screen-update-status-button"
                     title="Update status"
@@ -369,44 +369,18 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     <span>Update status</span>
                   </Button>
 
-                  {/* Refer button */}
-                  {showComplaintReferrals && (
-                    <Button
-                      id="details-screen-refer-button"
-                      title="Refer"
+                  <Dropdown className="comp-header-kebab-menu">
+                    <Dropdown.Toggle
+                      aria-label="Actions Menu"
                       variant="outline-light"
-                      onClick={openReferModal}
-                      disabled={status !== "Open" || complaintAgency !== userAgency}
+                      className="kebab-btn"
+                      id="dropdown-basic"
                     >
-                      <i className="bi bi-send"></i>
-                      <span>Refer</span>
-                    </Button>
-                  )}
-
-                  {/* Collaboration button  */}
-                  {showComplaintCollaboration && (
-                    <Button
-                      id="details-screen-manage-collaborators-button"
-                      title="Manage collaborators"
-                      variant="outline-light"
-                      onClick={() => openManageCollaboratorsModal()}
-                      disabled={complaintAgency !== userAgency}
-                    >
-                      <i className="bi bi-people"></i>
-                      <span>Manage collaborators</span>
-                    </Button>
-                  )}
-
-                  <Button
-                    id="details-screen-export-complaint-button"
-                    title="Export"
-                    variant="outline-light"
-                    onClick={() => exportComplaintToPdf()}
-                    disabled={complaintAgency !== userAgency}
-                  >
-                    <i className="bi bi-file-earmark-pdf"></i>
-                    <span>Export</span>
-                  </Button>
+                      <i className="bi bi-three-dots-vertical"></i>
+                      <span>More actions</span>
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu align="end">{renderCommonDropdownItems()}</Dropdown.Menu>
+                  </Dropdown>
                 </div>
               </div>
             )}
@@ -461,9 +435,13 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
               will need to be updated to pull the agency off of the collaborator person_complaint_xref records
               creator, but for now the owning agency is sufficient.
             */}
-            {complaintAgency && Object.keys(AgencyNames).includes(complaintAgency) && (
+            {complaintAgency && (
               <>
-                <span className="fw-bold">{AgencyNames[complaintAgency as keyof typeof AgencyNames].short}</span>
+                <span className="fw-bold">
+                  {agencyCodes?.find(({ agency }) => agency === complaintAgency)?.shortDescription ||
+                    complaintAgency ||
+                    "Unknown Agency"}
+                </span>
                 {" added you to this complaint as a collaborator."}
               </>
             )}
@@ -476,6 +454,22 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         <section className="comp-details-body comp-container">
           <div className="comp-header-status-container">
             <div className="comp-details-status">
+              <dl>
+                <dt>Lead agency</dt>
+                <dd>
+                  <div className="comp-lead-agency">
+                    <i className="bi bi-building"></i>
+                    <span
+                      id="comp-details-lead-agency-text-id"
+                      className="comp-lead-agency-name"
+                    >
+                      {agencyCodes?.find(({ agency }) => agency === complaintAgency)?.longDescription ||
+                        complaintAgency ||
+                        "Unknown Agency"}
+                    </span>
+                  </div>
+                </dd>
+              </dl>
               <dl className="comp-details-date-logged">
                 <dt>Date logged</dt>
                 <dd className="comp-date-time-value">

@@ -71,7 +71,7 @@ export const Header: FC = () => {
               )}
             </div>
 
-            {/* User Profile Avatar and Menu */}
+            {/* User Profile Avatar & Menu */}
             <div className="comp-header-profile-menu">
               {/* <!-- placeholder menu --> */}
               {showExperimentalFeature ? (

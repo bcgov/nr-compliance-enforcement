@@ -56,41 +56,41 @@ select distinct
 	per.last_name || ', ' || per.first_name as "Officer Assigned",
 	cmp.reference_number as "COORS Number"
 from 
-	complaint cmp
+	complaint.complaint cmp
 join 
-	complaint_status_code cst on cst.complaint_status_code = cmp.complaint_status_code 
+	complaint.complaint_status_code cst on cst.complaint_status_code = cmp.complaint_status_code 
 join 
-	geo_organization_unit_code goc on goc.geo_organization_unit_code  = cmp.geo_organization_unit_code 
+	complaint.geo_organization_unit_code goc on goc.geo_organization_unit_code  = cmp.geo_organization_unit_code 
 join 
-	cos_geo_org_unit_flat_mvw gfv on gfv.area_code = goc.geo_organization_unit_code 
+	complaint.cos_geo_org_unit_flat_mvw gfv on gfv.area_code = goc.geo_organization_unit_code 
 left join
-	complaint_referral crf on crf.complaint_identifier = cmp.complaint_identifier 
+	complaint.complaint_referral crf on crf.complaint_identifier = cmp.complaint_identifier 
 left join
-	agency_code agt on agt.agency_code = crf.referred_to_agency_code 
+	complaint.agency_code agt on agt.agency_code = crf.referred_to_agency_code 
 left join
-	agency_code agb on agb.agency_code = crf.referred_by_agency_code 
+	complaint.agency_code agb on agb.agency_code = crf.referred_by_agency_code 
 left join 
-	person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true and pcx.person_complaint_xref_code = 'ASSIGNEE'
+	complaint.person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true and pcx.person_complaint_xref_code = 'ASSIGNEE'
 left join 
-	person per on per.person_guid = pcx.person_guid 
+	complaint.person per on per.person_guid = pcx.person_guid 
 right join 
-	hwcr_complaint hwc on hwc.complaint_identifier = cmp.complaint_identifier 
+	complaint.hwcr_complaint hwc on hwc.complaint_identifier = cmp.complaint_identifier 
 left join
-	species_code spc on spc.species_code = hwc.species_code
+	complaint.species_code spc on spc.species_code = hwc.species_code
 left join 
-	hwcr_complaint_nature_code hnc on hnc.hwcr_complaint_nature_code = hwc.hwcr_complaint_nature_code 
+	complaint.hwcr_complaint_nature_code hnc on hnc.hwcr_complaint_nature_code = hwc.hwcr_complaint_nature_code 
 left join (
     select complaint_identifier, count(*) as update_count
-    from complaint_update
+    from complaint.complaint_update
     group by complaint_identifier
 ) cup on cup.complaint_identifier = cmp.complaint_identifier
 left join
-   complaint_update cu ON cu.complaint_identifier = cmp.complaint_identifier 
+   complaint.complaint_update cu ON cu.complaint_identifier = cmp.complaint_identifier 
 LEFT JOIN 
-    hwcr_complaint_h hch ON hch.target_row_id = hwc.hwcr_complaint_guid
+    complaint.hwcr_complaint_h hch ON hch.target_row_id = hwc.hwcr_complaint_guid
     AND hch.operation_type = 'I'
 LEFT JOIN 
-    species_code prev_spc ON prev_spc.species_code = hch.data_after_executed_operation ->> 'species_code' 
+    complaint.species_code prev_spc ON prev_spc.species_code = hch.data_after_executed_operation ->> 'species_code' 
 where
 	cmp.owned_by_agency_code = 'COS' or
 	crf.referred_by_agency_code = 'COS'

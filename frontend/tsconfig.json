@@ -10,12 +10,12 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["cypress", "node"],
+    "types": ["vite/client", "node"],
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"],
@@ -30,5 +30,5 @@
       "@apptypes/*": ["app/types/*"],
     }
   },
-  "include": ["src"]
+  "include": ["src", "tsconfig.node.js"]
 }
