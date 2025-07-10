@@ -24776,6 +24776,13 @@ WHERE
   entity_code = 'geoorgutcd'
   AND staged_data_value = 'Eastgate';
 
+UPDATE staging_metadata_mapping
+SET
+  live_data_value = 'EASTPINE'
+WHERE
+  entity_code = 'geoorgutcd'
+  AND staged_data_value = 'East Pine';
+
 --------------------------
 -- New Changes above this line
 -------------------------
