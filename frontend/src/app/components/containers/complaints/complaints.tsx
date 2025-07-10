@@ -24,7 +24,7 @@ import {
 import { ComplaintMapWithServerSideClustering } from "./complaint-map-with-server-side-clustering";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
-import { COMPLAINT_TYPES, CEEB_TYPES, HWCR_ONLY_TYPES } from "@apptypes/app/complaint-types";
+import { COMPLAINT_TYPES, CEEB_TYPES, HWCR_ONLY_TYPES, SECTOR_TYPES } from "@apptypes/app/complaint-types";
 import { selectCurrentOfficer } from "@store/reducers/officer";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
@@ -33,7 +33,7 @@ import { resetComplaintSearchParameters, selectComplaintSearchParameters } from 
 import { AgencyType } from "@/app/types/app/agency-types";
 import { DropdownOption } from "@/app/types/app/drop-down-option";
 import { isFeatureActive } from "@store/reducers/app";
-import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 type Props = {
   defaultComplaintType: string;
@@ -51,9 +51,15 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
   useEffect(() => {
     if (!storedComplaintType) dispatch(setActiveTab(defaultComplaintType));
   }, [storedComplaintType, dispatch, defaultComplaintType]);
-  const [complaintType, setComplaintType] = useState(
-    UserService.hasRole([Roles.CEEB]) ? CEEB_TYPES.ERS : storedComplaintType ?? defaultComplaintType,
-  );
+  const [complaintType, setComplaintType] = useState(() => {
+    if (UserService.hasRole([Roles.CEEB])) {
+      return CEEB_TYPES.ERS;
+    } else if (UserService.hasRole([Roles.SECTOR])) {
+      return SECTOR_TYPES.SECTOR;
+    } else {
+      return storedComplaintType ?? defaultComplaintType;
+    }
+  });
 
   const storedComplaintViewType = useAppSelector(selectActiveComplaintsViewType);
   useEffect(() => {
@@ -114,7 +120,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       <div className="comp-page-header">
         <div className="comp-page-title-container">
           <h1>Complaints</h1>
-          <Button onClick={() => handleCreateClick()}>Create complaint</Button>
+          {!UserService.hasRole(Roles.SECTOR) && <Button onClick={() => handleCreateClick()}>Create complaint</Button>}
         </div>
         {/* <!-- create list of complaint types --> */}
 
@@ -224,7 +230,9 @@ const getComplaintTypes = (showSectorView: boolean) => {
     case UserService.hasRole(Roles.HWCR_ONLY):
       returnTypes = HWCR_ONLY_TYPES;
       break;
-
+    case UserService.hasRole(Roles.SECTOR):
+      returnTypes = SECTOR_TYPES;
+      break;
     default:
       returnTypes = COMPLAINT_TYPES;
       if (!showSectorView) {
@@ -232,6 +240,11 @@ const getComplaintTypes = (showSectorView: boolean) => {
         returnTypes = rest; // Remove SECTOR type if the feature is not active
       }
       break;
+  }
+
+  if (!showSectorView && returnTypes.hasOwnProperty("SECTOR")) {
+    const { SECTOR, ...rest } = returnTypes as any;
+    returnTypes = rest; // Remove SECTOR type if the feature is not active
   }
 
   return returnTypes;
@@ -252,7 +265,11 @@ const getFilters = (
   }
 
   // Province-wide, HWCR only and Parks role defaults to only "Open" so skip the other checks
-  if (UserService.hasRole(Roles.PROVINCE_WIDE) || UserService.hasRole(Roles.HWCR_ONLY)) {
+  if (
+    UserService.hasRole(Roles.PROVINCE_WIDE) ||
+    UserService.hasRole(Roles.HWCR_ONLY) ||
+    UserService.hasRole(Roles.SECTOR)
+  ) {
     return filters;
   }
 

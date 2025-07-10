@@ -44,7 +44,7 @@ describe("Verify Parks specific search filters work", () => {
     });
 
     // Return to the complaints view
-    cy.get("#complaints-link").click();
+    cy.get("#icon-complaints-link").click();
 
     // Filter by park
     cy.get("#comp-filter-btn").should("exist").click({ force: true });

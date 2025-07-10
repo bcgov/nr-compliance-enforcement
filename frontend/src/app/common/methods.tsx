@@ -17,7 +17,7 @@ import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
 import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 import { ToggleError } from "./toast";
-let utmObj = require("utm-latlng");
+import utmObj from "utm-latlng";
 
 type Coordinate = number[] | string[] | undefined;
 
@@ -462,11 +462,16 @@ export const latLngToUtm = (lat: string, lng: string): { easting: string; northi
   const regex = /-?(?:\d+(\.\d+)?|.\d+)/;
   if (regex.exec(lat) && regex.exec(lng) && ![lat, lng].includes("0")) {
     let utm = new utmObj();
-    const utmCoordinates = utm.convertLatLngToUtm(lat, lng, 3);
+    const utmCoordinates = (utm as any).convertLatLngToUtm(parseFloat(lat), parseFloat(lng), 3);
+
+    if (typeof utmCoordinates === "string") {
+      throw new Error(`UTM conversion failed: ${utmCoordinates}`);
+    }
+
     return {
       easting: utmCoordinates.Easting.toFixed(0),
       northing: utmCoordinates.Northing.toFixed(0),
-      zone: utmCoordinates.ZoneNumber ?? "",
+      zone: utmCoordinates.ZoneNumber?.toString() ?? "",
     };
   }
   return { easting: "", northing: "", zone: "" };

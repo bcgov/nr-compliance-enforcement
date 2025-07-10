@@ -6299,7 +6299,7 @@ VALUES
     uuid_generate_v4 (),
     'geoorgutcd',
     'Eastgate',
-    'ETHURLOW',
+    'EASTGTE',
     'FLYWAY',
     CURRENT_TIMESTAMP,
     'FLYWAY',
@@ -24764,6 +24764,17 @@ WHERE geo_organization_unit_code = 'MOUNTROB';
 UPDATE staging_metadata_mapping 
 SET staged_data_value = 'Mount Robson' 
 WHERE live_data_value = 'MOUNTROB';
+
+-----------------------
+-- Correct Eastgate mapping
+-----------------------
+
+UPDATE staging_metadata_mapping
+SET
+  live_data_value = 'EASTGTE'
+WHERE
+  entity_code = 'geoorgutcd'
+  AND staged_data_value = 'Eastgate';
 
 --------------------------
 -- New Changes above this line

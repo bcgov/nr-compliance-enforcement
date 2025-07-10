@@ -12,8 +12,9 @@ enum Roles {
   PROVINCE_WIDE = "Province-wide",
   PARKS = "PARKS",
   HWCR_ONLY = "HWCR only",
+  SECTOR = "SECTOR",
 }
 
-const coreRoles: Roles[] = [Roles.COS, Roles.CEEB, Roles.PARKS];
+const coreRoles: Roles[] = [Roles.COS, Roles.CEEB, Roles.PARKS, Roles.SECTOR];
 
 export { Roles, coreRoles };
