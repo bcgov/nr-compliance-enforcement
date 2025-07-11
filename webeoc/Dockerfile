@@ -28,8 +28,5 @@ HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3002/health
 # Non-privileged user
 USER app
 
-# Explicit entrypoint for image
-ENTRYPOINT [ "node" ]
-
 # max old space the heap size, 80MB with 150MB limit in deployment.
 CMD ["--max-old-space-size=80", "/app/dist/main"]
