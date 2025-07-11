@@ -1,11 +1,10 @@
-import { Dispatch, FC, SetStateAction, useContext, useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import {
   assignOfficerToOffice,
   createOfficer,
   getOfficers,
-  selectCurrentOfficer,
   selectOfficerByPersonGuid,
   updateOfficer as updateOfficerReducer,
 } from "@store/reducers/officer";
@@ -18,9 +17,6 @@ import {
   getTokenProfile,
   openModal,
   personGuid,
-  selectDefaultParkArea,
-  selectDefaultRegion,
-  selectDefaultZone,
   selectNotification,
   userId,
 } from "@store/reducers/app";
@@ -41,12 +37,6 @@ import { NewOfficer } from "@/app/types/person/new-officer";
 import { TOGGLE_DEACTIVATE } from "@/app/types/modal/modal-types";
 import "@assets/sass/user-management.scss";
 import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
-import { resetComplaintSearchParameters } from "@/app/store/reducers/complaints";
-import { DropdownOption } from "@/app/types/app/drop-down-option";
-import UserService from "@/app/service/user-service";
-import { Roles } from "@/app/types/app/roles";
-import { ComplaintFilterPayload, resetFilters } from "@/app/store/reducers/complaint-filters";
-import { ComplaintFilterContext } from "@/app/providers/complaint-filter-provider";
 
 interface EditUserProps {
   officer: Option;
@@ -555,7 +545,9 @@ export const EditUser: FC<EditUserProps> = ({
 
         {/* Agency */}
         <div className="comp-details-form-row">
-          <label htmlFor="user-agency-id">Agency</label>
+          <label htmlFor="user-agency-id">
+            Agency<span className="required-ind">*</span>
+          </label>
           <div className="comp-details-edit-input">
             <CompSelect
               id="agency-select-id"
@@ -638,7 +630,9 @@ export const EditUser: FC<EditUserProps> = ({
 
         {/* Role */}
         <div className="comp-details-form-row">
-          <label htmlFor="user-role-id">Role</label>
+          <label htmlFor="user-role-id">
+            Role<span className="required-ind">*</span>
+          </label>
           <div className="comp-details-edit-input">
             <ValidationMultiSelect
               className="comp-details-input"
