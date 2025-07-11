@@ -192,9 +192,9 @@ describe("Complaint Search Functionality", () => {
     cy.wait("@mapData", { timeout: 10000 });
 
     // Navigate to a different page, and return to then complaints page
-    cy.get("#create-complaints-link").click({ force: true });
+    cy.get("#icon-create-complaints-link").click({ force: true });
     cy.get("#details-screen-cancel-edit-button-top").should("exist");
-    cy.get("#complaints-link").click({ force: true });
+    cy.get("#icon-complaints-link").click({ force: true });
 
     // Verify that the search parameters set before leaving the page were retained
     cy.get("#complaint-search").should("have.value", "wildlife");

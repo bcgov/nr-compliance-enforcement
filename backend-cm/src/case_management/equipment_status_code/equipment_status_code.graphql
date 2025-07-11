@@ -1,0 +1,11 @@
+type EquipmentStatusCode {
+  equipmentStatusCode: String
+  shortDescription: String
+  longDescription: String
+  displayOrder: Int
+  activeIndicator: Boolean
+}
+
+type Query {
+  equipmentStatusCodes: [EquipmentStatusCode]!
+}

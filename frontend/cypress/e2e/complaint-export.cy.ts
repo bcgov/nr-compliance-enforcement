@@ -36,7 +36,8 @@ describe("Export Complaint Functionality", () => {
           fileName = `EC_23-006888_${formattedDate}.pdf`;
         });
       }
-      cy.get("#details-screen-export-complaint-button").click({ force: true });
+      cy.get("#dropdown-basic").click({ force: true });
+      cy.get("#export-pdf-button").click({ force: true });
       cy.verifyDownload(fileName, { timeout: 10000 });
     });
   });

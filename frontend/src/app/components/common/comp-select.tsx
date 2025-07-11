@@ -1,5 +1,5 @@
 import { FC } from "react";
-import Select, { StylesConfig, components } from "react-select";
+import Select, { MenuPlacement, StylesConfig, components } from "react-select";
 import Option from "@apptypes/app/option";
 
 type Props = {
@@ -17,6 +17,8 @@ type Props = {
   onChange?: (selectedOption: Option | null) => void;
   isDisabled?: boolean;
   isClearable?: boolean;
+  maxMenuHeight?: number;
+  menuPlacement?: MenuPlacement;
 };
 
 // Custom Option component to render labelElement
@@ -47,6 +49,8 @@ export const CompSelect: FC<Props> = ({
   errorMessage,
   isDisabled,
   isClearable,
+  maxMenuHeight,
+  menuPlacement,
 }) => {
   let styles: StylesConfig = {};
 
@@ -71,15 +75,6 @@ export const CompSelect: FC<Props> = ({
     }));
   }
 
-  // If "none" is an option, lighten the colour a bit so that it doesn't appear the same as the other selectable options
-  styles = {
-    ...styles,
-    option: (provided, state) => ({
-      ...provided,
-      color: state.label === "None" || state.label === "Unassigned" ? "#a1a1a1" : "black",
-    }),
-  };
-
   //-- pass through the onChange event
   const handleChange = (s: any) => {
     if (onChange) {
@@ -101,10 +96,11 @@ export const CompSelect: FC<Props> = ({
         classNamePrefix={classNamePrefix}
         defaultValue={defaultOption}
         isDisabled={isDisabled}
-        menuPlacement="auto"
+        menuPlacement={menuPlacement ?? "auto"}
         filterOption={customFilterOption}
         components={{ Option: CustomOption }}
         isClearable={isClearable ?? false}
+        maxMenuHeight={maxMenuHeight ?? undefined}
       />
       {enableValidation && <div className="error-message">{errorMessage}</div>}
     </div>

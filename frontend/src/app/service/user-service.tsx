@@ -13,6 +13,7 @@ const initKeycloak = (onAuthenticatedCallback: () => void) => {
     .init({
       onLoad: "login-required",
       pkceMethod: "S256",
+      checkLoginIframe: false,
     })
     .then((authenticated) => {
       if (!authenticated) {
@@ -60,7 +61,10 @@ const hasRole = (roles: any) => {
 };
 
 export const getUserAgency = () => {
-  let agency = AgencyType.COS;
+  let agency = AgencyType.SECTOR;
+  if (hasRole("COS")) {
+    agency = AgencyType.COS;
+  }
   if (hasRole("CEEB")) {
     agency = AgencyType.CEEB;
   }

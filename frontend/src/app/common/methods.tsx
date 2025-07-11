@@ -7,17 +7,17 @@ import { Violation } from "@apptypes/app/code-tables/violation";
 import { Species } from "@apptypes/app/code-tables/species";
 import { NatureOfComplaint } from "@apptypes/app/code-tables/nature-of-complaint";
 import { UUID } from "crypto";
-import { Complaint as ComplaintDto } from "@apptypes/app/complaints/complaint";
+import { Complaint } from "@apptypes/app/complaints/complaint";
 import { GifReader } from "omggif";
 import { fromImage } from "imtool";
 import AttachmentEnum from "@constants/attachment-enum";
 import Option from "@apptypes/app/option";
 import { GirType } from "@apptypes/app/code-tables/gir-type";
-import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
-import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
-import { GeneralIncidentComplaint as GeneralIncidentComplaintDto } from "@apptypes/app/complaints/general-complaint";
+import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
+import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
+import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 import { ToggleError } from "./toast";
-let utmObj = require("utm-latlng");
+import utmObj from "utm-latlng";
 
 type Coordinate = number[] | string[] | undefined;
 
@@ -79,7 +79,7 @@ export const getSelectedItem = (value: string, options: Option[]): Option => {
 export const getSelectedOfficer = (
   officers: Option[],
   personGuid: UUID | string,
-  update: ComplaintDto | undefined,
+  update: Complaint | undefined,
 ): any => {
   if (update && personGuid) {
     const { delegates } = update;
@@ -273,7 +273,7 @@ export const parseCoordinates = (coordinates: Coordinate, coordinateType: Coordi
 // Helper function for determining what type of complaint your are working with
 // so you can pass that type onto the backend for proper processing
 export const getComplaintType = (
-  complaint: WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto | null,
+  complaint: WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint | null,
 ): string => {
   if (!complaint) {
     return "Unknown";
@@ -291,7 +291,7 @@ export const getComplaintType = (
     return COMPLAINT_TYPES.GIR;
   }
 
-  return "Unknown";
+  return COMPLAINT_TYPES.SECTOR;
 };
 
 export const getComplaintTypeFromUrl = (): number => {
@@ -462,11 +462,16 @@ export const latLngToUtm = (lat: string, lng: string): { easting: string; northi
   const regex = /-?(?:\d+(\.\d+)?|.\d+)/;
   if (regex.exec(lat) && regex.exec(lng) && ![lat, lng].includes("0")) {
     let utm = new utmObj();
-    const utmCoordinates = utm.convertLatLngToUtm(lat, lng, 3);
+    const utmCoordinates = (utm as any).convertLatLngToUtm(parseFloat(lat), parseFloat(lng), 3);
+
+    if (typeof utmCoordinates === "string") {
+      throw new Error(`UTM conversion failed: ${utmCoordinates}`);
+    }
+
     return {
       easting: utmCoordinates.Easting.toFixed(0),
       northing: utmCoordinates.Northing.toFixed(0),
-      zone: utmCoordinates.ZoneNumber ?? "",
+      zone: utmCoordinates.ZoneNumber?.toString() ?? "",
     };
   }
   return { easting: "", northing: "", zone: "" };

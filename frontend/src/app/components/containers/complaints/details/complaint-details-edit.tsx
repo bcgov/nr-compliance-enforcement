@@ -44,7 +44,7 @@ import notificationInvalid from "@assets/images/notification-invalid.png";
 import { CompSelect } from "@components/common/comp-select";
 import { CompInput } from "@components/common/comp-input";
 import { from } from "linq-to-typescript";
-import { openModal, isFeatureActive } from "@store/reducers/app";
+import { openModal } from "@store/reducers/app";
 import { useParams } from "react-router-dom";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { ToggleError } from "@common/toast";
@@ -56,10 +56,10 @@ import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { AttachmentsCarousel } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
-import { Complaint as ComplaintDto } from "@apptypes/app/complaints/complaint";
-import { WildlifeComplaint as WildlifeComplaintDto } from "@apptypes/app/complaints/wildlife-complaint";
-import { AllegationComplaint as AllegationComplaintDto } from "@apptypes/app/complaints/allegation-complaint";
-import { GeneralIncidentComplaint as GeneralInformationComplaintDto } from "@apptypes/app/complaints/general-complaint";
+import { Complaint } from "@apptypes/app/complaints/complaint";
+import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
+import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
+import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 import { UUID } from "crypto";
 import { Delegate } from "@apptypes/app/people/delegate";
 import { AttractantXref } from "@apptypes/app/complaints/attractant-xref";
@@ -67,11 +67,8 @@ import { Button, Card } from "react-bootstrap";
 import { HWCROutcomeReport } from "@components/containers/complaints/outcomes/hwcr-outcome-report";
 import AttachmentEnum from "@constants/attachment-enum";
 import { WebEOCComplaintUpdateList } from "@components/containers/complaints/webeoc-complaint-updates/webeoc-complaint-update-list";
-import { getUserAgency } from "@service/user-service";
 import { AgencyType } from "@apptypes/app/agency-types";
 import { CeebOutcomeReport } from "@components/containers/complaints/outcomes/ceeb/ceeb-outcome-report";
-import { FEATURE_TYPES } from "@constants/feature-flag-types";
-import { FeatureFlag } from "@components/common/feature-flag";
 import { LinkedComplaintList } from "./linked-complaint-list";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { ExternalFileReference } from "@components/containers/complaints/outcomes/external-file-reference";
@@ -102,7 +99,6 @@ export const ComplaintDetailsEdit: FC = () => {
   //-- selectors
   const data = useAppSelector(selectComplaint);
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
-  const enablePrivacyFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.PRIV_REQ));
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const {
@@ -139,6 +135,9 @@ export const ComplaintDetailsEdit: FC = () => {
     isPrivacyRequested,
   } = useAppSelector(selectComplaintCallerInformation);
 
+  const enablePrivacyFeature = ownedByAgencyCode?.agency && ownedByAgencyCode?.agency === AgencyType.CEEB;
+  const enableOfficeFeature = ownedByAgencyCode?.agency && ownedByAgencyCode?.agency !== AgencyType.CEEB;
+
   // Get the code table lists to populate the Selects
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
@@ -149,8 +148,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
   const complaintMethodReceivedCodes = useSelector(selectComplaintReceivedMethodDropdown) as Option[];
 
-  const agency = getUserAgency();
-  const violationTypeCodes = useSelector(selectViolationCodeDropdown(agency)) as Option[];
+  const violationTypeCodes = useSelector(selectViolationCodeDropdown(ownedByAgencyCode?.agency)) as Option[];
   const girTypeCodes = useSelector(selectGirTypeCodeDropdown) as Option[];
 
   const officersInAgencyList = useSelector((state: RootState) =>
@@ -184,7 +182,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   //-- complaint update object
   const [complaintUpdate, applyComplaintUpdate] = useState<
-    ComplaintDto | AllegationComplaintDto | WildlifeComplaintDto | GeneralInformationComplaintDto
+    Complaint | AllegationComplaint | WildlifeComplaint | GeneralIncidentComplaint
   >();
 
   // files to add to COMS when complaint is saved
@@ -374,7 +372,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const selectedReportedByCode = reportedByCodes.find((option) => option.value === reportedByCode?.reportedBy);
 
   const hasAssignedOfficer = (): boolean => {
-    const { delegates } = complaintUpdate as ComplaintDto;
+    const { delegates } = complaintUpdate as Complaint;
 
     return from(delegates).any(({ type, isActive }) => type === "ASSIGNEE" && isActive);
   };
@@ -423,7 +421,7 @@ export const ComplaintDetailsEdit: FC = () => {
       setGeneralIncidentTypeErrorMsg("Required");
     }
 
-    let updatedComplaint = { ...complaintUpdate, girType: value } as GeneralInformationComplaintDto;
+    let updatedComplaint = { ...complaintUpdate, girType: value } as GeneralIncidentComplaint;
     applyComplaintUpdate(updatedComplaint);
   };
   //-- wildlife complaint updates
@@ -436,7 +434,7 @@ export const ComplaintDetailsEdit: FC = () => {
       setNatureOfComplaintError("Required");
     }
 
-    let updatedComplaint = { ...complaintUpdate, natureOfComplaint: value } as WildlifeComplaintDto;
+    let updatedComplaint = { ...complaintUpdate, natureOfComplaint: value } as WildlifeComplaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -449,7 +447,7 @@ export const ComplaintDetailsEdit: FC = () => {
       setSpeciesError("Required");
     }
 
-    let updatedComplaint = { ...complaintUpdate, species: value } as WildlifeComplaintDto;
+    let updatedComplaint = { ...complaintUpdate, species: value } as WildlifeComplaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -463,7 +461,7 @@ export const ComplaintDetailsEdit: FC = () => {
       setViolationTypeErrorMsg("Required");
     }
 
-    let updatedComplaint = { ...complaintUpdate, violation: value } as AllegationComplaintDto;
+    let updatedComplaint = { ...complaintUpdate, violation: value } as AllegationComplaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -472,7 +470,7 @@ export const ComplaintDetailsEdit: FC = () => {
       const { value } = selected;
 
       const isInProgress = value?.toUpperCase() === "YES";
-      let updatedComplaint = { ...complaintUpdate, isInProgress } as AllegationComplaintDto;
+      let updatedComplaint = { ...complaintUpdate, isInProgress } as AllegationComplaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -482,18 +480,18 @@ export const ComplaintDetailsEdit: FC = () => {
       const { value } = selected;
 
       const wasObserved = value?.toUpperCase() === "YES";
-      let updatedComplaint = { ...complaintUpdate, wasObserved } as AllegationComplaintDto;
+      let updatedComplaint = { ...complaintUpdate, wasObserved } as AllegationComplaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
 
   const handleSuspectDetailsChange = (value: string) => {
-    let updatedComplaint = { ...complaintUpdate, violationDetails: value } as AllegationComplaintDto;
+    let updatedComplaint = { ...complaintUpdate, violationDetails: value } as AllegationComplaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
   const handleAssignedOfficerChange = (selected: Option | null) => {
-    let { delegates } = complaintUpdate as ComplaintDto;
+    let { delegates } = complaintUpdate as Complaint;
     if (selected) {
       const { value } = selected;
       let existing = delegates.filter(({ type }) => type !== "ASSIGNEE");
@@ -532,7 +530,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
         updatedDelegates = [...updatedDelegates, ...existing, delegate];
 
-        let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as ComplaintDto;
+        let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as Complaint;
         applyComplaintUpdate(updatedComplaint);
       } else if (from(delegates).any() && from(delegates).any((item) => item.type === "ASSIGNEE")) {
         let delegate = delegates.find((item) => item.type === "ASSIGNEE");
@@ -540,12 +538,12 @@ export const ComplaintDetailsEdit: FC = () => {
 
         updatedDelegates = [updatedDelegate];
 
-        let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as ComplaintDto;
+        let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as Complaint;
         applyComplaintUpdate(updatedComplaint);
       }
     } else {
       let updatedDelegates = delegates.filter(({ type }) => type !== "ASSIGNEE");
-      let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as ComplaintDto;
+      let updatedComplaint = { ...complaintUpdate, delegates: updatedDelegates } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -556,7 +554,7 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setComplaintDescriptionError("");
 
-      const updatedComplaint = { ...complaintUpdate, details: value } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, details: value } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -564,12 +562,12 @@ export const ComplaintDetailsEdit: FC = () => {
   const handleIncidentDateTimeChange = (date: Date) => {
     setSelectedIncidentDateTime(date);
 
-    const updatedComplaint = { ...complaintUpdate, incidentDateTime: date } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, incidentDateTime: date } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
   const handleAttractantsChange = async (options: Option[] | null) => {
-    const { attractants } = complaintUpdate as WildlifeComplaintDto;
+    const { attractants } = complaintUpdate as WildlifeComplaint;
     let updates: Array<AttractantXref> = [];
 
     if (options && options.length > 0) {
@@ -595,22 +593,22 @@ export const ComplaintDetailsEdit: FC = () => {
       });
     }
 
-    const model = { ...complaintUpdate, attractants: updates } as WildlifeComplaintDto;
+    const model = { ...complaintUpdate, attractants: updates } as WildlifeComplaint;
     applyComplaintUpdate(model);
   };
 
   const handleLocationChange = (value: string) => {
-    const updatedComplaint = { ...complaintUpdate, locationSummary: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, locationSummary: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
   const handleLocationDescriptionChange = (value: string) => {
-    const updatedComplaint = { ...complaintUpdate, locationDetail: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, locationDetail: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
   const handleParkChange = (value?: string) => {
-    const updatedComplaint = { ...complaintUpdate, parkGuid: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, parkGuid: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -622,15 +620,15 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setCommunityError("Required");
     }
-    const { organization } = complaintUpdate as ComplaintDto;
+    const { organization } = complaintUpdate as Complaint;
     const updatedOrganization = { ...organization, area: value };
 
-    const updatedComplaint = { ...complaintUpdate, organization: updatedOrganization } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, organization: updatedOrganization } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
   const handleNameChange = (value: string) => {
-    const updatedComplaint = { ...complaintUpdate, name: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, name: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -642,7 +640,7 @@ export const ComplaintDetailsEdit: FC = () => {
     let updatedComplaint = {
       ...complaintUpdate,
       isPrivacyRequested: value,
-    } as ComplaintDto;
+    } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -654,7 +652,7 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setPrimaryPhoneMsg("");
 
-      const updatedComplaint = { ...complaintUpdate, phone1: value ?? "" } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, phone1: value ?? "" } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -667,7 +665,7 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setSecondaryPhoneMsg("");
 
-      const updatedComplaint = { ...complaintUpdate, phone2: value ?? "" } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, phone2: value ?? "" } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -680,13 +678,13 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setAlternatePhoneMsg("");
 
-      const updatedComplaint = { ...complaintUpdate, phone3: value ?? "" } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, phone3: value ?? "" } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
 
   const handleAddressChange = (value: string) => {
-    const updatedComplaint = { ...complaintUpdate, address: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, address: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -696,7 +694,7 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setEmailMsg("");
 
-      const updatedComplaint = { ...complaintUpdate, email: value } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, email: value } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   }
@@ -706,7 +704,7 @@ export const ComplaintDetailsEdit: FC = () => {
     if (selected) {
       value = selected.value;
     }
-    const updatedComplaint = { ...complaintUpdate, reportedBy: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, reportedBy: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -715,7 +713,7 @@ export const ComplaintDetailsEdit: FC = () => {
     if (selected) {
       value = selected.value;
     }
-    const updatedComplaint = { ...complaintUpdate, complaintMethodReceivedCode: value } as ComplaintDto;
+    const updatedComplaint = { ...complaintUpdate, complaintMethodReceivedCode: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -734,12 +732,12 @@ export const ComplaintDetailsEdit: FC = () => {
         ],
       };
 
-      const updatedComplaint = { ...complaintUpdate, location } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, location } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     } else if (yCoordinate === "" && xCoordinate === "") {
       const location = { type: "point", coordinates: [0, 0] };
 
-      const updatedComplaint = { ...complaintUpdate, location } as ComplaintDto;
+      const updatedComplaint = { ...complaintUpdate, location } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
@@ -782,6 +780,7 @@ export const ComplaintDetailsEdit: FC = () => {
     }
     setMapElements(mapElements);
   }, [equipmentList, parentCoordinates]);
+
   return (
     <div className="comp-complaint-details">
       <ToastContainer />
@@ -823,14 +822,16 @@ export const ComplaintDetailsEdit: FC = () => {
         {/* Complaints Details (View) */}
         <div className="comp-details-view">
           {/* Call Details */}
-          {readOnly && <CallDetails complaintType={complaintType} />}
-
+          {readOnly && (
+            <CallDetails
+              complaintOwner={ownedByAgencyCode?.agency}
+              complaintType={complaintType}
+            />
+          )}
           {/* Suspect / Witness Details */}
           {readOnly && complaintType === COMPLAINT_TYPES.ERS && <SuspectWitnessDetails />}
-
           {/* Caller Information */}
-          {readOnly && <CallerInformation />}
-
+          {readOnly && <CallerInformation complaintOwner={ownedByAgencyCode?.agency} />}
           {/* Attachments */}
           {readOnly && (
             <section id="complaint_attachments_div_id">
@@ -848,7 +849,6 @@ export const ComplaintDetailsEdit: FC = () => {
               </Card>
             </section>
           )}
-
           {/* Map */}
           {readOnly && (
             <ComplaintLocation
@@ -1190,7 +1190,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   />
                 </div>
               </div>
-              <FeatureFlag feature={FEATURE_TYPES.ENABLE_OFFICE}>
+              {enableOfficeFeature && (
                 <div
                   className="comp-details-form-row"
                   id="office-pair-id"
@@ -1204,7 +1204,7 @@ export const ComplaintDetailsEdit: FC = () => {
                     defaultValue={office}
                   />
                 </div>
-              </FeatureFlag>
+              )}
               <div
                 className="comp-details-form-row"
                 id="zone-pair-id"
@@ -1509,26 +1509,19 @@ export const ComplaintDetailsEdit: FC = () => {
       </section>
 
       {/* HWCR Outcome Report and File Linkage */}
-      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && (
-        <>
-          <HWCROutcomeReport />
-          <FeatureFlag feature={FEATURE_TYPES.EXTERNAL_FILE_REFERENCE}>
-            <ExternalFileReference />
-          </FeatureFlag>
-        </>
-      )}
+      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
 
       {/* CEEB ERS Outcome Report */}
-      {readOnly && complaintType === COMPLAINT_TYPES.ERS && agency === AgencyType.CEEB && <CeebOutcomeReport />}
-
-      {/* COS ERS File Linkage */}
-      {readOnly && complaintType === COMPLAINT_TYPES.ERS && (
-        <FeatureFlag feature={FEATURE_TYPES.EXTERNAL_FILE_REFERENCE}>
-          <ExternalFileReference />
-        </FeatureFlag>
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && ownedByAgencyCode?.agency === AgencyType.CEEB && (
+        <CeebOutcomeReport />
       )}
 
       {readOnly && complaintType === COMPLAINT_TYPES.GIR && <GIROutcomeReport />}
+
+      {/* COS ERS File Linkage */}
+      {readOnly && complaintType !== COMPLAINT_TYPES.GIR && ownedByAgencyCode?.agency !== AgencyType.CEEB && (
+        <ExternalFileReference />
+      )}
     </div>
   );
 };
