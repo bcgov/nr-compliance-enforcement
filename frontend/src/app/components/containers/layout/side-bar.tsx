@@ -16,6 +16,12 @@ export const SideBar: FC = () => {
 
   const menueItems: Array<MenuItem> = [
     {
+      id: "cases-link",
+      name: "Cases",
+      icon: "bi bi-folder",
+      route: "/cases",
+    },
+    {
       id: "complaints-link",
       name: "Complaints",
       icon: "bi bi-file-earmark-medical",

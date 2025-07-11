@@ -13,6 +13,7 @@ import { fetchAllCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
 import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
+import Cases from "./components/containers/cases/cases";
 import COMPLAINT_TYPES from "./types/app/complaint-types";
 import { getCodeTableVersion, getConfigurations, getFeatureFlag, getOfficerDefaultZone } from "./store/reducers/app";
 import { CreateComplaint } from "./components/containers/complaints/details/complaint-details-create";
@@ -52,6 +53,10 @@ const App: FC = () => {
             <Route
               path="/complaints/:type?"
               element={<ComplaintsRouteWrapper />}
+            />
+            <Route
+              path="/cases"
+              element={<Cases />}
             />
             <Route
               path="/complaint/:complaintType/:id"
