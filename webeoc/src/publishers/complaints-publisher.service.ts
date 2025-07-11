@@ -20,7 +20,6 @@ export class ComplaintsPublisherService {
         waitOnFirstConnect: true,
       });
       this.jsClient = nc.jetstream();
-      this.logger.debug("jetstream client created", this.jsClient);
     } catch (error) {
       this.logger.error(`Error connecting to NATS: ${error.message}`, error);
     }
@@ -37,6 +36,7 @@ export class ComplaintsPublisherService {
       const msg = this.codec.encode(complaint);
       const natsHeaders = headers(); // used to look for complaints that have already been submitted
       natsHeaders.set("Nats-Msg-Id", `staged-${complaint.incident_number}-${complaint.created_by_datetime}`);
+      this.logger.debug("Publishing using jsclient: ", this.jsClient);
       const ack = await this.jsClient.publish(STREAM_TOPICS.COMPLAINTS, msg, { headers: natsHeaders });
       if (!ack.duplicate) {
         this.logger.debug(`Publishing new complaint for staging: ${complaint.incident_number}`);
