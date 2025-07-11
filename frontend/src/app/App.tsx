@@ -5,6 +5,7 @@ import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
 import { NotAuthorized, NotFound } from "./components/containers/pages";
 import { ComplaintDetailsEdit } from "./components/containers/complaints/details/complaint-details-edit";
+import { CaseDetails } from "./components/containers/cases/details/case-details";
 import ColorReference, { MiscReference, SpaceReference } from "./components/reference";
 import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
@@ -57,6 +58,10 @@ const App: FC = () => {
             <Route
               path="/cases"
               element={<Cases />}
+            />
+            <Route
+              path="/case/:id"
+              element={<CaseDetails />}
             />
             <Route
               path="/complaint/:complaintType/:id"

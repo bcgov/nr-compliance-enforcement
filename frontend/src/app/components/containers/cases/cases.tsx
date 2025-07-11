@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { Link } from "react-router-dom";
 
 const Cases: FC = () => {
   return (
@@ -11,6 +12,20 @@ const Cases: FC = () => {
         </div>
         <div className="comp-page-content">
           <p>Lorim... Ipsum?</p>
+
+          <div className="mt-3">
+            <ul>
+              <li>
+                <Link to="/case/CASE-001">Case #CASE-001</Link>
+              </li>
+              <li>
+                <Link to="/case/CASE-002">Case #CASE-002</Link>
+              </li>
+              <li>
+                <Link to="/case/CASE-003">Case #CASE-003</Link>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
