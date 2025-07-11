@@ -21,10 +21,6 @@ WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 
-# include entrypoint script
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-
 # Port and health check
 EXPOSE 3002
 HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3002/health
