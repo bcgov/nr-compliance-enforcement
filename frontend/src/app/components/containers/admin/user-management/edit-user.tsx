@@ -1,10 +1,11 @@
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction, useContext, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import {
   assignOfficerToOffice,
   createOfficer,
   getOfficers,
+  selectCurrentOfficer,
   selectOfficerByPersonGuid,
   updateOfficer as updateOfficerReducer,
 } from "@store/reducers/officer";
@@ -17,6 +18,9 @@ import {
   getTokenProfile,
   openModal,
   personGuid,
+  selectDefaultParkArea,
+  selectDefaultRegion,
+  selectDefaultZone,
   selectNotification,
   userId,
 } from "@store/reducers/app";
@@ -37,6 +41,12 @@ import { NewOfficer } from "@/app/types/person/new-officer";
 import { TOGGLE_DEACTIVATE } from "@/app/types/modal/modal-types";
 import "@assets/sass/user-management.scss";
 import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
+import { resetComplaintSearchParameters } from "@/app/store/reducers/complaints";
+import { DropdownOption } from "@/app/types/app/drop-down-option";
+import UserService from "@/app/service/user-service";
+import { Roles } from "@/app/types/app/roles";
+import { ComplaintFilterPayload, resetFilters } from "@/app/store/reducers/complaint-filters";
+import { ComplaintFilterContext } from "@/app/providers/complaint-filter-provider";
 
 interface EditUserProps {
   officer: Option;
@@ -253,19 +263,13 @@ export const EditUser: FC<EditUserProps> = ({
   };
 
   const handleOfficeChange = (input: any) => {
-    if (input.value) {
-      setSelectedOffice(input);
-    }
+    setSelectedOffice(input);
   };
   const handleParkAreaChange = (input: any) => {
-    if (input.value) {
-      setSelectedParkArea(input);
-    }
+    setSelectedParkArea(input);
   };
   const handleTeamChange = (input: any) => {
-    if (input.value) {
-      setSelectedTeam(input);
-    }
+    setSelectedTeam(input);
   };
   const handleRoleChange = (input: any) => {
     setSelectedRoles(input);
@@ -280,9 +284,6 @@ export const EditUser: FC<EditUserProps> = ({
     resetValidationErrors();
     if (!officer) {
       setOfficerError("User is required");
-    }
-    if (selectedAgency?.value === "COS" && !selectedOffice) {
-      setOfficeError("Office is required");
     }
     return officeError === "" && officerError === "";
   };
@@ -363,12 +364,12 @@ export const EditUser: FC<EditUserProps> = ({
   ) => {
     switch (selectedUserAgency?.value) {
       case AgencyType.CEEB: {
-        if (selectedTeam && selectedRoles) {
+        if (selectedRoles) {
           let res = await updateTeamRole(
             selectedUserIdir,
             officerData?.officer_guid,
             selectedUserAgency.value,
-            selectedTeam?.value,
+            selectedTeam?.value ?? null,
             mapRoles,
           );
           return res;
@@ -378,8 +379,8 @@ export const EditUser: FC<EditUserProps> = ({
       case AgencyType.PARKS: {
         const officer_guid = officerData?.officer_guid;
         //Update park_area_guid
-        if (officer_guid && selectedParkArea) {
-          await dispatch(updateOfficerReducer(officer_guid, { park_area_guid: selectedParkArea?.value }));
+        if (officer_guid) {
+          await dispatch(updateOfficerReducer(officer_guid, { park_area_guid: selectedParkArea?.value ?? null }));
         }
         //Update roles
         let res = await updateTeamRole(
@@ -593,6 +594,7 @@ export const EditUser: FC<EditUserProps> = ({
                   value={selectedTeam}
                   errorMessage={""}
                   isDisabled={officerData?.deactivate_ind}
+                  isClearable={true}
                 />
               )}
               {(currentAgency?.value === AgencyType.COS || selectedAgency?.value === AgencyType.COS) && (
@@ -610,6 +612,7 @@ export const EditUser: FC<EditUserProps> = ({
                   value={selectedOffice}
                   errorMessage={officeError}
                   isDisabled={officerData?.deactivate_ind}
+                  isClearable={true}
                 />
               )}
               {(currentAgency?.value === AgencyType.PARKS || selectedAgency?.value === AgencyType.PARKS) && (
@@ -626,6 +629,7 @@ export const EditUser: FC<EditUserProps> = ({
                   enableValidation={true}
                   value={selectedParkArea}
                   isDisabled={officerData?.deactivate_ind}
+                  isClearable={true}
                 />
               )}
             </div>
