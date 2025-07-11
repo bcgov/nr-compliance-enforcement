@@ -20,6 +20,7 @@ export class ComplaintsPublisherService {
         waitOnFirstConnect: true,
       });
       this.jsClient = nc.jetstream();
+      this.logger.debug("jetstream client created", this.jsClient);
     } catch (error) {
       this.logger.error(`Error connecting to NATS: ${error.message}`, error);
     }
