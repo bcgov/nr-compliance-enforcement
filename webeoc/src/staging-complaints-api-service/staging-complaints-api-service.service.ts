@@ -1,11 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import { STAGING_API_ENDPOINT_CREATES, STAGING_API_ENDPOINT_UPDATES } from "../common/constants";
 import { Complaint } from "../types/complaint-type";
 import { ComplaintUpdate } from "src/types/complaint-update-type";
-import { HttpsProxyAgent } from "https-proxy-agent";
-
-const httpsProxyAgent = process.env.HTTPS_PROXY ? new HttpsProxyAgent(process.env.HTTPS_PROXY) : undefined;
 
 @Injectable()
 export class StagingComplaintsApiService {
@@ -21,15 +18,8 @@ export class StagingComplaintsApiService {
     try {
       const apiUrl = `${process.env.COMPLAINTS_MANAGEMENT_API_URL}/${STAGING_API_ENDPOINT_CREATES}`;
       this.logger.debug(`Posting new complaint ${complaintData.incident_number} to staging. API URL: ${apiUrl}`);
-      let axiosConfig: AxiosRequestConfig = { ...this._apiConfig };
-      if (process.env.HTTPS_PROXY) {
-        axiosConfig = {
-          ...axiosConfig,
-          proxy: false,
-          httpsAgent: httpsProxyAgent,
-        };
-      }
-      await axios.post(apiUrl, complaintData, axiosConfig);
+
+      await axios.post(apiUrl, complaintData, this._apiConfig);
     } catch (error) {
       this.logger.error("Error calling Staging Complaint API:", error);
       throw error;
