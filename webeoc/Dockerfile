@@ -6,6 +6,14 @@ WORKDIR /app
 COPY *.json ./
 COPY ./src /app/src
 
+RUN apt-get update && apt-get install -y \
+    curl \
+    vim \
+    dig \
+    jq \
+    yq \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN npm ci --omit=dev --ignore-scripts && \
     npm run build
 
