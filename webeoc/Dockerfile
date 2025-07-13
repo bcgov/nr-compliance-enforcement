@@ -6,7 +6,7 @@ WORKDIR /app
 COPY *.json ./
 COPY ./src /app/src
 
-RUN apt-get update && apt-get install -y curl vim && rm -rf /var/lib/apt/lists/*
+RUN apt-get --no-install-recommends update && apt-get --no-install-recommends install -y curl vim && rm -rf /var/lib/apt/lists/*
 
 RUN npm ci --omit=dev --ignore-scripts && \
     npm run build
