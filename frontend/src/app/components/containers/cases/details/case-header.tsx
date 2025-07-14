@@ -117,7 +117,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({
 
         {/* Case Type Details */}
         <div
-          className="comp-nature-of-complaint"
+          className="mt-1 max-width-48ch"
           id="comp-nature-of-complaint"
         >
           <span>{caseType}</span>

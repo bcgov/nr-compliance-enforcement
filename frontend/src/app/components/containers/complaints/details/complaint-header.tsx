@@ -408,7 +408,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
           {/* Nature of Complaint Details */}
           <div
-            className="comp-nature-of-complaint"
+            className="mt-1 max-width-48ch"
             id="comp-nature-of-complaint"
           >
             {readOnly && species && complaintType !== COMPLAINT_TYPES.ERS && (

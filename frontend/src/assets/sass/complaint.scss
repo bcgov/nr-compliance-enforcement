@@ -1,3 +1,8 @@
+// UTILITY CLASSES
+.max-width-48ch {
+  max-width: 48ch;
+}
+
 // COMPLAINTS PAGE CONTAINER
 .comp-page-container {
   display: flex;
@@ -397,11 +402,6 @@
       color: $black !important;
     }
   }
-}
-
-.comp-nature-of-complaint {
-  margin-top: 4px;
-  max-width: 48ch;
 }
 
 // HEADER ACTIONS
