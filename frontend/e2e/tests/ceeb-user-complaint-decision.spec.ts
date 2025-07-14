@@ -157,8 +157,8 @@ test.describe("CEEB Complaints can be created and outcome decisions set ", () =>
     await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, complaintId, true, page);
 
     //Determine if we need to save or edit
-    const $decision = page.locator("#ceeb-decision");
-    const editBtnLocator = $decision.locator("#decision-edit-button").all;
+    const $decision = await page.locator("#ceeb-decision");
+    const editBtnLocator = await $decision.locator("#decision-edit-button").all();
     // Check if the button was found
     if ((await editBtnLocator.length) > 0) {
       await $decision.locator("#decision-edit-button").click();

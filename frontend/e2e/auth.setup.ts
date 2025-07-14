@@ -15,6 +15,12 @@ setup("authenticate as CEEB", async ({ page }) => {
   await page.context().storageState({ path: STORAGE_STATE_BY_ROLE.CEEB });
 });
 
+setup("authenticate as Parks", async ({ page }) => {
+  await loginToKeycloak(page, "PARKS");
+  await slowExpect(page.getByText("BC Parks")).toBeVisible();
+  await page.context().storageState({ path: STORAGE_STATE_BY_ROLE.PARKS });
+});
+
 async function loginToKeycloak(page: Page, role?: string): Promise<void> {
   const authBaseUrl = process.env.REACT_APP_KEYCLOAK_URL!;
   const realm = process.env.REACT_APP_KEYCLOAK_REALM!;

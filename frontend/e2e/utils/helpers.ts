@@ -80,6 +80,25 @@ export async function navigateToEditScreen(
   await page.locator("#details-screen-edit-button").click();
 }
 
+export async function navigateToTab(complaintTab: string, removeFilters: boolean, page: Page) {
+  //-- load the human wildlife conflicts
+  await page.locator(complaintTab).click();
+
+  //-- verify correct tab
+  if (complaintTab === "#hwcr-tab") {
+    await expect(await page.locator(complaintTab)).toHaveText(/Human Wildlife Conflict/);
+  } else {
+    await expect(await page.locator(complaintTab)).toHaveText(/Enforcement/);
+  }
+
+  if (removeFilters) {
+    await page.locator("#comp-status-filter").click();
+    await page.locator("#comp-zone-filter").click();
+    await expect(await page.locator("#comp-status-filter")).not.toBeVisible();
+    await expect(await page.locator("#comp-zone-filter")).not.toBeVisible();
+  }
+}
+
 export async function assignSelfToComplaint(page: Page) {
   await page.locator("#details-screen-assign-button").click();
   await page.locator("#self_assign_button").click();
@@ -99,12 +118,18 @@ export async function hasErrorMessage(page: Page, inputs: Array<string>, toastTe
 }
 
 export async function typeAndTriggerChange(locatorValue, value, page: Page) {
-  // const foundItems = await page.locator(locatorValue);
-  // if (foundItems[0]) {
-  //   await foundItems[0].fill(value);
-  // }
-  await locatorValue.fill(value);
+  const foundItems = await page.locator(locatorValue).count();
+  if (foundItems) {
+    await page.locator(locatorValue).fill(value);
+  }
 }
+
+// export async function typeAndTriggerChange(locatorValue, value, page: Page) {
+//   const foundItems = await page.locator(locatorValue).all();
+//   if (foundItems.length) {
+//     await foundItems[0].fill(value);
+//   }
+// }
 
 export async function selectItemById(selectId: string, optionText: string, page: Page) {
   await page.locator(`#${selectId}`).click();
@@ -128,6 +153,8 @@ export async function enterDateTimeInDatePicker(
     await page.locator(`#${datePickerId}`).click();
     // await page.locator(".react-datepicker-time__input").locator("input:scope").click();
     await page.locator(".react-datepicker-time__input").locator("input:scope").fill(`${hour}:${minute}`);
+    await page.keyboard.press("Escape");
+    await page.keyboard.press("Escape");
   }
 }
 export async function verifyMapMarkerExists(existIndicator: boolean, page: Page) {
@@ -191,7 +218,8 @@ export async function fillInHWCSection(loc: Locator, page: Page, sectionParams: 
   await enterDateTimeInDatePicker(page, datePickerId, date);
 
   //click Save Button
-  await page.locator(saveButtonId).click();
+  const saveButton = await page.locator(saveButtonId).first();
+  saveButton.click();
 }
 
 export async function validateHWCSection(loc: Locator, page: Page, sectionParams: Partial<HWCSectionParams>) {
@@ -257,7 +285,7 @@ export async function validateHWCSection(loc: Locator, page: Page, sectionParams
 
   //validate the toast
   if (toastText) {
-    const $toast = page.locator(".Toastify__toast-body");
+    const $toast = await page.locator(".Toastify__toast-body");
     expect($toast).toHaveText(toastText);
   }
 }
@@ -265,6 +293,35 @@ export async function validateHWCSection(loc: Locator, page: Page, sectionParams
 export async function navigateToCreateScreen(page: Page) {
   await page.goto("/complaint/createComplaint");
   await waitForSpinner(page);
-  // await page.locator("#create-complaints-link").click();
-  // await waitForSpinner(page);
+}
+
+export async function verifyAttachmentsCarousel(page: Page, uploadable: boolean, divId: string) {
+  const scope = await page.locator(`#${divId}`);
+  // verify the attachments section exists
+  await expect(scope.getByText(/attachments/).first()).toBeVisible();
+
+  // verify the carousel exists (since 23-000076, 23-006888 are known to have attachments)
+  await expect(scope.locator("div.comp-carousel")).toBeVisible();
+
+  if (!uploadable) {
+    await expect(scope.locator(".comp-attachment-upload-btn")).not.toBeVisible();
+    // scope.locator(".comp-attachment-slide-actions").first().("attr", "style", "display: block");
+
+    // cypress can't verify things that happen in other tabs, so don't open attachments in another tab
+    await expect(scope.locator(".comp-slide-download-btn")).toBeVisible();
+  }
+}
+
+export async function clearFilterById(filterId: string, page: Page) {
+  await expect(page.locator(`#${filterId}`)).toBeVisible();
+  await page.locator(`#${filterId}`).click(); //clear status filter in list view
+  await expect(page.locator(`#${filterId}`)).not.toBeVisible();
+}
+
+export async function selectTypeAheadItemByText(selectId: string, optionText: string, page: Page) {
+  const typeaheadInput = page.locator(`#${selectId}`).locator("input").first();
+  await typeaheadInput.clear();
+  await typeaheadInput.fill(optionText);
+  await expect(page.locator(".dropdown-item").getByText(optionText).first()).toBeVisible();
+  await page.locator(".dropdown-item").getByText(optionText).first().click();
 }

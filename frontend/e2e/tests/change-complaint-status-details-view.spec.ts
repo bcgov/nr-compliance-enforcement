@@ -27,7 +27,7 @@ async function fillInAssessmentSection(page: Page) {
   } else if (await $assessments.locator("#outcome-report-add-assessment").count()) {
     await $assessments.locator("#outcome-report-add-assessment").click();
   }
-  const $assessment = page.locator(".comp-outcome-report-complaint-assessment");
+  const $assessment = await page.locator(".comp-outcome-report-complaint-assessment");
   if (await $assessment.locator("#outcome-save-button").count()) {
     await fillInHWCSection($assessment, page, sectionParams);
     sectionParams.checkboxes = ["Sighting"];
@@ -56,7 +56,7 @@ test.describe("Complaint Change Status spec - Details View", () => {
         await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true, page);
         await assignSelfToComplaint(page);
 
-        fillInAssessmentSection(page);
+        await fillInAssessmentSection(page);
         await waitForSpinner(page);
       } else {
         await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true, page);
@@ -64,8 +64,9 @@ test.describe("Complaint Change Status spec - Details View", () => {
         await waitForSpinner(page);
         await page.locator("#external-file-reference-number-input").click();
         await page.locator("#external-file-reference-number-input").clear();
-        await page.locator("#external-file-reference-number-input").pressSequentially("1111111", { delay: 0 });
+        await page.locator("#external-file-reference-number-input").fill("1111111");
         await page.locator("#external-file-reference-save-button").click();
+        await waitForSpinner(page);
         await page.locator("#details-screen-update-status-button").locator(":visible:scope").click();
         await page.locator("#complaint_status_dropdown").click();
         await page.locator(".comp-select__option").getByText(/Open/).first().click();
@@ -82,6 +83,7 @@ test.describe("Complaint Change Status spec - Details View", () => {
         .first()
         .click();
       await page.locator("#update_complaint_status_button").click();
+      await waitForSpinner(page);
       await expect(page.locator("#update_complaint_status_button")).not.toBeVisible();
       await expect(
         await page
@@ -123,7 +125,7 @@ test.describe("Complaint Change Status spec - Details View", () => {
     //validate error message
     await expect(page.locator("#outcome-assessment").locator(".section-error-message")).toBeVisible();
     await expect(async () => {
-      const $error = page.locator(".section-error-message");
+      const $error = await page.locator(".section-error-message");
       expect($error).toHaveText("Complete section before closing the complaint.");
     }).toPass();
   });
