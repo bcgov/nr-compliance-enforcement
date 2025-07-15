@@ -9,6 +9,10 @@
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@graphql-codegen/cli": "^5.0.7",
+    "@graphql-codegen/typescript": "^4.1.6",
+    "@graphql-codegen/typescript-graphql-request": "^6.3.0",
+    "@graphql-codegen/typescript-operations": "^4.6.1",
     "@popperjs/core": "^2.11.7",
     "@react-aria/ssr": "^3.6.0",
     "@reduxjs/toolkit": "^2.5.1",
@@ -51,6 +55,8 @@
     "esri-leaflet-vector": "^3.1.2",
     "faker": "^5.5.3",
     "fs": "^0.0.1-security",
+    "graphql": "^16.11.0",
+    "graphql-request": "^7.2.0",
     "immutable": "^4.3.0",
     "imtool": "^1.2.1",
     "install": "^0.13.0",
@@ -136,7 +142,8 @@
     "preview": "vite preview",
     "test": "jest",
     "test:cov": "jest --coverage",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "eslintConfig": {
     "extends": [

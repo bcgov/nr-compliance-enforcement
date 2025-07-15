@@ -28,6 +28,7 @@
       "@service/*": ["app/service/*"],
       "@store/*": ["app/store/*"],
       "@apptypes/*": ["app/types/*"],
+      "@graphql/*": ["app/graphql/*"],
     }
   },
   "include": ["src", "tsconfig.node.js"]

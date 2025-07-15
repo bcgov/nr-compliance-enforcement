@@ -19,7 +19,7 @@ import {
   setActiveComplaintsViewType,
   selectDefaultRegion,
   selectDefaultParkArea,
-} from "../../../store/reducers/app";
+} from "@store/reducers/app";
 
 import { ComplaintMapWithServerSideClustering } from "./complaint-map-with-server-side-clustering";
 import { useNavigate } from "react-router-dom";
