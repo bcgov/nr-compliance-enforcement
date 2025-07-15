@@ -16,7 +16,7 @@ const Cases: FC = () => {
           <div className="mt-3">
             <ul>
               <li>
-                <Link to="/case/CASE-001">Case #CASE-001</Link>
+                <Link to="/case/6d9a40ca-11bc-4f7d-8bcf-f04e39067009">Case #CASE-001</Link>
               </li>
               <li>
                 <Link to="/case/CASE-002">Case #CASE-002</Link>

@@ -47,7 +47,7 @@ export const CaseDetails: FC = () => {
   if (isLoading) {
     return (
       <div className="comp-complaint-details">
-        <CaseHeader caseId={id} />
+        <CaseHeader />
         <section className="comp-details-body comp-container">
           <div className="comp-details-content">
             <p>Loading case details...</p>
@@ -57,11 +57,11 @@ export const CaseDetails: FC = () => {
     );
   }
 
-  const caseFile = data?.caseMomsSpaghettiFile;
+  const caseData = data?.caseMomsSpaghettiFile;
 
   return (
     <div className="comp-complaint-details">
-      <CaseHeader caseId={id} />
+      <CaseHeader caseData={caseData || undefined} />
 
       <section className="comp-details-body comp-container">
         <hr className="comp-details-body-spacer"></hr>
@@ -74,56 +74,29 @@ export const CaseDetails: FC = () => {
         <div className="comp-details-view">
           <div className="comp-details-content">
             <h3>Case Information</h3>
-
-            {caseFile ? (
+            {!caseData && <p>No data found for ID: {id}</p>}
+            {caseData && (
               <div>
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-group">
                       <label>Case Identifier:</label>
-                      <p>{caseFile.caseIdentifier || "N/A"}</p>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <label>Case Opened:</label>
-                      <p>
-                        {caseFile.caseOpenedTimestamp
-                          ? new Date(caseFile.caseOpenedTimestamp).toLocaleDateString()
-                          : "N/A"}
-                      </p>
+                      <p>{caseData.caseIdentifier || "N/A"}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <label>Case Status:</label>
-                      <p>{caseFile.caseStatus?.shortDescription || "N/A"}</p>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <label>Lead Agency:</label>
-                      <p>{caseFile.leadAgency?.shortDescription || "N/A"}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {caseFile.caseActivities && caseFile.caseActivities.length > 0 && (
+                {caseData.caseActivities && (
                   <div className="row">
                     <div className="col-12">
                       <div className="form-group">
                         <label>Case Activities:</label>
-                        <p>{caseFile.caseActivities.length} activities found</p>
+                        <p>{caseData.caseActivities.length} activities found</p>
                       </div>
                     </div>
                   </div>
                 )}
               </div>
-            ) : (
-              <p>No case data found for ID: {id}</p>
             )}
           </div>
         </div>
