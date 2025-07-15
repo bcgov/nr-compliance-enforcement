@@ -109,9 +109,6 @@ test.describe("Complaint Create Page spec - Enter Coordinates - Create View", ()
       .getByText(createCallDetails.attractants[2], { exact: true })
       .first()
       .click();
-    // await scope.getByText(createCallDetails.attractants[0]).first().click();
-    // await scope.getByText(createCallDetails.attractants[1]).first().click();
-    // await scope.getByText(createCallDetails.attractants[2]).first().click();
     await selectItemById("community-select-id", createCallDetails.community, page);
     await selectItemById("nature-of-complaint-select-id", createCallDetails.natureOfComplaint, page);
     await selectItemById("species-select-id", createCallDetails.species, page);

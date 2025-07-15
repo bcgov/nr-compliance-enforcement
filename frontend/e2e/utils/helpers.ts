@@ -124,13 +124,6 @@ export async function typeAndTriggerChange(locatorValue, value, page: Page) {
   }
 }
 
-// export async function typeAndTriggerChange(locatorValue, value, page: Page) {
-//   const foundItems = await page.locator(locatorValue).all();
-//   if (foundItems.length) {
-//     await foundItems[0].fill(value);
-//   }
-// }
-
 export async function selectItemById(selectId: string, optionText: string, page: Page) {
   await page.locator(`#${selectId}`).click();
   await expect(page.locator(".comp-select__menu-list")).toBeVisible(); //Wait for the options to show
@@ -151,7 +144,6 @@ export async function enterDateTimeInDatePicker(
   // Locate the time input field and click it to open the time picker
   if (hour && minute) {
     await page.locator(`#${datePickerId}`).click();
-    // await page.locator(".react-datepicker-time__input").locator("input:scope").click();
     await page.locator(".react-datepicker-time__input").locator("input:scope").fill(`${hour}:${minute}`);
     await page.keyboard.press("Escape");
     await page.keyboard.press("Escape");
@@ -285,8 +277,7 @@ export async function validateHWCSection(loc: Locator, page: Page, sectionParams
 
   //validate the toast
   if (toastText) {
-    const $toast = await page.locator(".Toastify__toast-body");
-    expect($toast).toHaveText(toastText);
+    await expect(await page.locator(".Toastify__toast-body", { hasText: toastText })).toBeVisible();
   }
 }
 
