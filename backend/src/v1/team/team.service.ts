@@ -28,10 +28,9 @@ export class TeamService {
     return this.teamRepository.find({
       relations: {
         team_code: true,
-        agency_code: true,
       },
       order: {
-        agency_code: "ASC",
+        agency_code_ref: "ASC",
         team_code: "ASC",
       },
     });
@@ -42,17 +41,15 @@ export class TeamService {
       where: { team_guid: id },
       relations: {
         team_code: true,
-        agency_code: true,
       },
     });
   }
 
   async findByTeamCodeAndAgencyCode(teamCode: any, agencyCode) {
     return this.teamRepository.findOneOrFail({
-      where: { team_code: teamCode, agency_code: agencyCode },
+      where: { team_code: teamCode, agency_code_ref: agencyCode },
       relations: {
         team_code: true,
-        agency_code: true,
       },
     });
   }
