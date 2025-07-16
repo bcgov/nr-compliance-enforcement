@@ -132,7 +132,6 @@ test.describe("CEEB Complaints can be created and outcome decisions set ", () =>
     await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, complaintId, true, page);
     //delete authorization if it exists
     if (await page.locator("#ceeb-authorization-delete-btn").isVisible()) {
-      const $authorization = await page.locator("#ceeb-authorization");
       await page.locator("#ceeb-authorization-delete-btn").click();
       await page.getByRole("button", { name: "Yes, delete authorization" }).first().click();
     } else {
