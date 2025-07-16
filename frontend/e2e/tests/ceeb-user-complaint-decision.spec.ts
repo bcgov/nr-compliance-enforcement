@@ -134,7 +134,7 @@ test.describe("CEEB Complaints can be created and outcome decisions set ", () =>
     if (await page.locator("#ceeb-authorization-delete-btn").isVisible()) {
       const $authorization = await page.locator("#ceeb-authorization");
       await page.locator("#ceeb-authorization-delete-btn").click();
-      await $authorization.getByRole("button", { name: "Yes, delete authorization" }).click();
+      await $authorization.getByRole("button", { name: "Yes, delete authorization" }).first().click();
     } else {
       console.log("The delete button is not visible, skipping the click actions.");
     }

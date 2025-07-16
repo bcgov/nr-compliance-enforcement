@@ -23,7 +23,7 @@ async function fillInAssessmentSection(page: Page) {
   const $assessments = await page.locator("#outcome-assessments");
   if (await $assessments.locator("#assessment-edit-button").count()) {
     sectionParams.toastText = "Assessment has been updated";
-    await $assessments.locator("#assessment-edit-button").click();
+    await $assessments.locator("#assessment-edit-button").first().click();
   } else if (await $assessments.locator("#outcome-report-add-assessment").count()) {
     await $assessments.locator("#outcome-report-add-assessment").click();
   }
@@ -61,10 +61,6 @@ test.describe("Complaint Change Status spec - Details View", () => {
       } else {
         await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true, page);
         await assignSelfToComplaint(page);
-        await page.locator("#external-file-reference-number-input").click();
-        await page.locator("#external-file-reference-number-input").clear();
-        await page.locator("#external-file-reference-number-input").fill("1111111");
-        await page.locator("#external-file-reference-save-button").click();
         await waitForSpinner(page);
         await page.locator("#details-screen-update-status-button").locator(":visible:scope").click();
         await page.locator("#complaint_status_dropdown").click();

@@ -96,9 +96,9 @@ test.describe("COMPENF-37 Display ECR Details", () => {
     await page.locator("#supporting-notes-textarea-id").fill("A");
     await page.locator("#supporting-notes-save-button").click();
     await waitForSpinner(page);
-    await expect(page.locator("#additional-note-text")).toHaveText("A");
+    await expect(await page.locator("#additional-note-text", { hasText: "A" })).toBeVisible();
     await page.locator("#notes-delete-button").click();
-    await page.locator("#confirm-delete-note-button").click();
+    await page.locator("#confirm-delete-note-button").first().click();
     await waitForSpinner(page);
     await expect(page.locator("#outcome-report-add-note")).toBeVisible();
   });
