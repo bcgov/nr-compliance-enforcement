@@ -6074,7 +6074,7 @@ do nothing;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6096,7 +6096,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6118,7 +6118,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6140,7 +6140,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6162,7 +6162,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6184,7 +6184,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6206,7 +6206,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6228,7 +6228,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6250,7 +6250,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6272,7 +6272,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,

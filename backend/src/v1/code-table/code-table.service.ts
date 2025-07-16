@@ -858,7 +858,7 @@ export class CodeTableService {
     };
 
     if (agency) {
-      whereClause.agency_code = agency;
+      whereClause.agency_code_ref = agency;
     }
 
     const data = await this._compMthdRecvCdAgcyCdXrefRepository.find({

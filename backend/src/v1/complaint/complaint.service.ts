@@ -248,8 +248,7 @@ export class ComplaintService {
       .leftJoin("delegate.person_complaint_xref_code", "delegate_code")
       .leftJoin("delegate.person_guid", "person", "delegate.active_ind = true")
       .leftJoin("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
-      .leftJoin("method_xref.complaint_method_received_code", "method_code")
-      .leftJoin("method_xref.agency_code", "method_agency");
+      .leftJoin("method_xref.complaint_method_received_code", "method_code");
     if (includeCosOrganization) {
       builder.leftJoin("complaint.cos_geo_org_unit", "cos_organization");
     }
@@ -346,9 +345,7 @@ export class ComplaintService {
       .leftJoinAndSelect("delegate.person_complaint_xref_code", "delegate_code")
       .leftJoinAndSelect("delegate.person_guid", "person", "delegate.active_ind = true")
       .leftJoinAndSelect("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
-      .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code")
-      .leftJoinAndSelect("method_xref.agency_code", "method_agency");
-
+      .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code");
     return builder;
   };
 
@@ -1039,8 +1036,7 @@ export class ComplaintService {
             "person.last_name",
           ])
           .leftJoinAndSelect("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
-          .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code")
-          .leftJoinAndSelect("method_xref.agency_code", "method_agency");
+          .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code");
       }
 
       builder.where("complaint.complaint_identifier = :id", { id });
