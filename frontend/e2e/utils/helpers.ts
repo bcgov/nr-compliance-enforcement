@@ -102,6 +102,7 @@ export async function navigateToTab(complaintTab: string, removeFilters: boolean
 export async function assignSelfToComplaint(page: Page) {
   await page.locator("#details-screen-assign-button").click();
   await page.locator("#self_assign_button").click();
+  await waitForSpinner(page);
 }
 
 export async function hasErrorMessage(page: Page, inputs: Array<string>, toastText?: string) {

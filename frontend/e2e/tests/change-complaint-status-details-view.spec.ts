@@ -61,7 +61,6 @@ test.describe("Complaint Change Status spec - Details View", () => {
       } else {
         await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true, page);
         await assignSelfToComplaint(page);
-        await waitForSpinner(page);
         await page.locator("#external-file-reference-number-input").click();
         await page.locator("#external-file-reference-number-input").clear();
         await page.locator("#external-file-reference-number-input").fill("1111111");
