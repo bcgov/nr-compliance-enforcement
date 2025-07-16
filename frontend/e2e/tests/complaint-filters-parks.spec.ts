@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 
-import { Roles } from "../../src/app/types/app/roles";
 import COMPLAINT_TYPES from "../../src/app/types/app/complaint-types";
 import { STORAGE_STATE_BY_ROLE } from "../utils/authConfig";
 import { navigateToDetailsScreen, selectTypeAheadItemByText, waitForSpinner } from "../utils/helpers";
