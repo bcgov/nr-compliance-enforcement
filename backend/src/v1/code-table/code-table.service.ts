@@ -836,11 +836,11 @@ export class CodeTableService {
       case "email-reference": {
         const data = await this._emailReferenceRepository.find({
           where: { active_ind: true },
-          order: { agency_code: "ASC" },
+          order: { agency_code_ref: "ASC" },
         });
-        const emailReferences = data.map(({ agency_code, email_address, geo_organization_unit_code }) => {
+        const emailReferences = data.map(({ agency_code_ref, email_address, geo_organization_unit_code }) => {
           return {
-            agencyCode: agency_code,
+            agencyCode: agency_code_ref,
             emailAddress: email_address,
             geoOrgUnitTypeCode: geo_organization_unit_code,
             shortDescription: "",
