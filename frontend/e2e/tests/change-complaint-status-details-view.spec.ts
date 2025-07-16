@@ -97,7 +97,7 @@ test.describe("Complaint Change Status spec - Details View", () => {
 
       // Delete the external file reference for future tests
       if ("#ers-tab".includes(complaintType)) {
-        await page.locator("#external-file-reference-delete-button").click();
+        await page.locator("#external-file-reference-delete-button").first().click();
         await page.locator(".btn-primary").click();
       }
     });

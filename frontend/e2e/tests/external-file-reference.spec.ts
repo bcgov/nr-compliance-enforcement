@@ -15,7 +15,7 @@ async function enterReferenceNumber(page, number: string, shouldSave: boolean) {
   await page.locator("#external-file-reference-delete-button");
 }
 async function navigateToComplaint(page: Page, type) {
-  if (COMPLAINT_TYPES.HWCR.includes(type)) {
+  if (COMPLAINT_TYPES.HWCR === type) {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-031226", true, page);
   } else {
     await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-027918", true, page);
@@ -23,7 +23,7 @@ async function navigateToComplaint(page: Page, type) {
 }
 async function deleteReferenceNumber(page: Page) {
   if (await page.locator("#external-file-reference-delete-button").isVisible()) {
-    await page.locator("#external-file-reference-delete-button").click();
+    await page.locator("#external-file-reference-delete-button").first().click();
     await page.locator(".modal-footer > .btn-primary").click();
     await waitForSpinner(page);
   } else {
