@@ -277,13 +277,13 @@ export class CodeTableService {
             },
           },
         });
-        let results = data.map(({ violation_code, agency_code, active_ind }) => {
+        let results = data.map(({ violation_code, agency_code_ref, active_ind }) => {
           let table: Violation = {
             violation: violation_code.violation_code,
             shortDescription: violation_code.short_description,
             longDescription: violation_code.long_description,
             displayOrder: violation_code.display_order,
-            agencyCode: agency_code.agency_code,
+            agencyCode: agency_code_ref,
             isActive: active_ind,
           };
           return table;

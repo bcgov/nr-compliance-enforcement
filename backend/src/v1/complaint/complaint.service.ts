@@ -267,12 +267,11 @@ export class ComplaintService {
           .leftJoinAndSelect("allegation.complaint_identifier", "complaint")
           .leftJoin("allegation.violation_code", "violation_code")
           .leftJoin("violation_code.violationAgencyXrefs", "violation_agency_xref")
-          .leftJoin("violation_agency_xref.agency_code", "agency_code")
           .addSelect([
             "violation_code.violation_code",
             "violation_code.short_description",
             "violation_code.long_description",
-            "agency_code.agency_code",
+            "violation_agency_xref.agency_code_ref",
           ]);
         break;
       case "GIR":
