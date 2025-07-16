@@ -6,6 +6,7 @@ module.exports = {
     "^.+\\.(css|less|scss)$": "babel-jest",
   },
   coverageReporters: ["text", "cobertura", "lcov"],
+  testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/e2e/"],
 };
 
 process.env = Object.assign(process.env, {
