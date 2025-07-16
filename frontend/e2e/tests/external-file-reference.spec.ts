@@ -137,7 +137,7 @@ complaintTypes.forEach((type) => {
 
     test("Will accept a alphanumeric reference file number with dashes", async ({ page }) => {
       //navigatetoComplaint
-      await navigateToComplaint(page, 1);
+      await navigateToComplaint(page, type);
 
       //make sure that there isn't an old one there from a failed run
       await deleteReferenceNumber(page);
@@ -154,7 +154,7 @@ complaintTypes.forEach((type) => {
 
     test("Will not accept a reference file number with other special characters", async ({ page }) => {
       //navigatetoComplaint
-      await navigateToComplaint(page, 1);
+      await navigateToComplaint(page, type);
 
       //make sure that there isn't an old one there from a failed run
       await deleteReferenceNumber(page);
