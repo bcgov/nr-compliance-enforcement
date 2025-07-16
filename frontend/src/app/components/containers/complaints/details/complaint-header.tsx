@@ -82,7 +82,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
   const complaintWasReferred =
     complaintAgency !== userAgency && referrals.length > 0
-      ? referrals[0].referred_to_agency_code.agency_code !== userAgency
+      ? referrals[0].referred_to_agency.agency !== userAgency
       : false;
   const derivedStatus = complaintWasReferred && !userIsCollaborator ? "Referred" : status;
 

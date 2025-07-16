@@ -58,8 +58,6 @@ export class ComplaintUpdatesService {
         complaint_identifier: id,
       },
       relations: {
-        referred_by_agency_code: true,
-        referred_to_agency_code: true,
         officer_guid: {
           person_guid: true,
         },
@@ -67,14 +65,8 @@ export class ComplaintUpdatesService {
       select: {
         complaint_referral_guid: true,
         complaint_identifier: true,
-        referred_by_agency_code: {
-          agency_code: true,
-          long_description: true,
-        },
-        referred_to_agency_code: {
-          agency_code: true,
-          long_description: true,
-        },
+        referred_by_agency_code_ref: true,
+        referred_to_agency_code_ref: true,
         officer_guid: {
           officer_guid: true,
           person_guid: {

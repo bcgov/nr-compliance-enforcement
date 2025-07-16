@@ -107,8 +107,8 @@ export class EmailService {
   sendReferralEmail = async (createComplaintReferralDto, user, exportContentBuffer) => {
     const {
       complaint_identifier: id,
-      referred_to_agency_code,
-      referred_by_agency_code,
+      referred_to_agency_code_ref,
+      referred_by_agency_code_ref,
       referral_reason,
       complaint_url,
       additionalEmailRecipients,
@@ -136,7 +136,7 @@ export class EmailService {
 
       const recipientList = await this._buildRecipientList(
         externalAgencyInd,
-        referred_to_agency_code,
+        referred_to_agency_code_ref,
         complaint,
         additionalEmailRecipients,
       );
@@ -144,8 +144,8 @@ export class EmailService {
       const { short_description: communityName } = await this._geoOrganizationUnitCodeService.findOne(
         complaint.organization.area,
       );
-      const referredToAgency = await this._agencyCodeService.findById(referred_to_agency_code);
-      const referredByAgency = await this._agencyCodeService.findById(referred_by_agency_code);
+      const referredToAgency = await this._agencyCodeService.findById(referred_to_agency_code_ref);
+      const referredByAgency = await this._agencyCodeService.findById(referred_by_agency_code_ref);
 
       const { subjectTypeDescription, bodyTypeDescription, complaintSummaryText, subjectAdditionalDetails } =
         await this._getComplaintDetailsByType(type, complaint, communityName);

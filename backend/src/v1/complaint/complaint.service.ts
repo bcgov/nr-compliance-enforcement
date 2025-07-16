@@ -1099,8 +1099,8 @@ export class ComplaintService {
     if (status === "REFERRED") {
       builder.andWhere(
         `complaint.owned_by_agency_code.agency_code NOT IN (:...agency_codes)
-       AND complaint_referral.referred_by_agency_code.agency_code IS NOT NULL
-       AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)`,
+       AND complaint_referral.referred_by_agency_code_ref IS NOT NULL
+       AND complaint_referral.referred_by_agency_code_ref IN (:...agency_codes)`,
         { agency_codes: agencies },
       );
       return builder;
@@ -1112,8 +1112,8 @@ export class ComplaintService {
         builder.andWhere(
           `(complaint.owned_by_agency_code.agency_code IN (:...agency_codes)
         OR (
-          complaint_referral.referred_by_agency_code.agency_code IS NOT NULL
-          AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)
+          complaint_referral.referred_by_agency_code_ref IS NOT NULL
+          AND complaint_referral.referred_by_agency_code_ref IN (:...agency_codes)
         )
         )`,
           { agency_codes: agencies },
@@ -1308,13 +1308,8 @@ export class ComplaintService {
         where: {
           complaint_identifier: In(items.map((item) => item.id)),
         },
-        relations: {
-          referred_by_agency_code: true,
-        },
         select: {
-          referred_by_agency_code: {
-            agency_code: true,
-          },
+          referred_by_agency_code_ref: true,
         },
       });
 
@@ -1333,7 +1328,7 @@ export class ComplaintService {
       // Set referral agency codes
       const referrals = referralComplaints.filter((referral) => referral.complaint_identifier === item.id);
       if (referrals.length > 0) {
-        item.referralAgency = referrals.map((referral) => referral.referred_by_agency_code.agency_code);
+        item.referralAgency = referrals.map((referral) => referral.referred_by_agency_code_ref);
       }
 
       // Set issueType based on the complaint type
@@ -2105,19 +2100,13 @@ export class ComplaintService {
           complaint_identifier: id,
         },
         relations: {
-          referred_by_agency_code: true,
-          referred_to_agency_code: true,
           officer_guid: {
             person_guid: true,
           },
         },
         select: {
-          referred_by_agency_code: {
-            long_description: true,
-          },
-          referred_to_agency_code: {
-            long_description: true,
-          },
+          referred_by_agency_code_ref: true,
+          referred_to_agency_code_ref: true,
           officer_guid: {
             officer_guid: true,
             person_guid: {
@@ -2140,8 +2129,8 @@ export class ComplaintService {
           updateTime: zonedReferralDate,
           updateType: ComplaintUpdateType.REFERRAL,
           referral: {
-            previousAgency: item.referred_by_agency_code.long_description,
-            newAgency: item.referred_to_agency_code.long_description,
+            previousAgency: item.referred_by_agency_code_ref,
+            newAgency: item.referred_to_agency_code_ref,
             referredBy: {
               officerGuid: item.officer_guid.officer_guid,
               lastName: item.officer_guid.person_guid.last_name,
