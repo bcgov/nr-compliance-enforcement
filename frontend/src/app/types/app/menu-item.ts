@@ -7,4 +7,5 @@ export default interface MenuItem {
   route?: string;
   excludedRoles?: Array<Roles>;
   requiredRoles?: Array<Roles>;
+  featureFlag?: string;
 }
