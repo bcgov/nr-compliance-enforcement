@@ -1,23 +1,32 @@
 /// <reference types="node" />
-import { test as setup, Page } from "@playwright/test";
+import { test as setup, Page, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "./utils/authConfig";
 import { slowExpect } from "./utils/helpers";
 
 setup("authenticate as COS", async ({ page }) => {
   await loginToKeycloak(page, "COS");
-  await slowExpect(page.getByText("Conservation Officer Service")).toBeVisible();
+  await slowExpect(await page.locator("h1", { hasText: "Complaints" })).toBeVisible();
+  // Expand the sidebar to reveal the agency name
+  await page.locator("button").first().click();
+  await expect(page.getByText("Conservation Officer Service")).toBeVisible();
   await page.context().storageState({ path: STORAGE_STATE_BY_ROLE.COS });
 });
 
 setup("authenticate as CEEB", async ({ page }) => {
   await loginToKeycloak(page, "CEEB");
-  await slowExpect(page.getByText("Compliance and Environmental Enforcement Branch")).toBeVisible();
+  await slowExpect(await page.locator("h1", { hasText: "Complaints" })).toBeVisible();
+  // Expand the sidebar to reveal the agency name
+  await page.locator("button").first().click();
+  await expect(page.getByText("Compliance and Environmental Enforcement Branch")).toBeVisible();
   await page.context().storageState({ path: STORAGE_STATE_BY_ROLE.CEEB });
 });
 
 setup("authenticate as Parks", async ({ page }) => {
   await loginToKeycloak(page, "PARKS");
-  await slowExpect(page.getByText("BC Parks")).toBeVisible();
+  await slowExpect(await page.locator("h1", { hasText: "Complaints" })).toBeVisible();
+  // Expand the sidebar to reveal the agency name
+  await page.locator("button").first().click();
+  await expect(page.getByText("BC Parks")).toBeVisible();
   await page.context().storageState({ path: STORAGE_STATE_BY_ROLE.PARKS });
 });
 

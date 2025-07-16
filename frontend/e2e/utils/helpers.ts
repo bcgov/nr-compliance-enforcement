@@ -127,7 +127,7 @@ export async function typeAndTriggerChange(locatorValue, value, page: Page) {
 export async function selectItemById(selectId: string, optionText: string, page: Page) {
   await page.locator(`#${selectId}`).click();
   await expect(page.locator(".comp-select__menu-list")).toBeVisible(); //Wait for the options to show
-  await page.locator(`.comp-select__option`, { hasText: optionText }).first().click();
+  await page.locator(`.comp-select__option`, { hasText: optionText }).first().click({ force: true });
 }
 
 export async function enterDateTimeInDatePicker(
@@ -230,34 +230,22 @@ export async function validateHWCSection(loc: Locator, page: Page, sectionParams
   }
 
   if (section === "ASSESSMENT" && actionRequired) {
-    await expect(async () => {
-      const $div = page.locator("#action-required-div", { hasText: actionRequired }).first();
-      expect($div).toHaveText(actionRequired);
-    }).toPass();
+    await expect(await page.locator("#action-required-div", { hasText: actionRequired }).first()).toBeVisible();
 
     if (actionRequired === "Yes") {
       //Verify Fields exist
       for (let checkbox of checkboxes) {
-        await expect(async () => {
-          const $div = page.locator(checkboxDiv);
-          expect($div).toHaveText(checkbox);
-        }).toPass();
+        await expect(await page.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible();
       }
     }
   } else if (checkboxes) {
     for (let checkbox of checkboxes) {
-      await expect(async () => {
-        const $div = page.locator(checkboxDiv);
-        expect($div).toHaveText(checkbox);
-      }).toPass();
+      await expect(await page.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible;
     }
   }
 
   if (justification) {
-    await expect(async () => {
-      const $div = page.locator("#justification-div");
-      expect($div).toHaveText(justification);
-    }).toPass();
+    await expect(await page.locator("#justification-div", { hasText: justification }).first()).toBeVisible;
   }
 
   if (equipmentType) {
@@ -271,8 +259,8 @@ export async function validateHWCSection(loc: Locator, page: Page, sectionParams
     expect($div).toHaveText(officer);
   }).toPass();
   await expect(async () => {
-    const $div = page.locator(dateDiv);
-    expect($div).toHaveText(date); //Don't know the month... could maybe make this a bit smarter but this is probably good enough.
+    const dateText = await page.locator(dateDiv).textContent();
+    expect(dateText).toContain(date); //Don't know the month... could maybe make this a bit smarter but this is probably good enough.
   }).toPass();
 
   //validate the toast

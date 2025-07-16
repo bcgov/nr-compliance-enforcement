@@ -135,18 +135,37 @@ complaintTypes.forEach((type) => {
       await validateFormIsEmpty(page);
     });
 
-    test(`Will not accept a reference file number with letters: ${type}`, async ({ page }) => {
+    test("Will accept a alphanumeric reference file number with dashes", async ({ page }) => {
       //navigatetoComplaint
-      await navigateToComplaint(page, type);
-      await waitForSpinner(page);
+      await navigateToComplaint(page, 1);
 
       //make sure that there isn't an old one there from a failed run
       await deleteReferenceNumber(page);
 
       //enter the number
-      await enterReferenceNumber(page, "444BADNUMBER44", true);
+      await enterReferenceNumber(page, "ABC-123-DEF", true);
 
-      //validate the error message
+      //validate the number
+      await expect(page.locator("#external-file-reference-number")).toHaveText("ABC-123-DEF");
+
+      // ERS for COS close when saved, so needs to be reopened for the next tests tests
+      await setStatusOpen(page);
+    });
+
+    test("Will not accept a reference file number with other special characters", async ({ page }) => {
+      //navigatetoComplaint
+      await navigateToComplaint(page, 1);
+
+      //make sure that there isn't an old one there from a failed run
+      await deleteReferenceNumber(page);
+
+      //enter the number
+      await enterReferenceNumber(page, "444@BAD#NUMBER$44", false);
+
+      //click save to trigger validation
+      await page.locator("#external-file-reference-save-button").click();
+
+      //validate the error message appears
       await hasErrorMessage(page, ["#external-file-reference-number-div"]);
     });
   });

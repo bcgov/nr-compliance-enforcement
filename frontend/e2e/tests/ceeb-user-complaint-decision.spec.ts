@@ -5,7 +5,6 @@ import {
   enterDateTimeInDatePicker,
   navigateToDetailsScreen,
   navigateToEditScreen,
-  optionallyWaitForSpinner,
   selectItemById,
   waitForSpinner,
 } from "../utils/helpers";
@@ -64,7 +63,7 @@ test.describe("CEEB Complaints can be created and outcome decisions set ", () =>
     await page.goto("/complaint/createComplaint", {
       waitUntil: "commit",
     });
-    await optionallyWaitForSpinner(page, "#violation-type-select-id");
+    await waitForSpinner(page);
     await selectItemById("violation-type-select-id", "Waste", page);
     await page.locator("#complaint-description-textarea-id").click();
     await page.locator("#complaint-description-textarea-id").clear();
@@ -144,7 +143,7 @@ test.describe("CEEB Complaints can be created and outcome decisions set ", () =>
     await page.locator("#outcome-authroization-authroized-site").clear();
     await page.locator("#outcome-authroization-authroized-site").fill("0000001");
     await page.locator("#outcome-authorization-save-button").click();
-    await optionallyWaitForSpinner(page, 'dd[id="authorization-id"]');
+    await waitForSpinner(page);
     await expect(
       page
         .locator('dd[id="authorization-id"]')

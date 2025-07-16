@@ -25,9 +25,9 @@ test.describe("Verify CEEB specific search filters work", () => {
     await waitForSpinner(page);
     // If the action taken input is available then the complaint does not yet have a decision made on it.
     // Set an action taken so that the filter will have results to return.
-    const decisionCount = await page.locator("#ceeb-decision").locator("#decision-edit-button").count();
+    const decisionCount = await page.locator("#decision-edit-button").count();
     // If the edit button is on the page, a decision needs to be made
-    if (decisionCount > 0) {
+    if (decisionCount === 0) {
       await selectItemById("outcome-decision-schedule-sector", "Other", page);
       await selectItemById("outcome-decision-schedule-sector", "Other", page);
       await selectItemById("outcome-decision-sector-category", "None", page);
@@ -42,7 +42,7 @@ test.describe("Verify CEEB specific search filters work", () => {
     }
 
     // Return to the complaints view
-    await page.locator("#complaints-link").click();
+    await page.locator("#icon-complaints-link").click();
 
     // Filter by action taken
     await expect(await page.locator("#comp-filter-btn")).toBeVisible();

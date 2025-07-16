@@ -49,18 +49,26 @@ test.describe("COMPENF-37 Display ECR Details", () => {
 
     //-- verify the call details block
     await expect(
-      page.locator('pre[id="comp-details-description"]').getByText(callDetails.description).first(),
-    ).toBeVisible();
-    await expect(page.locator('dd[id="comp-details-location"]').getByText(callDetails.location).first()).toBeVisible();
-    await expect(
-      page.locator('dd[id="comp-details-location-description"]').getByText(callDetails.locationDescription).first(),
+      await page.locator('pre[id="comp-details-description"]', { hasText: callDetails.description }).first(),
     ).toBeVisible();
     await expect(
-      page.locator('dd[id="comp-details-community"]').getByText(callDetails.community).first(),
+      await page.locator('dd[id="comp-details-location"]', { hasText: callDetails.location }).first(),
     ).toBeVisible();
-    await expect(page.locator('dd[id="comp-details-office"]').getByText(callDetails.office).first()).toBeVisible();
-    await expect(page.locator('dd[id="comp-details-zone"]').getByText(callDetails.zone).first()).toBeVisible();
-    await expect(page.locator('dd[id="comp-details-region"]').getByText(callDetails.region).first()).toBeVisible();
+    await expect(
+      await page
+        .locator('dd[id="comp-details-location-description"]', { hasText: callDetails.locationDescription })
+        .first(),
+    ).toBeVisible();
+    await expect(
+      await page.locator('dd[id="comp-details-community"]', { hasText: callDetails.community }).first(),
+    ).toBeVisible();
+    await expect(
+      await page.locator('dd[id="comp-details-office"]', { hasText: callDetails.office }).first(),
+    ).toBeVisible();
+    await expect(await page.locator('dd[id="comp-details-zone"]', { hasText: callDetails.zone }).first()).toBeVisible();
+    await expect(
+      await page.locator('dd[id="comp-details-region"]', { hasText: callDetails.region }).first(),
+    ).toBeVisible();
   });
 
   test("it has a map on screen with no marker", async function ({ page }) {
