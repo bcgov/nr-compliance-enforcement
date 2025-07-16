@@ -346,7 +346,7 @@ export class PersonComplaintXrefService {
       .createQueryBuilder("person_complaint_xref")
       .leftJoinAndSelect("person_complaint_xref.person_guid", "person")
       .innerJoin(Officer, "officer", "person.person_guid=officer.person_guid")
-      .innerJoin(AgencyCode, "agency_code", "officer.agency_code=agency_code.agency_code")
+      .innerJoin(AgencyCode, "agency_code", "officer.agency_code_ref=agency_code.agency_code")
       .where("person_complaint_xref.complaint_identifier = :complaintId", { complaintId: complaintIdentifier })
       .andWhere("person_complaint_xref.person_complaint_xref_code = :code", {
         code: PersonComplaintXrefCodeEnum.COLLABORATOR,

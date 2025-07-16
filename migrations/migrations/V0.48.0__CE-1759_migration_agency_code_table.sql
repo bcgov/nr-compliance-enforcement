@@ -20,7 +20,7 @@ ALTER TABLE feature_agency_xref RENAME COLUMN agency_code TO agency_code_ref;
 ALTER TABLE team RENAME COLUMN agency_code TO agency_code_ref;
 --ALTER TABLE geo_org_unit_structure RENAME COLUMN agency_code TO agency_code_ref;
 --ALTER TABLE office RENAME COLUMN agency_code TO agency_code_ref;
---ALTER TABLE officer RENAME COLUMN agency_code TO agency_code_ref;
+ALTER TABLE officer RENAME COLUMN agency_code TO agency_code_ref;
 
 --comment on column complaint.owned_by_agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  The agency that currently owns the complaint.';
 comment on column complaint_type_code.agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  The agency that defines the complaint type';
@@ -33,6 +33,6 @@ comment on column feature_agency_xref.agency_code_ref is 'Key representing an ag
 comment on column team.agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  The agency for which the team is defined.';
 --comment on column geo_org_unit_structure.agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  Used to map geographic organization structures to individual agencies as different structures are used throughout the sector.';
 --comment on column office.agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  The agency that owns the office.';
---comment on column officer.agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  The agency that employs the Officer.';
+comment on column officer.agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  The agency that employs the Officer.';
 
 --DROP table agency_code

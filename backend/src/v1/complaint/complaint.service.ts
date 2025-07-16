@@ -2238,7 +2238,8 @@ export class ComplaintService {
 
         const officer = await this._officerService.findByAuthUserGuid(assessment.assessmentActor);
         const { first_name, last_name } = officer.person_guid;
-        const agency_code = officer.agency_code?.short_description;
+        // TODO: this needs to be the short description not the code.  Don't merge until fixed.
+        const agency_code = officer.agency_code_ref;
 
         assessment.assessmentActor = `${last_name}, ${first_name} (${agency_code})`;
 

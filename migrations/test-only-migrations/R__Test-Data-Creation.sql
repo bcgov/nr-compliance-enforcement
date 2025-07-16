@@ -337,15 +337,15 @@ INSERT INTO officer
 VALUES('9d171865-aab6-43d1-bbf2-93b4d4c5ba02'::uuid, 'AWILCOX', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '666c0f30-d707-4ade-b67f-9b888fe234e6'::uuid, '9fc7327b-b206-4a5c-88f1-2875a456eb49'::uuid, '287d4e72-8409-4dd1-991a-8b1117b8eb2a'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO officer
-(officer_guid, user_id, agency_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
+(officer_guid, user_id, agency_code_ref, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
 VALUES('fc91b041-7f1b-46e9-8c07-0813bb656a7f'::uuid, 'ENCETST1', 'COS', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186', '16dc87d5-2034-4d9a-bbf4-3ec0f927d3e8'::uuid, '79fe321b-7716-413f-b878-c5fd6100317d'::uuid, '0cf857a2-28a3-4867-af0f-d59449243057'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO officer
-(officer_guid, user_id, agency_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, auth_user_guid)
+(officer_guid, user_id, agency_code_ref, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, auth_user_guid)
 VALUES('ac64c6e6-8233-4cee-807b-5bb2b4ddb15b'::uuid, 'ENCETST2', 'EPO', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186', '375bac7f-390a-4b32-91da-1ed9da71c1e3'::uuid, '6d1bb908-0f03-4873-af49-916713583c7e'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO officer
-(officer_guid, user_id, agency_code, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, auth_user_guid)
+(officer_guid, user_id, agency_code_ref, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, auth_user_guid)
 VALUES('1c28a7a0-fd7e-4d39-9e8f-50f34e1b3e59'::uuid, 'ENCETST3', 'PARKS', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186', '7e49b515-48c5-4fc2-9b70-a0ea8653f4aa'::uuid, '45b33bda-6d2c-4947-9ba2-1f611655047a'::uuid)
 ON CONFLICT DO NOTHING;
 INSERT INTO officer
@@ -1971,9 +1971,9 @@ WHERE complaint_identifier IN ('23-031744', '23-006888', '23-032456');
 -- Assign offiers with no office or agency to CEEB
 ---------------------
 UPDATE officer
-SET agency_code = 'EPO'
+SET agency_code_ref = 'EPO'
 WHERE office_guid is null
-AND agency_code is null;
+AND agency_code_ref is null;
 
 ---------------------
 -- Overwrite all referred email addresses in dev and test to avoid accidents
@@ -2030,8 +2030,8 @@ WHERE feature_code = 'SECTORVIEW';
 -- In the event of mismatch - just update the user in CSS to be the desired role
 -----------------------
 UPDATE officer 
-SET agency_code = 'COS'
-WHERE agency_code is null;
+SET agency_code_ref = 'COS'
+WHERE agency_code_ref is null;
 
 ---------------------
 -- Update complaint_type_code for test data
