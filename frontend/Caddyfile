@@ -42,12 +42,6 @@
     header_up X-Real-IP {remote_host}
     header_up X-Forwarded-For {remote_host}
   }
-  # Proxy requests to the GraphQL service 
-  reverse_proxy /graphql/* {$GRAPHQL_URL} {
-    header_up Host {http.reverse_proxy.upstream.hostport}
-    header_up X-Real-IP {remote_host}
-    header_up X-Forwarded-For {remote_host}
-  }
   header {
     -Server
     X-Frame-Options "SAMEORIGIN"
