@@ -131,8 +131,11 @@ export const SideBar: FC = () => {
               return null; // Exclude this item if the user does not have the required role
             }
             // Check if the item has a feature flag and if the feature is active
-            if (item.featureFlag && !useAppSelector(isFeatureActive(item.featureFlag))) {
-              return null; // Exclude this item if the feature flag is not active
+            if (item.featureFlag) {
+              const isActive = useAppSelector(isFeatureActive(item.featureFlag));
+              if (!isActive) {
+                return null; // Exclude this item if the feature flag is not active
+              }
             }
             // If neither excludedRoles, requiredRoles, nor featureFlag conditions apply, render the item
             return renderSideBarMenuItem(idx, item);
