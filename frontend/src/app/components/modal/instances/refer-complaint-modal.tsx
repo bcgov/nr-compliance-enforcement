@@ -222,10 +222,10 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
   }, [assignableOfficers, currentOfficer]);
 
   return (
-    <div style={{ maxHeight: "90vh", overflow: "hidden" }}>
+    <div style={{ maxHeight: "90vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
       {title && (
         <Modal.Header
-          style={{ paddingBottom: 0, marginBottom: -10 }}
+          style={{ paddingBottom: 0, marginBottom: 0 }}
           closeButton={true}
         >
           <Modal.Title as="h3">

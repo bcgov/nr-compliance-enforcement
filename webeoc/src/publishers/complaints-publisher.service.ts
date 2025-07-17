@@ -14,11 +14,15 @@ export class ComplaintsPublisherService {
   }
 
   private async initializeNATS() {
-    const nc = await connect({
-      servers: [process.env.NATS_HOST],
-      waitOnFirstConnect: true,
-    });
-    this.jsClient = nc.jetstream();
+    try {
+      const nc = await connect({
+        servers: [process.env.NATS_HOST],
+        waitOnFirstConnect: true,
+      });
+      this.jsClient = nc.jetstream();
+    } catch (error) {
+      this.logger.error(`Error connecting to NATS: ${error.message}`, error);
+    }
   }
 
   private codec = JSONCodec<Complaint>();
