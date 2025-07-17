@@ -283,7 +283,7 @@ export async function clearFilterById(filterId: string, page: Page) {
 export async function selectTypeAheadItemByText(selectId: string, optionText: string, page: Page) {
   const typeaheadInput = page.locator(`#${selectId}`).locator("input").first();
   await typeaheadInput.clear();
-  await typeaheadInput.fill(optionText);
+  await typeaheadInput.pressSequentially(optionText);
   await expect(await page.locator(".dropdown-item").getByText(optionText).first()).toBeVisible();
   await page.locator(".dropdown-item").getByText(optionText).first().click();
 }
