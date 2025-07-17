@@ -348,7 +348,7 @@ const violations = [
     long_description: "Aquatic: Invasive Species",
     display_order: 1,
     active_ind: true,
-    agency_code: { agency_code: "COS" },
+    agency_code_ref: { agency_code: "COS" },
   },
   {
     violation_code: "BOATING",
@@ -356,7 +356,7 @@ const violations = [
     long_description: "Boating",
     display_order: 2,
     active_ind: true,
-    agency_code: { agency_code: "COS" },
+    agency_code_ref: { agency_code: "COS" },
   },
   {
     violation_code: "DUMPING",
@@ -364,7 +364,7 @@ const violations = [
     long_description: "Dumping",
     display_order: 3,
     active_ind: true,
-    agency_code: { agency_code: "COS" },
+    agency_code_ref: { agency_code: "COS" },
   },
   {
     violation_code: "FISHERY",
@@ -372,7 +372,7 @@ const violations = [
     long_description: "Fisheries",
     display_order: 4,
     active_ind: true,
-    agency_code: { agency_code: "COS" },
+    agency_code_ref: { agency_code: "COS" },
   },
   {
     violation_code: "ORV",
@@ -380,7 +380,7 @@ const violations = [
     long_description: "Off-road vehicles (ORV)",
     display_order: 5,
     active_ind: true,
-    agency_code: { agency_code: "COS" },
+    agency_code_ref: { agency_code: "COS" },
   },
   {
     violation_code: "OPENBURN",
@@ -388,7 +388,7 @@ const violations = [
     long_description: "Open Burning",
     display_order: 6,
     active_ind: true,
-    agency_code: { agency_code: "COS" },
+    agency_code_ref: { agency_code: "COS" },
   },
   {
     violation_code: "OTHER",
@@ -396,7 +396,7 @@ const violations = [
     long_description: "Other",
     display_order: 7,
     active_ind: true,
-    agency_code: { agency_code: "COS" },
+    agency_code_ref: { agency_code: "COS" },
   },
   {
     violation_code: "PESTICDE",
@@ -404,7 +404,7 @@ const violations = [
     long_description: "Pesticide",
     display_order: 8,
     active_ind: true,
-    agency_code: { agency_code: "COS" },
+    agency_code_ref: { agency_code: "COS" },
   },
   {
     violation_code: "RECREATN",
@@ -412,7 +412,7 @@ const violations = [
     long_description: "Recreation sites/ trails",
     display_order: 9,
     active_ind: true,
-    agency_code: { agency_code: "COS" },
+    agency_code_ref: { agency_code: "COS" },
   },
 ];
 

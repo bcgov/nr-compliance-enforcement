@@ -1,7 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 
-import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { ComplaintMethodReceivedCode } from "../../complaint_method_received_code/entities/complaint_method_received_code.entity";
 
 export class CompMthdRecvCdAgcyCdXrefDto {
@@ -16,7 +15,7 @@ export class CompMthdRecvCdAgcyCdXrefDto {
     example: "INDCAMP",
     description: "A human readable code used to identify an attractant.",
   })
-  public agency_code: AgencyCode;
+  public agency_code_ref: string;
 
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",

@@ -21,7 +21,7 @@ const complaints = [
     update_utc_timestamp: "2023-10-24T19:06:48.861Z",
     complaint_identifier: "23-029344",
     reported_by_code: null,
-    owned_by_agency_code: null,
+    owned_by_agency_code_ref: null,
     complaint_status_code: { complaint_status_code: "OPEN", short_description: "OPEN", long_description: "Open" },
     cos_geo_org_unit: {
       zone_code: "CRBOTMPSN",
@@ -86,7 +86,7 @@ const complaints = [
     update_utc_timestamp: "2023-11-14T19:45:56.835Z",
     complaint_identifier: "23-031744",
     reported_by_code: null,
-    owned_by_agency_code: null,
+    owned_by_agency_code_ref: null,
     complaint_status_code: { complaint_status_code: "OPEN", short_description: "OPEN", long_description: "Open" },
     cos_geo_org_unit: {
       zone_code: "CRBOTMPSN",
@@ -151,7 +151,7 @@ const complaints = [
     update_utc_timestamp: "2023-10-24T19:06:48.861Z",
     complaint_identifier: "23-031562",
     reported_by_code: null,
-    owned_by_agency_code: null,
+    owned_by_agency_code_ref: null,
     complaint_status_code: { complaint_status_code: "OPEN", short_description: "OPEN", long_description: "Open" },
     cos_geo_org_unit: {
       zone_code: "CRBOTMPSN",
@@ -215,7 +215,7 @@ const complaints = [
     update_utc_timestamp: "2023-10-24T19:06:48.861Z",
     complaint_identifier: "23-031396",
     reported_by_code: null,
-    owned_by_agency_code: null,
+    owned_by_agency_code_ref: null,
     complaint_status_code: { complaint_status_code: "OPEN", short_description: "OPEN", long_description: "Open" },
     cos_geo_org_unit: {
       zone_code: "CRBOTMPSN",
@@ -280,7 +280,7 @@ const complaints = [
     update_utc_timestamp: "2023-10-24T19:06:48.861Z",
     complaint_identifier: "23-029210",
     reported_by_code: null,
-    owned_by_agency_code: null,
+    owned_by_agency_code_ref: null,
     complaint_status_code: { complaint_status_code: "CLOSED", short_description: "CLOSED", long_description: "Closed" },
     cos_geo_org_unit: {
       zone_code: "FRSRS",
@@ -315,7 +315,7 @@ const complaints = [
     update_utc_timestamp: "2023-10-24T19:06:48.861Z",
     complaint_identifier: "23-026677",
     reported_by_code: null,
-    owned_by_agency_code: null,
+    owned_by_agency_code_ref: null,
     complaint_status_code: { complaint_status_code: "CLOSED", short_description: "CLOSED", long_description: "Closed" },
     cos_geo_org_unit: {
       zone_code: "CENISL",
@@ -349,7 +349,7 @@ const complaints = [
     update_utc_timestamp: "2023-10-24T19:06:48.861Z",
     complaint_identifier: "23-025135",
     reported_by_code: null,
-    owned_by_agency_code: null,
+    owned_by_agency_code_ref: null,
     complaint_status_code: { complaint_status_code: "CLOSED", short_description: "CLOSED", long_description: "Closed" },
     cos_geo_org_unit: {
       zone_code: "SNSHNCST",
@@ -385,7 +385,7 @@ const complaints = [
     update_utc_timestamp: "2023-10-24T19:06:48.861Z",
     complaint_identifier: "23-027921",
     reported_by_code: null,
-    owned_by_agency_code: null,
+    oowned_by_agency_code_ref: null,
     complaint_status_code: { complaint_status_code: "CLOSED", short_description: "CLOSED", long_description: "Closed" },
     cos_geo_org_unit: {
       zone_code: "EKTNY",

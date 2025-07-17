@@ -12,6 +12,7 @@ import { ComplaintFilterContext, ComplaintFilterProvider } from "@providers/comp
 import { resetFilters, ComplaintFilterPayload } from "@store/reducers/complaint-filters";
 
 import {
+  isFeatureActive,
   selectDefaultZone,
   setActiveTab,
   selectActiveTab,

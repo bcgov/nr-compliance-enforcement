@@ -8,7 +8,6 @@ import { Office } from "./entities/office.entity";
 import { MockOfficeRepository } from "../../../test/mocks/mock-office-repository";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { UUID } from "crypto";
-import { AgencyCodeDto } from "../agency_code/dto/agency_code.dto";
 import { CreateOfficeDto } from "./dto/create-office.dto";
 
 describe("Testing: OfficeService", () => {
@@ -99,22 +98,9 @@ describe("Testing: OfficeService", () => {
   });
 
   it("should create a new office record or throw an error", async () => {
-    const agency: AgencyCodeDto = {
-      agency_code: "TEST",
-      short_description: "Test",
-      long_description: "Test Agency",
-      display_order: 1,
-      active_ind: true,
-      create_user_id: "MSEARS",
-      update_user_id: "MSEARS",
-      create_utc_timestamp: new Date(),
-      update_utc_timestamp: new Date(),
-      external_agency_ind: false,
-    };
-
     const payload: CreateOfficeDto = {
       geo_organization_unit_code: "TEST",
-      agency_code: agency,
+      agency_code_ref: "TEST",
       create_user_id: "MSEARS",
       update_user_id: "MSEARS",
       create_utc_timestamp: new Date(),
@@ -124,10 +110,10 @@ describe("Testing: OfficeService", () => {
     let response = await service.create(payload);
     expect(response).not.toBe(null);
 
-    const { create_user_id, update_user_id, agency_code, office_guid } = response;
+    const { create_user_id, update_user_id, agency_code_ref, office_guid } = response;
     expect(create_user_id).toBe("TEST");
     expect(update_user_id).toBe("TEST");
-    expect(agency_code).toBe("COS");
+    expect(agency_code_ref).toBe("COS");
     expect(office_guid).not.toBe(null);
 
     response = await service.create(payload);

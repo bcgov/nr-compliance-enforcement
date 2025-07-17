@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, forwardRef } from "@nestjs/common";
 import { ChesService } from "../../external_api/ches/ches.service";
-import { generateReferralEmailBody, GenerateReferralEmailParams } from "../../email_templates/referrals";
+import { generateReferralEmailBody } from "../../email_templates/referrals";
 import { EmailReferenceService } from "../../v1/email_reference/email_reference.service";
 import { ComplaintService } from "../../v1/complaint/complaint.service";
 import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
@@ -8,7 +8,6 @@ import { SpeciesCodeService } from "../../v1/species_code/species_code.service";
 import { HwcrComplaintNatureCodeService } from "../../v1/hwcr_complaint_nature_code/hwcr_complaint_nature_code.service";
 import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
 import { GeoOrganizationUnitCodeService } from "../../v1/geo_organization_unit_code/geo_organization_unit_code.service";
-import { AgencyCodeService } from "../../v1/agency_code/agency_code.service";
 import { ViolationCodeService } from "../../v1/violation_code/violation_code.service";
 import { GeneralIncidentComplaintDto } from "../../types/models/complaints/dtos/gir-complaint";
 import { GirTypeCodeService } from "../../v1/gir_type_code/gir_type_code.service";
@@ -29,7 +28,6 @@ export class EmailService {
     private readonly _speciesCodeService: SpeciesCodeService,
     private readonly _natureOfComplaintService: HwcrComplaintNatureCodeService,
     private readonly _geoOrganizationUnitCodeService: GeoOrganizationUnitCodeService,
-    private readonly _agencyCodeService: AgencyCodeService,
     private readonly _violationCodeService: ViolationCodeService,
     private readonly _girTypeCodeService: GirTypeCodeService,
     private readonly _cssService: CssService,
@@ -107,8 +105,8 @@ export class EmailService {
   sendReferralEmail = async (createComplaintReferralDto, user, exportContentBuffer) => {
     const {
       complaint_identifier: id,
-      referred_to_agency_code,
-      referred_by_agency_code,
+      referred_to_agency_code_ref,
+      referred_by_agency_code_ref,
       referral_reason,
       complaint_url,
       additionalEmailRecipients,
@@ -136,7 +134,7 @@ export class EmailService {
 
       const recipientList = await this._buildRecipientList(
         externalAgencyInd,
-        referred_to_agency_code,
+        referred_to_agency_code_ref,
         complaint,
         additionalEmailRecipients,
       );
@@ -144,8 +142,10 @@ export class EmailService {
       const { short_description: communityName } = await this._geoOrganizationUnitCodeService.findOne(
         complaint.organization.area,
       );
-      const referredToAgency = await this._agencyCodeService.findById(referred_to_agency_code);
-      const referredByAgency = await this._agencyCodeService.findById(referred_by_agency_code);
+
+      //TODO - get this from the Code Table Service so the long description can be retrieved
+      const referredToAgency = referred_to_agency_code_ref;
+      const referredByAgency = referred_by_agency_code_ref;
 
       const { subjectTypeDescription, bodyTypeDescription, complaintSummaryText, subjectAdditionalDetails } =
         await this._getComplaintDetailsByType(type, complaint, communityName);
@@ -204,7 +204,9 @@ export class EmailService {
       const collaboratorName = `${firstName} ${lastName}`;
       const complaint = await this._complaintService.findById(complaintId, complaintType);
 
-      const { short_description: owningAgency } = await this._agencyCodeService.findById(complaint.ownedBy);
+      //TODO - get short description from the Code Table Service and don't just use the code
+      //const { short_description: owningAgency } = complaint.ownedBy;
+      const owningAgency = complaint.ownedBy;
       let subjectAdditionalDetails = "";
       let complaintSummaryText = "";
       let subjectTypeDescription = `${complaintType}`;

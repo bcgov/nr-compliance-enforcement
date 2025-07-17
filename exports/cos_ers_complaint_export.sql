@@ -45,8 +45,8 @@ select distinct
 	gfv.offloc_name as "District",
 	gfv.zone_name as "Zone",
 	gfv.region_name as "Region",
-	ST_X(cmp.location_geometry_point) AS "Longitude (X)",
-    ST_Y(cmp.location_geometry_point) AS "Latitude (Y)",
+	complaint.ST_X(cmp.location_geometry_point) AS "Longitude (X)",
+    complaint.ST_Y(cmp.location_geometry_point) AS "Latitude (Y)",
 	per.last_name || ', ' || per.first_name as "Officer Assigned",
 	cmp.reference_number AS "COORS Number"
 from 

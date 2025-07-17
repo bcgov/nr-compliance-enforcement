@@ -95,7 +95,7 @@ export const createComplaintMetaData = () => {
     location_detailed_text: String,
     complaint_status_code: Object,
     reported_by_code: ReportedByCode,
-    owned_by_agency_code: Object,
+    owned_by_agency_code_ref: String,
     reported_by_other_text: String,
     incident_reported_utc_timestmp: Date,
     incident_utc_datetime: Date,

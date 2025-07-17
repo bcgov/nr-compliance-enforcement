@@ -25,10 +25,9 @@ export class FeatureFlagService {
     return this.featureAgencyXrefRepository.find({
       relations: {
         feature_code: true,
-        agency_code: true,
       },
       order: {
-        agency_code: "ASC",
+        agency_code_ref: "ASC",
         feature_code: "ASC",
       },
     });
@@ -39,7 +38,6 @@ export class FeatureFlagService {
       where: { feature_agency_xref_guid: id },
       relations: {
         feature_code: true,
-        agency_code: true,
       },
     });
   }
@@ -52,7 +50,7 @@ export class FeatureFlagService {
         "featureCode",
         "featureAgencyXref.feature_code = featureCode.feature_code",
       )
-      .where("featureAgencyXref.agency_code = :agency_code", { agency_code: agencyCode })
+      .where("featureAgencyXref.agency_code_ref = :agency_code", { agency_code: agencyCode })
       .getMany();
     const result = data.map((feature) => {
       return {
@@ -74,7 +72,7 @@ export class FeatureFlagService {
         "featureCode",
         "featureAgencyXref.feature_code = featureCode.feature_code",
       )
-      .where("featureAgencyXref.agency_code = :agency_code", { agency_code: agencyCode })
+      .where("featureAgencyXref.agency_code_ref = :agency_code", { agency_code: agencyCode })
       .andWhere("featureAgencyXref.feature_code = :feature_code", { feature_code: featureCode })
       .getOne();
 

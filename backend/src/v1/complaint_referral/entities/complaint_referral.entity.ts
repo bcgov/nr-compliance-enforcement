@@ -1,6 +1,5 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { UUID } from "crypto";
-import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { Officer } from "../../officer/entities/officer.entity";
 import { Complaint } from "../../complaint/entities/complaint.entity";
 
@@ -36,13 +35,11 @@ export class ComplaintReferral {
   @Column("character varying", { name: "complaint_identifier" })
   complaint_identifier: string;
 
-  @ManyToOne(() => AgencyCode, (agencyCode) => agencyCode.agency_code)
-  @JoinColumn([{ name: "referred_by_agency_code", referencedColumnName: "agency_code" }])
-  referred_by_agency_code: AgencyCode;
+  @Column("character varying", { name: "referred_by_agency_code_ref" })
+  referred_by_agency_code_ref: string;
 
-  @ManyToOne(() => AgencyCode, (agencyCode) => agencyCode.agency_code)
-  @JoinColumn([{ name: "referred_to_agency_code", referencedColumnName: "agency_code" }])
-  referred_to_agency_code: AgencyCode;
+  @Column("character varying", { name: "referred_to_agency_code_ref" })
+  referred_to_agency_code_ref: string;
 
   @ManyToOne(() => Officer, (officer) => officer.officer_guid)
   @JoinColumn({ name: "officer_guid" })
