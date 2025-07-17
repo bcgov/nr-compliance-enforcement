@@ -101,6 +101,7 @@ export class CodeTableService {
     this.logger.debug("in code table: " + JSON.stringify(table));
     switch (table) {
       case "agency": {
+        // TODO: Rename case Management query once CM refactor is done
         const { data } = await get(token, {
           query:
             "{agencyMomsSpaghettiCodes{agencyCode shortDescription longDescription displayOrder activeIndicator externalAgencyIndicator}}",
