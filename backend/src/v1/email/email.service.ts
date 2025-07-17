@@ -33,7 +33,7 @@ export class EmailService {
     private readonly _girTypeCodeService: GirTypeCodeService,
     private readonly _cssService: CssService,
     private readonly _officerService: OfficerService,
-    private readonly _CodeTableService: CodeTableService,
+    private readonly _codeTableService: CodeTableService,
   ) {}
 
   private async _buildRecipientList(externalAgencyInd, referredToAgencyCode, complaint, additionalRecipients) {
@@ -145,7 +145,7 @@ export class EmailService {
         complaint.organization.area,
       );
 
-      const agencyTable = await this._CodeTableService.getCodeTableByName("agency", token);
+      const agencyTable = await this._codeTableService.getCodeTableByName("agency", token);
       const referredToAgency = agencyTable?.find(
         (agency: any) => agency.agency === referred_to_agency_code_ref,
       )?.longDescription;
@@ -214,7 +214,7 @@ export class EmailService {
       const { email, lastName, firstName } = collaborator;
       const collaboratorName = `${firstName} ${lastName}`;
       const complaint = await this._complaintService.findById(complaintId, complaintType);
-      const agencyTable = await this._CodeTableService.getCodeTableByName("agency", token);
+      const agencyTable = await this._codeTableService.getCodeTableByName("agency", token);
       const owningAgency = agencyTable?.find((agency: any) => agency.agency === complaint.ownedBy)?.shortDescription;
       let subjectAdditionalDetails = "";
       let complaintSummaryText = "";
