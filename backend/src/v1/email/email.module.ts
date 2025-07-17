@@ -11,6 +11,7 @@ import { ViolationCodeModule } from "../../v1/violation_code/violation_code.modu
 import { GirTypeCodeModule } from "../../v1/gir_type_code/gir_type_code.module";
 import { CssModule } from "../../external_api/css/css.module";
 import { OfficerModule } from "../../v1/officer/officer.module";
+import { CodeTableModule } from "../../v1/code-table/code-table.module";
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { OfficerModule } from "../../v1/officer/officer.module";
     GirTypeCodeModule,
     CssModule,
     OfficerModule,
+    CodeTableModule,
   ],
   controllers: [EmailController],
   providers: [EmailService],

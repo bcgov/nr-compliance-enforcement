@@ -85,6 +85,7 @@ export class ComplaintReferralService {
         createComplaintReferralDto,
         user,
         complaintExport,
+        token,
       );
 
       // Log the email recipients

@@ -256,6 +256,7 @@ export class PersonComplaintXrefService {
     personGuid: string,
     sendCollaboratorEmailDto: SendCollaboratorEmalDto,
     user,
+    token: string,
   ): Promise<PersonComplaintXref> {
     this.logger.debug(`Adding collaborator ${personGuid} Complaint ${complaintIdentifier}`);
     let newPersonComplaintXref: PersonComplaintXref;
@@ -291,7 +292,7 @@ export class PersonComplaintXrefService {
       await queryRunner.release();
       if (sendEmail) {
         try {
-          await this._emailService.sendCollaboratorEmail(complaintIdentifier, sendCollaboratorEmailDto, user);
+          await this._emailService.sendCollaboratorEmail(complaintIdentifier, sendCollaboratorEmailDto, user, token);
         } catch (error) {
           this.logger.error(`Error sending collaborator email.`, error);
         }
