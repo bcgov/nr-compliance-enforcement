@@ -388,6 +388,8 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`);
       const response = await get<Officer>(dispatch, parameters);
 
+      console.log(response);
+
       //Update auth_user_guid if there is no data
       if (!response.auth_user_guid) {
         const updateGuid = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${response.officer_guid}`, {
@@ -401,7 +403,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       let regionDescription = "";
       let zone = "";
       let zoneDescription = "";
-      let agency = response.agency_code?.agency_code;
+      let agency = response.agency_code_ref;
       let personGuid = response.person_guid.person_guid;
       let comsEnrolledInd = response.coms_enrolled_ind;
       let parkAreaGuid = response.park_area_guid;
@@ -469,7 +471,8 @@ export const getOfficerDefaultZone = (): AppThunk => async (dispatch) => {
         const {
           office_guid: { cos_geo_org_unit: unit, agency_code: agency },
         } = response;
-        const { agency_code: agencyCode } = agency;
+
+        const { agency: agencyCode } = agency;
 
         const { zone_code: name, zone_name: description } = unit;
 
