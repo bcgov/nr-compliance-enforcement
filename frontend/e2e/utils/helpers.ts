@@ -302,6 +302,6 @@ export async function selectTypeAheadItemByText(selectId: string, optionText: st
   const typeaheadInput = page.locator(`#${selectId}`).locator("input").first();
   await typeaheadInput.clear();
   await typeaheadInput.fill(optionText);
-  await expect(page.locator(".dropdown-item").getByText(optionText).first()).toBeVisible();
+  await expect(await page.locator(".dropdown-item").getByText(optionText).first()).toBeVisible();
   await page.locator(".dropdown-item").getByText(optionText).first().click();
 }
