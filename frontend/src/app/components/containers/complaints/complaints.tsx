@@ -20,6 +20,7 @@ import {
   setActiveComplaintsViewType,
   selectDefaultRegion,
   selectDefaultParkArea,
+  isFeatureActive,
 } from "@store/reducers/app";
 
 import { ComplaintMapWithServerSideClustering } from "./complaint-map-with-server-side-clustering";

@@ -8,7 +8,7 @@ interface CaseHeaderProps {
   caseData?: CaseMomsSpaghettiFile;
 }
 
-export const CaseHeader: FC<CaseHeaderProps> = ({ caseData: caseData }) => {
+export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
   // Extract values from case object with fallbacks
   const caseId = caseData?.caseIdentifier || "Unknown";
   const caseStatus = caseData?.caseStatus?.shortDescription || "Active";

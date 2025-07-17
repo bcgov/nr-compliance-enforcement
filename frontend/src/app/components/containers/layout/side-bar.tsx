@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { isSidebarOpen, toggleSidebar } from "@store/reducers/app";
+import { isSidebarOpen, toggleSidebar, isFeatureActive } from "@store/reducers/app";
 import MenuItem from "@apptypes/app/menu-item";
 import { Link } from "react-router-dom";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -8,10 +8,10 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import { AgencyBanner } from "./agency-banner";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
-
   const isOpen = useAppSelector(isSidebarOpen);
 
   const menueItems: Array<MenuItem> = [
@@ -20,6 +20,7 @@ export const SideBar: FC = () => {
       name: "Cases",
       icon: "bi bi-folder",
       route: "/cases",
+      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
     },
     {
       id: "complaints-link",
@@ -52,7 +53,6 @@ export const SideBar: FC = () => {
 
   const renderSideBarMenuItem = (idx: number, item: MenuItem): JSX.Element => {
     const { id, icon, name, route } = item;
-
     return isOpen ? (
       <li key={`sb-open-${idx}`}>
         {!route ? (
@@ -119,7 +119,6 @@ export const SideBar: FC = () => {
       >
         {/* <!-- organization name --> */}
         <AgencyBanner />
-
         {/* <!-- menu items for the organization --> */}
         <ul className="nav nav-pills flex-column mb-auto comp-sidenav-list">
           {menueItems.map((item, idx) => {
@@ -127,13 +126,15 @@ export const SideBar: FC = () => {
             if (item.excludedRoles && UserService.hasRole(item.excludedRoles)) {
               return null; // Exclude this item if the user has an excluded role
             }
-
             // Check if the item has required roles and if the user has the required role
             if (item.requiredRoles && !UserService.hasRole(item.requiredRoles)) {
               return null; // Exclude this item if the user does not have the required role
             }
-
-            // If neither excludedRoles nor requiredRoles conditions apply, render the item
+            // Check if the item is hidden
+            if (item.hidden) {
+              return null;
+            }
+            // If neither excludedRoles, requiredRoles, nor featureFlag conditions apply, render the item
             return renderSideBarMenuItem(idx, item);
           })}
         </ul>

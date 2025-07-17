@@ -1,11 +1,10 @@
 import { GraphQLClient } from "graphql-request";
 import { AUTH_TOKEN } from "@service/user-service";
-
-const GRAPHQL_URL = "http://localhost:3003/graphql";
+import config from "@/config";
 
 const getClient = () => {
   const accessToken = localStorage.getItem(AUTH_TOKEN);
-  return new GraphQLClient(GRAPHQL_URL, {
+  return new GraphQLClient(config.GRAPHQL_URL, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

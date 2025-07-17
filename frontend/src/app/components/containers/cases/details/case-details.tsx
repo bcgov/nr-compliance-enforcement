@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { useParams } from "react-router-dom";
 import { CaseHeader } from "./case-header";
 import { useGraphQLQuery } from "@graphql/hooks";
@@ -80,7 +80,7 @@ export const CaseDetails: FC = () => {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-group">
-                      <label>Case Identifier:</label>
+                      <p>Case Identifier:</p>
                       <p>{caseData.caseIdentifier || "N/A"}</p>
                     </div>
                   </div>
@@ -90,7 +90,7 @@ export const CaseDetails: FC = () => {
                   <div className="row">
                     <div className="col-12">
                       <div className="form-group">
-                        <label>Case Activities:</label>
+                        <p>Case Activities:</p>
                         <p>{caseData.caseActivities.length} activities found</p>
                       </div>
                     </div>
