@@ -126,7 +126,7 @@ export async function typeAndTriggerChange(locatorValue, value, page: Page) {
 }
 
 export async function selectItemById(selectId: string, optionText: string, page: Page) {
-  await page.locator(`#${selectId}`).click();
+  await page.locator(`#${selectId}`).first().click();
   await expect(page.locator(".comp-select__menu-list")).toBeVisible(); //Wait for the options to show
   await page.locator(`.comp-select__option`, { hasText: optionText }).first().click({ force: true });
 }
