@@ -110,6 +110,8 @@ describe("Testing: OfficeService", () => {
     let response = await service.create(payload);
     expect(response).not.toBe(null);
 
+    console.log(response);
+
     const { create_user_id, update_user_id, agency_code_ref, office_guid } = response;
     expect(create_user_id).toBe("TEST");
     expect(update_user_id).toBe("TEST");
