@@ -350,11 +350,10 @@ export class PersonComplaintXrefService {
         code: PersonComplaintXrefCodeEnum.COLLABORATOR,
       })
       .andWhere("officer.person_guid = person.person_guid")
-      .addSelect("officer.auth_user_guid")
+      .addSelect(["officer.auth_user_guid", "officer.agency_code_ref"])
       .addSelect("person_complaint_xref.active_ind")
       .execute();
 
-    //TODO: Confirm this is working in the FE
     const collaborators = res.map((row) => {
       return {
         personComplaintXrefGuid: row.person_complaint_xref_person_complaint_xref_guid,
