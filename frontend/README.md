@@ -106,11 +106,13 @@ executing GraphQL requests.
 
 ### Inline Query Definitions
 
-Define queries inline with components using the `gql` template literal. This
-approach keeps queries close to where they're used and allows for easy
-refactoring. The GET_CASE_FILE example demonstrates this pattern with a case
-details query that fetches case information including status, lead agency, and
-activities.
+Define queries inline with components using the `gql` template literal. The
+GET_CASE_FILE example demonstrates this pattern with a case details query that
+fetches case information including status, lead agency, and activities.
+
+This approach keeps queries close to where they're used but also allows for
+easy refactoring later to a mixture of shared and inline queries or a seperate
+path for queries.
 
 ## Environment Variables
 

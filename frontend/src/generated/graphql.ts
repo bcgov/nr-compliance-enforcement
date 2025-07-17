@@ -1080,36 +1080,7 @@ export type WildlifeInput = {
   tags?: InputMaybe<Array<InputMaybe<EarTagInput>>>;
 };
 
-export type GetCaseMomsSpaghetttiFileQueryVariables = Exact<{
-  caseFileGuid: Scalars['String']['input'];
-}>;
 
-
-export type GetCaseMomsSpaghetttiFileQuery = { __typename?: 'Query', caseMomsSpaghettiFile?: { __typename: 'CaseMomsSpaghettiFile', caseIdentifier?: string | null, caseOpenedTimestamp?: any | null, caseStatus?: { __typename?: 'CaseStatusCode', caseStatusCode?: string | null, shortDescription?: string | null, longDescription?: string | null } | null, leadAgency?: { __typename?: 'AgencyMomsSpaghettiCode', agencyCode?: string | null, shortDescription?: string | null, longDescription?: string | null } | null, caseActivities?: Array<{ __typename: 'CaseActivity' } | null> | null } | null };
-
-
-export const GetCaseMomsSpaghetttiFileDocument = gql`
-    query GetCaseMomsSpaghetttiFile($caseFileGuid: String!) {
-  caseMomsSpaghettiFile(caseFileGuid: $caseFileGuid) {
-    __typename
-    caseIdentifier
-    caseOpenedTimestamp
-    caseStatus {
-      caseStatusCode
-      shortDescription
-      longDescription
-    }
-    leadAgency {
-      agencyCode
-      shortDescription
-      longDescription
-    }
-    caseActivities {
-      __typename
-    }
-  }
-}
-    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -1118,9 +1089,7 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    GetCaseMomsSpaghetttiFile(variables: GetCaseMomsSpaghetttiFileQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetCaseMomsSpaghetttiFileQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetCaseMomsSpaghetttiFileQuery>({ document: GetCaseMomsSpaghetttiFileDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetCaseMomsSpaghetttiFile', 'query', variables);
-    }
+
   };
 }
 export type Sdk = ReturnType<typeof getSdk>;
