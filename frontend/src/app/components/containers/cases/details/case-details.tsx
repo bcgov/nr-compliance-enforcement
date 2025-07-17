@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { CaseHeader } from "./case-header";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
-import { GetCaseMomsSpaghetttiFileQuery, GetCaseMomsSpaghetttiFileQueryVariables } from "@/generated/graphql";
+import { CaseMomsSpaghettiFile } from "@/generated/graphql";
 
 const GET_CASE_FILE = gql`
   query GetCaseMomsSpaghetttiFile($caseFileGuid: String!) {
@@ -34,11 +34,7 @@ export type CaseParams = {
 
 export const CaseDetails: FC = () => {
   const { id = "" } = useParams<CaseParams>();
-  const { data, isLoading } = useGraphQLQuery<
-    GetCaseMomsSpaghetttiFileQuery,
-    Error,
-    GetCaseMomsSpaghetttiFileQueryVariables
-  >(GET_CASE_FILE, {
+  const { data, isLoading } = useGraphQLQuery<{ caseMomsSpaghettiFile: CaseMomsSpaghettiFile }>(GET_CASE_FILE, {
     queryKey: ["caseMomsSpaghettiFile", id],
     variables: { caseFileGuid: id },
     enabled: !!id, // Only refresh query if id is provided
