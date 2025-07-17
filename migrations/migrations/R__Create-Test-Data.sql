@@ -11471,7 +11471,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11492,7 +11492,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11512,7 +11512,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
