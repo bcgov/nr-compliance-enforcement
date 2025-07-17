@@ -201,7 +201,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                 className="d-flex justify-content-start"
                 key={`${c.personComplaintXrefGuid}`}
               >
-                {c.lastName}, {c.firstName} | <span className="fw-bold">{c.collaboratorAgency}</span>
+                {c.lastName}, {c.firstName} |{" "}
+                <span className="fw-bold">
+                  {agencyCodes?.find(({ agency }) => agency === c.collaboratorAgency)?.shortDescription}
+                </span>
               </div>
             );
           })}
