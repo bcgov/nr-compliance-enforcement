@@ -10,12 +10,6 @@ import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
-// hook to check if a feature flag is active
-const useFeatureFlag = (featureFlag: string | undefined) => {
-  if (!featureFlag) return true; // If no feature flag, always show
-  return useAppSelector(isFeatureActive(featureFlag));
-};
-
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector(isSidebarOpen);
@@ -26,7 +20,7 @@ export const SideBar: FC = () => {
       name: "Cases",
       icon: "bi bi-folder",
       route: "/cases",
-      featureFlag: FEATURE_TYPES.CASES,
+      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
     },
     {
       id: "complaints-link",
@@ -136,9 +130,9 @@ export const SideBar: FC = () => {
             if (item.requiredRoles && !UserService.hasRole(item.requiredRoles)) {
               return null; // Exclude this item if the user does not have the required role
             }
-            // Check if the item has a feature flag and if the feature is active
-            if (!useFeatureFlag(item.featureFlag)) {
-              return null; // Exclude this item if the feature flag is not active
+            // Check if the item is hidden
+            if (item.hidden) {
+              return null;
             }
             // If neither excludedRoles, requiredRoles, nor featureFlag conditions apply, render the item
             return renderSideBarMenuItem(idx, item);
