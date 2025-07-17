@@ -1,7 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Entity, Column, JoinColumn, PrimaryColumn, Index, ManyToOne, OneToOne, OneToMany } from "typeorm";
 import { ComplaintStatusCode } from "../../complaint_status_code/entities/complaint_status_code.entity";
-import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { GeoOrganizationUnitCode } from "../../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { Point } from "geojson";
 import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
@@ -35,10 +34,8 @@ export class Complaint {
     example: "COS",
     description: "The organization code of the organization that currently owns the complaint",
   })
-  @ManyToOne(() => AgencyCode)
-  @ApiProperty({ type: () => AgencyCode })
-  @JoinColumn({ name: "owned_by_agency_code" })
-  owned_by_agency_code: AgencyCode;
+  @Column({ name: "owned_by_agency_code_ref" })
+  owned_by_agency_code_ref: string;
 
   @ApiProperty({
     example: "Open",
@@ -290,7 +287,7 @@ export class Complaint {
     update_utc_timestamp?: Date,
     complaint_identifier?: string,
     reported_by_code?: ReportedByCode,
-    owned_by_agency_code?: AgencyCode,
+    owned_by_agency_code_ref?: string,
     complaint_status_code?: ComplaintStatusCode,
     geo_organization_unit_code?: GeoOrganizationUnitCode,
     cos_geo_org_unit?: CosGeoOrgUnit,
@@ -326,7 +323,7 @@ export class Complaint {
     this.update_utc_timestamp = update_utc_timestamp;
     this.complaint_identifier = complaint_identifier;
     this.reported_by_code = reported_by_code;
-    this.owned_by_agency_code = owned_by_agency_code;
+    this.owned_by_agency_code_ref = owned_by_agency_code_ref;
     this.complaint_status_code = complaint_status_code;
     this.geo_organization_unit_code = geo_organization_unit_code;
     this.cos_geo_org_unit = cos_geo_org_unit;

@@ -388,11 +388,11 @@ BEGIN
     if (_edit_violation_code <> _current_violation_type_code) then
 	    if _edit_violation_code = 'WASTE' OR _edit_violation_code = 'PESTICDE' then
         UPDATE complaint.complaint
-        SET    owned_by_agency_code = 'EPO'
+        SET    owned_by_agency_code_ref = 'EPO'
         WHERE  complaint_identifier = _complaint_identifier;
       else
         UPDATE complaint.complaint
-        SET    owned_by_agency_code = 'COS'
+        SET    owned_by_agency_code_ref = 'COS'
         WHERE  complaint_identifier = _complaint_identifier;
       end if;  
 	    

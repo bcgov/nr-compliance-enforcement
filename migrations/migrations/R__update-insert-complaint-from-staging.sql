@@ -181,7 +181,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
                             create_utc_timestamp,
                             update_user_id,
                             update_utc_timestamp,
-                            owned_by_agency_code,
+                            owned_by_agency_code_ref,
                             complaint_status_code,
                             geo_organization_unit_code,
                             location_geometry_point,
@@ -344,7 +344,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
 
       IF _violation_code = 'WASTE' OR _violation_code = 'PESTICDE' THEN
         UPDATE complaint.complaint
-        SET    owned_by_agency_code = 'EPO', complaint_status_code = 'OPEN'
+        SET    owned_by_agency_code_ref = 'EPO', complaint_status_code = 'OPEN'
         WHERE  complaint_identifier = _complaint_identifier;
       END IF;
 
@@ -383,7 +383,7 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
         SELECT comp_mthd_recv_cd_agcy_cd_xref_guid 
         FROM complaint.comp_mthd_recv_cd_agcy_cd_xref cmrcacx 
         WHERE complaint_method_received_code = METHOD_OF_COMPLAINT_RAPP
-        AND cmrcacx.agency_code = com.owned_by_agency_code
+        AND cmrcacx.agency_code_ref = com.owned_by_agency_code_ref
     )
     WHERE complaint_identifier = _complaint_identifier;
     UPDATE complaint.staging_complaint

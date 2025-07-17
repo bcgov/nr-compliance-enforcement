@@ -74,11 +74,9 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (dest) => dest.owned_by_agency_code,
+      (dest) => dest.owned_by_agency_code_ref,
       mapFrom((src) => {
-        return {
-          agency_code: src.ownedBy,
-        };
+        return src.ownedBy;
       }),
     ),
     forMember(

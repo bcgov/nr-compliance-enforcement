@@ -9,7 +9,7 @@ ALTER TABLE feature_agency_xref DROP CONSTRAINT "FK_agencycode";
 ALTER TABLE team DROP CONSTRAINT "team_agency_code_fk";
 ALTER TABLE geo_org_unit_structure DROP CONSTRAINT "FK_gorgustrct_agencycode";
 
---ALTER TABLE complaint RENAME COLUMN owned_by_agency_code TO owned_by_agency_code_ref;
+ALTER TABLE complaint RENAME COLUMN owned_by_agency_code TO owned_by_agency_code_ref;
 ALTER TABLE complaint_type_code RENAME COLUMN agency_code TO agency_code_ref;
 ALTER TABLE comp_mthd_recv_cd_agcy_cd_xref RENAME COLUMN agency_code TO agency_code_ref;
 ALTER TABLE email_reference RENAME COLUMN agency_code TO agency_code_ref;
@@ -22,7 +22,7 @@ ALTER TABLE geo_org_unit_structure RENAME COLUMN agency_code TO agency_code_ref;
 ALTER TABLE office RENAME COLUMN agency_code TO agency_code_ref;
 ALTER TABLE officer RENAME COLUMN agency_code TO agency_code_ref;
 
---comment on column complaint.owned_by_agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  The agency that currently owns the complaint.';
+comment on column complaint.owned_by_agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  The agency that currently owns the complaint.';
 comment on column complaint_type_code.agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  The agency that defines the complaint type';
 comment on column comp_mthd_recv_cd_agcy_cd_xref.agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  Used to map methods complaints are received to NatSuite agencies as the users were not able to standardize on a common list.';
 comment on column email_reference.agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  The agency that the email address belongs to.';

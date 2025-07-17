@@ -67,7 +67,7 @@ export class ComplaintReferralService {
 
     if (result.complaint_referral_guid) {
       const updateData: any = {
-        owned_by_agency_code: referred_to_agency_code_ref,
+        owned_by_agency_code_ref: referred_to_agency_code_ref,
         comp_last_upd_utc_timestamp: new Date(),
       };
       if (externalAgencyInd) {
