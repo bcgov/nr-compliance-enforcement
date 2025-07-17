@@ -17,24 +17,6 @@ export async function waitForSpinner(page: Page, timeBeforeContinuing: number = 
   }
 }
 
-export async function optionallyWaitForSpinner(page: Page, alternativeSelector: string) {
-  const foundSpinner = await Promise.race([
-    page
-      .locator(".comp-loader-overlay")
-      .waitFor()
-      .then(() => true),
-    page
-      .locator(alternativeSelector)
-      .waitFor()
-      .then(() => false),
-  ]).catch(() => {
-    throw new Error(`When searching for ${alternativeSelector} and loader overaly, neither were found`);
-  });
-  if (foundSpinner) {
-    await slowExpect(page.locator(".comp-loader-overlay")).not.toBeVisible();
-  }
-}
-
 export async function navigateToDetailsScreen(
   complaintType: string,
   complaintIdentifier: string,
@@ -54,14 +36,14 @@ export async function navigateToDetailsScreen(
 
     //-- click on HWCR tab
     await page.locator(`#${complaintType.toLowerCase()}-tab`).click();
-    await expect(page.locator("#comp-zone-filter")).toBeVisible();
+    await expect(await page.locator("#comp-zone-filter")).toBeVisible();
     await page.locator("#comp-zone-filter").click(); //clear zone filter so this complaint is in the list view
-    await expect(page.locator("#comp-zone-filter")).not.toBeVisible();
+    await expect(await page.locator("#comp-zone-filter")).not.toBeVisible();
     await waitForSpinner(page);
-    await expect(page.locator("#comp-status-filter")).toBeVisible();
+    await expect(await page.locator("#comp-status-filter")).toBeVisible();
     await page.locator("#comp-status-filter").click(); //clear status filter so this complaint is in the list view
     await waitForSpinner(page);
-    await expect(page.locator("#comp-status-filter")).not.toBeVisible();
+    await expect(await page.locator("#comp-status-filter")).not.toBeVisible();
 
     //-- check to make sure there are items in the table
     await expect(await page.locator("#complaint-list").locator("tr").count()).toBeGreaterThan(0);
