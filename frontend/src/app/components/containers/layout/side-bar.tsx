@@ -10,6 +10,12 @@ import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
+// hook to check if a feature flag is active
+const useFeatureFlag = (featureFlag: string | undefined) => {
+  if (!featureFlag) return true; // If no feature flag, always show
+  return useAppSelector(isFeatureActive(featureFlag));
+};
+
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector(isSidebarOpen);
@@ -131,11 +137,8 @@ export const SideBar: FC = () => {
               return null; // Exclude this item if the user does not have the required role
             }
             // Check if the item has a feature flag and if the feature is active
-            if (item.featureFlag) {
-              const isActive = useAppSelector(isFeatureActive(item.featureFlag));
-              if (!isActive) {
-                return null; // Exclude this item if the feature flag is not active
-              }
+            if (!useFeatureFlag(item.featureFlag)) {
+              return null; // Exclude this item if the feature flag is not active
             }
             // If neither excludedRoles, requiredRoles, nor featureFlag conditions apply, render the item
             return renderSideBarMenuItem(idx, item);

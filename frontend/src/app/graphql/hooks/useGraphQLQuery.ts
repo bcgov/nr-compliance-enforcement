@@ -32,7 +32,7 @@ export const useGraphQLQuery = <TData = any, TError = Error, TVariables = any>(
   return useQuery<TData, TError>({
     queryKey,
     queryFn: async () => {
-      return await useRequest(query, variables || {});
+      return await useRequest(query, variables ?? {});
     },
     enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes default
