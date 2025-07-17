@@ -15,6 +15,7 @@ import { GenerateCollaboratorEmailParams, generateCollaboratorEmailBody } from "
 import { CssService } from "../../external_api/css/css.service";
 import { SendCollaboratorEmalDto } from "../../v1/email/dto/send_collaborator_email.dto";
 import { OfficerService } from "../../v1/officer/officer.service";
+import { CodeTableService } from "../code-table/code-table.service";
 
 @Injectable()
 export class EmailService {
@@ -32,6 +33,7 @@ export class EmailService {
     private readonly _girTypeCodeService: GirTypeCodeService,
     private readonly _cssService: CssService,
     private readonly _officerService: OfficerService,
+    private readonly _CodeTableService: CodeTableService,
   ) {}
 
   private async _buildRecipientList(externalAgencyInd, referredToAgencyCode, complaint, additionalRecipients) {
@@ -102,7 +104,7 @@ export class EmailService {
     return { subjectTypeDescription, bodyTypeDescription, complaintSummaryText, subjectAdditionalDetails };
   }
 
-  sendReferralEmail = async (createComplaintReferralDto, user, exportContentBuffer) => {
+  sendReferralEmail = async (createComplaintReferralDto, user, exportContentBuffer, token) => {
     const {
       complaint_identifier: id,
       referred_to_agency_code_ref,
@@ -143,16 +145,20 @@ export class EmailService {
         complaint.organization.area,
       );
 
-      //TODO - get this from the Code Table Service so the long description can be retrieved
-      const referredToAgency = referred_to_agency_code_ref;
-      const referredByAgency = referred_by_agency_code_ref;
+      const agencyTable = await this._CodeTableService.getCodeTableByName("agency", token);
+      const referredToAgency = agencyTable?.find(
+        (agency: any) => agency.agency === referred_to_agency_code_ref,
+      )?.longDescription;
+      const referredByAgency = agencyTable?.find(
+        (agency: any) => agency.agency === referred_by_agency_code_ref,
+      )?.longDescription;
 
       const { subjectTypeDescription, bodyTypeDescription, complaintSummaryText, subjectAdditionalDetails } =
         await this._getComplaintDetailsByType(type, complaint, communityName);
 
       const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : null;
       const emailSubject = externalAgencyInd
-        ? `${envFlag}Referral from ${referredByAgency.long_description}: ${subjectTypeDescription} complaint #${id}`
+        ? `${envFlag}Referral from ${referredByAgency}: ${subjectTypeDescription} complaint #${id}`
         : `${envFlag}NatCom referral ${subjectTypeDescription} complaint #${id} ${subjectAdditionalDetails}`;
 
       const generateReferralEmailParams = {
@@ -160,8 +166,8 @@ export class EmailService {
         complaintTypeDescription: bodyTypeDescription,
         senderName,
         senderEmailAddress,
-        referredToAgency: referredToAgency.long_description,
-        referredByAgency: referredByAgency.long_description,
+        referredToAgency: referredToAgency,
+        referredByAgency: referredByAgency,
         reasonForReferral: referral_reason,
         supportEmail,
         complaintSummaryText,
@@ -188,7 +194,12 @@ export class EmailService {
     }
   };
 
-  sendCollaboratorEmail = async (complaintId, sendCollaboratorEmailDto: SendCollaboratorEmalDto, user) => {
+  sendCollaboratorEmail = async (
+    complaintId,
+    sendCollaboratorEmailDto: SendCollaboratorEmalDto,
+    user,
+    token: string,
+  ) => {
     try {
       const { complaintType, personGuid, complaintUrl } = sendCollaboratorEmailDto;
       const senderEmailAddress = user.email ?? process.env.CEDS_EMAIL;
@@ -203,10 +214,8 @@ export class EmailService {
       const { email, lastName, firstName } = collaborator;
       const collaboratorName = `${firstName} ${lastName}`;
       const complaint = await this._complaintService.findById(complaintId, complaintType);
-
-      //TODO - get short description from the Code Table Service and don't just use the code
-      //const { short_description: owningAgency } = complaint.ownedBy;
-      const owningAgency = complaint.ownedBy;
+      const agencyTable = await this._CodeTableService.getCodeTableByName("agency", token);
+      const owningAgency = agencyTable?.find((agency: any) => agency.agency === complaint.ownedBy)?.shortDescription;
       let subjectAdditionalDetails = "";
       let complaintSummaryText = "";
       let subjectTypeDescription = `${complaintType}`;

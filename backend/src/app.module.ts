@@ -159,10 +159,10 @@ export class AppModule {
       .forRoutes(
         "v1/code-table",
         "v1/case",
+        "v1/complaint-referral",
         "v1/shared-data",
         "v1/configuration",
-        "v1/complaint/search",
-        "v1/complaint/map/search",
+        "v1/complaint/",
         "v1/document/export-complaint",
       );
   }
