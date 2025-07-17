@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CodeTableService } from "./code-table.service";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 
@@ -46,10 +45,6 @@ describe("Testing: CodeTable Service", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CodeTableService,
-        {
-          provide: getRepositoryToken(AgencyCode),
-          useFactory: MockAgencyCodeTableRepository,
-        },
         {
           provide: getRepositoryToken(AttractantCode),
           useFactory: MockAttractantCodeTableRepository,
@@ -285,10 +280,6 @@ describe("Testing: CodeTable service", () => {
       providers: [
         CodeTableService,
         {
-          provide: getRepositoryToken(AgencyCode),
-          useFactory: MockAgencyCodeTableRepository,
-        },
-        {
           provide: getRepositoryToken(AttractantCode),
           useFactory: MockAttractantCodeTableRepository,
         },
@@ -380,10 +371,6 @@ describe("Testing: CodeTable service", () => {
       providers: [
         CodeTableService,
         {
-          provide: getRepositoryToken(AgencyCode),
-          useFactory: MockAgencyCodeTableRepository,
-        },
-        {
           provide: getRepositoryToken(AttractantCode),
           useFactory: MockAttractantCodeTableRepository,
         },
@@ -474,10 +461,6 @@ describe("Testing: CodeTable service", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CodeTableService,
-        {
-          provide: getRepositoryToken(AgencyCode),
-          useFactory: MockAgencyCodeTableRepository,
-        },
         {
           provide: getRepositoryToken(AttractantCode),
           useFactory: MockAttractantCodeTableRepository,

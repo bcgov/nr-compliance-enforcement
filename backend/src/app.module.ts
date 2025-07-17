@@ -8,7 +8,6 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { JwtAuthModule } from "./auth/jwtauth.module";
 import { ComplaintStatusCodeModule } from "./v1/complaint_status_code/complaint_status_code.module";
-import { AgencyCodeModule } from "./v1/agency_code/agency_code.module";
 import { ComplaintModule } from "./v1/complaint/complaint.module";
 import { ViolationCodeModule } from "./v1/violation_code/violation_code.module";
 import { AllegationComplaintModule } from "./v1/allegation_complaint/allegation_complaint.module";
@@ -95,7 +94,6 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     }),
     JwtAuthModule,
     ComplaintStatusCodeModule,
-    AgencyCodeModule,
     ComplaintModule,
     ViolationCodeModule,
     AllegationComplaintModule,

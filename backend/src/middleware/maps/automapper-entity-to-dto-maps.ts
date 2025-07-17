@@ -38,7 +38,6 @@ import { AllegationReportData } from "../../types/models/reports/complaints/alle
 import { WildlifeReportData } from "../../types/models/reports/complaints/wildlife-report-data";
 import { formatPhonenumber } from "../../common/methods";
 import { GeneralIncidentReportData } from "src/types/models/reports/complaints/general-incident-report-data";
-import { AgencyCode } from "src/v1/agency_code/entities/agency_code.entity";
 // @SONAR_STOP@
 
 //-- define entity -> model mapping
@@ -368,34 +367,6 @@ const attractantCodeToAttractantDtoMap = (mapper: Mapper) => {
   );
 };
 
-const agencyCodeToAgencyDto = (mapper: Mapper) => {
-  createMap<AgencyCode, Agency>(
-    mapper,
-    "AgencyCode",
-    "AgencyCodeDto",
-    forMember(
-      (destination) => destination.agency,
-      mapFrom((source) => source.agency_code),
-    ),
-    forMember(
-      (destination) => destination.shortDescription,
-      mapFrom((source) => source.short_description),
-    ),
-    forMember(
-      (destination) => destination.longDescription,
-      mapFrom((source) => source.long_description),
-    ),
-    forMember(
-      (destination) => destination.displayOrder,
-      mapFrom((source) => source.display_order),
-    ),
-    forMember(
-      (destination) => destination.isActive,
-      mapFrom((source) => source.active_ind),
-    ),
-  );
-};
-
 const reportedByCodeToReportedByDto = (mapper: Mapper) => {
   createMap<ReportedByCode, ReportedBy>(
     mapper,
@@ -482,7 +453,6 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
   natureOfComplaintCodeToNatureOfComplaintDtoMap(mapper);
   attractantCodeToAttractantDtoMap(mapper);
   attractantXrefToAttractantXrefDto(mapper);
-  agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
@@ -752,7 +722,6 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
 
 export const applyAllegationComplaintMap = (mapper: Mapper) => {
   violationCodeToViolationDto(mapper);
-  agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
@@ -991,7 +960,6 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
 
 export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
   violationCodeToViolationDto(mapper);
-  agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
@@ -1207,7 +1175,6 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
 
 export const applySectorComplaintMap = (mapper: Mapper) => {
   violationCodeToViolationDto(mapper);
-  agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
@@ -1414,7 +1381,6 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
   natureOfComplaintCodeToNatureOfComplaintDtoMap(mapper);
   attractantCodeToAttractantDtoMap(mapper);
   attractantXrefToAttractantXrefDto(mapper);
-  agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
@@ -1743,7 +1709,6 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
   const reportGeneratedOn: Date = new Date();
 
   violationCodeToViolationDto(mapper);
-  agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
@@ -2060,7 +2025,6 @@ export const mapGeneralIncidentReport = (mapper: Mapper, tz: string = "America/V
   violationCodeToViolationDto(mapper);
   personComplaintToDelegateDtoMap(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
-  agencyCodeToAgencyDto(mapper);
 
   createMap<GirComplaint, GeneralIncidentReportData>(
     mapper,

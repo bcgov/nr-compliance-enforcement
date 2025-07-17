@@ -35,4 +35,4 @@ comment on column geo_org_unit_structure.agency_code_ref is 'Key representing an
 comment on column office.agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  The agency that owns the office.';
 comment on column officer.agency_code_ref is 'Key representing an agency stored in the agency_code table of the shared schema.  The agency that employs the Officer.';
 
---DROP table agency_code
+DROP table agency_code

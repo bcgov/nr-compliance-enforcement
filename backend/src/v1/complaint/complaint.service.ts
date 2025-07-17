@@ -28,7 +28,6 @@ import { Complaint } from "./entities/complaint.entity";
 import { UpdateComplaintDto } from "../../types/models/complaints/dtos/update-complaint";
 
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
-import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 
@@ -1862,12 +1861,6 @@ export class ComplaintService {
 
     const idir = webeocInd ? "webeoc" : getIdirFromRequest(this.request);
 
-    const agencyCodeInstance = new AgencyCode("COS");
-
-    const { ownedBy } = model;
-
-    const agencyCode = webeocInd ? agencyCodeInstance : new AgencyCode(ownedBy);
-
     const queryRunner = this.dataSource.createQueryRunner();
     let complaintId = "";
 
@@ -1889,12 +1882,12 @@ export class ComplaintService {
       entity.create_user_id = idir;
       entity.update_user_id = idir;
       entity.complaint_identifier = complaintId;
-      entity.owned_by_agency_code_ref = agencyCode.agency_code;
+      entity.owned_by_agency_code_ref = model.ownedBy;
       entity.comp_last_upd_utc_timestamp = null; // do not want to set this value on a create
 
       const xref = await this._compMthdRecvCdAgcyCdXrefService.findByComplaintMethodReceivedCodeAndAgencyCode(
         model.complaintMethodReceivedCode,
-        agencyCode.agency_code,
+        model.ownedBy,
       );
 
       entity.comp_mthd_recv_cd_agcy_cd_xref = xref;

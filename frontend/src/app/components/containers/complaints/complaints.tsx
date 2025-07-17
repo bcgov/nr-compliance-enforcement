@@ -12,6 +12,7 @@ import { ComplaintFilterContext, ComplaintFilterProvider } from "@providers/comp
 import { resetFilters, ComplaintFilterPayload } from "@store/reducers/complaint-filters";
 
 import {
+  isFeatureActive,
   selectDefaultZone,
   setActiveTab,
   selectActiveTab,
@@ -32,7 +33,6 @@ import Option from "@apptypes/app/option";
 import { resetComplaintSearchParameters, selectComplaintSearchParameters } from "@/app/store/reducers/complaints";
 import { AgencyType } from "@/app/types/app/agency-types";
 import { DropdownOption } from "@/app/types/app/drop-down-option";
-import { isFeatureActive } from "@store/reducers/app";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 type Props = {
