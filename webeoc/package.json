@@ -1,6 +1,6 @@
 {
   "name": "webeoc",
-  "version": "2.0.36",
+  "version": "2.0.38",
   "description": "",
   "author": "",
   "private": true,
@@ -30,6 +30,7 @@
     "date-fns": "^3.6.0",
     "date-fns-tz": "^3.1.3",
     "dotenv": "^16.3.1",
+    "https-proxy-agent": "^7.0.6",
     "nats": "^2.23.0",
     "npm-check-updates": "^17.1.3",
     "reflect-metadata": "^0.1.13",

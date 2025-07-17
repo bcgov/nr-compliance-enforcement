@@ -216,7 +216,10 @@ export const assignOfficerToOffice =
       });
 
       const { office_guid: office } = selectedOfficer || {};
-      const updatedOffice = { ...office, office_guid: officeId };
+      let updatedOffice;
+      if (officeId) {
+        updatedOffice = { ...office, office_guid: officeId };
+      } else updatedOffice = null;
 
       const update = { ...selectedOfficer, office_guid: updatedOffice };
       const { agency_code, ...updateWithoutAgencyCode } = update;
@@ -528,7 +531,7 @@ export const selectOfficersByZoneAgencyAndRole =
         const hasRole = officer?.user_roles.includes(role);
         const isNotReadOnly = !officer?.user_roles.includes(Roles.READ_ONLY);
         const matchesParkArea =
-          Array.isArray(park_area_guids) && park_area_guids.length > 0
+          Array.isArray(park_area_guids) && park_area_guids.length > 0 && officer.park_area_guid
             ? park_area_guids.includes(officer.park_area_guid)
             : true;
 

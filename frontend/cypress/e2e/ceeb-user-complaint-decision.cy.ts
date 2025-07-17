@@ -108,7 +108,7 @@ describe("CEEB Complaints can be created and outcome decisions set ", () => {
     //end verifying edit changes are saved
   });
 
-  it("can save a authorization id on a complaint with a violation type of Waste", function () {
+  it("can save an authorization id on a complaint with a violation type of Waste", function () {
     cy.navigateToDetailsScreen(COMPLAINT_TYPES.ERS, complaintId, true);
     //delete authorization if it exists
     cy.get("#ceeb-authorization").then(function ($authorization) {
