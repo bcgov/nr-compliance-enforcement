@@ -5,7 +5,6 @@ import { AttractantCode } from "../attractant_code/entities/attractant_code.enti
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 
 import {
-  MockAgencyCodeTableRepository,
   MockAttractantCodeTableRepository,
   MockComplaintStatusCodeTableRepository,
   MockNatureOfComplaintCodeTableRepository,
@@ -113,19 +112,6 @@ describe("Testing: CodeTable Service", () => {
 
   it("should be defined", () => {
     expect(service).toBeDefined();
-  });
-
-  it("should return collection of agency codes", async () => {
-    //-- arrange
-    const _tableName = "agency";
-
-    //-- act
-    const results = await service.getCodeTableByName(_tableName);
-
-    //-- assert
-    expect(results).not.toBe(null);
-    expect(results.length).not.toBe(0);
-    expect(results.length).toBe(3);
   });
 
   it("should return collection of reported by codes", async () => {

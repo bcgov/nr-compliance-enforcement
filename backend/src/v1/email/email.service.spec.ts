@@ -10,6 +10,7 @@ import { ViolationCodeService } from "../../v1/violation_code/violation_code.ser
 import { GirTypeCodeService } from "../../v1/gir_type_code/gir_type_code.service";
 import { CssService } from "../../external_api/css/css.service";
 import { OfficerService } from "../../v1/officer/officer.service";
+import { CodeTableService } from "../code-table/code-table.service";
 
 describe("EmailService", () => {
   let service: EmailService;
@@ -24,6 +25,10 @@ describe("EmailService", () => {
         },
         {
           provide: EmailReferenceService,
+          useValue: {},
+        },
+        {
+          provide: CodeTableService,
           useValue: {},
         },
         {
