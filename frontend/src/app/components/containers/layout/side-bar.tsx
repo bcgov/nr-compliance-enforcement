@@ -20,7 +20,7 @@ export const SideBar: FC = () => {
       name: "Cases",
       icon: "bi bi-folder",
       route: "/cases",
-      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
+      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.CASES)),
     },
     {
       id: "complaints-link",
