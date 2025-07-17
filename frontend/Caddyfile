@@ -30,7 +30,7 @@
   encode zstd gzip
   file_server
   @spa_router {
-    not path /api/* /config.js
+    not path /api/* /graphql/* /config.js
     file {
         try_files {path} /index.html
     }
@@ -42,7 +42,7 @@
     header_up X-Real-IP {remote_host}
     header_up X-Forwarded-For {remote_host}
   }
-  # Proxy requests to the GraphQL service 
+  # Proxy requests to GraphQL service
   reverse_proxy /graphql/* {$GRAPHQL_URL} {
     header_up Host {http.reverse_proxy.upstream.hostport}
     header_up X-Real-IP {remote_host}
