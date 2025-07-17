@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { AgencyCodeDto } from "../../agency_code/dto/agency_code.dto";
 import { CreateGeoOrganizationUnitCodeDto } from "../../geo_organization_unit_code/dto/create-geo_organization_unit_code.dto";
 
 export class OfficeDto {
@@ -20,7 +19,7 @@ export class OfficeDto {
     example: "COS",
     description: "The agency code for the office",
   })
-  agency_code: AgencyCodeDto;
+  agency_code_ref: string;
 
   @ApiProperty({
     example: "IDIRmburns",

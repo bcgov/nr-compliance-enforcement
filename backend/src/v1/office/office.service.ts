@@ -70,10 +70,9 @@ export class OfficeService {
   findOffices = async (): Promise<Array<OfficeAssignmentDto>> => {
     const queryBuilder = this.officeRepository
       .createQueryBuilder("office")
-      .select("office.office_guid")
+      .select(["office.office_guid", "office.agency_code_ref"])
       .leftJoin("office.cos_geo_org_unit", "organization")
-      .leftJoin("office.agency_code", "agency")
-      .addSelect(["organization.office_location_name", "agency.short_description", "agency.agency_code"]);
+      .addSelect("organization.office_location_name");
 
     const data = await queryBuilder.getMany();
 
@@ -81,9 +80,9 @@ export class OfficeService {
       const {
         office_guid: id,
         cos_geo_org_unit: { office_location_name: name },
-        agency_code: { short_description: description, agency_code: code },
+        agency_code_ref: agency,
       } = item;
-      const record: OfficeAssignmentDto = { id, name, agency: description, code };
+      const record: OfficeAssignmentDto = { id, name, agency };
       return record;
     });
 

@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
-import { AgencyCodeDto } from "../../agency_code/dto/agency_code.dto";
 import { GeoOrganizationUnitCodeDto } from "../../geo_organization_unit_code/dto/geo_organization_unit_code.dto";
 
 export class GeoOrgUnitStructureDto {
@@ -11,7 +10,7 @@ export class GeoOrgUnitStructureDto {
   geo_org_unit_structure_guid: UUID;
 
   @ApiProperty({ example: "COS", description: "The agency this geo org unit structure references" })
-  agency_code: AgencyCodeDto;
+  agency_code_ref: string;
 
   @ApiProperty({ example: "903f87c8-76dd-427c-a1bb-4d179e443252", description: "The parent geo org unit structure" })
   parent_geo_org_unit_code: GeoOrganizationUnitCodeDto;

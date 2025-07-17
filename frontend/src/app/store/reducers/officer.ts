@@ -219,9 +219,10 @@ export const assignOfficerToOffice =
       const updatedOffice = { ...office, office_guid: officeId };
 
       const update = { ...selectedOfficer, office_guid: updatedOffice };
+      const { agency_code, ...updateWithoutAgencyCode } = update;
 
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${selectedOfficer?.officer_guid}`, {
-        ...update,
+        ...updateWithoutAgencyCode,
       });
 
       const response = await patch<Array<Officer>>(dispatch, parameters);

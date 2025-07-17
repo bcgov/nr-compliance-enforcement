@@ -24,7 +24,5 @@ export interface NewOfficer {
   };
   coms_enrolled_ind: boolean;
   deactivate_ind: boolean;
-  agency_code: {
-    agency_code: string | undefined;
-  };
+  agency_code_ref: string | undefined;
 }

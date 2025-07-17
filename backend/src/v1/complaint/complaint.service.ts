@@ -150,22 +150,21 @@ export class ComplaintService {
     mapAttractantXrefDtoToAttractantHwcrXref(mapper);
   }
 
-  private _getAgencyByUser = async (): Promise<AgencyCode> => {
+  private readonly _getAgencyByUser = async (): Promise<string> => {
     const idir = getIdirFromRequest(this.request);
 
     const builder = this._officertRepository
       .createQueryBuilder("officer")
       .leftJoinAndSelect("officer.office_guid", "office")
-      .leftJoinAndSelect("office.agency_code", "agency")
       .where("officer.user_id = :idir", { idir });
 
     const result = await builder.getOne();
     //-- pull the user's agency from the query results and return the agency code
-    if (result.office_guid?.agency_code) {
+    if (result.office_guid?.agency_code_ref) {
       const {
-        office_guid: { agency_code },
+        office_guid: { agency_code_ref },
       } = result;
-      return agency_code;
+      return agency_code_ref;
     } else {
       return null;
     }
@@ -632,7 +631,7 @@ export class ComplaintService {
     return builder;
   }
 
-  private _getTotalComplaintsByZone = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<number> => {
+  private readonly _getTotalComplaintsByZone = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<number> => {
     const agency = await this._getAgencyByUser();
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
 
@@ -657,14 +656,17 @@ export class ComplaintService {
       .andWhere("complaint.complaint_status_code = :status", {
         status: "OPEN",
       })
-      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency });
 
     const result = await builder.getCount();
 
     return result;
   };
 
-  private _getTotalComplaintsByOffice = async (complaintType: COMPLAINT_TYPE, office: string): Promise<number> => {
+  private readonly _getTotalComplaintsByOffice = async (
+    complaintType: COMPLAINT_TYPE,
+    office: string,
+  ): Promise<number> => {
     const agency = await this._getAgencyByUser();
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
 
@@ -690,12 +692,15 @@ export class ComplaintService {
       .andWhere("complaint.complaint_status_code = :status", {
         status: "OPEN",
       })
-      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency });
 
     return await builder.getCount();
   };
 
-  private _getTotalAssignedComplaintsByZone = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<number> => {
+  private readonly _getTotalAssignedComplaintsByZone = async (
+    complaintType: COMPLAINT_TYPE,
+    zone: string,
+  ): Promise<number> => {
     const agency = await this._getAgencyByUser();
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
 
@@ -726,14 +731,14 @@ export class ComplaintService {
       .andWhere("complaint.complaint_status_code = :status", {
         status: "OPEN",
       })
-      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency });
 
     const result = await builder.getCount();
 
     return result;
   };
 
-  private _getTotalAssignedComplaintsByOffice = async (
+  private readonly _getTotalAssignedComplaintsByOffice = async (
     complaintType: COMPLAINT_TYPE,
     office: string,
   ): Promise<number> => {
@@ -765,20 +770,20 @@ export class ComplaintService {
       })
       .andWhere("person.active_ind = true")
       .andWhere("person.person_complaint_xref_code = :assignee", { assignee: "ASSIGNEE" })
-      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency });
 
     const result = await builder.getCount();
 
     return result;
   };
 
-  private _getOfficeIdByOrganizationUnitCode = async (code: string): Promise<UUID> => {
+  private readonly _getOfficeIdByOrganizationUnitCode = async (code: string): Promise<UUID> => {
     try {
       const agency = await this._getAgencyByUser();
       const officeGuidQuery = await this._officeRepository
         .createQueryBuilder("office")
         .where("office.geo_organization_unit_code = :code", { code })
-        .andWhere("office.agency_code = :agency", { agency: agency.agency_code });
+        .andWhere("office.agency_code_ref = :agency", { agency: agency });
 
       const office = await officeGuidQuery.getOne();
 
@@ -819,7 +824,10 @@ export class ComplaintService {
     } catch (error) {}
   };
 
-  private _getTotalAssignedComplaintsByOfficer = async (complaintType: string, officerId: string): Promise<number> => {
+  private readonly _getTotalAssignedComplaintsByOfficer = async (
+    complaintType: string,
+    officerId: string,
+  ): Promise<number> => {
     const agency = await this._getAgencyByUser();
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
 
@@ -851,7 +859,7 @@ export class ComplaintService {
         .andWhere("complaint.complaint_status_code = :status", {
           status: "OPEN",
         })
-        .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+        .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency });
 
       return builder.getCount();
     } catch (error) {

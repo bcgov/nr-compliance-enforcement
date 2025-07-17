@@ -3,183 +3,183 @@
 -------------------------
 
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('db343458-8eca-42c2-91ec-070b3e6de663'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', '100MLHSE', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('5c7023b9-710e-4333-bbcb-8a95350b747c'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'ATLIN', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('cdd9964e-7878-44c1-b4a2-0290c6345dec'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'BLLACLA', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('3338cb74-5be4-4ed3-8b11-41f83d72de00'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'BLKCRKCR', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('ee09bf4d-e5a1-4fb8-9012-c192692dd1bd'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'BURNSLK', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('aebabfed-cf45-4253-9fbf-f49452190332'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'CSTLGAR', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('92bad201-cccc-4021-9c79-bbdcf13947f2'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'CHTWD', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('79fe321b-7716-413f-b878-c5fd6100317d'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'CLRWTER', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('19addcac-91b2-4ab3-83b9-9a26baa1e635'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'CRNBK', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('2044f08d-b53c-489a-8584-dd867b63514a'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'CRSTN', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('55d7b990-8123-492f-8b5b-7cbbd14ac423'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'DJNG', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('4a5a94b1-bd47-4611-a577-861d97089903'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'DWSNCRK', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('f30857bf-bab9-491a-b38f-83600238c36d'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'DSELK', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('f7065a6e-2481-4526-b874-6ab98009481d'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'DNCN', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('784080e4-9674-4c84-ac3e-bf161b09c2de'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'FRNIE', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('edd4b298-ced7-4b10-9232-87512ec640b3'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'FRTNLN', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('e0ad7fe3-59da-4e1a-a611-46ccf7ea7396'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'FRTSTJN', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('643a4ff7-9135-4e6d-86ad-f2f8aac195ef'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'GLDN', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('c8aeb3d9-3718-49d9-b8b5-6c84671546eb'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'GDFKS', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('a5e2e92e-4928-4dbc-8165-e06234b051c1'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'INVRM', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('3a070028-2c6f-4ea9-a548-271cf076280a'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'KMLPS', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('21855957-521f-4190-b0f9-a7ab7d139978'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'KLWNA', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('33dc58c7-2ebf-4924-93f9-168073058273'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'LLT', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('3a4e8fc8-db72-4f02-b5ee-1f257c74a635'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'MKNZI', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('e6807e73-f591-459a-b0f7-413f6fb2984e'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'MRRTT', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('8f9e10a8-53b5-4125-8d8f-b7fbfdd6ae47'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'MSNCHWK', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('491941e6-89a7-473f-b246-a2d8cd21b078'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'MSNMPLRD', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('00048dd4-17b0-4fdc-a3fb-54f820970422'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'MSNSR', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('6496f00f-5397-470d-90db-490e6859256a'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'NNIMO', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('4ff0d641-4c60-4a0a-964e-6e0ac5bfa8de'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'NLSON', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('b494082e-35a3-468f-8955-4aa002066b36'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'PNTCTN', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('305f0ee6-b525-40fd-b2d8-c7a882e8b7fd'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'PRTALB', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('3058b00c-cafd-4eba-a1a4-a989ccff00bf'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'PRTMCNL', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('cd101564-6114-49e0-9e87-fa6e4925dbb7'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'PWLRV', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'PRCG', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('313f4ec3-e88a-41c2-9956-78c7b18cb71d'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'QSNL', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('19d0f476-0fc4-4fe1-b7aa-b76d3c2c5b9b'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'SLMONRM', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('b74014cf-1d80-4074-97c0-024a422d24f9'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'SCHLT', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('cbd8d434-f525-410b-9c3c-119b82a31813'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'SMITHRS', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('38105a68-c83d-44e5-af6e-9cfa40792118'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'SQMSHWHS', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('0f2cdcb7-c4ba-457d-adac-adde1d8c077a'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'TERRC', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('5128179c-f622-499b-b8e5-b39199081f22'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'VNDHF', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('1f4d9042-d6a5-46b6-a860-e1de7edb6add'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'VRNON', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('45abdc96-1b07-4b9c-8b05-e2b0c46c1d1d'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'VICTRA', 'COS')
 ON CONFLICT DO NOTHING;
 INSERT INTO office
-(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code)
+(office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, geo_organization_unit_code, agency_code_ref)
 VALUES('9fc7327b-b206-4a5c-88f1-2875a456eb49'::uuid, 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'WLMSLK', 'COS')
 ON CONFLICT DO NOTHING;
 

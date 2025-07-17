@@ -18,7 +18,6 @@ import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import request from "supertest";
 import { UUID } from "crypto";
 import { CreateOfficeDto } from "./dto/create-office.dto";
-import { AgencyCodeDto } from "../agency_code/dto/agency_code.dto";
 import { UpdateOfficeDto } from "./dto/update-office.dto";
 
 describe("Testing: Office Controller", () => {
@@ -72,22 +71,9 @@ describe("Testing: Office Controller", () => {
   });
 
   it("should return 201 when a POST is called successfully", () => {
-    const agency: AgencyCodeDto = {
-      agency_code: "",
-      short_description: "",
-      long_description: "",
-      display_order: 1,
-      active_ind: true,
-      create_user_id: "",
-      update_user_id: "",
-      create_utc_timestamp: new Date(),
-      update_utc_timestamp: new Date(),
-      external_agency_ind: false,
-    };
-
     const payload: CreateOfficeDto = {
       geo_organization_unit_code: "TEST",
-      agency_code: agency,
+      agency_code_ref: "COS",
       create_user_id: "",
       create_utc_timestamp: new Date(),
       update_user_id: "",
@@ -98,22 +84,9 @@ describe("Testing: Office Controller", () => {
   });
 
   it("should return 501 when a PATCH is is not implemented", () => {
-    const agency: AgencyCodeDto = {
-      agency_code: "",
-      short_description: "",
-      long_description: "",
-      display_order: 1,
-      active_ind: true,
-      create_user_id: "",
-      update_user_id: "",
-      create_utc_timestamp: new Date(),
-      update_utc_timestamp: new Date(),
-      external_agency_ind: false,
-    };
-
     const payload: UpdateOfficeDto = {
       geo_organization_unit_code: "TEST",
-      agency_code: agency,
+      agency_code_ref: "COS",
       create_user_id: "JEST",
       create_utc_timestamp: new Date(),
       update_user_id: null,
