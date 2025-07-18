@@ -43,7 +43,7 @@ spec:
             - name: BACKEND_URL
               value: "http://{{ .Release.Name }}-backend"
             - name: GRAPHQL_URL
-              value: "http://dc0a4a-compenf-dev-static-backend.apps.emerald.devops.gov.bc.ca/graphql"
+              value: "http://dc0a4a-compenf-dev-static-backend.apps.emerald.devops.gov.bc.ca"
             - name: LOG_LEVEL
               value: "info"
             - name: KEYCLOAK_URL
