@@ -43,7 +43,14 @@ spec:
             - name: BACKEND_URL
               value: "http://{{ .Release.Name }}-backend"
             - name: GRAPHQL_URL
-              value: "https://dc0a4a-compenf-dev-static-backend.apps.emerald.devops.gov.bc.ca/graphql"
+              value:  >
+                {{- if eq .Release.Namespace "c1c7ed-dev" }}
+                "http://dc0a4a-compenf-dev-static-backend.apps.emerald.devops.gov.bc.ca"
+                {{- else if eq .Release.Namespace "c1c7ed-test" }}
+                "http://dc0a4a-compenf-test-backend.apps.emerald.devops.gov.bc.ca"
+                {{- else if eq .Release.Namespace "c1c7ed-prod" }}
+                "http://dc0a4a-compenf-prod-backend.apps.emerald.devops.gov.bc.ca"
+                {{- end }}
             - name: LOG_LEVEL
               value: "info"
             - name: KEYCLOAK_URL
