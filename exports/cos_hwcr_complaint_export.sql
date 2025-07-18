@@ -5,12 +5,18 @@
 select distinct
 	cmp.complaint_identifier as "Complaint Identifier",
 	case 
-        	when hwc.complaint_identifier is not null then 'HWCR'
+    when hwc.complaint_identifier is not null then 'HWCR'
 		else 'Unknown' 
-    	end as "Complaint Type",
-    agt.short_description as "Referred to agency",
-    agb.short_description as "Referred by agency",
-    to_char(crf.referral_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Los_Angeles', 'YYYY-MM-DD HH24:MI') as "Referral date",
+  end as "Complaint Type",
+  case 
+		when crf.referred_to_agency_code_ref = 'EPO' then 'CEEB'
+		else crf.referred_to_agency_code_ref
+	end as "Referred to agency",
+	case 
+		when crf.referred_by_agency_code_ref = 'EPO' then 'CEEB'
+		else crf.referred_by_agency_code_ref
+  end as "Referred by agency",
+  to_char(crf.referral_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Los_Angeles', 'YYYY-MM-DD HH24:MI') as "Referral date",
 	case -- This is a temporary solution as it isn't really scalable.
 	    when cmp.incident_reported_utc_timestmp at time zone 'UTC' at time zone 'America/Los_Angeles' 
 	         between 
@@ -51,8 +57,8 @@ select distinct
 	gfv.offloc_name as "District",
 	gfv.zone_name as "Zone",
 	gfv.region_name as "Region",
-	complaint.ST_X(cmp.location_geometry_point) AS "Longitude (X)",
-    complaint.ST_Y(cmp.location_geometry_point) AS "Latitude (Y)",
+	complaint.ST_X(cmp.location_geometry_point) AS "Longitude (X)", -- Note when running locally postgis is installed in the public schema
+	complaint.ST_Y(cmp.location_geometry_point) AS "Latitude (Y)",
 	per.last_name || ', ' || per.first_name as "Officer Assigned",
 	cmp.reference_number as "COORS Number"
 from 
@@ -65,10 +71,6 @@ join
 	complaint.cos_geo_org_unit_flat_mvw gfv on gfv.area_code = goc.geo_organization_unit_code 
 left join
 	complaint.complaint_referral crf on crf.complaint_identifier = cmp.complaint_identifier 
-left join
-	complaint.agency_code agt on agt.agency_code = crf.referred_to_agency_code 
-left join
-	complaint.agency_code agb on agb.agency_code = crf.referred_by_agency_code 
 left join 
 	complaint.person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true and pcx.person_complaint_xref_code = 'ASSIGNEE'
 left join 
@@ -92,7 +94,7 @@ LEFT JOIN
 LEFT JOIN 
     complaint.species_code prev_spc ON prev_spc.species_code = hch.data_after_executed_operation ->> 'species_code' 
 where
-	cmp.owned_by_agency_code = 'COS' or
-	crf.referred_by_agency_code = 'COS'
+	cmp.owned_by_agency_code_ref = 'COS' or
+	crf.referred_by_agency_code_ref = 'COS'
 order by
 	cmp.complaint_identifier asc
