@@ -4,7 +4,12 @@ import config from "@/config";
 
 const getClient = () => {
   const accessToken = localStorage.getItem(AUTH_TOKEN);
-  return new GraphQLClient(config.GRAPHQL_URL, {
+
+  const graphqlUrl = config.GRAPHQL_URL.startsWith("http")
+    ? config.GRAPHQL_URL
+    : `${window.location.origin}${config.GRAPHQL_URL}`;
+
+  return new GraphQLClient(graphqlUrl, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
