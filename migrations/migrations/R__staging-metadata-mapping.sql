@@ -24776,6 +24776,131 @@ WHERE
   entity_code = 'geoorgutcd'
   AND staged_data_value = 'Eastgate';
 
+/*
+-----------------------
+
+CE-1795 Correct mapping for communities starting with "East"
+
+This ticket to update some staging metadata mappings. 
+However, since this is a repeatable script the original INSERT statements 
+at the beginning of this script will still run every time and may create duplicate records. 
+To delete these redundant records, need to run these DELETE statements. 
+The deletion and subsequent INSERT statement will effectively do the needed update.
+Once the new INSERTs run, the subsequent runs will cause a conflict and DO NOTHING
+
+-----------------------
+*/
+
+delete from staging_metadata_mapping
+where entity_code = 'geoorgutcd' and staged_data_value  = 'East Pine (portion West of Pine River)' and live_data_value = 'EASTPINE';
+
+insert into
+  staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+values
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'East Pine (portion West of Pine River)',
+    'ESPINEPW',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+delete from staging_metadata_mapping
+where entity_code = 'geoorgutcd' and staged_data_value  = 'East Sooke' and live_data_value = 'ESLOPPPP';
+
+insert into
+  staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+values
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'East Sooke',
+    'EASTSKE',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+delete from staging_metadata_mapping
+where entity_code = 'geoorgutcd' and staged_data_value  = 'East Thurlow Island' and live_data_value = 'EASTSKE';
+
+insert into
+  staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+values
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'East Thurlow Island',
+    'ETHURLOW',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+
+delete from staging_metadata_mapping
+where entity_code = 'geoorgutcd' and staged_data_value  = 'East slope Pine Pass (almost to Azouetta Lake)' 
+and live_data_value = 'ESPINEPW';
+
+insert into
+  staging_metadata_mapping (
+    staging_metadata_mapping_guid,
+    entity_code,
+    staged_data_value,
+    live_data_value,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+values
+  (
+    uuid_generate_v4 (),
+    'geoorgutcd',
+    'East slope Pine Pass (almost to Azouetta Lake)',
+    'ESLOPPPP',
+    'FLYWAY',
+    CURRENT_TIMESTAMP,
+    'FLYWAY',
+    CURRENT_TIMESTAMP
+  ) on conflict do nothing;
+
+delete from staging_metadata_mapping
+where entity_code = 'geoorgutcd' and staged_data_value  = 'East Pine' 
+and live_data_value = 'EASTGTE';
+
 --------------------------
 -- New Changes above this line
 -------------------------
