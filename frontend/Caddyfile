@@ -30,7 +30,7 @@
   encode zstd gzip
   file_server
   @spa_router {
-    not path /api/* /graphql/* /config.js
+    not path /api/* /shared/* /config.js
     file {
         try_files {path} /index.html
     }
