@@ -70,40 +70,6 @@ jobs:
           else
             echo "No high risk issues found."
           fi
-  cypress-tests:
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}-${{ inputs.target }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout GitCode
-        uses: actions/checkout@v3
-
-      - name: Debug secrets
-        run: |
-          echo "Checking secrets..."
-          echo "auth_base_url: ${{ vars.KEYCLOAK_URL_DEV }}"
-          echo "auth_realm: ${{ vars.KEYCLOAK_REALM }}"
-          echo "keycloak_user: ${{ vars.KEYCLOAK_USER }}"
-          echo "keycloak_client_id: ${{ vars.KEYCLOAK_CLIENT_ID }}"
-
-        env:
-          KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
-
-      - name: Run Cypress Test
-        uses: cypress-io/github-action@v5
-        with:
-          working-directory: ./frontend
-          command: npx cypress run --browser electron --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }} --env auth_base_url=${{ vars.KEYCLOAK_URL_DEV }},auth_realm=${{ vars.KEYCLOAK_REALM }},auth_client_id=${{ vars.KEYCLOAK_CLIENT_ID }},keycloak_user=${{ vars.KEYCLOAK_USER }},keycloak_user_02=${{ vars.KEYCLOAK_USER_02 }},keycloak_user_03=${{ vars.KEYCLOAK_USER_03 }},keycloak_password=${{ secrets.KEYCLOAK_PASSWORD }}
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: cypress-artifacts
-          path: |-
-            /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/videos/
-            /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/screenshots/
   playwright-tests:
     name: "Playwright Tests"
     timeout-minutes: 60
@@ -150,3 +116,39 @@ jobs:
         with:
           name: playwright-report
           path: /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/playwright-report
+
+  cypress-tests:
+    needs: playwright-tests
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
+      PREFIX: ${{ github.event.repository.name }}-${{ inputs.target }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitCode
+        uses: actions/checkout@v3
+
+      - name: Debug secrets
+        run: |
+          echo "Checking secrets..."
+          echo "auth_base_url: ${{ vars.KEYCLOAK_URL_DEV }}"
+          echo "auth_realm: ${{ vars.KEYCLOAK_REALM }}"
+          echo "keycloak_user: ${{ vars.KEYCLOAK_USER }}"
+          echo "keycloak_client_id: ${{ vars.KEYCLOAK_CLIENT_ID }}"
+
+        env:
+          KEYCLOAK_PASSWORD: ${{ secrets.KEYCLOAK_PASSWORD }}
+
+      - name: Run Cypress Test
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: ./frontend
+          command: npx cypress run --browser electron --config baseUrl=https://${{ env.PREFIX }}-frontend.${{ env.DOMAIN }} --env auth_base_url=${{ vars.KEYCLOAK_URL_DEV }},auth_realm=${{ vars.KEYCLOAK_REALM }},auth_client_id=${{ vars.KEYCLOAK_CLIENT_ID }},keycloak_user=${{ vars.KEYCLOAK_USER }},keycloak_user_02=${{ vars.KEYCLOAK_USER_02 }},keycloak_user_03=${{ vars.KEYCLOAK_USER_03 }},keycloak_password=${{ secrets.KEYCLOAK_PASSWORD }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-artifacts
+          path: |-
+            /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/videos/
+            /home/runner/work/nr-compliance-enforcement/nr-compliance-enforcement/frontend/cypress/screenshots/
