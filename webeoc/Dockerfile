@@ -13,9 +13,10 @@ RUN npm ci --omit=dev --ignore-scripts && \
 FROM node:22-bookworm-slim
 # Set node to production
 ENV NODE_EN=production
-RUN apt-get --no-install-recommends update && apt-get --no-install-recommends install -y \
-    curl vim \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get --no-install-recommends update &&\
+    apt-get --no-install-recommends install -y \
+    curl vim &&\
+    rm -rf /var/lib/apt/lists/*
 # Copy over app
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
