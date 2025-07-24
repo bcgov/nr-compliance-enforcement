@@ -14,6 +14,9 @@ import { ActionsTakenPublisherService } from "src/publishers/actions-taken-publi
 import { randomUUID } from "crypto";
 import * as path from "path";
 import * as fs from "fs";
+import { HttpsProxyAgent } from "https-proxy-agent";
+
+const httpsProxyAgent = process.env.HTTPS_PROXY ? new HttpsProxyAgent(process.env.HTTPS_PROXY) : undefined;
 
 @Injectable()
 export class WebEocScheduler {
@@ -254,11 +257,19 @@ export class WebEocScheduler {
       incident: process.env.WEBEOC_INCIDENT,
     };
 
-    const config: AxiosRequestConfig = {
+    let config: AxiosRequestConfig = {
       withCredentials: true,
       headers: {
         Cookie: this.cookie,
       },
+    };
+
+    if (process.env.HTTPS_PROXY) {
+      config = {
+        ...config,
+        proxy: false,
+        httpsAgent: httpsProxyAgent,
+      }
     };
 
     try {
@@ -298,11 +309,18 @@ export class WebEocScheduler {
   private async fetchDataFromWebEOC(urlPath: string, flagName: string, operationType: string): Promise<any[]> {
     const dateFilter = this.getDateFilter(operationType);
     const url = `${process.env.WEBEOC_URL}/${urlPath}`;
-    const config: AxiosRequestConfig = {
+    let config: AxiosRequestConfig = {
       headers: {
         Cookie: this.cookie,
       },
     };
+    if (process.env.HTTPS_PROXY) {
+      config = {
+        ...config,
+        proxy: false,
+        httpsAgent: httpsProxyAgent,
+      }
+    }
 
     // default filter grabs complaints that are newer than a specific date
     const filterItems = [dateFilter];

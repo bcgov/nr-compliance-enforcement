@@ -28,7 +28,7 @@ export interface Officer {
   user_roles: string[];
   coms_enrolled_ind: boolean;
   deactivate_ind: boolean;
-  park_area_guid: string;
+  park_area_guid: string | null;
 }
 
 export interface OfficeGUID {
