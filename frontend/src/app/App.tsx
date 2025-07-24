@@ -25,6 +25,8 @@ import { VerifyAccess } from "./components/containers/pages/verify-access";
 import { Roles, coreRoles } from "./types/app/roles";
 import { FeatureManagement } from "./components/containers/admin/feature-management";
 import { AppUpdate } from "./AppUpdate";
+import Investigations from "@/app/components/containers/investigations/investigations";
+import { InvestigationDetails } from "@/app/components/containers/investigations/details/investigation-details";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -62,6 +64,14 @@ const App: FC = () => {
             <Route
               path="/case/:id"
               element={<CaseDetails />}
+            />
+            <Route
+              path="/investigations"
+              element={<Investigations />}
+            />
+            <Route
+              path="/investigation/:id"
+              element={<InvestigationDetails />}
             />
             <Route
               path="/complaint/:complaintType/:id"
