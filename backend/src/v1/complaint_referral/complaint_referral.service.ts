@@ -41,11 +41,11 @@ export class ComplaintReferralService {
     // FEATURE FLAG check
     // If both agencies involved have the feature flag active, send the referral email notification
     const referredByActive = await this._featureFlagService.checkActiveByAgencyAndFeatureCode(
-      createComplaintReferralDto.referred_by_agency_code,
+      createComplaintReferralDto.referred_by_agency_code_ref,
       "REFEMAIL",
     );
     const referredToActive = await this._featureFlagService.checkActiveByAgencyAndFeatureCode(
-      createComplaintReferralDto.referred_to_agency_code,
+      createComplaintReferralDto.referred_to_agency_code_ref,
       "REFEMAIL",
     );
     const sendEmail = referredByActive && referredToActive;
@@ -54,7 +54,7 @@ export class ComplaintReferralService {
     createComplaintReferralDto.create_user_id = idir;
     createComplaintReferralDto.update_user_id = idir;
 
-    const { complaint_identifier: id, referred_to_agency_code, externalAgencyInd } = createComplaintReferralDto;
+    const { complaint_identifier: id, referred_to_agency_code_ref, externalAgencyInd } = createComplaintReferralDto;
     const { type, fileName, tz, attachments } = createComplaintReferralDto.documentExportParams;
     // Generate the document export from the referring agency if sending the referral email
     let complaintExport;
@@ -67,7 +67,7 @@ export class ComplaintReferralService {
 
     if (result.complaint_referral_guid) {
       const updateData: any = {
-        owned_by_agency_code: referred_to_agency_code,
+        owned_by_agency_code_ref: referred_to_agency_code_ref,
         comp_last_upd_utc_timestamp: new Date(),
       };
       if (externalAgencyInd) {
@@ -85,6 +85,7 @@ export class ComplaintReferralService {
         createComplaintReferralDto,
         user,
         complaintExport,
+        token,
       );
 
       // Log the email recipients

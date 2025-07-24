@@ -2,7 +2,6 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { TeamCode } from "../../team_code/entities/team_code.entity";
-import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 
 @Entity()
 export class Team {
@@ -52,13 +51,12 @@ export class Team {
   })
   public team_code: TeamCode;
 
-  @ManyToOne(() => AgencyCode, (agency_code) => agency_code.agency_code)
-  @JoinColumn({ name: "agency_code" })
+  @Column()
   @ApiProperty({
     example: "EPO",
     description: "System generated unique key for a agency.",
   })
-  public agency_code: AgencyCode;
+  public agency_code_ref: string;
 
   @ApiProperty({
     example: "true",

@@ -8,8 +8,14 @@ select distinct
     when alc.complaint_identifier is not null then 'ERS'
 		else 'Unknown' 
   end as "Complaint Type",
-	agt.short_description as "Referred to agency",
-  agb.short_description as "Referred by agency",
+  case 
+		when crf.referred_to_agency_code_ref = 'EPO' then 'CEEB'
+		else crf.referred_to_agency_code_ref
+	end as "Referred to agency",
+	case 
+		when crf.referred_by_agency_code_ref = 'EPO' then 'CEEB'
+		else crf.referred_by_agency_code_ref
+  end as "Referred by agency",
 	to_char(crf.referral_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/Los_Angeles', 'YYYY-MM-DD HH24:MI') as "Referral date",
   vc.long_description as "Violation Type",
 	case -- This is a temporary solution as it isn't really scalable.
@@ -45,8 +51,8 @@ select distinct
 	gfv.offloc_name as "District",
 	gfv.zone_name as "Zone",
 	gfv.region_name as "Region",
-	ST_X(cmp.location_geometry_point) AS "Longitude (X)",
-    ST_Y(cmp.location_geometry_point) AS "Latitude (Y)",
+	complaint.ST_X(cmp.location_geometry_point) AS "Longitude (X)", -- Note when running locally postgis is installed in the public schema
+  complaint.ST_Y(cmp.location_geometry_point) AS "Latitude (Y)",
 	per.last_name || ', ' || per.first_name as "Officer Assigned",
 	cmp.reference_number AS "COORS Number"
 from 
@@ -59,10 +65,6 @@ join
 	complaint.cos_geo_org_unit_flat_mvw gfv on gfv.area_code = goc.geo_organization_unit_code 
 left join
 	complaint.complaint_referral crf on crf.complaint_identifier = cmp.complaint_identifier 
-left join
-	complaint.agency_code agt on agt.agency_code = crf.referred_to_agency_code 
-left join
-	complaint.agency_code agb on agb.agency_code = crf.referred_by_agency_code 
 left join 
 	complaint.person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true and pcx.person_complaint_xref_code = 'ASSIGNEE'
 left join 
@@ -79,7 +81,7 @@ left join
 left join
 	complaint.violation_code vc  on alc.violation_code = vc.violation_code 
 where
-	cmp.owned_by_agency_code = 'COS' or
-	crf.referred_by_agency_code = 'COS'
+	cmp.owned_by_agency_code_ref = 'COS' or
+	crf.referred_by_agency_code_ref = 'COS'
 order by
 	cmp.complaint_identifier asc

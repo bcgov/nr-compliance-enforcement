@@ -75,7 +75,7 @@ export const FeatureManagement: FC = () => {
                     return (
                       <tr key={item.feature_agency_xref_guid}>
                         <td>{i + 1}</td>
-                        <td>{item.agency_code.agency_code}</td>
+                        <td>{item.agency_code_ref}</td>
                         <td style={{ maxWidth: "500px", wordWrap: "break-word", whiteSpace: "normal" }}>
                           {item.feature_code.short_description}
                         </td>

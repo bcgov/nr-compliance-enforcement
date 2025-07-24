@@ -1,5 +1,4 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
-import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { ViolationCode } from "../../violation_code/entities/violation_code.entity";
 
 @Index("PK_violation_agency_xref_guid", ["violation_agency_xref_guid"], {
@@ -35,9 +34,8 @@ export class ViolationAgencyXref {
   @Column("boolean", { name: "active_ind", default: () => "true" })
   active_ind: boolean;
 
-  @ManyToOne(() => AgencyCode, (agencyCode) => agencyCode.violationAgencyXrefs, { eager: true })
-  @JoinColumn([{ name: "agency_code", referencedColumnName: "agency_code" }])
-  agency_code: AgencyCode;
+  @Column("character varying", { name: "agency_code_ref" })
+  agency_code_ref: string;
 
   @ManyToOne(() => ViolationCode, (violationCode) => violationCode.violationAgencyXrefs, { eager: true })
   @JoinColumn([{ name: "violation_code", referencedColumnName: "violation_code" }])

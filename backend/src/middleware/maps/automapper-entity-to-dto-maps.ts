@@ -8,7 +8,6 @@ import { SpeciesCode } from "../../v1/species_code/entities/species_code.entity"
 import { HwcrComplaintNatureCode } from "../../v1/hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { AttractantCode } from "../../v1/attractant_code/entities/attractant_code.entity";
 import { HwcrComplaint } from "../../v1/hwcr_complaint/entities/hwcr_complaint.entity";
-import { AgencyCode } from "../../v1/agency_code/entities/agency_code.entity";
 import { AttractantHwcrXref } from "../../v1/attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
 import { ViolationCode } from "../../v1/violation_code/entities/violation_code.entity";
 import { AllegationComplaint } from "../../v1/allegation_complaint/entities/allegation_complaint.entity";
@@ -180,16 +179,7 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.ownedBy,
-      mapFrom((source) => {
-        if (source.owned_by_agency_code !== null) {
-          const {
-            owned_by_agency_code: { agency_code },
-          } = source;
-          return agency_code;
-        } else {
-          return "";
-        }
-      }),
+      mapFrom((source) => source.owned_by_agency_code_ref),
     ),
     forMember(
       (destination) => destination.reportedByOther,
@@ -377,34 +367,6 @@ const attractantCodeToAttractantDtoMap = (mapper: Mapper) => {
   );
 };
 
-const agencyCodeToAgencyDto = (mapper: Mapper) => {
-  createMap<AgencyCode, Agency>(
-    mapper,
-    "AgencyCode",
-    "AgencyCodeDto",
-    forMember(
-      (destination) => destination.agency,
-      mapFrom((source) => source.agency_code),
-    ),
-    forMember(
-      (destination) => destination.shortDescription,
-      mapFrom((source) => source.short_description),
-    ),
-    forMember(
-      (destination) => destination.longDescription,
-      mapFrom((source) => source.long_description),
-    ),
-    forMember(
-      (destination) => destination.displayOrder,
-      mapFrom((source) => source.display_order),
-    ),
-    forMember(
-      (destination) => destination.isActive,
-      mapFrom((source) => source.active_ind),
-    ),
-  );
-};
-
 const reportedByCodeToReportedByDto = (mapper: Mapper) => {
   createMap<ReportedByCode, ReportedBy>(
     mapper,
@@ -491,7 +453,6 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
   natureOfComplaintCodeToNatureOfComplaintDtoMap(mapper);
   attractantCodeToAttractantDtoMap(mapper);
   attractantXrefToAttractantXrefDto(mapper);
-  agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
@@ -599,17 +560,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.ownedBy,
-      mapFrom((source) => {
-        const {
-          complaint_identifier: { owned_by_agency_code: agency },
-        } = source;
-        if (agency !== null) {
-          const code = mapper.map<AgencyCode, Agency>(agency, "AgencyCode", "AgencyCodeDto");
-          return code.agency;
-        }
-
-        return "";
-      }),
+      mapFrom((source) => source.complaint_identifier.owned_by_agency_code_ref),
     ),
     forMember(
       (destination) => destination.reportedByOther,
@@ -771,7 +722,6 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
 
 export const applyAllegationComplaintMap = (mapper: Mapper) => {
   violationCodeToViolationDto(mapper);
-  agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
@@ -879,17 +829,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.ownedBy,
-      mapFrom((source) => {
-        const {
-          complaint_identifier: { owned_by_agency_code: agency },
-        } = source;
-        if (agency !== null) {
-          const code = mapper.map<AgencyCode, Agency>(agency, "AgencyCode", "AgencyCodeDto");
-          return code.agency;
-        }
-
-        return "";
-      }),
+      mapFrom((source) => source.complaint_identifier.owned_by_agency_code_ref),
     ),
     forMember(
       (destination) => destination.reportedByOther,
@@ -1020,7 +960,6 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
 
 export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
   violationCodeToViolationDto(mapper);
-  agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
@@ -1129,17 +1068,7 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.ownedBy,
-      mapFrom((source) => {
-        const {
-          complaint_identifier: { owned_by_agency_code: agency },
-        } = source;
-        if (agency !== null) {
-          const code = mapper.map<AgencyCode, Agency>(agency, "AgencyCode", "AgencyCodeDto");
-          return code.agency;
-        }
-
-        return "";
-      }),
+      mapFrom((source) => source.complaint_identifier.owned_by_agency_code_ref),
     ),
     forMember(
       (destination) => destination.reportedByOther,
@@ -1246,7 +1175,6 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
 
 export const applySectorComplaintMap = (mapper: Mapper) => {
   violationCodeToViolationDto(mapper);
-  agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
@@ -1341,15 +1269,7 @@ export const applySectorComplaintMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.ownedBy,
-      mapFrom((source) => {
-        const { owned_by_agency_code: agency } = source;
-        if (agency !== null) {
-          const code = mapper.map<AgencyCode, Agency>(agency, "AgencyCode", "AgencyCodeDto");
-          return code.agency;
-        }
-
-        return "";
-      }),
+      mapFrom((source) => source.owned_by_agency_code_ref),
     ),
     forMember(
       (destination) => destination.reportedByOther,
@@ -1461,7 +1381,6 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
   natureOfComplaintCodeToNatureOfComplaintDtoMap(mapper);
   attractantCodeToAttractantDtoMap(mapper);
   attractantXrefToAttractantXrefDto(mapper);
-  agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
@@ -1481,7 +1400,7 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
     ),
     forMember(
       (destination) => destination.ownedBy,
-      mapFrom((source) => source.complaint_identifier.owned_by_agency_code.agency_code),
+      mapFrom((source) => source.complaint_identifier.owned_by_agency_code_ref),
     ),
     forMember(
       (destination) => destination.reportedOn,
@@ -1790,7 +1709,6 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
   const reportGeneratedOn: Date = new Date();
 
   violationCodeToViolationDto(mapper);
-  agencyCodeToAgencyDto(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
   personComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
@@ -1810,7 +1728,7 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     ),
     forMember(
       (destination) => destination.ownedBy,
-      mapFrom((source) => source.complaint_identifier.owned_by_agency_code.agency_code),
+      mapFrom((source) => source.complaint_identifier.owned_by_agency_code_ref),
     ),
     forMember(
       (destination) => destination.reportedOn,
@@ -2107,7 +2025,6 @@ export const mapGeneralIncidentReport = (mapper: Mapper, tz: string = "America/V
   violationCodeToViolationDto(mapper);
   personComplaintToDelegateDtoMap(mapper);
   cosGeoOrgUnitToOrganizationDtoMap(mapper);
-  agencyCodeToAgencyDto(mapper);
 
   createMap<GirComplaint, GeneralIncidentReportData>(
     mapper,
@@ -2369,7 +2286,7 @@ export const mapGeneralIncidentReport = (mapper: Mapper, tz: string = "America/V
     ),
     forMember(
       (destination) => destination.ownedBy,
-      mapFrom((source) => source.complaint_identifier.owned_by_agency_code.agency_code),
+      mapFrom((source) => source.complaint_identifier.owned_by_agency_code_ref),
     ),
     forMember(
       (destination) => destination.createdBy,

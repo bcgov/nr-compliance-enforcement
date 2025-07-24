@@ -1,7 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { FeatureCode } from "../../feature_code/entities/feature_code.entity";
-import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 
 export class FeatureAgencyXrefDto {
   @ApiProperty({
@@ -47,7 +46,7 @@ export class FeatureAgencyXrefDto {
     example: "COS",
     description: "A human readable code used to identify an agency.",
   })
-  public agency_code: AgencyCode;
+  public agency_code_ref: string;
 
   @ApiProperty({
     example: "true",

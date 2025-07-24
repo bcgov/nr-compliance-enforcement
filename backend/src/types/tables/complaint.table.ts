@@ -18,7 +18,7 @@ export interface ComplaintTable {
   update_utc_timestamp: Date;
   complaint_identifier: string;
   reported_by_code: string;
-  owned_by_agency_code: string;
+  owned_by_agency_code_ref: string;
   complaint_status_code: string;
   geo_organization_unit_code: string;
   cos_geo_org_unit: string;

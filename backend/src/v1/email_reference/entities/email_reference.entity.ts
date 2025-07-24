@@ -24,7 +24,7 @@ export class EmailReference {
     description: "System generated unique key for a agency.",
   })
   @Column()
-  public agency_code: string;
+  public agency_code_ref: string;
 
   @ApiProperty({
     example: "STHPCE",

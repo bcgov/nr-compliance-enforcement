@@ -5,6 +5,7 @@ import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
 import { NotAuthorized, NotFound } from "./components/containers/pages";
 import { ComplaintDetailsEdit } from "./components/containers/complaints/details/complaint-details-edit";
+import { CaseDetails } from "./components/containers/cases/details/case-details";
 import ColorReference, { MiscReference, SpaceReference } from "./components/reference";
 import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch } from "./hooks/hooks";
@@ -13,6 +14,7 @@ import { fetchAllCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
 import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
+import Cases from "./components/containers/cases/cases";
 import COMPLAINT_TYPES from "./types/app/complaint-types";
 import { getCodeTableVersion, getConfigurations, getFeatureFlag, getOfficerDefaultZone } from "./store/reducers/app";
 import { CreateComplaint } from "./components/containers/complaints/details/complaint-details-create";
@@ -52,6 +54,14 @@ const App: FC = () => {
             <Route
               path="/complaints/:type?"
               element={<ComplaintsRouteWrapper />}
+            />
+            <Route
+              path="/cases"
+              element={<Cases />}
+            />
+            <Route
+              path="/case/:id"
+              element={<CaseDetails />}
             />
             <Route
               path="/complaint/:complaintType/:id"

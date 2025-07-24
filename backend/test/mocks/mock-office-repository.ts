@@ -85,7 +85,7 @@ export const MockOfficeRepository = () => ({
     .mockResolvedValueOnce({
       create_user_id: "TEST",
       update_user_id: "TEST",
-      agency_code: "COS",
+      agency_code_ref: "COS",
       office_guid: randomUUID(),
     })
     .mockRejectedValueOnce(new Error("Simulated error")),

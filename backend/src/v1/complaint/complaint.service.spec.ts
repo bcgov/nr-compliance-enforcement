@@ -13,7 +13,6 @@ import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hw
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { Complaint } from "./entities/complaint.entity";
 import { CodeTableService } from "../code-table/code-table.service";
-import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -175,10 +174,6 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(HwcrComplaint),
           useFactory: MockWildlifeConflictComplaintRepository,
-        },
-        {
-          provide: getRepositoryToken(AgencyCode),
-          useFactory: MockComplaintsAgencyRepository,
         },
         {
           provide: getRepositoryToken(Officer),
@@ -490,10 +485,6 @@ describe("Testing: Complaint Service", () => {
         {
           provide: getRepositoryToken(HwcrComplaint),
           useFactory: MockWildlifeConflictComplaintRepository,
-        },
-        {
-          provide: getRepositoryToken(AgencyCode),
-          useFactory: MockComplaintsAgencyRepository,
         },
         {
           provide: getRepositoryToken(Officer),

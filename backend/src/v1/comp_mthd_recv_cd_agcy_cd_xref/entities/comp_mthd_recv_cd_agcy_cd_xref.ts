@@ -1,4 +1,3 @@
-import { AgencyCode } from "../..//agency_code/entities/agency_code.entity";
 import { Complaint } from "../../complaint/entities/complaint.entity";
 import { ComplaintMethodReceivedCode } from "../../complaint_method_received_code/entities/complaint_method_received_code.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from "typeorm";
@@ -19,9 +18,8 @@ export class CompMthdRecvCdAgcyCdXref {
   @JoinColumn({ name: "complaint_method_received_code" })
   complaint_method_received_code: ComplaintMethodReceivedCode;
 
-  @ManyToOne(() => AgencyCode)
-  @JoinColumn({ name: "agency_code" })
-  agency_code: AgencyCode;
+  @Column("character varying", { name: "agency_code_ref" })
+  agency_code_ref: string;
 
   @Column("boolean", { name: "active_ind" })
   active_ind: boolean;

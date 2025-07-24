@@ -27,6 +27,7 @@ import { Roles } from "@apptypes/app/roles";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { Collaborator } from "@/app/types/app/complaints/collaborator";
 import { renderLabelElement } from "@/app/components/common/collaborator-badge";
+import { CodeTableState } from "@/app/types/state/code-table-state";
 
 const initialState: OfficerState = {
   officers: [],
@@ -56,10 +57,15 @@ export const { setOfficers } = officerSlice.actions;
 // Get list of the officers and update store
 export const getOfficers =
   (zone?: string): AppThunk =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
     try {
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/`);
       const response = await get<Array<Officer>>(dispatch, parameters);
+      const agencyTable = getState()?.codeTables?.agency as CodeTableState["agency"] | undefined;
+
+      for (const officer of response) {
+        officer.agency_code = agencyTable?.find((item) => item.agency === officer.agency_code_ref);
+      }
 
       if (response && from(response).any()) {
         dispatch(
@@ -216,9 +222,10 @@ export const assignOfficerToOffice =
       } else updatedOffice = null;
 
       const update = { ...selectedOfficer, office_guid: updatedOffice };
+      const { agency_code, ...updateWithoutAgencyCode } = update;
 
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${selectedOfficer?.officer_guid}`, {
-        ...update,
+        ...updateWithoutAgencyCode,
       });
 
       const response = await patch<Array<Officer>>(dispatch, parameters);
@@ -285,10 +292,10 @@ export const searchOfficers =
     const {
       officers: { officers: items },
     } = state;
+
     let results: Array<Officer> = [];
     const searchInput = input.toLowerCase();
     const role = mapAgencyToRole(agency);
-
     //-- look for any officers that match firstname, lastname, or office
     if (input.length >= 2) {
       results = items.filter((officer) => {
@@ -297,14 +304,12 @@ export const searchOfficers =
           office_guid,
           user_roles,
         } = officer;
-
         // Safely handle office_guid and cos_geo_org_unit
         const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? undefined; // Will be undefined if cos_geo_org_unit is null or undefined
 
         const nameMatch =
           firstName.toLocaleLowerCase().includes(searchInput) || lastName.toLocaleLowerCase().includes(searchInput);
         const roleMatch = user_roles.includes(role) && !user_roles.includes(Roles.READ_ONLY);
-
         if (complaintType !== "HWCR" && user_roles.includes(Roles.HWCR_ONLY)) {
           //Don't include HWCR_ONLY users if the complaint is not an HWCR
           return false;

@@ -3,7 +3,6 @@ import { UUID } from "crypto";
 import { Office } from "../../office/entities/office.entity";
 import { Person } from "../../person/entities/person.entity";
 import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn, ManyToOne, AfterLoad } from "typeorm";
-import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 
 @Entity()
 @Unique(["person_guid"])
@@ -99,9 +98,8 @@ export class Officer {
     example: "COS",
     description: "The agency code for the officer",
   })
-  @ManyToOne(() => AgencyCode)
-  @JoinColumn({ name: "agency_code" })
-  agency_code: AgencyCode;
+  @Column({ name: "agency_code_ref" })
+  agency_code_ref: string;
 
   user_roles: string[];
   @AfterLoad()

@@ -268,14 +268,23 @@ export const complaintSlice = createSlice({
     },
     setRelatedData: (state, action) => {
       const {
-        payload: { updates: webeocUpdates, actions, referrals, referral_email_logs },
+        payload: { updates: webeocUpdates, actions, referrals, referral_email_logs, agencyTable },
       } = action;
       for (const referral of referrals) {
+        //get the full agency information from state
+        referral.referred_by_agency = agencyTable?.find(
+          (item: Agency) => item.agency === referral.referred_by_agency_code_ref,
+        );
+
+        referral.referred_to_agency = agencyTable?.find(
+          (item: Agency) => item.agency === referral.referred_to_agency_code_ref,
+        );
         referral.referral_email_logs = referral_email_logs.filter(
           (emailLog: any) =>
             emailLog.complaint_referral_guid.complaint_referral_guid === referral.complaint_referral_guid,
         );
       }
+      console.log(referrals);
       return { ...state, webeocUpdates, actions, referrals };
     },
     setActions: (state, action: PayloadAction<ActionTaken[]>) => {
@@ -484,13 +493,19 @@ export const getWebEOCUpdates =
   };
 export const getRelatedData =
   (complaintIdentifier: string): AppThunk =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
     try {
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint-updates/related/${complaintIdentifier}`,
       );
       const response = await get<RelatedData>(dispatch, parameters);
-      dispatch(setRelatedData(response));
+      const agencyTable = getState().codeTables.agency;
+      dispatch(
+        setRelatedData({
+          ...response,
+          agencyTable, // 👈 add agencyTable to payload
+        }),
+      );
     } catch (error) {
       console.error(`Unable to retrieve related data for complaint ${complaintIdentifier}: ${error}`);
     }
@@ -620,8 +635,8 @@ export const createComplaintReferral =
   (
     complaint_identifier: string,
     referral_date: Date,
-    referred_by_agency_code: string,
-    referred_to_agency_code: string,
+    referred_by_agency_code_ref: string,
+    referred_to_agency_code_ref: string,
     officer_guid: string,
     referral_reason: string,
     complaint_type: string,
@@ -633,7 +648,7 @@ export const createComplaintReferral =
     try {
       const { attachments } = getState();
       const agencyTable = getState()?.codeTables?.agency as CodeTableState["agency"] | undefined;
-      const agency = agencyTable?.find((item) => item.agency === referred_to_agency_code);
+      const agency = agencyTable?.find((item) => item.agency === referred_to_agency_code_ref);
       const externalAgencyInd = agency?.externalAgencyInd;
 
       const documentExportParams = generateExportComplaintInputParams(
@@ -641,13 +656,13 @@ export const createComplaintReferral =
         attachments,
         complaint_type,
         date_logged,
-        referred_by_agency_code,
+        referred_by_agency_code_ref,
       );
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-referral`, {
         complaint_identifier,
         referral_date,
-        referred_by_agency_code,
-        referred_to_agency_code,
+        referred_by_agency_code_ref,
+        referred_to_agency_code_ref,
         officer_guid,
         referral_reason,
         documentExportParams,

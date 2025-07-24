@@ -1,12 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CodeTableService } from "./code-table.service";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 
 import {
-  MockAgencyCodeTableRepository,
   MockAttractantCodeTableRepository,
   MockComplaintStatusCodeTableRepository,
   MockNatureOfComplaintCodeTableRepository,
@@ -46,10 +44,6 @@ describe("Testing: CodeTable Service", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CodeTableService,
-        {
-          provide: getRepositoryToken(AgencyCode),
-          useFactory: MockAgencyCodeTableRepository,
-        },
         {
           provide: getRepositoryToken(AttractantCode),
           useFactory: MockAttractantCodeTableRepository,
@@ -118,19 +112,6 @@ describe("Testing: CodeTable Service", () => {
 
   it("should be defined", () => {
     expect(service).toBeDefined();
-  });
-
-  it("should return collection of agency codes", async () => {
-    //-- arrange
-    const _tableName = "agency";
-
-    //-- act
-    const results = await service.getCodeTableByName(_tableName);
-
-    //-- assert
-    expect(results).not.toBe(null);
-    expect(results.length).not.toBe(0);
-    expect(results.length).toBe(3);
   });
 
   it("should return collection of reported by codes", async () => {
@@ -285,10 +266,6 @@ describe("Testing: CodeTable service", () => {
       providers: [
         CodeTableService,
         {
-          provide: getRepositoryToken(AgencyCode),
-          useFactory: MockAgencyCodeTableRepository,
-        },
-        {
           provide: getRepositoryToken(AttractantCode),
           useFactory: MockAttractantCodeTableRepository,
         },
@@ -380,10 +357,6 @@ describe("Testing: CodeTable service", () => {
       providers: [
         CodeTableService,
         {
-          provide: getRepositoryToken(AgencyCode),
-          useFactory: MockAgencyCodeTableRepository,
-        },
-        {
           provide: getRepositoryToken(AttractantCode),
           useFactory: MockAttractantCodeTableRepository,
         },
@@ -474,10 +447,6 @@ describe("Testing: CodeTable service", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CodeTableService,
-        {
-          provide: getRepositoryToken(AgencyCode),
-          useFactory: MockAgencyCodeTableRepository,
-        },
         {
           provide: getRepositoryToken(AttractantCode),
           useFactory: MockAttractantCodeTableRepository,

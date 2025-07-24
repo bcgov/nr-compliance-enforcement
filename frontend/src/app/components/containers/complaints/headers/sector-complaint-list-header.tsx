@@ -33,7 +33,7 @@ export const SectorComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sort
         <SortableHeader
           title="Agency"
           sortFnc={handleSort}
-          sortKey="owned_by_agency_code"
+          sortKey="owned_by_agency_code_ref"
           currentSort={sortKey}
           sortDirection={sortDirection}
         />

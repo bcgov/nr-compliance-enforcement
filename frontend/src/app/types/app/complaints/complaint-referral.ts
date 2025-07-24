@@ -1,4 +1,5 @@
 import { UUID } from "crypto";
+import { Agency } from "../code-tables/agency";
 
 export interface ComplaintReferral {
   complaint_referral_guid: UUID;
@@ -9,15 +10,8 @@ export interface ComplaintReferral {
       last_name: string;
     };
   };
-  referred_by_agency_code: {
-    agency_code: string;
-    long_description: string;
-  };
-  referred_to_agency_code: {
-    agency_code: string;
-    long_description: string;
-    external_agency_ind: string;
-  };
+  referred_by_agency: Agency;
+  referred_to_agency: Agency;
   referral_reason: string;
   referral_date: string;
   referral_email_logs?: Array<{

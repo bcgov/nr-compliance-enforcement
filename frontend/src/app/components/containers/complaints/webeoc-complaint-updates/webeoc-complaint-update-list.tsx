@@ -180,20 +180,20 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                   )}
                 </div>
 
-                {(update.content as ComplaintReferral).referred_by_agency_code && (
+                {(update.content as ComplaintReferral).referred_by_agency && (
                   <div className="complaint-description-section">
                     <div className="comp-complaint-update-label">Previous agency:</div>
                     <div className="complaint-description-text">
-                      {(update.content as ComplaintReferral).referred_by_agency_code.long_description}
+                      {(update.content as ComplaintReferral).referred_by_agency.longDescription}
                     </div>
                   </div>
                 )}
 
-                {(update.content as ComplaintReferral).referred_to_agency_code && (
+                {(update.content as ComplaintReferral).referred_to_agency && (
                   <div className="complaint-description-section">
                     <div className="comp-complaint-update-label">New lead agency:</div>
                     <div className="complaint-description-text">
-                      <strong>{(update.content as ComplaintReferral).referred_to_agency_code.long_description}</strong>{" "}
+                      <strong>{(update.content as ComplaintReferral).referred_to_agency.longDescription}</strong>{" "}
                       <OverlayTrigger
                         placement="bottom"
                         delay={{ show: 250, hide: 400 }}
