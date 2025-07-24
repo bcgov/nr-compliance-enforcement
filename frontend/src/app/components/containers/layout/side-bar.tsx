@@ -36,6 +36,13 @@ export const SideBar: FC = () => {
       excludedRoles: [Roles.SECTOR],
     },
     {
+      id: "investigations-link",
+      name: "Investigations",
+      icon: "bi bi-incognito",
+      route: "/investigations",
+      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.CASES)),
+    },
+    {
       id: "zone-at-a-glance-link",
       name: "Zone at a glance",
       icon: "bi bi-buildings",
