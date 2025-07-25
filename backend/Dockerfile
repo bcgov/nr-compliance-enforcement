@@ -10,6 +10,10 @@ RUN npm ci --omit=dev && \
 
 # Deployment container
 FROM node:22-bookworm-slim
+# tools for live debug
+RUN apt-get --no-install-recommends update && apt-get --no-install-recommends install -y \
+    curl vim \
+    && rm -rf /var/lib/apt/lists/*
 # Set node to production
 ENV NODE_ENV=production
 
