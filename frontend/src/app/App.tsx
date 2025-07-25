@@ -26,6 +26,7 @@ import { Roles, coreRoles } from "./types/app/roles";
 import { FeatureManagement } from "./components/containers/admin/feature-management";
 import { AppUpdate } from "./AppUpdate";
 
+
 const App: FC = () => {
   const dispatch = useAppDispatch();
 
