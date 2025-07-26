@@ -36,6 +36,33 @@
             <column ascending="true" name="h_action_taken_guid"/>
          </index>
       </table>
+      <table name="agency_code" remarks="An agency is an organized and named grouping of people that interacts in some way with the Ministry." schema="complaint" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_code" nullable="false" remarks="A human readable code used to identify an agency." size="10" type="varchar" typeCode="12">
+            <child column="agency_code" foreignKey="FK_comp_mthd_recv_cd_agcy_cd_xref_agencycode" implied="false" onDeleteCascade="false" schema="complaint" table="comp_mthd_recv_cd_agcy_cd_xref"/>
+            <child column="owned_by_agency_code" foreignKey="FK_complaint_owned_by_agencycode" implied="false" onDeleteCascade="false" schema="complaint" table="complaint"/>
+            <child column="referred_by_agency_code" foreignKey="FK_cmplreferral__referred_by_agency_code" implied="false" onDeleteCascade="false" schema="complaint" table="complaint_referral"/>
+            <child column="referred_to_agency_code" foreignKey="FK_cmplreferral__referred_to_agency_code" implied="false" onDeleteCascade="false" schema="complaint" table="complaint_referral"/>
+            <child column="agency_code" foreignKey="FK_complaint_type_code_agency_code" implied="false" onDeleteCascade="false" schema="complaint" table="complaint_type_code"/>
+            <child column="agency_code" foreignKey="FK_emailref__agency_code" implied="false" onDeleteCascade="false" schema="complaint" table="email_reference"/>
+            <child column="agency_code" foreignKey="FK_agencycode" implied="false" onDeleteCascade="false" schema="complaint" table="feature_agency_xref"/>
+            <child column="agency_code" foreignKey="FK_gorgustrct_agencycode" implied="false" onDeleteCascade="false" schema="complaint" table="geo_org_unit_structure"/>
+            <child column="agency_code" foreignKey="team_agency_code_fk" implied="false" onDeleteCascade="false" schema="complaint" table="team"/>
+            <child column="agency_code" foreignKey="FK_violation_agency_xref__agency_code" implied="false" onDeleteCascade="false" schema="complaint" table="violation_agency_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the agency code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the agency code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the agency code table should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the agency code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the agency code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the agency was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the agency code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the agency was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="9" name="external_agency_ind" nullable="true" remarks="Flag to indicate if an agency has been onboarded to Natcom or is external." size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="agency_code" sequenceNumberInPK="1"/>
+         <index name="PK_agengycode" unique="true">
+            <column ascending="true" name="agency_code"/>
+         </index>
+      </table>
       <table name="allegation_complaint" remarks="A complaint for which a caller believes that a Violation has occurred and should be investigated." schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="allegation_complaint_guid" nullable="false" remarks="System generated unique key for an allegation complaint. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="in_progress_ind" nullable="false" remarks="True if the alleged violation is currently described as being in progress.  False otherwise." size="1" type="bool" typeCode="-7"/>
@@ -125,7 +152,9 @@
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="comp_mthd_recv_cd_agcy_cd_xref_guid" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <child column="comp_mthd_recv_cd_agcy_cd_xref_guid" foreignKey="complaint_comp_mthd_recv_cd_agcy_cd_xref_fk" implied="false" onDeleteCascade="false" schema="complaint" table="complaint"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_code_ref" nullable="false" remarks="Key representing an agency stored in the agency_code table of the shared schema.  Used to map methods complaints are received to NatSuite agencies as the users were not able to standardize on a common list." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="agency_code" nullable="false" remarks="A human readable code used to identify an AGENCY." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_comp_mthd_recv_cd_agcy_cd_xref_agencycode" implied="false" onDeleteCascade="false" schema="complaint" table="agency_code"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="complaint_method_received_code" nullable="false" remarks="A human readable code used to identify a complaint_method_received_code that is controlled by the comp_mthd_recv_cd_agcy_cd_xref table." size="10" type="varchar" typeCode="12">
             <parent column="complaint_method_received_code" foreignKey="FK_comp_mthd_recv_cd_agcy_cd_xref_complaint_method_received_cod" implied="false" onDeleteCascade="false" schema="complaint" table="complaint_method_received_code"/>
          </column>
@@ -139,7 +168,7 @@
             <column ascending="true" name="comp_mthd_recv_cd_agcy_cd_xref_guid"/>
          </index>
          <index name="UK_comp_mthd_recv_cd_agcy_cd_xref" unique="true">
-            <column ascending="true" name="agency_code_ref"/>
+            <column ascending="true" name="agency_code"/>
             <column ascending="true" name="complaint_method_received_code"/>
          </index>
       </table>
@@ -175,7 +204,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="reported_by_code" nullable="true" remarks="A human readable code used to identify an agency.  The agency that originally referred the complaint." size="10" type="varchar" typeCode="12">
             <parent column="reported_by_code" foreignKey="FK_complaint_reported_by_code" implied="false" onDeleteCascade="false" schema="complaint" table="reported_by_code"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="owned_by_agency_code_ref" nullable="true" remarks="Key representing an agency stored in the agency_code table of the shared schema.  The agency that currently owns the complaint." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="owned_by_agency_code" nullable="true" remarks="A human readable code used to identify an agency.  The agency that currently owns the complaint." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_complaint_owned_by_agencycode" implied="false" onDeleteCascade="false" schema="complaint" table="agency_code"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="complaint_status_code" nullable="true" remarks="A human readable code used to identify a complaint status." size="10" type="varchar" typeCode="12">
             <parent column="complaint_status_code" foreignKey="FK_complaint_compntstscd" implied="false" onDeleteCascade="false" schema="complaint" table="complaint_status_code"/>
          </column>
@@ -239,8 +270,12 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="complaint_identifier" nullable="false" remarks="A human readable code used to identify a complaint being referred." size="20" type="varchar" typeCode="12">
             <parent column="complaint_identifier" foreignKey="FK_cmplreferral__complaint" implied="false" onDeleteCascade="false" schema="complaint" table="complaint"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="referred_by_agency_code_ref" nullable="false" remarks="Key representing an agency stored in the agency_code table of the shared schema.  The agency that a complaint being referred from." size="10" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="referred_to_agency_code_ref" nullable="false" remarks="Key representing an agency stored in the agency_code table of the shared schema.  The agency that a complaint is referred to." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="referred_by_agency_code" nullable="false" remarks="The agency that a complaint being reffered from." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_cmplreferral__referred_by_agency_code" implied="false" onDeleteCascade="false" schema="complaint" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="referred_to_agency_code" nullable="false" remarks="The agency that a complaint being reffered to." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_cmplreferral__referred_to_agency_code" implied="false" onDeleteCascade="false" schema="complaint" table="agency_code"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="officer_guid" nullable="false" remarks="Unique key for an officer who refers a complaint. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
             <parent column="officer_guid" foreignKey="FK_cmplreferral__officer_guid" implied="false" onDeleteCascade="false" schema="complaint" table="officer"/>
          </column>
@@ -304,7 +339,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_utc_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="'COS'::character varying" digits="0" id="11" name="agency_code_ref" nullable="false" remarks="Key representing an agency stored in the agency_code table of the shared schema.  The agency that defines the complaint type" size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="'COS'::character varying" digits="0" id="11" name="agency_code" nullable="false" remarks="A human readable code used to identify an agency." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_complaint_type_code_agency_code" implied="false" onDeleteCascade="false" schema="complaint" table="agency_code"/>
+         </column>
          <primaryKey column="complaint_type_code" sequenceNumberInPK="1"/>
          <index name="PK_complainttypecode" unique="true">
             <column ascending="true" name="complaint_type_code"/>
@@ -380,7 +417,7 @@
             <column ascending="true" name="h_configuration_guid"/>
          </index>
       </table>
-      <table name="cos_geo_org_unit_flat_mvw" numRows="0" remarks="" schema="complaint" type="VIEW" viewSql=" SELECT DISTINCT gou.geo_organization_unit_code AS region_code,&#10;    gou.short_description AS region_name,&#10;    gou2.geo_organization_unit_code AS zone_code,&#10;    gou2.short_description AS zone_name,&#10;    gou3.geo_organization_unit_code AS offloc_code,&#10;    gou3.short_description AS offloc_name,&#10;    (COALESCE(gou4.geo_organization_unit_code, NULL::character varying))::character varying(10) AS area_code,&#10;    (COALESCE(gou4.short_description, NULL::character varying))::character varying(50) AS area_name,&#10;    gou3.administrative_office_ind&#10;   FROM (((((((complaint.geo_org_unit_structure gos&#10;     JOIN complaint.geo_organization_unit_code gou ON (((gos.parent_geo_org_unit_code)::text = (gou.geo_organization_unit_code)::text)))&#10;     JOIN complaint.geo_org_unit_structure gos2 ON (((gos2.parent_geo_org_unit_code)::text = (gou.geo_organization_unit_code)::text)))&#10;     JOIN complaint.geo_organization_unit_code gou2 ON (((gos2.child_geo_org_unit_code)::text = (gou2.geo_organization_unit_code)::text)))&#10;     JOIN complaint.geo_org_unit_structure gos3 ON (((gos3.parent_geo_org_unit_code)::text = (gou2.geo_organization_unit_code)::text)))&#10;     JOIN complaint.geo_organization_unit_code gou3 ON (((gos3.child_geo_org_unit_code)::text = (gou3.geo_organization_unit_code)::text)))&#10;     LEFT JOIN complaint.geo_org_unit_structure gos4 ON (((gos4.parent_geo_org_unit_code)::text = (gou3.geo_organization_unit_code)::text)))&#10;     LEFT JOIN complaint.geo_organization_unit_code gou4 ON (((gos4.child_geo_org_unit_code)::text = (gou4.geo_organization_unit_code)::text)))&#10;  WHERE (((gou.geo_org_unit_type_code)::text = 'REGION'::text) AND ((gou2.geo_org_unit_type_code)::text = 'ZONE'::text) AND ((gou3.geo_org_unit_type_code)::text = 'OFFLOC'::text) AND (((gou4.geo_org_unit_type_code)::text = 'AREA'::text) OR (gou4.geo_org_unit_type_code IS NULL)) AND ((gos.agency_code_ref)::text = 'COS'::text));">
+      <table name="cos_geo_org_unit_flat_mvw" numRows="0" remarks="" schema="complaint" type="VIEW" viewSql=" SELECT DISTINCT gou.geo_organization_unit_code AS region_code,&#10;    gou.short_description AS region_name,&#10;    gou2.geo_organization_unit_code AS zone_code,&#10;    gou2.short_description AS zone_name,&#10;    gou3.geo_organization_unit_code AS offloc_code,&#10;    gou3.short_description AS offloc_name,&#10;    (COALESCE(gou4.geo_organization_unit_code, NULL::character varying))::character varying(10) AS area_code,&#10;    (COALESCE(gou4.short_description, NULL::character varying))::character varying(50) AS area_name,&#10;    gou3.administrative_office_ind&#10;   FROM (((((((complaint.geo_org_unit_structure gos&#10;     JOIN complaint.geo_organization_unit_code gou ON (((gos.parent_geo_org_unit_code)::text = (gou.geo_organization_unit_code)::text)))&#10;     JOIN complaint.geo_org_unit_structure gos2 ON (((gos2.parent_geo_org_unit_code)::text = (gou.geo_organization_unit_code)::text)))&#10;     JOIN complaint.geo_organization_unit_code gou2 ON (((gos2.child_geo_org_unit_code)::text = (gou2.geo_organization_unit_code)::text)))&#10;     JOIN complaint.geo_org_unit_structure gos3 ON (((gos3.parent_geo_org_unit_code)::text = (gou2.geo_organization_unit_code)::text)))&#10;     JOIN complaint.geo_organization_unit_code gou3 ON (((gos3.child_geo_org_unit_code)::text = (gou3.geo_organization_unit_code)::text)))&#10;     LEFT JOIN complaint.geo_org_unit_structure gos4 ON (((gos4.parent_geo_org_unit_code)::text = (gou3.geo_organization_unit_code)::text)))&#10;     LEFT JOIN complaint.geo_organization_unit_code gou4 ON (((gos4.child_geo_org_unit_code)::text = (gou4.geo_organization_unit_code)::text)))&#10;  WHERE (((gou.geo_org_unit_type_code)::text = 'REGION'::text) AND ((gou2.geo_org_unit_type_code)::text = 'ZONE'::text) AND ((gou3.geo_org_unit_type_code)::text = 'OFFLOC'::text) AND (((gou4.geo_org_unit_type_code)::text = 'AREA'::text) OR (gou4.geo_org_unit_type_code IS NULL)) AND ((gos.agency_code)::text = 'COS'::text));">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="region_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="region_name" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="zone_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12"/>
@@ -394,7 +431,9 @@
       <table name="email_reference" remarks="Used to track shared email addresses used by various agencies." schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="email_reference_guid" nullable="false" remarks="System generated unique key for the referral action." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address" nullable="false" remarks="The email address used by parties referenced by this record." size="256" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code_ref" nullable="true" remarks="Key representing an agency stored in the agency_code table of the shared schema.  The agency that the email address belongs to." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code" nullable="true" remarks="The agency that the email address belongs to." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_emailref__agency_code" implied="false" onDeleteCascade="false" schema="complaint" table="agency_code"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="geo_organization_unit_code" nullable="true" remarks="The geographic organization code that the email address belongs to." size="10" type="varchar" typeCode="12">
             <parent column="geo_organization_unit_code" foreignKey="FK_emailref__geo_org_unit_code" implied="false" onDeleteCascade="false" schema="complaint" table="geo_organization_unit_code"/>
          </column>
@@ -430,7 +469,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="feature_code" nullable="false" remarks="A human readable code used to identify a FEATURE that is controlled by the FEATURE_AGENCY_XREF table." size="10" type="varchar" typeCode="12">
             <parent column="feature_code" foreignKey="FK_featurecd" implied="false" onDeleteCascade="false" schema="complaint" table="feature_code"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code_ref" nullable="false" remarks="Key representing an agency stored in the agency_code table of the shared schema.  The agency for which the feature is either enabled or disabled." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code" nullable="false" remarks="A human readable code used to identify an AGENCY." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_agencycode" implied="false" onDeleteCascade="false" schema="complaint" table="agency_code"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the FEATURE should be rendered the for users in the given AGENCY" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the FEATURE / AGENCY mapping." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the FEATURE / AGENCY mapping was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
@@ -442,7 +483,7 @@
          </index>
          <index name="UK_unique_feature_agency" unique="true">
             <column ascending="true" name="feature_code"/>
-            <column ascending="true" name="agency_code_ref"/>
+            <column ascending="true" name="agency_code"/>
          </index>
       </table>
       <table name="feature_code" remarks="A list of FEATUREs that can be enabled or disabled on a per agency basis." schema="complaint" type="TABLE">
@@ -489,7 +530,9 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the geographical organization unit structure was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="false" remarks="The id of the user that updated the geographical organization unit structure." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the geographical organization unit structure was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="agency_code_ref" nullable="true" remarks="Key representing an agency stored in the agency_code table of the shared schema.  Used to map geographic organization structures to individual agencies as different structures are used throughout the sector." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="agency_code" nullable="true" remarks="A human readable code used to identify an agency.  The agency that defines the geographical organization unit structural relationship." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_gorgustrct_agencycode" implied="false" onDeleteCascade="false" schema="complaint" table="agency_code"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="parent_geo_org_unit_code" nullable="true" remarks="The geographical organization that contains the child geographical organization unit." size="10" type="varchar" typeCode="12">
             <parent column="geo_organization_unit_code" foreignKey="FK_gorgustrct_parent_geoorgutcd" implied="false" onDeleteCascade="false" schema="complaint" table="geo_organization_unit_code"/>
          </column>
@@ -697,7 +740,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="geo_organization_unit_code" nullable="true" remarks="A human readable code used to identify a geographical organization unit.  The geographical unit where the office is located.   This might not necessarily be the lowest level in the geographical organizational unit hierarchy." size="10" type="varchar" typeCode="12">
             <parent column="geo_organization_unit_code" foreignKey="FK_office_geoorgutnd" implied="false" onDeleteCascade="false" schema="complaint" table="geo_organization_unit_code"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="agency_code_ref" nullable="true" remarks="Key representing an agency stored in the agency_code table of the shared schema.  The agency that owns the office." size="6" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="agency_code" nullable="true" remarks="A human readable code used to identify an agency.  The agency that owns the office." size="6" type="varchar" typeCode="12"/>
          <primaryKey column="office_guid" sequenceNumberInPK="1"/>
          <index name="PK_office" unique="true">
             <column ascending="true" name="office_guid"/>
@@ -734,7 +777,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="auth_user_guid" nullable="true" remarks="The SiteMinder guid returned to the application from KeyCloak.   Used to uniquely identify a user over the course of their lifecycle." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="false" digits="0" id="9" name="coms_enrolled_ind" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="false" digits="0" id="10" name="deactivate_ind" nullable="true" remarks="A boolean indicator representing if an officer has been deactivated" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="agency_code_ref" nullable="true" remarks="Key representing an agency stored in the agency_code table of the shared schema.  The agency that employs the Officer." size="6" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="agency_code" nullable="true" remarks="" size="6" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="park_area_guid" nullable="true" remarks="System generated unique identifier for a park area." size="2147483647" type="uuid" typeCode="1111"/>
          <primaryKey column="officer_guid" sequenceNumberInPK="1"/>
          <index name="PK_officer" unique="true">
@@ -997,7 +1040,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="team_code" nullable="false" remarks="A human readable code used to identify a TEAM" size="15" type="varchar" typeCode="12">
             <parent column="team_code" foreignKey="team_team_code_fk" implied="false" onDeleteCascade="false" schema="complaint" table="team_code"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code_ref" nullable="false" remarks="Key representing an agency stored in the agency_code table of the shared schema.  The agency for which the team is defined." size="6" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code" nullable="false" remarks="" size="6" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="team_agency_code_fk" implied="false" onDeleteCascade="false" schema="complaint" table="agency_code"/>
+         </column>
          <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the TEAM is active." size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="true" remarks="The id of the user that created the TEAM." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the TEAM was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
@@ -1009,7 +1054,7 @@
          </index>
          <index name="team_un" unique="true">
             <column ascending="true" name="team_code"/>
-            <column ascending="true" name="agency_code_ref"/>
+            <column ascending="true" name="agency_code"/>
          </index>
       </table>
       <table name="team_code" remarks="An team is an organized and named grouping of people that interacts in some way with the Ministry." schema="complaint" type="TABLE">
@@ -1046,7 +1091,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="violation_code" nullable="false" remarks="A human readable code used to identify a violation." size="10" type="varchar" typeCode="12">
             <parent column="violation_code" foreignKey="FK_violation_agency_xref__violation_code" implied="false" onDeleteCascade="false" schema="complaint" table="violation_code"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code_ref" nullable="false" remarks="Key representing an agency stored in the agency_code table of the shared schema.  Used to map violation types to the NatSuite agency responsible for compliance." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code" nullable="false" remarks="A human readable code used to identify an agency." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="FK_violation_agency_xref__agency_code" implied="false" onDeleteCascade="false" schema="complaint" table="agency_code"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_id" nullable="false" remarks="The id of the user that created the relationship between an agency and a violation code." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the relationship between an agency and a violation code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="false" remarks="The id of the user that updated the relationship between an agency and a violation code." size="32" type="varchar" typeCode="12"/>
@@ -1529,11 +1576,11 @@ BEGIN
     if (_edit_violation_code <> _current_violation_type_code) then
 	    if _edit_violation_code = 'WASTE' OR _edit_violation_code = 'PESTICDE' then
         UPDATE complaint.complaint
-        SET    owned_by_agency_code_ref = 'EPO'
+        SET    owned_by_agency_code = 'EPO'
         WHERE  complaint_identifier = _complaint_identifier;
       else
         UPDATE complaint.complaint
-        SET    owned_by_agency_code_ref = 'COS'
+        SET    owned_by_agency_code = 'COS'
         WHERE  complaint_identifier = _complaint_identifier;
       end if;  
 	    
@@ -1903,7 +1950,7 @@ END;]]></definition>
                             create_utc_timestamp,
                             update_user_id,
                             update_utc_timestamp,
-                            owned_by_agency_code_ref,
+                            owned_by_agency_code,
                             complaint_status_code,
                             geo_organization_unit_code,
                             location_geometry_point,
@@ -2066,7 +2113,7 @@ END;]]></definition>
 
       IF _violation_code = 'WASTE' OR _violation_code = 'PESTICDE' THEN
         UPDATE complaint.complaint
-        SET    owned_by_agency_code_ref = 'EPO', complaint_status_code = 'OPEN'
+        SET    owned_by_agency_code = 'EPO', complaint_status_code = 'OPEN'
         WHERE  complaint_identifier = _complaint_identifier;
       END IF;
 
@@ -2105,7 +2152,7 @@ END;]]></definition>
         SELECT comp_mthd_recv_cd_agcy_cd_xref_guid 
         FROM complaint.comp_mthd_recv_cd_agcy_cd_xref cmrcacx 
         WHERE complaint_method_received_code = METHOD_OF_COMPLAINT_RAPP
-        AND cmrcacx.agency_code_ref = com.owned_by_agency_code_ref
+        AND cmrcacx.agency_code = com.owned_by_agency_code
     )
     WHERE complaint_identifier = _complaint_identifier;
     UPDATE complaint.staging_complaint
@@ -2687,11 +2734,11 @@ BEGIN
      if ((_update_violation_code <> _original_violation_type_code) and (_update_violation_code <> _current_violation_type_code)) then 
 	    if _update_violation_code = 'WASTE' OR _update_violation_code = 'PESTICDE' then
         UPDATE complaint.complaint
-        SET    owned_by_agency_code_ref = 'EPO'
+        SET    owned_by_agency_code = 'EPO'
         WHERE  complaint_identifier = _complaint_identifier;
       else
         UPDATE complaint.complaint
-        SET    owned_by_agency_code_ref = 'COS'
+        SET    owned_by_agency_code = 'COS'
         WHERE  complaint_identifier = _complaint_identifier;
       end if;
 

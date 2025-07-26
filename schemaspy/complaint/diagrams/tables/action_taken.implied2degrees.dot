@@ -3,12 +3,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
   "action_taken":"complaint_identifier":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
   "action_taken":"complaint_update_guid":w -> "complaint_update":"complaint_update_guid":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
   "allegation_complaint":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=teeodot];
+  "comp_mthd_recv_cd_agcy_cd_xref":"elipses":w -> "agency_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint":"comp_mthd_recv_cd_agcy_cd_xref_guid":w -> "comp_mthd_recv_cd_agcy_cd_xref":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint":"complaint_status_code":w -> "complaint_status_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint":"complaint_type_code":w -> "complaint_type_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint":"geo_organization_unit_code":w -> "geo_organization_unit_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "complaint":"owned_by_agency_code":w -> "agency_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint":"reported_by_code":w -> "reported_by_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint_referral":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot];
+  "complaint_referral":"elipses":w -> "agency_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "complaint_referral":"elipses":w -> "agency_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "complaint_type_code":"elipses":w -> "agency_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint_update":"complaint_identifier":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint_update":"upd_reported_by_code":w -> "reported_by_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "gir_complaint":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=teeodot];
@@ -37,6 +42,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="action_taken"
   ];
+  "agency_code" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="75" HEIGHT="16"><B>agency_code</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">10 &gt;</TD></TR>
+    </TABLE>>
+    URL="agency_code.html"
+    target="_top"
+    tooltip="agency_code"
+  ];
   "allegation_complaint" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -53,7 +69,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="199" HEIGHT="16"><B>comp_mthd_recv_cd_agcy_cd_xref</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
     </TABLE>>
     URL="comp_mthd_recv_cd_agcy_cd_xref.html"
     target="_top"
@@ -64,7 +80,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="60" HEIGHT="16"><B>complaint</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">10 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 6</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">10 &gt;</TD></TR>
     </TABLE>>
     URL="complaint.html"
     target="_top"
@@ -75,7 +91,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="111" HEIGHT="16"><B>complaint_referral</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
     </TABLE>>
     URL="complaint_referral.html"
     target="_top"
@@ -97,7 +113,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="125" HEIGHT="16"><B>complaint_type_code</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
     </TABLE>>
     URL="complaint_type_code.html"
     target="_top"

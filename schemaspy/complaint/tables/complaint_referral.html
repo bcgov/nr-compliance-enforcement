@@ -166,7 +166,7 @@
                                     <td><p>A human readable code used to identify a complaint being referred.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="referred_by_agency_code_ref">referred_by_agency_code_ref</span></td>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="referred_by_agency_code">referred_by_agency_code</span></td>
                                     <td>varchar</td>
                                     <td>10</td>
                                     <td title=''></td>
@@ -178,12 +178,17 @@
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="complaint_referral.referred_by_agency_code references agency_code.agency_code via FK_cmplreferral__referred_by_agency_code"><a href='agency_code.html'>agency_code</a><span class='relatedKey'>.agency_code</span></td>
+                                                <td class="constraint detail">FK_cmplreferral__referred_by_agency_code</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
                                         </table>
                                     </td>
-                                    <td><p>Key representing an agency stored in the agency_code table of the shared schema.  The agency that a complaint being referred from.</p></td>
+                                    <td><p>The agency that a complaint being reffered from.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="referred_to_agency_code_ref">referred_to_agency_code_ref</span></td>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="referred_to_agency_code">referred_to_agency_code</span></td>
                                     <td>varchar</td>
                                     <td>10</td>
                                     <td title=''></td>
@@ -195,9 +200,14 @@
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="complaint_referral.referred_to_agency_code references agency_code.agency_code via FK_cmplreferral__referred_to_agency_code"><a href='agency_code.html'>agency_code</a><span class='relatedKey'>.agency_code</span></td>
+                                                <td class="constraint detail">FK_cmplreferral__referred_to_agency_code</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
                                         </table>
                                     </td>
-                                    <td><p>Key representing an agency stored in the agency_code table of the shared schema.  The agency that a complaint is referred to.</p></td>
+                                    <td><p>The agency that a complaint being reffered to.</p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="officer_guid">officer_guid</span></td>
@@ -401,67 +411,81 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="405,85,817,507">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="5,5,361,299">
-<area shape="rect" id="node3" href="officer.html" target="_top" title="officer" alt="" coords="67,316,299,492">
-<area shape="rect" id="node4" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="861,59,1181,205">
+<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="281,5,637,328">
+<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,305,237,423">
+<area shape="rect" id="node3" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="681,248,1064,669">
+<area shape="rect" id="node4" href="officer.html" target="_top" title="officer" alt="" coords="343,417,575,593">
+<area shape="rect" id="node5" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="1108,221,1428,368">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/complaint_referral.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="802,463,1049,551">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="395,261,751,555">
-<area shape="rect" id="node3" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="5,411,351,499">
-<area shape="rect" id="node4" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="47,305,309,393">
-<area shape="rect" id="node5" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="55,621,301,709">
-<area shape="rect" id="node6" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="29,516,327,604">
-<area shape="rect" id="node7" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="68,149,288,237">
-<area shape="rect" id="node8" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="1100,139,1512,560">
-<area shape="rect" id="node9" href="officer.html" target="_top" title="officer" alt="" coords="809,673,1041,849">
-<area shape="rect" id="node15" href="office.html" target="_top" title="office" alt="" coords="511,704,635,792">
-<area shape="rect" id="node16" href="person.html" target="_top" title="person" alt="" coords="505,584,640,672">
-<area shape="rect" id="node10" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="1556,112,1876,259">
-<area shape="rect" id="node11" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="813,5,1037,93">
-<area shape="rect" id="node12" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="831,147,1019,235">
-<area shape="rect" id="node13" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="822,252,1029,340">
-<area shape="rect" id="node14" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="798,357,1053,445">
-<area shape="rect" id="node17" href="officer_team_xref.html" target="_top" title="officer_team_xref" alt="" coords="1197,676,1415,764">
-<area shape="rect" id="node18" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="795,568,1056,656">
+<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="1081,41,1328,129">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="773,360,933,448">
+<area shape="rect" id="node3" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="348,357,693,445">
+<area shape="rect" id="node4" href="agency_code.html" target="_top" title="agency_code" alt="" coords="65,571,245,659">
+<area shape="rect" id="node5" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="390,252,651,340">
+<area shape="rect" id="node6" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="397,463,644,551">
+<area shape="rect" id="node7" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,1028,304,1116">
+<area shape="rect" id="node8" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="411,604,631,692">
+<area shape="rect" id="node9" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="1013,673,1396,1095">
+<area shape="rect" id="node10" href="officer.html" target="_top" title="officer" alt="" coords="737,887,969,1063">
+<area shape="rect" id="node19" href="office.html" target="_top" title="office" alt="" coords="459,1133,583,1221">
+<area shape="rect" id="node20" href="person.html" target="_top" title="person" alt="" coords="453,781,588,869">
+<area shape="rect" id="node11" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="1440,647,1760,793">
+<area shape="rect" id="node12" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="1093,463,1317,551">
+<area shape="rect" id="node13" href="email_reference.html" target="_top" title="email_reference" alt="" coords="417,923,625,1011">
+<area shape="rect" id="node14" href="feature_agency_xref.html" target="_top" title="feature_agency_xref" alt="" coords="401,5,641,93">
+<area shape="rect" id="node15" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="390,1028,651,1116">
+<area shape="rect" id="node16" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="1111,147,1299,235">
+<area shape="rect" id="node17" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="1101,252,1308,340">
+<area shape="rect" id="node18" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="1077,357,1332,445">
+<area shape="rect" id="node21" href="officer_team_xref.html" target="_top" title="officer_team_xref" alt="" coords="1095,1112,1314,1200">
+<area shape="rect" id="node22" href="team.html" target="_top" title="team" alt="" coords="793,1096,914,1184">
+<area shape="rect" id="node23" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="1074,568,1335,656">
+<area shape="rect" id="node24" href="violation_agency_xref.html" target="_top" title="violation_agency_xref" alt="" coords="395,147,647,235">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/complaint_referral.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="405,85,817,507">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="5,5,361,299">
-<area shape="rect" id="node3" href="officer.html" target="_top" title="officer" alt="" coords="67,316,299,492">
-<area shape="rect" id="node4" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="861,59,1181,205">
+<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="281,5,637,328">
+<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,305,237,423">
+<area shape="rect" id="node3" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="681,248,1064,669">
+<area shape="rect" id="node4" href="officer.html" target="_top" title="officer" alt="" coords="343,417,575,593">
+<area shape="rect" id="node5" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="1108,221,1428,368">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/complaint_referral.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="1215,145,1397,233">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="395,319,751,612">
-<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="813,5,1037,93">
-<area shape="rect" id="node5" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="5,468,351,556">
-<area shape="rect" id="node6" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="47,363,309,451">
-<area shape="rect" id="node7" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="55,679,301,767">
-<area shape="rect" id="node8" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="29,573,327,661">
-<area shape="rect" id="node9" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="68,183,288,271">
-<area shape="rect" id="node4" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="802,357,1049,445">
-<area shape="rect" id="node10" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="1100,391,1512,812">
-<area shape="rect" id="node11" href="officer.html" target="_top" title="officer" alt="" coords="809,815,1041,991">
-<area shape="rect" id="node16" href="office.html" target="_top" title="office" alt="" coords="511,860,635,948">
-<area shape="rect" id="node17" href="person.html" target="_top" title="person" alt="" coords="505,724,640,812">
-<area shape="rect" id="node12" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="1556,364,1876,511">
-<area shape="rect" id="node13" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="831,499,1019,587">
-<area shape="rect" id="node14" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="822,604,1029,692">
-<area shape="rect" id="node15" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="798,111,1053,199">
-<area shape="rect" id="node18" href="officer_team_xref.html" target="_top" title="officer_team_xref" alt="" coords="1197,829,1415,917">
-<area shape="rect" id="node19" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="795,709,1056,797">
-<area shape="rect" id="node20" href="staging_complaint.html" target="_top" title="staging_complaint" alt="" coords="813,216,1038,304">
+<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="1509,311,1691,399">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="773,403,933,491">
+<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="1093,611,1317,699">
+<area shape="rect" id="node5" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="348,295,693,383">
+<area shape="rect" id="node6" href="agency_code.html" target="_top" title="agency_code" alt="" coords="65,614,245,702">
+<area shape="rect" id="node7" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="390,401,651,489">
+<area shape="rect" id="node8" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="397,506,644,594">
+<area shape="rect" id="node9" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,1071,304,1159">
+<area shape="rect" id="node10" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="411,647,631,735">
+<area shape="rect" id="node4" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="1081,85,1328,173">
+<area shape="rect" id="node11" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="1013,822,1396,1243">
+<area shape="rect" id="node12" href="officer.html" target="_top" title="officer" alt="" coords="737,1005,969,1181">
+<area shape="rect" id="node20" href="office.html" target="_top" title="office" alt="" coords="459,1177,583,1265">
+<area shape="rect" id="node21" href="person.html" target="_top" title="person" alt="" coords="453,825,588,913">
+<area shape="rect" id="node13" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="1440,795,1760,942">
+<area shape="rect" id="node14" href="email_reference.html" target="_top" title="email_reference" alt="" coords="417,966,625,1054">
+<area shape="rect" id="node15" href="feature_agency_xref.html" target="_top" title="feature_agency_xref" alt="" coords="401,49,641,137">
+<area shape="rect" id="node16" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="390,1071,651,1159">
+<area shape="rect" id="node17" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="1111,190,1299,278">
+<area shape="rect" id="node18" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="1101,295,1308,383">
+<area shape="rect" id="node19" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="1077,401,1332,489">
+<area shape="rect" id="node22" href="officer_team_xref.html" target="_top" title="officer_team_xref" alt="" coords="1095,1261,1314,1349">
+<area shape="rect" id="node23" href="team.html" target="_top" title="team" alt="" coords="793,1230,914,1318">
+<area shape="rect" id="node24" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="1074,717,1335,805">
+<area shape="rect" id="node25" href="staging_complaint.html" target="_top" title="staging_complaint" alt="" coords="1092,506,1317,594">
+<area shape="rect" id="node26" href="violation_agency_xref.html" target="_top" title="violation_agency_xref" alt="" coords="395,154,647,242">
 </map>
                                         <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/complaint_referral.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
