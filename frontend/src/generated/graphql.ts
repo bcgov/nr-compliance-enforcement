@@ -151,6 +151,18 @@ export type CaseMomsSpaghettiFile = {
   leadAgency?: Maybe<AgencyMomsSpaghettiCode>;
 };
 
+export type CaseMomsSpaghettiFileFilters = {
+  agencyCode?: InputMaybe<Scalars['String']['input']>;
+  caseStatus?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CaseMomsSpaghettiFileResult = {
+  __typename?: 'CaseMomsSpaghettiFileResult';
+  items: Array<CaseMomsSpaghettiFile>;
+  pageInfo: PageInfo;
+};
+
 export type CaseStatusCode = {
   __typename?: 'CaseStatusCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -712,6 +724,16 @@ export type Note = {
   note?: Maybe<Scalars['String']['output']>;
 };
 
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  currentPage: Scalars['Int']['output'];
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPreviousPage: Scalars['Boolean']['output'];
+  pageSize: Scalars['Int']['output'];
+  totalCount: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
+};
+
 export type Park = {
   __typename?: 'Park';
   externalId?: Maybe<Scalars['String']['output']>;
@@ -800,6 +822,7 @@ export type Query = {
   agencyMomsSpaghettiCodes: Array<Maybe<AgencyMomsSpaghettiCode>>;
   caseLocationCodes: Array<Maybe<CaseLocationCode>>;
   caseMomsSpaghettiFile?: Maybe<CaseMomsSpaghettiFile>;
+  caseMomsSpaghettiFiles: CaseMomsSpaghettiFileResult;
   configurationCodes: Array<Maybe<Configuration>>;
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
   dischargeCodes: Array<Maybe<DischargeCode>>;
@@ -838,6 +861,13 @@ export type Query = {
 
 export type QuerycaseMomsSpaghettiFileArgs = {
   caseFileGuid: Scalars['String']['input'];
+};
+
+
+export type QuerycaseMomsSpaghettiFilesArgs = {
+  filters?: InputMaybe<CaseMomsSpaghettiFileFilters>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
