@@ -155,6 +155,8 @@ export type CaseMomsSpaghettiFileFilters = {
   agencyCode?: InputMaybe<Scalars['String']['input']>;
   caseStatus?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CaseMomsSpaghettiFileResult = {
@@ -822,7 +824,7 @@ export type Query = {
   agencyMomsSpaghettiCodes: Array<Maybe<AgencyMomsSpaghettiCode>>;
   caseLocationCodes: Array<Maybe<CaseLocationCode>>;
   caseMomsSpaghettiFile?: Maybe<CaseMomsSpaghettiFile>;
-  caseMomsSpaghettiFiles: CaseMomsSpaghettiFileResult;
+  caseMomsSpaghettiFiles: Array<CaseMomsSpaghettiFile>;
   configurationCodes: Array<Maybe<Configuration>>;
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
   dischargeCodes: Array<Maybe<DischargeCode>>;
@@ -853,6 +855,7 @@ export type Query = {
   person?: Maybe<Person>;
   scheduleCodes: Array<Maybe<ScheduleCode>>;
   scheduleSectorXrefs: Array<Maybe<ScheduleSectorXref>>;
+  searchCaseMomsSpaghettiFiles: CaseMomsSpaghettiFileResult;
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
@@ -865,9 +868,7 @@ export type QuerycaseMomsSpaghettiFileArgs = {
 
 
 export type QuerycaseMomsSpaghettiFilesArgs = {
-  filters?: InputMaybe<CaseMomsSpaghettiFileFilters>;
-  page?: InputMaybe<Scalars['Int']['input']>;
-  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -944,6 +945,13 @@ export type QueryparksArgs = {
 
 export type QuerypersonArgs = {
   personGuid: Scalars['String']['input'];
+};
+
+
+export type QuerysearchCaseMomsSpaghettiFilesArgs = {
+  filters?: InputMaybe<CaseMomsSpaghettiFileFilters>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type ReviewActionInput = {
