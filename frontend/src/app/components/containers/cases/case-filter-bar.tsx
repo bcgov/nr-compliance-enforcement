@@ -4,23 +4,16 @@ import { FilterButton } from "@components/common/filter-button";
 import MapListToggle from "@components/common/map-list-toggle";
 import SearchInput from "@components/common/search-input";
 import { CaseFilters } from "./case-filter";
-import { CaseSearchFormData } from "./hooks/use-case-search-form";
+import { useCaseSearchForm } from "./hooks/use-case-search-form";
 
 type Props = {
-  formValues: CaseSearchFormData;
-  form: any; // Tanstack form instance
   toggleShowMobileFilters: MouseEventHandler;
   toggleShowDesktopFilters: MouseEventHandler;
   onClearFilter?: (filterName: string) => void;
 };
 
-export const CaseFilterBar: FC<Props> = ({
-  formValues,
-  form,
-  toggleShowMobileFilters,
-  toggleShowDesktopFilters,
-  onClearFilter,
-}) => {
+export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters, onClearFilter }) => {
+  const { formValues, setFieldValue } = useCaseSearchForm();
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   const removeFilter = useCallback(
@@ -32,11 +25,11 @@ export const CaseFilterBar: FC<Props> = ({
   );
 
   const handleViewTypeToggle = (view: "map" | "list") => {
-    form.setFieldValue("viewType", view);
+    setFieldValue("viewType", view);
   };
 
   const handleSearchChange = (query: string) => {
-    form.setFieldValue("searchQuery", query);
+    setFieldValue("searchQuery", query);
   };
 
   const hasFilter = (filterName: keyof CaseFilters): boolean => {
@@ -48,15 +41,32 @@ export const CaseFilterBar: FC<Props> = ({
   };
 
   const getDateRangeLabel = (): string => {
-    if (formValues.startDate && formValues.endDate) {
-      return `${formValues.startDate.toLocaleDateString()} - ${formValues.endDate.toLocaleDateString()}`;
-    } else if (formValues.startDate) {
-      return `From ${formValues.startDate.toLocaleDateString()}`;
-    } else if (formValues.endDate) {
-      return `Until ${formValues.endDate.toLocaleDateString()}`;
+    const { startDate, endDate } = formValues;
+
+    if (startDate && endDate) {
+      return `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
+    }
+    if (startDate) {
+      return `From ${startDate.toLocaleDateString()}`;
+    }
+    if (endDate) {
+      return `Until ${endDate.toLocaleDateString()}`;
     }
     return "Date Range";
   };
+
+  const renderFilterButton = (variant: "desktop" | "mobile", onClick: MouseEventHandler, id?: string) => (
+    <Button
+      variant="outline-primary"
+      size="sm"
+      className={`icon-start filter-btn filter-btn-${variant}`}
+      id={id}
+      onClick={onClick}
+    >
+      <i className="bi bi-filter"></i>
+      <span>Filters</span>
+    </Button>
+  );
 
   return (
     <div className="comp-filter-bar">
@@ -75,26 +85,8 @@ export const CaseFilterBar: FC<Props> = ({
       </div>
 
       <div className="filter-pills-container">
-        <Button
-          variant="outline-primary"
-          size="sm"
-          className="icon-start filter-btn filter-btn-desktop"
-          id="case-filter-btn"
-          onClick={toggleShowDesktopFilters}
-        >
-          <i className="bi bi-filter"></i>
-          <span>Filters</span>
-        </Button>
-
-        <Button
-          variant="outline-primary"
-          size="sm"
-          className="icon-start filter-btn filter-btn-mobile"
-          onClick={toggleShowMobileFilters}
-        >
-          <i className="bi bi-filter"></i>
-          <span>Filters</span>
-        </Button>
+        {renderFilterButton("desktop", toggleShowDesktopFilters, "case-filter-btn")}
+        {renderFilterButton("mobile", toggleShowMobileFilters)}
 
         {hasFilter("status") && (
           <FilterButton

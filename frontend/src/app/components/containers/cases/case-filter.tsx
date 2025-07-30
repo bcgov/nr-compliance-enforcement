@@ -2,13 +2,7 @@ import { FC } from "react";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { FilterDate } from "@components/common/filter-date";
-import { CaseSearchFormData } from "./hooks/use-case-search-form";
-
-type Props = {
-  form: any; // Using any to simplify Tanstack Form type complexity
-  statusOptions: Option[];
-  leadAgencyOptions: Option[];
-};
+import { CaseSearchFormData, useCaseSearchForm } from "./hooks/use-case-search-form";
 
 // Re-export for backward compatibility
 export interface CaseFilters {
@@ -18,15 +12,11 @@ export interface CaseFilters {
   endDate?: Date | null;
 }
 
-export const CaseFilter: FC<Props> = ({ form, statusOptions, leadAgencyOptions }) => {
-  const formValues = form.store.state.values;
+export const CaseFilter: FC = () => {
+  const { formValues, setFieldValue, statusOptions, leadAgencyOptions } = useCaseSearchForm();
 
-  const handleStatusChange = (option: Option | null) => {
-    form.setFieldValue("status", option);
-  };
-
-  const handleLeadAgencyChange = (option: Option | null) => {
-    form.setFieldValue("leadAgency", option);
+  const handleFieldChange = (fieldName: keyof CaseSearchFormData) => (option: Option | null) => {
+    setFieldValue(fieldName, option);
   };
 
   const handleDateRangeChange = (dates: [Date, Date]) => {
@@ -39,51 +29,58 @@ export const CaseFilter: FC<Props> = ({ form, statusOptions, leadAgencyOptions }
       end.setHours(23, 59, 59, 999);
     }
 
-    form.setFieldValue("startDate", start);
-    form.setFieldValue("endDate", end);
+    setFieldValue("startDate", start);
+    setFieldValue("endDate", end);
   };
+
+  const renderSelectFilter = (
+    id: string,
+    label: string,
+    options: Option[],
+    placeholder: string,
+    value: Option | null,
+    onChange: (option: Option | null) => void,
+  ) => (
+    <div id={`case-${id}-filter-id`}>
+      <label htmlFor={`case-${id}-select-id`}>{label}</label>
+      <div className="filter-select-padding">
+        <CompSelect
+          id={`case-${id}-select-id`}
+          classNamePrefix="comp-select"
+          onChange={onChange}
+          classNames={{
+            menu: () => "top-layer-select",
+          }}
+          options={options}
+          placeholder={placeholder}
+          enableValidation={false}
+          value={value}
+          isClearable={true}
+          showInactive={false}
+        />
+      </div>
+    </div>
+  );
 
   return (
     <div className="comp-filter-container">
-      <div id="case-status-filter-id">
-        <label htmlFor="case-status-select-id">Status</label>
-        <div className="filter-select-padding">
-          <CompSelect
-            id="case-status-select-id"
-            classNamePrefix="comp-select"
-            onChange={handleStatusChange}
-            classNames={{
-              menu: () => "top-layer-select",
-            }}
-            options={statusOptions}
-            placeholder="Select status"
-            enableValidation={false}
-            value={formValues.status}
-            isClearable={true}
-            showInactive={false}
-          />
-        </div>
-      </div>
+      {renderSelectFilter(
+        "status",
+        "Status",
+        statusOptions,
+        "Select status",
+        formValues.status,
+        handleFieldChange("status"),
+      )}
 
-      <div id="case-lead-agency-filter-id">
-        <label htmlFor="case-lead-agency-select-id">Lead Agency</label>
-        <div className="filter-select-padding">
-          <CompSelect
-            id="case-lead-agency-select-id"
-            classNamePrefix="comp-select"
-            onChange={handleLeadAgencyChange}
-            classNames={{
-              menu: () => "top-layer-select",
-            }}
-            options={leadAgencyOptions}
-            placeholder="Select agency"
-            enableValidation={false}
-            value={formValues.leadAgency}
-            isClearable={true}
-            showInactive={false}
-          />
-        </div>
-      </div>
+      {renderSelectFilter(
+        "lead-agency",
+        "Lead Agency",
+        leadAgencyOptions,
+        "Select agency",
+        formValues.leadAgency,
+        handleFieldChange("leadAgency"),
+      )}
 
       <FilterDate
         id="case-date-range-filter"

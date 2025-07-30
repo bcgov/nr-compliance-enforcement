@@ -43,8 +43,7 @@ const Cases: FC = () => {
   const [open, setOpen] = useState(false);
 
   // Use Tanstack Form hook for all search/filter state
-  const { form, formValues, statusOptions, leadAgencyOptions, clearFilter, getAPIFilters, updateURLImmediate } =
-    useCaseSearchForm();
+  const { formValues, setFieldValue, clearFilter, getAPIFilters } = useCaseSearchForm();
 
   const { data, isLoading, error } = useGraphQLQuery<{ searchCaseMomsSpaghettiFiles: CaseMomsSpaghettiFileResult }>(
     SEARCH_CASE_FILES,
@@ -76,27 +75,20 @@ const Cases: FC = () => {
     console.log("Create case clicked");
   };
 
+  // Hook handles URL updates automatically - no manual updates needed
   const handleSort = useCallback(
     (column: string, direction: string) => {
-      form.setFieldValue("sortBy", column);
-      form.setFieldValue("sortOrder", direction);
-      // Immediately update URL for sorting (no debounce)
-      setTimeout(() => {
-        updateURLImmediate(form.store.state.values);
-      }, 50);
+      setFieldValue("sortBy", column);
+      setFieldValue("sortOrder", direction);
     },
-    [form, updateURLImmediate],
+    [setFieldValue],
   );
 
   const handlePageChange = useCallback(
     (newPage: number) => {
-      form.setFieldValue("page", newPage);
-      // Immediately update URL for pagination (no debounce)
-      setTimeout(() => {
-        updateURLImmediate(form.store.state.values);
-      }, 50);
+      setFieldValue("page", newPage);
     },
-    [form, updateURLImmediate],
+    [setFieldValue],
   );
 
   const handleClearFilter = useCallback(
@@ -106,8 +98,79 @@ const Cases: FC = () => {
     [clearFilter],
   );
 
-  const cases = data?.searchCaseMomsSpaghettiFiles?.items || [];
-  const totalCases = data?.searchCaseMomsSpaghettiFiles?.pageInfo?.totalCount || 0;
+  const getCurrentFilters = (): CaseFilters => ({
+    status: formValues.status,
+    leadAgency: formValues.leadAgency,
+    startDate: formValues.startDate,
+    endDate: formValues.endDate,
+  });
+
+  const renderFilterSection = () => (
+    <Collapse
+      in={open}
+      dimension="width"
+    >
+      <div className="comp-data-filters">
+        <div className="comp-data-filters-inner">
+          <div className="comp-data-filters-header">
+            Filter by{" "}
+            <CloseButton
+              onClick={() => setOpen(!open)}
+              aria-expanded={open}
+              aria-label="Close filters"
+            />
+          </div>
+          <div className="comp-data-filters-body">
+            <CaseFilter />
+          </div>
+        </div>
+      </div>
+    </Collapse>
+  );
+
+  const renderDataView = () => {
+    const currentFilters = getCurrentFilters();
+    const cases = data?.searchCaseMomsSpaghettiFiles?.items || [];
+    const totalCases = data?.searchCaseMomsSpaghettiFiles?.pageInfo?.totalCount || 0;
+
+    return formValues.viewType === "list" ? (
+      <CaseList
+        cases={cases}
+        searchQuery={formValues.searchQuery}
+        filters={currentFilters}
+        onSort={handleSort}
+        currentPage={formValues.page}
+        totalItems={totalCases}
+        resultsPerPage={formValues.pageSize}
+        onPageChange={handlePageChange}
+        isLoading={isLoading}
+        error={error}
+      />
+    ) : (
+      <CaseMap
+        cases={cases}
+        searchQuery={formValues.searchQuery}
+        filters={currentFilters}
+        isLoading={isLoading}
+        error={error}
+      />
+    );
+  };
+
+  const renderMobileFilters = () => (
+    <Offcanvas
+      show={show}
+      onHide={hideFilters}
+      placement="end"
+    >
+      <Offcanvas.Header closeButton>
+        <Offcanvas.Title>Filters</Offcanvas.Title>
+      </Offcanvas.Header>
+      <Offcanvas.Body>
+        <CaseFilter />
+      </Offcanvas.Body>
+    </Offcanvas>
+  );
 
   return (
     <div className="comp-page-container comp-page-container--noscroll">
@@ -119,8 +182,6 @@ const Cases: FC = () => {
         </div>
 
         <CaseFilterBar
-          formValues={formValues}
-          form={form}
           toggleShowMobileFilters={toggleShowMobileFilters}
           toggleShowDesktopFilters={toggleShowDesktopFilters}
           onClearFilter={handleClearFilter}
@@ -128,83 +189,11 @@ const Cases: FC = () => {
       </div>
 
       <div className="comp-data-container">
-        <Collapse
-          in={open}
-          dimension="width"
-        >
-          <div className="comp-data-filters">
-            <div className="comp-data-filters-inner">
-              <div className="comp-data-filters-header">
-                Filter by{" "}
-                <CloseButton
-                  onClick={() => setOpen(!open)}
-                  aria-expanded={open}
-                  aria-label="Close filters"
-                />
-              </div>
-              <div className="comp-data-filters-body">
-                <CaseFilter
-                  form={form}
-                  statusOptions={statusOptions}
-                  leadAgencyOptions={leadAgencyOptions}
-                />
-              </div>
-            </div>
-          </div>
-        </Collapse>
-
-        <div className="comp-data-list-map">
-          {formValues.viewType === "list" ? (
-            <CaseList
-              cases={cases}
-              searchQuery={formValues.searchQuery}
-              filters={{
-                status: formValues.status,
-                leadAgency: formValues.leadAgency,
-                startDate: formValues.startDate,
-                endDate: formValues.endDate,
-              }}
-              onSort={handleSort}
-              currentPage={formValues.page}
-              totalItems={totalCases}
-              resultsPerPage={formValues.pageSize}
-              onPageChange={handlePageChange}
-              isLoading={isLoading}
-              error={error}
-            />
-          ) : (
-            <CaseMap
-              cases={cases}
-              searchQuery={formValues.searchQuery}
-              filters={{
-                status: formValues.status,
-                leadAgency: formValues.leadAgency,
-                startDate: formValues.startDate,
-                endDate: formValues.endDate,
-              }}
-              isLoading={isLoading}
-              error={error}
-            />
-          )}
-        </div>
+        {renderFilterSection()}
+        <div className="comp-data-list-map">{renderDataView()}</div>
       </div>
 
-      <Offcanvas
-        show={show}
-        onHide={hideFilters}
-        placement="end"
-      >
-        <Offcanvas.Header closeButton>
-          <Offcanvas.Title>Filters</Offcanvas.Title>
-        </Offcanvas.Header>
-        <Offcanvas.Body>
-          <CaseFilter
-            form={form}
-            statusOptions={statusOptions}
-            leadAgencyOptions={leadAgencyOptions}
-          />
-        </Offcanvas.Body>
-      </Offcanvas>
+      {renderMobileFilters()}
     </div>
   );
 };
