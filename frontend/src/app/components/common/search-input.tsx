@@ -1,22 +1,15 @@
-import { ChangeEvent, FC, KeyboardEvent, useContext, useState, useEffect } from "react";
+import { ChangeEvent, FC, KeyboardEvent, useState, useEffect } from "react";
 import { CloseButton, InputGroup } from "react-bootstrap";
-import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
-import { getComplaints } from "@store/reducers/complaints";
-import { generateComplaintRequestPayload } from "@components/containers/complaints/complaint-list";
-import { useAppDispatch } from "@hooks/hooks";
-import { SORT_TYPES } from "@constants/sort-direction";
 
 type Props = {
   complaintType: string;
   viewType: "map" | "list";
   searchQuery: string | undefined;
   applySearchQuery: Function;
+  handleSearch: (input: string) => void;
 };
 
-const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySearchQuery }) => {
-  const dispatch = useAppDispatch();
-  const { state: filters } = useContext(ComplaintFilterContext);
-
+const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySearchQuery, handleSearch }) => {
   const [input, setInput] = useState<string>(searchQuery ?? "");
 
   useEffect(() => {
@@ -25,24 +18,10 @@ const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySea
     }
   }, [searchQuery]);
 
-  const handleSearch = () => {
+  const onSearch = () => {
     if (input.length >= 3) {
       applySearchQuery(input);
-
-      if (viewType === "list") {
-        let payload = generateComplaintRequestPayload(
-          complaintType,
-          filters,
-          1,
-          50,
-          "incident_reported_utc_timestmp",
-          SORT_TYPES.DESC,
-        );
-
-        payload = { ...payload, query: input };
-
-        dispatch(getComplaints(complaintType, payload));
-      }
+      handleSearch(input);
     }
   };
 
@@ -55,7 +34,7 @@ const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySea
     const { key } = evt;
 
     if (key.toUpperCase() === "ENTER") {
-      handleSearch();
+      onSearch();
     }
   };
 
@@ -94,7 +73,7 @@ const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySea
       <button
         id="search-button"
         className="btn text-white"
-        onClick={handleSearch}
+        onClick={onSearch}
         type="button"
         aria-label="Search"
       >

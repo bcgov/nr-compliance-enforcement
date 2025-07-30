@@ -32,6 +32,9 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
     setFieldValue("searchQuery", query);
   };
 
+  // Search is handled through the form hook
+  const handleSearch = () => {}};
+
   const hasFilter = (filterName: keyof CaseFilters): boolean => {
     return formValues[filterName] != null;
   };
@@ -76,6 +79,7 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
           complaintType="CASE" // Using a generic type for cases
           searchQuery={formValues.searchQuery}
           applySearchQuery={handleSearchChange}
+          handleSearch={handleSearch}
         />
         <MapListToggle
           onToggle={handleViewTypeToggle}
