@@ -1,17 +1,17 @@
-import { FC, useMemo } from "react";
+import { FC } from "react";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { FilterDate } from "@components/common/filter-date";
-import { CaseSearchFormData, useCaseSearchForm } from "./hooks/use-case-search-form";
+import { CaseSearchForm, useCaseSearch } from "./hooks/use-case-search";
 import { useAppSelector } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
 
 export const CaseFilter: FC = () => {
-  const { formValues, setFieldValue } = useCaseSearchForm();
+  const { formValues, setFieldValue } = useCaseSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
 
-  const handleFieldChange = (fieldName: keyof CaseSearchFormData) => (option: Option | null) => {
+  const handleFieldChange = (fieldName: keyof CaseSearchForm) => (option: Option | null) => {
     setFieldValue(fieldName, option?.value);
   };
 
@@ -65,8 +65,8 @@ export const CaseFilter: FC = () => {
         "Status",
         statusOptions,
         "Select status",
-        statusOptions.find((option) => option.value === formValues.status) || null,
-        handleFieldChange("status"),
+        statusOptions.find((option) => option.value === formValues.statucaseStatuss) || null,
+        handleFieldChange("caseStatus"),
       )}
 
       {renderSelectFilter(
@@ -74,8 +74,8 @@ export const CaseFilter: FC = () => {
         "Lead Agency",
         leadAgencyOptions,
         "Select agency",
-        leadAgencyOptions.find((option) => option.value === formValues.leadAgency) || null,
-        handleFieldChange("leadAgency"),
+        leadAgencyOptions.find((option) => option.value === formValues.agencyCode) || null,
+        handleFieldChange("agencyCode"),
       )}
 
       <FilterDate

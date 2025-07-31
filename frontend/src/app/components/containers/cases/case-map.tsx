@@ -12,10 +12,7 @@ export const CaseMap: FC<Props> = ({ cases, isLoading = false, error = null }) =
       <div className="comp-map-container">
         <div className="d-flex align-items-center justify-content-center h-100">
           <div className="text-center">
-            <div
-              className="spinner-border mb-3"
-              role="status"
-            >
+            <div className="spinner-border mb-3">
               <span className="visually-hidden">Loading...</span>
             </div>
             <h4 className="text-muted">Loading Map</h4>

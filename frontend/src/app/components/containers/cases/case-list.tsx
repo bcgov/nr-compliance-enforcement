@@ -1,6 +1,6 @@
 import { FC, useCallback } from "react";
 import { Table } from "react-bootstrap";
-import { useCaseSearchForm } from "./hooks/use-case-search-form";
+import { useCaseSearch } from "./hooks/use-case-search";
 import { SortableHeader } from "@components/common/sortable-header";
 import Paginator from "@/app/components/common/paginator";
 import { SORT_TYPES } from "@constants/sort-direction";
@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, error = null }) => {
-  const { formValues, setFieldValue, setMultipleFieldValues } = useCaseSearchForm();
+  const { formValues, setFieldValue, setMultipleFieldValues } = useCaseSearch();
 
   const handleSort = (sortInput: string) => {
     const currentSortBy = formValues.sortBy;
@@ -72,10 +72,7 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
         className="text-center p-4"
       >
         <div className="d-flex align-items-center justify-content-center">
-          <div
-            className="spinner-border spinner-border-sm me-2"
-            role="status"
-          >
+          <div className="spinner-border spinner-border-sm me-2">
             <span className="visually-hidden">Loading...</span>
           </div>
           <span>Loading cases...</span>
@@ -84,19 +81,21 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
     </tr>
   );
 
-  const renderMessage = (icon: string, message: string, variant?: string) => (
-    <tr>
-      <td
-        colSpan={5}
-        className="text-center p-4"
-      >
-        <div className={`d-flex align-items-center justify-content-center${variant ? ` ${variant}` : ""}`}>
-          <i className={`bi bi-${icon} me-2`}></i>
-          <span>{message}</span>
-        </div>
-      </td>
-    </tr>
-  );
+  const renderMessage = (icon: string, message: string, variant?: string) => {
+    return (
+      <tr>
+        <td
+          colSpan={5}
+          className="text-center p-4"
+        >
+          <div className={`d-flex align-items-center justify-content-center${variant || ""}`}>
+            <i className={`bi bi-${icon} me-2`}></i>
+            <span>{message}</span>
+          </div>
+        </td>
+      </tr>
+    );
+  };
 
   const renderErrorMessage = () =>
     renderMessage(

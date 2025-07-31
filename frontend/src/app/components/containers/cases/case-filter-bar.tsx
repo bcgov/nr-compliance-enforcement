@@ -1,10 +1,10 @@
-import { FC, MouseEventHandler, useState, useCallback } from "react";
+import { FC, MouseEventHandler, useCallback } from "react";
 import { Button } from "react-bootstrap";
 import { FilterButton } from "@components/common/filter-button";
 import MapListToggle from "@components/common/map-list-toggle";
 import SearchInput from "@components/common/search-input";
 import { useAppSelector } from "@hooks/hooks";
-import { useCaseSearchForm } from "./hooks/use-case-search-form";
+import { useCaseSearch } from "./hooks/use-case-search";
 import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters }) => {
-  const { formValues, setFieldValue, clearFilter } = useCaseSearchForm();
+  const { formValues, setFieldValue, clearFilter } = useCaseSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
 

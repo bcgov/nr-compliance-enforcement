@@ -8,7 +8,7 @@ import { CaseFilter } from "./case-filter";
 import { CaseList } from "./case-list";
 import { CaseFilterBar } from "./case-filter-bar";
 import { CaseMap } from "./case-map";
-import { useCaseSearchForm } from "./hooks/use-case-search-form";
+import { useCaseSearch } from "./hooks/use-case-search";
 
 const SEARCH_CASE_FILES = gql`
   query SearchCaseMomsSpaghettiFiles($page: Int, $pageSize: Int, $filters: CaseMomsSpaghettiFileFilters) {
@@ -42,7 +42,7 @@ const Cases: FC = () => {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);
 
-  const { formValues, getFilters } = useCaseSearchForm();
+  const { formValues, getFilters } = useCaseSearch();
 
   const { data, isLoading, error } = useGraphQLQuery<{ searchCaseMomsSpaghettiFiles: CaseMomsSpaghettiFileResult }>(
     SEARCH_CASE_FILES,
