@@ -1,54 +1,36 @@
-import { FC, useRef, useState } from "react";
-import { Table, Dropdown } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { CaseFilters } from "./case-filter";
+import { FC } from "react";
+import { Table } from "react-bootstrap";
+import { useCaseSearchForm } from "./hooks/use-case-search-form";
 import { SortableHeader } from "@components/common/sortable-header";
 import ComplaintPagination from "@components/common/complaint-pagination";
-import { applyStatusClass } from "@common/methods";
 import { SORT_TYPES } from "@constants/sort-direction";
+import { CaseListItem } from "./case-list-item";
 
 type Props = {
   cases: any[];
-  searchQuery?: string;
-  filters?: CaseFilters;
-  onSort?: (column: string, direction: string) => void;
-  currentPage?: number;
   totalItems?: number;
-  resultsPerPage?: number;
-  onPageChange?: (page: number) => void;
   isLoading?: boolean;
   error?: Error | null;
 };
 
-export const CaseList: FC<Props> = ({
-  cases,
-  searchQuery,
-  filters,
-  onSort,
-  currentPage = 1,
-  totalItems = 0,
-  resultsPerPage = 25,
-  onPageChange,
-  isLoading = false,
-  error = null,
-}) => {
-  const [sortKey, setSortKey] = useState("caseOpenedTimestamp");
-  const [sortDirection, setSortDirection] = useState(SORT_TYPES.DESC);
-  const divRef = useRef<HTMLDivElement>(null);
+export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, error = null }) => {
+  const { formValues, setFieldValue, setMultipleFieldValues } = useCaseSearchForm();
 
   const handleSort = (sortInput: string) => {
-    const newDirection = sortKey === sortInput && sortDirection === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC;
+    const currentSortBy = formValues.sortBy;
+    const currentSortOrder = formValues.sortOrder;
+    const newDirection =
+      currentSortBy === sortInput && currentSortOrder === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC;
 
-    setSortKey(sortInput);
-    setSortDirection(newDirection);
-    onSort?.(sortInput, newDirection);
+    // Update both sortBy and sortOrder atomically to avoid timing issues
+    setMultipleFieldValues({
+      sortBy: sortInput,
+      sortOrder: newDirection,
+    });
   };
 
-  const scrollToTop = () => {
-    divRef.current?.scroll({
-      top: 0,
-      behavior: "smooth",
-    });
+  const handlePageChange = (newPage: number) => {
+    setFieldValue("page", newPage);
   };
 
   const renderSortableHeader = (title: string, sortKey: string, className?: string) => (
@@ -56,8 +38,8 @@ export const CaseList: FC<Props> = ({
       title={title}
       sortFnc={handleSort}
       sortKey={sortKey}
-      currentSort={sortKey}
-      sortDirection={sortDirection}
+      currentSort={formValues.sortBy}
+      sortDirection={formValues.sortOrder}
       className={className}
     />
   );
@@ -80,100 +62,7 @@ export const CaseList: FC<Props> = ({
     </thead>
   );
 
-  const renderDropdownAction = (caseFile: any, icon: string, label: string, to?: string, onClick?: () => void) => {
-    const itemProps = {
-      id: `${label.toLowerCase().replace(" ", "-")}-case-${caseFile.caseIdentifier}`,
-      onClick,
-    };
-
-    return to ? (
-      <Dropdown.Item
-        as={Link}
-        to={to}
-        {...itemProps}
-      >
-        <i className={`bi bi-${icon}`} /> {label}
-      </Dropdown.Item>
-    ) : (
-      <Dropdown.Item {...itemProps}>
-        <i className={`bi bi-${icon}`} /> {label}
-      </Dropdown.Item>
-    );
-  };
-
-  const renderCaseListItem = (caseFile: any): JSX.Element => (
-    <tr key={caseFile.caseIdentifier}>
-      <td className="comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center">
-        <Link
-          to={`/case/${caseFile.caseIdentifier}`}
-          className="comp-cell-link"
-        >
-          {caseFile.caseIdentifier}
-        </Link>
-      </td>
-      <td className="comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell">
-        {caseFile.caseOpenedTimestamp ? new Date(caseFile.caseOpenedTimestamp).toLocaleDateString() : "—"}
-      </td>
-      <td className="comp-cell-width-110">
-        {caseFile.caseStatus && (
-          <span className={`badge ${applyStatusClass(caseFile.caseStatus.caseStatusCode)}`}>
-            {caseFile.caseStatus.shortDescription}
-          </span>
-        )}
-      </td>
-      <td>{caseFile.leadAgency?.longDescription || "—"}</td>
-      <td className="comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col case-table-actions-cell">
-        <Dropdown
-          id={`case-action-button-${caseFile.caseIdentifier}`}
-          key={`case-action-${caseFile.caseIdentifier}`}
-          drop="start"
-          className="comp-action-dropdown"
-        >
-          <Dropdown.Toggle
-            id={`case-action-toggle-${caseFile.caseIdentifier}`}
-            size="sm"
-            variant="outline-primary"
-          >
-            Actions
-          </Dropdown.Toggle>
-          <Dropdown.Menu
-            popperConfig={{
-              modifiers: [
-                {
-                  name: "offset",
-                  options: {
-                    offset: [0, 13],
-                    placement: "start",
-                  },
-                },
-              ],
-            }}
-          >
-            {renderDropdownAction(caseFile, "eye", "View Case", `/case/${caseFile.caseIdentifier}`)}
-            {renderDropdownAction(caseFile, "pencil", "Edit Case", undefined, () =>
-              console.log("Edit case", caseFile.caseIdentifier),
-            )}
-          </Dropdown.Menu>
-        </Dropdown>
-      </td>
-    </tr>
-  );
-
-  const renderMessageState = (icon: string, message: string, variant?: string) => (
-    <tr>
-      <td
-        colSpan={5}
-        className="text-center p-4"
-      >
-        <div className={`d-flex align-items-center justify-content-center${variant ? ` ${variant}` : ""}`}>
-          <i className={`bi bi-${icon} me-2`}></i>
-          <span>{message}</span>
-        </div>
-      </td>
-    </tr>
-  );
-
-  const renderLoadingState = () => (
+  const renderLoadingSpinner = () => (
     <tr>
       <td
         colSpan={5}
@@ -192,50 +81,72 @@ export const CaseList: FC<Props> = ({
     </tr>
   );
 
-  const renderErrorState = () =>
-    renderMessageState(
+  const renderMessage = (icon: string, message: string, variant?: string) => (
+    <tr>
+      <td
+        colSpan={5}
+        className="text-center p-4"
+      >
+        <div className={`d-flex align-items-center justify-content-center${variant ? ` ${variant}` : ""}`}>
+          <i className={`bi bi-${icon} me-2`}></i>
+          <span>{message}</span>
+        </div>
+      </td>
+    </tr>
+  );
+
+  const renderErrorMessage = () =>
+    renderMessage(
       "exclamation-triangle-fill",
       `Error loading cases: ${error?.message || "An unexpected error occurred"}`,
       "text-danger",
     );
 
-  const renderNoCasesFound = () => {
-    const hasActiveFilters = searchQuery || (filters && Object.values(filters).some((f) => f != null));
+  const renderNoCasesFoundMessage = () => {
+    const hasActiveFilters =
+      formValues.searchQuery ||
+      formValues.status ||
+      formValues.leadAgency ||
+      formValues.startDate ||
+      formValues.endDate;
+
     const message = hasActiveFilters
       ? "No cases found using your current filters. Remove or change your filters to see cases."
       : "No cases found.";
 
-    return renderMessageState("info-circle-fill", message);
+    return renderMessage("info-circle-fill", message);
   };
 
-  const renderTableBody = () => {
-    if (isLoading) return renderLoadingState();
-    if (!isLoading && error) return renderErrorState();
-    if (!isLoading && !error && cases.length === 0) return renderNoCasesFound();
-    return cases.map((caseFile) => renderCaseListItem(caseFile));
+  const renderCaseListItems = () => {
+    if (isLoading) return renderLoadingSpinner();
+    if (!isLoading && error) return renderErrorMessage();
+    if (!isLoading && !error && cases.length === 0) return renderNoCasesFoundMessage();
+    return cases.map((caseFile) => (
+      <CaseListItem
+        key={caseFile.caseIdentifier}
+        caseFile={caseFile}
+      />
+    ));
   };
 
   return (
     <div className="comp-table-container">
-      <div
-        className="comp-table-scroll-container"
-        ref={divRef}
-      >
+      <div className="comp-table-scroll-container">
         <Table
           className="comp-table"
           id="case-list"
         >
           {renderCaseListHeader()}
-          <tbody>{renderTableBody()}</tbody>
+          <tbody>{renderCaseListItems()}</tbody>
         </Table>
       </div>
 
-      {onPageChange && (
+      {totalItems > 0 && (
         <ComplaintPagination
-          currentPage={currentPage}
+          currentPage={formValues.page}
           totalItems={totalItems}
-          onPageChange={onPageChange}
-          resultsPerPage={resultsPerPage}
+          onPageChange={handlePageChange}
+          resultsPerPage={formValues.pageSize}
         />
       )}
     </div>

@@ -2,13 +2,11 @@ import { FC } from "react";
 
 type Props = {
   cases?: any[];
-  searchQuery?: string;
-  filters?: any;
   isLoading?: boolean;
   error?: Error | null;
 };
 
-export const CaseMap: FC<Props> = ({ cases, searchQuery, filters, isLoading = false, error = null }) => {
+export const CaseMap: FC<Props> = ({ cases, isLoading = false, error = null }) => {
   if (isLoading) {
     return (
       <div className="comp-map-container">
@@ -64,7 +62,6 @@ export const CaseMap: FC<Props> = ({ cases, searchQuery, filters, isLoading = fa
               {cases.length} case{cases.length !== 1 ? "s" : ""} for mapping
             </p>
           )}
-          {searchQuery && <p className="text-muted small">Search: "{searchQuery}"</p>}
         </div>
       </div>
     </div>

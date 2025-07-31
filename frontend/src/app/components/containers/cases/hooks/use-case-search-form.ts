@@ -1,6 +1,5 @@
-import { useForm } from "@tanstack/react-form";
 import { useSearchParams } from "react-router-dom";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
 import Option from "@apptypes/app/option";
 import { SORT_TYPES } from "@constants/sort-direction";
 
@@ -102,169 +101,164 @@ const URL_PARAM_NAMES = {
   viewType: "viewType",
 } as const;
 
+// Global debounced update function to prevent multiple simultaneous URL updates
+let globalDebouncedUpdate: ((newParams: URLSearchParams, setter: (params: URLSearchParams) => void) => void) | null =
+  null;
+let immediateUpdateFields = new Set(["page", "pageSize", "sortBy", "sortOrder"]); // Fields that need immediate updates
+let updateInProgress = false;
+
 export const useCaseSearchForm = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const isInitializing = useRef(true);
-  const isUrlUpdate = useRef(false);
+  const lastUpdateTime = useRef(0);
 
   // Parse URL params to form values
-  const parseUrlToFormValues = useCallback(
-    (): CaseSearchFormData => ({
-      searchQuery: searchParams.get("search") || DEFAULT_FORM_VALUES.searchQuery,
-      status: deserializeOption(searchParams.get("status"), STATUS_OPTIONS),
-      leadAgency: deserializeOption(searchParams.get("leadAgency"), LEAD_AGENCY_OPTIONS),
-      startDate: deserializeDate(searchParams.get("startDate")),
-      endDate: deserializeDate(searchParams.get("endDate")),
-      sortBy: searchParams.get("sortBy") || DEFAULT_FORM_VALUES.sortBy,
-      sortOrder: searchParams.get("sortOrder") || DEFAULT_FORM_VALUES.sortOrder,
-      page: parseInt(searchParams.get("page") || "1", 10),
-      pageSize: parseInt(searchParams.get("pageSize") || "25", 10),
-      viewType: (searchParams.get("viewType") as "list" | "map") || DEFAULT_FORM_VALUES.viewType,
-    }),
-    [searchParams],
-  );
+  const formValues: CaseSearchFormData = {
+    searchQuery: searchParams.get("search") || DEFAULT_FORM_VALUES.searchQuery,
+    status: deserializeOption(searchParams.get("status"), STATUS_OPTIONS),
+    leadAgency: deserializeOption(searchParams.get("leadAgency"), LEAD_AGENCY_OPTIONS),
+    startDate: deserializeDate(searchParams.get("startDate")),
+    endDate: deserializeDate(searchParams.get("endDate")),
+    sortBy: searchParams.get("sortBy") || DEFAULT_FORM_VALUES.sortBy,
+    sortOrder: searchParams.get("sortOrder") || DEFAULT_FORM_VALUES.sortOrder,
+    page: parseInt(searchParams.get("page") || "1", 10),
+    pageSize: parseInt(searchParams.get("pageSize") || "25", 10),
+    viewType: (searchParams.get("viewType") as "list" | "map") || DEFAULT_FORM_VALUES.viewType,
+  };
 
-  const form = useForm({
-    defaultValues: parseUrlToFormValues(),
-    onSubmit: async ({ value }) => {
-      updateUrl(value);
-    },
-  });
-
-  // Convert form values to URL params
-  const buildUrlParams = useCallback((values: CaseSearchFormData): URLSearchParams => {
-    const params = new URLSearchParams();
-
-    Object.entries(values).forEach(([key, value]) => {
-      const formKey = key as keyof CaseSearchFormData;
-      const serialized = serializeFormValueToUrl(formKey, value);
-      if (serialized !== undefined) {
-        const paramName = URL_PARAM_NAMES[formKey];
-        params.set(paramName, serialized);
+  // Create debounced update function once
+  if (!globalDebouncedUpdate) {
+    globalDebouncedUpdate = debounce((newParams: URLSearchParams, setter: (params: URLSearchParams) => void) => {
+      if (!updateInProgress) {
+        updateInProgress = true;
+        setter(newParams);
+        setTimeout(() => {
+          updateInProgress = false;
+        }, 100);
       }
-    });
+    }, 300);
+  }
 
-    return params;
-  }, []);
-
-  // Update URL with form values
-  const updateUrl = useCallback(
-    (values: CaseSearchFormData) => {
-      if (isUrlUpdate.current) return;
-
-      const params = buildUrlParams(values);
-      setSearchParams(params, { replace: true });
-    },
-    [buildUrlParams, setSearchParams],
-  );
-
-  // Debounced URL update for search/filter changes
-  const debouncedUpdateUrl = useCallback(
-    debounce((values: CaseSearchFormData) => {
-      if (!isInitializing.current) {
-        updateUrl(values);
-      }
-    }, 300),
-    [updateUrl],
-  );
-
-  // Immediate URL update for sorting/pagination
-  const updateUrlImmediate = useCallback(
-    (values: CaseSearchFormData) => {
-      if (!isInitializing.current) {
-        updateUrl(values);
-      }
-    },
-    [updateUrl],
-  );
-
-  // Auto-update URL when form values change
-  useEffect(() => {
-    const subscription = form.store.subscribe(() => {
-      const values = form.store.state.values;
-      debouncedUpdateUrl(values);
-    });
-
-    return () => subscription();
-  }, [form.store, debouncedUpdateUrl]);
-
-  // Update form when URL changes (browser navigation)
-  useEffect(() => {
-    const newValues = parseUrlToFormValues();
-    const currentValues = form.store.state.values;
-
-    // Check if values actually changed
-    const hasChanged = Object.keys(newValues).some((key) => {
-      const newVal = newValues[key as keyof CaseSearchFormData];
-      const currentVal = currentValues[key as keyof CaseSearchFormData];
-      return JSON.stringify(newVal) !== JSON.stringify(currentVal);
-    });
-
-    if (hasChanged) {
-      isUrlUpdate.current = true;
-
-      Object.entries(newValues).forEach(([key, value]) => {
-        form.setFieldValue(key as keyof CaseSearchFormData, value);
-      });
-
-      setTimeout(() => {
-        isUrlUpdate.current = false;
-      }, 100);
-    }
-  }, [searchParams, form, parseUrlToFormValues]);
-
-  // Initialize hook
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      isInitializing.current = false;
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Exposed setFieldValue function
+  // Update URL with new field value
   const setFieldValue = useCallback(
     (field: keyof CaseSearchFormData, value: any) => {
-      form.setFieldValue(field, value);
+      // Throttle rapid updates
+      const now = Date.now();
+      if (now - lastUpdateTime.current < 50) {
+        return;
+      }
+      lastUpdateTime.current = now;
+
+      const newParams = new URLSearchParams(searchParams);
+
+      const serialized = serializeFormValueToUrl(field, value);
+      const paramName = URL_PARAM_NAMES[field];
+
+      if (serialized !== undefined) {
+        newParams.set(paramName, serialized);
+      } else {
+        newParams.delete(paramName);
+      }
+
+      // Reset to page 1 when filters change (except for page/pageSize changes)
+      if (field !== "page" && field !== "pageSize" && field !== "sortBy" && field !== "sortOrder") {
+        newParams.delete("page");
+      }
+
+      // Use immediate update for pagination/sorting, debounced for everything else
+      if (immediateUpdateFields.has(field)) {
+        if (!updateInProgress) {
+          updateInProgress = true;
+          setSearchParams(newParams, { replace: true });
+          setTimeout(() => {
+            updateInProgress = false;
+          }, 100);
+        }
+      } else {
+        globalDebouncedUpdate!(newParams, setSearchParams);
+      }
     },
-    [form],
+    [searchParams, setSearchParams],
   );
 
-  // Helper functions
+  // Update multiple fields at once (useful for sorting)
+  const setMultipleFieldValues = useCallback(
+    (updates: Partial<CaseSearchFormData>) => {
+      const now = Date.now();
+      if (now - lastUpdateTime.current < 50) {
+        return;
+      }
+      lastUpdateTime.current = now;
+
+      const newParams = new URLSearchParams(searchParams);
+
+      // Apply all updates to the new params
+      Object.entries(updates).forEach(([field, value]) => {
+        const fieldKey = field as keyof CaseSearchFormData;
+        const serialized = serializeFormValueToUrl(fieldKey, value);
+        const paramName = URL_PARAM_NAMES[fieldKey];
+
+        if (serialized !== undefined) {
+          newParams.set(paramName, serialized);
+        } else {
+          newParams.delete(paramName);
+        }
+      });
+
+      // Reset to page 1 when filters change (except for page/pageSize/sorting changes)
+      const updatedFields = Object.keys(updates);
+      const hasNonSortingUpdates = updatedFields.some(
+        (field) => field !== "page" && field !== "pageSize" && field !== "sortBy" && field !== "sortOrder",
+      );
+      if (hasNonSortingUpdates) {
+        newParams.delete("page");
+      }
+
+      // Use immediate update since this is typically used for sorting
+      if (!updateInProgress) {
+        updateInProgress = true;
+        setSearchParams(newParams, { replace: true });
+        setTimeout(() => {
+          updateInProgress = false;
+        }, 100);
+      }
+    },
+    [searchParams, setSearchParams],
+  );
+
+  // Clear a specific filter
   const clearFilter = useCallback(
     (filterName: keyof CaseSearchFormData) => {
-      form.setFieldValue(filterName, DEFAULT_FORM_VALUES[filterName] as any);
-      // Hook's form subscription will automatically handle URL update
+      setFieldValue(filterName, DEFAULT_FORM_VALUES[filterName]);
     },
-    [form],
+    [setFieldValue],
   );
 
+  // Reset all filters
   const resetForm = useCallback(() => {
-    form.reset();
     setSearchParams(new URLSearchParams(), { replace: true });
-  }, [form, setSearchParams]);
+  }, [setSearchParams]);
 
-  // Get API filters from form values
-  const getAPIFilters = useCallback(() => {
-    const values = form.store.state.values;
+  // Get API filters from current URL params
+  const getFilters = useCallback(() => {
     return {
-      search: values.searchQuery || undefined,
-      agencyCode: values.leadAgency?.value || undefined,
-      caseStatus: values.status?.value || undefined,
-      sortBy: values.sortBy || undefined,
-      sortOrder: values.sortOrder || undefined,
-      startDate: values.startDate || undefined,
-      endDate: values.endDate || undefined,
+      search: formValues.searchQuery || undefined,
+      agencyCode: formValues.leadAgency?.value || undefined,
+      caseStatus: formValues.status?.value || undefined,
+      sortBy: formValues.sortBy || undefined,
+      sortOrder: formValues.sortOrder || undefined,
+      startDate: formValues.startDate || undefined,
+      endDate: formValues.endDate || undefined,
     };
-  }, [form.store.state.values]);
+  }, [formValues]);
 
   return {
-    formValues: form.store.state.values,
+    formValues,
     setFieldValue,
+    setMultipleFieldValues,
     statusOptions: STATUS_OPTIONS,
     leadAgencyOptions: LEAD_AGENCY_OPTIONS,
     clearFilter,
     resetForm,
-    getAPIFilters,
+    getFilters,
   };
 };

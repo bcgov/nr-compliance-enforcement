@@ -4,7 +4,7 @@ import { ToastContainer } from "react-toastify";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
 import { CaseMomsSpaghettiFileResult } from "@/generated/graphql";
-import { CaseFilter, CaseFilters } from "./case-filter";
+import { CaseFilter } from "./case-filter";
 import { CaseList } from "./case-list";
 import { CaseFilterBar } from "./case-filter-bar";
 import { CaseMap } from "./case-map";
@@ -39,11 +39,10 @@ const SEARCH_CASE_FILES = gql`
 `;
 
 const Cases: FC = () => {
-  const [show, setShow] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [showDesktopFilters, setShowDesktopFilters] = useState(false);
 
-  // Use Tanstack Form hook for all search/filter state
-  const { formValues, setFieldValue, clearFilter, getAPIFilters } = useCaseSearchForm();
+  const { formValues, getFilters } = useCaseSearchForm();
 
   const { data, isLoading, error } = useGraphQLQuery<{ searchCaseMomsSpaghettiFiles: CaseMomsSpaghettiFileResult }>(
     SEARCH_CASE_FILES,
@@ -61,53 +60,22 @@ const Cases: FC = () => {
       variables: {
         page: formValues.page,
         pageSize: formValues.pageSize,
-        filters: getAPIFilters(),
+        filters: getFilters(),
       },
     },
   );
 
-  const hideFilters = () => setShow(false);
-  const toggleShowMobileFilters = useCallback(() => setShow((prevShow) => !prevShow), []);
-  const toggleShowDesktopFilters = useCallback(() => setOpen((prevShow) => !prevShow), []);
+  const toggleShowMobileFilters = useCallback(() => setShowMobileFilters((prevShow) => !prevShow), []);
+  const toggleShowDesktopFilters = useCallback(() => setShowDesktopFilters((prevShow) => !prevShow), []);
 
   const handleCreateClick = () => {
     // Future implementation for creating cases
     console.log("Create case clicked");
   };
 
-  // Hook handles URL updates automatically - no manual updates needed
-  const handleSort = useCallback(
-    (column: string, direction: string) => {
-      setFieldValue("sortBy", column);
-      setFieldValue("sortOrder", direction);
-    },
-    [setFieldValue],
-  );
-
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      setFieldValue("page", newPage);
-    },
-    [setFieldValue],
-  );
-
-  const handleClearFilter = useCallback(
-    (filterName: string) => {
-      clearFilter(filterName as keyof typeof formValues);
-    },
-    [clearFilter],
-  );
-
-  const getCurrentFilters = (): CaseFilters => ({
-    status: formValues.status,
-    leadAgency: formValues.leadAgency,
-    startDate: formValues.startDate,
-    endDate: formValues.endDate,
-  });
-
-  const renderFilterSection = () => (
+  const renderDesktopFilterSection = () => (
     <Collapse
-      in={open}
+      in={showDesktopFilters}
       dimension="width"
     >
       <div className="comp-data-filters">
@@ -115,8 +83,8 @@ const Cases: FC = () => {
           <div className="comp-data-filters-header">
             Filter by{" "}
             <CloseButton
-              onClick={() => setOpen(!open)}
-              aria-expanded={open}
+              onClick={() => setShowDesktopFilters(false)}
+              aria-expanded={showDesktopFilters}
               aria-label="Close filters"
             />
           </div>
@@ -128,39 +96,10 @@ const Cases: FC = () => {
     </Collapse>
   );
 
-  const renderDataView = () => {
-    const currentFilters = getCurrentFilters();
-    const cases = data?.searchCaseMomsSpaghettiFiles?.items || [];
-    const totalCases = data?.searchCaseMomsSpaghettiFiles?.pageInfo?.totalCount || 0;
-
-    return formValues.viewType === "list" ? (
-      <CaseList
-        cases={cases}
-        searchQuery={formValues.searchQuery}
-        filters={currentFilters}
-        onSort={handleSort}
-        currentPage={formValues.page}
-        totalItems={totalCases}
-        resultsPerPage={formValues.pageSize}
-        onPageChange={handlePageChange}
-        isLoading={isLoading}
-        error={error}
-      />
-    ) : (
-      <CaseMap
-        cases={cases}
-        searchQuery={formValues.searchQuery}
-        filters={currentFilters}
-        isLoading={isLoading}
-        error={error}
-      />
-    );
-  };
-
   const renderMobileFilters = () => (
     <Offcanvas
-      show={show}
-      onHide={hideFilters}
+      show={showMobileFilters}
+      onHide={() => setShowMobileFilters(false)}
       placement="end"
     >
       <Offcanvas.Header closeButton>
@@ -171,6 +110,26 @@ const Cases: FC = () => {
       </Offcanvas.Body>
     </Offcanvas>
   );
+
+  const renderCases = () => {
+    const cases = data?.searchCaseMomsSpaghettiFiles?.items || [];
+    const totalCases = data?.searchCaseMomsSpaghettiFiles?.pageInfo?.totalCount || 0;
+
+    return formValues.viewType === "list" ? (
+      <CaseList
+        cases={cases}
+        totalItems={totalCases}
+        isLoading={isLoading}
+        error={error}
+      />
+    ) : (
+      <CaseMap
+        cases={cases}
+        isLoading={isLoading}
+        error={error}
+      />
+    );
+  };
 
   return (
     <div className="comp-page-container comp-page-container--noscroll">
@@ -184,13 +143,12 @@ const Cases: FC = () => {
         <CaseFilterBar
           toggleShowMobileFilters={toggleShowMobileFilters}
           toggleShowDesktopFilters={toggleShowDesktopFilters}
-          onClearFilter={handleClearFilter}
         />
       </div>
 
       <div className="comp-data-container">
-        {renderFilterSection()}
-        <div className="comp-data-list-map">{renderDataView()}</div>
+        {renderDesktopFilterSection()}
+        <div className="comp-data-list-map">{renderCases()}</div>
       </div>
 
       {renderMobileFilters()}

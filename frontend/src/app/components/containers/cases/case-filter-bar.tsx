@@ -3,25 +3,29 @@ import { Button } from "react-bootstrap";
 import { FilterButton } from "@components/common/filter-button";
 import MapListToggle from "@components/common/map-list-toggle";
 import SearchInput from "@components/common/search-input";
-import { CaseFilters } from "./case-filter";
+import Option from "@apptypes/app/option";
 import { useCaseSearchForm } from "./hooks/use-case-search-form";
 
 type Props = {
   toggleShowMobileFilters: MouseEventHandler;
   toggleShowDesktopFilters: MouseEventHandler;
-  onClearFilter?: (filterName: string) => void;
 };
 
-export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters, onClearFilter }) => {
-  const { formValues, setFieldValue } = useCaseSearchForm();
+export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters }) => {
+  const { formValues, setFieldValue, clearFilter } = useCaseSearchForm();
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   const removeFilter = useCallback(
     (filterName: string) => {
-      onClearFilter?.(filterName);
+      if (filterName === "dateRange") {
+        clearFilter("startDate");
+        clearFilter("endDate");
+      } else {
+        clearFilter(filterName as keyof typeof formValues);
+      }
       setActiveFilters((prev) => prev.filter((f) => f !== filterName));
     },
-    [onClearFilter],
+    [clearFilter],
   );
 
   const handleViewTypeToggle = (view: "map" | "list") => {
@@ -33,10 +37,10 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
   };
 
   // Search is handled through the form hook
-  const handleSearch = () => {}};
+  const handleSearch = () => {};
 
-  const hasFilter = (filterName: keyof CaseFilters): boolean => {
-    return formValues[filterName] != null;
+  const hasFilter = (filterName: string): boolean => {
+    return formValues[filterName as keyof typeof formValues] != null;
   };
 
   const hasDateRange = (): boolean => {
@@ -76,7 +80,6 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
       <div className="search-bar">
         <SearchInput
           viewType={formValues.viewType}
-          complaintType="CASE" // Using a generic type for cases
           searchQuery={formValues.searchQuery}
           applySearchQuery={handleSearchChange}
           handleSearch={handleSearch}

@@ -4,14 +4,6 @@ import Option from "@apptypes/app/option";
 import { FilterDate } from "@components/common/filter-date";
 import { CaseSearchFormData, useCaseSearchForm } from "./hooks/use-case-search-form";
 
-// Re-export for backward compatibility
-export interface CaseFilters {
-  status?: Option | null;
-  leadAgency?: Option | null;
-  startDate?: Date | null;
-  endDate?: Date | null;
-}
-
 export const CaseFilter: FC = () => {
   const { formValues, setFieldValue, statusOptions, leadAgencyOptions } = useCaseSearchForm();
 
@@ -19,18 +11,31 @@ export const CaseFilter: FC = () => {
     setFieldValue(fieldName, option);
   };
 
-  const handleDateRangeChange = (dates: [Date, Date]) => {
+  const handleDateRangeChange = (dates: [Date | null, Date | null] | null) => {
+    if (!dates) {
+      setFieldValue("startDate", null);
+      setFieldValue("endDate", null);
+      return;
+    }
+
     const [start, end] = dates;
 
-    if (start) {
-      start.setHours(0, 0, 0, 0);
-    }
-    if (end) {
-      end.setHours(23, 59, 59, 999);
+    // Create new Date objects to avoid mutating the originals
+    const startDate = start ? new Date(start.getTime()) : null;
+    const endDate = end ? new Date(end.getTime()) : null;
+
+    // Set start date to beginning of day
+    if (startDate) {
+      startDate.setHours(0, 0, 0, 0);
     }
 
-    setFieldValue("startDate", start);
-    setFieldValue("endDate", end);
+    // Set end date to end of day
+    if (endDate) {
+      endDate.setHours(23, 59, 59, 999);
+    }
+
+    setFieldValue("startDate", startDate);
+    setFieldValue("endDate", endDate);
   };
 
   const renderSelectFilter = (

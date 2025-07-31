@@ -2,14 +2,13 @@ import { ChangeEvent, FC, KeyboardEvent, useState, useEffect } from "react";
 import { CloseButton, InputGroup } from "react-bootstrap";
 
 type Props = {
-  complaintType: string;
   viewType: "map" | "list";
   searchQuery: string | undefined;
   applySearchQuery: Function;
   handleSearch: (input: string) => void;
 };
 
-const SearchInput: FC<Props> = ({ complaintType, viewType, searchQuery, applySearchQuery, handleSearch }) => {
+const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handleSearch }) => {
   const [input, setInput] = useState<string>(searchQuery ?? "");
 
   useEffect(() => {
