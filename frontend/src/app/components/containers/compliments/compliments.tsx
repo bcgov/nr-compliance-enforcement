@@ -183,7 +183,9 @@ const Compliments: FC = () => {
   const [randomCompliment, setRandomCompliment] = useState("");
 
   useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * compliments.length);
+    const randomArray = new Uint32Array(1);
+    crypto.getRandomValues(randomArray);
+    const randomIndex = randomArray[0] % compliments.length;
     setRandomCompliment(compliments[randomIndex]);
   }, []);
 
