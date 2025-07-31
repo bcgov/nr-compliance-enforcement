@@ -179,7 +179,7 @@ const compliments = [
 ];
 
 const Compliments: FC = () => {
-  const isFeatureEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLIMENTS));
+  const isFeatureEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLIMENT));
   const [randomCompliment, setRandomCompliment] = useState("");
 
   useEffect(() => {
