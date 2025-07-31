@@ -33,7 +33,7 @@ export const SideBar: FC = () => {
       name: "Compliments",
       icon: "bi bi-heart",
       route: "/compliments",
-      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLIMENTS)),
+      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLIMENT)),
     },
     {
       id: "create-complaints-link",

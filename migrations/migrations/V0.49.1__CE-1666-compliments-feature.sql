@@ -11,7 +11,7 @@ INSERT INTO
     update_utc_timestamp
   )
 SELECT
-  'COMPLIMENTS',
+  'COMPLIMENT',
   'Compliments',
   'Display compliments page with motivational messages',
   500,
@@ -32,7 +32,7 @@ INSERT INTO
     update_utc_timestamp
   )
 SELECT
-  'COMPLIMENTS',
+  'COMPLIMENT',
   'EPO',
   'N',
   'FLYWAY',
@@ -51,7 +51,7 @@ INSERT INTO
     update_utc_timestamp
   )
 SELECT
-  'COMPLIMENTS',
+  'COMPLIMENT',
   'COS',
   'N',
   'FLYWAY',
@@ -70,7 +70,7 @@ INSERT INTO
     update_utc_timestamp
   )
 SELECT
-  'COMPLIMENTS',
+  'COMPLIMENT',
   'PARKS',
   'N',
   'FLYWAY',
@@ -89,7 +89,7 @@ INSERT INTO
     update_utc_timestamp
   )
 SELECT
-  'COMPLIMENTS',
+  'COMPLIMENT',
   'CEEB',
   'N',
   'FLYWAY',
