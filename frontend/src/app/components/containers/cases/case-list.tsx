@@ -14,11 +14,11 @@ type Props = {
 };
 
 export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, error = null }) => {
-  const { formValues, setFieldValue, setMultipleFieldValues } = useCaseSearch();
+  const { searchValues, setFieldValue, setMultipleFieldValues } = useCaseSearch();
 
   const handleSort = (sortInput: string) => {
-    const currentSortBy = formValues.sortBy;
-    const currentSortOrder = formValues.sortOrder;
+    const currentSortBy = searchValues.sortBy;
+    const currentSortOrder = searchValues.sortOrder;
     const newDirection =
       currentSortBy === sortInput && currentSortOrder === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC;
 
@@ -41,8 +41,8 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
       title={title}
       sortFnc={handleSort}
       sortKey={sortKey}
-      currentSort={formValues.sortBy}
-      sortDirection={formValues.sortOrder}
+      currentSort={searchValues.sortBy}
+      sortDirection={searchValues.sortOrder}
       className={className}
     />
   );
@@ -104,25 +104,10 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
       "text-danger",
     );
 
-  const renderNoCasesFoundMessage = () => {
-    const hasActiveFilters =
-      formValues.searchQuery ||
-      formValues.status ||
-      formValues.leadAgency ||
-      formValues.startDate ||
-      formValues.endDate;
-
-    const message = hasActiveFilters
-      ? "No cases found using your current filters. Remove or change your filters to see cases."
-      : "No cases found.";
-
-    return renderMessage("info-circle-fill", message);
-  };
-
   const renderCaseListItems = () => {
     if (isLoading) return renderLoadingSpinner();
     if (!isLoading && error) return renderErrorMessage();
-    if (!isLoading && !error && cases.length === 0) return renderNoCasesFoundMessage();
+    if (!isLoading && !error && cases.length === 0) return renderMessage("info-circle-fill", "No cases found.");
     return cases.map((caseFile) => (
       <CaseListItem
         key={caseFile.caseIdentifier}
@@ -145,10 +130,10 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
 
       {totalItems > 0 && (
         <Paginator
-          currentPage={formValues.page}
+          currentPage={searchValues.page}
           totalItems={totalItems}
           onPageChange={handlePageChange}
-          resultsPerPage={formValues.pageSize}
+          resultsPerPage={searchValues.pageSize}
         />
       )}
     </div>

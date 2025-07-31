@@ -42,24 +42,24 @@ const Cases: FC = () => {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);
 
-  const { formValues, getFilters } = useCaseSearch();
+  const { searchValues, getFilters } = useCaseSearch();
 
   const { data, isLoading, error } = useGraphQLQuery<{ searchCaseMomsSpaghettiFiles: CaseMomsSpaghettiFileResult }>(
     SEARCH_CASE_FILES,
     {
       queryKey: [
         "searchCaseMomsSpaghettiFiles",
-        formValues.searchQuery,
-        formValues.status,
-        formValues.leadAgency,
-        formValues.sortBy,
-        formValues.sortOrder,
-        formValues.page,
-        formValues.pageSize,
+        searchValues.search,
+        searchValues.caseStatus,
+        searchValues.agencyCode,
+        searchValues.sortBy,
+        searchValues.sortOrder,
+        searchValues.page,
+        searchValues.pageSize,
       ],
       variables: {
-        page: formValues.page,
-        pageSize: formValues.pageSize,
+        page: searchValues.page,
+        pageSize: searchValues.pageSize,
         filters: getFilters(),
       },
     },
@@ -115,7 +115,7 @@ const Cases: FC = () => {
     const cases = data?.searchCaseMomsSpaghettiFiles?.items || [];
     const totalCases = data?.searchCaseMomsSpaghettiFiles?.pageInfo?.totalCount || 0;
 
-    return formValues.viewType === "list" ? (
+    return searchValues.viewType === "list" ? (
       <CaseList
         cases={cases}
         totalItems={totalCases}

@@ -7,7 +7,7 @@ import { useAppSelector } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
 
 export const CaseFilter: FC = () => {
-  const { formValues, setFieldValue } = useCaseSearch();
+  const { searchValues, setFieldValue } = useCaseSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
 
@@ -65,7 +65,7 @@ export const CaseFilter: FC = () => {
         "Status",
         statusOptions,
         "Select status",
-        statusOptions.find((option) => option.value === formValues.statucaseStatuss) || null,
+        statusOptions.find((option) => option.value === searchValues.caseStatus) || null,
         handleFieldChange("caseStatus"),
       )}
 
@@ -74,15 +74,15 @@ export const CaseFilter: FC = () => {
         "Lead Agency",
         leadAgencyOptions,
         "Select agency",
-        leadAgencyOptions.find((option) => option.value === formValues.agencyCode) || null,
+        leadAgencyOptions.find((option) => option.value === searchValues.agencyCode) || null,
         handleFieldChange("agencyCode"),
       )}
 
       <FilterDate
         id="case-date-range-filter"
         label="Date Range"
-        startDate={formValues.startDate || undefined}
-        endDate={formValues.endDate || undefined}
+        startDate={searchValues.startDate || undefined}
+        endDate={searchValues.endDate || undefined}
         handleDateChange={handleDateRangeChange}
       />
     </div>

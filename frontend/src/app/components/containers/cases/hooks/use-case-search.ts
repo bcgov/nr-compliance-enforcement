@@ -15,7 +15,7 @@ export interface CaseSearchParams {
   viewType: "list" | "map";
 }
 
-const DEFAULT_FORM_VALUES: CaseSearchParams = {
+const DEFAULT_SEARCH_VALUES: CaseSearchParams = {
   search: "",
   caseStatus: null,
   agencyCode: null,
@@ -32,13 +32,13 @@ const serializeDate = (date: Date | null): string | undefined => (date ? date.to
 
 const deserializeDate = (dateString: string | null): Date | null => (dateString ? new Date(dateString) : null);
 
-const serializeFormValueToUrl = (key: keyof CaseSearchParams, value: any): string | undefined => {
+const serializeSearchValueToUrl = (key: keyof CaseSearchParams, value: any): string | undefined => {
   if (value == null) {
     return undefined;
   }
 
   // If value equals default we don't need to include it in the URL
-  if (value === DEFAULT_FORM_VALUES[key]) {
+  if (value === DEFAULT_SEARCH_VALUES[key]) {
     return undefined;
   }
 
@@ -61,18 +61,18 @@ const serializeFormValueToUrl = (key: keyof CaseSearchParams, value: any): strin
 export const useCaseSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const formValues: CaseSearchParams = useMemo(
+  const searchValues: CaseSearchParams = useMemo(
     () => ({
-      search: searchParams.get("search") || DEFAULT_FORM_VALUES.search,
+      search: searchParams.get("search") || DEFAULT_SEARCH_VALUES.search,
       caseStatus: searchParams.get("caseStatus"),
       agencyCode: searchParams.get("agencyCode"),
       startDate: deserializeDate(searchParams.get("startDate")),
       endDate: deserializeDate(searchParams.get("endDate")),
-      sortBy: searchParams.get("sortBy") || DEFAULT_FORM_VALUES.sortBy,
-      sortOrder: searchParams.get("sortOrder") || DEFAULT_FORM_VALUES.sortOrder,
+      sortBy: searchParams.get("sortBy") || DEFAULT_SEARCH_VALUES.sortBy,
+      sortOrder: searchParams.get("sortOrder") || DEFAULT_SEARCH_VALUES.sortOrder,
       page: parseInt(searchParams.get("page") || "1", 10),
       pageSize: parseInt(searchParams.get("pageSize") || "25", 10),
-      viewType: (searchParams.get("viewType") as "list" | "map") || DEFAULT_FORM_VALUES.viewType,
+      viewType: (searchParams.get("viewType") as "list" | "map") || DEFAULT_SEARCH_VALUES.viewType,
     }),
     [searchParams],
   );
@@ -83,7 +83,7 @@ export const useCaseSearch = () => {
         (currentParams) => {
           const newParams = new URLSearchParams(currentParams);
 
-          const serialized = serializeFormValueToUrl(field, value);
+          const serialized = serializeSearchValueToUrl(field, value);
 
           if (serialized !== undefined) {
             newParams.set(field, serialized);
@@ -114,7 +114,7 @@ export const useCaseSearch = () => {
           // Apply all updates to the new params
           Object.entries(updates).forEach(([field, value]) => {
             const fieldKey = field as keyof CaseSearchParams;
-            const serialized = serializeFormValueToUrl(fieldKey, value);
+            const serialized = serializeSearchValueToUrl(fieldKey, value);
 
             if (serialized !== undefined) {
               newParams.set(fieldKey, serialized);
@@ -142,25 +142,25 @@ export const useCaseSearch = () => {
 
   const clearFilter = useCallback(
     (filterName: keyof CaseSearchParams) => {
-      setFieldValue(filterName, DEFAULT_FORM_VALUES[filterName]);
+      setFieldValue(filterName, DEFAULT_SEARCH_VALUES[filterName]);
     },
     [setFieldValue],
   );
 
-  const resetForm = useCallback(() => {
+  const resetSearch = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
   }, [setSearchParams]);
 
   const getFilters = useCallback(() => {
-    return formValues;
-  }, [formValues]);
+    return searchValues;
+  }, [searchValues]);
 
   return {
-    formValues,
+    searchValues,
     setFieldValue,
     setMultipleFieldValues,
     clearFilter,
-    resetForm,
+    resetSearch,
     getFilters,
   };
 };

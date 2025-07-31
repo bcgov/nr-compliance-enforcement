@@ -13,7 +13,7 @@ type Props = {
 };
 
 export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters }) => {
-  const { formValues, setFieldValue, clearFilter } = useCaseSearch();
+  const { searchValues, setFieldValue, clearFilter } = useCaseSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
 
@@ -23,7 +23,7 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
         clearFilter("startDate");
         clearFilter("endDate");
       } else {
-        clearFilter(filterName as keyof typeof formValues);
+        clearFilter(filterName as keyof typeof searchValues);
       }
     },
     [clearFilter],
@@ -34,22 +34,22 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
   };
 
   const handleSearchChange = (query: string) => {
-    setFieldValue("searchQuery", query);
+    setFieldValue("search", query);
   };
 
   // Search is handled through the form hook
   const handleSearch = () => {};
 
   const hasFilter = (filterName: string): boolean => {
-    return formValues[filterName as keyof typeof formValues] != null;
+    return searchValues[filterName as keyof typeof searchValues] != null;
   };
 
   const hasDateRange = (): boolean => {
-    return formValues.startDate != null || formValues.endDate != null;
+    return searchValues.startDate != null || searchValues.endDate != null;
   };
 
   const getDateRangeLabel = (): string => {
-    const { startDate, endDate } = formValues;
+    const { startDate, endDate } = searchValues;
 
     if (startDate && endDate) {
       return `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
@@ -80,14 +80,14 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
     <div className="comp-filter-bar">
       <div className="search-bar">
         <SearchInput
-          viewType={formValues.viewType}
-          searchQuery={formValues.searchQuery}
+          viewType={searchValues.viewType}
+          searchQuery={searchValues.search}
           applySearchQuery={handleSearchChange}
           handleSearch={handleSearch}
         />
         <MapListToggle
           onToggle={handleViewTypeToggle}
-          activeView={formValues.viewType}
+          activeView={searchValues.viewType}
           className="map-list-toggle"
         />
       </div>
@@ -99,7 +99,7 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
         {hasFilter("status") && (
           <FilterButton
             id="case-status-filter-pill"
-            label={statusOptions.find((option) => option.value === formValues.status)?.label || "Status"}
+            label={statusOptions.find((option) => option.value === searchValues.caseStatus)?.label || "Status"}
             name="status"
             clear={removeFilter}
           />
@@ -108,7 +108,7 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
         {hasFilter("leadAgency") && (
           <FilterButton
             id="case-agency-filter-pill"
-            label={leadAgencyOptions.find((option) => option.value === formValues.leadAgency)?.label || "Agency"}
+            label={leadAgencyOptions.find((option) => option.value === searchValues.agencyCode)?.label || "Agency"}
             name="leadAgency"
             clear={removeFilter}
           />
