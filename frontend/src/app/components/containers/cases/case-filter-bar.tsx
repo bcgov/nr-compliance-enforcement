@@ -3,8 +3,9 @@ import { Button } from "react-bootstrap";
 import { FilterButton } from "@components/common/filter-button";
 import MapListToggle from "@components/common/map-list-toggle";
 import SearchInput from "@components/common/search-input";
-import Option from "@apptypes/app/option";
+import { useAppSelector } from "@hooks/hooks";
 import { useCaseSearchForm } from "./hooks/use-case-search-form";
+import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
 
 type Props = {
   toggleShowMobileFilters: MouseEventHandler;
@@ -13,7 +14,8 @@ type Props = {
 
 export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters }) => {
   const { formValues, setFieldValue, clearFilter } = useCaseSearchForm();
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
+  const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
 
   const removeFilter = useCallback(
     (filterName: string) => {
@@ -23,7 +25,6 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
       } else {
         clearFilter(filterName as keyof typeof formValues);
       }
-      setActiveFilters((prev) => prev.filter((f) => f !== filterName));
     },
     [clearFilter],
   );
@@ -98,7 +99,7 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
         {hasFilter("status") && (
           <FilterButton
             id="case-status-filter-pill"
-            label={formValues.status?.label || "Status"}
+            label={statusOptions.find((option) => option.value === formValues.status)?.label || "Status"}
             name="status"
             clear={removeFilter}
           />
@@ -107,7 +108,7 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
         {hasFilter("leadAgency") && (
           <FilterButton
             id="case-agency-filter-pill"
-            label={formValues.leadAgency?.label || "Agency"}
+            label={leadAgencyOptions.find((option) => option.value === formValues.leadAgency)?.label || "Agency"}
             name="leadAgency"
             clear={removeFilter}
           />

@@ -21,7 +21,7 @@ import { selectActiveTab, selectDefaultPageSize } from "@store/reducers/app";
 import { WildlifeComplaintListItem } from "./list-items/wildlife-complaint-list-item";
 import { AllegationComplaintListItem } from "./list-items/allegation-complaint-list-item";
 import { SectorComplaintListItem } from "./list-items/sector-complaint-list-item";
-import ComplaintPagination from "@components/common/complaint-pagination";
+import Paginator from "@/app/components/common/paginator";
 
 //-- new models
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
@@ -313,11 +313,12 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
         </Table>
       </div>
 
-      <ComplaintPagination
+      <Paginator
         currentPage={page}
         totalItems={totalComplaints}
         onPageChange={handlePageChange}
         resultsPerPage={pageSize}
+        resetPageOnChange={true}
       />
     </div>
   );

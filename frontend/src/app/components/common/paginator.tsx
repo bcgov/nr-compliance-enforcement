@@ -7,11 +7,12 @@ import { useAppSelector } from "@hooks/hooks";
 import { isFeatureActive } from "@store/reducers/app";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
-interface ComplaintPaginationProps {
+interface PaginationProps {
   currentPage: number;
   totalItems: number;
   resultsPerPage: number;
   onPageChange: (page: number) => void;
+  resetPageOnChange?: boolean;
 }
 
 /**
@@ -19,12 +20,14 @@ interface ComplaintPaginationProps {
  * @param currentPage Current page that is selected
  * @param totalItems Total number of items
  * @param resultsPerPage The number of results to appear on each page
+ * @param resetPageOnChange Whether to reset to page 1 when totalItems changes (default: true)
  */
-const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
+const Paginator: React.FC<PaginationProps> = ({
   currentPage,
   totalItems,
   onPageChange,
   resultsPerPage,
+  resetPageOnChange = false,
 }) => {
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
@@ -37,8 +40,10 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
 
   useEffect(() => {
     // Update the local state whenever selectedValue changes so that the pagination starts at 1 again.
-    onPageChange(1);
-  }, [onPageChange, totalItems]);
+    if (resetPageOnChange) {
+      onPageChange(1);
+    }
+  }, [onPageChange, totalItems, resetPageOnChange]);
 
   const handleEnterKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -175,4 +180,4 @@ const ComplaintPagination: React.FC<ComplaintPaginationProps> = ({
   );
 };
 
-export default ComplaintPagination;
+export default Paginator;

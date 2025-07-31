@@ -1,41 +1,32 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { FilterDate } from "@components/common/filter-date";
 import { CaseSearchFormData, useCaseSearchForm } from "./hooks/use-case-search-form";
+import { useAppSelector } from "@hooks/hooks";
+import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
 
 export const CaseFilter: FC = () => {
-  const { formValues, setFieldValue, statusOptions, leadAgencyOptions } = useCaseSearchForm();
+  const { formValues, setFieldValue } = useCaseSearchForm();
+  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
+  const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
 
   const handleFieldChange = (fieldName: keyof CaseSearchFormData) => (option: Option | null) => {
-    setFieldValue(fieldName, option);
+    setFieldValue(fieldName, option?.value);
   };
 
-  const handleDateRangeChange = (dates: [Date | null, Date | null] | null) => {
-    if (!dates) {
-      setFieldValue("startDate", null);
-      setFieldValue("endDate", null);
-      return;
-    }
-
+  const handleDateRangeChange = (dates: [Date, Date]) => {
     const [start, end] = dates;
 
-    // Create new Date objects to avoid mutating the originals
-    const startDate = start ? new Date(start.getTime()) : null;
-    const endDate = end ? new Date(end.getTime()) : null;
-
-    // Set start date to beginning of day
-    if (startDate) {
-      startDate.setHours(0, 0, 0, 0);
+    if (start) {
+      start.setHours(0, 0, 0, 0);
+    }
+    if (end) {
+      end.setHours(23, 59, 59, 999);
     }
 
-    // Set end date to end of day
-    if (endDate) {
-      endDate.setHours(23, 59, 59, 999);
-    }
-
-    setFieldValue("startDate", startDate);
-    setFieldValue("endDate", endDate);
+    setFieldValue("startDate", start);
+    setFieldValue("endDate", end);
   };
 
   const renderSelectFilter = (
@@ -74,7 +65,7 @@ export const CaseFilter: FC = () => {
         "Status",
         statusOptions,
         "Select status",
-        formValues.status,
+        statusOptions.find((option) => option.value === formValues.status) || null,
         handleFieldChange("status"),
       )}
 
@@ -83,7 +74,7 @@ export const CaseFilter: FC = () => {
         "Lead Agency",
         leadAgencyOptions,
         "Select agency",
-        formValues.leadAgency,
+        leadAgencyOptions.find((option) => option.value === formValues.leadAgency) || null,
         handleFieldChange("leadAgency"),
       )}
 

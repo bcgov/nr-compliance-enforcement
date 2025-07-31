@@ -1,8 +1,8 @@
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import { Table } from "react-bootstrap";
 import { useCaseSearchForm } from "./hooks/use-case-search-form";
 import { SortableHeader } from "@components/common/sortable-header";
-import ComplaintPagination from "@components/common/complaint-pagination";
+import Paginator from "@/app/components/common/paginator";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { CaseListItem } from "./case-list-item";
 
@@ -29,9 +29,12 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
     });
   };
 
-  const handlePageChange = (newPage: number) => {
-    setFieldValue("page", newPage);
-  };
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      setFieldValue("page", newPage);
+    },
+    [setFieldValue],
+  );
 
   const renderSortableHeader = (title: string, sortKey: string, className?: string) => (
     <SortableHeader
@@ -142,7 +145,7 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
       </div>
 
       {totalItems > 0 && (
-        <ComplaintPagination
+        <Paginator
           currentPage={formValues.page}
           totalItems={totalItems}
           onPageChange={handlePageChange}
