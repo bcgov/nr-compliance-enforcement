@@ -2,7 +2,7 @@ import { useSearchParams } from "react-router-dom";
 import { useCallback, useMemo } from "react";
 import { SORT_TYPES } from "@constants/sort-direction";
 
-export interface CaseSearchForm {
+export interface CaseSearchParams {
   search: string;
   caseStatus: string | null;
   agencyCode: string | null;
@@ -15,7 +15,7 @@ export interface CaseSearchForm {
   viewType: "list" | "map";
 }
 
-const DEFAULT_FORM_VALUES: CaseSearchForm = {
+const DEFAULT_FORM_VALUES: CaseSearchParams = {
   search: "",
   caseStatus: null,
   agencyCode: null,
@@ -32,7 +32,7 @@ const serializeDate = (date: Date | null): string | undefined => (date ? date.to
 
 const deserializeDate = (dateString: string | null): Date | null => (dateString ? new Date(dateString) : null);
 
-const serializeFormValueToUrl = (key: keyof CaseSearchForm, value: any): string | undefined => {
+const serializeFormValueToUrl = (key: keyof CaseSearchParams, value: any): string | undefined => {
   if (value == null) {
     return undefined;
   }
@@ -61,7 +61,7 @@ const serializeFormValueToUrl = (key: keyof CaseSearchForm, value: any): string 
 export const useCaseSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const formValues: CaseSearchForm = useMemo(
+  const formValues: CaseSearchParams = useMemo(
     () => ({
       search: searchParams.get("search") || DEFAULT_FORM_VALUES.search,
       caseStatus: searchParams.get("caseStatus"),
@@ -78,7 +78,7 @@ export const useCaseSearch = () => {
   );
 
   const setFieldValue = useCallback(
-    (field: keyof CaseSearchForm, value: any) => {
+    (field: keyof CaseSearchParams, value: any) => {
       setSearchParams(
         (currentParams) => {
           const newParams = new URLSearchParams(currentParams);
@@ -106,14 +106,14 @@ export const useCaseSearch = () => {
 
   // Update multiple fields at once (useful for sorting)
   const setMultipleFieldValues = useCallback(
-    (updates: Partial<CaseSearchForm>) => {
+    (updates: Partial<CaseSearchParams>) => {
       setSearchParams(
         (currentParams) => {
           const newParams = new URLSearchParams(currentParams);
 
           // Apply all updates to the new params
           Object.entries(updates).forEach(([field, value]) => {
-            const fieldKey = field as keyof CaseSearchForm;
+            const fieldKey = field as keyof CaseSearchParams;
             const serialized = serializeFormValueToUrl(fieldKey, value);
 
             if (serialized !== undefined) {
@@ -141,7 +141,7 @@ export const useCaseSearch = () => {
   );
 
   const clearFilter = useCallback(
-    (filterName: keyof CaseSearchForm) => {
+    (filterName: keyof CaseSearchParams) => {
       setFieldValue(filterName, DEFAULT_FORM_VALUES[filterName]);
     },
     [setFieldValue],

@@ -2,7 +2,7 @@ import { FC } from "react";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { FilterDate } from "@components/common/filter-date";
-import { CaseSearchForm, useCaseSearch } from "./hooks/use-case-search";
+import { CaseSearchParams, useCaseSearch } from "./hooks/use-case-search";
 import { useAppSelector } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
 
@@ -11,7 +11,7 @@ export const CaseFilter: FC = () => {
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
 
-  const handleFieldChange = (fieldName: keyof CaseSearchForm) => (option: Option | null) => {
+  const handleFieldChange = (fieldName: keyof CaseSearchParams) => (option: Option | null) => {
     setFieldValue(fieldName, option?.value);
   };
 
