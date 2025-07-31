@@ -4,9 +4,9 @@ import Option from "@apptypes/app/option";
 import { SORT_TYPES } from "@constants/sort-direction";
 
 export interface CaseSearchFormData {
-  searchQuery: string;
-  status: string;
-  leadAgency: string;
+  search: string;
+  caseStatus: string | null;
+  agencyCode: string | null;
   startDate: Date | null;
   endDate: Date | null;
   sortBy: string;
@@ -16,11 +16,10 @@ export interface CaseSearchFormData {
   viewType: "list" | "map";
 }
 
-// Constants
 const DEFAULT_FORM_VALUES: CaseSearchFormData = {
-  searchQuery: "",
-  status: null,
-  leadAgency: null,
+  search: "",
+  caseStatus: null,
+  agencyCode: null,
   startDate: null,
   endDate: null,
   sortBy: "caseOpenedTimestamp",
@@ -30,59 +29,44 @@ const DEFAULT_FORM_VALUES: CaseSearchFormData = {
   viewType: "list",
 };
 
-// Utility functions
 const serializeDate = (date: Date | null): string | undefined => (date ? date.toISOString().split("T")[0] : undefined);
 
 const deserializeDate = (dateString: string | null): Date | null => (dateString ? new Date(dateString) : null);
 
-// URL parameter mapping functions
 const serializeFormValueToUrl = (key: keyof CaseSearchFormData, value: any): string | undefined => {
-  switch (key) {
-    case "searchQuery":
-      return value || undefined;
-    case "status":
-    case "leadAgency":
-      return value || undefined;
-    case "startDate":
-    case "endDate":
-      return serializeDate(value);
-    case "sortBy":
-      return value !== DEFAULT_FORM_VALUES.sortBy ? value : undefined;
-    case "sortOrder":
-      return value !== DEFAULT_FORM_VALUES.sortOrder ? value : undefined;
-    case "page":
-      return value !== DEFAULT_FORM_VALUES.page ? value.toString() : undefined;
-    case "pageSize":
-      return value !== DEFAULT_FORM_VALUES.pageSize ? value.toString() : undefined;
-    case "viewType":
-      return value !== DEFAULT_FORM_VALUES.viewType ? value : undefined;
+  if (value == null) {
+    return undefined;
+  }
+
+  // If value equals default we don't need to include it in the URL
+  if (value === DEFAULT_FORM_VALUES[key]) {
+    return undefined;
+  }
+
+  if (value instanceof Date) {
+    return serializeDate(value);
+  }
+
+  switch (typeof value) {
+    case "string":
+      return value.trim() || undefined;
+    case "number":
+      return value.toString();
+    case "boolean":
+      return value.toString();
     default:
-      return undefined;
+      return value ? String(value) : undefined;
   }
 };
-
-const URL_PARAM_NAMES = {
-  searchQuery: "search",
-  status: "status",
-  leadAgency: "leadAgency",
-  startDate: "startDate",
-  endDate: "endDate",
-  sortBy: "sortBy",
-  sortOrder: "sortOrder",
-  page: "page",
-  pageSize: "pageSize",
-  viewType: "viewType",
-} as const;
 
 export const useCaseSearchForm = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Parse URL params to form values (memoized to prevent infinite re-renders)
   const formValues: CaseSearchFormData = useMemo(
     () => ({
-      searchQuery: searchParams.get("search") || DEFAULT_FORM_VALUES.searchQuery,
-      status: searchParams.get("status"),
-      leadAgency: searchParams.get("leadAgency"),
+      search: searchParams.get("search") || DEFAULT_FORM_VALUES.search,
+      caseStatus: searchParams.get("caseStatus"),
+      agencyCode: searchParams.get("agencyCode"),
       startDate: deserializeDate(searchParams.get("startDate")),
       endDate: deserializeDate(searchParams.get("endDate")),
       sortBy: searchParams.get("sortBy") || DEFAULT_FORM_VALUES.sortBy,
@@ -94,7 +78,6 @@ export const useCaseSearchForm = () => {
     [searchParams],
   );
 
-  // Update URL with new field value
   const setFieldValue = useCallback(
     (field: keyof CaseSearchFormData, value: any) => {
       setSearchParams(
@@ -102,12 +85,11 @@ export const useCaseSearchForm = () => {
           const newParams = new URLSearchParams(currentParams);
 
           const serialized = serializeFormValueToUrl(field, value);
-          const paramName = URL_PARAM_NAMES[field];
 
           if (serialized !== undefined) {
-            newParams.set(paramName, serialized);
+            newParams.set(field, serialized);
           } else {
-            newParams.delete(paramName);
+            newParams.delete(field);
           }
 
           // Reset to page 1 when filters change (except for page/pageSize changes)
@@ -134,12 +116,11 @@ export const useCaseSearchForm = () => {
           Object.entries(updates).forEach(([field, value]) => {
             const fieldKey = field as keyof CaseSearchFormData;
             const serialized = serializeFormValueToUrl(fieldKey, value);
-            const paramName = URL_PARAM_NAMES[fieldKey];
 
             if (serialized !== undefined) {
-              newParams.set(paramName, serialized);
+              newParams.set(fieldKey, serialized);
             } else {
-              newParams.delete(paramName);
+              newParams.delete(fieldKey);
             }
           });
 
@@ -160,7 +141,6 @@ export const useCaseSearchForm = () => {
     [setSearchParams],
   );
 
-  // Clear a specific filter
   const clearFilter = useCallback(
     (filterName: keyof CaseSearchFormData) => {
       setFieldValue(filterName, DEFAULT_FORM_VALUES[filterName]);
@@ -168,22 +148,12 @@ export const useCaseSearchForm = () => {
     [setFieldValue],
   );
 
-  // Reset all filters
   const resetForm = useCallback(() => {
     setSearchParams(new URLSearchParams(), { replace: true });
   }, [setSearchParams]);
 
-  // Get API filters from current URL params
   const getFilters = useCallback(() => {
-    return {
-      search: formValues.searchQuery || undefined,
-      agencyCode: formValues.leadAgency || undefined,
-      caseStatus: formValues.status || undefined,
-      sortBy: formValues.sortBy || undefined,
-      sortOrder: formValues.sortOrder || undefined,
-      startDate: formValues.startDate || undefined,
-      endDate: formValues.endDate || undefined,
-    };
+    return formValues;
   }, [formValues]);
 
   return {
