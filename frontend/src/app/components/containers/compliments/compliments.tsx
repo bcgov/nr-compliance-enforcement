@@ -1,8 +1,4 @@
 import { FC, useState, useEffect } from "react";
-import { useAppSelector } from "@hooks/hooks";
-import { isFeatureActive } from "@store/reducers/app";
-import { FEATURE_TYPES } from "@constants/feature-flag-types";
-import { NotAuthorized } from "@components/containers/pages";
 
 const compliments = [
   "Your dedication to protecting our natural environment makes a real difference.",
@@ -179,7 +175,6 @@ const compliments = [
 ];
 
 const Compliments: FC = () => {
-  const isFeatureEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLIMENT));
   const [randomCompliment, setRandomCompliment] = useState("");
 
   useEffect(() => {
@@ -188,11 +183,6 @@ const Compliments: FC = () => {
     const randomIndex = randomArray[0] % compliments.length;
     setRandomCompliment(compliments[randomIndex]);
   }, []);
-
-  if (!isFeatureEnabled) {
-    return <NotAuthorized />;
-  }
-
   return (
     <div className="comp-page-container comp-page-container--noscroll">
       <div className="comp-page-header">
