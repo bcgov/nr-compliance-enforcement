@@ -96,20 +96,20 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
         {renderFilterButton("desktop", toggleShowDesktopFilters, "case-filter-btn")}
         {renderFilterButton("mobile", toggleShowMobileFilters)}
 
-        {hasFilter("status") && (
+        {hasFilter("caseStatus") && (
           <FilterButton
             id="case-status-filter-pill"
             label={statusOptions.find((option) => option.value === searchValues.caseStatus)?.label || "Status"}
-            name="status"
+            name="caseStatus"
             clear={removeFilter}
           />
         )}
 
-        {hasFilter("leadAgency") && (
+        {hasFilter("agencyCode") && (
           <FilterButton
             id="case-agency-filter-pill"
             label={leadAgencyOptions.find((option) => option.value === searchValues.agencyCode)?.label || "Agency"}
-            name="leadAgency"
+            name="agencyCode"
             clear={removeFilter}
           />
         )}

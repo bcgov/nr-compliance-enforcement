@@ -52,6 +52,8 @@ const Cases: FC = () => {
         searchValues.search,
         searchValues.caseStatus,
         searchValues.agencyCode,
+        searchValues.startDate,
+        searchValues.endDate,
         searchValues.sortBy,
         searchValues.sortOrder,
         searchValues.page,

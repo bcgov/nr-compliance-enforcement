@@ -154,9 +154,11 @@ export type CaseMomsSpaghettiFile = {
 export type CaseMomsSpaghettiFileFilters = {
   agencyCode?: InputMaybe<Scalars['String']['input']>;
   caseStatus?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['Date']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['Date']['input']>;
 };
 
 export type CaseMomsSpaghettiFileResult = {

@@ -104,19 +104,43 @@ export const useCaseSearch = () => {
     [setSearchParams],
   );
 
-  const setSort = useCallback(
-    (sortBy: string, sortOrder: string) => {
+  const setMultipleValues = useCallback(
+    (values: Partial<CaseSearchParams>) => {
       setSearchParams(
         (currentParams) => {
           const newParams = new URLSearchParams(currentParams);
-          newParams.set("sortBy", sortBy);
-          newParams.set("sortOrder", sortOrder);
+
+          Object.entries(values).forEach(([key, value]) => {
+            const serialized = serializeSearchValueToUrl(key as keyof CaseSearchParams, value);
+
+            if (serialized !== undefined) {
+              newParams.set(key, serialized);
+            } else {
+              newParams.delete(key);
+            }
+          });
+
+          // Reset to page 1 when filters change (except for page/pageSize/sort changes)
+          const filterFields = Object.keys(values).filter(
+            (key) => !["page", "pageSize", "sortBy", "sortOrder"].includes(key),
+          );
+          if (filterFields.length > 0) {
+            newParams.delete("page");
+          }
+
           return newParams;
         },
         { replace: true },
       );
     },
     [setSearchParams],
+  );
+
+  const setSort = useCallback(
+    (sortBy: string, sortOrder: string) => {
+      setMultipleValues({ sortBy, sortOrder });
+    },
+    [setMultipleValues],
   );
 
   const clearValue = useCallback(
@@ -131,12 +155,14 @@ export const useCaseSearch = () => {
   }, [setSearchParams]);
 
   const getFilters = useCallback(() => {
-    return searchValues;
+    const { viewType, page, pageSize, ...filters } = searchValues;
+    return filters;
   }, [searchValues]);
 
   return {
     searchValues,
     setValue,
+    setMultipleValues,
     setSort,
     clearValue,
     resetSearch,

@@ -7,7 +7,7 @@ import { useAppSelector } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
 
 export const CaseFilter: FC = () => {
-  const { searchValues, setValue } = useCaseSearch();
+  const { searchValues, setValue, setMultipleValues } = useCaseSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
 
@@ -16,6 +16,7 @@ export const CaseFilter: FC = () => {
   };
 
   const handleDateRangeChange = (dates: [Date, Date]) => {
+    console.log("dates", dates);
     const [start, end] = dates;
 
     if (start) {
@@ -25,8 +26,10 @@ export const CaseFilter: FC = () => {
       end.setHours(23, 59, 59, 999);
     }
 
-    setValue("startDate", start);
-    setValue("endDate", end);
+    setMultipleValues({
+      startDate: start,
+      endDate: end,
+    });
   };
 
   const renderSelectFilter = (
