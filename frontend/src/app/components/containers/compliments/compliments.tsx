@@ -177,12 +177,17 @@ const compliments = [
 const Compliments: FC = () => {
   const [randomCompliment, setRandomCompliment] = useState("");
 
-  useEffect(() => {
+  const generateRandomCompliment = () => {
     const randomArray = new Uint32Array(1);
     crypto.getRandomValues(randomArray);
     const randomIndex = randomArray[0] % compliments.length;
     setRandomCompliment(compliments[randomIndex]);
+  };
+
+  useEffect(() => {
+    generateRandomCompliment();
   }, []);
+
   return (
     <div className="comp-page-container comp-page-container--noscroll">
       <div className="comp-page-header">
@@ -208,7 +213,13 @@ const Compliments: FC = () => {
                   style={{ maxWidth: "500px" }}
                 >
                   <div className="card-body">
-                    <p className="card-text fs-5 text-dark mb-0">"{randomCompliment}"</p>
+                    <p className="card-text fs-5 text-dark mb-5">"{randomCompliment}"</p>
+                    <button
+                      className="btn btn-primary"
+                      onClick={generateRandomCompliment}
+                    >
+                      Another!
+                    </button>
                   </div>
                 </div>
               </div>
