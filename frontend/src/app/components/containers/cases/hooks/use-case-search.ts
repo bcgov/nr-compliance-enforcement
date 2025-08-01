@@ -119,7 +119,7 @@ export const useCaseSearch = () => {
     [setSearchParams],
   );
 
-  const clearFilter = useCallback(
+  const clearValue = useCallback(
     (filterName: keyof CaseSearchParams) => {
       setValue(filterName, DEFAULT_SEARCH_VALUES[filterName]);
     },
@@ -138,7 +138,7 @@ export const useCaseSearch = () => {
     searchValues,
     setValue,
     setSort,
-    clearFilter,
+    clearValue,
     resetSearch,
     getFilters,
   };
