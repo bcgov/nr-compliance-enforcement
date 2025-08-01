@@ -16,7 +16,6 @@ export const CaseFilter: FC = () => {
   };
 
   const handleDateRangeChange = (dates: [Date, Date]) => {
-    console.log("dates", dates);
     const [start, end] = dates;
 
     if (start) {
