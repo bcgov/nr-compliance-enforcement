@@ -77,7 +77,7 @@ export const useCaseSearch = () => {
     [searchParams],
   );
 
-  const setFieldValue = useCallback(
+  const setValue = useCallback(
     (field: keyof CaseSearchParams, value: any) => {
       setSearchParams(
         (currentParams) => {
@@ -104,34 +104,13 @@ export const useCaseSearch = () => {
     [setSearchParams],
   );
 
-  // Update multiple fields at once (useful for sorting)
-  const setMultipleFieldValues = useCallback(
-    (updates: Partial<CaseSearchParams>) => {
+  const setSort = useCallback(
+    (sortBy: string, sortOrder: string) => {
       setSearchParams(
         (currentParams) => {
           const newParams = new URLSearchParams(currentParams);
-
-          // Apply all updates to the new params
-          Object.entries(updates).forEach(([field, value]) => {
-            const fieldKey = field as keyof CaseSearchParams;
-            const serialized = serializeSearchValueToUrl(fieldKey, value);
-
-            if (serialized !== undefined) {
-              newParams.set(fieldKey, serialized);
-            } else {
-              newParams.delete(fieldKey);
-            }
-          });
-
-          // Reset to page 1 when filters change (except for page/pageSize/sorting changes)
-          const updatedFields = Object.keys(updates);
-          const hasNonSortingUpdates = updatedFields.some(
-            (field) => field !== "page" && field !== "pageSize" && field !== "sortBy" && field !== "sortOrder",
-          );
-          if (hasNonSortingUpdates) {
-            newParams.delete("page");
-          }
-
+          newParams.set("sortBy", sortBy);
+          newParams.set("sortOrder", sortOrder);
           return newParams;
         },
         { replace: true },
@@ -142,9 +121,9 @@ export const useCaseSearch = () => {
 
   const clearFilter = useCallback(
     (filterName: keyof CaseSearchParams) => {
-      setFieldValue(filterName, DEFAULT_SEARCH_VALUES[filterName]);
+      setValue(filterName, DEFAULT_SEARCH_VALUES[filterName]);
     },
-    [setFieldValue],
+    [setValue],
   );
 
   const resetSearch = useCallback(() => {
@@ -157,8 +136,8 @@ export const useCaseSearch = () => {
 
   return {
     searchValues,
-    setFieldValue,
-    setMultipleFieldValues,
+    setValue,
+    setSort,
     clearFilter,
     resetSearch,
     getFilters,

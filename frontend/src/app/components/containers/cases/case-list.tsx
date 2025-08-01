@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, error = null }) => {
-  const { searchValues, setFieldValue, setMultipleFieldValues } = useCaseSearch();
+  const { searchValues, setValue, setSort } = useCaseSearch();
 
   const handleSort = (sortInput: string) => {
     const currentSortBy = searchValues.sortBy;
@@ -23,17 +23,14 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
       currentSortBy === sortInput && currentSortOrder === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC;
 
     // Update both sortBy and sortOrder atomically to avoid timing issues
-    setMultipleFieldValues({
-      sortBy: sortInput,
-      sortOrder: newDirection,
-    });
+    setSort(sortInput, newDirection);
   };
 
   const handlePageChange = useCallback(
     (newPage: number) => {
-      setFieldValue("page", newPage);
+      setValue("page", newPage);
     },
-    [setFieldValue],
+    [setValue],
   );
 
   const renderSortableHeader = (title: string, sortKey: string, className?: string) => (
