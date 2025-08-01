@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { getCaseFile, upsertAuthorizationOutcome } from "@store/reducers/case-thunks";
 import { selectCaseId } from "@store/reducers/case-selectors";
-import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
+import { PermitSite } from "@/app/types/app/complaint-outcomes/ceeb/authorization-outcome/permit-site";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";

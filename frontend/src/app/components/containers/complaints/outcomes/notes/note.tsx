@@ -36,7 +36,7 @@ export const Note: FC<props> = ({ id = "", complaintType = "", note }) => {
         data: {
           title: "Delete note",
           description: "All the data in this note will be lost.",
-          caseIdentifier: id,
+          complaintOutcomeGuid: id,
           ok: "Yes, delete note",
           cancel: "No, go back",
           id: note?.id,
@@ -63,7 +63,7 @@ export const Note: FC<props> = ({ id = "", complaintType = "", note }) => {
             actions={note.actions}
             handleEdit={() => setShowInput(true)}
             handleDelete={openDeleteNoteModal}
-            agencyCode={note.agencyCode}
+            agencyCode={note.outcomeAgencyCode}
           />
         )
       )}

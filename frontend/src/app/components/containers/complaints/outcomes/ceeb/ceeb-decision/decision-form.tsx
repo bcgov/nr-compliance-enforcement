@@ -10,7 +10,7 @@ import {
   selectIPMAuthCategoryDropdown,
 } from "@store/reducers/code-table-selectors";
 import { selectLeadAgencyDropdown } from "@store/reducers/code-table";
-import { Decision } from "@apptypes/app/case-files/ceeb/decision/decision";
+import { Decision } from "@/app/types/app/complaint-outcomes/ceeb/decision/decision";
 import { Button } from "react-bootstrap";
 import { ValidationDatePicker } from "@common/validation-date-picker";
 import { CompSelect } from "@components/common/comp-select";

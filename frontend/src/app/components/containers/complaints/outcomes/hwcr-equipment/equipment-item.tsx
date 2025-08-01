@@ -4,7 +4,7 @@ import { BsExclamationCircleFill } from "react-icons/bs";
 import { formatDate } from "@common/methods";
 
 import { DeleteConfirmModal } from "@components/modal/instances/delete-confirm-modal";
-import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
+import { EquipmentDetailsDto } from "@/app/types/app/complaint-outcomes/equipment-details";
 import { selectOfficerByAuthUserGuid } from "@store/reducers/officer";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 

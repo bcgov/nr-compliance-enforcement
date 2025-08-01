@@ -3,7 +3,7 @@ import config from "@/config";
 import { deleteMethod, generateApiParameters, get, patch, post } from "@common/api";
 import { AppThunk, RootState } from "@store/store";
 import { ToggleError, ToggleSuccess } from "@common/toast";
-import { CaseFileDto } from "@apptypes/app/case-files/case-file";
+import { ComplaintOutcomeDto } from "@/app/types/app/complaint-outcomes/complaint-outcome";
 import {
   clearAssessment,
   clearPrevention,
@@ -16,59 +16,59 @@ import {
 } from "./cases";
 import { Assessment } from "@apptypes/outcomes/assessment";
 import { Officer } from "@apptypes/person/person";
-import { AssessmentActionDto } from "@/app/types/app/case-files/assessment/assessment-action";
-import { UpdateAssessmentInput } from "@/app/types/app/case-files/assessment/update-assessment-input";
-import { CreateAssessmentInput } from "@/app/types/app/case-files/assessment/create-assessment-input";
+import { AssessmentActionDto } from "@/app/types/app/complaint-outcomes/assessment/assessment-action";
+import { UpdateAssessmentInput } from "@/app/types/app/complaint-outcomes/assessment/update-assessment-input";
+import { CreateAssessmentInput } from "@/app/types/app/complaint-outcomes/assessment/create-assessment-input";
 import { Prevention } from "@apptypes/outcomes/prevention";
-import { PreventionActionDto } from "@apptypes/app/case-files/prevention/prevention-action";
-import { UpdatePreventionInput } from "@apptypes/app/case-files/prevention/update-prevention-input";
-import { CreatePreventionInput } from "@apptypes/app/case-files/prevention/create-prevention-input";
-import { CreateNoteInput } from "@apptypes/app/case-files/notes/create-note-input";
-import { UpdateNoteInput } from "@apptypes/app/case-files/notes/update-note-input";
-import { DeleteNoteInput } from "@apptypes/app/case-files/notes/delete-note-input";
+import { PreventionActionDto } from "@/app/types/app/complaint-outcomes/prevention/prevention-action";
+import { UpdatePreventionInput } from "@/app/types/app/complaint-outcomes/prevention/update-prevention-input";
+import { CreatePreventionInput } from "@/app/types/app/complaint-outcomes/prevention/create-prevention-input";
+import { CreateNoteInput } from "@/app/types/app/complaint-outcomes/notes/create-note-input";
+import { UpdateNoteInput } from "@/app/types/app/complaint-outcomes/notes/update-note-input";
+import { DeleteNoteInput } from "@/app/types/app/complaint-outcomes/notes/delete-note-input";
 import { UUID } from "crypto";
-import { ReviewInput } from "@apptypes/app/case-files/review-input";
-import { ReviewCompleteAction } from "@apptypes/app/case-files/review-complete-action";
-import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
-import { CreateEquipmentInput } from "@apptypes/app/case-files/equipment-inputs/create-equipment-input";
-import { UpdateEquipmentInput } from "@apptypes/app/case-files/equipment-inputs/update-equipment-input";
+import { ReviewInput } from "@/app/types/app/complaint-outcomes/review-input";
+import { ReviewCompleteAction } from "@/app/types/app/complaint-outcomes/review-complete-action";
+import { EquipmentDetailsDto } from "@/app/types/app/complaint-outcomes/equipment-details";
+import { CreateEquipmentInput } from "@/app/types/app/complaint-outcomes/equipment-inputs/create-equipment-input";
+import { UpdateEquipmentInput } from "@/app/types/app/complaint-outcomes/equipment-inputs/update-equipment-input";
 import { getComplaintStatusById, clearComplaint } from "./complaints";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
-import { CreateAnimalOutcomeInput } from "@apptypes/app/case-files/animal-outcome/create-animal-outcome-input";
+import { CreateAnimalOutcomeInput } from "@/app/types/app/complaint-outcomes/animal-outcome/create-animal-outcome-input";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
 import { from } from "linq-to-typescript";
-import { EarTagInput } from "@apptypes/app/case-files/animal-outcome/ear-tag-input";
-import { DrugUsedInputV3 } from "@apptypes/app/case-files/animal-outcome/drug-used-input";
-import { AnimalOutcomeActionInput } from "@apptypes/app/case-files/animal-outcome/animal-outcome-action-input";
-import { DeleteAnimalOutcomeInput } from "@apptypes/app/case-files/animal-outcome/delete-animal-outcome-input";
-import { UpdateAnimalOutcomeInput } from "@apptypes/app/case-files/animal-outcome/update-animal-outcome-input";
-import { Decision } from "@apptypes/app/case-files/ceeb/decision/decision";
-import { CreateDecisionInput } from "@apptypes/app/case-files/ceeb/decision/create-decision-input";
-import { UpdateDecisionInput } from "@apptypes/app/case-files/ceeb/decision/update-decsion-input";
-import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
-import { CreateAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/create-authorization-outcome-input";
-import { UpdateAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/update-authorization-outcome-input";
-import { DeleteAuthorizationOutcomeInput } from "@apptypes/app/case-files/ceeb/authorization-outcome/delete-authorization-outcome-input";
+import { EarTagInput } from "@/app/types/app/complaint-outcomes/animal-outcome/ear-tag-input";
+import { DrugUsedInputV3 } from "@/app/types/app/complaint-outcomes/animal-outcome/drug-used-input";
+import { AnimalOutcomeActionInput } from "@/app/types/app/complaint-outcomes/animal-outcome/animal-outcome-action-input";
+import { DeleteAnimalOutcomeInput } from "@/app/types/app/complaint-outcomes/animal-outcome/delete-animal-outcome-input";
+import { UpdateAnimalOutcomeInput } from "@/app/types/app/complaint-outcomes/animal-outcome/update-animal-outcome-input";
+import { Decision } from "@/app/types/app/complaint-outcomes/ceeb/decision/decision";
+import { CreateDecisionInput } from "@/app/types/app/complaint-outcomes/ceeb/decision/create-decision-input";
+import { UpdateDecisionInput } from "@/app/types/app/complaint-outcomes/ceeb/decision/update-decsion-input";
+import { PermitSite } from "@/app/types/app/complaint-outcomes/ceeb/authorization-outcome/permit-site";
+import { CreateAuthorizationOutcomeInput } from "@/app/types/app/complaint-outcomes/ceeb/authorization-outcome/create-authorization-outcome-input";
+import { UpdateAuthorizationOutcomeInput } from "@/app/types/app/complaint-outcomes/ceeb/authorization-outcome/update-authorization-outcome-input";
+import { DeleteAuthorizationOutcomeInput } from "@/app/types/app/complaint-outcomes/ceeb/authorization-outcome/delete-authorization-outcome-input";
 import { Note } from "@/app/types/outcomes/note";
-import { AssessmentDto } from "@/app/types/app/case-files/assessment/assessment";
-import { PreventionDto } from "@/app/types/app/case-files/prevention/prevention";
-import { DeletePreventionInput } from "@/app/types/app/case-files/prevention/delete-prevention-input";
+import { AssessmentDto } from "@/app/types/app/complaint-outcomes/assessment/assessment";
+import { PreventionDto } from "@/app/types/app/complaint-outcomes/prevention/prevention";
+import { DeletePreventionInput } from "@/app/types/app/complaint-outcomes/prevention/delete-prevention-input";
 
 //-- general thunks
 export const findCase =
   (complaintIdentifier?: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch) => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
-    const response = await get<CaseFileDto>(dispatch, parameters);
-    return response?.caseIdentifier;
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/${complaintIdentifier}`);
+    const response = await get<ComplaintOutcomeDto>(dispatch, parameters);
+    return response?.complaintOutcomeGuid;
   };
 
 export const getCaseFile =
   (complaintIdentifier?: string): AppThunk =>
   async (dispatch, getState) => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
-    const response = await get<CaseFileDto>(dispatch, parameters);
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/${complaintIdentifier}`);
+    const response = await get<ComplaintOutcomeDto>(dispatch, parameters);
     dispatch(setCaseFile(response));
     // If there is a case file parse and set the assessment details which is not handled by setCaseFile
     if (response) {
@@ -95,10 +95,10 @@ export const getAssessment =
     const {
       officers: { officers },
     } = getState();
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
-    return await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/${complaintIdentifier}`);
+    return await get<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
       const assessments = await parseAssessmentResponse(res, officers);
-      dispatch(setCaseId(res.caseIdentifier));
+      dispatch(setCaseId(res.complaintOutcomeGuid));
       dispatch(setAssessments(assessments));
       dispatch(setIsReviewedRequired(res.isReviewRequired));
       dispatch(setReviewComplete(res.reviewComplete));
@@ -111,16 +111,16 @@ export const upsertAssessment =
     if (!assessment) {
       return;
     }
-    const caseIdentifier = await dispatch(findCase(complaintIdentifier));
-    if (!caseIdentifier || !assessment.id) {
-      dispatch(addAssessment(assessment, complaintIdentifier, caseIdentifier));
+    const complaintOutcomeGuid = await dispatch(findCase(complaintIdentifier));
+    if (!complaintOutcomeGuid || !assessment.id) {
+      dispatch(addAssessment(assessment, complaintIdentifier, complaintOutcomeGuid));
     } else {
-      dispatch(updateAssessment(assessment, complaintIdentifier, caseIdentifier));
+      dispatch(updateAssessment(assessment, complaintIdentifier, complaintOutcomeGuid));
     }
   };
 
 const addAssessment =
-  (assessment: Assessment, complaintIdentifier: string, caseIdentifier?: string): AppThunk =>
+  (assessment: Assessment, complaintIdentifier: string, complaintOutcomeGuid?: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       codeTables: { "assessment-type": assessmentType, "assessment-cat1-type": assessmentCat1Type },
@@ -129,10 +129,10 @@ const addAssessment =
       cases: { caseId },
     } = getState();
     let createAssessmentInput = {
-      leadIdentifier: complaintIdentifier,
-      caseIdentifier: caseIdentifier,
+      complaintId: complaintIdentifier,
+      complaintOutcomeGuid: complaintOutcomeGuid,
       createUserId: profile.idir_username,
-      agencyCode: assessment.agency,
+      outcomeAgencyCode: assessment.agency,
       caseCode: "HWCR",
       assessment: {
         actionNotRequired: assessment.action_required === "No",
@@ -203,12 +203,15 @@ const addAssessment =
       }
     }
 
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createAssessment`, createAssessmentInput);
-    await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/complaint-outcome/createAssessment`,
+      createAssessmentInput,
+    );
+    await post<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
       const assessments = await parseAssessmentResponse(res, officers);
       if (res) {
         dispatch(setAssessments(assessments));
-        if (!caseId) dispatch(setCaseId(res.caseIdentifier));
+        if (!caseId) dispatch(setCaseId(res.complaintOutcomeGuid));
         dispatch(clearComplaint());
         ToggleSuccess(`Assessment has been saved`);
       } else {
@@ -219,7 +222,7 @@ const addAssessment =
   };
 
 const updateAssessment =
-  (assessment: Assessment, complaintIdentifier: string, caseIdentifier: string): AppThunk =>
+  (assessment: Assessment, complaintIdentifier: string, complaintOutcomeGuid: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       codeTables: { "assessment-type": assessmentType, "assessment-cat1-type": assessmentCat1Type },
@@ -228,10 +231,10 @@ const updateAssessment =
     } = getState();
 
     let updateAssessmentInput = {
-      leadIdentifier: complaintIdentifier,
-      caseIdentifier: caseIdentifier,
+      complaintId: complaintIdentifier,
+      complaintOutcomeGuid: complaintOutcomeGuid,
       updateUserId: profile.idir_username,
-      agencyCode: assessment.agency,
+      outcomeAgencyCode: assessment.agency,
       caseCode: "HWCR",
       assessment: {
         id: assessment.id,
@@ -303,8 +306,11 @@ const updateAssessment =
         } as AssessmentActionDto);
       }
     }
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/updateAssessment`, updateAssessmentInput);
-    await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/complaint-outcome/updateAssessment`,
+      updateAssessmentInput,
+    );
+    await patch<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
       const assessments = await parseAssessmentResponse(res, officers);
       if (res) {
         dispatch(setAssessments(assessments));
@@ -316,7 +322,7 @@ const updateAssessment =
     });
   };
 
-const parseAssessmentResponse = async (res: CaseFileDto, officers: Officer[]): Promise<Assessment[] | null> =>
+const parseAssessmentResponse = async (res: ComplaintOutcomeDto, officers: Officer[]): Promise<Assessment[] | null> =>
   res?.assessment?.map((assessment: AssessmentDto) => {
     const { actor, actionDate } = assessment.actions.map((action: { actor: any; date: any }) => {
       return { actor: action.actor, actionDate: action.date };
@@ -338,7 +344,7 @@ const parseAssessmentResponse = async (res: CaseFileDto, officers: Officer[]): P
 
     const updatedAssessmentData = {
       id: assessment.id,
-      agency: assessment.agencyCode,
+      agency: assessment.outcomeAgencyCode,
       date: actionDate,
       officer: { key: officerFullName, value: actor },
       action_required: assessment.actionNotRequired ? "No" : "Yes",
@@ -384,8 +390,8 @@ export const getPrevention =
     const {
       officers: { officers },
     } = getState();
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/${complaintIdentifier}`);
-    await get<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/${complaintIdentifier}`);
+    await get<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
       const updatedPreventionData = await parsePreventionResponse(res, officers);
       dispatch(setPreventions(updatedPreventionData));
     });
@@ -397,16 +403,16 @@ export const upsertPrevention =
     if (!prevention) {
       return;
     }
-    const caseIdentifier = await dispatch(findCase(complaintIdentifier));
-    if (!caseIdentifier || !prevention.id) {
-      dispatch(addPrevention(complaintIdentifier, agencyCode, prevention, caseIdentifier));
+    const complaintOutcomeGuid = await dispatch(findCase(complaintIdentifier));
+    if (!complaintOutcomeGuid || !prevention.id) {
+      dispatch(addPrevention(complaintIdentifier, agencyCode, prevention, complaintOutcomeGuid));
     } else {
-      dispatch(updatePrevention(complaintIdentifier, agencyCode, prevention, caseIdentifier));
+      dispatch(updatePrevention(complaintIdentifier, agencyCode, prevention, complaintOutcomeGuid));
     }
   };
 
 const addPrevention =
-  (complaintIdentifier: string, agencyCode: string, prevention: Prevention, caseIdentifier?: string): AppThunk =>
+  (complaintIdentifier: string, agencyCode: string, prevention: Prevention, complaintOutcomeGuid?: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       codeTables: { "prevention-type": preventionType },
@@ -415,10 +421,10 @@ const addPrevention =
       cases: { caseId },
     } = getState();
     let createPreventionInput = {
-      leadIdentifier: complaintIdentifier,
-      caseIdentifier: caseIdentifier,
+      complaintId: complaintIdentifier,
+      complaintOutcomeGuid: complaintOutcomeGuid,
       createUserId: profile.idir_username,
-      agencyCode: agencyCode,
+      outcomeAgencyCode: agencyCode,
       caseCode: "HWCR",
       prevention: {
         actions: prevention.prevention_type.map((item) => {
@@ -447,12 +453,15 @@ const addPrevention =
         } as PreventionActionDto);
       }
     }
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/createPrevention`, createPreventionInput);
-    await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/complaint-outcome/createPrevention`,
+      createPreventionInput,
+    );
+    await post<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
       const updatedPreventionData = await parsePreventionResponse(res, officers);
       if (res) {
         dispatch(setPreventions(updatedPreventionData));
-        if (!caseId) dispatch(setCaseId(res.caseIdentifier));
+        if (!caseId) dispatch(setCaseId(res.complaintOutcomeGuid));
         ToggleSuccess(`Prevention and education has been saved`);
       } else {
         dispatch(clearPrevention());
@@ -462,7 +471,7 @@ const addPrevention =
   };
 
 const updatePrevention =
-  (complaintIdentifier: string, agencyCode: string, prevention: Prevention, caseIdentifier: string): AppThunk =>
+  (complaintIdentifier: string, agencyCode: string, prevention: Prevention, complaintOutcomeGuid: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       codeTables: { "prevention-type": preventionType },
@@ -470,10 +479,10 @@ const updatePrevention =
       app: { profile },
     } = getState();
     let updatePreventionInput = {
-      leadIdentifier: complaintIdentifier,
-      caseIdentifier: caseIdentifier,
+      complaintId: complaintIdentifier,
+      complaintOutcomeGuid: complaintOutcomeGuid,
       updateUserId: profile.idir_username,
-      agencyCode: agencyCode,
+      outcomeAgencyCode: agencyCode,
       caseCode: "HWCR",
       prevention: {
         id: prevention.id,
@@ -503,8 +512,11 @@ const updatePrevention =
         } as PreventionActionDto);
       }
     }
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/updatePrevention`, updatePreventionInput);
-    await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/complaint-outcome/updatePrevention`,
+      updatePreventionInput,
+    );
+    await patch<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
       const updatedPreventionData = await parsePreventionResponse(res, officers);
       if (res) {
         dispatch(setPreventions(updatedPreventionData));
@@ -525,11 +537,14 @@ export const deletePrevention =
     } = getState();
     const deletePreventionInput = {
       id: id,
-      leadIdentifier: complaintIdentifier,
+      complaintId: complaintIdentifier,
       updateUserId: profile.idir_username,
     } as DeletePreventionInput;
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/prevention`, deletePreventionInput);
-    await deleteMethod<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/complaint-outcome/prevention`,
+      deletePreventionInput,
+    );
+    await deleteMethod<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
       const updatedPreventionData = await parsePreventionResponse(res, officers);
       if (res) {
         dispatch(setPreventions(updatedPreventionData));
@@ -542,7 +557,7 @@ export const deletePrevention =
   };
 
 const parsePreventionResponse = async (
-  res: CaseFileDto,
+  res: ComplaintOutcomeDto,
   officers: Officer[],
 ): Promise<Prevention[] | undefined | null> =>
   res?.prevention?.map((prevention: PreventionDto) => {
@@ -564,7 +579,7 @@ const parsePreventionResponse = async (
     }
     const updatedPreventionData = {
       id: prevention.id,
-      agencyCode: prevention.agencyCode,
+      outcomeAgencyCode: prevention.outcomeAgencyCode,
       date: actionDate,
       officer: { key: officerFullName, value: actor },
       prevention_type: prevention.actions
@@ -581,7 +596,7 @@ const parsePreventionResponse = async (
 //-- note thunks
 export const upsertNote =
   (
-    leadIdentifier: string,
+    complaintId: string,
     complaintType: string,
     note: string,
     agencyCode: string,
@@ -603,19 +618,19 @@ export const upsertNote =
         actor: string,
         userId: string,
         agencyCode: string,
-      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
+      ): ThunkAction<Promise<ComplaintOutcomeDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const input: CreateNoteInput = {
           note,
-          leadIdentifier: leadIdentifier,
-          agencyCode: agencyCode,
+          complaintId,
+          outcomeAgencyCode: agencyCode,
           caseCode: complaintType,
           actor,
           createUserId: userId,
         };
 
-        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
-        return await post<CaseFileDto>(dispatch, parameters);
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/note`, input);
+        return await post<ComplaintOutcomeDto>(dispatch, parameters);
       };
 
     const _updateNote =
@@ -624,33 +639,31 @@ export const upsertNote =
         note: string,
         actor: string,
         userId: string,
-      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
+      ): ThunkAction<Promise<ComplaintOutcomeDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
-        const caseId = await dispatch(findCase(leadIdentifier));
+        const caseId = await dispatch(findCase(complaintId));
 
         const input: UpdateNoteInput = {
           id,
           note,
-          leadIdentifier: leadIdentifier,
-          caseIdentifier: caseId as UUID,
+          complaintId: complaintId,
+          complaintOutcomeGuid: caseId as UUID,
           actor,
           updateUserId: userId,
         };
 
-        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
-        return await patch<CaseFileDto>(dispatch, parameters);
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/note`, input);
+        return await patch<ComplaintOutcomeDto>(dispatch, parameters);
       };
 
     const officer = officers.find((item) => item.user_id === idir);
 
     let result;
     if (!id) {
-      result = await dispatch(
-        _createNote(leadIdentifier, note, officer ? officer.auth_user_guid : "", idir, agencyCode),
-      );
+      result = await dispatch(_createNote(complaintId, note, officer ? officer.auth_user_guid : "", idir, agencyCode));
 
       if (result !== null) {
-        dispatch(setCaseId(result.caseIdentifier)); //ideally check if caseId exists first, if not then do this function.
+        dispatch(setCaseId(result.complaintOutcomeGuid)); //ideally check if caseId exists first, if not then do this function.
 
         ToggleSuccess("Note created");
       } else {
@@ -660,7 +673,7 @@ export const upsertNote =
       result = await dispatch(_updateNote(id, note, officer ? officer.auth_user_guid : "", idir));
 
       if (result !== null) {
-        dispatch(setCaseId(result.caseIdentifier));
+        dispatch(setCaseId(result.complaintOutcomeGuid));
         ToggleSuccess("Note updated");
       } else {
         ToggleError("Error, unable to update note");
@@ -692,18 +705,18 @@ export const deleteNote =
         id: UUID,
         actor: string,
         userId: string,
-      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
+      ): ThunkAction<Promise<ComplaintOutcomeDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const input: DeleteNoteInput = {
-          leadIdentifier: leadIdentifer,
-          caseIdentifier: caseId as UUID,
+          complaintId: leadIdentifer,
+          complaintOutcomeGuid: caseId as UUID,
           id,
           actor,
           updateUserId: userId,
         };
 
-        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/note`, input);
-        return await deleteMethod<CaseFileDto>(dispatch, parameters);
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/note`, input);
+        return await deleteMethod<ComplaintOutcomeDto>(dispatch, parameters);
       };
 
     if (currentNotes.find((note: Note) => note.id === id)) {
@@ -711,7 +724,7 @@ export const deleteNote =
       const result = await dispatch(_deleteNote(id, officer ? officer.officer_guid : "", idir));
 
       if (result !== null) {
-        dispatch(setCaseId(result.caseIdentifier));
+        dispatch(setCaseId(result.complaintOutcomeGuid));
         ToggleSuccess("Note deleted");
         return "success";
       } else {
@@ -734,10 +747,10 @@ export const createReview =
     } = getState();
     let reviewInput = {
       reviewInput: {
-        leadIdentifier: complaintId,
-        caseIdentifier: caseId,
+        complaintId: complaintId,
+        complaintOutcomeGuid: caseId,
         userId: profile.idir_username,
-        agencyCode: "COS",
+        outcomeAgencyCode: "COS",
         caseCode: "HWCR",
         isReviewRequired,
       } as ReviewInput,
@@ -747,10 +760,10 @@ export const createReview =
       reviewInput.reviewInput.reviewComplete = reviewComplete;
     }
 
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/review`, reviewInput);
-    await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/review`, reviewInput);
+    await post<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
       if (res) {
-        if (!caseId) dispatch(setCaseId(res.caseIdentifier));
+        if (!caseId) dispatch(setCaseId(res.complaintOutcomeGuid));
         dispatch(setIsReviewedRequired(res.isReviewRequired));
         if (res.reviewComplete) {
           dispatch(setReviewComplete(res.reviewComplete));
@@ -772,10 +785,10 @@ export const updateReview =
     } = getState();
     let reviewInput = {
       reviewInput: {
-        leadIdentifier: complaintId,
-        caseIdentifier: caseId,
+        complaintId,
+        complaintOutcomeGuid: caseId,
         userId: profile.idir_username,
-        agencyCode: "COS",
+        outcomeAgencyCode: "COS",
         caseCode: "HWCR",
         isReviewRequired,
       } as ReviewInput,
@@ -786,8 +799,8 @@ export const updateReview =
       reviewInput.reviewInput.reviewComplete.actionId = reviewComplete?.actionId;
     }
 
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/review`, reviewInput);
-    await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/review`, reviewInput);
+    await patch<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
       if (res) {
         dispatch(setIsReviewedRequired(res.isReviewRequired));
         dispatch(setReviewComplete(res.reviewComplete));
@@ -814,10 +827,13 @@ export const deleteEquipment =
     const deleteEquipmentInput = {
       id: id,
       updateUserId: profile.idir_username,
-      leadIdentifier: complaintId,
+      complaintId: complaintId,
     };
 
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, deleteEquipmentInput);
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/complaint-outcome/equipment`,
+      deleteEquipmentInput,
+    );
     await deleteMethod<boolean>(dispatch, parameters).then(async (res) => {
       if (res) {
         // remove equipment from state
@@ -849,18 +865,21 @@ export const upsertEquipment =
     if (complaintIdentifier && !equipment.id) {
       let createEquipmentInput = {
         createEquipmentInput: {
-          leadIdentifier: complaintIdentifier,
+          complaintId: complaintIdentifier,
           createUserId: profile.idir_username,
-          agencyCode: "COS",
+          outcomeAgencyCode: "COS",
           caseCode: "HWCR",
           equipment: [equipment],
         },
       } as CreateEquipmentInput;
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, createEquipmentInput);
-      await post<CaseFileDto>(dispatch, parameters).then(async (res) => {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint-outcome/equipment`,
+        createEquipmentInput,
+      );
+      await post<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
         if (res) {
           dispatch(setCaseFile(res));
-          if (!caseId) dispatch(setCaseId(res.caseIdentifier));
+          if (!caseId) dispatch(setCaseId(res.complaintOutcomeGuid));
           ToggleSuccess(`Equipment has been updated`);
         } else {
           ToggleError(`Unable to update equipment`);
@@ -870,16 +889,19 @@ export const upsertEquipment =
       // equipment exists, we're updating it here
       let updateEquipmentInput = {
         updateEquipmentInput: {
-          leadIdentifier: complaintIdentifier,
+          complaintId: complaintIdentifier,
           updateUserId: profile.idir_username,
-          agencyCode: "COS",
+          outcomeAgencyCode: "COS",
           caseCode: "HWCR",
           equipment: [equipment],
         },
       } as UpdateEquipmentInput;
 
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/equipment`, updateEquipmentInput);
-      await patch<CaseFileDto>(dispatch, parameters).then(async (res) => {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint-outcome/equipment`,
+        updateEquipmentInput,
+      );
+      await patch<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
         if (res) {
           dispatch(setCaseFile(res));
           ToggleSuccess(`Equipment has been updated`);
@@ -893,7 +915,7 @@ export const upsertEquipment =
 //-- animal outcome thunks
 export const createAnimalOutcome =
   (
-    id: string,
+    complaintId: string,
     animalOutcome: AnimalOutcome,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
@@ -901,6 +923,7 @@ export const createAnimalOutcome =
       app: {
         profile: { idir_username: idir },
       },
+      cases: { caseId },
     } = getState();
 
     const {
@@ -952,8 +975,8 @@ export const createAnimalOutcome =
     });
 
     const input: CreateAnimalOutcomeInput = {
-      leadIdentifier: id,
-      agencyCode: "COS",
+      complaintId,
+      outcomeAgencyCode: "COS",
       caseCode: "HWCR",
       createUserId: idir,
       wildlife: {
@@ -970,12 +993,11 @@ export const createAnimalOutcome =
       },
     };
 
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/wildlife`, input);
-    let result = await post<CaseFileDto>(dispatch, parameters);
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/wildlife`, input);
+    let result = await post<ComplaintOutcomeDto>(dispatch, parameters);
 
     if (result) {
-      const { caseIdentifier } = result;
-      dispatch(setCaseId(caseIdentifier));
+      if (!caseId) dispatch(setCaseId(result.complaintOutcomeGuid));
 
       ToggleSuccess("Animal outcome added");
       return "success";
@@ -988,7 +1010,7 @@ export const createAnimalOutcome =
 export const updateAnimalOutcome =
   (
     id: UUID,
-    leadIdentifier: string,
+    complaintId: string,
     animalOutcome: AnimalOutcome,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
@@ -1045,8 +1067,8 @@ export const updateAnimalOutcome =
     const tagsInput = tags.map(({ id, ear, identifier }) => ({ id, ear, identifier }));
 
     const input: UpdateAnimalOutcomeInput = {
-      caseIdentifier: id,
-      leadIdentifier: leadIdentifier,
+      complaintOutcomeGuid: id,
+      complaintId: complaintId,
       updateUserId: idir,
       wildlife: {
         id: wildlifeId,
@@ -1063,12 +1085,12 @@ export const updateAnimalOutcome =
       },
     };
 
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/wildlife`, input);
-    let result = await patch<CaseFileDto>(dispatch, parameters);
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/wildlife`, input);
+    let result = await patch<ComplaintOutcomeDto>(dispatch, parameters);
 
     if (result) {
-      const { caseIdentifier } = result;
-      dispatch(setCaseId(caseIdentifier));
+      const { complaintOutcomeGuid } = result;
+      dispatch(setCaseId(complaintOutcomeGuid));
 
       ToggleSuccess("Animal outcome updated");
       return "success";
@@ -1079,7 +1101,7 @@ export const updateAnimalOutcome =
   };
 
 export const deleteAnimalOutcome =
-  (id: string, leadIdentifier: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (id: string, complaintId: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       officers: { officers },
@@ -1092,29 +1114,29 @@ export const deleteAnimalOutcome =
     const _deleteAnimalOutcome =
       (
         outcomeId: string,
-        leadIdentifier: string,
+        complaintId: string,
         actor: string,
         userId: string,
-      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
+      ): ThunkAction<Promise<ComplaintOutcomeDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const input: DeleteAnimalOutcomeInput = {
-          caseIdentifier: caseId as UUID,
-          leadIdentifier: leadIdentifier,
+          complaintOutcomeGuid: caseId as UUID,
+          complaintId: complaintId,
           actor,
           updateUserId: userId,
           outcomeId,
         };
 
-        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/wildlife`, input);
-        return await deleteMethod<CaseFileDto>(dispatch, parameters);
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/wildlife`, input);
+        return await deleteMethod<ComplaintOutcomeDto>(dispatch, parameters);
       };
 
     const officer = officers.find((item) => item.user_id === idir);
-    const result = await dispatch(_deleteAnimalOutcome(id, leadIdentifier, officer ? officer.officer_guid : "", idir));
+    const result = await dispatch(_deleteAnimalOutcome(id, complaintId, officer ? officer.officer_guid : "", idir));
 
     if (result) {
-      const { caseIdentifier } = result;
-      dispatch(setCaseId(caseIdentifier));
+      const { complaintOutcomeGuid } = result;
+      dispatch(setCaseId(complaintOutcomeGuid));
 
       ToggleSuccess("Animal outcome deleted");
       return "success";
@@ -1127,7 +1149,7 @@ export const deleteAnimalOutcome =
 export const upsertDecisionOutcome =
   (
     id: string,
-    leadIdentifier: string,
+    complaintId: string,
     decision: Decision,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
@@ -1139,31 +1161,31 @@ export const upsertDecisionOutcome =
     } = getState();
 
     const _createDecision =
-      (id: string, decision: Decision): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
+      (id: string, decision: Decision): ThunkAction<Promise<ComplaintOutcomeDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const { assignedTo } = decision;
 
         const input: CreateDecisionInput = {
-          leadIdentifier: id,
-          agencyCode: "EPO",
+          complaintId: id,
+          outcomeAgencyCode: "EPO",
           caseCode: "ERS",
           actor: assignedTo,
           createUserId: idir,
           decision,
         };
 
-        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/decision`, input);
-        return await post<CaseFileDto>(dispatch, parameters);
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/decision`, input);
+        return await post<ComplaintOutcomeDto>(dispatch, parameters);
       };
 
     const _updateDecison =
-      (id: string, decision: Decision): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
+      (id: string, decision: Decision): ThunkAction<Promise<ComplaintOutcomeDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const { assignedTo } = decision;
 
         const input: UpdateDecisionInput = {
-          caseIdentifier: id,
-          leadIdentifier: leadIdentifier,
+          complaintOutcomeGuid: id,
+          complaintId: complaintId,
           agencyCode: "EPO",
           caseCode: "ERS",
           actor: assignedTo,
@@ -1171,8 +1193,8 @@ export const upsertDecisionOutcome =
           decision,
         };
 
-        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/decision`, input);
-        return await patch<CaseFileDto>(dispatch, parameters);
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/decision`, input);
+        return await patch<ComplaintOutcomeDto>(dispatch, parameters);
       };
 
     //-- if there's no decsionId then create a new decsion
@@ -1192,7 +1214,7 @@ export const upsertDecisionOutcome =
     const { decision: _decision } = result;
 
     if (result && _decision.id) {
-      dispatch(setCaseId(result.caseIdentifier));
+      dispatch(setCaseId(result.complaintOutcomeGuid));
 
       ToggleSuccess(`Decision ${!current?.id ? "added" : "updated"}`);
       return "success";
@@ -1205,7 +1227,7 @@ export const upsertDecisionOutcome =
 export const upsertAuthorizationOutcome =
   (
     id: string,
-    leadIdentifier: string,
+    complaintId: string,
     input: PermitSite,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
@@ -1217,36 +1239,36 @@ export const upsertAuthorizationOutcome =
     } = getState();
 
     const _create =
-      (id: string, input: PermitSite): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
+      (id: string, input: PermitSite): ThunkAction<Promise<ComplaintOutcomeDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const payload: CreateAuthorizationOutcomeInput = {
-          leadIdentifier: id,
-          agencyCode: "EPO",
+          complaintId: id,
+          outcomeAgencyCode: "EPO",
           caseCode: "ERS",
           createUserId: idir,
           input,
         };
 
-        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/site`, payload);
-        return await post<CaseFileDto>(dispatch, parameters);
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/site`, payload);
+        return await post<ComplaintOutcomeDto>(dispatch, parameters);
       };
 
     const _update =
       (
         id: string,
-        leadIdentifier: string,
+        complaintId: string,
         site: PermitSite,
-      ): ThunkAction<Promise<CaseFileDto>, RootState, unknown, Action<string>> =>
+      ): ThunkAction<Promise<ComplaintOutcomeDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const input: UpdateAuthorizationOutcomeInput = {
-          caseIdentifier: id,
-          leadIdentifier: leadIdentifier,
+          complaintOutcomeGuid: id,
+          complaintId: complaintId,
           updateUserId: idir,
           input: site,
         };
 
-        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/site`, input);
-        return await patch<CaseFileDto>(dispatch, parameters);
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/site`, input);
+        return await patch<ComplaintOutcomeDto>(dispatch, parameters);
       };
 
     let result;
@@ -1255,12 +1277,12 @@ export const upsertAuthorizationOutcome =
       result = await dispatch(_create(id, input));
     } else {
       const update = { ...input, id: current.id };
-      result = await dispatch(_update(id, leadIdentifier, update));
+      result = await dispatch(_update(id, complaintId, update));
     }
     const { authorization } = result;
 
     if (result && authorization.id) {
-      dispatch(setCaseId(result.caseIdentifier));
+      dispatch(setCaseId(result.complaintOutcomeGuid));
 
       ToggleSuccess(`Authorization outcome ${!current?.id ? "added" : "updated"}`);
       return "success";
@@ -1271,7 +1293,7 @@ export const upsertAuthorizationOutcome =
   };
 
 export const deleteAuthorizationOutcome =
-  (leadIdentifier: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (complaintId: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       app: {
@@ -1283,19 +1305,19 @@ export const deleteAuthorizationOutcome =
     if (caseId && authorization?.id) {
       const { id } = authorization;
       const input: DeleteAuthorizationOutcomeInput = {
-        caseIdentifier: caseId,
-        leadIdentifier: leadIdentifier,
+        complaintOutcomeGuid: caseId,
+        complaintId: complaintId,
         updateUserId: idir,
         id,
       };
 
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/case/site`, input);
-      const result = await deleteMethod<CaseFileDto>(dispatch, parameters);
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/site`, input);
+      const result = await deleteMethod<ComplaintOutcomeDto>(dispatch, parameters);
 
       const { authorization: outcome } = result;
 
       if (result && !outcome) {
-        dispatch(setCaseId(result.caseIdentifier));
+        dispatch(setCaseId(result.complaintOutcomeGuid));
 
         ToggleSuccess("Authroization outcome deleted");
         return "success";

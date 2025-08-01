@@ -1,5 +1,5 @@
 import { from } from "linq-to-typescript";
-import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
+import { EquipmentDetailsDto } from "@/app/types/app/complaint-outcomes/equipment-details";
 import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
 import { Assessment } from "@apptypes/outcomes/assessment";
 import { Prevention } from "@apptypes/outcomes/prevention";
@@ -7,8 +7,8 @@ import { Note } from "@/app/types/outcomes/note";
 import { AnimalOutcomeSubject, Subject } from "@apptypes/state/cases-state";
 import { RootState } from "@store/store";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
-import { Decision } from "@apptypes/app/case-files/ceeb/decision/decision";
-import { PermitSite } from "@apptypes/app/case-files/ceeb/authorization-outcome/permit-site";
+import { Decision } from "@/app/types/app/complaint-outcomes/ceeb/decision/decision";
+import { PermitSite } from "@/app/types/app/complaint-outcomes/ceeb/authorization-outcome/permit-site";
 import { createSelector } from "@reduxjs/toolkit";
 
 //-- Case file selectors

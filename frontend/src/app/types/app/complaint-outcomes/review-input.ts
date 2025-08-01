@@ -1,0 +1,12 @@
+import { UUID } from "crypto";
+import { ReviewCompleteAction } from "./review-complete-action";
+
+export interface ReviewInput {
+  complaintOutcomeGuid?: UUID;
+  complaintId: string;
+  userId: string;
+  outcomeAgencyCode: string;
+  caseCode: string;
+  isReviewRequired: boolean;
+  reviewComplete?: ReviewCompleteAction;
+}
