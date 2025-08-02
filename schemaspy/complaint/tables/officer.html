@@ -329,7 +329,7 @@
                                     <td><p>A boolean indicator representing if an officer has been deactivated</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="agency_code_ref">agency_code_ref</span></td>
+                                    <td><span id="agency_code">agency_code</span></td>
                                     <td>varchar</td>
                                     <td>6</td>
                                     <td title='nullable'>√</td>
@@ -343,7 +343,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>Key representing an agency stored in the agency_code table of the shared schema.  The agency that employs the Officer.</p></td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td><span id="park_area_guid">park_area_guid</span></td>
@@ -427,26 +427,27 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="728,5,1005,181">
-<area shape="rect" id="node2" href="officer.html" target="_top" title="officer" alt="" coords="317,143,684,593">
-<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="5,403,273,549">
-<area shape="rect" id="node4" href="person.html" target="_top" title="person" alt="" coords="23,268,255,385">
-<area shape="rect" id="node5" href="officer_team_xref.html" target="_top" title="officer_team_xref" alt="" coords="751,199,983,375">
+<area shape="rect" id="node1" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="728,5,976,240">
+<area shape="rect" id="node2" href="officer.html" target="_top" title="officer" alt="" coords="317,201,684,652">
+<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="5,461,273,608">
+<area shape="rect" id="node4" href="person.html" target="_top" title="person" alt="" coords="23,327,255,444">
+<area shape="rect" id="node5" href="officer_team_xref.html" target="_top" title="officer_team_xref" alt="" coords="736,257,968,433">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/officer.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="402,55,562,143">
-<area shape="rect" id="node2" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,210,304,298">
-<area shape="rect" id="node3" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="1071,27,1348,203">
-<area shape="rect" id="node4" href="officer.html" target="_top" title="officer" alt="" coords="660,161,1027,611">
-<area shape="rect" id="node6" href="office.html" target="_top" title="office" alt="" coords="348,350,616,497">
-<area shape="rect" id="node7" href="person.html" target="_top" title="person" alt="" coords="366,197,598,314">
-<area shape="rect" id="node5" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="1392,30,1701,118">
-<area shape="rect" id="node8" href="officer_team_xref.html" target="_top" title="officer_team_xref" alt="" coords="1093,355,1325,531">
-<area shape="rect" id="node9" href="team.html" target="_top" title="team" alt="" coords="783,629,904,717">
-<area shape="rect" id="node10" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="713,55,974,143">
+<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="763,92,923,180">
+<area shape="rect" id="node2" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,224,304,312">
+<area shape="rect" id="node3" href="agency_code.html" target="_top" title="agency_code" alt="" coords="392,193,572,281">
+<area shape="rect" id="node4" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="1077,111,1325,345">
+<area shape="rect" id="node5" href="officer.html" target="_top" title="officer" alt="" coords="660,269,1027,720">
+<area shape="rect" id="node7" href="office.html" target="_top" title="office" alt="" coords="348,389,616,536">
+<area shape="rect" id="node8" href="person.html" target="_top" title="person" alt="" coords="366,9,598,127">
+<area shape="rect" id="node6" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="1376,113,1685,201">
+<area shape="rect" id="node9" href="officer_team_xref.html" target="_top" title="officer_team_xref" alt="" coords="1085,521,1317,697">
+<area shape="rect" id="node10" href="team.html" target="_top" title="team" alt="" coords="783,737,904,825">
+<area shape="rect" id="node11" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="1071,5,1332,93">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/officer.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
