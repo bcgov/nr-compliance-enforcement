@@ -66,6 +66,7 @@ const Cases: FC = () => {
         pageSize: searchValues.pageSize,
         filters: getFilters(),
       },
+      placeholderData: (previousData) => previousData,
     },
   );
 
