@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
-import { deleteNote, getCaseFile } from "@store/reducers/case-thunks";
+import { deleteNote, getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 
 type props = {
   close: () => void;

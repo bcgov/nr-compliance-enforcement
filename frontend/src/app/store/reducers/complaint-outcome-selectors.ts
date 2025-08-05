@@ -4,7 +4,7 @@ import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal
 import { Assessment } from "@apptypes/outcomes/assessment";
 import { Prevention } from "@apptypes/outcomes/prevention";
 import { Note } from "@/app/types/outcomes/note";
-import { AnimalOutcomeSubject, Subject } from "@apptypes/state/cases-state";
+import { AnimalOutcomeSubject, Subject } from "@/app/types/state/complaint-outcomes-state";
 import { RootState } from "@store/store";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
 import { Decision } from "@/app/types/app/complaint-outcomes/ceeb/decision/decision";
@@ -14,36 +14,36 @@ import { createSelector } from "@reduxjs/toolkit";
 //-- Case file selectors
 export const selectCaseId = (state: RootState): string => {
   const {
-    cases: { caseId },
+    complaintOutcomes: { complaintOutcomeGuid },
   } = state;
-  return caseId ?? "";
+  return complaintOutcomeGuid ?? "";
 };
 
 export const selectAssessments = (state: RootState): Assessment[] => {
-  const { cases } = state;
-  return cases.assessments;
+  const { complaintOutcomes } = state;
+  return complaintOutcomes.assessments;
 };
 
 export const selectPreventions = (state: RootState): Prevention[] => {
-  const { cases } = state;
-  return cases.preventions;
+  const { complaintOutcomes } = state;
+  return complaintOutcomes.preventions;
 };
 
 export const selectEquipment = (state: RootState): EquipmentDetailsDto[] => {
-  const { cases } = state;
-  return cases.equipment;
+  const { complaintOutcomes } = state;
+  return complaintOutcomes.equipment;
 };
 
-export const selectSubject = (state: RootState): Subject[] => state.cases.subject;
+export const selectSubject = (state: RootState): Subject[] => state.complaintOutcomes.subject;
 
-export const selectIsInEdit = (state: RootState): any => state.cases.isInEdit;
+export const selectIsInEdit = (state: RootState): any => state.complaintOutcomes.isInEdit;
 
-export const selectIsReviewRequired = (state: RootState): boolean => state.cases.isReviewRequired;
+export const selectIsReviewRequired = (state: RootState): boolean => state.complaintOutcomes.isReviewRequired;
 
-export const selectReviewComplete = (state: RootState): any => state.cases.reviewComplete;
+export const selectReviewComplete = (state: RootState): any => state.complaintOutcomes.reviewComplete;
 
-export const selectNotes = (state: RootState): Note[] => state.cases.notes;
-export const selectSubjects = (state: RootState) => state.cases.subject;
+export const selectNotes = (state: RootState): Note[] => state.complaintOutcomes.notes;
+export const selectSubjects = (state: RootState) => state.complaintOutcomes.subject;
 
 export const selectAnimalOutcomes = createSelector([selectSubjects], (subjects) => {
   if (subjects && from(subjects).any()) {
@@ -119,7 +119,7 @@ export const selectAnimalOutcomes = createSelector([selectSubjects], (subjects) 
 });
 
 export const selectCaseDecision = (state: RootState): Decision => {
-  const { cases } = state;
+  const { complaintOutcomes } = state;
 
   const defaultDecision: Decision = {
     schedule: "",
@@ -133,10 +133,10 @@ export const selectCaseDecision = (state: RootState): Decision => {
     actionTakenDate: null,
   };
 
-  return !cases.decision ? defaultDecision : cases.decision;
+  return !complaintOutcomes.decision ? defaultDecision : complaintOutcomes.decision;
 };
 
 export const selectCeebAuthorization = (state: RootState): PermitSite => {
-  const { cases } = state;
-  return !cases.authorization ? {} : cases.authorization;
+  const { complaintOutcomes } = state;
+  return !complaintOutcomes.authorization ? {} : complaintOutcomes.authorization;
 };

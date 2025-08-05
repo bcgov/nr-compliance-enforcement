@@ -9,11 +9,11 @@ import {
   clearPrevention,
   setAssessments,
   setCaseFile,
-  setCaseId,
+  setComplaintOutcomeGuid,
   setIsReviewedRequired,
   setPreventions,
   setReviewComplete,
-} from "./cases";
+} from "./complaint-outcomes";
 import { Assessment } from "@apptypes/outcomes/assessment";
 import { Officer } from "@apptypes/person/person";
 import { AssessmentActionDto } from "@/app/types/app/complaint-outcomes/assessment/assessment-action";
@@ -98,7 +98,7 @@ export const getAssessment =
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/${complaintIdentifier}`);
     return await get<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
       const assessments = await parseAssessmentResponse(res, officers);
-      dispatch(setCaseId(res.complaintOutcomeGuid));
+      dispatch(setComplaintOutcomeGuid(res.complaintOutcomeGuid));
       dispatch(setAssessments(assessments));
       dispatch(setIsReviewedRequired(res.isReviewRequired));
       dispatch(setReviewComplete(res.reviewComplete));
@@ -126,7 +126,7 @@ const addAssessment =
       codeTables: { "assessment-type": assessmentType, "assessment-cat1-type": assessmentCat1Type },
       officers: { officers },
       app: { profile },
-      cases: { caseId },
+      complaintOutcomes: { complaintOutcomeGuid },
     } = getState();
     let createAssessmentInput = {
       complaintId: complaintIdentifier,
@@ -211,7 +211,7 @@ const addAssessment =
       const assessments = await parseAssessmentResponse(res, officers);
       if (res) {
         dispatch(setAssessments(assessments));
-        if (!caseId) dispatch(setCaseId(res.complaintOutcomeGuid));
+        if (!complaintOutcomeGuid) dispatch(setComplaintOutcomeGuid(res.complaintOutcomeGuid));
         dispatch(clearComplaint());
         ToggleSuccess(`Assessment has been saved`);
       } else {
@@ -418,7 +418,7 @@ const addPrevention =
       codeTables: { "prevention-type": preventionType },
       officers: { officers },
       app: { profile },
-      cases: { caseId },
+      complaintOutcomes: { complaintOutcomeGuid },
     } = getState();
     let createPreventionInput = {
       complaintId: complaintIdentifier,
@@ -461,7 +461,7 @@ const addPrevention =
       const updatedPreventionData = await parsePreventionResponse(res, officers);
       if (res) {
         dispatch(setPreventions(updatedPreventionData));
-        if (!caseId) dispatch(setCaseId(res.complaintOutcomeGuid));
+        if (!complaintOutcomeGuid) dispatch(setComplaintOutcomeGuid(res.complaintOutcomeGuid));
         ToggleSuccess(`Prevention and education has been saved`);
       } else {
         dispatch(clearPrevention());
@@ -608,7 +608,7 @@ export const upsertNote =
       app: {
         profile: { idir_username: idir },
       },
-      cases: { notes: currentNotes },
+      complaintOutcomes: { notes: currentNotes },
     } = getState();
 
     const _createNote =
@@ -641,13 +641,13 @@ export const upsertNote =
         userId: string,
       ): ThunkAction<Promise<ComplaintOutcomeDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
-        const caseId = await dispatch(findCase(complaintId));
+        const complaintOutcomeGuid = await dispatch(findCase(complaintId));
 
         const input: UpdateNoteInput = {
           id,
           note,
           complaintId: complaintId,
-          complaintOutcomeGuid: caseId as UUID,
+          complaintOutcomeGuid: complaintOutcomeGuid as UUID,
           actor,
           updateUserId: userId,
         };
@@ -663,7 +663,7 @@ export const upsertNote =
       result = await dispatch(_createNote(complaintId, note, officer ? officer.auth_user_guid : "", idir, agencyCode));
 
       if (result !== null) {
-        dispatch(setCaseId(result.complaintOutcomeGuid)); //ideally check if caseId exists first, if not then do this function.
+        dispatch(setComplaintOutcomeGuid(result.complaintOutcomeGuid)); //ideally check if complaintOutcomeGuid exists first, if not then do this function.
 
         ToggleSuccess("Note created");
       } else {
@@ -673,7 +673,7 @@ export const upsertNote =
       result = await dispatch(_updateNote(id, note, officer ? officer.auth_user_guid : "", idir));
 
       if (result !== null) {
-        dispatch(setCaseId(result.complaintOutcomeGuid));
+        dispatch(setComplaintOutcomeGuid(result.complaintOutcomeGuid));
         ToggleSuccess("Note updated");
       } else {
         ToggleError("Error, unable to update note");
@@ -697,7 +697,7 @@ export const deleteNote =
       app: {
         profile: { idir_username: idir },
       },
-      cases: { caseId, notes: currentNotes },
+      complaintOutcomes: { complaintOutcomeGuid, notes: currentNotes },
     } = getState();
 
     const _deleteNote =
@@ -709,7 +709,7 @@ export const deleteNote =
       async (dispatch) => {
         const input: DeleteNoteInput = {
           complaintId: leadIdentifer,
-          complaintOutcomeGuid: caseId as UUID,
+          complaintOutcomeGuid: complaintOutcomeGuid as UUID,
           id,
           actor,
           updateUserId: userId,
@@ -724,7 +724,7 @@ export const deleteNote =
       const result = await dispatch(_deleteNote(id, officer ? officer.officer_guid : "", idir));
 
       if (result !== null) {
-        dispatch(setCaseId(result.complaintOutcomeGuid));
+        dispatch(setComplaintOutcomeGuid(result.complaintOutcomeGuid));
         ToggleSuccess("Note deleted");
         return "success";
       } else {
@@ -743,12 +743,12 @@ export const createReview =
   async (dispatch, getState) => {
     const {
       app: { profile },
-      cases: { caseId },
+      complaintOutcomes: { complaintOutcomeGuid },
     } = getState();
     let reviewInput = {
       reviewInput: {
         complaintId: complaintId,
-        complaintOutcomeGuid: caseId,
+        complaintOutcomeGuid: complaintOutcomeGuid,
         userId: profile.idir_username,
         outcomeAgencyCode: "COS",
         caseCode: "HWCR",
@@ -763,7 +763,7 @@ export const createReview =
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/review`, reviewInput);
     await post<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
       if (res) {
-        if (!caseId) dispatch(setCaseId(res.complaintOutcomeGuid));
+        if (!complaintOutcomeGuid) dispatch(setComplaintOutcomeGuid(res.complaintOutcomeGuid));
         dispatch(setIsReviewedRequired(res.isReviewRequired));
         if (res.reviewComplete) {
           dispatch(setReviewComplete(res.reviewComplete));
@@ -781,12 +781,12 @@ export const updateReview =
   async (dispatch, getState) => {
     const {
       app: { profile },
-      cases: { caseId, reviewComplete },
+      complaintOutcomes: { complaintOutcomeGuid, reviewComplete },
     } = getState();
     let reviewInput = {
       reviewInput: {
         complaintId,
-        complaintOutcomeGuid: caseId,
+        complaintOutcomeGuid: complaintOutcomeGuid,
         userId: profile.idir_username,
         outcomeAgencyCode: "COS",
         caseCode: "HWCR",
@@ -838,7 +838,7 @@ export const deleteEquipment =
       if (res) {
         // remove equipment from state
         const {
-          cases: { equipment, notes, subject, reviewComplete },
+          complaintOutcomes: { equipment, notes, subject, reviewComplete },
         } = getState();
         const updatedEquipment = equipment?.filter((equipment) => equipment.id !== id);
 
@@ -859,7 +859,7 @@ export const upsertEquipment =
 
     const {
       app: { profile },
-      cases: { caseId },
+      complaintOutcomes: { complaintOutcomeGuid },
     } = getState();
     // equipment does not exist, let's create it
     if (complaintIdentifier && !equipment.id) {
@@ -879,7 +879,7 @@ export const upsertEquipment =
       await post<ComplaintOutcomeDto>(dispatch, parameters).then(async (res) => {
         if (res) {
           dispatch(setCaseFile(res));
-          if (!caseId) dispatch(setCaseId(res.complaintOutcomeGuid));
+          if (!complaintOutcomeGuid) dispatch(setComplaintOutcomeGuid(res.complaintOutcomeGuid));
           ToggleSuccess(`Equipment has been updated`);
         } else {
           ToggleError(`Unable to update equipment`);
@@ -923,7 +923,7 @@ export const createAnimalOutcome =
       app: {
         profile: { idir_username: idir },
       },
-      cases: { caseId },
+      complaintOutcomes: { complaintOutcomeGuid },
     } = getState();
 
     const {
@@ -997,7 +997,7 @@ export const createAnimalOutcome =
     let result = await post<ComplaintOutcomeDto>(dispatch, parameters);
 
     if (result) {
-      if (!caseId) dispatch(setCaseId(result.complaintOutcomeGuid));
+      if (!complaintOutcomeGuid) dispatch(setComplaintOutcomeGuid(result.complaintOutcomeGuid));
 
       ToggleSuccess("Animal outcome added");
       return "success";
@@ -1090,7 +1090,7 @@ export const updateAnimalOutcome =
 
     if (result) {
       const { complaintOutcomeGuid } = result;
-      dispatch(setCaseId(complaintOutcomeGuid));
+      dispatch(setComplaintOutcomeGuid(complaintOutcomeGuid));
 
       ToggleSuccess("Animal outcome updated");
       return "success";
@@ -1108,7 +1108,7 @@ export const deleteAnimalOutcome =
       app: {
         profile: { idir_username: idir },
       },
-      cases: { caseId },
+      complaintOutcomes: { complaintOutcomeGuid },
     } = getState();
 
     const _deleteAnimalOutcome =
@@ -1120,7 +1120,7 @@ export const deleteAnimalOutcome =
       ): ThunkAction<Promise<ComplaintOutcomeDto>, RootState, unknown, Action<string>> =>
       async (dispatch) => {
         const input: DeleteAnimalOutcomeInput = {
-          complaintOutcomeGuid: caseId as UUID,
+          complaintOutcomeGuid: complaintOutcomeGuid as UUID,
           complaintId: complaintId,
           actor,
           updateUserId: userId,
@@ -1136,7 +1136,7 @@ export const deleteAnimalOutcome =
 
     if (result) {
       const { complaintOutcomeGuid } = result;
-      dispatch(setCaseId(complaintOutcomeGuid));
+      dispatch(setComplaintOutcomeGuid(complaintOutcomeGuid));
 
       ToggleSuccess("Animal outcome deleted");
       return "success";
@@ -1157,7 +1157,7 @@ export const upsertDecisionOutcome =
       app: {
         profile: { idir_username: idir },
       },
-      cases: { decision: current },
+      complaintOutcomes: { decision: current },
     } = getState();
 
     const _createDecision =
@@ -1214,7 +1214,7 @@ export const upsertDecisionOutcome =
     const { decision: _decision } = result;
 
     if (result && _decision.id) {
-      dispatch(setCaseId(result.complaintOutcomeGuid));
+      dispatch(setComplaintOutcomeGuid(result.complaintOutcomeGuid));
 
       ToggleSuccess(`Decision ${!current?.id ? "added" : "updated"}`);
       return "success";
@@ -1235,7 +1235,7 @@ export const upsertAuthorizationOutcome =
       app: {
         profile: { idir_username: idir },
       },
-      cases: { authorization: current },
+      complaintOutcomes: { authorization: current },
     } = getState();
 
     const _create =
@@ -1282,7 +1282,7 @@ export const upsertAuthorizationOutcome =
     const { authorization } = result;
 
     if (result && authorization.id) {
-      dispatch(setCaseId(result.complaintOutcomeGuid));
+      dispatch(setComplaintOutcomeGuid(result.complaintOutcomeGuid));
 
       ToggleSuccess(`Authorization outcome ${!current?.id ? "added" : "updated"}`);
       return "success";
@@ -1299,13 +1299,13 @@ export const deleteAuthorizationOutcome =
       app: {
         profile: { idir_username: idir },
       },
-      cases: { caseId, authorization },
+      complaintOutcomes: { complaintOutcomeGuid, authorization },
     } = getState();
 
-    if (caseId && authorization?.id) {
+    if (complaintOutcomeGuid && authorization?.id) {
       const { id } = authorization;
       const input: DeleteAuthorizationOutcomeInput = {
-        complaintOutcomeGuid: caseId,
+        complaintOutcomeGuid: complaintOutcomeGuid,
         complaintId: complaintId,
         updateUserId: idir,
         id,
@@ -1317,7 +1317,7 @@ export const deleteAuthorizationOutcome =
       const { authorization: outcome } = result;
 
       if (result && !outcome) {
-        dispatch(setCaseId(result.complaintOutcomeGuid));
+        dispatch(setComplaintOutcomeGuid(result.complaintOutcomeGuid));
 
         ToggleSuccess("Authroization outcome deleted");
         return "success";

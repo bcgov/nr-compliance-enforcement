@@ -3,7 +3,7 @@ import { AssessmentDto } from "./assessment/assessment";
 import { ReviewCompleteAction } from "./review-complete-action";
 import { PreventionDto } from "./prevention/prevention";
 import { EquipmentDetailsDto } from "./equipment-details";
-import { Subject } from "@apptypes/state/cases-state";
+import { Subject } from "@/app/types/state/complaint-outcomes-state";
 import { PermitSite } from "./ceeb/authorization-outcome/permit-site";
 import { Decision } from "./ceeb/decision/decision";
 

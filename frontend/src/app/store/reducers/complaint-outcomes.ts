@@ -1,9 +1,9 @@
 import { createAction, createSlice } from "@reduxjs/toolkit";
-import { CasesState } from "@apptypes/state/cases-state";
+import { ComplaintOutcomesState } from "@/app/types/state/complaint-outcomes-state";
 import { Assessment } from "@apptypes/outcomes/assessment";
 
-const initialState: CasesState = {
-  caseId: undefined,
+const initialState: ComplaintOutcomesState = {
+  complaintOutcomeGuid: undefined,
   assessments: [],
   preventions: [
     {
@@ -36,13 +36,13 @@ const initialState: CasesState = {
 };
 
 export const casesSlice = createSlice({
-  name: "cases",
+  name: "complaintOutcomes",
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    setCaseId: (state, action) => {
+    setComplaintOutcomeGuid: (state, action) => {
       const { payload } = action;
-      return { ...state, caseId: payload };
+      return { ...state, complaintOutcomeGuid: payload };
     },
     setAssessments: (state, action) => {
       state.assessments = action.payload;
@@ -74,7 +74,7 @@ export const casesSlice = createSlice({
       //-- each individual state. Add assessment, prevention, equipment here
       return {
         ...state,
-        caseId: complaintOutcomeGuid,
+        complaintOutcomeGuid,
         notes,
         equipment,
         subject,
@@ -105,7 +105,7 @@ export const casesSlice = createSlice({
 export const {
   setAssessments,
   setPreventions,
-  setCaseId,
+  setComplaintOutcomeGuid,
   setIsReviewedRequired,
   setReviewComplete,
   setCaseFile,

@@ -8,8 +8,8 @@ import { DrugUsed } from "@apptypes/app/complaints/outcomes/wildlife/drug-used";
 import { Decision } from "@/app/types/app/complaint-outcomes/ceeb/decision/decision";
 import { PermitSite } from "@/app/types/app/complaint-outcomes/ceeb/authorization-outcome/permit-site";
 
-export interface CasesState {
-  caseId: string | undefined;
+export interface ComplaintOutcomesState {
+  complaintOutcomeGuid: string | undefined;
   assessments: Assessment[];
   preventions: Prevention[];
   notes: Note[];

@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectCurrentOfficer } from "@store/reducers/officer";
-import { setIsInEdit } from "@store/reducers/cases";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { openModal } from "@store/reducers/app";
 import { DELETE_NOTE } from "@apptypes/modal/modal-types";
 import { Note as NoteType } from "@/app/types/outcomes/note";

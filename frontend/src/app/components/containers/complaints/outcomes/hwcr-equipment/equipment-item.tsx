@@ -12,7 +12,7 @@ import Option from "@apptypes/app/option";
 
 import { selectAllEquipmentDropdown, selectHasQuantityEquipment } from "@store/reducers/code-table";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
-import { deleteEquipment } from "@store/reducers/case-thunks";
+import { deleteEquipment } from "@/app/store/reducers/complaint-outcome-thunks";
 import { CompLocationInfo } from "@components/common/comp-location-info";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 import { useParams } from "react-router-dom";
@@ -70,7 +70,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
     ? `${removedEquipmentOfficer.person_guid.last_name}, ${removedEquipmentOfficer.person_guid.first_name}`
     : null;
 
-  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const showSectionErrors =
