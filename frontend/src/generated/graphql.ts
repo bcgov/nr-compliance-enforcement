@@ -839,7 +839,6 @@ export type Query = {
   hwcrOutcomeActionedByCodes: Array<Maybe<HWCROutcomeActionedByCode>>;
   hwcrOutcomeCodes: Array<Maybe<HWCROutcomeCode>>;
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
-  investigationStatusCodes: Array<Maybe<InvestigationStatusCode>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
   nonComplianceCodes: Array<Maybe<NonComplianceCode>>;
   park?: Maybe<Park>;
