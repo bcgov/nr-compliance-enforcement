@@ -4,7 +4,7 @@ import { FilterButton } from "@components/common/filter-button";
 import MapListToggle from "@components/common/map-list-toggle";
 import SearchInput from "@components/common/search-input";
 import { useAppSelector } from "@hooks/hooks";
-import { useCaseSearch } from "./hooks/use-case-search";
+import { useCaseSearch } from "../hooks/use-case-search";
 import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
 
 type Props = {

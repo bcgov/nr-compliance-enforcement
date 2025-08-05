@@ -1,6 +1,6 @@
 import { FC, useCallback } from "react";
 import { Table } from "react-bootstrap";
-import { useCaseSearch } from "./hooks/use-case-search";
+import { useCaseSearch } from "../hooks/use-case-search";
 import { SortableHeader } from "@components/common/sortable-header";
 import Paginator from "@/app/components/common/paginator";
 import { SORT_TYPES } from "@constants/sort-direction";

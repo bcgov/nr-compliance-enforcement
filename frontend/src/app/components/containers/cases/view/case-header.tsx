@@ -10,7 +10,7 @@ interface CaseHeaderProps {
 
 export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
   // Extract values from case object with fallbacks
-  const caseId = caseData?.caseIdentifier || "Unknown";
+  const caseId = caseData?.caseFileGuid || "Unknown";
   const caseStatus = caseData?.caseStatus?.shortDescription || "Active";
   const caseType = "Investispection";
   const leadAgency = caseData?.leadAgency?.longDescription || "Unknown Agency";

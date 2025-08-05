@@ -2,7 +2,7 @@ import { FC } from "react";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { FilterDate } from "@components/common/filter-date";
-import { CaseSearchParams, useCaseSearch } from "./hooks/use-case-search";
+import { CaseSearchParams, useCaseSearch } from "../hooks/use-case-search";
 import { useAppSelector } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
 

@@ -145,10 +145,16 @@ export type CaseLocationCode = {
 export type CaseMomsSpaghettiFile = {
   __typename?: 'CaseMomsSpaghettiFile';
   caseActivities?: Maybe<Array<Maybe<CaseActivity>>>;
+  caseFileGuid?: Maybe<Scalars['String']['output']>;
   caseIdentifier?: Maybe<Scalars['String']['output']>;
   caseOpenedTimestamp?: Maybe<Scalars['Date']['output']>;
   caseStatus?: Maybe<CaseStatusCode>;
   leadAgency?: Maybe<AgencyMomsSpaghettiCode>;
+};
+
+export type CaseMomsSpaghettiFileCreateInput = {
+  caseStatus: Scalars['String']['input'];
+  leadAgencyCode: Scalars['String']['input'];
 };
 
 export type CaseMomsSpaghettiFileFilters = {
@@ -161,10 +167,20 @@ export type CaseMomsSpaghettiFileFilters = {
   startDate?: InputMaybe<Scalars['Date']['input']>;
 };
 
+export type CaseMomsSpaghettiFileInput = {
+  caseStatus: Scalars['String']['input'];
+  leadAgencyCode: Scalars['String']['input'];
+};
+
 export type CaseMomsSpaghettiFileResult = {
   __typename?: 'CaseMomsSpaghettiFileResult';
   items: Array<CaseMomsSpaghettiFile>;
   pageInfo: PageInfo;
+};
+
+export type CaseMomsSpaghettiFileUpdateInput = {
+  caseStatus?: InputMaybe<Scalars['String']['input']>;
+  leadAgencyCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CaseStatusCode = {
@@ -528,6 +544,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createAssessment: CaseFile;
   createAuthorizationOutcome: CaseFile;
+  createCaseMomsSpaghettiFile: CaseMomsSpaghettiFile;
   createDecision: CaseFile;
   createEquipment: CaseFile;
   createNote: CaseFile;
@@ -547,6 +564,7 @@ export type Mutation = {
   deleteWildlife: CaseFile;
   updateAssessment: CaseFile;
   updateAuthorizationOutcome: CaseFile;
+  updateCaseMomsSpaghettiFile: CaseMomsSpaghettiFile;
   updateDecision: CaseFile;
   updateEquipment: CaseFile;
   updateNote: CaseFile;
@@ -566,6 +584,11 @@ export type MutationcreateAssessmentArgs = {
 
 export type MutationcreateAuthorizationOutcomeArgs = {
   input: CreateAuthorizationOutcomeInput;
+};
+
+
+export type MutationcreateCaseMomsSpaghettiFileArgs = {
+  input: CaseMomsSpaghettiFileCreateInput;
 };
 
 
@@ -661,6 +684,12 @@ export type MutationupdateAssessmentArgs = {
 
 export type MutationupdateAuthorizationOutcomeArgs = {
   input: UpdateAuthorizationOutcomeInput;
+};
+
+
+export type MutationupdateCaseMomsSpaghettiFileArgs = {
+  caseFileGuid: Scalars['String']['input'];
+  input: CaseMomsSpaghettiFileUpdateInput;
 };
 
 

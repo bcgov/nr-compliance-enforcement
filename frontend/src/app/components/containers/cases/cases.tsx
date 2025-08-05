@@ -1,13 +1,14 @@
 import { FC, useState, useCallback } from "react";
 import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
 import { CaseMomsSpaghettiFileResult } from "@/generated/graphql";
-import { CaseFilter } from "./case-filter";
-import { CaseList } from "./case-list";
-import { CaseFilterBar } from "./case-filter-bar";
-import { CaseMap } from "./case-map";
+import { CaseFilter } from "./list/case-filter";
+import { CaseList } from "./list";
+import { CaseFilterBar } from "./list/case-filter-bar";
+import { CaseMap } from "./map/case-map";
 import { useCaseSearch } from "./hooks/use-case-search";
 
 const SEARCH_CASE_FILES = gql`
@@ -15,7 +16,7 @@ const SEARCH_CASE_FILES = gql`
     searchCaseMomsSpaghettiFiles(page: $page, pageSize: $pageSize, filters: $filters) {
       items {
         __typename
-        caseIdentifier
+        caseFileGuid
         caseOpenedTimestamp
         caseStatus {
           caseStatusCode
@@ -39,6 +40,7 @@ const SEARCH_CASE_FILES = gql`
 `;
 
 const Cases: FC = () => {
+  const navigate = useNavigate();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);
 
@@ -71,8 +73,7 @@ const Cases: FC = () => {
   const toggleShowDesktopFilters = useCallback(() => setShowDesktopFilters((prevShow) => !prevShow), []);
 
   const handleCreateClick = () => {
-    // Future implementation for creating cases
-    console.log("Create case clicked");
+    navigate("/case/create");
   };
 
   const renderDesktopFilterSection = () => (
