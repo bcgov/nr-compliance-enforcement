@@ -182,6 +182,10 @@ test.describe("CEEB Complaints can be created and outcome decisions set ", () =>
     ).toBeVisible();
 
     // Verify that IPM Sector Type rules are applied when selected
+    await selectItemById("outcome-decision-ipm-auth-category", "Other", page);
+    await selectItemById("outcome-decision-sector-category", "Agriculture", page);
+    await selectItemById("outcome-decision-action-taken", "No action", page);
+
     await selectItemById("outcome-decision-schedule-sector", "IPM sector type", page);
     await expect(page.locator("#decision-ipm-auth-category")).toBeVisible();
     await page.locator("#outcome-decision-sector-category").locator("div").first().click();
@@ -197,9 +201,6 @@ test.describe("CEEB Complaints can be created and outcome decisions set ", () =>
         .getByText(/Abrasives industry/)
         .first(),
     ).not.toBeVisible();
-    await selectItemById("outcome-decision-ipm-auth-category", "Other", page);
-    await selectItemById("outcome-decision-sector-category", "Agriculture", page);
-    await selectItemById("outcome-decision-action-taken", "No action", page);
     await enterDateTimeInDatePicker(page, "outcome-decision-outcome-date", "01");
 
     // save decision
