@@ -8,11 +8,13 @@ import { gql } from "graphql-request";
 import { CaseEditHeader } from "./case-edit-header";
 import { CompSelect } from "@components/common/comp-select";
 import { ValidationTextArea } from "@common/validation-textarea";
-import { useAppSelector } from "@hooks/hooks";
+import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectLeadAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@common/toast";
+import { openModal } from "@store/reducers/app";
+import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import "react-toastify/dist/ReactToastify.css";
 import { CaseMomsSpaghettiFileCreateInput, CaseMomsSpaghettiFileUpdateInput } from "@/generated/graphql";
 
@@ -79,6 +81,7 @@ const GET_CASE_FILE = gql`
 
 const CaseEdit: FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const { id } = useParams<{ id?: string }>();
   const isEditMode = !!id;
@@ -161,9 +164,29 @@ const CaseEdit: FC = () => {
     }
   }, [isEditMode, caseData]);
 
+  const confirmCancelChanges = useCallback(() => {
+    form.reset();
+
+    if (isEditMode && id) {
+      navigate(`/case/${id}`);
+    } else {
+      navigate("/cases");
+    }
+  }, [navigate, isEditMode, id, form]);
+
   const cancelButtonClick = useCallback(() => {
-    navigate("/cases");
-  }, [navigate]);
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: CANCEL_CONFIRM,
+        data: {
+          title: "Cancel changes?",
+          description: "Your changes will be lost.",
+          cancelConfirmed: confirmCancelChanges,
+        },
+      }),
+    );
+  }, [dispatch, confirmCancelChanges]);
 
   const saveButtonClick = useCallback(() => {
     form.handleSubmit();
