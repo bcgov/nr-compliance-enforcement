@@ -497,6 +497,24 @@ export type InactionJustificationType = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type Investigation = {
+  __typename?: 'Investigation';
+  investigationDescription?: Maybe<Scalars['String']['output']>;
+  investigationGuid?: Maybe<Scalars['String']['output']>;
+  investigationStartedTimestamp?: Maybe<Scalars['Date']['output']>;
+  investigationStatus?: Maybe<InvestigationStatusCode>;
+  leadAgency?: Maybe<Scalars['String']['output']>;
+};
+
+export type InvestigationStatusCode = {
+  __typename?: 'InvestigationStatusCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  investigationStatusCode?: Maybe<Scalars['String']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type KeyValuePair = {
   __typename?: 'KeyValuePair';
   key?: Maybe<Scalars['String']['output']>;
@@ -813,6 +831,7 @@ export type Query = {
   getCaseFileByLeadId?: Maybe<CaseFile>;
   getCaseFilesByLeadId?: Maybe<Array<Maybe<CaseFile>>>;
   getCasesFilesBySearchString?: Maybe<Array<Maybe<CaseFile>>>;
+  getInvestigation?: Maybe<Investigation>;
   getLeadsByActionTaken?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByEquipment?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByOutcomeAnimal?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -820,6 +839,7 @@ export type Query = {
   hwcrOutcomeActionedByCodes: Array<Maybe<HWCROutcomeActionedByCode>>;
   hwcrOutcomeCodes: Array<Maybe<HWCROutcomeCode>>;
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
+  investigationStatusCodes: Array<Maybe<InvestigationStatusCode>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
   nonComplianceCodes: Array<Maybe<NonComplianceCode>>;
   park?: Maybe<Park>;
@@ -863,6 +883,11 @@ export type QuerygetCaseFilesByLeadIdArgs = {
 
 export type QuerygetCasesFilesBySearchStringArgs = {
   searchString: Scalars['String']['input'];
+};
+
+
+export type QuerygetInvestigationArgs = {
+  investigationGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 

@@ -42,7 +42,7 @@ const App: FC = () => {
     dispatch(getFeatureFlag());
   }, [dispatch]);
 
-  const investigationsActive = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
+  const investigationsActive = useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATIONS));
 
   return (
     <GenericErrorBoundary>
@@ -77,7 +77,7 @@ const App: FC = () => {
             )}
             {investigationsActive && (
               <Route
-                path="/investigation/:id"
+                path="/investigation/:investigationGuid"
                 element={<InvestigationDetails />}
               />
             )}

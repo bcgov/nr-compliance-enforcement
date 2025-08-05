@@ -40,7 +40,7 @@ export const SideBar: FC = () => {
       name: "Investigations",
       icon: "bi bi-incognito",
       route: "/investigations",
-      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.CASES)),
+      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATIONS)),
     },
     {
       id: "zone-at-a-glance-link",

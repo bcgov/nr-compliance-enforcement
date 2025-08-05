@@ -3,12 +3,10 @@ import { Link } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 
 interface InvestigationHeaderProps {
-  investigationId: string;
+  investigationGuid: string;
 }
 
-export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigationId }) => {
-  // Extract values from case object with fallbacks
-
+export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigationGuid }) => {
   return (
     <>
       <div className="comp-details-header">
@@ -24,7 +22,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                   className="breadcrumb-item"
                   aria-current="page"
                 >
-                  {investigationId}
+                  {investigationGuid}
                 </li>
               </ol>
             </nav>
@@ -36,7 +34,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
             <div className="comp-details-title-info">
               <h1 className="comp-box-complaint-id">
                 <span>Investigation </span>
-                {investigationId}
+                {investigationGuid}
               </h1>
             </div>
 

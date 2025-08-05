@@ -12,14 +12,20 @@ const Investigations: FC = () => {
         </div>
         <div className="comp-page-content">
           <p>For developer sanity</p>
-
-          <div className="mt-3">
-            <ul>
-              <li>
-                <Link to="/case/35f7301d-ae9e-40e5-b2a0-1becf9157b42">Case #CASE-001</Link>
-              </li>
-            </ul>
-          </div>
+          <ul>
+            <li>
+              <Link to="/investigation/66dd3a1f-4bc5-4758-a986-a664b8d8f200">200</Link>
+            </li>
+            <li>
+              <Link to="/investigation/66dd3a1f-4bc5-4758-a986-a664b8d8f201">201</Link>
+            </li>
+            <li>
+              <Link to="/investigation/66dd3a1f-4bc5-4758-a986-a664b8d8f202">202</Link>
+            </li>
+            <li>
+              <Link to="/investigation/66dd3a1f-4bc5-4758-a986-a664b8d8f203">203</Link>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
