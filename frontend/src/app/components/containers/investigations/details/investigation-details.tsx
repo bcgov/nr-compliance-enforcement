@@ -1,5 +1,5 @@
 import { InvestigationHeader } from "@/app/components/containers/investigations/details/investigation-header";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { useParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
