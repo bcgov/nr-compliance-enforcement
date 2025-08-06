@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, error = null }) => {
-  const { searchValues, setValue, setSort } = useCaseSearch();
+  const { searchValues, setValues, setSort } = useCaseSearch();
 
   const handleSort = (sortInput: string) => {
     const currentSortBy = searchValues.sortBy;
@@ -28,9 +28,9 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
 
   const handlePageChange = useCallback(
     (newPage: number) => {
-      setValue("page", newPage);
+      setValues({ page: newPage });
     },
-    [setValue],
+    [setValues],
   );
 
   const renderSortableHeader = (title: string, sortKey: string, className?: string) => (

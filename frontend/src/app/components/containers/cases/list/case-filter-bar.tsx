@@ -13,28 +13,27 @@ type Props = {
 };
 
 export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters }) => {
-  const { searchValues, setValue, clearValue } = useCaseSearch();
+  const { searchValues, setValues, clearValues } = useCaseSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
 
   const removeFilter = useCallback(
     (filterName: string) => {
       if (filterName === "dateRange") {
-        clearValue("startDate");
-        clearValue("endDate");
+        clearValues(["startDate", "endDate"]);
       } else {
-        clearValue(filterName as keyof typeof searchValues);
+        clearValues(filterName as keyof typeof searchValues);
       }
     },
-    [clearValue],
+    [clearValues],
   );
 
   const handleViewTypeToggle = (view: "map" | "list") => {
-    setValue("viewType", view);
+    setValues({ viewType: view });
   };
 
   const handleSearchChange = (query: string) => {
-    setValue("search", query);
+    setValues({ search: query });
   };
 
   // Search is handled through the form hook

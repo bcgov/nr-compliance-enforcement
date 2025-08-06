@@ -84,9 +84,9 @@ const CaseEdit: FC = () => {
   const isEditMode = !!id;
 
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
-  const agencyOptions = useAppSelector(selectAgencyDropdown).filter((option) => option.value !== "NRS");
+  const agencyOptions = useAppSelector(selectAgencyDropdown);
 
-  const { data: caseData, isLoading: isCaseLoading } = useGraphQLQuery(GET_CASE_FILE, {
+  const { data: caseData, isLoading } = useGraphQLQuery(GET_CASE_FILE, {
     queryKey: ["caseMomsSpaghettiFile", id],
     variables: { caseFileGuid: id },
     enabled: isEditMode,
@@ -104,7 +104,7 @@ const CaseEdit: FC = () => {
   });
 
   const updateCaseMutation = useGraphQLMutation(UPDATE_CASE_MUTATION, {
-    invalidateQueries: [["caseMomsSpaghettiFile", id], ["searchCaseMomsSpaghettiFiles"]],
+    invalidateQueries: [["caseMomsSpaghettiFile", id], "searchCaseMomsSpaghettiFiles"],
     onSuccess: (data: any) => {
       ToggleSuccess("Case updated successfully");
       navigate(`/case/${id}`);
@@ -184,7 +184,7 @@ const CaseEdit: FC = () => {
   }, [form]);
 
   const isSubmitting = createCaseMutation.isPending || updateCaseMutation.isPending;
-  const isDisabled = isSubmitting || (isEditMode && isCaseLoading);
+  const isDisabled = isSubmitting || isLoading;
 
   return (
     <div className="comp-complaint-details">
