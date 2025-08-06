@@ -5,6 +5,7 @@ import { z } from "zod";
 import { gql } from "graphql-request";
 import { CaseEditHeader } from "./case-edit-header";
 import { CompSelect } from "@components/common/comp-select";
+import { FormField } from "@components/common/form-field";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
@@ -183,6 +184,7 @@ const CaseEdit: FC = () => {
   }, [form]);
 
   const isSubmitting = createCaseMutation.isPending || updateCaseMutation.isPending;
+  const isDisabled = isSubmitting || (isEditMode && isCaseLoading);
 
   return (
     <div className="comp-complaint-details">
@@ -198,99 +200,78 @@ const CaseEdit: FC = () => {
           <h2>Case Details</h2>
         </div>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            form.handleSubmit();
-          }}
-        >
-          <fieldset disabled={isSubmitting || (isEditMode && isCaseLoading)}>
-            <form.Field
+        <form onSubmit={form.handleSubmit}>
+          <fieldset disabled={isDisabled}>
+            <FormField
+              form={form}
               name="caseStatus"
-              validators={{
-                onChange: z.string().min(1, "Case status is required"),
-              }}
-              children={(field) => {
+              label="Case status"
+              required
+              validators={{ onChange: z.string().min(1, "Case status is required") }}
+              render={(field) => {
                 const error = field.state.meta.errors?.[0]?.message || "";
                 return (
-                  <div className="comp-details-form-row">
-                    <label htmlFor="case-status-select">
-                      Case status<span className="required-ind">*</span>
-                    </label>
-                    <div className="comp-details-edit-input">
-                      <CompSelect
-                        id="case-status-select"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={statusOptions}
-                        value={statusOptions.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value || "")}
-                        placeholder="Select case status"
-                        isClearable={true}
-                        showInactive={false}
-                        enableValidation={true}
-                        errorMessage={error}
-                        isDisabled={isSubmitting || (isEditMode && isCaseLoading)}
-                      />
-                    </div>
-                  </div>
+                  <CompSelect
+                    id="case-status-select"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    options={statusOptions}
+                    value={statusOptions.find((opt) => opt.value === field.state.value)}
+                    onChange={(option) => field.handleChange(option?.value || "")}
+                    placeholder="Select case status"
+                    isClearable={true}
+                    showInactive={false}
+                    enableValidation={true}
+                    errorMessage={error}
+                    isDisabled={isDisabled}
+                  />
                 );
               }}
             />
 
-            <form.Field
+            <FormField
+              form={form}
               name="leadAgencyCode"
-              validators={{
-                onChange: z.string().min(1, "Lead agency is required"),
-              }}
-              children={(field) => {
+              label="Lead agency"
+              required
+              validators={{ onChange: z.string().min(1, "Lead agency is required") }}
+              render={(field) => {
                 const error = field.state.meta.errors?.[0]?.message || "";
                 return (
-                  <div className="comp-details-form-row">
-                    <label htmlFor="lead-agency-select">
-                      Lead agency<span className="required-ind">*</span>
-                    </label>
-                    <div className="comp-details-edit-input">
-                      <CompSelect
-                        id="lead-agency-select"
-                        classNamePrefix="comp-select"
-                        className="comp-details-input"
-                        options={agencyOptions}
-                        value={agencyOptions.find((opt) => opt.value === field.state.value)}
-                        onChange={(option) => field.handleChange(option?.value || "")}
-                        placeholder="Select lead agency"
-                        isClearable={true}
-                        showInactive={false}
-                        enableValidation={true}
-                        errorMessage={error}
-                        isDisabled={isSubmitting || (isEditMode && isCaseLoading)}
-                      />
-                    </div>
-                  </div>
+                  <CompSelect
+                    id="lead-agency-select"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    options={agencyOptions}
+                    value={agencyOptions.find((opt) => opt.value === field.state.value)}
+                    onChange={(option) => field.handleChange(option?.value || "")}
+                    placeholder="Select lead agency"
+                    isClearable={true}
+                    showInactive={false}
+                    enableValidation={true}
+                    errorMessage={error}
+                    isDisabled={isDisabled}
+                  />
                 );
               }}
             />
 
-            <form.Field
+            <FormField
+              form={form}
               name="description"
-              children={(field) => (
-                <div className="comp-details-form-row">
-                  <label htmlFor="case-description">Case description</label>
-                  <div className="comp-details-edit-input">
-                    <ValidationTextArea
-                      id="case-description"
-                      className="comp-form-control comp-details-input"
-                      rows={4}
-                      defaultValue={field.state.value}
-                      onChange={(value: string) => field.handleChange(value)}
-                      placeholderText="Enter case description..."
-                      maxLength={4000}
-                      errMsg=""
-                      disabled={isSubmitting || (isEditMode && isCaseLoading)}
-                    />
-                  </div>
-                </div>
+              label="Case description"
+              render={(field) => (
+                <ValidationTextArea
+                  id="case-description"
+                  className="comp-form-control comp-details-input"
+                  rows={4}
+                  defaultValue={field.state.value}
+                  onChange={(value: string) => field.handleChange(value)}
+                  placeholderText="Enter case description..."
+                  maxLength={4000}
+                  errMsg=""
+                  disabled={isDisabled}
+                />
               )}
             />
           </fieldset>

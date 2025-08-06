@@ -3,7 +3,7 @@ import { useRequest } from "@graphql/client";
 
 interface QueryInvalidationOptions {
   /** Query keys to invalidate on successful mutation */
-  invalidateQueries?: Array<string>;
+  invalidateQueries?: Array<string | Array<any>>;
 }
 
 interface UseGraphQLMutationOptions<TData, TError, TVariables>
