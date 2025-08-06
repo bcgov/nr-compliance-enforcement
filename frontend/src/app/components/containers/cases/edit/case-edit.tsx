@@ -2,7 +2,6 @@ import { FC, useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { gql } from "graphql-request";
 import { CaseEditHeader } from "./case-edit-header";
@@ -82,7 +81,6 @@ const GET_CASE_FILE = gql`
 const CaseEdit: FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const queryClient = useQueryClient();
   const { id } = useParams<{ id?: string }>();
   const isEditMode = !!id;
 
@@ -107,16 +105,9 @@ const CaseEdit: FC = () => {
   });
 
   const updateCaseMutation = useGraphQLMutation(UPDATE_CASE_MUTATION, {
+    invalidateQueries: [["caseMomsSpaghettiFile", id], ["searchCaseMomsSpaghettiFiles"]],
     onSuccess: (data: any) => {
       ToggleSuccess("Case updated successfully");
-      // Invalidate and refetch the case data to ensure UI is up to date
-      queryClient.invalidateQueries({
-        queryKey: ["caseMomsSpaghettiFile", id],
-      });
-      // Also invalidate the cases list to update any displayed data there
-      queryClient.invalidateQueries({
-        queryKey: ["searchCaseMomsSpaghettiFiles"],
-      });
       navigate(`/case/${id}`);
     },
     onError: (error: any) => {

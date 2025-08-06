@@ -23,25 +23,10 @@ export const SideBar: FC = () => {
       hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.CASES)),
     },
     {
-      id: "create-case-link",
-      name: "Create case",
-      icon: "bi bi-folder-plus",
-      route: "/case/create",
-      excludedRoles: [Roles.SECTOR],
-      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.CASES)),
-    },
-    {
       id: "complaints-link",
       name: "Complaints",
       icon: "bi bi-file-earmark-medical",
       route: "/complaints",
-    },
-    {
-      id: "create-complaints-link",
-      name: "Create complaint",
-      icon: "bi bi-file-earmark-plus",
-      route: "complaint/createComplaint",
-      excludedRoles: [Roles.SECTOR],
     },
     {
       id: "zone-at-a-glance-link",
