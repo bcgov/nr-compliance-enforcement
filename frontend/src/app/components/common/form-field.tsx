@@ -10,9 +10,8 @@ interface FormFieldProps {
 }
 
 /**
- * Reusable form field wrapper component that works around a sonarqube rule
- * disallowing setting the children prop, which is the recommended pattern
- * for tanstack forms.
+ * Wrapper component that works around a sonarqube rule disallowing setting the
+ * children prop, which is the recommended pattern for tanstack forms.
  */
 export const FormField: FC<FormFieldProps> = ({ form, name, label, required = false, validators, render }) => (
   <form.Field
