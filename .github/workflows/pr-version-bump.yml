@@ -70,9 +70,6 @@ jobs:
           cd ../backend-cm
           npm version $new_v --no-git-tag-version
           echo "Backend-cm package.json version updated to $new_v"
-          cd ../frontend-cm
-          npm version $new_v --no-git-tag-version
-          echo "Frontend-cm package.json version updated to $new_v"
           cd ..
       - name: Update helm chart version and appVersion in Chart.yaml
         run: |
