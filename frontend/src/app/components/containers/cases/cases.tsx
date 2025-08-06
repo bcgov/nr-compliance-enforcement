@@ -143,8 +143,8 @@ const Cases: FC = () => {
             onClick={handleCreateClick}
             variant="primary"
           >
-            <i className="bi bi-plus-circle"></i>
-            Create case
+            <i className="bi bi-plus-circle" />
+            <span>Create case</span>
           </Button>
         </div>
 

@@ -29,7 +29,7 @@ export const CaseEditHeader: FC<CaseEditHeaderProps> = ({
                 className="breadcrumb-item"
                 aria-current="page"
               >
-                {isEditMode && caseFileGuid ? caseFileGuid : isEditMode ? "Edit case" : "Create case"}
+                {isEditMode ? "Edit case" : "Create case"}
               </li>
             </ol>
           </nav>
