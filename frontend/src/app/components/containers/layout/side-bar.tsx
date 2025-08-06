@@ -49,6 +49,13 @@ export const SideBar: FC = () => {
       route: "/admin/user",
       requiredRoles: [Roles.TEMPORARY_TEST_ADMIN],
     },
+    {
+      id: "compliments-link",
+      name: "Compliments",
+      icon: "bi bi-heart",
+      route: "/compliments",
+      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLIMENT)),
+    },
   ];
 
   const renderSideBarMenuItem = (idx: number, item: MenuItem): JSX.Element => {
