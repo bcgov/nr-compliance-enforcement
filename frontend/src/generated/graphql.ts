@@ -151,6 +151,22 @@ export type CaseMomsSpaghettiFile = {
   leadAgency?: Maybe<AgencyMomsSpaghettiCode>;
 };
 
+export type CaseMomsSpaghettiFileFilters = {
+  agencyCode?: InputMaybe<Scalars['String']['input']>;
+  caseStatus?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['Date']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['Date']['input']>;
+};
+
+export type CaseMomsSpaghettiFileResult = {
+  __typename?: 'CaseMomsSpaghettiFileResult';
+  items: Array<CaseMomsSpaghettiFile>;
+  pageInfo: PageInfo;
+};
+
 export type CaseStatusCode = {
   __typename?: 'CaseStatusCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -730,6 +746,16 @@ export type Note = {
   note?: Maybe<Scalars['String']['output']>;
 };
 
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  currentPage: Scalars['Int']['output'];
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPreviousPage: Scalars['Boolean']['output'];
+  pageSize: Scalars['Int']['output'];
+  totalCount: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
+};
+
 export type Park = {
   __typename?: 'Park';
   externalId?: Maybe<Scalars['String']['output']>;
@@ -818,6 +844,7 @@ export type Query = {
   agencyMomsSpaghettiCodes: Array<Maybe<AgencyMomsSpaghettiCode>>;
   caseLocationCodes: Array<Maybe<CaseLocationCode>>;
   caseMomsSpaghettiFile?: Maybe<CaseMomsSpaghettiFile>;
+  caseMomsSpaghettiFiles: Array<CaseMomsSpaghettiFile>;
   configurationCodes: Array<Maybe<Configuration>>;
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
   dischargeCodes: Array<Maybe<DischargeCode>>;
@@ -849,6 +876,7 @@ export type Query = {
   person?: Maybe<Person>;
   scheduleCodes: Array<Maybe<ScheduleCode>>;
   scheduleSectorXrefs: Array<Maybe<ScheduleSectorXref>>;
+  searchCaseMomsSpaghettiFiles: CaseMomsSpaghettiFileResult;
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
@@ -857,6 +885,11 @@ export type Query = {
 
 export type QuerycaseMomsSpaghettiFileArgs = {
   caseFileGuid: Scalars['String']['input'];
+};
+
+
+export type QuerycaseMomsSpaghettiFilesArgs = {
+  ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -938,6 +971,13 @@ export type QueryparksArgs = {
 
 export type QuerypersonArgs = {
   personGuid: Scalars['String']['input'];
+};
+
+
+export type QuerysearchCaseMomsSpaghettiFilesArgs = {
+  filters?: InputMaybe<CaseMomsSpaghettiFileFilters>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type ReviewActionInput = {
