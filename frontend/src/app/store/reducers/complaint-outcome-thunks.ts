@@ -1186,7 +1186,7 @@ export const upsertDecisionOutcome =
         const input: UpdateDecisionInput = {
           complaintOutcomeGuid: id,
           complaintId: complaintId,
-          agencyCode: "EPO",
+          outcomeAgencyCode: "EPO",
           caseCode: "ERS",
           actor: assignedTo,
           updateUserId: idir,

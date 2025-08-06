@@ -104,7 +104,7 @@ export class CodeTableService {
         // TODO: Rename case Management query once CM refactor is done
         const { data } = await get(token, {
           query:
-            "{outcomeAgencyCodes{outcomeAgencyCode shortDescription longDescription displayOrder activeIndicator externalAgencyIndicator}}",
+            "{outcomeAgencyCodes{outcomeAgencyCode shortDescription longDescription displayOrder activeIndicator}}",
         });
         const results = data.outcomeAgencyCodes.map(
           ({
@@ -113,7 +113,7 @@ export class CodeTableService {
             longDescription,
             displayOrder,
             activeIndicator,
-            externalAgencyIndicator,
+            // externalAgencyIndicator,
           }) => {
             const table: Agency = {
               agency: outcomeAgencyCode,
@@ -121,7 +121,8 @@ export class CodeTableService {
               longDescription: longDescription,
               displayOrder: displayOrder,
               isActive: activeIndicator,
-              externalAgencyInd: externalAgencyIndicator,
+              externalAgencyInd: false,
+              // externalAgencyInd: externalAgencyIndicator,
             };
             return table;
           },
@@ -332,7 +333,7 @@ export class CodeTableService {
       case "justification": {
         const { data } = await get(token, {
           query:
-            "{inactionJustificationCodes{inactionJustificationCode agencyCode shortDescription longDescription displayOrder activeIndicator}}",
+            "{inactionJustificationCodes{inactionJustificationCode outcomeAgencyCode shortDescription longDescription displayOrder activeIndicator}}",
         });
         const justificationCodes = data.inactionJustificationCodes.map(
           ({ inactionJustificationCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
@@ -779,12 +780,13 @@ export class CodeTableService {
       }
       case "lead-agency": {
         const { data } = await get(token, {
-          query: "{agencyCodes{agencyCode shortDescription longDescription displayOrder activeIndicator}}",
+          query:
+            "{outcomeAgencyCodes{outcomeAgencyCode shortDescription longDescription displayOrder activeIndicator}}",
         });
-        const results = data.agencyCodes.map(
-          ({ agencyCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+        const results = data.outcomeAgencyCodes.map(
+          ({ outcomeAgencyCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
             const table: Agency = {
-              agency: agencyCode,
+              agency: outcomeAgencyCode,
               shortDescription: shortDescription,
               longDescription: longDescription,
               displayOrder: displayOrder,

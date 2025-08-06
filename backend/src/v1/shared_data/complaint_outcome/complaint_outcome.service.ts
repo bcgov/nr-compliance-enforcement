@@ -515,7 +515,6 @@ export class ComplaintOutcomeService {
   };
 
   updateWildlife = async (token: any, model: UpdateWildlifeInput): Promise<ComplaintOutcomeDto> => {
-    console.log(model);
     const complaintId = model.complaintId;
     delete model.complaintId;
     const result = await post(token, {
