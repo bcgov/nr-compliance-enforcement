@@ -34,6 +34,27 @@ async function fillInAssessmentSection(page: Page) {
     await validateHWCSection($assessment, page, sectionParams);
   }
 }
+
+async function enterReferenceNumber(page, number: string, shouldSave: boolean) {
+  await page.locator("#external-file-reference-number-input").click();
+  await page.locator("#external-file-reference-number-input").clear();
+  await page.locator("#external-file-reference-number-input").pressSequentially(number, { delay: 0 });
+  if (shouldSave) {
+    await page.locator("#external-file-reference-save-button").click();
+  }
+  await page.locator("#external-file-reference-delete-button");
+}
+
+async function deleteReferenceNumber(page: Page) {
+  if (await page.locator("#external-file-reference-delete-button").isVisible()) {
+    await page.locator("#external-file-reference-delete-button").first().click();
+    await page.locator(".modal-footer > .btn-primary").click();
+    await waitForSpinner(page);
+  } else {
+    console.log("No reference number to delete");
+  }
+}
+
 /*
 Test to verify that the user is able to change the status both the
 HWC and Enforcement details screens
@@ -62,6 +83,11 @@ test.describe("Complaint Change Status spec - Details View", () => {
         await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true, page);
         await assignSelfToComplaint(page);
         await waitForSpinner(page);
+
+        //make sure that there isn't an old COORS Number there from a failed run then set one
+        await deleteReferenceNumber(page);
+        await enterReferenceNumber(page, "111111", true);
+
         await page.locator("#details-screen-update-status-button").locator(":visible:scope").click();
         await page.locator("#complaint_status_dropdown").click();
         await page.locator(".comp-select__option").getByText(/Open/).first().click();
