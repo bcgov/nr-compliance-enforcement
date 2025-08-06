@@ -202,7 +202,7 @@ const CaseEdit: FC = () => {
           onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            void form.handleSubmit();
+            form.handleSubmit();
           }}
         >
           <fieldset disabled={isSubmitting || (isEditMode && isCaseLoading)}>
