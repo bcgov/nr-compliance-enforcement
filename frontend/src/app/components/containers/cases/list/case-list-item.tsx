@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { applyStatusClass } from "@common/methods";
+import { applyStatusClass, formatDateTime } from "@common/methods";
 
 type Props = {
   caseFile: any;
@@ -40,7 +40,7 @@ export const CaseListItem: FC<Props> = ({ caseFile }) => {
         </Link>
       </td>
       <td className="comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell">
-        {caseFile.caseOpenedTimestamp ? new Date(caseFile.caseOpenedTimestamp).toLocaleDateString() : "—"}
+        {formatDateTime(caseFile.caseOpenedTimestamp)}
       </td>
       <td className="comp-cell-width-110">
         {caseFile.caseStatus && (
