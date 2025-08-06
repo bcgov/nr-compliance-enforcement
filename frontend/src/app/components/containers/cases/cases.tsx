@@ -1,6 +1,5 @@
 import { FC, useState, useCallback } from "react";
 import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
-import { ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
@@ -137,11 +136,16 @@ const Cases: FC = () => {
 
   return (
     <div className="comp-page-container comp-page-container--noscroll">
-      <ToastContainer />
       <div className="comp-page-header">
         <div className="comp-page-title-container">
           <h1>Cases</h1>
-          <Button onClick={handleCreateClick}>Create case</Button>
+          <Button
+            onClick={handleCreateClick}
+            variant="primary"
+          >
+            <i className="bi bi-plus-circle"></i>
+            Create case
+          </Button>
         </div>
 
         <CaseFilterBar

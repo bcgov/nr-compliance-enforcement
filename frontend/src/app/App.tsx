@@ -1,5 +1,7 @@
 import { FC, useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes, useParams } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
@@ -47,6 +49,7 @@ const App: FC = () => {
         <ScrollToTop />
         <Modal />
         <PageLoader />
+        <ToastContainer />
         <Routes>
           <Route element={<ProtectedRoutes roles={coreRoles} />}>
             <Route

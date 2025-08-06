@@ -48,7 +48,6 @@ import { openModal } from "@store/reducers/app";
 import { useParams } from "react-router-dom";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { ToggleError } from "@common/toast";
-import { ToastContainer } from "react-toastify";
 import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
@@ -783,7 +782,6 @@ export const ComplaintDetailsEdit: FC = () => {
 
   return (
     <div className="comp-complaint-details">
-      <ToastContainer />
       <ComplaintHeader
         id={id}
         complaintType={complaintType}

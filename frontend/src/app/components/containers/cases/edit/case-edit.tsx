@@ -1,6 +1,5 @@
-import { FC, useCallback, useEffect } from "react";
+import { FC, useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { gql } from "graphql-request";
@@ -8,13 +7,12 @@ import { CaseEditHeader } from "./case-edit-header";
 import { CompSelect } from "@components/common/comp-select";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
-import { selectLeadAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
+import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import "react-toastify/dist/ReactToastify.css";
 import { CaseMomsSpaghettiFileCreateInput, CaseMomsSpaghettiFileUpdateInput } from "@/generated/graphql";
 
 const CREATE_CASE_MUTATION = gql`
@@ -85,12 +83,12 @@ const CaseEdit: FC = () => {
   const isEditMode = !!id;
 
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
-  const agencyOptions = useAppSelector(selectLeadAgencyDropdown);
+  const agencyOptions = useAppSelector(selectAgencyDropdown).filter((option) => option.value !== "NRS");
 
   const { data: caseData, isLoading: isCaseLoading } = useGraphQLQuery(GET_CASE_FILE, {
     queryKey: ["caseMomsSpaghettiFile", id],
     variables: { caseFileGuid: id },
-    enabled: isEditMode && !!id,
+    enabled: isEditMode,
   });
 
   const createCaseMutation = useGraphQLMutation(CREATE_CASE_MUTATION, {
@@ -116,15 +114,26 @@ const CaseEdit: FC = () => {
     },
   });
 
-  const form = useForm({
-    defaultValues: {
+  const defaultValues = useMemo(() => {
+    // If there is case data set the default state of the form to the case data
+    if (isEditMode && caseData?.caseMomsSpaghettiFile) {
+      return {
+        caseStatus: caseData.caseMomsSpaghettiFile.caseStatus?.caseStatusCode || "",
+        leadAgencyCode: caseData.caseMomsSpaghettiFile.leadAgency?.agencyCode || "",
+        description: caseData.caseMomsSpaghettiFile.description || "",
+      };
+    }
+    return {
       caseStatus: "",
       leadAgencyCode: "",
       description: "",
-    },
+    };
+  }, [isEditMode, caseData]);
+
+  const form = useForm({
+    defaultValues,
     onSubmit: async ({ value }) => {
       if (isEditMode) {
-        // Update existing case
         const updateInput: CaseMomsSpaghettiFileUpdateInput = {
           caseStatus: value.caseStatus,
           leadAgencyCode: value.leadAgencyCode,
@@ -135,7 +144,6 @@ const CaseEdit: FC = () => {
           input: updateInput,
         });
       } else {
-        // Create new case
         const createInput: CaseMomsSpaghettiFileCreateInput = {
           caseStatus: value.caseStatus,
           leadAgencyCode: value.leadAgencyCode,
@@ -145,15 +153,6 @@ const CaseEdit: FC = () => {
       }
     },
   });
-
-  // Load existing case data when available
-  useEffect(() => {
-    if (isEditMode && caseData?.caseMomsSpaghettiFile) {
-      const caseFile = caseData.caseMomsSpaghettiFile;
-      form.setFieldValue("caseStatus", caseFile.caseStatus?.caseStatusCode || "");
-      form.setFieldValue("leadAgencyCode", caseFile.leadAgency?.agencyCode || "");
-    }
-  }, [isEditMode, caseData]);
 
   const confirmCancelChanges = useCallback(() => {
     form.reset();
@@ -187,7 +186,6 @@ const CaseEdit: FC = () => {
 
   return (
     <div className="comp-complaint-details">
-      <ToastContainer />
       <CaseEditHeader
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
@@ -199,12 +197,6 @@ const CaseEdit: FC = () => {
         <div className="comp-details-section-header">
           <h2>Case Details</h2>
         </div>
-
-        {isCaseLoading && isEditMode && (
-          <div className="text-center py-4">
-            <span>Loading case data...</span>
-          </div>
-        )}
 
         <form
           onSubmit={(e) => {
@@ -220,7 +212,7 @@ const CaseEdit: FC = () => {
                 onChange: z.string().min(1, "Case status is required"),
               }}
               children={(field) => {
-                const error = field.state.meta.errors?.[0]?.toString() || "";
+                const error = field.state.meta.errors?.[0]?.message || "";
                 return (
                   <div className="comp-details-form-row">
                     <label htmlFor="case-status-select">
@@ -253,7 +245,7 @@ const CaseEdit: FC = () => {
                 onChange: z.string().min(1, "Lead agency is required"),
               }}
               children={(field) => {
-                const error = field.state.meta.errors?.[0]?.toString() || "";
+                const error = field.state.meta.errors?.[0]?.message || "";
                 return (
                   <div className="comp-details-form-row">
                     <label htmlFor="lead-agency-select">
@@ -302,18 +294,6 @@ const CaseEdit: FC = () => {
               )}
             />
           </fieldset>
-
-          <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) => (
-              <div className="comp-details-form-buttons">
-                <span className="text-sm text-gray-600">
-                  {(isSubmitting || createCaseMutation.isPending || updateCaseMutation.isPending) &&
-                    (isEditMode ? "Updating..." : "Creating...")}
-                </span>
-              </div>
-            )}
-          />
         </form>
       </section>
     </div>
