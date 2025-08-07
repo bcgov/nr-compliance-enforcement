@@ -43,7 +43,7 @@ export type CaseParams = {
   id: string;
 };
 
-export const CaseDetails: FC = () => {
+export const CaseView: FC = () => {
   const dispatch = useAppDispatch();
   const { id = "" } = useParams<CaseParams>();
   const navigate = useNavigate();
@@ -107,21 +107,21 @@ export const CaseDetails: FC = () => {
 
   return (
     <>
-      <div className="comp-details-section-header-actions">
-        <Button
-          variant="outline-primary"
-          size="sm"
-          id="details-screen-edit-button"
-          onClick={editButtonClick}
-        >
-          <i className="bi bi-pencil"></i>
-          <span>Edit case</span>
-        </Button>
-      </div>
       {!caseData && <div className="case-not-found">No data found for ID: {id}</div>}
       {caseData && (
         <div className="comp-complaint-details">
           <CaseHeader caseData={caseData} />
+          <div className="comp-details-section-header-actions case-relations-container">
+            <Button
+              variant="outline-primary"
+              size="sm"
+              id="details-screen-edit-button"
+              onClick={editButtonClick}
+            >
+              <i className="bi bi-pencil"></i>
+              <span>Edit case</span>
+            </Button>
+          </div>
           <div className="row case-relations-container">
             <div className="d-flex flex-column flex-md-row p-2">
               <div className="col-lg-3  p-2">
