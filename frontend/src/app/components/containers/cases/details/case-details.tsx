@@ -115,7 +115,10 @@ export const CaseDetails: FC = () => {
                     ? linkedComplaints
                         ?.sort((left, right) => left.id.localeCompare(right.id))
                         .map((complaint) => (
-                          <div className="col-sm-12 border p-2 my-2">
+                          <div
+                            className="col-sm-12 border p-2 my-2"
+                            key={complaint?.id}
+                          >
                             <div className="comp-details-badge-container case-relations-badge-container">
                               <Link to={`/complaint/HWCR/${complaint?.id}`}>{complaint?.id}</Link>
                               {getSpeciesBySpeciesCode(complaint?.species, speciesCodes)}
