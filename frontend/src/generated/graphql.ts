@@ -151,6 +151,11 @@ export type CaseMomsSpaghettiFile = {
   leadAgency?: Maybe<AgencyMomsSpaghettiCode>;
 };
 
+export type CaseMomsSpaghettiFileCreateInput = {
+  caseStatus: Scalars['String']['input'];
+  leadAgencyCode: Scalars['String']['input'];
+};
+
 export type CaseMomsSpaghettiFileFilters = {
   agencyCode?: InputMaybe<Scalars['String']['input']>;
   caseStatus?: InputMaybe<Scalars['String']['input']>;
@@ -165,6 +170,11 @@ export type CaseMomsSpaghettiFileResult = {
   __typename?: 'CaseMomsSpaghettiFileResult';
   items: Array<CaseMomsSpaghettiFile>;
   pageInfo: PageInfo;
+};
+
+export type CaseMomsSpaghettiFileUpdateInput = {
+  caseStatus?: InputMaybe<Scalars['String']['input']>;
+  leadAgencyCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CaseStatusCode = {
@@ -546,6 +556,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createAssessment: CaseFile;
   createAuthorizationOutcome: CaseFile;
+  createCaseMomsSpaghettiFile: CaseMomsSpaghettiFile;
   createDecision: CaseFile;
   createEquipment: CaseFile;
   createNote: CaseFile;
@@ -565,6 +576,7 @@ export type Mutation = {
   deleteWildlife: CaseFile;
   updateAssessment: CaseFile;
   updateAuthorizationOutcome: CaseFile;
+  updateCaseMomsSpaghettiFile: CaseMomsSpaghettiFile;
   updateDecision: CaseFile;
   updateEquipment: CaseFile;
   updateNote: CaseFile;
@@ -584,6 +596,11 @@ export type MutationcreateAssessmentArgs = {
 
 export type MutationcreateAuthorizationOutcomeArgs = {
   input: CreateAuthorizationOutcomeInput;
+};
+
+
+export type MutationcreateCaseMomsSpaghettiFileArgs = {
+  input: CaseMomsSpaghettiFileCreateInput;
 };
 
 
@@ -679,6 +696,12 @@ export type MutationupdateAssessmentArgs = {
 
 export type MutationupdateAuthorizationOutcomeArgs = {
   input: UpdateAuthorizationOutcomeInput;
+};
+
+
+export type MutationupdateCaseMomsSpaghettiFileArgs = {
+  caseIdentifier: Scalars['String']['input'];
+  input: CaseMomsSpaghettiFileUpdateInput;
 };
 
 
@@ -884,12 +907,12 @@ export type Query = {
 
 
 export type QuerycaseMomsSpaghettiFileArgs = {
-  caseFileGuid: Scalars['String']['input'];
+  caseIdentifier: Scalars['String']['input'];
 };
 
 
 export type QuerycaseMomsSpaghettiFilesArgs = {
-  ids: Array<Scalars['String']['input']>;
+  caseIdentifiers: Array<Scalars['String']['input']>;
 };
 
 

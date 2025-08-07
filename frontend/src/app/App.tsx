@@ -1,11 +1,13 @@
 import { FC, useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes, useParams } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
 import { NotAuthorized, NotFound } from "./components/containers/pages";
 import { ComplaintDetailsEdit } from "./components/containers/complaints/details/complaint-details-edit";
-import { CaseDetails } from "./components/containers/cases/details/case-details";
+import { CaseView } from "./components/containers/cases/view/case-view";
 import ColorReference, { MiscReference, SpaceReference } from "./components/reference";
 import { ModalComponent as Modal } from "./components/modal/modal";
 import { useAppDispatch, useAppSelector } from "./hooks/hooks";
@@ -15,6 +17,7 @@ import { getOfficers } from "./store/reducers/officer";
 import { PageLoader } from "./components/common/page-loader";
 import { ComplaintsWrapper } from "./components/containers/complaints/complaints";
 import Cases from "./components/containers/cases/cases";
+import CaseEdit from "./components/containers/cases/edit/case-edit";
 import Compliments from "./components/containers/compliments/compliments";
 import COMPLAINT_TYPES from "./types/app/complaint-types";
 import { getCodeTableVersion, getConfigurations, getFeatureFlag, getOfficerDefaultZone } from "./store/reducers/app";
@@ -52,6 +55,7 @@ const App: FC = () => {
         <ScrollToTop />
         <Modal />
         <PageLoader />
+        <ToastContainer />
         <Routes>
           <Route element={<ProtectedRoutes roles={coreRoles} />}>
             <Route
@@ -67,12 +71,20 @@ const App: FC = () => {
               element={<Cases />}
             />
             <Route
-              path="/compliments"
-              element={<Compliments />}
+              path="/case/create"
+              element={<CaseEdit />}
             />
             <Route
               path="/case/:id"
-              element={<CaseDetails />}
+              element={<CaseView />}
+            />
+            <Route
+              path="/case/:id/edit"
+              element={<CaseEdit />}
+            />
+            <Route
+              path="/compliments"
+              element={<Compliments />}
             />
             {investigationsActive && (
               <Route
