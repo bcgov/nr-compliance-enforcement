@@ -223,9 +223,8 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add("navigateToCreateScreen", () => {
-  cy.visit("/");
+  cy.visit("/complaint/createComplaint");
   cy.waitForSpinner();
-  cy.get("#icon-create-complaints-link").click({ force: true });
 });
 
 Cypress.Commands.add("waitForSpinner", () => {

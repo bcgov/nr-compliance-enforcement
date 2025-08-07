@@ -1,13 +1,13 @@
 import { FC, useState, useCallback } from "react";
 import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
-import { ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
 import { CaseMomsSpaghettiFileResult } from "@/generated/graphql";
-import { CaseFilter } from "./case-filter";
-import { CaseList } from "./case-list";
-import { CaseFilterBar } from "./case-filter-bar";
-import { CaseMap } from "./case-map";
+import { CaseFilter } from "./list/case-filter";
+import { CaseList } from "./list";
+import { CaseFilterBar } from "./list/case-filter-bar";
+import { CaseMap } from "./map/case-map";
 import { useCaseSearch } from "./hooks/use-case-search";
 
 const SEARCH_CASE_FILES = gql`
@@ -39,6 +39,7 @@ const SEARCH_CASE_FILES = gql`
 `;
 
 const Cases: FC = () => {
+  const navigate = useNavigate();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);
 
@@ -64,6 +65,7 @@ const Cases: FC = () => {
         pageSize: searchValues.pageSize,
         filters: getFilters(),
       },
+      placeholderData: (previousData) => previousData,
     },
   );
 
@@ -71,8 +73,7 @@ const Cases: FC = () => {
   const toggleShowDesktopFilters = useCallback(() => setShowDesktopFilters((prevShow) => !prevShow), []);
 
   const handleCreateClick = () => {
-    // Future implementation for creating cases
-    console.log("Create case clicked");
+    navigate("/case/create");
   };
 
   const renderDesktopFilterSection = () => (
@@ -135,11 +136,16 @@ const Cases: FC = () => {
 
   return (
     <div className="comp-page-container comp-page-container--noscroll">
-      <ToastContainer />
       <div className="comp-page-header">
         <div className="comp-page-title-container">
           <h1>Cases</h1>
-          <Button onClick={handleCreateClick}>Create case</Button>
+          <Button
+            onClick={handleCreateClick}
+            variant="primary"
+          >
+            <i className="bi bi-plus-circle" />
+            <span>Create case</span>
+          </Button>
         </div>
 
         <CaseFilterBar

@@ -30,7 +30,6 @@ import { setIsInEdit } from "@store/reducers/cases";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { ToggleError } from "@common/toast";
-import "react-toastify/dist/ReactToastify.css";
 import { Assessment } from "@apptypes/outcomes/assessment";
 import { ValidationDatePicker } from "@common/validation-date-picker";
 import { BsExclamationCircleFill } from "react-icons/bs";

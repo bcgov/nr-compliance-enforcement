@@ -1,10 +1,10 @@
 import { FC, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { CaseHeader } from "./case-header";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
 import { CaseMomsSpaghettiFile } from "@/generated/graphql";
-import { Badge } from "react-bootstrap";
+import { Badge, Button } from "react-bootstrap";
 import { applyStatusClass, getSpeciesBySpeciesCode } from "@common/methods";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { getComplaintById, selectComplaint, setComplaint } from "@/app/store/reducers/complaints";
@@ -13,8 +13,8 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 
 const GET_CASE_FILE = gql`
-  query GetCaseMomsSpaghetttiFile($caseFileGuid: String!) {
-    caseMomsSpaghettiFile(caseFileGuid: $caseFileGuid) {
+  query GetCaseMomsSpaghetttiFile($caseIdentifier: String!) {
+    caseMomsSpaghettiFile(caseIdentifier: $caseIdentifier) {
       __typename
       caseIdentifier
       caseOpenedTimestamp
@@ -46,9 +46,11 @@ export type CaseParams = {
 export const CaseDetails: FC = () => {
   const dispatch = useAppDispatch();
   const { id = "" } = useParams<CaseParams>();
+  const navigate = useNavigate();
+
   const { data, isLoading } = useGraphQLQuery<{ caseMomsSpaghettiFile: CaseMomsSpaghettiFile }>(GET_CASE_FILE, {
     queryKey: ["caseMomsSpaghettiFile", id],
-    variables: { caseFileGuid: id },
+    variables: { caseIdentifier: id },
     enabled: !!id, // Only refresh query if id is provided
   });
 
@@ -87,6 +89,9 @@ export const CaseDetails: FC = () => {
     });
   }, [caseData, dispatch]);
 
+  const editButtonClick = () => {
+    navigate(`/case/${id}/edit`);
+  };
   if (isLoading) {
     return (
       <div className="comp-complaint-details">
@@ -102,6 +107,17 @@ export const CaseDetails: FC = () => {
 
   return (
     <>
+      <div className="comp-details-section-header-actions">
+        <Button
+          variant="outline-primary"
+          size="sm"
+          id="details-screen-edit-button"
+          onClick={editButtonClick}
+        >
+          <i className="bi bi-pencil"></i>
+          <span>Edit case</span>
+        </Button>
+      </div>
       {!caseData && <div className="case-not-found">No data found for ID: {id}</div>}
       {caseData && (
         <div className="comp-complaint-details">
