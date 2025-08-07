@@ -34,8 +34,6 @@ import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { createComplaint, selectComplaintDetails, setComplaint } from "@store/reducers/complaints";
 import { from } from "linq-to-typescript";
 import { ToggleError } from "@common/toast";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { AttachmentsCarousel } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
@@ -686,7 +684,6 @@ export const CreateComplaint: FC = () => {
 
   return (
     <div className="comp-complaint-details">
-      <ToastContainer />
       <CreateComplaintHeader
         complaintType={complaintType}
         cancelButtonClick={cancelButtonClick}

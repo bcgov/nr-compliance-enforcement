@@ -1,6 +1,6 @@
 import { FC, useCallback } from "react";
 import { Table } from "react-bootstrap";
-import { useCaseSearch } from "./hooks/use-case-search";
+import { useCaseSearch } from "../hooks/use-case-search";
 import { SortableHeader } from "@components/common/sortable-header";
 import Paginator from "@/app/components/common/paginator";
 import { SORT_TYPES } from "@constants/sort-direction";
@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, error = null }) => {
-  const { searchValues, setValue, setSort } = useCaseSearch();
+  const { searchValues, setValues, setSort } = useCaseSearch();
 
   const handleSort = (sortInput: string) => {
     const currentSortBy = searchValues.sortBy;
@@ -28,9 +28,9 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
 
   const handlePageChange = useCallback(
     (newPage: number) => {
-      setValue("page", newPage);
+      setValues({ page: newPage });
     },
-    [setValue],
+    [setValues],
   );
 
   const renderSortableHeader = (title: string, sortKey: string, className?: string) => (

@@ -1,6 +1,5 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch } from "@hooks/hooks";
-import { ToastContainer } from "react-toastify";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { Table } from "react-bootstrap";
 import { generateApiParameters, get, patch } from "@common/api";
@@ -47,7 +46,6 @@ export const FeatureManagement: FC = () => {
 
   return (
     <>
-      <ToastContainer />
       <div className="comp-page-container">
         <div className="comp-page-header">
           <div className="comp-page-title-container">

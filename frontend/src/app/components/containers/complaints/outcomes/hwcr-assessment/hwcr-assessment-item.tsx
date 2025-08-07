@@ -7,7 +7,6 @@ import {
   selectComplaintViewMode,
 } from "@store/reducers/complaints";
 import { formatDate } from "@common/methods";
-import "react-toastify/dist/ReactToastify.css";
 import { Assessment } from "@apptypes/outcomes/assessment";
 import { Badge, Button, Card } from "react-bootstrap";
 
