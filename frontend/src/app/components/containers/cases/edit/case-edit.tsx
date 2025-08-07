@@ -19,7 +19,7 @@ import { CaseMomsSpaghettiFileCreateInput, CaseMomsSpaghettiFileUpdateInput } fr
 const CREATE_CASE_MUTATION = gql`
   mutation CreateCaseMomsSpaghettiFile($input: CaseMomsSpaghettiFileCreateInput!) {
     createCaseMomsSpaghettiFile(input: $input) {
-      caseFileGuid
+      caseIdentifier
       caseOpenedTimestamp
       caseStatus {
         caseStatusCode
@@ -36,9 +36,9 @@ const CREATE_CASE_MUTATION = gql`
 `;
 
 const UPDATE_CASE_MUTATION = gql`
-  mutation UpdateCaseMomsSpaghettiFile($caseFileGuid: String!, $input: CaseMomsSpaghettiFileUpdateInput!) {
-    updateCaseMomsSpaghettiFile(caseFileGuid: $caseFileGuid, input: $input) {
-      caseFileGuid
+  mutation UpdateCaseMomsSpaghettiFile($caseIdentifier: String!, $input: CaseMomsSpaghettiFileUpdateInput!) {
+    updateCaseMomsSpaghettiFile(caseIdentifier: $caseIdentifier, input: $input) {
+      caseIdentifier
       caseOpenedTimestamp
       caseStatus {
         caseStatusCode
@@ -55,10 +55,10 @@ const UPDATE_CASE_MUTATION = gql`
 `;
 
 const GET_CASE_FILE = gql`
-  query GetCaseMomsSpaghetttiFile($caseFileGuid: String!) {
-    caseMomsSpaghettiFile(caseFileGuid: $caseFileGuid) {
+  query GetCaseMomsSpaghetttiFile($caseIdentifier: String!) {
+    caseMomsSpaghettiFile(caseIdentifier: $caseIdentifier) {
       __typename
-      caseFileGuid
+      caseIdentifier
       caseOpenedTimestamp
       caseStatus {
         caseStatusCode
@@ -88,14 +88,15 @@ const CaseEdit: FC = () => {
 
   const { data: caseData, isLoading } = useGraphQLQuery(GET_CASE_FILE, {
     queryKey: ["caseMomsSpaghettiFile", id],
-    variables: { caseFileGuid: id },
+    variables: { caseIdentifier: id },
     enabled: isEditMode,
   });
 
   const createCaseMutation = useGraphQLMutation(CREATE_CASE_MUTATION, {
+    invalidateQueries: ["searchCaseMomsSpaghettiFiles"],
     onSuccess: (data: any) => {
       ToggleSuccess("Case created successfully");
-      navigate(`/case/${data.createCaseMomsSpaghettiFile.caseFileGuid}`);
+      navigate(`/case/${data.createCaseMomsSpaghettiFile.caseIdentifier}`);
     },
     onError: (error: any) => {
       console.error("Error creating case:", error);
@@ -141,7 +142,7 @@ const CaseEdit: FC = () => {
         };
 
         updateCaseMutation.mutate({
-          caseFileGuid: id,
+          caseIdentifier: id,
           input: updateInput,
         });
       } else {
@@ -192,7 +193,7 @@ const CaseEdit: FC = () => {
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
         isEditMode={isEditMode}
-        caseFileGuid={id}
+        caseIdentifier={id}
       />
 
       <section className="comp-details-body comp-details-form comp-container">

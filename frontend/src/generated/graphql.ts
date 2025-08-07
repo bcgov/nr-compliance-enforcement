@@ -145,7 +145,6 @@ export type CaseLocationCode = {
 export type CaseMomsSpaghettiFile = {
   __typename?: 'CaseMomsSpaghettiFile';
   caseActivities?: Maybe<Array<Maybe<CaseActivity>>>;
-  caseFileGuid?: Maybe<Scalars['String']['output']>;
   caseIdentifier?: Maybe<Scalars['String']['output']>;
   caseOpenedTimestamp?: Maybe<Scalars['Date']['output']>;
   caseStatus?: Maybe<CaseStatusCode>;
@@ -165,11 +164,6 @@ export type CaseMomsSpaghettiFileFilters = {
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
   startDate?: InputMaybe<Scalars['Date']['input']>;
-};
-
-export type CaseMomsSpaghettiFileInput = {
-  caseStatus: Scalars['String']['input'];
-  leadAgencyCode: Scalars['String']['input'];
 };
 
 export type CaseMomsSpaghettiFileResult = {
@@ -688,7 +682,7 @@ export type MutationupdateAuthorizationOutcomeArgs = {
 
 
 export type MutationupdateCaseMomsSpaghettiFileArgs = {
-  caseFileGuid: Scalars['String']['input'];
+  caseIdentifier: Scalars['String']['input'];
   input: CaseMomsSpaghettiFileUpdateInput;
 };
 
@@ -894,12 +888,12 @@ export type Query = {
 
 
 export type QuerycaseMomsSpaghettiFileArgs = {
-  caseFileGuid: Scalars['String']['input'];
+  caseIdentifier: Scalars['String']['input'];
 };
 
 
 export type QuerycaseMomsSpaghettiFilesArgs = {
-  ids: Array<Scalars['String']['input']>;
+  caseIdentifiers: Array<Scalars['String']['input']>;
 };
 
 

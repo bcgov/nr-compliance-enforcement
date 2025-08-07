@@ -15,7 +15,7 @@ const SEARCH_CASE_FILES = gql`
     searchCaseMomsSpaghettiFiles(page: $page, pageSize: $pageSize, filters: $filters) {
       items {
         __typename
-        caseFileGuid
+        caseIdentifier
         caseOpenedTimestamp
         caseStatus {
           caseStatusCode

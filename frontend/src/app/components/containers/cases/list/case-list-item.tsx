@@ -10,7 +10,7 @@ type Props = {
 export const CaseListItem: FC<Props> = ({ caseFile }) => {
   const renderDropdownAction = (caseFile: any, icon: string, label: string, to?: string, onClick?: () => void) => {
     const itemProps = {
-      id: `${label.toLowerCase().replace(" ", "-")}-case-${caseFile.caseFileGuid}`,
+      id: `${label.toLowerCase().replace(" ", "-")}-case-${caseFile.caseIdentifier}`,
       onClick,
     };
 
@@ -30,13 +30,13 @@ export const CaseListItem: FC<Props> = ({ caseFile }) => {
   };
 
   return (
-    <tr key={caseFile.caseFileGuid}>
+    <tr key={caseFile.caseIdentifier}>
       <td className="comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center">
         <Link
-          to={`/case/${caseFile.caseFileGuid}`}
+          to={`/case/${caseFile.caseIdentifier}`}
           className="comp-cell-link"
         >
-          {caseFile.caseFileGuid}
+          {caseFile.caseIdentifier}
         </Link>
       </td>
       <td className="comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell">
@@ -52,13 +52,13 @@ export const CaseListItem: FC<Props> = ({ caseFile }) => {
       <td>{caseFile.leadAgency?.longDescription || "—"}</td>
       <td className="comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col case-table-actions-cell">
         <Dropdown
-          id={`case-action-button-${caseFile.caseFileGuid}`}
-          key={`case-action-${caseFile.caseFileGuid}`}
+          id={`case-action-button-${caseFile.caseIdentifier}`}
+          key={`case-action-${caseFile.caseIdentifier}`}
           drop="start"
           className="comp-action-dropdown"
         >
           <Dropdown.Toggle
-            id={`case-action-toggle-${caseFile.caseFileGuid}`}
+            id={`case-action-toggle-${caseFile.caseIdentifier}`}
             size="sm"
             variant="outline-primary"
           >
@@ -77,8 +77,8 @@ export const CaseListItem: FC<Props> = ({ caseFile }) => {
               ],
             }}
           >
-            {renderDropdownAction(caseFile, "eye", "View Case", `/case/${caseFile.caseFileGuid}`)}
-            {renderDropdownAction(caseFile, "pencil", "Edit Case", `/case/${caseFile.caseFileGuid}/edit`)}
+            {renderDropdownAction(caseFile, "eye", "View Case", `/case/${caseFile.caseIdentifier}`)}
+            {renderDropdownAction(caseFile, "pencil", "Edit Case", `/case/${caseFile.caseIdentifier}/edit`)}
           </Dropdown.Menu>
         </Dropdown>
       </td>

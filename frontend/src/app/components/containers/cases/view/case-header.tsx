@@ -9,7 +9,7 @@ interface CaseHeaderProps {
 }
 
 export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
-  const caseId = caseData?.caseFileGuid || "Unknown";
+  const caseId = caseData?.caseIdentifier || "Unknown";
   const caseStatus = caseData?.caseStatus?.shortDescription || "Active";
   const caseType = "Investispection";
   const leadAgency = caseData?.leadAgency?.longDescription || "Unknown Agency";

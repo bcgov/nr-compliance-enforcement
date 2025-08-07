@@ -24,13 +24,12 @@ export const useGraphQLMutation = <TData = any, TError = Error, TVariables = any
       return await useRequest(mutation, variables || {});
     },
     onSuccess: (data, variables, context) => {
-      if (invalidateQueries && invalidateQueries.length > 0) {
-        invalidateQueries.forEach((queryKey) => {
-          queryClient.invalidateQueries({
-            queryKey: Array.isArray(queryKey) ? queryKey : [queryKey],
-          });
+      console.log("invalidating queries", invalidateQueries);
+      invalidateQueries?.forEach((queryKey) => {
+        queryClient.invalidateQueries({
+          queryKey: Array.isArray(queryKey) ? queryKey : [queryKey],
         });
-      }
+      });
       if (onSuccess) {
         onSuccess(data, variables, context);
       }

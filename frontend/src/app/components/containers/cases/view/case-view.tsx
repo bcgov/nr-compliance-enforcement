@@ -7,10 +7,10 @@ import { gql } from "graphql-request";
 import { CaseMomsSpaghettiFile } from "@/generated/graphql";
 
 const GET_CASE_FILE = gql`
-  query GetCaseMomsSpaghetttiFile($caseFileGuid: String!) {
-    caseMomsSpaghettiFile(caseFileGuid: $caseFileGuid) {
+  query GetCaseMomsSpaghetttiFile($caseIdentifier: String!) {
+    caseMomsSpaghettiFile(caseIdentifier: $caseIdentifier) {
       __typename
-      caseFileGuid
+      caseIdentifier
       caseOpenedTimestamp
       caseStatus {
         caseStatusCode
@@ -39,7 +39,7 @@ export const CaseView: FC = () => {
 
   const { data, isLoading } = useGraphQLQuery<{ caseMomsSpaghettiFile: CaseMomsSpaghettiFile }>(GET_CASE_FILE, {
     queryKey: ["caseMomsSpaghettiFile", id],
-    variables: { caseFileGuid: id },
+    variables: { caseIdentifier: id },
     enabled: !!id, // Only refresh query if id is provided
   });
 
@@ -95,7 +95,7 @@ export const CaseView: FC = () => {
                   <div className="col-md-6">
                     <div className="form-group">
                       <p>Case Identifier:</p>
-                      <p>{caseData.caseFileGuid || "N/A"}</p>
+                      <p>{caseData.caseIdentifier || "N/A"}</p>
                     </div>
                   </div>
                 </div>
