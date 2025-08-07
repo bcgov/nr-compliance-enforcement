@@ -10,9 +10,9 @@ const GET_INVESTIGATION = gql`
     getInvestigation(investigationGuid: $investigationGuid) {
       __typename
       investigationGuid
-      investigationDescription
-      investigationStartedTimestamp
-      investigationStatus {
+      description
+      openedTimestamp
+      status {
         investigationStatusCode
         shortDescription
         longDescription
@@ -76,12 +76,12 @@ export const InvestigationDetails: FC = () => {
                   </div>
                 </div>
 
-                {investigationData.investigationDescription && (
+                {investigationData.description && (
                   <div className="row">
                     <div className="col-12">
                       <div className="form-group">
                         <strong>Description:</strong>
-                        <p>{investigationData.investigationDescription}</p>
+                        <p>{investigationData.description}</p>
                       </div>
                     </div>
                   </div>

@@ -515,11 +515,11 @@ export type InactionJustificationType = {
 
 export type Investigation = {
   __typename?: 'Investigation';
-  investigationDescription?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
-  investigationStartedTimestamp?: Maybe<Scalars['Date']['output']>;
-  investigationStatus?: Maybe<InvestigationStatusCode>;
   leadAgency?: Maybe<Scalars['String']['output']>;
+  openedTimestamp?: Maybe<Scalars['Date']['output']>;
+  status?: Maybe<InvestigationStatusCode>;
 };
 
 export type InvestigationStatusCode = {
