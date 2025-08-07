@@ -15,6 +15,7 @@ import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CaseMomsSpaghettiFileCreateInput, CaseMomsSpaghettiFileUpdateInput } from "@/generated/graphql";
+import { getUserAgency } from "@/app/service/user-service";
 
 const CREATE_CASE_MUTATION = gql`
   mutation CreateCaseMomsSpaghettiFile($input: CaseMomsSpaghettiFileCreateInput!) {
@@ -126,8 +127,8 @@ const CaseEdit: FC = () => {
       };
     }
     return {
-      caseStatus: "",
-      leadAgencyCode: "",
+      caseStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
+      leadAgencyCode: getUserAgency(),
       description: "",
     };
   }, [isEditMode, caseData]);
@@ -209,25 +210,22 @@ const CaseEdit: FC = () => {
               label="Case status"
               required
               validators={{ onChange: z.string().min(1, "Case status is required") }}
-              render={(field) => {
-                const error = field.state.meta.errors?.[0]?.message || "";
-                return (
-                  <CompSelect
-                    id="case-status-select"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    options={statusOptions}
-                    value={statusOptions.find((opt) => opt.value === field.state.value)}
-                    onChange={(option) => field.handleChange(option?.value || "")}
-                    placeholder="Select case status"
-                    isClearable={true}
-                    showInactive={false}
-                    enableValidation={true}
-                    errorMessage={error}
-                    isDisabled={isDisabled}
-                  />
-                );
-              }}
+              render={(field) => (
+                <CompSelect
+                  id="case-status-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={statusOptions}
+                  value={statusOptions.find((opt) => opt.value === field.state.value)}
+                  onChange={(option) => field.handleChange(option?.value || "")}
+                  placeholder="Select case status"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  isDisabled={isDisabled}
+                />
+              )}
             />
 
             <FormField
@@ -236,31 +234,30 @@ const CaseEdit: FC = () => {
               label="Lead agency"
               required
               validators={{ onChange: z.string().min(1, "Lead agency is required") }}
-              render={(field) => {
-                const error = field.state.meta.errors?.[0]?.message || "";
-                return (
-                  <CompSelect
-                    id="lead-agency-select"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    options={agencyOptions}
-                    value={agencyOptions.find((opt) => opt.value === field.state.value)}
-                    onChange={(option) => field.handleChange(option?.value || "")}
-                    placeholder="Select lead agency"
-                    isClearable={true}
-                    showInactive={false}
-                    enableValidation={true}
-                    errorMessage={error}
-                    isDisabled={isDisabled}
-                  />
-                );
-              }}
+              render={(field) => (
+                <CompSelect
+                  id="lead-agency-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={agencyOptions}
+                  value={agencyOptions.find((opt) => opt.value === field.state.value)}
+                  onChange={(option) => field.handleChange(option?.value || "")}
+                  placeholder="Select lead agency"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  isDisabled={true}
+                />
+              )}
             />
 
             <FormField
               form={form}
               name="description"
               label="Case description"
+              required
+              validators={{ onChange: z.string().min(1, "Description is required") }}
               render={(field) => (
                 <ValidationTextArea
                   id="case-description"
@@ -270,7 +267,7 @@ const CaseEdit: FC = () => {
                   onChange={(value: string) => field.handleChange(value)}
                   placeholderText="Enter case description..."
                   maxLength={4000}
-                  errMsg=""
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
                   disabled={isDisabled}
                 />
               )}
