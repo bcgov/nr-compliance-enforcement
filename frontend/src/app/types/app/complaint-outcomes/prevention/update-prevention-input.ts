@@ -4,7 +4,6 @@ export interface UpdatePreventionInput {
   complaintId: string;
   complaintOutcomeGuid: string;
   outcomeAgencyCode: string;
-  caseCode: string;
   actor: UUID;
   createUserId: string;
   updateUserId: string;

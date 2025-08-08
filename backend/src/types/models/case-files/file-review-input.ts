@@ -6,7 +6,6 @@ export interface FileReviewInput {
   complaintId: string;
   userId: string;
   outcomeAgencyCode: string;
-  caseCode: string;
   isReviewRequired: boolean;
   reviewComplete?: CaseAction;
 }

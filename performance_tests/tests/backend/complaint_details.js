@@ -23,7 +23,6 @@ export const addAndRemoveComplaintOutcome = async (host, requestConfig) => {
   const outcomeBody = {
     complaintId: VALID_HWCR_COMPLAINT_ID,
     outcomeAgencyCode: "COS",
-    caseCode: "HWCR",
     createUserId: username,
     wildlife: {
       species: "FOX",

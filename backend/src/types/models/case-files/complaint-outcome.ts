@@ -12,7 +12,6 @@ export interface ComplaintOutcomeDto {
   complaintId: string;
   createUserId: string;
   outcomeAgencyCode: string;
-  caseCode: string;
   assessment?: AssessmentDto[];
   prevention?: PreventionDto[];
   equipment: EquipmentDetailsDto[];

@@ -3,6 +3,5 @@ import { Decision } from "./decision";
 
 export interface UpdateDecisionInput extends BaseComplaintOutcomeUpdateInput {
   outcomeAgencyCode: string;
-  caseCode: string;
   decision: Decision;
 }

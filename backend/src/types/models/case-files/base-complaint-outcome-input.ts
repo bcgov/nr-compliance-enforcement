@@ -5,7 +5,6 @@ export interface BaseComplaintOutcomeInput {
   complaintId: string;
 
   outcomeAgencyCode: string;
-  caseCode: string;
 
   actor: UUID;
 

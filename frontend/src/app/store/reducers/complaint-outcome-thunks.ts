@@ -133,7 +133,6 @@ const addAssessment =
       complaintOutcomeGuid: complaintOutcomeGuid,
       createUserId: profile.idir_username,
       outcomeAgencyCode: assessment.agency,
-      caseCode: "HWCR",
       assessment: {
         actionNotRequired: assessment.action_required === "No",
         actionCloseComplaint: assessment.close_complaint,
@@ -235,7 +234,6 @@ const updateAssessment =
       complaintOutcomeGuid: complaintOutcomeGuid,
       updateUserId: profile.idir_username,
       outcomeAgencyCode: assessment.agency,
-      caseCode: "HWCR",
       assessment: {
         id: assessment.id,
         actionNotRequired: assessment.action_required === "No",
@@ -425,7 +423,6 @@ const addPrevention =
       complaintOutcomeGuid: complaintOutcomeGuid,
       createUserId: profile.idir_username,
       outcomeAgencyCode: agencyCode,
-      caseCode: "HWCR",
       prevention: {
         actions: prevention.prevention_type.map((item) => {
           return {
@@ -483,7 +480,6 @@ const updatePrevention =
       complaintOutcomeGuid: complaintOutcomeGuid,
       updateUserId: profile.idir_username,
       outcomeAgencyCode: agencyCode,
-      caseCode: "HWCR",
       prevention: {
         id: prevention.id,
         actions: prevention.prevention_type.map((item) => {
@@ -624,7 +620,6 @@ export const upsertNote =
           note,
           complaintId,
           outcomeAgencyCode: agencyCode,
-          caseCode: complaintType,
           actor,
           createUserId: userId,
         };
@@ -751,7 +746,6 @@ export const createReview =
         complaintOutcomeGuid: complaintOutcomeGuid,
         userId: profile.idir_username,
         outcomeAgencyCode: "COS",
-        caseCode: "HWCR",
         isReviewRequired,
       } as ReviewInput,
     };
@@ -789,7 +783,6 @@ export const updateReview =
         complaintOutcomeGuid: complaintOutcomeGuid,
         userId: profile.idir_username,
         outcomeAgencyCode: "COS",
-        caseCode: "HWCR",
         isReviewRequired,
       } as ReviewInput,
     };
@@ -868,7 +861,6 @@ export const upsertEquipment =
           complaintId: complaintIdentifier,
           createUserId: profile.idir_username,
           outcomeAgencyCode: "COS",
-          caseCode: "HWCR",
           equipment: [equipment],
         },
       } as CreateEquipmentInput;
@@ -892,7 +884,6 @@ export const upsertEquipment =
           complaintId: complaintIdentifier,
           updateUserId: profile.idir_username,
           outcomeAgencyCode: "COS",
-          caseCode: "HWCR",
           equipment: [equipment],
         },
       } as UpdateEquipmentInput;
@@ -977,7 +968,6 @@ export const createAnimalOutcome =
     const input: CreateAnimalOutcomeInput = {
       complaintId,
       outcomeAgencyCode: "COS",
-      caseCode: "HWCR",
       createUserId: idir,
       wildlife: {
         species,
@@ -1168,7 +1158,6 @@ export const upsertDecisionOutcome =
         const input: CreateDecisionInput = {
           complaintId: id,
           outcomeAgencyCode: "EPO",
-          caseCode: "ERS",
           actor: assignedTo,
           createUserId: idir,
           decision,
@@ -1187,7 +1176,6 @@ export const upsertDecisionOutcome =
           complaintOutcomeGuid: id,
           complaintId: complaintId,
           outcomeAgencyCode: "EPO",
-          caseCode: "ERS",
           actor: assignedTo,
           updateUserId: idir,
           decision,
@@ -1244,7 +1232,6 @@ export const upsertAuthorizationOutcome =
         const payload: CreateAuthorizationOutcomeInput = {
           complaintId: id,
           outcomeAgencyCode: "EPO",
-          caseCode: "ERS",
           createUserId: idir,
           input,
         };
