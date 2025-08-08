@@ -104,25 +104,24 @@ export class CodeTableService {
         // TODO: Rename case Management query once CM refactor is done
         const { data } = await get(token, {
           query:
-            "{outcomeAgencyCodes{outcomeAgencyCode shortDescription longDescription displayOrder activeIndicator}}",
+            "{agencyMomsSpaghettiCodes{agencyCode shortDescription longDescription displayOrder activeIndicator externalAgencyIndicator}}",
         });
-        const results = data.outcomeAgencyCodes.map(
+        const results = data.agencyMomsSpaghettiCodes.map(
           ({
-            outcomeAgencyCode,
+            agencyCode,
             shortDescription,
             longDescription,
             displayOrder,
             activeIndicator,
-            // externalAgencyIndicator,
+            externalAgencyIndicator,
           }) => {
             const table: Agency = {
-              agency: outcomeAgencyCode,
+              agency: agencyCode,
               shortDescription: shortDescription,
               longDescription: longDescription,
               displayOrder: displayOrder,
               isActive: activeIndicator,
-              externalAgencyInd: false,
-              // externalAgencyInd: externalAgencyIndicator,
+              externalAgencyInd: externalAgencyIndicator,
             };
             return table;
           },
