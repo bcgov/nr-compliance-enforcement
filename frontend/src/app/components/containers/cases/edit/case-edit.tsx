@@ -56,7 +56,7 @@ const UPDATE_CASE_MUTATION = gql`
 `;
 
 const GET_CASE_FILE = gql`
-  query GetCaseMomsSpaghetttiFile($caseIdentifier: String!) {
+  query GetCaseFile($caseIdentifier: String!) {
     caseFile(caseIdentifier: $caseIdentifier) {
       __typename
       caseIdentifier

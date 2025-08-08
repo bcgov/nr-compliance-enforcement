@@ -13,7 +13,7 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 
 const GET_CASE_FILE = gql`
-  query GetCaseMomsSpaghetttiFile($caseIdentifier: String!) {
+  query GetCaseFile($caseIdentifier: String!) {
     caseFile(caseIdentifier: $caseIdentifier) {
       __typename
       caseIdentifier
