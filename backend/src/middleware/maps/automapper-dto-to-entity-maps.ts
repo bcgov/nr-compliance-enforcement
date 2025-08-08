@@ -123,11 +123,8 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (dest) => dest.owned_by_agency_code,
-      mapFrom((src) => {
-        const { ownedBy } = src ?? null;
-        return ownedBy ? { agency_code: ownedBy } : null;
-      }),
+      (dest) => dest.owned_by_agency_code_ref,
+      mapFrom((src) => src.ownedBy),
     ),
     forMember(
       (dest) => dest.reported_by_code,
@@ -280,11 +277,8 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (dest) => dest.complaint_identifier.owned_by_agency_code,
-      mapFrom((src) => {
-        const { ownedBy } = src ?? null;
-        return ownedBy ? { agency_code: ownedBy } : null;
-      }),
+      (dest) => dest.complaint_identifier.owned_by_agency_code_ref,
+      mapFrom((src) => src.ownedBy),
     ),
     forMember(
       (dest) => dest.complaint_identifier.reported_by_code,
@@ -483,11 +477,8 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (mapper: Mapper) =
       }),
     ),
     forMember(
-      (dest) => dest.complaint_identifier.owned_by_agency_code,
-      mapFrom((src) => {
-        const { ownedBy } = src ?? null;
-        return ownedBy ? { agency_code: ownedBy } : null;
-      }),
+      (dest) => dest.complaint_identifier.owned_by_agency_code_ref,
+      mapFrom((src) => src.ownedBy),
     ),
     forMember(
       (dest) => dest.complaint_identifier.reported_by_code,
@@ -627,11 +618,8 @@ export const mapGirComplaintDtoToGirComplaint = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (dest) => dest.complaint_identifier.owned_by_agency_code,
-      mapFrom((src) => {
-        const { ownedBy } = src ?? null;
-        return ownedBy ? { agency_code: ownedBy } : null;
-      }),
+      (dest) => dest.complaint_identifier.owned_by_agency_code_ref,
+      mapFrom((src) => src.ownedBy),
     ),
     forMember(
       (dest) => dest.complaint_identifier.reported_by_code,
@@ -749,11 +737,8 @@ export const mapSectorComplaintDtoToSectorComplaint = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (dest) => dest.owned_by_agency_code,
-      mapFrom((src) => {
-        const { ownedBy } = src ?? null;
-        return ownedBy ? { agency_code: ownedBy } : null;
-      }),
+      (dest) => dest.owned_by_agency_code_ref,
+      mapFrom((src) => src.ownedBy),
     ),
     forMember(
       (dest) => dest.reported_by_code,

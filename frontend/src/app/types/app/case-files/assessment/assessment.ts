@@ -1,5 +1,5 @@
 import { AssessmentActionDto } from "./assessment-action";
-import KeyValuePair from "../../key-value-pair";
+import KeyValuePair from "@apptypes/app/key-value-pair";
 export interface AssessmentDto {
   id?: string;
   agencyCode?: string;

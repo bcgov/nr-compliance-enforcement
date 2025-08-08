@@ -57,7 +57,6 @@ export const EditUser: FC<EditUserProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const officerData = useAppSelector(selectOfficerByPersonGuid(officer.value));
-  const officeAssignments = useAppSelector(selectOfficesForAssignmentDropdown);
   const notification = useAppSelector(selectNotification);
   const teams = useAppSelector(selectTeamDropdown);
   const agency = useAppSelector(selectAgencyDropdown);
@@ -83,22 +82,28 @@ export const EditUser: FC<EditUserProps> = ({
   const [offices, setOffices] = useState<Array<Option>>([]);
   const [roleList, setRoleList] = useState<Array<Option>>([]);
 
+  //Load offices on mount
   useEffect(() => {
-    if (officeAssignments) {
-      dispatch(fetchOfficeAssignments());
-      let options = availableOffices.map((item: { id: any; name: any; agency: any }) => {
-        const { id, name, agency } = item;
-        const record: Option = {
-          label: `${agency} - ${name}`,
-          value: id,
-        };
-
-        return record;
-      });
-      setOffices(options);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    dispatch(fetchOfficeAssignments());
   }, [dispatch]);
+
+  // Whenever availableOffices updates (after fetch), or agency changes, update the dropdown
+  useEffect(() => {
+    if (!availableOffices || availableOffices.length === 0) return;
+
+    const activeAgency = selectedAgency ?? currentAgency;
+
+    const filtered = activeAgency
+      ? availableOffices.filter((item) => item.agency === activeAgency.value)
+      : availableOffices;
+
+    const options = filtered.map((item) => ({
+      label: `${item.agency} - ${item.name}`,
+      value: item.id,
+    }));
+
+    setOffices(options);
+  }, [availableOffices, selectedAgency, currentAgency]);
 
   useEffect(() => {
     const { type } = notification;
@@ -231,24 +236,8 @@ export const EditUser: FC<EditUserProps> = ({
     return response;
   };
 
-  const handleAgencyChange = (input: any) => {
+  const handleAgencyChange = (input: Option | null) => {
     resetSelect();
-
-    if (input.value) {
-      //Update offices dropdown list based on selected agency (COS or PARKS)
-      let filtered = availableOffices
-        .filter((item) => item.code === input.value)
-        .map((item) => {
-          const { id, name, agency } = item;
-          const record: Option = {
-            label: `${agency} - ${name}`,
-            value: id,
-          };
-
-          return record;
-        });
-      setOffices(filtered);
-    }
     setSelectedAgency(input);
   };
 
@@ -340,9 +329,7 @@ export const EditUser: FC<EditUserProps> = ({
       },
       coms_enrolled_ind: false,
       deactivate_ind: false,
-      agency_code: {
-        agency_code: selectedAgency?.value,
-      },
+      agency_code_ref: selectedAgency?.value,
     };
     dispatch(createOfficer(newOfficerData));
   };

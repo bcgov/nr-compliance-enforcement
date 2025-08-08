@@ -29,11 +29,7 @@ const manyItems = [
       reported_by_agency_other_text: null,
       reported_by_code: null,
       complaint_identifier: "24-51557",
-      owned_by_agency_code: {
-        agency_code: "COS",
-        short_description: "COS",
-        long_description: "Conservation Officer Service",
-      },
+      owned_by_agency_code: "COS",
       complaint_status_code: { complaint_status_code: "OPEN", short_description: "OPEN", long_description: "Open" },
       cos_geo_org_unit: {
         region_code: "TMPSNCRBO",
@@ -75,11 +71,7 @@ const manyItems = [
       reported_by_agency_other_text: null,
       reported_by_code: null,
       complaint_identifier: "24-85978",
-      owned_by_agency_code: {
-        agency_code: "COS",
-        short_description: "COS",
-        long_description: "Conservation Officer Service",
-      },
+      owned_by_agency_code: "COS",
       complaint_status_code: { complaint_status_code: "OPEN", short_description: "OPEN", long_description: "Open" },
       cos_geo_org_unit: {
         region_code: "TMPSNCRBO",
@@ -133,11 +125,7 @@ const manyItems = [
       reported_by_agency_other_text: null,
       reported_by_code: null,
       complaint_identifier: "24-54436",
-      owned_by_agency_code: {
-        agency_code: "COS",
-        short_description: "COS",
-        long_description: "Conservation Officer Service",
-      },
+      owned_by_agency_code: "COS",
       complaint_status_code: { complaint_status_code: "OPEN", short_description: "OPEN", long_description: "Open" },
       cos_geo_org_unit: {
         region_code: "TMPSNCRBO",
@@ -191,11 +179,7 @@ const manyItems = [
       reported_by_agency_other_text: null,
       reported_by_code: null,
       complaint_identifier: "24-4339",
-      owned_by_agency_code: {
-        agency_code: "COS",
-        short_description: "COS",
-        long_description: "Conservation Officer Service",
-      },
+      owned_by_agency_code: "COS",
       complaint_status_code: { complaint_status_code: "OPEN", short_description: "OPEN", long_description: "Open" },
       cos_geo_org_unit: {
         region_code: "TMPSNCRBO",
@@ -242,11 +226,7 @@ const manyItems = [
       reported_by_agency_other_text: null,
       reported_by_code: null,
       complaint_identifier: "24-46247",
-      owned_by_agency_code: {
-        agency_code: "COS",
-        short_description: "COS",
-        long_description: "Conservation Officer Service",
-      },
+      owned_by_agency_code: "COS",
       complaint_status_code: { complaint_status_code: "OPEN", short_description: "OPEN", long_description: "Open" },
       cos_geo_org_unit: {
         region_code: "TMPSNCRBO",
@@ -302,11 +282,7 @@ const singleItem = {
     incident_reported_datetime: 'error: invalid date "2023-10-10T21:53:58.024Z"',
     reported_by_agency_other_text: null,
     complaint_identifier: "24-46247",
-    owned_by_agency_code: {
-      agency_code: "COS",
-      short_description: "COS",
-      long_description: "Conservation Officer Service",
-    },
+    owned_by_agency_code: "COS",
     complaint_status_code: { complaint_status_code: "OPEN", short_description: "OPEN", long_description: "Open" },
     cos_geo_org_unit: {
       region_code: "TMPSNCRBO",

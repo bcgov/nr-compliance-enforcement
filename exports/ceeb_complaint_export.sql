@@ -41,10 +41,10 @@ left join
 	complaint.complaint_method_received_code cmrc on cmrc.complaint_method_received_code = cmrcacx.complaint_method_received_code
 left join
 	complaint.complaint_referral crf on crf.complaint_identifier = cmp.complaint_identifier 
-left join
-	complaint.agency_code agt on agt.agency_code = crf.referred_to_agency_code 
-left join
-	complaint.agency_code agb on agb.agency_code = crf.referred_by_agency_code 
+--left join
+--	complaint.agency_code agt on agt.agency_code = crf.referred_to_agency_code 
+--left join
+--	complaint.agency_code agb on agb.agency_code = crf.referred_by_agency_code 
 left join 
 	complaint.person_complaint_xref pcx on pcx.complaint_identifier = cmp.complaint_identifier and pcx.active_ind = true and pcx.person_complaint_xref_code = 'ASSIGNEE'
 left join 
@@ -54,7 +54,7 @@ left join
 right join 
 	complaint.allegation_complaint ac on ac.complaint_identifier = cmp.complaint_identifier 
 where
-	cmp.owned_by_agency_code = 'EPO'
+	cmp.owned_by_agency_code_ref = 'EPO'
 	-- or crf.referred_by_agency_code = 'EPO'
 order by
 	cmp.complaint_identifier asc

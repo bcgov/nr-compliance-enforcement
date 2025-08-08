@@ -33,7 +33,6 @@ import {
 } from "../../../test/mocks/mock-complaints-repositories";
 import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/mock-wildlife-conflict-complaint-repository";
 import { DataSource } from "typeorm";
-import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
@@ -109,10 +108,6 @@ describe("DocumentService", () => {
         {
           provide: getRepositoryToken(HwcrComplaint),
           useFactory: MockWildlifeConflictComplaintRepository,
-        },
-        {
-          provide: getRepositoryToken(AgencyCode),
-          useFactory: MockComplaintsAgencyRepository,
         },
         {
           provide: getRepositoryToken(Officer),

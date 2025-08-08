@@ -775,6 +775,7 @@ export const selectAgencyDropdown = createSelector(
   (agencyItems) =>
     agencyItems
       .filter((agency) => !agency.externalAgencyInd) // filter out the pseudo-agencies
+      .filter((agency) => agency.agency !== "NRS") // filter out the NRS agency
       .map(({ agency, longDescription, isActive }) => ({
         label: longDescription,
         value: agency,

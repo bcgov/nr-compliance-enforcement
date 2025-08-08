@@ -20,7 +20,6 @@ import { ComplaintService } from "../../complaint/complaint.service";
 import { CodeTableService } from "../../code-table/code-table.service";
 import { PersonComplaintXrefService } from "../../person_complaint_xref/person_complaint_xref.service";
 import { AttractantHwcrXrefService } from "../../attractant_hwcr_xref/attractant_hwcr_xref.service";
-import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../../attractant_code/entities/attractant_code.entity";
 import {
   MockAttractantCodeTableRepository,
@@ -108,10 +107,6 @@ describe("Testing: Case File Service", () => {
         {
           provide: getRepositoryToken(HwcrComplaint),
           useFactory: MockWildlifeConflictComplaintRepository,
-        },
-        {
-          provide: getRepositoryToken(AgencyCode),
-          useFactory: MockComplaintsAgencyRepository,
         },
         {
           provide: getRepositoryToken(Officer),

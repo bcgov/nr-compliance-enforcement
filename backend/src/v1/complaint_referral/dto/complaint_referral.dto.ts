@@ -1,7 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { Complaint } from "../../complaint/entities/complaint.entity";
-import { AgencyCode } from "../../agency_code/entities/agency_code.entity";
 import { Officer } from "../../officer/entities/officer.entity";
 
 export class ComplaintReferralDto {
@@ -52,13 +51,13 @@ export class ComplaintReferralDto {
     example: "COS",
     description: "",
   })
-  public referred_by_agency_code: AgencyCode;
+  public referred_by_agency_code_ref: string;
 
   @ApiProperty({
     example: "COS",
     description: "",
   })
-  public referred_to_agency_code: AgencyCode;
+  public referred_to_agency_code_ref: string;
 
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",

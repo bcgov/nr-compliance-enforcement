@@ -11,7 +11,6 @@ import { Officer } from "../officer/entities/officer.entity";
 import { UUID } from "crypto";
 import { EmailService } from "../email/email.service";
 import { SendCollaboratorEmalDto } from "../email/dto/send_collaborator_email.dto";
-import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -257,6 +256,7 @@ export class PersonComplaintXrefService {
     personGuid: string,
     sendCollaboratorEmailDto: SendCollaboratorEmalDto,
     user,
+    token: string,
   ): Promise<PersonComplaintXref> {
     this.logger.debug(`Adding collaborator ${personGuid} Complaint ${complaintIdentifier}`);
     let newPersonComplaintXref: PersonComplaintXref;
@@ -292,7 +292,7 @@ export class PersonComplaintXrefService {
       await queryRunner.release();
       if (sendEmail) {
         try {
-          await this._emailService.sendCollaboratorEmail(complaintIdentifier, sendCollaboratorEmailDto, user);
+          await this._emailService.sendCollaboratorEmail(complaintIdentifier, sendCollaboratorEmailDto, user, token);
         } catch (error) {
           this.logger.error(`Error sending collaborator email.`, error);
         }
@@ -346,14 +346,12 @@ export class PersonComplaintXrefService {
       .createQueryBuilder("person_complaint_xref")
       .leftJoinAndSelect("person_complaint_xref.person_guid", "person")
       .innerJoin(Officer, "officer", "person.person_guid=officer.person_guid")
-      .innerJoin(AgencyCode, "agency_code", "officer.agency_code=agency_code.agency_code")
       .where("person_complaint_xref.complaint_identifier = :complaintId", { complaintId: complaintIdentifier })
       .andWhere("person_complaint_xref.person_complaint_xref_code = :code", {
         code: PersonComplaintXrefCodeEnum.COLLABORATOR,
       })
       .andWhere("officer.person_guid = person.person_guid")
-      .addSelect("agency_code.short_description", "agency_code_short_description")
-      .addSelect("officer.auth_user_guid")
+      .addSelect(["officer.auth_user_guid", "officer.agency_code_ref"])
       .addSelect("person_complaint_xref.active_ind")
       .execute();
 
@@ -363,7 +361,7 @@ export class PersonComplaintXrefService {
         complaintId: row.person_complaint_xref_complaint_identifier,
         personGuid: row.person_complaint_xref_person_guid,
         authUserGuid: row.officer_auth_user_guid,
-        collaboratorAgency: row.agency_code_short_description,
+        collaboratorAgency: row.officer_agency_code_ref,
         firstName: row.person_first_name,
         lastName: row.person_last_name,
         middleName1: row.person_middle_name_1,

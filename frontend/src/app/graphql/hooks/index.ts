@@ -1,0 +1,1 @@
+export { useGraphQLQuery } from "./useGraphQLQuery";

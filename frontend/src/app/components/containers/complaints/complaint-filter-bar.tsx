@@ -6,6 +6,10 @@ import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complai
 import MapListToggle from "@components/common/map-list-toggle";
 import SearchInput from "@components/common/search-input";
 import { Button } from "react-bootstrap";
+import { useAppDispatch } from "@hooks/hooks";
+import { generateComplaintRequestPayload } from "./complaint-list";
+import { getComplaints } from "@store/reducers/complaints";
+import { SORT_TYPES } from "@constants/sort-direction";
 
 type Props = {
   toggleViewType: (view: "map" | "list") => void;
@@ -26,7 +30,28 @@ export const ComplaintFilterBar: FC<Props> = ({
   toggleShowMobileFilters,
   toggleShowDesktopFilters,
 }) => {
-  const { state, dispatch } = useContext(ComplaintFilterContext);
+  const { state: filters, dispatch } = useContext(ComplaintFilterContext);
+  const appDispatch = useAppDispatch();
+
+  const handleSearch = useCallback(
+    (input: string) => {
+      if (viewType === "list") {
+        let payload = generateComplaintRequestPayload(
+          complaintType,
+          filters,
+          1,
+          50,
+          "incident_reported_utc_timestmp",
+          SORT_TYPES.DESC,
+        );
+
+        payload = { ...payload, query: input };
+
+        appDispatch(getComplaints(complaintType, payload));
+      }
+    },
+    [viewType, complaintType, filters, appDispatch],
+  );
 
   const {
     region,
@@ -50,7 +75,7 @@ export const ComplaintFilterBar: FC<Props> = ({
     outcomeActionedBy,
     equipmentStatus,
     equipmentTypes,
-  } = state;
+  } = filters;
 
   const dateRangeLabel = (startDate: Date | undefined | null, endDate: Date | undefined | null): string | undefined => {
     const currentDate = new Date().toLocaleDateString();
@@ -74,7 +99,7 @@ export const ComplaintFilterBar: FC<Props> = ({
   };
 
   const hasFilter = (filter: string) => {
-    const selected = state[filter as keyof ComplaintFilters];
+    const selected = filters[filter as keyof ComplaintFilters];
     //Check if the filter is Equipment types
     if (Array.isArray(selected)) {
       return selected.length > 0 && !!selected;
@@ -114,9 +139,9 @@ export const ComplaintFilterBar: FC<Props> = ({
       <div className="search-bar">
         <SearchInput
           viewType={viewType}
-          complaintType={complaintType}
           searchQuery={searchQuery}
           applySearchQuery={applySearchQuery}
+          handleSearch={handleSearch}
         />
         <MapListToggle
           onToggle={toggleViewType}
@@ -303,7 +328,7 @@ export const ComplaintFilterBar: FC<Props> = ({
         {hasFilter("equipmentTypes") && (
           <FilterButton
             id="comp-complaint-method-filter"
-            label={equipmentTypes?.map((type) => type.label).join(", ")}
+            label={equipmentTypes?.map((type: any) => type.label).join(", ")}
             name="equipmentTypes"
             clear={removeFilter}
           />

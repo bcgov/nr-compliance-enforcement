@@ -24,7 +24,7 @@ AS SELECT DISTINCT gou.geo_organization_unit_code AS region_code,
   AND gou2.geo_org_unit_type_code::text = 'ZONE'::text 
   AND gou3.geo_org_unit_type_code::text = 'OFFLOC'::text 
   AND (gou4.geo_org_unit_type_code::text = 'AREA'::text OR gou4.geo_org_unit_type_code IS NULL) 
-  AND gos.agency_code::text = 'COS'::text;
+  AND gos.agency_code_ref::text = 'COS'::text;
   
  CREATE INDEX  IF NOT EXISTS area_code
   ON cos_geo_org_unit_flat_mvw (area_code);

@@ -41,10 +41,8 @@ export class OfficerService {
       .createQueryBuilder("officer")
       .leftJoinAndSelect("officer.office_guid", "office")
       .leftJoinAndSelect("officer.person_guid", "person")
-      .leftJoinAndSelect("officer.agency_code", "agency")
       // This view is slow :(
       .leftJoinAndSelect("office.cos_geo_org_unit", "cos_geo_org_unit")
-      .leftJoinAndSelect("office.agency_code", "agency_code")
       .orderBy("person.last_name", "ASC")
       .getMany();
 
@@ -58,7 +56,7 @@ export class OfficerService {
           person_guid: officer.person_guid,
           office_guid: officer.office_guid,
           user_id: officer.user_id,
-          agency_code: officer.agency_code,
+          agency_code_ref: officer.agency_code_ref,
           create_user_id: officer.create_user_id,
           create_utc_timestamp: officer.create_utc_timestamp,
           update_user_id: officer.update_user_id,
@@ -91,7 +89,6 @@ export class OfficerService {
     return this.officerRepository.findOne({
       where: { auth_user_guid: auth_user_guid },
       relations: {
-        agency_code: true,
         person_guid: {},
       },
     });
@@ -125,7 +122,6 @@ export class OfficerService {
     return this.officerRepository.findOne({
       where: { user_id: userid },
       relations: {
-        agency_code: {},
         person_guid: {},
         office_guid: {
           cos_geo_org_unit: true,
@@ -140,7 +136,6 @@ export class OfficerService {
         person_guid: true,
         office_guid: {
           cos_geo_org_unit: true,
-          agency_code: true,
         },
       },
     });

@@ -7,7 +7,6 @@ import {
   selectComplaintViewMode,
 } from "@store/reducers/complaints";
 import { formatDate } from "@common/methods";
-import "react-toastify/dist/ReactToastify.css";
 import { Assessment } from "@apptypes/outcomes/assessment";
 import { Badge, Button, Card } from "react-bootstrap";
 
@@ -195,7 +194,7 @@ export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
                 <dt>Officer</dt>
                 <dd>
                   <span id="assessment-officer-div">{assessment.officer?.key ?? ""}</span>{" "}
-                  <Badge className="comp-status-badge-closed">{officer?.agency_code?.short_description}</Badge>
+                  <Badge className="comp-status-badge-closed">{officer?.agency_code?.shortDescription}</Badge>
                 </dd>
               </div>
               <div id="assessment-date-div">

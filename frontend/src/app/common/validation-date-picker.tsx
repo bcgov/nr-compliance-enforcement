@@ -37,7 +37,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
     <div className={className}>
       <div>
         <DatePicker
-          selected={selectedDate}
+          selected={selectedDate ? new Date(selectedDate) : undefined}
           onChange={handleDateChange}
           placeholderText={placeholder}
           className={`${calculatedBorderClass} ${classNamePrefix}`}

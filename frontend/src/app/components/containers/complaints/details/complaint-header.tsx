@@ -82,7 +82,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const assignText = officerAssigned === "Not Assigned" ? "Assign" : "Reassign";
   const complaintWasReferred =
     complaintAgency !== userAgency && referrals.length > 0
-      ? referrals[0].referred_to_agency_code.agency_code !== userAgency
+      ? referrals[0].referred_to_agency.agency !== userAgency
       : false;
   const derivedStatus = complaintWasReferred && !userIsCollaborator ? "Referred" : status;
 
@@ -201,7 +201,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                 className="d-flex justify-content-start"
                 key={`${c.personComplaintXrefGuid}`}
               >
-                {c.lastName}, {c.firstName} | <span className="fw-bold">{c.collaboratorAgency}</span>
+                {c.lastName}, {c.firstName} |{" "}
+                <span className="fw-bold">
+                  {agencyCodes?.find(({ agency }) => agency === c.collaboratorAgency)?.shortDescription}
+                </span>
               </div>
             );
           })}
@@ -408,7 +411,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
           {/* Nature of Complaint Details */}
           <div
-            className="comp-nature-of-complaint"
+            className="mt-1 max-width-48ch"
             id="comp-nature-of-complaint"
           >
             {readOnly && species && complaintType !== COMPLAINT_TYPES.ERS && (

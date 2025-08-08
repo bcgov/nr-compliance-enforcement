@@ -18,7 +18,6 @@ import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_comp
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
-import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { Configuration } from "../configuration/entities/configuration.entity";
@@ -97,10 +96,6 @@ describe("ComplaintReferralController", () => {
         },
         {
           provide: getRepositoryToken(PersonComplaintXref),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(AgencyCode),
           useValue: {},
         },
         {

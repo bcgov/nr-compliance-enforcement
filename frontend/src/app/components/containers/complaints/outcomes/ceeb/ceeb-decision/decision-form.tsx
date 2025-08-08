@@ -310,7 +310,7 @@ export const DecisionForm: FC<props> = ({
           className="comp-details-form-row"
           id="decision-schedule-sector-type"
         >
-          <label htmlFor="outcome-decision-schedule-secto">
+          <label htmlFor="outcome-decision-schedule-sector">
             WDR schedule/IPM sector type<span className="required-ind">*</span>
           </label>
           <div className="comp-details-input full-width">

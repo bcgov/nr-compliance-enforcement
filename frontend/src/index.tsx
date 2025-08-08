@@ -12,6 +12,19 @@ import reportWebVitals from "./reportWebVitals";
 import { PersistGate } from "redux-persist/integration/react";
 import { ErrorBoundaryContext } from "./app/hooks/error-boundary";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+// Create QueryClient instance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+      refetchOnWindowFocus: false,
+      retry: 3,
+    },
+  },
+});
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
@@ -20,14 +33,16 @@ const onAuthenticatedCallback = () =>
   root.render(
     <StrictMode>
       <ErrorBoundaryContext>
-        <Provider store={store}>
-          <PersistGate
-            loading={null}
-            persistor={persistor}
-          >
-            <App />
-          </PersistGate>
-        </Provider>
+        <QueryClientProvider client={queryClient}>
+          <Provider store={store}>
+            <PersistGate
+              loading={null}
+              persistor={persistor}
+            >
+              <App />
+            </PersistGate>
+          </Provider>
+        </QueryClientProvider>
       </ErrorBoundaryContext>
     </StrictMode>,
   );

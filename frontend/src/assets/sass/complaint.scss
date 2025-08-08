@@ -1,3 +1,8 @@
+// UTILITY CLASSES
+.max-width-48ch {
+  max-width: 48ch;
+}
+
 // COMPLAINTS PAGE CONTAINER
 .comp-page-container {
   display: flex;
@@ -279,6 +284,33 @@
   }
 }
 
+// CASE TABLES - GENERAL
+#case-list {
+  border-collapse: initial;
+  border-spacing: 0px;
+  font-style: normal;
+
+  thead {
+    th + th {
+      border-left: 1px solid $gray-300;
+    }
+  }
+
+  tbody {
+    tr {
+      cursor: pointer;
+
+      &:hover {
+        background-color: $gray-110;
+      }
+    }
+
+    .comp-table-row-hover-style {
+      background-color: $gray-110;
+    }
+  }
+}
+
 // COMPLAINT TABLE - HUMAN WILDLIFE COMPLAINTS
 .hwc-table {
   &-date-cell {
@@ -397,11 +429,6 @@
       color: $black !important;
     }
   }
-}
-
-.comp-nature-of-complaint {
-  margin-top: 4px;
-  max-width: 48ch;
 }
 
 // HEADER ACTIONS

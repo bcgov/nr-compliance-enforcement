@@ -63,6 +63,7 @@ export default defineConfig({
       "@service": path.resolve(__dirname, "./src/app/service/"),
       "@store": path.resolve(__dirname, "./src/app/store/"),
       "@apptypes": path.resolve(__dirname, "./src/app/types/"),
+      "@graphql": path.resolve(__dirname, "./src/app/graphql/"),
     },
   },
 });

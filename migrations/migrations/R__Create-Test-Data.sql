@@ -24,7 +24,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -46,7 +46,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -68,7 +68,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -90,7 +90,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -112,7 +112,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -134,7 +134,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -156,7 +156,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -178,7 +178,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -200,7 +200,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -222,7 +222,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -244,7 +244,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -266,7 +266,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -288,7 +288,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -310,7 +310,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -332,7 +332,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -354,7 +354,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -376,7 +376,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -398,7 +398,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -420,7 +420,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -442,7 +442,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -464,7 +464,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -486,7 +486,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -508,7 +508,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -530,7 +530,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -552,7 +552,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -574,7 +574,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -596,7 +596,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -618,7 +618,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -640,7 +640,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -662,7 +662,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -684,7 +684,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -706,7 +706,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -728,7 +728,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -750,7 +750,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -772,7 +772,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -794,7 +794,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -816,7 +816,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -838,7 +838,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -860,7 +860,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -882,7 +882,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -904,7 +904,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -926,7 +926,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -948,7 +948,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -970,7 +970,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -992,7 +992,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -1783,7 +1783,7 @@ INSERT INTO
     update_user_id,
     update_utc_timestamp,
     geo_organization_unit_code,
-    agency_code
+    agency_code_ref
   )
 VALUES
   (
@@ -1805,7 +1805,7 @@ insert into
     create_utc_timestamp,
     update_user_id,
     update_utc_timestamp,
-    agency_code,
+    agency_code_ref,
     parent_geo_org_unit_code,
     child_geo_org_unit_code
   )
@@ -3151,7 +3151,7 @@ WHERE
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3169,7 +3169,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3187,7 +3187,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3205,7 +3205,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3223,7 +3223,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3241,7 +3241,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3259,7 +3259,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3277,7 +3277,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3295,7 +3295,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3313,7 +3313,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3331,7 +3331,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3349,7 +3349,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3367,7 +3367,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3385,7 +3385,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3403,7 +3403,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3421,7 +3421,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3439,7 +3439,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3457,7 +3457,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3475,7 +3475,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3493,7 +3493,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3511,7 +3511,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3529,7 +3529,7 @@ DO NOTHING;
 INSERT INTO
   office (
     geo_organization_unit_code,
-    agency_code,
+    agency_code_ref,
     create_user_id,
     create_utc_timestamp,
     update_user_id,
@@ -3543,64 +3543,6 @@ SELECT
   user,
   now() ON CONFLICT
 DO NOTHING;
-
-------------------------------
--- update agency table with updated EPO -> CEEB short description and display order
-------------------------------
-UPDATE agency_code
-SET
-  short_description = 'CEEB',
-  long_description = 'Compliance and Environmental Enforcement Branch'
-where
-  agency_code = 'EPO';
-
-UPDATE agency_code
-SET
-  display_order = 2
-WHERE
-  agency_code = 'BCWF';
-
-UPDATE agency_code
-SET
-  display_order = 3
-WHERE
-  agency_code = 'BYLAW';
-
-UPDATE agency_code
-SET
-  display_order = 4
-WHERE
-  agency_code = 'COS';
-
-UPDATE agency_code
-SET
-  display_order = 5
-WHERE
-  agency_code = 'DOF';
-
-UPDATE agency_code
-SET
-  display_order = 6
-WHERE
-  agency_code = 'EPO';
-
-UPDATE agency_code
-SET
-  display_order = 7
-WHERE
-  agency_code = 'CEB';
-
-UPDATE agency_code
-SET
-  display_order = 8
-WHERE
-  agency_code = 'LE';
-
-UPDATE agency_code
-SET
-  display_order = 9
-WHERE
-  agency_code = 'OTHER';
 
 ------------------------------
 -- Update Administrative Office Indicator for COS HQ office
@@ -4481,7 +4423,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4501,7 +4443,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4521,7 +4463,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4541,7 +4483,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4562,7 +4504,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4582,7 +4524,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4602,7 +4544,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4622,7 +4564,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4642,7 +4584,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4662,7 +4604,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4682,7 +4624,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4702,7 +4644,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4722,7 +4664,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4742,7 +4684,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4762,7 +4704,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4783,7 +4725,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4803,7 +4745,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4823,7 +4765,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4843,7 +4785,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4863,7 +4805,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4883,7 +4825,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4903,7 +4845,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4923,7 +4865,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4943,7 +4885,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4963,7 +4905,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -4983,7 +4925,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5003,7 +4945,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5024,7 +4966,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5044,7 +4986,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5064,7 +5006,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5084,7 +5026,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5104,7 +5046,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5124,7 +5066,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5144,7 +5086,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5164,7 +5106,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5184,7 +5126,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5204,7 +5146,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5224,7 +5166,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5244,7 +5186,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5265,7 +5207,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5285,7 +5227,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5305,7 +5247,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5325,7 +5267,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5345,7 +5287,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5365,7 +5307,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5385,7 +5327,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5405,7 +5347,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5425,7 +5367,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5445,7 +5387,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5465,7 +5407,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5485,7 +5427,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5505,7 +5447,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5525,7 +5467,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5545,7 +5487,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5565,7 +5507,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5585,7 +5527,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5605,7 +5547,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5625,7 +5567,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5645,7 +5587,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5665,7 +5607,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5848,7 +5790,7 @@ DO NOTHING;
 insert into
   team (
     team_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5870,7 +5812,7 @@ DO NOTHING;
 insert into
   team (
     team_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5892,7 +5834,7 @@ DO NOTHING;
 insert into
   team (
     team_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5914,7 +5856,7 @@ DO NOTHING;
 insert into
   team (
     team_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5936,7 +5878,7 @@ DO NOTHING;
 insert into
   team (
     team_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -5958,7 +5900,7 @@ DO NOTHING;
 insert into
   team (
     team_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -6074,7 +6016,7 @@ do nothing;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6096,7 +6038,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6118,7 +6060,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6140,7 +6082,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6162,7 +6104,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6184,7 +6126,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6206,7 +6148,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6228,7 +6170,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6250,7 +6192,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6272,7 +6214,7 @@ DO NOTHING;
 
 INSERT INTO
   comp_mthd_recv_cd_agcy_cd_xref (
-    agency_code,
+    agency_code_ref,
     complaint_method_received_code,
     active_ind,
     create_user_id,
@@ -6325,7 +6267,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -6345,7 +6287,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -6365,7 +6307,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -10150,7 +10092,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -10170,7 +10112,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -10190,7 +10132,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -10208,10 +10150,10 @@ SELECT
 DO NOTHING;
 
 
-UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'COS';
-UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code = 'PARKS';
-UPDATE feature_agency_xref SET active_ind = true WHERE feature_code = 'METH_FLTR' AND agency_code = 'EPO';
-UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'ENBL_OFF' AND agency_code = 'PARKS';
+UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code_ref = 'COS';
+UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'METH_FLTR' AND agency_code_ref = 'PARKS';
+UPDATE feature_agency_xref SET active_ind = true WHERE feature_code = 'METH_FLTR' AND agency_code_ref = 'EPO';
+UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'ENBL_OFF' AND agency_code_ref = 'PARKS';
 
 --
 -- create new feature for External Reference
@@ -10244,7 +10186,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -10264,7 +10206,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -10284,7 +10226,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -10332,7 +10274,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -10352,7 +10294,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -10372,7 +10314,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -10466,7 +10408,7 @@ insert into
     create_utc_timestamp,
     update_user_id,
     update_utc_timestamp,
-    agency_code,
+    agency_code_ref,
     parent_geo_org_unit_code,
     child_geo_org_unit_code
   )
@@ -10523,7 +10465,7 @@ insert into
     create_utc_timestamp,
     update_user_id,
     update_utc_timestamp,
-    agency_code,
+    agency_code_ref,
     parent_geo_org_unit_code,
     child_geo_org_unit_code
   )
@@ -10579,7 +10521,7 @@ insert into
     create_utc_timestamp,
     update_user_id,
     update_utc_timestamp,
-    agency_code,
+    agency_code_ref,
     parent_geo_org_unit_code,
     child_geo_org_unit_code
   )
@@ -10635,7 +10577,7 @@ insert into
     create_utc_timestamp,
     update_user_id,
     update_utc_timestamp,
-    agency_code,
+    agency_code_ref,
     parent_geo_org_unit_code,
     child_geo_org_unit_code
   )
@@ -10691,7 +10633,7 @@ insert into
     create_utc_timestamp,
     update_user_id,
     update_utc_timestamp,
-    agency_code,
+    agency_code_ref,
     parent_geo_org_unit_code,
     child_geo_org_unit_code
   )
@@ -10772,7 +10714,7 @@ insert into
     create_utc_timestamp,
     update_user_id,
     update_utc_timestamp,
-    agency_code,
+    agency_code_ref,
     parent_geo_org_unit_code,
     child_geo_org_unit_code
   )
@@ -10834,7 +10776,7 @@ insert into
     create_utc_timestamp,
     update_user_id,
     update_utc_timestamp,
-    agency_code,
+    agency_code_ref,
     parent_geo_org_unit_code,
     child_geo_org_unit_code
   )
@@ -10897,7 +10839,7 @@ insert into
     create_utc_timestamp,
     update_user_id,
     update_utc_timestamp,
-    agency_code,
+    agency_code_ref,
     parent_geo_org_unit_code,
     child_geo_org_unit_code
   )
@@ -10959,7 +10901,7 @@ insert into
     create_utc_timestamp,
     update_user_id,
     update_utc_timestamp,
-    agency_code,
+    agency_code_ref,
     parent_geo_org_unit_code,
     child_geo_org_unit_code
   )
@@ -11045,7 +10987,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11065,7 +11007,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11085,7 +11027,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11202,7 +11144,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11222,7 +11164,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11242,7 +11184,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11290,7 +11232,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11310,7 +11252,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11330,7 +11272,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11348,25 +11290,17 @@ SELECT
 DO NOTHING;
 
 
-UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'ZONE_FLTR' AND agency_code = 'PARKS';
-UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'REG_FLTR' AND agency_code = 'PARKS';
+UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'ZONE_FLTR' AND agency_code_ref = 'PARKS';
+UPDATE feature_agency_xref SET active_ind = false WHERE feature_code = 'REG_FLTR' AND agency_code_ref = 'PARKS';
 
 ---------------------------
 -- CE-225 Add external agencies
 ---------------------------
 
-insert into agency_code (agency_code, short_description, long_description, display_order, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, external_agency_ind)
-values ('DFO', 'Fisheries and Oceans Canada', 'Fisheries and Oceans Canada', 20, true, user, now(), user, now(), 'Y'),
-      ('ECCC', 'Environment and Climate Change Canada', 'Environment and Climate Change Canada', 10, true, user, now(), user, now(), 'Y'),
-      ('POL', 'Police', 'Police', 50, true, user, now(), user, now(), 'Y'),
-      ('NROS', 'Natural Resource Officer Service', 'Natural Resource Officer Service', 30, true, user, now(), user, now(), 'Y'),
-      ('OTH', 'Other', 'Other', 40, true, user, now(), user, now(), 'Y')
-on conflict do nothing;
-
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11411,7 +11345,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11431,7 +11365,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11451,7 +11385,7 @@ DO NOTHING;
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11487,14 +11421,10 @@ DELETE from feature_code where feature_code = 'EXTRNALREF';
 -- Add Sector Agency Type and enable filters
 -------------------------
 
-insert into agency_code (agency_code, short_description, long_description, display_order, active_ind, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, external_agency_ind)
-values ('NRS', 'Natural Resource Sector', 'Natural Resource Sector', 35, true, user, now(), user, now(), 'N')
-on conflict do nothing;
-
 INSERT INTO
   feature_agency_xref (
     feature_code,
-    agency_code,
+    agency_code_ref,
     active_ind,
     create_user_id,
     create_utc_timestamp,
@@ -11509,6 +11439,95 @@ VALUES
 ('STAT_FLTR', 'NRS', 'Y', user, now(), user, now()),
 ('SECTORVIEW', 'NRS', 'Y', user, now(), user, now())
  ON CONFLICT DO NOTHING;
+
+-------------------------
+-- CE-1771 Add Cases
+-------------------------
+ 
+INSERT INTO
+  feature_code (
+    feature_code,
+    short_description,
+    long_description,
+    display_order,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'CASES',
+  'Enable Cases',
+  'Enables the high level navigation to cases and case details.',
+  300,
+  'Y',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code_ref,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+
+SELECT
+  'CASES',
+  'COS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code_ref,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'CASES',
+  'PARKS',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
+
+INSERT INTO
+  feature_agency_xref (
+    feature_code,
+    agency_code_ref,
+    active_ind,
+    create_user_id,
+    create_utc_timestamp,
+    update_user_id,
+    update_utc_timestamp
+  )
+SELECT
+  'CASES',
+  'EPO',
+  'N',
+  user,
+  now(),
+  user,
+  now() ON CONFLICT
+DO NOTHING;
 
 --------------------------
 -- New Changes above this line

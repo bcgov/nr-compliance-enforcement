@@ -22,7 +22,6 @@ import BaseCodeTable, {
   GirType,
   IPMAuthCategory,
 } from "../../types/models/code-tables";
-import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
@@ -67,8 +66,6 @@ import { EmailReference } from "../email_reference/entities/email_reference.enti
 export class CodeTableService {
   private readonly logger = new Logger(CodeTableService.name);
 
-  @InjectRepository(AgencyCode)
-  private readonly _agencyRepository: Repository<AgencyCode>;
   @InjectRepository(AttractantCode)
   private readonly _attractantRepository: Repository<AttractantCode>;
   @InjectRepository(ComplaintStatusCode)
@@ -104,21 +101,31 @@ export class CodeTableService {
     this.logger.debug("in code table: " + JSON.stringify(table));
     switch (table) {
       case "agency": {
-        const data = await this._agencyRepository.find({ order: { display_order: "ASC" } });
-        let results = data.map(
-          ({ agency_code, short_description, long_description, display_order, active_ind, external_agency_ind }) => {
-            let table: Agency = {
-              agency: agency_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order,
-              isActive: active_ind,
-              externalAgencyInd: external_agency_ind,
+        // TODO: Rename case Management query once CM refactor is done
+        const { data } = await get(token, {
+          query:
+            "{agencyMomsSpaghettiCodes{agencyCode shortDescription longDescription displayOrder activeIndicator externalAgencyIndicator}}",
+        });
+        const results = data.agencyMomsSpaghettiCodes.map(
+          ({
+            agencyCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator,
+            externalAgencyIndicator,
+          }) => {
+            const table: Agency = {
+              agency: agencyCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
+              externalAgencyInd: externalAgencyIndicator,
             };
             return table;
           },
         );
-
         return results;
       }
       case "attractant": {
@@ -277,13 +284,13 @@ export class CodeTableService {
             },
           },
         });
-        let results = data.map(({ violation_code, agency_code, active_ind }) => {
+        let results = data.map(({ violation_code, agency_code_ref, active_ind }) => {
           let table: Violation = {
             violation: violation_code.violation_code,
             shortDescription: violation_code.short_description,
             longDescription: violation_code.long_description,
             displayOrder: violation_code.display_order,
-            agencyCode: agency_code.agency_code,
+            agencyCode: agency_code_ref,
             isActive: active_ind,
           };
           return table;
@@ -836,11 +843,11 @@ export class CodeTableService {
       case "email-reference": {
         const data = await this._emailReferenceRepository.find({
           where: { active_ind: true },
-          order: { agency_code: "ASC" },
+          order: { agency_code_ref: "ASC" },
         });
-        const emailReferences = data.map(({ agency_code, email_address, geo_organization_unit_code }) => {
+        const emailReferences = data.map(({ agency_code_ref, email_address, geo_organization_unit_code }) => {
           return {
-            agencyCode: agency_code,
+            agencyCode: agency_code_ref,
             emailAddress: email_address,
             geoOrgUnitTypeCode: geo_organization_unit_code,
             shortDescription: "",
@@ -858,7 +865,7 @@ export class CodeTableService {
     };
 
     if (agency) {
-      whereClause.agency_code = agency;
+      whereClause.agency_code_ref = agency;
     }
 
     const data = await this._compMthdRecvCdAgcyCdXrefRepository.find({

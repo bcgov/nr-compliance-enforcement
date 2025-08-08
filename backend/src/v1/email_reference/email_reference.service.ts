@@ -15,7 +15,7 @@ export class EmailReferenceService {
     try {
       const data = await this.emailReferenceRepository
         .createQueryBuilder("email_reference")
-        .where("email_reference.agency_code = :agency_code", { agency_code: agencyCode })
+        .where("email_reference.agency_code_ref = :agency_code", { agency_code: agencyCode })
         .andWhere("email_reference.active_ind is true")
         .getMany();
 

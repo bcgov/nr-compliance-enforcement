@@ -168,12 +168,14 @@ export class ComplaintController {
     @Param("person_guid") personGuid: string,
     @Body() sendCollaboratorEmailDto: SendCollaboratorEmalDto,
     @User() user,
+    @Token() token,
   ) {
     return await this.personComplaintXrefService.addCollaboratorToComplaint(
       complaintId,
       personGuid,
       sendCollaboratorEmailDto,
       user,
+      token,
     );
   }
 

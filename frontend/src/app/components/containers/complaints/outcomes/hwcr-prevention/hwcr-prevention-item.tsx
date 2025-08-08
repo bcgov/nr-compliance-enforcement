@@ -44,7 +44,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
                 <dt>Officer</dt>
                 <dd>
                   <span id="comp-review-required-officer">{prevention.officer?.key ?? ""}</span>{" "}
-                  <Badge className="comp-status-badge-closed">{officer?.agency_code?.short_description}</Badge>
+                  <Badge className="comp-status-badge-closed">{officer?.agency_code?.shortDescription}</Badge>
                 </dd>
               </div>
               <div id="prev-educ-outcome-date-div">

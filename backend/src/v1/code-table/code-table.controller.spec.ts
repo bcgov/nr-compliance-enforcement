@@ -11,7 +11,6 @@ import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { CodeTableController } from "./code-table.controller";
 import { CodeTableService } from "./code-table.service";
 import {
-  MockAgencyCodeTableRepository,
   MockAttractantCodeTableRepository,
   MockCommunityCodeTableServiceRepository,
   MockComplaintStatusCodeTableRepository,
@@ -27,7 +26,6 @@ import {
   MockTeamCodeRepository,
   MockCompMthdRecvCdAgcyCdXrefRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
-import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
@@ -53,10 +51,6 @@ describe("Testing: CodeTable Controller", () => {
       controllers: [CodeTableController],
       providers: [
         CodeTableService,
-        {
-          provide: getRepositoryToken(AgencyCode),
-          useFactory: MockAgencyCodeTableRepository,
-        },
         {
           provide: getRepositoryToken(AttractantCode),
           useFactory: MockAttractantCodeTableRepository,
@@ -141,10 +135,7 @@ describe("Testing: CodeTable Controller", () => {
     const _agency = "cos";
 
     //-- act
-    let response = await request(app.getHttpServer()).get(`/code-table/${_tableName}`);
-    expect(response.statusCode).toBe(200);
-
-    response = await request(app.getHttpServer()).get(`/code-table/organization-by-agency/${_agency}`);
+    let response = await request(app.getHttpServer()).get(`/code-table/organization-by-agency/${_agency}`);
     expect(response.statusCode).toBe(200);
 
     response = await request(app.getHttpServer()).get(`/code-table/regions-by-agency/${_agency}`);

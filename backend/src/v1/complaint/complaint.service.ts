@@ -28,7 +28,6 @@ import { Complaint } from "./entities/complaint.entity";
 import { UpdateComplaintDto } from "../../types/models/complaints/dtos/update-complaint";
 
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
-import { AgencyCode } from "../agency_code/entities/agency_code.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { Office } from "../office/entities/office.entity";
 
@@ -150,22 +149,21 @@ export class ComplaintService {
     mapAttractantXrefDtoToAttractantHwcrXref(mapper);
   }
 
-  private _getAgencyByUser = async (): Promise<AgencyCode> => {
+  private readonly _getAgencyByUser = async (): Promise<string> => {
     const idir = getIdirFromRequest(this.request);
 
     const builder = this._officertRepository
       .createQueryBuilder("officer")
       .leftJoinAndSelect("officer.office_guid", "office")
-      .leftJoinAndSelect("office.agency_code", "agency")
       .where("officer.user_id = :idir", { idir });
 
     const result = await builder.getOne();
     //-- pull the user's agency from the query results and return the agency code
-    if (result.office_guid?.agency_code) {
+    if (result.office_guid?.agency_code_ref) {
       const {
-        office_guid: { agency_code },
+        office_guid: { agency_code_ref },
       } = result;
-      return agency_code;
+      return agency_code_ref;
     } else {
       return null;
     }
@@ -242,14 +240,12 @@ export class ComplaintService {
       .leftJoin("complaint.reported_by_code", "reported_by")
       .leftJoin("complaint.complaint_update", "complaint_update")
       .leftJoin("complaint.action_taken", "action_taken")
-      .leftJoin("complaint.owned_by_agency_code", "owned_by")
       .leftJoin("complaint.linked_complaint_xref", "linked_complaint")
       .leftJoin("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
       .leftJoin("delegate.person_complaint_xref_code", "delegate_code")
       .leftJoin("delegate.person_guid", "person", "delegate.active_ind = true")
       .leftJoin("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
-      .leftJoin("method_xref.complaint_method_received_code", "method_code")
-      .leftJoin("method_xref.agency_code", "method_agency");
+      .leftJoin("method_xref.complaint_method_received_code", "method_code");
     if (includeCosOrganization) {
       builder.leftJoin("complaint.cos_geo_org_unit", "cos_organization");
     }
@@ -267,12 +263,11 @@ export class ComplaintService {
           .leftJoinAndSelect("allegation.complaint_identifier", "complaint")
           .leftJoin("allegation.violation_code", "violation_code")
           .leftJoin("violation_code.violationAgencyXrefs", "violation_agency_xref")
-          .leftJoin("violation_agency_xref.agency_code", "agency_code")
           .addSelect([
             "violation_code.violation_code",
             "violation_code.short_description",
             "violation_code.long_description",
-            "agency_code.agency_code",
+            "violation_agency_xref.agency_code_ref",
           ]);
         break;
       case "GIR":
@@ -338,18 +333,13 @@ export class ComplaintService {
 
       .leftJoin("complaint.action_taken", "action_taken")
       .addSelect(["action_taken.action_details_txt", "action_taken.complaint_identifier"])
-
-      .leftJoin("complaint.owned_by_agency_code", "owned_by")
-      .addSelect(["owned_by.agency_code", "owned_by.short_description", "owned_by.long_description"])
       .leftJoinAndSelect("complaint.linked_complaint_xref", "linked_complaint")
       .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
       .leftJoinAndSelect("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
       .leftJoinAndSelect("delegate.person_complaint_xref_code", "delegate_code")
       .leftJoinAndSelect("delegate.person_guid", "person", "delegate.active_ind = true")
       .leftJoinAndSelect("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
-      .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code")
-      .leftJoinAndSelect("method_xref.agency_code", "method_agency");
-
+      .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code");
     return builder;
   };
 
@@ -541,10 +531,10 @@ export class ComplaintService {
           query: `%${query}%`,
         });
 
-        qb.orWhere("owned_by.short_description ILIKE :query", {
+        qb.orWhere("complaint.owned_by_agency_code_ref ILIKE :query", {
           query: `%${query}%`,
         });
-        qb.orWhere("owned_by.long_description ILIKE :query", {
+        qb.orWhere("complaint.owned_by_agency_code_ref ILIKE :query", {
           query: `%${query}%`,
         });
 
@@ -636,7 +626,7 @@ export class ComplaintService {
     return builder;
   }
 
-  private _getTotalComplaintsByZone = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<number> => {
+  private readonly _getTotalComplaintsByZone = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<number> => {
     const agency = await this._getAgencyByUser();
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
 
@@ -661,14 +651,17 @@ export class ComplaintService {
       .andWhere("complaint.complaint_status_code = :status", {
         status: "OPEN",
       })
-      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+      .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
 
     const result = await builder.getCount();
 
     return result;
   };
 
-  private _getTotalComplaintsByOffice = async (complaintType: COMPLAINT_TYPE, office: string): Promise<number> => {
+  private readonly _getTotalComplaintsByOffice = async (
+    complaintType: COMPLAINT_TYPE,
+    office: string,
+  ): Promise<number> => {
     const agency = await this._getAgencyByUser();
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
 
@@ -694,12 +687,15 @@ export class ComplaintService {
       .andWhere("complaint.complaint_status_code = :status", {
         status: "OPEN",
       })
-      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+      .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
 
     return await builder.getCount();
   };
 
-  private _getTotalAssignedComplaintsByZone = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<number> => {
+  private readonly _getTotalAssignedComplaintsByZone = async (
+    complaintType: COMPLAINT_TYPE,
+    zone: string,
+  ): Promise<number> => {
     const agency = await this._getAgencyByUser();
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
 
@@ -730,14 +726,14 @@ export class ComplaintService {
       .andWhere("complaint.complaint_status_code = :status", {
         status: "OPEN",
       })
-      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+      .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
 
     const result = await builder.getCount();
 
     return result;
   };
 
-  private _getTotalAssignedComplaintsByOffice = async (
+  private readonly _getTotalAssignedComplaintsByOffice = async (
     complaintType: COMPLAINT_TYPE,
     office: string,
   ): Promise<number> => {
@@ -769,20 +765,20 @@ export class ComplaintService {
       })
       .andWhere("person.active_ind = true")
       .andWhere("person.person_complaint_xref_code = :assignee", { assignee: "ASSIGNEE" })
-      .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+      .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
 
     const result = await builder.getCount();
 
     return result;
   };
 
-  private _getOfficeIdByOrganizationUnitCode = async (code: string): Promise<UUID> => {
+  private readonly _getOfficeIdByOrganizationUnitCode = async (code: string): Promise<UUID> => {
     try {
       const agency = await this._getAgencyByUser();
       const officeGuidQuery = await this._officeRepository
         .createQueryBuilder("office")
         .where("office.geo_organization_unit_code = :code", { code })
-        .andWhere("office.agency_code = :agency", { agency: agency.agency_code });
+        .andWhere("office.agency_code_ref = :agency", { agency: agency });
 
       const office = await officeGuidQuery.getOne();
 
@@ -823,7 +819,10 @@ export class ComplaintService {
     } catch (error) {}
   };
 
-  private _getTotalAssignedComplaintsByOfficer = async (complaintType: string, officerId: string): Promise<number> => {
+  private readonly _getTotalAssignedComplaintsByOfficer = async (
+    complaintType: string,
+    officerId: string,
+  ): Promise<number> => {
     const agency = await this._getAgencyByUser();
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
 
@@ -855,7 +854,7 @@ export class ComplaintService {
         .andWhere("complaint.complaint_status_code = :status", {
           status: "OPEN",
         })
-        .andWhere("complaint.owned_by_agency_code.agency_code = :agency", { agency: agency.agency_code });
+        .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
 
       return builder.getCount();
     } catch (error) {
@@ -1026,8 +1025,6 @@ export class ComplaintService {
           ])
           .leftJoin("complaint.reported_by_code", "reported_by")
           .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
-          .leftJoin("complaint.owned_by_agency_code", "owned_by")
-          .addSelect(["owned_by.agency_code", "owned_by.short_description", "owned_by.long_description"])
           .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
           .leftJoinAndSelect("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
           .leftJoinAndSelect("delegate.person_complaint_xref_code", "delegate_code")
@@ -1040,8 +1037,7 @@ export class ComplaintService {
             "person.last_name",
           ])
           .leftJoinAndSelect("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
-          .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code")
-          .leftJoinAndSelect("method_xref.agency_code", "method_agency");
+          .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code");
       }
 
       builder.where("complaint.complaint_identifier = :id", { id });
@@ -1103,9 +1099,9 @@ export class ComplaintService {
     // Handle referral status
     if (status === "REFERRED") {
       builder.andWhere(
-        `complaint.owned_by_agency_code.agency_code NOT IN (:...agency_codes)
-       AND complaint_referral.referred_by_agency_code.agency_code IS NOT NULL
-       AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)`,
+        `complaint.owned_by_agency_code_ref NOT IN (:...agency_codes)
+       AND complaint_referral.referred_by_agency_code_ref IS NOT NULL
+       AND complaint_referral.referred_by_agency_code_ref IN (:...agency_codes)`,
         { agency_codes: agencies },
       );
       return builder;
@@ -1115,16 +1111,16 @@ export class ComplaintService {
     if (complaintType !== "SECTOR") {
       if (!status) {
         builder.andWhere(
-          `(complaint.owned_by_agency_code.agency_code IN (:...agency_codes)
+          `(complaint.owned_by_agency_code_ref IN (:...agency_codes)
         OR (
-          complaint_referral.referred_by_agency_code.agency_code IS NOT NULL
-          AND complaint_referral.referred_by_agency_code.agency_code IN (:...agency_codes)
+          complaint_referral.referred_by_agency_code_ref IS NOT NULL
+          AND complaint_referral.referred_by_agency_code_ref IN (:...agency_codes)
         )
         )`,
           { agency_codes: agencies },
         );
       } else {
-        builder.andWhere("complaint.owned_by_agency_code.agency_code IN (:...agency_codes)", {
+        builder.andWhere("complaint.owned_by_agency_code_ref IN (:...agency_codes)", {
           agency_codes: agencies,
         });
       }
@@ -1313,13 +1309,8 @@ export class ComplaintService {
         where: {
           complaint_identifier: In(items.map((item) => item.id)),
         },
-        relations: {
-          referred_by_agency_code: true,
-        },
         select: {
-          referred_by_agency_code: {
-            agency_code: true,
-          },
+          referred_by_agency_code_ref: true,
         },
       });
 
@@ -1338,7 +1329,7 @@ export class ComplaintService {
       // Set referral agency codes
       const referrals = referralComplaints.filter((referral) => referral.complaint_identifier === item.id);
       if (referrals.length > 0) {
-        item.referralAgency = referrals.map((referral) => referral.referred_by_agency_code.agency_code);
+        item.referralAgency = referrals.map((referral) => referral.referred_by_agency_code_ref);
       }
 
       // Set issueType based on the complaint type
@@ -1870,12 +1861,6 @@ export class ComplaintService {
 
     const idir = webeocInd ? "webeoc" : getIdirFromRequest(this.request);
 
-    const agencyCodeInstance = new AgencyCode("COS");
-
-    const { ownedBy } = model;
-
-    const agencyCode = webeocInd ? agencyCodeInstance : new AgencyCode(ownedBy);
-
     const queryRunner = this.dataSource.createQueryRunner();
     let complaintId = "";
 
@@ -1897,12 +1882,12 @@ export class ComplaintService {
       entity.create_user_id = idir;
       entity.update_user_id = idir;
       entity.complaint_identifier = complaintId;
-      entity.owned_by_agency_code = agencyCode;
+      entity.owned_by_agency_code_ref = model.ownedBy;
       entity.comp_last_upd_utc_timestamp = null; // do not want to set this value on a create
 
       const xref = await this._compMthdRecvCdAgcyCdXrefService.findByComplaintMethodReceivedCodeAndAgencyCode(
         model.complaintMethodReceivedCode,
-        agencyCode.agency_code,
+        model.ownedBy,
       );
 
       entity.comp_mthd_recv_cd_agcy_cd_xref = xref;
@@ -2110,19 +2095,13 @@ export class ComplaintService {
           complaint_identifier: id,
         },
         relations: {
-          referred_by_agency_code: true,
-          referred_to_agency_code: true,
           officer_guid: {
             person_guid: true,
           },
         },
         select: {
-          referred_by_agency_code: {
-            long_description: true,
-          },
-          referred_to_agency_code: {
-            long_description: true,
-          },
+          referred_by_agency_code_ref: true,
+          referred_to_agency_code_ref: true,
           officer_guid: {
             officer_guid: true,
             person_guid: {
@@ -2145,8 +2124,8 @@ export class ComplaintService {
           updateTime: zonedReferralDate,
           updateType: ComplaintUpdateType.REFERRAL,
           referral: {
-            previousAgency: item.referred_by_agency_code.long_description,
-            newAgency: item.referred_to_agency_code.long_description,
+            previousAgency: item.referred_by_agency_code_ref,
+            newAgency: item.referred_to_agency_code_ref,
             referredBy: {
               officerGuid: item.officer_guid.officer_guid,
               lastName: item.officer_guid.person_guid.last_name,
@@ -2254,7 +2233,10 @@ export class ComplaintService {
 
         const officer = await this._officerService.findByAuthUserGuid(assessment.assessmentActor);
         const { first_name, last_name } = officer.person_guid;
-        const agency_code = officer.agency_code?.short_description;
+        const agencyTable = await this._codeTableService.getCodeTableByName("agency", token);
+        const agency_code = agencyTable?.find(
+          (agency: any) => agency.agency === officer.agency_code_ref,
+        )?.shortDescription;
 
         assessment.assessmentActor = `${last_name}, ${first_name} (${agency_code})`;
 
@@ -2623,8 +2605,6 @@ export class ComplaintService {
           ])
           .leftJoin("complaint.reported_by_code", "reported_by")
           .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
-          .leftJoin("complaint.owned_by_agency_code", "owned_by")
-          .addSelect(["owned_by.agency_code", "owned_by.short_description", "owned_by.long_description"])
           .leftJoinAndSelect("complaint.linked_complaint_xref", "linked_complaint")
           .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
           .leftJoinAndSelect("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")

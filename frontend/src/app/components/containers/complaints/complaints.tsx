@@ -1,7 +1,6 @@
 import { FC, useState, useContext, useCallback, useEffect, useMemo } from "react";
 import { shallowEqual } from "react-redux";
 import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
-import { ToastContainer } from "react-toastify";
 
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { ComplaintFilter } from "./complaint-filter";
@@ -12,6 +11,7 @@ import { ComplaintFilterContext, ComplaintFilterProvider } from "@providers/comp
 import { resetFilters, ComplaintFilterPayload } from "@store/reducers/complaint-filters";
 
 import {
+  isFeatureActive,
   selectDefaultZone,
   setActiveTab,
   selectActiveTab,
@@ -19,7 +19,7 @@ import {
   setActiveComplaintsViewType,
   selectDefaultRegion,
   selectDefaultParkArea,
-} from "../../../store/reducers/app";
+} from "@store/reducers/app";
 
 import { ComplaintMapWithServerSideClustering } from "./complaint-map-with-server-side-clustering";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +32,6 @@ import Option from "@apptypes/app/option";
 import { resetComplaintSearchParameters, selectComplaintSearchParameters } from "@/app/store/reducers/complaints";
 import { AgencyType } from "@/app/types/app/agency-types";
 import { DropdownOption } from "@/app/types/app/drop-down-option";
-import { isFeatureActive } from "@store/reducers/app";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 type Props = {
@@ -116,11 +115,14 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
 
   return (
     <div className="comp-page-container comp-page-container--noscroll">
-      <ToastContainer />
       <div className="comp-page-header">
         <div className="comp-page-title-container">
           <h1>Complaints</h1>
-          {!UserService.hasRole(Roles.SECTOR) && <Button onClick={() => handleCreateClick()}>Create complaint</Button>}
+          {!UserService.hasRole(Roles.SECTOR) && (
+            <Button onClick={() => handleCreateClick()}>
+              <i className="bi bi-plus-circle"></i>Create complaint
+            </Button>
+          )}
         </div>
         {/* <!-- create list of complaint types --> */}
 

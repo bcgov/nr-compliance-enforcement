@@ -1,5 +1,4 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { AgencyCode } from "../../../../v1/agency_code/entities/agency_code.entity";
 import { ComplaintStatusCode } from "../../../../v1/complaint_status_code/entities/complaint_status_code.entity";
 import { GeoOrganizationUnitCode } from "../../../../v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { Point } from "geojson";
@@ -25,7 +24,7 @@ export class UpdateComplaintDto {
     example: "COS",
     description: "The organization code of the organization that currently owns the complaint",
   })
-  owned_by_agency_code: AgencyCode;
+  owned_by_agency_code_ref: string;
 
   @ApiProperty({
     example: "Open",
