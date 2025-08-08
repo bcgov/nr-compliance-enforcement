@@ -8,7 +8,7 @@ import { OfficerDto } from "@apptypes/app/people/officer";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { upsertNote, getCaseFile } from "@store/reducers/case-thunks";
+import { upsertNote, getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { ToggleError } from "@common/toast";
 import { Note } from "@/app/types/outcomes/note";
@@ -28,7 +28,7 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
 
   const dispatch = useAppDispatch();
 
-  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
   const [defaultOfficer, setDefaultOfficer] = useState<Option>();

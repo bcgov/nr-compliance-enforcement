@@ -11,7 +11,7 @@ import { Button, Card } from "react-bootstrap";
 import AttachmentEnum from "@constants/attachment-enum";
 import { clearAttachments, getAttachments, selectAttachments } from "@store/reducers/attachments";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { setIsInEdit } from "@store/reducers/cases";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 
 type props = {
@@ -31,7 +31,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
 
   const dispatch = useAppDispatch();
   const carouselData = useAppSelector(selectAttachments(AttachmentEnum.OUTCOME_ATTACHMENT));
-  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   // files to add to COMS when complaint is saved

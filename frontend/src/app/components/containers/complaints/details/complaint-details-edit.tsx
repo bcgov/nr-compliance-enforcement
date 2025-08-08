@@ -71,13 +71,13 @@ import { CeebOutcomeReport } from "@components/containers/complaints/outcomes/ce
 import { LinkedComplaintList } from "./linked-complaint-list";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { ExternalFileReference } from "@components/containers/complaints/outcomes/external-file-reference";
-import { getCaseFile } from "@/app/store/reducers/case-thunks";
+import { getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
 import { RootState } from "@/app/store/store";
 import { Roles } from "@/app/types/app/roles";
 import { ParkSelect } from "@/app/components/common/park-select";
 import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
-import { selectEquipment } from "@/app/store/reducers/case-selectors";
+import { selectEquipment } from "@/app/store/reducers/complaint-outcome-selectors";
 import { isValidEmail } from "@/app/common/validate-email";
 
 export type ComplaintParams = {

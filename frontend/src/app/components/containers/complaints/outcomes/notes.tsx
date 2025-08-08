@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
-import { selectIsInEdit, selectNotes } from "@store/reducers/case-selectors";
+import { selectIsInEdit, selectNotes } from "@/app/store/reducers/complaint-outcome-selectors";
 import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
 import { Note } from "./notes/note";
 import { useAppSelector } from "@/app/hooks/hooks";

@@ -3,10 +3,10 @@ import { Button } from "react-bootstrap";
 import { EquipmentForm } from "./equipment-form";
 import { EquipmentItem } from "./equipment-item";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { selectEquipment } from "@store/reducers/case-selectors";
+import { selectEquipment } from "@/app/store/reducers/complaint-outcome-selectors";
 import { selectComplaintAssignedBy, selectComplaintViewMode } from "@store/reducers/complaints";
 import "@assets/sass/hwcr-equipment.scss";
-import { setIsInEdit } from "@store/reducers/cases";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 
 export const HWCREquipment: FC = memo(() => {
   const dispatch = useAppDispatch();

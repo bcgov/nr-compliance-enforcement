@@ -3,7 +3,7 @@ import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
-import { CaseMomsSpaghettiFileResult } from "@/generated/graphql";
+import { CaseFileResult } from "@/generated/graphql";
 import { CaseFilter } from "./list/case-filter";
 import { CaseList } from "./list";
 import { CaseFilterBar } from "./list/case-filter-bar";
@@ -11,13 +11,13 @@ import { CaseMap } from "./map/case-map";
 import { useCaseSearch } from "./hooks/use-case-search";
 
 const SEARCH_CASE_FILES = gql`
-  query SearchCaseMomsSpaghettiFiles($page: Int, $pageSize: Int, $filters: CaseMomsSpaghettiFileFilters) {
-    searchCaseMomsSpaghettiFiles(page: $page, pageSize: $pageSize, filters: $filters) {
+  query SearchCaseFiles($page: Int, $pageSize: Int, $filters: CaseFileFilters) {
+    searchCaseFiles(page: $page, pageSize: $pageSize, filters: $filters) {
       items {
         __typename
         caseIdentifier
-        caseOpenedTimestamp
-        caseStatus {
+        openedTimestamp
+        status {
           caseStatusCode
           shortDescription
           longDescription
@@ -45,29 +45,26 @@ const Cases: FC = () => {
 
   const { searchValues, getFilters } = useCaseSearch();
 
-  const { data, isLoading, error } = useGraphQLQuery<{ searchCaseMomsSpaghettiFiles: CaseMomsSpaghettiFileResult }>(
-    SEARCH_CASE_FILES,
-    {
-      queryKey: [
-        "searchCaseMomsSpaghettiFiles",
-        searchValues.search,
-        searchValues.caseStatus,
-        searchValues.agencyCode,
-        searchValues.startDate,
-        searchValues.endDate,
-        searchValues.sortBy,
-        searchValues.sortOrder,
-        searchValues.page,
-        searchValues.pageSize,
-      ],
-      variables: {
-        page: searchValues.page,
-        pageSize: searchValues.pageSize,
-        filters: getFilters(),
-      },
-      placeholderData: (previousData) => previousData,
+  const { data, isLoading, error } = useGraphQLQuery<{ searchCaseFiles: CaseFileResult }>(SEARCH_CASE_FILES, {
+    queryKey: [
+      "searchCaseFiles",
+      searchValues.search,
+      searchValues.status,
+      searchValues.leadAgency,
+      searchValues.startDate,
+      searchValues.endDate,
+      searchValues.sortBy,
+      searchValues.sortOrder,
+      searchValues.page,
+      searchValues.pageSize,
+    ],
+    variables: {
+      page: searchValues.page,
+      pageSize: searchValues.pageSize,
+      filters: getFilters(),
     },
-  );
+    placeholderData: (previousData) => previousData,
+  });
 
   const toggleShowMobileFilters = useCallback(() => setShowMobileFilters((prevShow) => !prevShow), []);
   const toggleShowDesktopFilters = useCallback(() => setShowDesktopFilters((prevShow) => !prevShow), []);
@@ -115,8 +112,8 @@ const Cases: FC = () => {
   );
 
   const renderCases = () => {
-    const cases = data?.searchCaseMomsSpaghettiFiles?.items || [];
-    const totalCases = data?.searchCaseMomsSpaghettiFiles?.pageInfo?.totalCount || 0;
+    const cases = data?.searchCaseFiles?.items || [];
+    const totalCases = data?.searchCaseFiles?.pageInfo?.totalCount || 0;
 
     return searchValues.viewType === "list" ? (
       <CaseList

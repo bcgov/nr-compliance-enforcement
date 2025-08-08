@@ -1,13 +1,13 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch } from "@hooks/hooks";
-import { setIsInEdit } from "@store/reducers/cases";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { HWCRPreventionItem } from "./hwcr-prevention-item";
 import { HWCRPreventionForm } from "./hwcr-prevention-form";
 import { Prevention } from "@/app/types/outcomes/prevention";
 import { useParams } from "react-router-dom";
 import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
 import { openModal } from "@/app/store/reducers/app";
-import { deletePrevention } from "@/app/store/reducers/case-thunks";
+import { deletePrevention } from "@/app/store/reducers/complaint-outcome-thunks";
 
 type props = {
   prevention?: Prevention;

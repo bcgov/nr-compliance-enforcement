@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
 import { selectComplaint, refreshComplaints } from "@store/reducers/complaints";
-import { setIsInEdit } from "@store/reducers/cases";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import {
   selectAssessments,
   selectPreventions,
@@ -13,7 +13,7 @@ import {
   selectNotes,
   selectIsReviewRequired,
   selectReviewComplete,
-} from "@store/reducers/case-selectors";
+} from "@/app/store/reducers/complaint-outcome-selectors";
 import { HWCRAssessmentForm } from "@components/containers/complaints/outcomes/hwcr-assessment/hwcr-assessment-form";
 import useValidateComplaint from "@/app/hooks/validate-complaint";
 

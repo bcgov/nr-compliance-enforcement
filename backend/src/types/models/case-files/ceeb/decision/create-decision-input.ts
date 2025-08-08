@@ -1,6 +1,6 @@
-import { BaseCaseFileInput } from "../../base-case-file-input";
+import { BaseComplaintOutcomeInput } from "../../base-complaint-outcome-input";
 import { DecisionDto } from "./decision-input";
 
-export interface CreateDecisionInput extends BaseCaseFileInput {
+export interface CreateDecisionInput extends BaseComplaintOutcomeInput {
   decison: DecisionDto;
 }

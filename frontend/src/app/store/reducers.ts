@@ -8,7 +8,7 @@ import complaints from "./reducers/complaints";
 import offices from "./reducers/office";
 import codeTables from "./reducers/code-table";
 import attachments from "./reducers/attachments";
-import cases from "./reducers/cases";
+import complaintOutcomes from "./reducers/complaint-outcomes";
 import parks from "./reducers/park";
 
 const appPersistConfig = {
@@ -44,6 +44,6 @@ export const rootReducer = combineReducers({
   complaints: persistReducer(complaintsPersistConfig, complaints),
   codeTables,
   attachments,
-  cases,
+  complaintOutcomes,
   parks: persistReducer(parksPersistConfig, parks),
 });

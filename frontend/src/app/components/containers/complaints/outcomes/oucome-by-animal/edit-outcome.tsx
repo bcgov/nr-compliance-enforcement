@@ -64,7 +64,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const threatLevels = useAppSelector(selectThreatLevelDropdown);
   const outcomes = useAppSelector(selectActiveWildlifeComplaintOutcome);
   const officers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
-  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const outcomeActionedByOptions = useAppSelector(selectOutcomeActionedByOptions);
   const showSectionErrors = isInEdit.showSectionErrors;

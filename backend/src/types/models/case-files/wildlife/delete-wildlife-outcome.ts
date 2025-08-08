@@ -1,5 +1,5 @@
-import { BaseCaseFileInput } from "../base-case-file-input";
+import { BaseComplaintOutcomeInput } from "../base-complaint-outcome-input";
 
-export interface DeleteWildlifeInput extends BaseCaseFileInput {
+export interface DeleteWildlifeInput extends BaseComplaintOutcomeInput {
   wildlifeId: string;
 }

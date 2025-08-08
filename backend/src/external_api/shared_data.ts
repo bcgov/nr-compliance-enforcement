@@ -9,11 +9,11 @@ axios.interceptors.response.use(undefined, (error: AxiosError) => {
 
 export const caseFileQueryFields: string = `
 {
-  caseIdentifier
-  leadIdentifier
+  complaintOutcomeGuid
+  complaintId
   assessment {
     id
-    agencyCode
+    outcomeAgencyCode
     actionNotRequired
     actionJustificationCode
     actionJustificationShortDescription
@@ -63,7 +63,7 @@ export const caseFileQueryFields: string = `
   }
   prevention {
     id
-    agencyCode
+    outcomeAgencyCode
     actions {
       actionId
       actor
@@ -77,7 +77,7 @@ export const caseFileQueryFields: string = `
   notes {
     id
     note 
-    agencyCode
+    outcomeAgencyCode
     actions { 
       actor
       actionCode

@@ -1,7 +1,7 @@
 import { AssessmentActionDto } from "./assessment-action";
 export interface AssessmentDto {
   id: string;
-  agencyCode: string;
+  outcomeAgencyCode: string;
   contactedComplainant: boolean;
   attended: boolean;
   actionNotRequired: boolean;

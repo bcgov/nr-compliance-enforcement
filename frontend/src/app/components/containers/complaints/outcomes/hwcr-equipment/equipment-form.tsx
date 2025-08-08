@@ -22,10 +22,10 @@ import Option from "@apptypes/app/option";
 import { ValidationDatePicker } from "@common/validation-date-picker";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
-import { CaseActionDto } from "@apptypes/app/case-files/case-action";
+import { EquipmentDetailsDto } from "@/app/types/app/complaint-outcomes/equipment-details";
+import { CaseActionDto } from "@/app/types/app/complaint-outcomes/case-action";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
-import { upsertEquipment } from "@store/reducers/case-thunks";
+import { upsertEquipment } from "@/app/store/reducers/complaint-outcome-thunks";
 import { CompRadioGroup } from "@components/common/comp-radiogroup";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
@@ -78,7 +78,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const hasQuantityEquipment = useAppSelector(selectHasQuantityEquipment);
   const assignableOfficers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
 
-  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
   // Clear state on unmount

@@ -39,7 +39,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove, ou
   const outcomeActionedByOptions = useAppSelector(selectOutcomeActionedByOptions);
   const officers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
-  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const showSectionErrors = !data.outcome && !data.officer && !data.date && isInEdit.showSectionErrors;
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 

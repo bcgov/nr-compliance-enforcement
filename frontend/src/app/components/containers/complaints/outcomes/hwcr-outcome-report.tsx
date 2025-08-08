@@ -6,7 +6,7 @@ import { Notes } from "./notes";
 import { OutcomeAttachments } from "./outcome-attachments";
 import { useAppDispatch } from "@hooks/hooks";
 import { HWCROutcomeByAnimalv2 } from "./hwcr-outcome-by-animal-v2";
-import { resetCases } from "@/app/store/reducers/cases";
+import { resetCases } from "@/app/store/reducers/complaint-outcomes";
 import { HWCRPreventions } from "./hwcr-prevention/hwcr-preventions";
 
 export const HWCROutcomeReport: FC = () => {

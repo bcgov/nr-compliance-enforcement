@@ -26,7 +26,7 @@ import {
 } from "@store/reducers/code-table";
 import { CompSelect } from "@components/common/comp-select";
 import { ValidationCheckboxGroup } from "@common/validation-checkbox-group";
-import { setIsInEdit } from "@store/reducers/cases";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { ToggleError } from "@common/toast";
@@ -35,7 +35,7 @@ import { ValidationDatePicker } from "@common/validation-date-picker";
 import { BsExclamationCircleFill } from "react-icons/bs";
 
 import "@assets/sass/hwcr-assessment.scss";
-import { upsertAssessment } from "@store/reducers/case-thunks";
+import { upsertAssessment } from "@/app/store/reducers/complaint-outcome-thunks";
 import { OptionLabels } from "@constants/option-labels";
 import { HWCRAssessmentLinkComplaintSearch } from "./hwcr-assessment-link-complaint-search";
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
@@ -95,7 +95,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const complaintData = useAppSelector(selectComplaint);
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
   const { ownedByAgencyCode } = useAppSelector(selectComplaintCallerInformation);
-  const cases = useAppSelector((state) => state.cases);
+  const complaintOutcomes = useAppSelector((state) => state.complaintOutcomes);
   const officersInAgencyList = useSelector((state: RootState) =>
     selectOfficersAndCollaboratorsByAgency(state, ownedByAgencyCode?.agency),
   );
@@ -109,7 +109,8 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const hasAssessments = Boolean(assessment);
-  const showSectionErrors = !hasAssessments && cases.isInEdit.showSectionErrors && !cases.isInEdit.hideAssessmentErrors;
+  const showSectionErrors =
+    !hasAssessments && complaintOutcomes.isInEdit.showSectionErrors && !complaintOutcomes.isInEdit.hideAssessmentErrors;
 
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
@@ -438,7 +439,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
         setJustificationRequiredErrorMessage(
           "Please address the errors in the other sections before closing the complaint as duplicate.",
         );
-        if (!cases.isInEdit.showSectionErrors) {
+        if (!complaintOutcomes.isInEdit.showSectionErrors) {
           dispatch(setIsInEdit({ showSectionErrors: true, hideAssessmentErrors: true }));
         }
         validationResults.scrollToErrors();
@@ -451,7 +452,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
     selectedLinkedComplaint,
     id,
     validationResults,
-    cases.isInEdit.showSectionErrors,
+    complaintOutcomes.isInEdit.showSectionErrors,
     dispatch,
   ]);
 

@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import { selectIsInEdit, selectPreventions } from "@store/reducers/case-selectors";
+import { selectIsInEdit, selectPreventions } from "@/app/store/reducers/complaint-outcome-selectors";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectComplaintViewMode, selectComplaint } from "@/app/store/reducers/complaints";
 import { HWCRPrevention } from "./hwcr-prevention";

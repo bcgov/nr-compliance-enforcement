@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectCurrentOfficer } from "@store/reducers/officer";
-import { setIsInEdit } from "@store/reducers/cases";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { openModal } from "@store/reducers/app";
 import { DELETE_NOTE } from "@apptypes/modal/modal-types";
 import { Note as NoteType } from "@/app/types/outcomes/note";
@@ -36,7 +36,7 @@ export const Note: FC<props> = ({ id = "", complaintType = "", note }) => {
         data: {
           title: "Delete note",
           description: "All the data in this note will be lost.",
-          caseIdentifier: id,
+          complaintOutcomeGuid: id,
           ok: "Yes, delete note",
           cancel: "No, go back",
           id: note?.id,
@@ -63,7 +63,7 @@ export const Note: FC<props> = ({ id = "", complaintType = "", note }) => {
             actions={note.actions}
             handleEdit={() => setShowInput(true)}
             handleDelete={openDeleteNoteModal}
-            agencyCode={note.agencyCode}
+            agencyCode={note.outcomeAgencyCode}
           />
         )
       )}

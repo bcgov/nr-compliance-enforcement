@@ -1,6 +1,6 @@
-import { BaseCaseFileInput } from "../base-case-file-input";
+import { BaseComplaintOutcomeInput } from "../base-complaint-outcome-input";
 import { PreventionDto } from "./prevention";
 
-export interface CreatePreventionInput extends BaseCaseFileInput {
+export interface CreatePreventionInput extends BaseComplaintOutcomeInput {
   prevention: PreventionDto;
 }
