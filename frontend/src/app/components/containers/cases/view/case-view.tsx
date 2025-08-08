@@ -4,11 +4,11 @@ import { Button } from "react-bootstrap";
 import { CaseHeader } from "./case-header";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
-import { CaseMomsSpaghettiFile } from "@/generated/graphql";
+import { CaseFile } from "@/generated/graphql";
 
 const GET_CASE_FILE = gql`
   query GetCaseMomsSpaghetttiFile($caseIdentifier: String!) {
-    caseMomsSpaghettiFile(caseIdentifier: $caseIdentifier) {
+    caseFile(caseIdentifier: $caseIdentifier) {
       __typename
       caseIdentifier
       caseOpenedTimestamp
@@ -37,8 +37,8 @@ export const CaseView: FC = () => {
   const { id = "" } = useParams<CaseParams>();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useGraphQLQuery<{ caseMomsSpaghettiFile: CaseMomsSpaghettiFile }>(GET_CASE_FILE, {
-    queryKey: ["caseMomsSpaghettiFile", id],
+  const { data, isLoading } = useGraphQLQuery<{ caseFile: CaseFile }>(GET_CASE_FILE, {
+    queryKey: ["caseFile", id],
     variables: { caseIdentifier: id },
     enabled: !!id, // Only refresh query if id is provided
   });
@@ -60,7 +60,7 @@ export const CaseView: FC = () => {
     );
   }
 
-  const caseData = data?.caseMomsSpaghettiFile;
+  const caseData = data?.caseFile;
 
   return (
     <div className="comp-complaint-details">

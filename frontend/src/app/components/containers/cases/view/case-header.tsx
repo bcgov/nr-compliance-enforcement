@@ -2,10 +2,10 @@ import { FC } from "react";
 import { Link } from "react-router-dom";
 import { Badge, Dropdown } from "react-bootstrap";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
-import { CaseMomsSpaghettiFile } from "@/generated/graphql";
+import { CaseFile } from "@/generated/graphql";
 
 interface CaseHeaderProps {
-  caseData?: CaseMomsSpaghettiFile;
+  caseData?: CaseFile;
 }
 
 export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
