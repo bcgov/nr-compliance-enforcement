@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import Option from "@apptypes/app/option";
-import { ToastContainer } from "react-toastify";
 import { clearNotification, selectNotification } from "@store/reducers/app";
 import { CssUser } from "@apptypes/person/person";
 import { SelectUser } from "@/app/components/containers/admin/user-management/select-user";
@@ -65,7 +64,6 @@ export const UserManagement: FC = () => {
 
   return (
     <>
-      <ToastContainer />
       {viewState === SEARCH_VIEW && (
         <SelectUser
           setOfficer={setOfficer}

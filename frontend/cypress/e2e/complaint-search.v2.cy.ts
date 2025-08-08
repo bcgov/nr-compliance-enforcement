@@ -192,7 +192,7 @@ describe("Complaint Search Functionality", () => {
     cy.wait("@mapData", { timeout: 10000 });
 
     // Navigate to a different page, and return to then complaints page
-    cy.get("#icon-create-complaints-link").click({ force: true });
+    cy.navigateToCreateScreen();
     cy.get("#details-screen-cancel-edit-button-top").should("exist");
     cy.get("#icon-complaints-link").click({ force: true });
 

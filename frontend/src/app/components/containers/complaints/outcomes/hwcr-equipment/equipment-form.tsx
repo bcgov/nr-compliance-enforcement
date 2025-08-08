@@ -1,7 +1,6 @@
 import { FC, useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Button, Card } from "react-bootstrap";
-import { ToastContainer } from "react-toastify";
 
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import {
@@ -20,7 +19,6 @@ import { bcUtmZoneNumbers, getSelectedItem, formatLatLongCoordinate } from "@com
 
 import Option from "@apptypes/app/option";
 
-import "react-toastify/dist/ReactToastify.css";
 import { ValidationDatePicker } from "@common/validation-date-picker";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
@@ -368,7 +366,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
 
   return (
     <div>
-      <ToastContainer />
       <Card border={showSectionErrors ? "danger" : "default"}>
         <Card.Body>
           {showSectionErrors && (

@@ -77,35 +77,8 @@ export const useCaseSearch = () => {
     [searchParams],
   );
 
-  const setValue = useCallback(
-    (field: keyof CaseSearchParams, value: any) => {
-      setSearchParams(
-        (currentParams) => {
-          const newParams = new URLSearchParams(currentParams);
-
-          const serialized = serializeSearchValueToUrl(field, value);
-
-          if (serialized !== undefined) {
-            newParams.set(field, serialized);
-          } else {
-            newParams.delete(field);
-          }
-
-          // Reset to page 1 when filters change (except for page/pageSize changes)
-          if (field !== "page" && field !== "pageSize" && field !== "sortBy" && field !== "sortOrder") {
-            newParams.delete("page");
-          }
-
-          return newParams;
-        },
-        { replace: true },
-      );
-    },
-    [setSearchParams],
-  );
-
-  const setMultipleValues = useCallback(
-    (values: Partial<CaseSearchParams>) => {
+  const setValues = useCallback(
+    (values: Partial<CaseSearchParams> | { [K in keyof CaseSearchParams]: CaseSearchParams[K] }) => {
       setSearchParams(
         (currentParams) => {
           const newParams = new URLSearchParams(currentParams);
@@ -136,18 +109,25 @@ export const useCaseSearch = () => {
     [setSearchParams],
   );
 
-  const setSort = useCallback(
-    (sortBy: string, sortOrder: string) => {
-      setMultipleValues({ sortBy, sortOrder });
+  const clearValues = useCallback(
+    (keys: keyof CaseSearchParams | (keyof CaseSearchParams)[]) => {
+      const keysArray = Array.isArray(keys) ? keys : [keys];
+      const valuesToClear: Partial<CaseSearchParams> = {};
+
+      keysArray.forEach((key) => {
+        (valuesToClear as any)[key] = DEFAULT_SEARCH_VALUES[key];
+      });
+
+      setValues(valuesToClear);
     },
-    [setMultipleValues],
+    [setValues],
   );
 
-  const clearValue = useCallback(
-    (filterName: keyof CaseSearchParams) => {
-      setValue(filterName, DEFAULT_SEARCH_VALUES[filterName]);
+  const setSort = useCallback(
+    (sortBy: string, sortOrder: string) => {
+      setValues({ sortBy, sortOrder });
     },
-    [setValue],
+    [setValues],
   );
 
   const resetSearch = useCallback(() => {
@@ -161,10 +141,9 @@ export const useCaseSearch = () => {
 
   return {
     searchValues,
-    setValue,
-    setMultipleValues,
+    setValues,
     setSort,
-    clearValue,
+    clearValues,
     resetSearch,
     getFilters,
   };

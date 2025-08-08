@@ -14,7 +14,7 @@ export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector(isSidebarOpen);
 
-  const menueItems: Array<MenuItem> = [
+  const menuItems: Array<MenuItem> = [
     {
       id: "cases-link",
       name: "Cases",
@@ -27,13 +27,6 @@ export const SideBar: FC = () => {
       name: "Complaints",
       icon: "bi bi-file-earmark-medical",
       route: "/complaints",
-    },
-    {
-      id: "create-complaints-link",
-      name: "Create complaint",
-      icon: "bi bi-plus-circle",
-      route: "complaint/createComplaint",
-      excludedRoles: [Roles.SECTOR],
     },
     {
       id: "zone-at-a-glance-link",
@@ -49,14 +42,15 @@ export const SideBar: FC = () => {
       route: "/admin/user",
       requiredRoles: [Roles.TEMPORARY_TEST_ADMIN],
     },
-    {
-      id: "compliments-link",
-      name: "Compliments",
-      icon: "bi bi-heart",
-      route: "/compliments",
-      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLIMENT)),
-    },
   ];
+
+  const bottomMenuItem: MenuItem = {
+    id: "compliments-link",
+    name: "Compliments",
+    icon: "bi bi-heart",
+    route: "/compliments",
+    hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLIMENT)),
+  };
 
   const renderSideBarMenuItem = (idx: number, item: MenuItem): JSX.Element => {
     const { id, icon, name, route } = item;
@@ -114,6 +108,18 @@ export const SideBar: FC = () => {
     );
   };
 
+  const renderBottomMenuItem = (item: MenuItem): JSX.Element | null => {
+    const { excludedRoles, requiredRoles, hidden } = item;
+    if (
+      (excludedRoles && UserService.hasRole(excludedRoles)) ||
+      (requiredRoles && !UserService.hasRole(requiredRoles)) ||
+      hidden
+    ) {
+      return null;
+    }
+    return renderSideBarMenuItem(-1, item);
+  };
+
   return (
     <div className="sidebar-wrapper">
       <button
@@ -128,7 +134,7 @@ export const SideBar: FC = () => {
         <AgencyBanner />
         {/* <!-- menu items for the organization --> */}
         <ul className="nav nav-pills flex-column mb-auto comp-sidenav-list">
-          {menueItems.map((item, idx) => {
+          {menuItems.map((item, idx) => {
             // Check if the user has an excluded role (e.g. hide ZAG)
             if (item.excludedRoles && UserService.hasRole(item.excludedRoles)) {
               return null; // Exclude this item if the user has an excluded role
@@ -144,6 +150,12 @@ export const SideBar: FC = () => {
             // If neither excludedRoles, requiredRoles, nor featureFlag conditions apply, render the item
             return renderSideBarMenuItem(idx, item);
           })}
+        </ul>
+        <ul
+          className="nav nav-pills flex-column comp-sidenav-list"
+          style={{ marginBottom: "8px" }}
+        >
+          {renderBottomMenuItem(bottomMenuItem)}
         </ul>
       </button>
       <OverlayTrigger

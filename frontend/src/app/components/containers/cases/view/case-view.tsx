@@ -1,13 +1,14 @@
 import { FC } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { Button } from "react-bootstrap";
 import { CaseHeader } from "./case-header";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
 import { CaseMomsSpaghettiFile } from "@/generated/graphql";
 
 const GET_CASE_FILE = gql`
-  query GetCaseMomsSpaghetttiFile($caseFileGuid: String!) {
-    caseMomsSpaghettiFile(caseFileGuid: $caseFileGuid) {
+  query GetCaseMomsSpaghetttiFile($caseIdentifier: String!) {
+    caseMomsSpaghettiFile(caseIdentifier: $caseIdentifier) {
       __typename
       caseIdentifier
       caseOpenedTimestamp
@@ -32,13 +33,19 @@ export type CaseParams = {
   id: string;
 };
 
-export const CaseDetails: FC = () => {
+export const CaseView: FC = () => {
   const { id = "" } = useParams<CaseParams>();
+  const navigate = useNavigate();
+
   const { data, isLoading } = useGraphQLQuery<{ caseMomsSpaghettiFile: CaseMomsSpaghettiFile }>(GET_CASE_FILE, {
     queryKey: ["caseMomsSpaghettiFile", id],
-    variables: { caseFileGuid: id },
+    variables: { caseIdentifier: id },
     enabled: !!id, // Only refresh query if id is provided
   });
+
+  const editButtonClick = () => {
+    navigate(`/case/${id}/edit`);
+  };
 
   if (isLoading) {
     return (
@@ -64,6 +71,17 @@ export const CaseDetails: FC = () => {
 
         <div className="comp-details-section-header">
           <h2>Case details</h2>
+          <div className="comp-details-section-header-actions">
+            <Button
+              variant="outline-primary"
+              size="sm"
+              id="details-screen-edit-button"
+              onClick={editButtonClick}
+            >
+              <i className="bi bi-pencil"></i>
+              <span>Edit case</span>
+            </Button>
+          </div>
         </div>
 
         {/* Case Details (View) */}
