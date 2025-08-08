@@ -111,22 +111,32 @@ export const CaseView: FC = () => {
       {caseData && (
         <div className="comp-complaint-details">
           <CaseHeader caseData={caseData} />
-          <div className="comp-details-section-header-actions case-relations-container">
-            <Button
-              variant="outline-primary"
-              size="sm"
-              id="details-screen-edit-button"
-              onClick={editButtonClick}
-            >
-              <i className="bi bi-pencil"></i>
-              <span>Edit case</span>
-            </Button>
-          </div>
-          <div className="row case-relations-container">
+          <section
+            className="comp-details-body comp-container"
+            style={{ paddingBottom: "0" }}
+          >
+            <hr className="comp-details-body-spacer"></hr>
+
+            <div className="comp-details-section-header">
+              <h2>Case details</h2>
+              <div className="comp-details-section-header-actions">
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  id="details-screen-edit-button"
+                  onClick={editButtonClick}
+                >
+                  <i className="bi bi-pencil"></i>
+                  <span>Edit case</span>
+                </Button>
+              </div>
+            </div>
+          </section>
+          <div className="row case-activities-container">
             <div className="d-flex flex-column flex-md-row p-2">
-              <div className="col-lg-3  p-2">
-                <div className="fw-bold py-4">Complaints</div>
-                <div className="border-end px-2 case-relations-outer-cell">
+              <div className="col-lg-3  px-2">
+                <div className="fw-bold py-2">Complaints</div>
+                <div className="border-end px-2 case-activities-outer-cell">
                   {linkedComplaints && linkedComplaints?.length > 0
                     ? linkedComplaints
                         ?.sort((left, right) => left.id.localeCompare(right.id))
@@ -135,7 +145,7 @@ export const CaseView: FC = () => {
                             className="col-sm-12 border p-2 my-2"
                             key={complaint?.id}
                           >
-                            <div className="comp-details-badge-container case-relations-badge-container">
+                            <div className="comp-details-badge-container case-activities-badge-container">
                               <Link to={`/complaint/HWCR/${complaint?.id}`}>{complaint?.id}</Link>
                               {getSpeciesBySpeciesCode(complaint?.species, speciesCodes)}
                               <Badge className={`badge ${applyStatusClass("Open")}`}>{complaint?.status}</Badge>
@@ -143,23 +153,32 @@ export const CaseView: FC = () => {
                           </div>
                         ))
                     : null}
-                  <div className="col-sm-12 border p-2 my-2 case-relations-action-cell">
+                  <div className="col-sm-12 border p-2 my-2 case-activities-action-cell">
                     <i className="comp-sidenav-item-icon bi bi-plus-circle"></i>&nbsp;&nbsp;Add complaint
                   </div>
-                  <div className="case-relations-footer-cell"></div>
+                  <div className="case-activities-footer-cell"></div>
                 </div>
               </div>
               <div className="col-lg-3 p-2">
-                <div className="fw-bold py-4">Investigations</div>
-                <div className="border-end px-2"></div>
+                <div className="fw-bold py-2">Investigations</div>
+                <div className="border-end px-2">
+                  <div className="case-activities-footer-cell"></div>
+                  <div className="case-activities-footer-cell"></div>
+                </div>
               </div>
               <div className="col-lg-3 p-2">
-                <div className="fw-bold py-4">Inspections</div>
-                <div className="border-end px-2"></div>
+                <div className="fw-bold py-2">Inspections</div>
+                <div className="border-end px-2">
+                  <div className="case-activities-footer-cell"></div>
+                  <div className="case-activities-footer-cell"></div>
+                </div>
               </div>
               <div className="col-lg-3 p-2">
-                <div className="fw-bold py-4">Records</div>
-                <div className="border-end px-2"></div>
+                <div className="fw-bold py-2">Records</div>
+                <div className="border-end px-2">
+                  <div className="case-activities-footer-cell"></div>
+                  <div className="case-activities-footer-cell"></div>
+                </div>
               </div>
             </div>
           </div>
