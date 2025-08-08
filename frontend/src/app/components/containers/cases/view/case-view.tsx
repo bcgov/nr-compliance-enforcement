@@ -92,6 +92,7 @@ export const CaseView: FC = () => {
   const editButtonClick = () => {
     navigate(`/case/${id}/edit`);
   };
+  
   if (isLoading) {
     return (
       <div className="comp-complaint-details">
