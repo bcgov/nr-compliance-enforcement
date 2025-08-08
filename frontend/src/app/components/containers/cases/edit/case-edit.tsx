@@ -21,8 +21,8 @@ const CREATE_CASE_MUTATION = gql`
   mutation CreateCaseFile($input: CaseFileCreateInput!) {
     createCaseFile(input: $input) {
       caseIdentifier
-      caseOpenedTimestamp
-      caseStatus {
+      openedTimestamp
+      status {
         caseStatusCode
         shortDescription
         longDescription
@@ -40,8 +40,8 @@ const UPDATE_CASE_MUTATION = gql`
   mutation UpdateCaseFile($caseIdentifier: String!, $input: CaseFileUpdateInput!) {
     updateCaseFile(caseIdentifier: $caseIdentifier, input: $input) {
       caseIdentifier
-      caseOpenedTimestamp
-      caseStatus {
+      openedTimestamp
+      status {
         caseStatusCode
         shortDescription
         longDescription
@@ -60,8 +60,8 @@ const GET_CASE_FILE = gql`
     caseFile(caseIdentifier: $caseIdentifier) {
       __typename
       caseIdentifier
-      caseOpenedTimestamp
-      caseStatus {
+      openedTimestamp
+      status {
         caseStatusCode
         shortDescription
         longDescription
@@ -71,7 +71,7 @@ const GET_CASE_FILE = gql`
         shortDescription
         longDescription
       }
-      caseActivities {
+      activities {
         __typename
       }
     }
@@ -121,14 +121,14 @@ const CaseEdit: FC = () => {
     // If there is case data set the default state of the form to the case data
     if (isEditMode && caseData?.caseFile) {
       return {
-        caseStatus: caseData.caseFile.caseStatus?.caseStatusCode || "",
-        leadAgencyCode: caseData.caseFile.leadAgency?.agencyCode || "",
+        status: caseData.caseFile.status?.caseStatusCode || "",
+        leadAgency: caseData.caseFile.leadAgency?.agencyCode || "",
         description: caseData.caseFile.description || "",
       };
     }
     return {
-      caseStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
-      leadAgencyCode: getUserAgency(),
+      status: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
+      leadAgency: getUserAgency(),
       description: "",
     };
   }, [isEditMode, caseData]);
@@ -138,8 +138,8 @@ const CaseEdit: FC = () => {
     onSubmit: async ({ value }) => {
       if (isEditMode) {
         const updateInput: CaseFileUpdateInput = {
-          caseStatus: value.caseStatus,
-          leadAgencyCode: value.leadAgencyCode,
+          status: value.status,
+          leadAgency: value.leadAgency,
         };
 
         updateCaseMutation.mutate({
@@ -148,8 +148,8 @@ const CaseEdit: FC = () => {
         });
       } else {
         const createInput: CaseFileCreateInput = {
-          caseStatus: value.caseStatus,
-          leadAgencyCode: value.leadAgencyCode,
+          status: value.status,
+          leadAgency: value.leadAgency,
         };
 
         createCaseMutation.mutate({ input: createInput });
@@ -206,7 +206,7 @@ const CaseEdit: FC = () => {
           <fieldset disabled={isDisabled}>
             <FormField
               form={form}
-              name="caseStatus"
+              name="status"
               label="Case status"
               required
               validators={{ onChange: z.string().min(1, "Case status is required") }}
@@ -230,7 +230,7 @@ const CaseEdit: FC = () => {
 
             <FormField
               form={form}
-              name="leadAgencyCode"
+              name="leadAgency"
               label="Lead agency"
               required
               validators={{ onChange: z.string().min(1, "Lead agency is required") }}

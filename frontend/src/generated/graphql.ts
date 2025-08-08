@@ -80,8 +80,8 @@ export type AssessmentInput = {
 
 export type CaseActivity = {
   __typename?: 'CaseActivity';
+  activityType?: Maybe<CaseActivityTypeCode>;
   caseActivityIdentifier?: Maybe<Scalars['String']['output']>;
-  caseActivityType?: Maybe<CaseActivityTypeCode>;
   effectiveDate?: Maybe<Scalars['Date']['output']>;
   expiryDate?: Maybe<Scalars['Date']['output']>;
 };
@@ -97,11 +97,11 @@ export type CaseActivityTypeCode = {
 
 export type CaseFile = {
   __typename?: 'CaseFile';
-  caseActivities?: Maybe<Array<Maybe<CaseActivity>>>;
+  activities?: Maybe<Array<Maybe<CaseActivity>>>;
   caseIdentifier?: Maybe<Scalars['String']['output']>;
-  caseOpenedTimestamp?: Maybe<Scalars['Date']['output']>;
-  caseStatus?: Maybe<CaseStatusCode>;
   leadAgency?: Maybe<AgencyCode>;
+  openedTimestamp?: Maybe<Scalars['Date']['output']>;
+  status?: Maybe<CaseStatusCode>;
 };
 
 export type CaseFileAction = {
@@ -119,18 +119,18 @@ export type CaseFileAction = {
 };
 
 export type CaseFileCreateInput = {
-  caseStatus: Scalars['String']['input'];
-  leadAgencyCode: Scalars['String']['input'];
+  leadAgency: Scalars['String']['input'];
+  status: Scalars['String']['input'];
 };
 
 export type CaseFileFilters = {
-  agencyCode?: InputMaybe<Scalars['String']['input']>;
-  caseStatus?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['Date']['input']>;
+  leadAgency?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
   startDate?: InputMaybe<Scalars['Date']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CaseFileResult = {
@@ -140,8 +140,8 @@ export type CaseFileResult = {
 };
 
 export type CaseFileUpdateInput = {
-  caseStatus?: InputMaybe<Scalars['String']['input']>;
-  leadAgencyCode?: InputMaybe<Scalars['String']['input']>;
+  leadAgency?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CaseLocationCode = {

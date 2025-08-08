@@ -16,8 +16,8 @@ const SEARCH_CASE_FILES = gql`
       items {
         __typename
         caseIdentifier
-        caseOpenedTimestamp
-        caseStatus {
+        openedTimestamp
+        status {
           caseStatusCode
           shortDescription
           longDescription
@@ -49,8 +49,8 @@ const Cases: FC = () => {
     queryKey: [
       "searchCaseFiles",
       searchValues.search,
-      searchValues.caseStatus,
-      searchValues.agencyCode,
+      searchValues.status,
+      searchValues.leadAgency,
       searchValues.startDate,
       searchValues.endDate,
       searchValues.sortBy,

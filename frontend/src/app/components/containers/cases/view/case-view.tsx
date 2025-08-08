@@ -17,8 +17,8 @@ const GET_CASE_FILE = gql`
     caseFile(caseIdentifier: $caseIdentifier) {
       __typename
       caseIdentifier
-      caseOpenedTimestamp
-      caseStatus {
+      openedTimestamp
+      status {
         caseStatusCode
         shortDescription
         longDescription
@@ -28,10 +28,10 @@ const GET_CASE_FILE = gql`
         shortDescription
         longDescription
       }
-      caseActivities {
+      activities {
         __typename
         caseActivityIdentifier
-        caseActivityType {
+        activityType {
           caseActivityTypeCode
         }
       }
@@ -58,8 +58,8 @@ export const CaseView: FC = () => {
   const speciesCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.SPECIES));
 
   const caseData = data?.caseFile;
-  const linkedComplaintIds = caseData?.caseActivities
-    ?.filter((activity) => activity?.caseActivityType?.caseActivityTypeCode === "COMP")
+  const linkedComplaintIds = caseData?.activities
+    ?.filter((activity) => activity?.activityType?.caseActivityTypeCode === "COMP")
     .map((item) => {
       return item?.caseActivityIdentifier;
     });
