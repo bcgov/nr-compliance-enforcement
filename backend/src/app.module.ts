@@ -154,16 +154,16 @@ export class AppModule {
   // let's add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(HTTPLoggerMiddleware).exclude({ path: "", method: RequestMethod.ALL }).forRoutes("*");
-    consumer
-      .apply(RequestTokenMiddleware)
-      .forRoutes(
-        "v1/code-table",
-        "v1/case",
-        "v1/complaint-referral",
-        "v1/shared-data",
-        "v1/configuration",
-        "v1/complaint/",
-        "v1/document/export-complaint",
-      );
+    consumer.apply(RequestTokenMiddleware).forRoutes(
+      "v1/code-table",
+      "v1/case",
+      "v1/complaint-referral",
+      "v1/shared-data",
+      "v1/configuration",
+      "v1/complaint/search", //Note: these all have to be explict paths of the @Public decorator will fail breaking the webEOC integration.
+      "v1/complaint/map/search",
+      "v1/complaint/:complaint_id/add-collaborator/:person_guid",
+      "v1/document/export-complaint",
+    );
   }
 }
