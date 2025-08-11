@@ -162,7 +162,9 @@ export class AppModule {
         "v1/complaint-referral",
         "v1/shared-data",
         "v1/configuration",
-        "v1/complaint/",
+        "v1/complaint/search",
+        "v1/complaint/map/search",
+        "v1/complaint/:complaint_id/add-collaborator/:person_guid",
         "v1/document/export-complaint",
       );
   }
