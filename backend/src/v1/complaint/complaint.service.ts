@@ -482,7 +482,7 @@ export class ComplaintService {
         throw new Error("GraphQL errors occurred");
       }
 
-      caseSearchData = data.getCasesFilesBySearchString;
+      caseSearchData = data.getComplaintOutcomesBySearchString;
     }
 
     builder.andWhere(
