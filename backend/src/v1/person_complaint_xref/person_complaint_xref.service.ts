@@ -11,6 +11,7 @@ import { Officer } from "../officer/entities/officer.entity";
 import { UUID } from "crypto";
 import { EmailService } from "../email/email.service";
 import { SendCollaboratorEmalDto } from "../email/dto/send_collaborator_email.dto";
+import { WebeocService } from "src/external_api/webeoc/webeoc.service";
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -24,6 +25,7 @@ export class PersonComplaintXrefService {
     @Inject(forwardRef(() => ComplaintService)) private readonly _complaintService: ComplaintService,
     @Inject(forwardRef(() => EmailService))
     private readonly _emailService: EmailService,
+    private readonly _webeocService: WebeocService,
     @Inject(REQUEST)
     private readonly request: Request,
   ) {}
@@ -83,10 +85,7 @@ export class PersonComplaintXrefService {
   }
 
   async update(person_complaint_xref_guid: any, updatePersonComplaintXrefDto): Promise<PersonComplaintXref> {
-    const updatedValue = await this.personComplaintXrefRepository.update(
-      person_complaint_xref_guid,
-      updatePersonComplaintXrefDto,
-    );
+    await this.personComplaintXrefRepository.update(person_complaint_xref_guid, updatePersonComplaintXrefDto);
     return this.findOne(person_complaint_xref_guid);
   }
 
@@ -127,11 +126,13 @@ export class PersonComplaintXrefService {
     this.logger.debug(`Assigning Complaint ${complaintIdentifier}`);
     let newPersonComplaintXref: PersonComplaintXref;
     let unassignedPersonComplaintXref: PersonComplaintXref;
+    let previouslyUnassigned = true;
 
     try {
       // unassign complaint if it's already assigned to an officer
       unassignedPersonComplaintXref = await this.findAssignedByComplaint(complaintIdentifier);
       if (unassignedPersonComplaintXref) {
+        previouslyUnassigned = false;
         this.logger.debug(
           `Unassigning existing person from complaint ${unassignedPersonComplaintXref?.complaint_identifier?.complaint_identifier}`,
         );
@@ -147,6 +148,10 @@ export class PersonComplaintXrefService {
 
       await queryRunner.commitTransaction();
       this.logger.debug(`Successfully assigned person to complaint ${complaintIdentifier}`);
+
+      if (previouslyUnassigned) {
+        await this.updateWebEOC(complaintIdentifier);
+      }
     } catch (err) {
       this.logger.error(err);
       this.logger.error(`Rolling back assignment on complaint ${complaintIdentifier}`);
@@ -174,11 +179,13 @@ export class PersonComplaintXrefService {
     this.logger.debug(`Assigning Complaint ${complaintIdentifier}`);
     let newPersonComplaintXref: PersonComplaintXref;
     let unassignedPersonComplaintXref: PersonComplaintXref;
+    let previouslyUnassigned = true;
 
     try {
       // unassign complaint if it's already assigned to an officer
       unassignedPersonComplaintXref = await this.findAssignedByComplaint(complaintIdentifier);
       if (unassignedPersonComplaintXref) {
+        previouslyUnassigned = false;
         this.logger.debug(
           `Unassigning existing person ${unassignedPersonComplaintXref.person_guid.person_guid} from complaint ${unassignedPersonComplaintXref?.complaint_identifier?.complaint_identifier}`,
         );
@@ -191,9 +198,12 @@ export class PersonComplaintXrefService {
 
       // Update the complaint last updated date on the parent record
       await this.updateComplaintLastUpdatedDate(complaintIdentifier, newPersonComplaintXref, queryRunner);
+
+      //Update webEOC - Note session handling might be refactored in the future.
+      if (previouslyUnassigned) {
+        await this.updateWebEOC(complaintIdentifier);
+      }
     } catch (err) {
-      this.logger.error(err);
-      this.logger.error(`Rolling back assignment on complaint ${complaintIdentifier}`);
       throw new BadRequestException(err);
     } finally {
       if (closeConnection) {
@@ -370,5 +380,20 @@ export class PersonComplaintXrefService {
       };
     });
     return collaborators;
+  }
+
+  private async updateWebEOC(complaintIdentifier: string) {
+    try {
+      const webeocIdentifier = (await this._complaintService.findById(complaintIdentifier)).webeocId;
+      if (webeocIdentifier) {
+        // Only if it came from webEOC
+        await this._webeocService.manageSession("POST");
+        await this._webeocService.assignOfficer(complaintIdentifier, webeocIdentifier);
+        await this._webeocService.manageSession("DELETE");
+      }
+    } catch (error) {
+      // The update to webEOC failed, but don't stop me now...
+      this.logger.error("Failed to update webEOC", error);
+    }
   }
 }
