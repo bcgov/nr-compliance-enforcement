@@ -1,6 +1,6 @@
-import { BaseCaseFileInput } from "../base-case-file-input";
+import { BaseComplaintOutcomeInput } from "../base-complaint-outcome-input";
 import { AssessmentDto } from "./assessment";
 
-export interface CreateAssessmentInput extends BaseCaseFileInput {
+export interface CreateAssessmentInput extends BaseComplaintOutcomeInput {
   assessment: AssessmentDto;
 }

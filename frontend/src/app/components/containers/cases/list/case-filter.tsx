@@ -67,8 +67,8 @@ export const CaseFilter: FC = () => {
         "Status",
         statusOptions,
         "Select status",
-        statusOptions.find((option) => option.value === searchValues.caseStatus) || null,
-        handleFieldChange("caseStatus"),
+        statusOptions.find((option) => option.value === searchValues.status) || null,
+        handleFieldChange("status"),
       )}
 
       {renderSelectFilter(
@@ -76,8 +76,8 @@ export const CaseFilter: FC = () => {
         "Lead Agency",
         leadAgencyOptions,
         "Select agency",
-        leadAgencyOptions.find((option) => option.value === searchValues.agencyCode) || null,
-        handleFieldChange("agencyCode"),
+        leadAgencyOptions.find((option) => option.value === searchValues.leadAgency) || null,
+        handleFieldChange("leadAgency"),
       )}
 
       <FilterDate

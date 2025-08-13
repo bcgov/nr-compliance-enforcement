@@ -8,9 +8,9 @@ import { formatDate } from "@common/methods";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { getComplaintStatusById, selectComplaint, selectComplaintViewMode } from "@store/reducers/complaints";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { createReview, updateReview } from "@store/reducers/case-thunks";
+import { createReview, updateReview } from "@/app/store/reducers/complaint-outcome-thunks";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
-import { setIsInEdit } from "@store/reducers/cases";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 
 export const HWCRFileReview: FC = () => {
   const REQUEST_REVIEW_STATE = 0;
@@ -19,11 +19,11 @@ export const HWCRFileReview: FC = () => {
   const dispatch = useAppDispatch();
   const complaintData = useAppSelector(selectComplaint);
   const authUserGuid = useAppSelector((state) => state.app.profile.idir);
-  const isReviewRequired = useAppSelector((state) => state.cases.isReviewRequired);
-  const reviewCompleteAction = useAppSelector((state) => state.cases.reviewComplete);
+  const isReviewRequired = useAppSelector((state) => state.complaintOutcomes.isReviewRequired);
+  const reviewCompleteAction = useAppSelector((state) => state.complaintOutcomes.reviewComplete);
   const { officers } = useAppSelector((state) => state.officers);
   const displayName = useAppSelector(profileDisplayName);
-  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   const [componentState, setComponentState] = useState<number>(REQUEST_REVIEW_STATE);

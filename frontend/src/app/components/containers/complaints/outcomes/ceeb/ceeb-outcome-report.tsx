@@ -2,7 +2,7 @@ import { FC, useEffect } from "react";
 import { CeebDecision } from "./ceeb-decision/decision";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "@hooks/hooks";
-import { getCaseFile } from "@store/reducers/case-thunks";
+import { getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
 import { OutcomeAttachments } from "@components/containers/complaints/outcomes/outcome-attachments";
 import { AuthoizationOutcome } from "./authorization-outcome/authorization-outcome";
