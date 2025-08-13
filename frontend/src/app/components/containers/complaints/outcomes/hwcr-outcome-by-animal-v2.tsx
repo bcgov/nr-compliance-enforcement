@@ -9,14 +9,14 @@ import { CreateAnimalOutcome } from "./oucome-by-animal/create-outcome";
 import { AnimalOutcome } from "./oucome-by-animal/animal-outcome";
 import { useParams } from "react-router-dom";
 import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
-import { createAnimalOutcome, getCaseFile, updateAnimalOutcome } from "@store/reducers/case-thunks";
-import { selectAnimalOutcomes, selectCaseId } from "@store/reducers/case-selectors";
+import { createAnimalOutcome, getCaseFile, updateAnimalOutcome } from "@/app/store/reducers/complaint-outcome-thunks";
+import { selectAnimalOutcomes, selectCaseId } from "@/app/store/reducers/complaint-outcome-selectors";
 import { selectOfficersByAgency } from "@store/reducers/officer";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM, DELETE_ANIMAL_OUTCOME } from "@apptypes/modal/modal-types";
 import { EditOutcome } from "./oucome-by-animal/edit-outcome";
 import { UUID } from "crypto";
-import { setIsInEdit } from "@store/reducers/cases";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
@@ -54,7 +54,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
   const subjects = useAppSelector(selectAnimalOutcomes);
   const caseId = useAppSelector(selectCaseId) as UUID;
   const isReadOnly = useAppSelector(selectComplaintViewMode);
-  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
 
   const { species, ownedBy: agency } = (complaint as WildlifeComplaint) || {};
   const officersInAgencyList = useSelector(

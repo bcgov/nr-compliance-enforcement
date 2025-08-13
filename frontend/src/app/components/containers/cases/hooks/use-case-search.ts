@@ -4,8 +4,8 @@ import { SORT_TYPES } from "@constants/sort-direction";
 
 export interface CaseSearchParams {
   search: string;
-  caseStatus: string | null;
-  agencyCode: string | null;
+  status: string | null;
+  leadAgency: string | null;
   startDate: Date | null;
   endDate: Date | null;
   sortBy: string;
@@ -17,11 +17,11 @@ export interface CaseSearchParams {
 
 const DEFAULT_SEARCH_VALUES: CaseSearchParams = {
   search: "",
-  caseStatus: null,
-  agencyCode: null,
+  status: null,
+  leadAgency: null,
   startDate: null,
   endDate: null,
-  sortBy: "caseOpenedTimestamp",
+  sortBy: "openedTimestamp",
   sortOrder: SORT_TYPES.DESC,
   page: 1,
   pageSize: 25,
@@ -64,8 +64,8 @@ export const useCaseSearch = () => {
   const searchValues: CaseSearchParams = useMemo(
     () => ({
       search: searchParams.get("search") || DEFAULT_SEARCH_VALUES.search,
-      caseStatus: searchParams.get("caseStatus"),
-      agencyCode: searchParams.get("agencyCode"),
+      status: searchParams.get("status"),
+      leadAgency: searchParams.get("leadAgency"),
       startDate: deserializeDate(searchParams.get("startDate")),
       endDate: deserializeDate(searchParams.get("endDate")),
       sortBy: searchParams.get("sortBy") || DEFAULT_SEARCH_VALUES.sortBy,

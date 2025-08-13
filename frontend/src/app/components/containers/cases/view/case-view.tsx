@@ -3,7 +3,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { CaseHeader } from "./case-header";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
-import { CaseMomsSpaghettiFile } from "@/generated/graphql";
+import { CaseFile } from "@/generated/graphql";
 import { Badge, Button } from "react-bootstrap";
 import { applyStatusClass, getSpeciesBySpeciesCode } from "@common/methods";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
@@ -13,12 +13,12 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 
 const GET_CASE_FILE = gql`
-  query GetCaseMomsSpaghetttiFile($caseIdentifier: String!) {
-    caseMomsSpaghettiFile(caseIdentifier: $caseIdentifier) {
+  query GetCaseFile($caseIdentifier: String!) {
+    caseFile(caseIdentifier: $caseIdentifier) {
       __typename
       caseIdentifier
-      caseOpenedTimestamp
-      caseStatus {
+      openedTimestamp
+      status {
         caseStatusCode
         shortDescription
         longDescription
@@ -28,10 +28,10 @@ const GET_CASE_FILE = gql`
         shortDescription
         longDescription
       }
-      caseActivities {
+      activities {
         __typename
         caseActivityIdentifier
-        caseActivityType {
+        activityType {
           caseActivityTypeCode
         }
       }
@@ -48,8 +48,8 @@ export const CaseView: FC = () => {
   const { id = "" } = useParams<CaseParams>();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useGraphQLQuery<{ caseMomsSpaghettiFile: CaseMomsSpaghettiFile }>(GET_CASE_FILE, {
-    queryKey: ["caseMomsSpaghettiFile", id],
+  const { data, isLoading } = useGraphQLQuery<{ caseFile: CaseFile }>(GET_CASE_FILE, {
+    queryKey: ["caseFile", id],
     variables: { caseIdentifier: id },
     enabled: !!id, // Only refresh query if id is provided
   });
@@ -57,9 +57,9 @@ export const CaseView: FC = () => {
   const complaintData = useAppSelector(selectComplaint) as WildlifeComplaint;
   const speciesCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.SPECIES));
 
-  const caseData = data?.caseMomsSpaghettiFile;
-  const linkedComplaintIds = caseData?.caseActivities
-    ?.filter((activity) => activity?.caseActivityType?.caseActivityTypeCode === "COMP")
+  const caseData = data?.caseFile;
+  const linkedComplaintIds = caseData?.activities
+    ?.filter((activity) => activity?.activityType?.caseActivityTypeCode === "COMP")
     .map((item) => {
       return item?.caseActivityIdentifier;
     });
@@ -92,7 +92,7 @@ export const CaseView: FC = () => {
   const editButtonClick = () => {
     navigate(`/case/${id}/edit`);
   };
-  
+
   if (isLoading) {
     return (
       <div className="comp-complaint-details">
