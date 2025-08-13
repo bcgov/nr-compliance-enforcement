@@ -15,7 +15,7 @@ type Props = {
 
 export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDelete }) => {
   const isReadOnly = useAppSelector(selectComplaintViewMode);
-  const isSameAgency = UserService.getUserAgency() === prevention.agencyCode;
+  const isSameAgency = UserService.getUserAgency() === prevention.outcomeAgencyCode;
   const officer = useAppSelector(selectOfficerByAuthUserGuid(prevention.officer?.value ?? ""));
   const canEdit = isSameAgency && !isReadOnly;
 

@@ -469,10 +469,10 @@ export class ComplaintService {
     if (complaintType === "ERS") {
       // Search CM for any case files that may match based on authorization id
       const { data, errors } = await get(token, {
-        query: `{getCasesFilesBySearchString (searchString: "${query}")
+        query: `{getComplaintOutcomesBySearchString (searchString: "${query}")
         {
-          leadIdentifier,
-          caseIdentifier
+          complaintId,
+          complaintOutcomeGuid
         }
       }`,
       });
@@ -482,7 +482,7 @@ export class ComplaintService {
         throw new Error("GraphQL errors occurred");
       }
 
-      caseSearchData = data.getCasesFilesBySearchString;
+      caseSearchData = data.getComplaintOutcomesBySearchString;
     }
 
     builder.andWhere(
@@ -1231,7 +1231,7 @@ export class ComplaintService {
           // Get the authorization id from the case management system
           const ids = items.map((item) => item.id);
           const { data, errors } = await get(token, {
-            query: `{getCaseFilesByLeadId (leadIdentifiers: [${ids.map((id) => '"' + id + '"').join(", ")}])
+            query: `{getComplaintOutcomesByComplaintId (complaintIds: [${ids.map((id) => '"' + id + '"').join(", ")}])
             ${caseFileQueryFields}
           }`,
           });
@@ -1242,12 +1242,14 @@ export class ComplaintService {
 
           // inject the authorization id onto each complaint
           items.forEach((item) => {
-            const caseFile = data.getCaseFilesByLeadId.find((file) => file.leadIdentifier === item.id);
-            if (caseFile?.authorization) {
+            const complaintOutcome = data.getComplaintOutcomesByComplaintId.find(
+              (file) => file.leadIdentifier === item.id,
+            );
+            if (complaintOutcome?.authorization) {
               item.authorization =
-                caseFile.authorization.type !== "permit"
-                  ? "UA" + caseFile.authorization.value
-                  : caseFile.authorization.value;
+                complaintOutcome.authorization.type !== "permit"
+                  ? "UA" + complaintOutcome.authorization.value
+                  : complaintOutcome.authorization.value;
             }
           });
 
@@ -2494,7 +2496,7 @@ export class ComplaintService {
       //-- Get the Outcome Data, this is done via a GQL call to prevent
       //-- a circular dependency between the complaint and case_file modules
       const { data, errors } = await get(token, {
-        query: `{getCaseFileByLeadId (leadIdentifier: "${id}")
+        query: `{getComplaintOutcomeByComplaintId (complaintId: "${id}")
         ${caseFileQueryFields}
       }`,
       });
@@ -2508,23 +2510,23 @@ export class ComplaintService {
 
       //-- Add UA to unpermitted sites
       if (
-        outcomeData.getCaseFileByLeadId.authorization &&
-        outcomeData.getCaseFileByLeadId.authorization.type !== "permit"
+        outcomeData.getComplaintOutcomeByComplaintId.authorization &&
+        outcomeData.getComplaintOutcomeByLeadId.authorization.type !== "permit"
       ) {
-        outcomeData.getCaseFileByLeadId.authorization.value =
-          "UA" + outcomeData.getCaseFileByLeadId.authorization.value;
+        outcomeData.getComplaintOutcomeByComplaintId.authorization.value =
+          "UA" + outcomeData.getComplaintOutcomeByComplaintId.authorization.value;
       }
 
-      const prevention = outcomeData.getCaseFileByLeadId.prevention;
-      const equipment = outcomeData.getCaseFileByLeadId.equipment;
-      const wildlife = outcomeData.getCaseFileByLeadId.subject;
-      const notes = outcomeData.getCaseFileByLeadId.notes;
+      const prevention = outcomeData.getComplaintOutcomeByComplaintId.prevention;
+      const equipment = outcomeData.getComplaintOutcomeByComplaintId.equipment;
+      const wildlife = outcomeData.getComplaintOutcomeByComplaintId.subject;
+      const notes = outcomeData.getComplaintOutcomeByComplaintId.notes;
 
       let hasOutcome = false;
 
-      if (outcomeData.getCaseFileByLeadId?.assessment?.length > 0) {
+      if (outcomeData.getComplaintOutcomeByComplaintId?.assessment?.length > 0) {
         hasOutcome = true;
-        await outcomeData.getCaseFileByLeadId.assessment.forEach(async (assessment) => {
+        await outcomeData.getComplaintOutcomeByComplaintId.assessment.forEach(async (assessment) => {
           const assessmentActions = [
             ...(Array.isArray(assessment?.actions) ? assessment.actions : []),
             ...(Array.isArray(assessment?.cat1Actions) ? assessment.cat1Actions : []),
@@ -2554,14 +2556,14 @@ export class ComplaintService {
         await _applyNoteData(notes);
       }
 
-      if (outcomeData.getCaseFileByLeadId.isReviewRequired) {
+      if (outcomeData.getComplaintOutcomeByComplaintId.isReviewRequired) {
         hasOutcome = true;
-        await _applyReviewData(outcomeData.getCaseFileByLeadId);
+        await _applyReviewData(outcomeData.getComplaintOutcomeByComplaintId);
       }
 
-      outcomeData.getCaseFileByLeadId.hasOutcome = hasOutcome;
+      outcomeData.getComplaintOutcomeByComplaintId.hasOutcome = hasOutcome;
 
-      return outcomeData.getCaseFileByLeadId;
+      return outcomeData.getComplaintOutcomeByComplaintId;
     };
 
     const _multiFieldCompare = (first: any, second: any, compareInfo: { field: string; sort: string }[]): number => {

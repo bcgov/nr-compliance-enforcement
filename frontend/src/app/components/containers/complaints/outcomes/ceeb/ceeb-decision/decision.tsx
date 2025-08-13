@@ -1,10 +1,10 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { Button, Card } from "react-bootstrap";
-import { selectCaseDecision } from "@store/reducers/case-selectors";
+import { selectCaseDecision } from "@/app/store/reducers/complaint-outcome-selectors";
 import { useParams } from "react-router-dom";
 import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
-import { setIsInEdit } from "@store/reducers/cases";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { DecisionForm } from "./decision-form";
 import { DecisionItem } from "./decision-item";
 import { BsExclamationCircleFill } from "react-icons/bs";
@@ -17,12 +17,12 @@ export const CeebDecision: FC = () => {
   //-- select the decision
   const data = useAppSelector(selectCaseDecision);
 
-  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const [editable, setEditable] = useState(true);
   const showSectionErrors = isInEdit.showSectionErrors;
 
-  const cases = useAppSelector((state) => state.cases);
-  const hasDecision = !cases.decision;
+  const complaintOutcomes = useAppSelector((state) => state.complaintOutcomes);
+  const hasDecision = !complaintOutcomes.decision;
 
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
