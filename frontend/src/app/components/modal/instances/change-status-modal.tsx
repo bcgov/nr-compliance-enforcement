@@ -4,13 +4,12 @@ import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
 import ComplaintStatusSelect from "@components/codes/complaint-status-select";
 import {
-  getComplaintById,
   updateAllegationComplaintStatus,
   updateWildlifeComplaintStatus,
   updateGeneralIncidentComplaintStatus,
 } from "@store/reducers/complaints";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
-import { setIsInEdit } from "@store/reducers/cases";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 
 type ChangeStatusModalProps = {
@@ -26,8 +25,8 @@ type ChangeStatusModalProps = {
  */
 export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type, complaint_status }) => {
   const modalData = useAppSelector(selectModalData);
-  const isReviewRequired = useAppSelector((state) => state.cases.isReviewRequired);
-  const reviewCompleteAction = useAppSelector((state) => state.cases.reviewComplete);
+  const isReviewRequired = useAppSelector((state) => state.complaintOutcomes.isReviewRequired);
+  const reviewCompleteAction = useAppSelector((state) => state.complaintOutcomes.reviewComplete);
   const [statusChangeDisabledInd, setStatusChangeDisabledInd] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();

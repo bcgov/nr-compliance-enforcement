@@ -37,7 +37,7 @@ import { StagingMetaDataMappingModule } from "./v1/staging_meta_data_mapping/sta
 import { StagingStatusCodeModule } from "./v1/staging_status_code/staging_status_code.module";
 import { StagingActivityCodeModule } from "./v1/staging_activity_code/staging_activity_code.module";
 import { RequestTokenMiddleware } from "./middleware/req.token";
-import { CaseFileModule } from "./v1/shared_data/case_file/case_file.module";
+import { ComplaintOutcomeModule } from "./v1/shared_data/complaint_outcome/complaint_outcome.module";
 import { ComplaintUpdatesModule } from "./v1/complaint_updates/complaint_updates.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ComplaintSequenceResetScheduler } from "./v1/complaint/complaint-sequence-reset.service";
@@ -124,7 +124,7 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
     StagingStatusCodeModule,
     StagingMetaDataMappingModule,
     EntityCodeModule,
-    CaseFileModule,
+    ComplaintOutcomeModule,
     ComplaintUpdatesModule,
     ScheduleModule.forRoot(),
     DocumentModule,
@@ -154,16 +154,17 @@ export class AppModule {
   // let's add a middleware on all routes
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(HTTPLoggerMiddleware).exclude({ path: "", method: RequestMethod.ALL }).forRoutes("*");
-    consumer
-      .apply(RequestTokenMiddleware)
-      .forRoutes(
-        "v1/code-table",
-        "v1/case",
-        "v1/complaint-referral",
-        "v1/shared-data",
-        "v1/configuration",
-        "v1/complaint/",
-        "v1/document/export-complaint",
-      );
+    consumer.apply(RequestTokenMiddleware).forRoutes(
+      "v1/code-table",
+      "v1/case",
+      "v1/complaint-outcome",
+      "v1/complaint-referral",
+      "v1/shared-data",
+      "v1/configuration",
+      "v1/complaint/search", //Note: these all have to be explict paths of the @Public decorator will fail breaking the webEOC integration.
+      "v1/complaint/map/search",
+      "v1/complaint/:complaint_id/add-collaborator/:person_guid",
+      "v1/document/export-complaint",
+    );
   }
 }

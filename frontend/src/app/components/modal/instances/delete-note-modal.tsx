@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
-import { deleteNote, getCaseFile } from "@store/reducers/case-thunks";
+import { deleteNote, getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 
 type props = {
   close: () => void;
@@ -12,13 +12,13 @@ type props = {
 export const DeleteNoteModal: FC<props> = ({ close, submit }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  const { title, description, ok, cancel, caseIdentifier, id } = modalData;
+  const { title, description, ok, cancel, complaintOutcomeGuid, id } = modalData;
 
   const handleSubmit = () => {
-    dispatch(deleteNote(caseIdentifier, id))
+    dispatch(deleteNote(complaintOutcomeGuid, id))
       .then((res) => {
         if (res === "success") {
-          dispatch(getCaseFile(caseIdentifier));
+          dispatch(getCaseFile(complaintOutcomeGuid));
         }
       })
       .finally(() => {

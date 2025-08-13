@@ -81,7 +81,7 @@ export const CreateAnimalOutcome: FC<props> = ({
   const outcomeActionedByOptions = useAppSelector(selectOutcomeActionedByOptions);
   const officers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
-  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
 
   //-- error handling

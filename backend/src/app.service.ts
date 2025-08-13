@@ -8,7 +8,7 @@ export class AppService {
     return "Hello Backend!";
   }
 
-  // return Success if able to Select 1 from database.
+  // return Success if able to Select 1 from database
   async getDBHealthCheck(): Promise<string> {
     try {
       await this.dataSource.query("SELECT 1");
