@@ -469,7 +469,7 @@ export const getOfficerDefaultZone = (): AppThunk => async (dispatch) => {
 
       if (response.office_guid !== null) {
         const {
-          office_guid: { cos_geo_org_unit: unit, agency_code_ref: agency_code_ref },
+          office_guid: { cos_geo_org_unit: unit, agency_code_ref },
         } = response;
 
         const { zone_code: name, zone_name: description } = unit;
