@@ -12,7 +12,7 @@ const GET_INVESTIGATION = gql`
       investigationGuid
       description
       openedTimestamp
-      status {
+      investigationStatus {
         investigationStatusCode
         shortDescription
         longDescription

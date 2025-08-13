@@ -527,9 +527,9 @@ export type Investigation = {
   __typename?: 'Investigation';
   description?: Maybe<Scalars['String']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
+  investigationStatus?: Maybe<InvestigationStatusCode>;
   leadAgency?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['Date']['output']>;
-  status?: Maybe<InvestigationStatusCode>;
 };
 
 export type InvestigationStatusCode = {
