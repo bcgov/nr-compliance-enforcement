@@ -18,7 +18,7 @@ const GET_CASE_FILE = gql`
       __typename
       caseIdentifier
       openedTimestamp
-      status {
+      caseStatus {
         caseStatusCode
         shortDescription
         longDescription
