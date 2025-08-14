@@ -10,7 +10,7 @@ import { ComplaintDetailsEdit } from "./components/containers/complaints/details
 import { CaseView } from "./components/containers/cases/view/case-view";
 import ColorReference, { MiscReference, SpaceReference } from "./components/reference";
 import { ModalComponent as Modal } from "./components/modal/modal";
-import { useAppDispatch } from "./hooks/hooks";
+import { useAppDispatch, useAppSelector } from "./hooks/hooks";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
 import { fetchAllCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
@@ -29,6 +29,10 @@ import { VerifyAccess } from "./components/containers/pages/verify-access";
 import { Roles, coreRoles } from "./types/app/roles";
 import { FeatureManagement } from "./components/containers/admin/feature-management";
 import { AppUpdate } from "./AppUpdate";
+import Investigations from "@/app/components/containers/investigations/investigations";
+import { InvestigationDetails } from "@/app/components/containers/investigations/details/investigation-details";
+import { isFeatureActive } from "@store/reducers/app";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -41,6 +45,8 @@ const App: FC = () => {
     dispatch(getCodeTableVersion());
     dispatch(getFeatureFlag());
   }, [dispatch]);
+
+  const investigationsActive = useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATIONS));
 
   return (
     <GenericErrorBoundary>
@@ -80,6 +86,18 @@ const App: FC = () => {
               path="/compliments"
               element={<Compliments />}
             />
+            {investigationsActive && (
+              <Route
+                path="/investigations"
+                element={<Investigations />}
+              />
+            )}
+            {investigationsActive && (
+              <Route
+                path="/investigation/:investigationGuid"
+                element={<InvestigationDetails />}
+              />
+            )}
             <Route
               path="/complaint/:complaintType/:id"
               element={<ComplaintDetailsEdit />}

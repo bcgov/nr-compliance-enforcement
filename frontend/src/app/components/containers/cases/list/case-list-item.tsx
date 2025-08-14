@@ -43,9 +43,9 @@ export const CaseListItem: FC<Props> = ({ caseFile }) => {
         {formatDateTime(caseFile.openedTimestamp)}
       </td>
       <td className="comp-cell-width-110">
-        {caseFile.status && (
-          <span className={`badge ${applyStatusClass(caseFile.status.caseStatusCode)}`}>
-            {caseFile.status.shortDescription}
+        {caseFile.caseStatus && (
+          <span className={`badge ${applyStatusClass(caseFile.caseStatus.caseStatusCode)}`}>
+            {caseFile.caseStatus.shortDescription}
           </span>
         )}
       </td>

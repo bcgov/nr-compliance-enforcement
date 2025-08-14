@@ -20,7 +20,7 @@ import {
   selectNotification,
   userId,
 } from "@store/reducers/app";
-import { selectAgencyDropdown, selectTeamDropdown } from "@store/reducers/code-table";
+import { selectAgencySectorDropdown, selectTeamDropdown } from "@store/reducers/code-table";
 import {
   CEEB_ROLE_OPTIONS,
   COS_ROLE_OPTIONS,
@@ -59,7 +59,7 @@ export const EditUser: FC<EditUserProps> = ({
   const officerData = useAppSelector(selectOfficerByPersonGuid(officer.value));
   const notification = useAppSelector(selectNotification);
   const teams = useAppSelector(selectTeamDropdown);
-  const agency = useAppSelector(selectAgencyDropdown);
+  const agency = useAppSelector(selectAgencySectorDropdown);
   const parkAreasList = useAppSelector(selectParkAreasDropdown);
   const availableOffices = useAppSelector(selectOffices);
   const adminIdirUsername = useAppSelector(userId);
