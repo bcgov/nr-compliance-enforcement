@@ -6,6 +6,7 @@ import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { ComplaintService } from "../complaint/complaint.service";
 import { EmailService } from "../email/email.service";
+import { WebeocService } from "../../external_api/webeoc/webeoc.service";
 
 describe("PersonComplaintXrefService", () => {
   let service: PersonComplaintXrefService;
@@ -29,6 +30,10 @@ describe("PersonComplaintXrefService", () => {
         },
         {
           provide: EmailService,
+          useValue: {},
+        },
+        {
+          provide: WebeocService,
           useValue: {},
         },
       ],

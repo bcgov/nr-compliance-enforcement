@@ -11,7 +11,7 @@ import { Officer } from "../officer/entities/officer.entity";
 import { UUID } from "crypto";
 import { EmailService } from "../email/email.service";
 import { SendCollaboratorEmalDto } from "../email/dto/send_collaborator_email.dto";
-import { WebeocService } from "src/external_api/webeoc/webeoc.service";
+import { WebeocService } from "../../external_api/webeoc/webeoc.service";
 
 @Injectable()
 export class PersonComplaintXrefService {
