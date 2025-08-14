@@ -508,7 +508,7 @@ export const selectOfficersByZoneAgencyAndRole =
       if (zone) {
         return officers.filter((officer) => {
           const zoneCode = officer?.office_guid?.cos_geo_org_unit?.zone_code ?? null;
-          const agencyCode = officer?.office_guid?.agency_code?.agency_code ?? null;
+          const agencyCode = officer?.office_guid?.agency_code_ref ?? null;
           const fromAdminOffice = officer?.office_guid?.cos_geo_org_unit?.administrative_office_ind;
           const zoneAgencyMatch = zone === zoneCode && (agency === agencyCode || !agency);
           const roleMatch =
