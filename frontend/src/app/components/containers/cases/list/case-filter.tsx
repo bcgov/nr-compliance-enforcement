@@ -63,12 +63,12 @@ export const CaseFilter: FC = () => {
   return (
     <div className="comp-filter-container">
       {renderSelectFilter(
-        "status",
+        "caseStatus",
         "Status",
         statusOptions,
         "Select status",
-        statusOptions.find((option) => option.value === searchValues.status) || null,
-        handleFieldChange("status"),
+        statusOptions.find((option) => option.value === searchValues.caseStatus) || null,
+        handleFieldChange("caseStatus"),
       )}
 
       {renderSelectFilter(

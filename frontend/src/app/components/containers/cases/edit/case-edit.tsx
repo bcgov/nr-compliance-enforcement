@@ -41,7 +41,7 @@ const UPDATE_CASE_MUTATION = gql`
     updateCaseFile(caseIdentifier: $caseIdentifier, input: $input) {
       caseIdentifier
       openedTimestamp
-      status {
+      caseStatus {
         caseStatusCode
         shortDescription
         longDescription
@@ -61,7 +61,7 @@ const GET_CASE_FILE = gql`
       __typename
       caseIdentifier
       openedTimestamp
-      status {
+      caseStatus {
         caseStatusCode
         shortDescription
         longDescription
@@ -121,13 +121,13 @@ const CaseEdit: FC = () => {
     // If there is case data set the default state of the form to the case data
     if (isEditMode && caseData?.caseFile) {
       return {
-        status: caseData.caseFile.status?.caseStatusCode || "",
+        caseStatus: caseData.caseFile.status?.caseStatusCode || "",
         leadAgency: caseData.caseFile.leadAgency?.agencyCode || "",
         description: caseData.caseFile.description || "",
       };
     }
     return {
-      status: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
+      caseStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
       leadAgency: getUserAgency(),
       description: "",
     };
@@ -138,7 +138,7 @@ const CaseEdit: FC = () => {
     onSubmit: async ({ value }) => {
       if (isEditMode) {
         const updateInput: CaseFileUpdateInput = {
-          status: value.status,
+          caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
         };
 
@@ -148,7 +148,7 @@ const CaseEdit: FC = () => {
         });
       } else {
         const createInput: CaseFileCreateInput = {
-          status: value.status,
+          caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
         };
 
@@ -206,7 +206,7 @@ const CaseEdit: FC = () => {
           <fieldset disabled={isDisabled}>
             <FormField
               form={form}
-              name="status"
+              name="caseStatus"
               label="Case status"
               required
               validators={{ onChange: z.string().min(1, "Case status is required") }}
