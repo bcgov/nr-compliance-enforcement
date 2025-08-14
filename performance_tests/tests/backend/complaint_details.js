@@ -21,9 +21,8 @@ export const addAndRemoveComplaintOutcome = async (host, requestConfig) => {
   // Add an outcome to a complaint to hit case management
   // then delete it so that the process can be repeated.
   const outcomeBody = {
-    leadIdentifier: VALID_HWCR_COMPLAINT_ID,
-    agencyCode: "COS",
-    caseCode: "HWCR",
+    complaintId: VALID_HWCR_COMPLAINT_ID,
+    outcomeAgencyCode: "COS",
     createUserId: username,
     wildlife: {
       species: "FOX",
@@ -37,11 +36,11 @@ export const addAndRemoveComplaintOutcome = async (host, requestConfig) => {
       actions: [{ action: "RECOUTCOME", actor: officerGuid, date: "2024-12-18T08:00:00.000Z" }],
     },
   };
-  check(await http.post(host + `/api/v1/case/wildlife`, JSON.stringify(outcomeBody), requestConfig), {
+  check(await http.post(host + `/api/v1/complaint-outcome/wildlife`, JSON.stringify(outcomeBody), requestConfig), {
     "addAndRemoveComplaintOutcome create outcome response status 201": (r) => r.status === 201,
   });
   // Fetch the updated complaint to get the outcome ID
-  const getComplaintRes = await http.get(host + `/api/v1/case/${VALID_HWCR_COMPLAINT_ID}`, requestConfig);
+  const getComplaintRes = await http.get(host + `/api/v1/complaint-outcome/${VALID_HWCR_COMPLAINT_ID}`, requestConfig);
   const updatedComplaint = JSON.parse(getComplaintRes.body);
   const outcomeId = updatedComplaint.subject?.id;
 
@@ -49,7 +48,7 @@ export const addAndRemoveComplaintOutcome = async (host, requestConfig) => {
   check(
     await http.del(
       host +
-        `/api/v1/case/wildlife?caseIdentifier=${updatedComplaint.caseIdentifier}&actor=${officerGuid}&updateUserId=${username}&outcomeId=${outcomeId}`,
+        `/api/v1/complaint-outcome/wildlife?complaintOutcomeGuid=${updatedComplaint.complaintOutcomeGuid}&actor=${officerGuid}&updateUserId=${username}&outcomeId=${outcomeId}`,
       undefined,
       requestConfig,
     ),
