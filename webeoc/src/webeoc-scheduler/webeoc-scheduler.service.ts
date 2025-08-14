@@ -24,11 +24,14 @@ export class WebEocScheduler {
   private cronJob: CronJob;
   private readonly logger = new Logger(WebEocScheduler.name);
   private readonly retentionDays = parseInt(process.env.WEBEOC_LOG_RETENTION_DAYS || "1");
+  private sessionStart: Date;
 
   constructor(
     private readonly complaintsPublisherService: ComplaintsPublisherService,
     private readonly _actionsTakenPublisherService: ActionsTakenPublisherService,
-  ) {}
+  ) {
+    this.sessionStart = null;
+  }
 
   onModuleInit() {
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
@@ -36,7 +39,11 @@ export class WebEocScheduler {
       const logDir = process.env.WEBEOC_LOG_PATH || "/mnt/data";
       await this.cleanupOldLogs(logDir);
 
-      await this.alterWebEOCSession("POST");
+      if (!this.sessionStart || Date.now() - this.sessionStart.getTime() > 86400000) {
+        await this.alterWebEOCSession("DELETE");
+        await this.alterWebEOCSession("POST");
+        this.sessionStart = new Date();
+      }
 
       //-- don't remove these items, these control complaints and complaint updates
       await this.fetchAndPublishComplaints(
@@ -66,8 +73,6 @@ export class WebEocScheduler {
         WEBEOC_FLAGS.ACTIONS_TAKEN_UPDATES,
         this._publishActionUpdate.bind(this),
       );
-
-      await this.alterWebEOCSession("DELETE");
     });
 
     this.cronJob.start();
@@ -269,8 +274,8 @@ export class WebEocScheduler {
         ...config,
         proxy: false,
         httpsAgent: httpsProxyAgent,
-      }
-    };
+      };
+    }
 
     try {
       let response;
@@ -319,7 +324,7 @@ export class WebEocScheduler {
         ...config,
         proxy: false,
         httpsAgent: httpsProxyAgent,
-      }
+      };
     }
 
     // default filter grabs complaints that are newer than a specific date
