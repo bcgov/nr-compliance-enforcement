@@ -59,6 +59,7 @@ import { DocumentService } from "../../v1/document/document.service";
 import { ComplaintReferralEmailLogService } from "../complaint_referral_email_log/complaint_referral_email_log.service";
 import { ComplaintReferralEmailLog } from "../complaint_referral_email_log/entities/complaint_referral_email_log.entity";
 import { EmailReference } from "../email_reference/entities/email_reference.entity";
+import { WebeocService } from "../../external_api/webeoc/webeoc.service";
 
 describe("ComplaintReferralService", () => {
   let service: ComplaintReferralService;
@@ -209,6 +210,7 @@ describe("ComplaintReferralService", () => {
         OfficerService,
         OfficerTeamXrefService,
         TeamService,
+        WebeocService,
         ConfigurationService,
         CssService,
         LinkedComplaintXrefService,
