@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import axios, { AxiosRequestConfig } from "axios";
 import { ConfigurationService } from "../../v1/configuration/configuration.service";
+import { format } from "date-fns";
 
 @Injectable()
 export class WebeocService {
@@ -58,7 +59,7 @@ export class WebeocService {
     }
   };
 
-  assignOfficer = async (complaintIdentifier: string, webeocIdentifier: string): Promise<string> => {
+  assignOfficer = async (webeocIdentifier: string): Promise<string> => {
     const urlPath = `/board/Conservation Officer Service/input/Input - API ECC NatCom Outcome/${webeocIdentifier}`;
     const url = `${process.env.WEBEOC_URL}/${urlPath}`;
     let config: AxiosRequestConfig = {
@@ -68,11 +69,14 @@ export class WebeocService {
     };
 
     // construct the body of the request
-    const body = {
-      dataid: webeocIdentifier,
-      incident_number: complaintIdentifier,
+    const params = {
       nc_off_assign: "Yes",
-      nc_dt_assign: new Date(),
+      nc_dt_assign: format(new Date(), "MM/dd/yyyy HH:mm:ss"),
+    };
+
+    // webEOC write API expects everything in a single "data" parameter.
+    const body = {
+      data: JSON.stringify(params),
     };
 
     try {

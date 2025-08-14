@@ -388,7 +388,7 @@ export class PersonComplaintXrefService {
       if (webeocIdentifier) {
         // Only if it came from webEOC
         await this._webeocService.manageSession("POST");
-        await this._webeocService.assignOfficer(complaintIdentifier, webeocIdentifier);
+        await this._webeocService.assignOfficer(webeocIdentifier);
         await this._webeocService.manageSession("DELETE");
       }
     } catch (error) {
