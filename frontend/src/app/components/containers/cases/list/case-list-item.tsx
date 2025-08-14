@@ -40,7 +40,7 @@ export const CaseListItem: FC<Props> = ({ caseFile }) => {
         </Link>
       </td>
       <td className="comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell">
-        {formatDateTime(caseFile.caseOpenedTimestamp)}
+        {formatDateTime(caseFile.openedTimestamp)}
       </td>
       <td className="comp-cell-width-110">
         {caseFile.caseStatus && (

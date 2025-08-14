@@ -2,19 +2,19 @@ import { FC } from "react";
 import { Link } from "react-router-dom";
 import { Badge, Dropdown } from "react-bootstrap";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
-import { CaseMomsSpaghettiFile } from "@/generated/graphql";
+import { CaseFile } from "@/generated/graphql";
 
 interface CaseHeaderProps {
-  caseData?: CaseMomsSpaghettiFile;
+  caseData?: CaseFile;
 }
 
 export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
   const caseId = caseData?.caseIdentifier || "Unknown";
-  const caseStatus = caseData?.caseStatus?.shortDescription || "Active";
+  const status = caseData?.caseStatus?.shortDescription || "Active";
   const caseType = "Investispection";
   const leadAgency = caseData?.leadAgency?.longDescription || "Unknown Agency";
-  const dateLogged = caseData?.caseOpenedTimestamp ? new Date(caseData.caseOpenedTimestamp).toString() : undefined;
-  const lastUpdated = caseData?.caseOpenedTimestamp ? new Date(caseData.caseOpenedTimestamp).toString() : undefined;
+  const dateLogged = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
+  const lastUpdated = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
   const officerAssigned = "Not Assigned";
   const createdBy = "Unknown";
 
@@ -52,9 +52,9 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
             <div className="comp-details-badge-container">
               <Badge
                 id="comp-details-status-text-id"
-                className={`badge ${applyStatusClass(caseStatus)}`}
+                className={`badge ${applyStatusClass(status)}`}
               >
-                {caseStatus}
+                {status}
               </Badge>
             </div>
 

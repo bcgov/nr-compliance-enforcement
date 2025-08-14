@@ -63,7 +63,7 @@ export const CaseFilter: FC = () => {
   return (
     <div className="comp-filter-container">
       {renderSelectFilter(
-        "status",
+        "caseStatus",
         "Status",
         statusOptions,
         "Select status",
@@ -76,8 +76,8 @@ export const CaseFilter: FC = () => {
         "Lead Agency",
         leadAgencyOptions,
         "Select agency",
-        leadAgencyOptions.find((option) => option.value === searchValues.agencyCode) || null,
-        handleFieldChange("agencyCode"),
+        leadAgencyOptions.find((option) => option.value === searchValues.leadAgency) || null,
+        handleFieldChange("leadAgency"),
       )}
 
       <FilterDate

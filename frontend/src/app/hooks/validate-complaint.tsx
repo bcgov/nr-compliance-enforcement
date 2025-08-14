@@ -9,9 +9,9 @@ import {
   selectIsInEdit,
   selectIsReviewRequired,
   selectReviewComplete,
-} from "@store/reducers/case-selectors";
-import { EquipmentDetailsDto } from "@apptypes/app/case-files/equipment-details";
-import { AnimalOutcomeSubject } from "@apptypes/state/cases-state";
+} from "@/app/store/reducers/complaint-outcome-selectors";
+import { EquipmentDetailsDto } from "@/app/types/app/complaint-outcomes/equipment-details";
+import { AnimalOutcomeSubject } from "@/app/types/state/complaint-outcomes-state";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { selectComplaint } from "@/app/store/reducers/complaints";
 import { getComplaintType } from "@/app/common/methods";

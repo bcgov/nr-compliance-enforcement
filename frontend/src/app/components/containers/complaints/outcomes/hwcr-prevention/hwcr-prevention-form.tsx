@@ -12,7 +12,7 @@ import Option from "@/app/types/app/option";
 import { Prevention } from "@/app/types/outcomes/prevention";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 
-import { selectIsInEdit } from "@/app/store/reducers/case-selectors";
+import { selectIsInEdit } from "@/app/store/reducers/complaint-outcome-selectors";
 import { selectPreventionTypeCodeDropdown } from "@store/reducers/code-table";
 import { openModal } from "@store/reducers/app";
 import {
@@ -22,7 +22,7 @@ import {
 
 import { RootState } from "@/app/store/store";
 import { selectComplaintAssignedBy, selectComplaintCallerInformation } from "@store/reducers/complaints";
-import { upsertPrevention } from "@/app/store/reducers/case-thunks";
+import { upsertPrevention } from "@/app/store/reducers/complaint-outcome-thunks";
 import { ToggleError } from "@common/toast";
 import UserService from "@/app/service/user-service";
 
