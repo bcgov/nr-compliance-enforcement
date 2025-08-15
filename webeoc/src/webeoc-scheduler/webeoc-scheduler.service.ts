@@ -40,7 +40,10 @@ export class WebEocScheduler {
       await this.cleanupOldLogs(logDir);
 
       if (!this.sessionStart || Date.now() - this.sessionStart.getTime() > 86400000) {
-        await this.alterWebEOCSession("DELETE");
+        if (this.cookie) {
+          //If you try and log out and you are already logged out the whole container crashes!
+          await this.alterWebEOCSession("DELETE");
+        }
         await this.alterWebEOCSession("POST");
         this.sessionStart = new Date();
       }
