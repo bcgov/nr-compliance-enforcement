@@ -39,7 +39,10 @@ export class WebEocScheduler {
       const logDir = process.env.WEBEOC_LOG_PATH || "/mnt/data";
       await this.cleanupOldLogs(logDir);
 
-      if (!this.sessionStart || Date.now() - this.sessionStart.getTime() > 86400000) {
+      if (
+        !this.sessionStart ||
+        Date.now() - this.sessionStart.getTime() > parseInt(process.env.WEBEOC_SESSION_TIME_MILLISECONDS || "86400000")
+      ) {
         if (this.cookie) {
           //If you try and log out and you are already logged out the whole container crashes!
           await this.alterWebEOCSession("DELETE");

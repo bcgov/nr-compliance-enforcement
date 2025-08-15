@@ -40,6 +40,7 @@ global:
     webeocCronExpression: ~
     webeocLogPath: ~
     webeocLogRetentionDays: ~
+    webeocSessionTimeMilliSeconds: ~
     backupDir: ~
     backupStrategy: ~
     numBackups: ~
@@ -353,13 +354,7 @@ webeoc:
   #-- autoscaling for the component. it is optional and is an object.
   autoscaling:
     #-- enable or disable autoscaling.
-    enabled: true
-    #-- the minimum number of replicas.
-    minReplicas: 2
-    #-- the maximum number of replicas.
-    maxReplicas: 3
-    #-- the target cpu utilization percentage, is from request cpu and NOT LIMIT CPU.
-    targetCPUUtilizationPercentage: 80
+    enabled: false #-- WebEOC doesn't benefit from autoscaling due to the nature of the API, it just results in double processing
   service:
     #-- the type of the service. it can be ClusterIP, NodePort, LoadBalancer, ExternalName. ClusterIP is the default and is recommended.
     type: ClusterIP
