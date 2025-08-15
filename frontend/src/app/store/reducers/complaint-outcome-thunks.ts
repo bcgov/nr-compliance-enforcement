@@ -369,8 +369,8 @@ const parseAssessmentResponse = async (res: ComplaintOutcomeDto, officers: Offic
       if (action.activeIndicator) {
         if (action.isLegacy && updatedAssessmentData.assessment_type_legacy) {
           updatedAssessmentData.assessment_type_legacy.push({
-            key: action.longDescription,
-            value: action.actionCode,
+            key: action.actionCode,
+            value: action.longDescription,
           });
         } else {
           updatedAssessmentData.assessment_type.push({ key: action.longDescription, value: action.actionCode });
