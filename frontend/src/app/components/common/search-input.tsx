@@ -1,5 +1,9 @@
 import { ChangeEvent, FC, KeyboardEvent, useState, useEffect } from "react";
-import { CloseButton, InputGroup } from "react-bootstrap";
+import { useAppSelector } from "@hooks/hooks";
+import { selectActiveTab } from "@store/reducers/app";
+import { CloseButton, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
+import COMPLAINT_TYPES from "@/app/types/app/complaint-types";
+import { getUserAgency } from "@service/user-service";
 
 type Props = {
   viewType: "map" | "list";
@@ -9,6 +13,9 @@ type Props = {
 };
 
 const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handleSearch }) => {
+  const activeTab = useAppSelector(selectActiveTab);
+  const userAgency = getUserAgency();
+  const isCEEB = activeTab === COMPLAINT_TYPES.HWCR && userAgency === "EPO";
   const [input, setInput] = useState<string>(searchQuery ?? "");
 
   useEffect(() => {
@@ -49,6 +56,58 @@ const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handl
     setInput(value);
   };
 
+  const renderTooltip = (props: any) => (
+    <Tooltip
+      id="search-button-tooltip"
+      className="comp-tooltip"
+      {...props}
+    >
+      <div style={{ textAlign: "left", fontSize: "10px", padding: "6px 8px" }}>
+        Searchable fields:
+        <ul style={{ padding: "0px 10px", margin: 0 }}>
+          <li>Complaint #</li>
+          <li>Complaint description</li>
+          <li>Officer assigned</li>
+          <li>Location/address</li>
+          <li>Community, Office</li>
+          <li>Zone, Region</li>
+          <li>Caller name, address, email</li>
+          <li>Caller phone numbers</li>
+          <li>Organization reporting</li>
+          <li>Complaint update</li>
+          <li>Call center action update</li>
+          {activeTab === COMPLAINT_TYPES.HWCR && userAgency === "COS" && (
+            <div>
+              <li>Species</li>
+              <li>Nature of complaint</li>
+              <li>Attractants</li>
+              <li>Outcome by animal: ear tag</li>
+            </div>
+          )}
+          {(activeTab === COMPLAINT_TYPES.ERS || isCEEB) && (
+            <div>
+              <li>Violation type</li>
+              <li>Complaint/witness details</li>
+            </div>
+          )}
+          {(activeTab === COMPLAINT_TYPES.HWCR || activeTab === COMPLAINT_TYPES.ERS) && userAgency === "COS" && (
+            <li>COORS number</li>
+          )}
+          {activeTab === COMPLAINT_TYPES.GIR && <li>GIR type</li>}
+
+          {/* CEEB agency */}
+          {isCEEB && (
+            <div>
+              <li>Authorization ID</li>
+              <li>Unauthorized site ID</li>
+              <li>NRIS inspection number</li>
+            </div>
+          )}
+        </ul>
+      </div>
+    </Tooltip>
+  );
+
   return (
     <InputGroup className="search-input-group">
       <input
@@ -69,15 +128,21 @@ const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handl
           tabIndex={0}
         ></CloseButton>
       )}
-      <button
-        id="search-button"
-        className="btn text-white"
-        onClick={onSearch}
-        type="button"
-        aria-label="Search"
+      <OverlayTrigger
+        placement="bottom"
+        delay={{ show: 250, hide: 400 }}
+        overlay={activeTab !== COMPLAINT_TYPES.SECTOR ? renderTooltip : <></>}
       >
-        <i className="bi bi-search"></i>
-      </button>
+        <button
+          id="search-button"
+          className="btn text-white"
+          onClick={onSearch}
+          type="button"
+          aria-label="Search"
+        >
+          <i className="bi bi-search"></i>
+        </button>
+      </OverlayTrigger>
     </InputGroup>
   );
 };
