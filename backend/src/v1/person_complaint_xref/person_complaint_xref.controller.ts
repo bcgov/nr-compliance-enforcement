@@ -16,7 +16,7 @@ import { DataSource } from "typeorm";
 export class PersonComplaintXrefController {
   constructor(
     private readonly personComplaintXrefService: PersonComplaintXrefService,
-    private dataSource: DataSource,
+    private readonly dataSource: DataSource,
   ) {}
 
   @Post(":complaint_id")
