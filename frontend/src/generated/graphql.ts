@@ -858,6 +858,7 @@ export type Query = {
   ageCodes: Array<Maybe<AgeCode>>;
   agencyCodes: Array<Maybe<AgencyCode>>;
   caseFile?: Maybe<CaseFile>;
+  caseFileByActivityId: CaseFile;
   caseFiles: Array<CaseFile>;
   caseLocationCodes: Array<Maybe<CaseLocationCode>>;
   configurationCodes: Array<Maybe<Configuration>>;
@@ -901,6 +902,12 @@ export type Query = {
 
 export type QuerycaseFileArgs = {
   caseIdentifier: Scalars['String']['input'];
+};
+
+
+export type QuerycaseFileByActivityIdArgs = {
+  activityIdentifier: Scalars['String']['input'];
+  activityType: Scalars['String']['input'];
 };
 
 
