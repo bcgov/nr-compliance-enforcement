@@ -463,10 +463,10 @@ export class ComplaintService {
     builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     complaintType: COMPLAINT_TYPE,
     query: string,
-    token: string,
+    token?: string,
   ): Promise<SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>> {
     let caseSearchData = [];
-    if (complaintType === "ERS" || complaintType === "HWCR") {
+    if (token && (complaintType === "ERS" || complaintType === "HWCR")) {
       // Search CM for any case files that may match based on authorization id
       const { data, errors } = await get(token, {
         query: `{getComplaintOutcomesBySearchString (complaintType: "${complaintType}" ,searchString: "${query}")
