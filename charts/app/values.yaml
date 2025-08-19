@@ -35,6 +35,9 @@ global:
     webeocUsername: ~
     webeocPassword: ~
     webeocPosition: ~
+    webeocWriteUsername: ~
+    webeocWritePassword: ~
+    webeocWritePosition: ~
     webeocIncident: ~
     webeocUrl: ~
     webeocCronExpression: ~
