@@ -808,12 +808,12 @@ export type ParkInput = {
 export type Party = {
   __typename?: 'Party';
   business?: Maybe<Business>;
-  partyCreatedDateTime?: Maybe<Scalars['String']['output']>;
+  createdDateTime?: Maybe<Scalars['Date']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
   partyIdentifier?: Maybe<Scalars['String']['output']>;
   partyTypeCode?: Maybe<Scalars['String']['output']>;
-  partyTypeLongDescription?: Maybe<Scalars['String']['output']>;
-  partyTypeShortDescription?: Maybe<Scalars['String']['output']>;
   person?: Maybe<Person>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
 export type PermitSite = {

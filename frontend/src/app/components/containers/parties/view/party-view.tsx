@@ -12,9 +12,9 @@ const GET_PARTY = gql`
       __typename
       partyIdentifier
       partyTypeCode
-      partyTypeLongDescription
-      partyTypeLongDescription
-      partyCreatedDateTime
+      shortDescription
+      longDescription
+      createdDateTime
       person {
         personGuid
         firstName

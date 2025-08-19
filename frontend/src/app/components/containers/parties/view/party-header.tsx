@@ -10,8 +10,8 @@ interface PartyHeaderProps {
 
 export const PartyHeader: FC<PartyHeaderProps> = ({ partyData }) => {
   const partyId = partyData?.partyIdentifier || "Unknown";
-  const partyType = partyData?.partyTypeLongDescription || "Unknown";
-  const dateLogged = partyData?.partyCreatedDateTime ? new Date(partyData.partyCreatedDateTime).toString() : undefined;
+  const partyType = partyData?.longDescription || "Unknown";
+  const dateLogged = partyData?.createdDateTime ? new Date(partyData.createdDateTime).toString() : undefined;
 
   return (
     <div className="comp-details-header">
