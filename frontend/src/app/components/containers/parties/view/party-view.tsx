@@ -49,8 +49,8 @@ export const PartyView: FC = () => {
 
   const displayName = () => {
     let result = "";
-    if (partyData && partyData.person) result = `${partyData.person?.firstName} ${partyData.person?.lastName}`;
-    else if (partyData && partyData.business) {
+    if (partyData?.person) result = `${partyData.person?.firstName} ${partyData.person?.lastName}`;
+    else if (partyData?.business) {
       result = `${partyData.business?.name}`;
     }
     return result;
@@ -106,7 +106,7 @@ export const PartyView: FC = () => {
                 <b>Name: </b>
                 {displayName()}
               </p>
-              {partyData && partyData?.person && (
+              {partyData?.person && (
                 <p>
                   <b>Date of birth:</b>
                 </p>
@@ -116,12 +116,10 @@ export const PartyView: FC = () => {
             <h4>Contact information</h4>
             <div className="party-details-item">
               <p>
-                <b>TextLabel: </b>
-                abc
+                <b>TextLabel:</b>&nbsp;abc
               </p>
               <p>
-                <b>TextLabel: </b>
-                abc
+                <b>TextLabel:</b>&nbsp;abc
               </p>
             </div>
             <br />
