@@ -284,10 +284,7 @@ export const EditUser: FC<EditUserProps> = ({
         const res = await updateOfficer(selectedUserAgency, selectedUserIdir, mapRoles);
         if (res?.roles) {
           dispatch(getOfficers()); //refresh the officer list to get the latest changes
-          //set active tab in list view back to first tab (to reload search tooltip's content)
-          selectedUserAgency?.value === AgencyType.CEEB
-            ? dispatch(setActiveTab("ERS"))
-            : dispatch(setActiveTab("HWCR"));
+          dispatch(setActiveTab("HWCR")); //set active tab in list view back to first tab
           ToggleSuccess("Officer updated successfully");
           //If current user edit their own account, refresh current user profile
           if (officer.value === userPersonGuid) {
