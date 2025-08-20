@@ -1,0 +1,33 @@
+.party-details-section {
+  padding-bottom: 0;
+}
+
+.party-details-summary-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: left;
+}
+
+.party-details-summary-vcard-container {
+  margin-left: 5em;
+}
+
+.party-details-summary-vcard {
+  font-size: 12em;
+  display: flex;
+}
+
+.party-details-summary-info {
+  margin-left: 3em;
+}
+
+.party-details-summary-actions {
+  margin-left: auto;
+}
+
+.party-details-item {
+  border: 1px solid rgb(190, 190, 190);
+  padding: 1em;
+  border-radius: 10px;
+}
