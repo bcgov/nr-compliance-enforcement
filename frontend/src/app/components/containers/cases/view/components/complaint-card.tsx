@@ -64,7 +64,6 @@ export const ComplaintCard: FC<ComplaintCardProps> = ({ item: complaint }) => {
     }
   };
 
-  // Extract data from complaint
   const dateLogged = complaint.reportedOn ? formatDate(complaint.reportedOn.toString()) : "—";
   const agency = getAgencyDescription(complaint.ownedBy || "");
   const complaintType = complaintTypeToName(complaint.type || "");
