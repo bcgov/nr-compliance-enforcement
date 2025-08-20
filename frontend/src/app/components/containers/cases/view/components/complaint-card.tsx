@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { SectorComplaint } from "@/app/types/app/complaints/complaint";
+import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
 import { applyStatusClass, formatDate } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
