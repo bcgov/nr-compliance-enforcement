@@ -92,7 +92,6 @@ const CaseEdit: FC = () => {
   const isEditMode = !!id;
 
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
-  console.log("statusOptions", statusOptions);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
 
   const { data: caseData, isLoading } = useGraphQLQuery(GET_CASE_FILE, {
