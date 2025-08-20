@@ -18,7 +18,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ id, linkTo, statusBadge, c
       <div className="d-flex align-items-center justify-content-between">
         <Link
           to={linkTo}
-          className="text-decoration-none fw-semibold text-break"
+          className="comp-cell-link"
         >
           {id}
         </Link>
