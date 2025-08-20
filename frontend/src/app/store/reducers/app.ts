@@ -388,8 +388,6 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`);
       const response = await get<Officer>(dispatch, parameters);
 
-      console.log(response);
-
       //Update auth_user_guid if there is no data
       if (!response.auth_user_guid) {
         const updateGuid = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${response.officer_guid}`, {

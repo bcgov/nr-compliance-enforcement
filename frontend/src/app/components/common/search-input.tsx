@@ -76,7 +76,7 @@ const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handl
           <li>Organization reporting</li>
           <li>Complaint update</li>
           <li>Call center action update</li>
-          {activeTab === COMPLAINT_TYPES.HWCR && userAgency === "COS" && (
+          {activeTab === COMPLAINT_TYPES.HWCR && (userAgency === "COS" || userAgency === "PARKS") && (
             <div>
               <li>Species</li>
               <li>Nature of complaint</li>
@@ -90,9 +90,8 @@ const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handl
               <li>Complaint/witness details</li>
             </div>
           )}
-          {(activeTab === COMPLAINT_TYPES.HWCR || activeTab === COMPLAINT_TYPES.ERS) && userAgency === "COS" && (
-            <li>COORS number</li>
-          )}
+          {(activeTab === COMPLAINT_TYPES.HWCR || activeTab === COMPLAINT_TYPES.ERS) &&
+            (userAgency === "COS" || userAgency === "PARKS") && <li>COORS number</li>}
           {activeTab === COMPLAINT_TYPES.GIR && <li>GIR type</li>}
 
           {/* CEEB agency */}
