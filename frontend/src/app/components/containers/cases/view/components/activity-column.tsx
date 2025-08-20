@@ -10,6 +10,7 @@ interface ActivityColumnProps {
   loadingText?: string;
   disableBorder?: boolean;
   onAddClick?: () => void;
+  keyProperty?: string;
 }
 
 export const ActivityColumn: FC<ActivityColumnProps> = ({
@@ -21,6 +22,7 @@ export const ActivityColumn: FC<ActivityColumnProps> = ({
   loadingText = "Loading...",
   disableBorder = false,
   onAddClick,
+  keyProperty = "id",
 }) => {
   const [showBorder, setShowBorder] = useState(true);
 
@@ -38,6 +40,7 @@ export const ActivityColumn: FC<ActivityColumnProps> = ({
 
     return () => mediaQuery.removeEventListener("change", listener);
   }, []);
+
   return (
     <div className="col-lg-3 d-flex flex-column">
       <h5 className="fw-bold mb-3">{title}</h5>
@@ -48,9 +51,9 @@ export const ActivityColumn: FC<ActivityColumnProps> = ({
           </div>
         ) : (
           ItemComponent &&
-          items.map((item, index) => (
+          items.map((item) => (
             <ItemComponent
-              key={index}
+              key={item[keyProperty]}
               item={item}
             />
           ))

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Complaint } from "@/app/types/app/complaints/complaint";
+import { SectorComplaint } from "@/app/types/app/complaints/complaint";
 import { applyStatusClass, formatDate } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
@@ -8,7 +8,7 @@ import { complaintTypeToName } from "@apptypes/app/complaint-types";
 import { ActivityCard } from "./activity-card";
 
 interface ComplaintCardProps {
-  item: Complaint;
+  item: SectorComplaint;
 }
 
 export const ComplaintCard: FC<ComplaintCardProps> = ({ item: complaint }) => {
@@ -68,7 +68,7 @@ export const ComplaintCard: FC<ComplaintCardProps> = ({ item: complaint }) => {
   const dateLogged = complaint.reportedOn ? formatDate(complaint.reportedOn.toString()) : "—";
   const agency = getAgencyDescription(complaint.ownedBy || "");
   const complaintType = complaintTypeToName(complaint.type || "");
-  const issueType = getIssueType(complaint.type || "", (complaint as any).issueType || "");
+  const issueType = getIssueType(complaint.type || "", complaint.issueType || "");
   const community = getLocationName(complaint.organization?.area || "");
   const status = getStatusDescription(complaint.status || "");
 

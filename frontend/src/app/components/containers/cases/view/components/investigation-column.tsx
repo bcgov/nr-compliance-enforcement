@@ -17,6 +17,7 @@ export const InvestigationColumn: FC<InvestigationColumnProps> = ({ investigatio
       title="Investigations"
       items={investigations}
       ItemComponent={InvestigationCard}
+      keyProperty="investigationGuid"
       addButtonText="Add investigation"
       isLoading={isLoading}
       loadingText="Loading investigations..."
