@@ -100,6 +100,7 @@ export type CaseFile = {
   activities?: Maybe<Array<Maybe<CaseActivity>>>;
   caseIdentifier?: Maybe<Scalars['String']['output']>;
   caseStatus?: Maybe<CaseStatusCode>;
+  description?: Maybe<Scalars['String']['output']>;
   leadAgency?: Maybe<AgencyCode>;
   openedTimestamp?: Maybe<Scalars['Date']['output']>;
 };
@@ -120,6 +121,7 @@ export type CaseFileAction = {
 
 export type CaseFileCreateInput = {
   caseStatus: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
 };
 
@@ -141,6 +143,7 @@ export type CaseFileResult = {
 
 export type CaseFileUpdateInput = {
   caseStatus?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -875,6 +878,7 @@ export type Query = {
   getComplaintOutcomesByComplaintId?: Maybe<Array<Maybe<ComplaintOutcome>>>;
   getComplaintOutcomesBySearchString?: Maybe<Array<Maybe<ComplaintOutcome>>>;
   getInvestigation?: Maybe<Investigation>;
+  getInvestigations?: Maybe<Array<Maybe<Investigation>>>;
   getLeadsByActionTaken?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByEquipment?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByOutcomeAnimal?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -937,12 +941,18 @@ export type QuerygetComplaintOutcomesByComplaintIdArgs = {
 
 
 export type QuerygetComplaintOutcomesBySearchStringArgs = {
+  complaintType: Scalars['String']['input'];
   searchString: Scalars['String']['input'];
 };
 
 
 export type QuerygetInvestigationArgs = {
   investigationGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerygetInvestigationsArgs = {
+  ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 

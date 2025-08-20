@@ -29,13 +29,6 @@ export const SideBar: FC = () => {
       route: "/complaints",
     },
     {
-      id: "create-complaints-link",
-      name: "Create complaint",
-      icon: "bi bi-plus-circle",
-      route: "complaint/createComplaint",
-      excludedRoles: [Roles.SECTOR],
-    },
-    {
       id: "investigations-link",
       name: "Investigations",
       icon: "bi bi-incognito",

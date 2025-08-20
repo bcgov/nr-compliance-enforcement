@@ -1,16 +1,14 @@
 import { FC, useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { CaseHeader } from "./case-header";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
-import { CaseFile } from "@/generated/graphql";
-import { Badge, Button } from "react-bootstrap";
-import { applyStatusClass, getSpeciesBySpeciesCode } from "@common/methods";
+import { CaseFile, Investigation } from "@/generated/graphql";
+import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { getComplaintById, selectComplaint, setComplaint } from "@/app/store/reducers/complaints";
-import { WildlifeComplaint } from "@/app/types/app/complaints/wildlife-complaint";
-import { selectCodeTable } from "@store/reducers/code-table";
-import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
+import { Complaint } from "@/app/types/app/complaints/complaint";
+import { ComplaintColumn, InvestigationColumn, InspectionColumn, RecordColumn } from "./components";
 
 const GET_CASE_FILE = gql`
   query GetCaseFile($caseIdentifier: String!) {
@@ -18,6 +16,7 @@ const GET_CASE_FILE = gql`
       __typename
       caseIdentifier
       openedTimestamp
+      description
       caseStatus {
         caseStatusCode
         shortDescription
@@ -29,12 +28,28 @@ const GET_CASE_FILE = gql`
         longDescription
       }
       activities {
-        __typename
         caseActivityIdentifier
         activityType {
           caseActivityTypeCode
         }
       }
+    }
+  }
+`;
+
+const GET_INVESTIGATIONS = gql`
+  query GetInvestigations($ids: [String]) {
+    getInvestigations(ids: $ids) {
+      __typename
+      investigationGuid
+      description
+      openedTimestamp
+      investigationStatus {
+        investigationStatusCode
+        shortDescription
+        longDescription
+      }
+      leadAgency
     }
   }
 `;
@@ -51,20 +66,35 @@ export const CaseView: FC = () => {
   const { data, isLoading } = useGraphQLQuery<{ caseFile: CaseFile }>(GET_CASE_FILE, {
     queryKey: ["caseFile", id],
     variables: { caseIdentifier: id },
-    enabled: !!id, // Only refresh query if id is provided
+    enabled: !!id,
   });
 
-  const complaintData = useAppSelector(selectComplaint) as WildlifeComplaint;
-  const speciesCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.SPECIES));
+  const complaintData = useAppSelector(selectComplaint) as Complaint;
 
   const caseData = data?.caseFile;
+
   const linkedComplaintIds = caseData?.activities
     ?.filter((activity) => activity?.activityType?.caseActivityTypeCode === "COMP")
     .map((item) => {
       return item?.caseActivityIdentifier;
     });
 
-  const [linkedComplaints, setLinkedComplaints] = useState<WildlifeComplaint[]>([]);
+  const linkedInvestigationIds = caseData?.activities
+    ?.filter((activity) => activity?.activityType?.caseActivityTypeCode === "INVSTGTN")
+    .map((item) => {
+      return item?.caseActivityIdentifier;
+    });
+
+  const [linkedComplaints, setLinkedComplaints] = useState<Complaint[]>([]);
+
+  const { data: investigationsData, isLoading: investigationsLoading } = useGraphQLQuery<{
+    getInvestigations: Investigation[];
+  }>(GET_INVESTIGATIONS, {
+    queryKey: ["getInvestigations", JSON.stringify(linkedInvestigationIds)],
+    variables: { ids: linkedInvestigationIds || [] },
+    enabled: !!caseData && !!linkedInvestigationIds && linkedInvestigationIds.length > 0,
+    staleTime: 0, // Force fresh data on navigation
+  });
 
   useEffect(() => {
     if (complaintData != null) {
@@ -84,7 +114,7 @@ export const CaseView: FC = () => {
   useEffect(() => {
     linkedComplaintIds?.map((id) => {
       if (id) {
-        dispatch(getComplaintById(id, "HWCR"));
+        dispatch(getComplaintById(id, "SECTOR"));
       }
     });
   }, [caseData, dispatch]);
@@ -108,14 +138,11 @@ export const CaseView: FC = () => {
 
   return (
     <>
-      {!caseData && <div className="case-not-found">No data found for ID: {id}</div>}
+      {!caseData && <div className="m-auto">No data found for case: {id}</div>}
       {caseData && (
         <div className="comp-complaint-details">
           <CaseHeader caseData={caseData} />
-          <section
-            className="comp-details-body comp-container"
-            style={{ paddingBottom: "0" }}
-          >
+          <section className="comp-details-body comp-container">
             <hr className="comp-details-body-spacer"></hr>
 
             <div className="comp-details-section-header">
@@ -132,55 +159,25 @@ export const CaseView: FC = () => {
                 </Button>
               </div>
             </div>
-          </section>
-          <div className="row case-activities-container">
-            <div className="d-flex flex-column flex-md-row p-2">
-              <div className="col-lg-3  px-2">
-                <div className="fw-bold py-2">Complaints</div>
-                <div className="border-end px-2 case-activities-outer-cell">
-                  {linkedComplaints && linkedComplaints?.length > 0
-                    ? linkedComplaints
-                        ?.sort((left, right) => left.id.localeCompare(right.id))
-                        .map((complaint) => (
-                          <div
-                            className="col-sm-12 border p-2 my-2"
-                            key={complaint?.id}
-                          >
-                            <div className="comp-details-badge-container case-activities-badge-container">
-                              <Link to={`/complaint/HWCR/${complaint?.id}`}>{complaint?.id}</Link>
-                              {getSpeciesBySpeciesCode(complaint?.species, speciesCodes)}
-                              <Badge className={`badge ${applyStatusClass("Open")}`}>{complaint?.status}</Badge>
-                            </div>
-                          </div>
-                        ))
-                    : null}
-                  <div className="col-sm-12 border p-2 my-2 case-activities-action-cell">
-                    <i className="comp-sidenav-item-icon bi bi-plus-circle"></i>&nbsp;&nbsp;Add complaint
+            <div className="comp-details-content">
+              <div className="row">
+                <div className="col-sm-12">
+                  <div className="border rounded p-3 mb-3 bg-white">
+                    <p>{caseData.description}</p>
                   </div>
-                  <div className="case-activities-footer-cell"></div>
                 </div>
               </div>
-              <div className="col-lg-3 p-2">
-                <div className="fw-bold py-2">Investigations</div>
-                <div className="border-end px-2">
-                  <div className="case-activities-footer-cell"></div>
-                  <div className="case-activities-footer-cell"></div>
-                </div>
-              </div>
-              <div className="col-lg-3 p-2">
-                <div className="fw-bold py-2">Inspections</div>
-                <div className="border-end px-2">
-                  <div className="case-activities-footer-cell"></div>
-                  <div className="case-activities-footer-cell"></div>
-                </div>
-              </div>
-              <div className="col-lg-3 p-2">
-                <div className="fw-bold py-2">Records</div>
-                <div className="border-end px-2">
-                  <div className="case-activities-footer-cell"></div>
-                  <div className="case-activities-footer-cell"></div>
-                </div>
-              </div>
+            </div>
+          </section>
+          <div className="container-fluid px-4 py-3">
+            <div className="row g-3">
+              <ComplaintColumn complaints={linkedComplaints} />
+              <InvestigationColumn
+                investigations={investigationsData?.getInvestigations}
+                isLoading={investigationsLoading && linkedInvestigationIds && linkedInvestigationIds.length > 0}
+              />
+              <InspectionColumn />
+              <RecordColumn />
             </div>
           </div>
         </div>
