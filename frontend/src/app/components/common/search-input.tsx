@@ -15,8 +15,7 @@ type Props = {
 const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handleSearch }) => {
   const activeTab = useAppSelector(selectActiveTab);
   const userAgency = getUserAgency();
-  //Take first 2 tabs as CEEB because for account that doesn not have Sector tab, there's only 1 tab show, and on first refresh, it's set to HWCR
-  const isCEEB = (activeTab === COMPLAINT_TYPES.HWCR || activeTab === COMPLAINT_TYPES.ERS) && userAgency === "EPO";
+  const isCEEB = activeTab === COMPLAINT_TYPES.ERS && userAgency === "EPO";
   const [input, setInput] = useState<string>(searchQuery ?? "");
 
   useEffect(() => {
