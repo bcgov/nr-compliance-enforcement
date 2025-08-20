@@ -1000,7 +1000,9 @@ export class ComplaintService {
   findById = async (
     id: string,
     complaintType?: COMPLAINT_TYPE,
-  ): Promise<ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> => {
+  ): Promise<
+    ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto | SectorComplaintDto
+  > => {
     let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
 
     try {
@@ -1063,6 +1065,15 @@ export class ComplaintService {
             "WildlifeComplaintDto",
           );
           return hwcr;
+        }
+        case "SECTOR": {
+          const sector = this.mapper.map<Complaint, SectorComplaintDto>(
+            result as Complaint,
+            "Complaint",
+            "SectorComplaintDto",
+          );
+          await this.setSectorComplaintIssueType([sector]);
+          return sector;
         }
         default: {
           return this.mapper.map<Complaint, ComplaintDto>(result as Complaint, "Complaint", "ComplaintDto");

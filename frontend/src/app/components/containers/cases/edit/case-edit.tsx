@@ -22,6 +22,7 @@ const CREATE_CASE_MUTATION = gql`
     createCaseFile(input: $input) {
       caseIdentifier
       openedTimestamp
+      description
       status {
         caseStatusCode
         shortDescription
@@ -41,6 +42,7 @@ const UPDATE_CASE_MUTATION = gql`
     updateCaseFile(caseIdentifier: $caseIdentifier, input: $input) {
       caseIdentifier
       openedTimestamp
+      description
       caseStatus {
         caseStatusCode
         shortDescription
@@ -61,6 +63,7 @@ const GET_CASE_FILE = gql`
       __typename
       caseIdentifier
       openedTimestamp
+      description
       caseStatus {
         caseStatusCode
         shortDescription
@@ -73,6 +76,10 @@ const GET_CASE_FILE = gql`
       }
       activities {
         __typename
+        caseActivityIdentifier
+        activityType {
+          caseActivityTypeCode
+        }
       }
     }
   }
@@ -121,7 +128,7 @@ const CaseEdit: FC = () => {
     // If there is case data set the default state of the form to the case data
     if (isEditMode && caseData?.caseFile) {
       return {
-        caseStatus: caseData.caseFile.status?.caseStatusCode || "",
+        caseStatus: caseData.caseFile.caseStatus?.caseStatusCode || "",
         leadAgency: caseData.caseFile.leadAgency?.agencyCode || "",
         description: caseData.caseFile.description || "",
       };
@@ -140,6 +147,7 @@ const CaseEdit: FC = () => {
         const updateInput: CaseFileUpdateInput = {
           caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
+          description: value.description,
         };
 
         updateCaseMutation.mutate({
@@ -150,6 +158,7 @@ const CaseEdit: FC = () => {
         const createInput: CaseFileCreateInput = {
           caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
+          description: value.description,
         };
 
         createCaseMutation.mutate({ input: createInput });
@@ -260,7 +269,7 @@ const CaseEdit: FC = () => {
               validators={{ onChange: z.string().min(1, "Description is required") }}
               render={(field) => (
                 <ValidationTextArea
-                  id="case-description"
+                  id="description"
                   className="comp-form-control comp-details-input"
                   rows={4}
                   defaultValue={field.state.value}
