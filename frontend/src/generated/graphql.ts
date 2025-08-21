@@ -236,6 +236,12 @@ export type CreateEquipmentInput = {
   outcomeAgencyCode: Scalars['String']['input'];
 };
 
+export type CreateInvestigationInput = {
+  caseIdentifier: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  leadAgency: Scalars['String']['input'];
+};
+
 export type CreateNoteInput = {
   actor: Scalars['String']['input'];
   complaintId: Scalars['String']['input'];
@@ -543,6 +549,7 @@ export type Mutation = {
   createCaseFile: CaseFile;
   createDecision: ComplaintOutcome;
   createEquipment: ComplaintOutcome;
+  createInvestigation: Investigation;
   createNote: ComplaintOutcome;
   createPark: Park;
   createParkArea: ParkArea;
@@ -595,6 +602,11 @@ export type MutationcreateDecisionArgs = {
 
 export type MutationcreateEquipmentArgs = {
   createEquipmentInput: CreateEquipmentInput;
+};
+
+
+export type MutationcreateInvestigationArgs = {
+  input: CreateInvestigationInput;
 };
 
 
@@ -937,6 +949,7 @@ export type QuerygetComplaintOutcomesByComplaintIdArgs = {
 
 
 export type QuerygetComplaintOutcomesBySearchStringArgs = {
+  complaintType: Scalars['String']['input'];
   searchString: Scalars['String']['input'];
 };
 
