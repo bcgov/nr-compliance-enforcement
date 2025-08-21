@@ -463,13 +463,13 @@ export class ComplaintService {
     builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     complaintType: COMPLAINT_TYPE,
     query: string,
-    token: string,
+    token?: string,
   ): Promise<SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>> {
     let caseSearchData = [];
-    if (complaintType === "ERS") {
+    if (token && (complaintType === "ERS" || complaintType === "HWCR")) {
       // Search CM for any case files that may match based on authorization id
       const { data, errors } = await get(token, {
-        query: `{getComplaintOutcomesBySearchString (searchString: "${query}")
+        query: `{getComplaintOutcomesBySearchString (complaintType: "${complaintType}" ,searchString: "${query}")
         {
           complaintId,
           complaintOutcomeGuid
@@ -534,9 +534,6 @@ export class ComplaintService {
         qb.orWhere("complaint.owned_by_agency_code_ref ILIKE :query", {
           query: `%${query}%`,
         });
-        qb.orWhere("complaint.owned_by_agency_code_ref ILIKE :query", {
-          query: `%${query}%`,
-        });
 
         qb.orWhere("cos_organization.region_name ILIKE :query", {
           query: `%${query}%`,
@@ -553,12 +550,6 @@ export class ComplaintService {
 
         switch (complaintType) {
           case "ERS": {
-            if (caseSearchData.length > 0) {
-              qb.orWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
-                complaint_identifiers: caseSearchData.map((caseData) => caseData.leadIdentifier),
-              });
-            }
-
             qb.orWhere("allegation.suspect_witnesss_dtl_text ILIKE :query", {
               query: `%${query}%`,
             });
@@ -578,6 +569,7 @@ export class ComplaintService {
             break;
           }
           case "HWCR": {
+            //consider to remove? because other_attractants_text is not displayed in frontend
             qb.orWhere("wildlife.other_attractants_text ILIKE :query", {
               query: `%${query}%`,
             });
@@ -606,6 +598,12 @@ export class ComplaintService {
             // Sector complaints do not have specific fields to search, so we skip this case
             break;
           }
+        }
+
+        if (caseSearchData.length > 0) {
+          qb.orWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
+            complaint_identifiers: caseSearchData.map((caseData) => caseData.complaintId),
+          });
         }
 
         qb.orWhere("person.first_name ILIKE :query", {
@@ -1002,7 +1000,9 @@ export class ComplaintService {
   findById = async (
     id: string,
     complaintType?: COMPLAINT_TYPE,
-  ): Promise<ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto> => {
+  ): Promise<
+    ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto | SectorComplaintDto
+  > => {
     let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
 
     try {
@@ -1065,6 +1065,15 @@ export class ComplaintService {
             "WildlifeComplaintDto",
           );
           return hwcr;
+        }
+        case "SECTOR": {
+          const sector = this.mapper.map<Complaint, SectorComplaintDto>(
+            result as Complaint,
+            "Complaint",
+            "SectorComplaintDto",
+          );
+          await this.setSectorComplaintIssueType([sector]);
+          return sector;
         }
         default: {
           return this.mapper.map<Complaint, ComplaintDto>(result as Complaint, "Complaint", "ComplaintDto");
@@ -1243,7 +1252,7 @@ export class ComplaintService {
           // inject the authorization id onto each complaint
           items.forEach((item) => {
             const complaintOutcome = data.getComplaintOutcomesByComplaintId.find(
-              (file) => file.leadIdentifier === item.id,
+              (file) => file.complaintId === item.id,
             );
             if (complaintOutcome?.authorization) {
               item.authorization =

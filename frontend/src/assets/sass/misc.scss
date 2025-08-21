@@ -372,6 +372,27 @@
   z-index: 9000 !important;
 }
 
+#search-button-tooltip {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 100000 !important;
+  opacity: 1 !important;
+}
+#search-button-tooltip .tooltip-inner {
+  background-color: white;
+  color: $black;
+  border: 1px solid $bc-gov-primary;
+}
+#search-button-tooltip.tooltip .tooltip-arrow {
+  background-color: white;
+}
+#search-button-tooltip.tooltip .tooltip-arrow::before {
+  border-right-color: white;
+  border-left-color: white;
+  border-top-color: white;
+}
+
 .comp-tooltip-dark .tooltip-inner {
   background-color: $black;
 }

@@ -29,6 +29,13 @@ export const SideBar: FC = () => {
       route: "/complaints",
     },
     {
+      id: "investigations-link",
+      name: "Investigations",
+      icon: "bi bi-incognito",
+      route: "/investigations",
+      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATIONS)),
+    },
+    {
       id: "zone-at-a-glance-link",
       name: "Zone at a glance",
       icon: "bi bi-buildings",

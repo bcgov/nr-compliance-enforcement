@@ -9,6 +9,7 @@ import { ComplaintService } from "../complaint/complaint.service";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
 import { REQUEST } from "@nestjs/core";
 import { EmailService } from "../email/email.service";
+import { WebeocService } from "../../external_api/webeoc/webeoc.service";
 
 describe("PersonComplaintXrefController", () => {
   let controller: PersonComplaintXrefController;
@@ -38,6 +39,10 @@ describe("PersonComplaintXrefController", () => {
         },
         {
           provide: EmailService,
+          useValue: {},
+        },
+        {
+          provide: WebeocService,
           useValue: {},
         },
         {
