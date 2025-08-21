@@ -46,12 +46,17 @@ export class WebeocService {
     try {
       let response;
       if (action === "POST") {
-        response = await axios.post(authUrl, credentials, config);
+        let response = await axios.get(authUrl, config); // try to refresh an existing session
+        if (response.status !== 200) {
+          // if the session is not found, create a new one
+          response = await axios.post(authUrl, credentials, config);
+          this.cookie = response.headers["set-cookie"]?.[0] || ""; // update the cookie
+        }
       } else {
         response = await axios.delete(authUrl, config);
+        this.cookie = ""; // clear the cookie
       }
 
-      this.cookie = response.headers["set-cookie"]?.[0] || "";
       return this.cookie;
     } catch (error) {
       this.logger.error(`Error ${action}ing WebEOC session:`, error);

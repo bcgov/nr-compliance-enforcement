@@ -389,7 +389,6 @@ export class PersonComplaintXrefService {
         // Only if it came from webEOC
         await this._webeocService.manageSession("POST");
         await this._webeocService.assignOfficer(webeocIdentifier);
-        await this._webeocService.manageSession("DELETE");
       }
     } catch (error) {
       // The update to webEOC failed, but don't stop me now...
