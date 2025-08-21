@@ -18,6 +18,7 @@ import {
   openModal,
   personGuid,
   selectNotification,
+  setActiveTab,
   userId,
 } from "@store/reducers/app";
 import { selectAgencySectorDropdown, selectTeamDropdown } from "@store/reducers/code-table";

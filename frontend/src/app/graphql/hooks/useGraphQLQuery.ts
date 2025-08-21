@@ -37,6 +37,7 @@ export const useGraphQLQuery = <TData = any, TError = Error, TVariables = any>(
     enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes default
     gcTime: 10 * 60 * 1000, // 10 minutes default
+    refetchOnMount: true, // Ensure refetch data on component mount
     ...queryOptions,
   });
 };
