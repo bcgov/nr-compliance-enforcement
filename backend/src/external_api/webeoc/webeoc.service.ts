@@ -62,7 +62,6 @@ export class WebeocService {
     try {
       let response;
       if (action === "POST") {
-        this.logger.error(`CHECK IF SESSION EXISTS`);
         try {
           // try to refresh an existing session
           let response = await axios.get(authUrl, config);
