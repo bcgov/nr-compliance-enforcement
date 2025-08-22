@@ -33,6 +33,7 @@ import Investigations from "@/app/components/containers/investigations/investiga
 import { InvestigationDetails } from "@/app/components/containers/investigations/details/investigation-details";
 import { isFeatureActive } from "@store/reducers/app";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { PartyView } from "./components/containers/parties/view";
 import Redirect from "./components/containers/pages/redirect";
 import config from "@/config";
 
@@ -98,6 +99,10 @@ const App: FC = () => {
                 <Route
                   path="/compliments"
                   element={<Compliments />}
+                />
+                <Route
+                  path="/party/:id"
+                  element={<PartyView />}
                 />
                 {investigationsActive && (
                   <Route
