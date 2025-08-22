@@ -18,12 +18,12 @@ const Redirect: React.FC<Props> = ({ url }) => {
       <div className="redirect-container">
         <i
           className="bi bi-globe"
-          style={{ fontSize: "x-large" }}
+          style={{ fontSize: "xx-large" }}
         ></i>
         &nbsp;
         <i
           className="bi bi-chevron-right"
-          style={{ fontSize: "large" }}
+          style={{ fontSize: "x-large" }}
         ></i>
         <p>We've moved to a new web address</p>
         <p>Please visit the new location and update your bookmarks.</p>
