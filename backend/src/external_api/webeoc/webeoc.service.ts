@@ -69,7 +69,7 @@ export class WebeocService {
           if (response.status === 200) {
             await this.setCookie(cachedCookie); // Session renewed, extend the cookie expiration time by 20 minutes
           }
-        } catch (error) {
+        } catch {
           // session is expired, create a new session
           response = await axios.post(authUrl, credentials, config);
           const newCookie = response.headers["set-cookie"]?.[0] || "";
