@@ -22,10 +22,12 @@ const Redirect: React.FC<Props> = ({ url }) => {
         ></i>
         &nbsp;
         <i
-          className="bi bi-chevron-right"
+          className="bi bi-arrow-right"
           style={{ fontSize: "x-large" }}
         ></i>
-        <p>We've moved to a new web address</p>
+        <p className="redirect-title">
+          <b>We've moved to a new web address</b>
+        </p>
         <p>Please visit the new location and update your bookmarks.</p>
         <b>
           <Button
