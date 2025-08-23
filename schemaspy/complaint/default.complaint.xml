@@ -425,7 +425,7 @@
             <column ascending="true" name="entity_code"/>
          </index>
       </table>
-      <table name="feature_agency_xref" remarks="Maintains a mapping between FEATURES and AGENCIES that allow for features to be displayed or hidden as required." schema="complaint" type="TABLE">
+      <table name="feature_agency_xref" numRows="93" remarks="Maintains a mapping between FEATURES and AGENCIES that allow for features to be displayed or hidden as required." schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="feature_agency_xref_guid" nullable="false" remarks="System generated unique key for a FEATURE_AGENCY_XREF ecord.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="feature_code" nullable="false" remarks="A human readable code used to identify a FEATURE that is controlled by the FEATURE_AGENCY_XREF table." size="10" type="varchar" typeCode="12">
             <parent column="feature_code" foreignKey="FK_featurecd" implied="false" onDeleteCascade="false" schema="complaint" table="feature_code"/>
@@ -462,7 +462,7 @@
             <column ascending="true" name="feature_code"/>
          </index>
       </table>
-      <table name="flyway_schema_history" remarks="" schema="complaint" type="TABLE">
+      <table name="flyway_schema_history" numRows="91" remarks="" schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="" size="200" type="varchar" typeCode="12"/>
@@ -481,7 +481,7 @@
             <column ascending="true" name="success"/>
          </index>
       </table>
-      <table name="geo_org_unit_structure" remarks="A geographical organization unit structure is a parent/child relationship between two geographical organization units." schema="complaint" type="TABLE">
+      <table name="geo_org_unit_structure" numRows="1041" remarks="A geographical organization unit structure is a parent/child relationship between two geographical organization units." schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="geo_org_unit_structure_guid" nullable="false" remarks="System generated unique key for a geographical organization unit structure. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="effective_date" nullable="false" remarks="The date the Geographical Organizational Unit Structure becomes effective as a valid relationship within the Ministry organizational structure." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="expiry_date" nullable="true" remarks="The date the Geographical Organizational Unit Structure is no longer recognized as a valid relationship within the Ministry organizational structure." size="29" type="timestamp" typeCode="93"/>
@@ -534,7 +534,7 @@
             <column ascending="true" name="geo_org_unit_type_code"/>
          </index>
       </table>
-      <table name="geo_organization_unit_code" remarks="A geographical organization unit is a named geographical boundary that represents a physical location.   The level of granularity can vary with Regions being the highest level - for example Okanagan, and Areas being the lowest level - for example Big White" schema="complaint" type="TABLE">
+      <table name="geo_organization_unit_code" numRows="1049" remarks="A geographical organization unit is a named geographical boundary that represents a physical location.   The level of granularity can vary with Regions being the highest level - for example Okanagan, and Areas being the lowest level - for example Big White" schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="geo_organization_unit_code" nullable="false" remarks="A human readable code used to identify a geographical organization unit." size="10" type="varchar" typeCode="12">
             <child column="geo_organization_unit_code" foreignKey="FK_complaint_geoorgutnd" implied="false" onDeleteCascade="false" schema="complaint" table="complaint"/>
             <child column="geo_organization_unit_code" foreignKey="FK_emailref__geo_org_unit_code" implied="false" onDeleteCascade="false" schema="complaint" table="email_reference"/>
@@ -686,7 +686,7 @@
          </index>
          <checkConstraint constraint="(((complaint_identifier)::text &lt;&gt; (linked_complaint_identifier)::text))" name="NE_lnkcmplxref_no_self_link"/>
       </table>
-      <table name="office" remarks="An office is a physical location that serves as a central organization point for groups of users of the system." schema="complaint" type="TABLE">
+      <table name="office" numRows="68" remarks="An office is a physical location that serves as a central organization point for groups of users of the system." schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="office_guid" nullable="false" remarks="System generated unique key for an office. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
             <child column="office_guid" foreignKey="FK_officer_office" implied="false" onDeleteCascade="false" schema="complaint" table="officer"/>
          </column>
@@ -703,7 +703,7 @@
             <column ascending="true" name="office_guid"/>
          </index>
       </table>
-      <table name="office_h" remarks="History table for office table" schema="complaint" type="TABLE">
+      <table name="office_h" numRows="68" remarks="History table for office table" schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="h_office_guid" nullable="false" remarks="System generated unique key for office history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the office that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
@@ -715,7 +715,7 @@
             <column ascending="true" name="h_office_guid"/>
          </index>
       </table>
-      <table name="officer" remarks="An officer is a subtype of a person who can be identified through their IDIR." schema="complaint" type="TABLE">
+      <table name="officer" numRows="71" remarks="An officer is a subtype of a person who can be identified through their IDIR." schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="officer_guid" nullable="false" remarks="System generated unique key for an officer. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
             <child column="officer_guid" foreignKey="FK_cmplreferral__officer_guid" implied="false" onDeleteCascade="false" schema="complaint" table="complaint_referral"/>
             <child column="officer_guid" foreignKey="officer_team_xref_officer_fk" implied="false" onDeleteCascade="false" schema="complaint" table="officer_team_xref"/>
@@ -744,7 +744,7 @@
             <column ascending="true" name="person_guid"/>
          </index>
       </table>
-      <table name="officer_h" remarks="History table for officer table" schema="complaint" type="TABLE">
+      <table name="officer_h" numRows="72" remarks="History table for officer table" schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="h_officer_guid" nullable="false" remarks="System generated unique key for officer history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the officer that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
@@ -786,7 +786,7 @@
             <column ascending="true" name="h_officer_team_xref_guid"/>
          </index>
       </table>
-      <table name="person" remarks="A person is an individual that is being tracked explicitly within the system.  The criteria for being included as a trackable individual is the possession of a unique identifier that can be used for dealiasing.  For example an IDIR or a BC Drivers Licence." schema="complaint" type="TABLE">
+      <table name="person" numRows="72" remarks="A person is an individual that is being tracked explicitly within the system.  The criteria for being included as a trackable individual is the possession of a unique identifier that can be used for dealiasing.  For example an IDIR or a BC Drivers Licence." schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="person_guid" nullable="false" remarks="System generated unique key for an person. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
             <child column="person_guid" foreignKey="FK_officer_person" implied="false" onDeleteCascade="false" schema="complaint" table="officer"/>
             <child column="person_guid" foreignKey="FK_person_complaint_xref__person_guid" implied="false" onDeleteCascade="false" schema="complaint" table="person_complaint_xref"/>
@@ -865,7 +865,7 @@
             <column ascending="true" name="h_person_complaint_xref_guid"/>
          </index>
       </table>
-      <table name="person_h" remarks="History table for person table" schema="complaint" type="TABLE">
+      <table name="person_h" numRows="72" remarks="History table for person table" schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="h_person_guid" nullable="false" remarks="System generated unique key for person history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the person that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
@@ -895,7 +895,7 @@
             <column ascending="true" name="reported_by_code"/>
          </index>
       </table>
-      <table name="species_code" remarks="The species involved in a Human Wildlife Conflict (E.g. BLKBEAR = Black Bear; WOLVERN = Wolverine)" schema="complaint" type="TABLE">
+      <table name="species_code" numRows="24" remarks="The species involved in a Human Wildlife Conflict (E.g. BLKBEAR = Black Bear; WOLVERN = Wolverine)" schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="species_code" nullable="false" remarks="A human readable code used to identify a wildlife species." size="10" type="varchar" typeCode="12">
             <child column="species_code" foreignKey="FK_hwcrcmplnt_speciescd" implied="false" onDeleteCascade="false" schema="complaint" table="hwcr_complaint"/>
          </column>
@@ -952,7 +952,7 @@
             <column ascending="true" name="staging_complaint_guid"/>
          </index>
       </table>
-      <table name="staging_metadata_mapping" remarks="" schema="complaint" type="TABLE">
+      <table name="staging_metadata_mapping" numRows="1066" remarks="" schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="staging_metadata_mapping_guid" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="entity_code" nullable="false" remarks="" size="10" type="varchar" typeCode="12">
             <parent column="entity_code" foreignKey="staging_staging_metadata_mapping_entity_code" implied="false" onDeleteCascade="false" schema="complaint" table="entity_code"/>
