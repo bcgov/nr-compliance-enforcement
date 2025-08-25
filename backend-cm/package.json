@@ -45,7 +45,7 @@
     "@nestjs/testing": "^10.4.4",
     "@nestjs/typeorm": "^10.0.2",
     "@prisma/client": "^6.6.0",
-    "apollo-server-express": "^3.13.0",
+    "@apollo/server": "^4.0.0",
     "axios": "^1.7.7",
     "class-validator": "^0.14.1",
     "copyfiles": "^2.4.1",
