@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch } from "@hooks/hooks";
-import { setIsInEdit } from "@store/reducers/cases";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { HWCRAssessmentItem } from "./hwcr-assessment-item";
 import { HWCRAssessmentForm } from "./hwcr-assessment-form";
 import { Assessment } from "@/app/types/outcomes/assessment";

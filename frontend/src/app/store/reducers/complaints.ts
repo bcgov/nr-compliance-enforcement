@@ -284,7 +284,6 @@ export const complaintSlice = createSlice({
             emailLog.complaint_referral_guid.complaint_referral_guid === referral.complaint_referral_guid,
         );
       }
-      console.log(referrals);
       return { ...state, webeocUpdates, actions, referrals };
     },
     setActions: (state, action: PayloadAction<ActionTaken[]>) => {

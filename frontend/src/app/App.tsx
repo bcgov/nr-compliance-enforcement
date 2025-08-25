@@ -10,7 +10,7 @@ import { ComplaintDetailsEdit } from "./components/containers/complaints/details
 import { CaseView } from "./components/containers/cases/view/case-view";
 import ColorReference, { MiscReference, SpaceReference } from "./components/reference";
 import { ModalComponent as Modal } from "./components/modal/modal";
-import { useAppDispatch } from "./hooks/hooks";
+import { useAppDispatch, useAppSelector } from "./hooks/hooks";
 import { ZoneAtAGlance } from "./components/containers/zone-at-a-glance/zone-at-a-glance";
 import { fetchAllCodeTables } from "./store/reducers/code-table";
 import { getOfficers } from "./store/reducers/officer";
@@ -29,6 +29,13 @@ import { VerifyAccess } from "./components/containers/pages/verify-access";
 import { Roles, coreRoles } from "./types/app/roles";
 import { FeatureManagement } from "./components/containers/admin/feature-management";
 import { AppUpdate } from "./AppUpdate";
+import Investigations from "@/app/components/containers/investigations/investigations";
+import { InvestigationDetails } from "@/app/components/containers/investigations/details/investigation-details";
+import { isFeatureActive } from "@store/reducers/app";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { PartyView } from "./components/containers/parties/view";
+import Redirect from "./components/containers/pages/redirect";
+import config from "@/config";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -42,6 +49,12 @@ const App: FC = () => {
     dispatch(getFeatureFlag());
   }, [dispatch]);
 
+  const investigationsActive = useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATIONS));
+
+  const { REDIRECT_MODE, REDIRECT_HOST_NAME } = config;
+  const redirectMode = REDIRECT_MODE === "true";
+  const redirectUrl = REDIRECT_HOST_NAME;
+
   return (
     <GenericErrorBoundary>
       <AppUpdate />
@@ -51,80 +64,105 @@ const App: FC = () => {
         <PageLoader />
         <ToastContainer />
         <Routes>
-          <Route element={<ProtectedRoutes roles={coreRoles} />}>
+          {redirectMode ? (
             <Route
-              path="/"
-              element={<ComplaintsRouteWrapper />}
+              path="*"
+              element={<Redirect url={redirectUrl} />}
             />
-            <Route
-              path="/complaints/:type?"
-              element={<ComplaintsRouteWrapper />}
-            />
-            <Route
-              path="/cases"
-              element={<Cases />}
-            />
-            <Route
-              path="/case/create"
-              element={<CaseEdit />}
-            />
-            <Route
-              path="/case/:id"
-              element={<CaseView />}
-            />
-            <Route
-              path="/case/:id/edit"
-              element={<CaseEdit />}
-            />
-            <Route
-              path="/compliments"
-              element={<Compliments />}
-            />
-            <Route
-              path="/complaint/:complaintType/:id"
-              element={<ComplaintDetailsEdit />}
-            />
-            <Route
-              path="/zone/at-a-glance"
-              element={<ZoneAtAGlance />}
-            />
-            <Route
-              path="/complaint/createComplaint"
-              element={<CreateComplaint />}
-            />
-          </Route>
-          <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
-            <Route
-              path="/admin/user"
-              element={<UserManagement />}
-            />
-          </Route>
-          <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
-            <Route
-              path="/admin/feature"
-              element={<FeatureManagement />}
-            />
-          </Route>
-          <Route
-            path="/verification"
-            element={<VerifyAccess />}
-          />
-          <Route
-            path="/not-authorized"
-            element={<NotAuthorized />}
-          />
-          <Route
-            path="*"
-            element={<NotFound />}
-          />
-          <Route
-            path="/reference"
-            element={
-              <>
-                <ColorReference /> <MiscReference /> <SpaceReference />
-              </>
-            }
-          />
+          ) : (
+            <>
+              <Route element={<ProtectedRoutes roles={coreRoles} />}>
+                <Route
+                  path="/"
+                  element={<ComplaintsRouteWrapper />}
+                />
+                <Route
+                  path="/complaints/:type?"
+                  element={<ComplaintsRouteWrapper />}
+                />
+                <Route
+                  path="/cases"
+                  element={<Cases />}
+                />
+                <Route
+                  path="/case/create"
+                  element={<CaseEdit />}
+                />
+                <Route
+                  path="/case/:id"
+                  element={<CaseView />}
+                />
+                <Route
+                  path="/case/:id/edit"
+                  element={<CaseEdit />}
+                />
+                <Route
+                  path="/compliments"
+                  element={<Compliments />}
+                />
+                <Route
+                  path="/party/:id"
+                  element={<PartyView />}
+                />
+                {investigationsActive && (
+                  <Route
+                    path="/investigations"
+                    element={<Investigations />}
+                  />
+                )}
+                {investigationsActive && (
+                  <Route
+                    path="/investigation/:investigationGuid"
+                    element={<InvestigationDetails />}
+                  />
+                )}
+                <Route
+                  path="/complaint/:complaintType/:id"
+                  element={<ComplaintDetailsEdit />}
+                />
+                <Route
+                  path="/zone/at-a-glance"
+                  element={<ZoneAtAGlance />}
+                />
+                <Route
+                  path="/complaint/createComplaint"
+                  element={<CreateComplaint />}
+                />
+              </Route>
+              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+                <Route
+                  path="/admin/user"
+                  element={<UserManagement />}
+                />
+              </Route>
+              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+                <Route
+                  path="/admin/feature"
+                  element={<FeatureManagement />}
+                />
+              </Route>
+              <Route
+                path="/verification"
+                element={<VerifyAccess />}
+              />
+              <Route
+                path="/not-authorized"
+                element={<NotAuthorized />}
+              />
+              <Route
+                path="*"
+                element={<NotFound />}
+              />
+              <Route
+                path="/reference"
+                element={
+                  <>
+                    <ColorReference /> <MiscReference /> <SpaceReference />
+                  </>
+                }
+              />
+            </>
+          )}
         </Routes>
       </Router>
     </GenericErrorBoundary>

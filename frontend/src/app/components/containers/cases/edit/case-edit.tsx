@@ -14,15 +14,16 @@ import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { CaseMomsSpaghettiFileCreateInput, CaseMomsSpaghettiFileUpdateInput } from "@/generated/graphql";
+import { CaseFileCreateInput, CaseFileUpdateInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
 
 const CREATE_CASE_MUTATION = gql`
-  mutation CreateCaseMomsSpaghettiFile($input: CaseMomsSpaghettiFileCreateInput!) {
-    createCaseMomsSpaghettiFile(input: $input) {
+  mutation CreateCaseFile($input: CaseFileCreateInput!) {
+    createCaseFile(input: $input) {
       caseIdentifier
-      caseOpenedTimestamp
-      caseStatus {
+      openedTimestamp
+      description
+      status {
         caseStatusCode
         shortDescription
         longDescription
@@ -37,10 +38,11 @@ const CREATE_CASE_MUTATION = gql`
 `;
 
 const UPDATE_CASE_MUTATION = gql`
-  mutation UpdateCaseMomsSpaghettiFile($caseIdentifier: String!, $input: CaseMomsSpaghettiFileUpdateInput!) {
-    updateCaseMomsSpaghettiFile(caseIdentifier: $caseIdentifier, input: $input) {
+  mutation UpdateCaseFile($caseIdentifier: String!, $input: CaseFileUpdateInput!) {
+    updateCaseFile(caseIdentifier: $caseIdentifier, input: $input) {
       caseIdentifier
-      caseOpenedTimestamp
+      openedTimestamp
+      description
       caseStatus {
         caseStatusCode
         shortDescription
@@ -56,11 +58,12 @@ const UPDATE_CASE_MUTATION = gql`
 `;
 
 const GET_CASE_FILE = gql`
-  query GetCaseMomsSpaghetttiFile($caseIdentifier: String!) {
-    caseMomsSpaghettiFile(caseIdentifier: $caseIdentifier) {
+  query GetCaseFile($caseIdentifier: String!) {
+    caseFile(caseIdentifier: $caseIdentifier) {
       __typename
       caseIdentifier
-      caseOpenedTimestamp
+      openedTimestamp
+      description
       caseStatus {
         caseStatusCode
         shortDescription
@@ -71,8 +74,12 @@ const GET_CASE_FILE = gql`
         shortDescription
         longDescription
       }
-      caseActivities {
+      activities {
         __typename
+        caseActivityIdentifier
+        activityType {
+          caseActivityTypeCode
+        }
       }
     }
   }
@@ -88,16 +95,16 @@ const CaseEdit: FC = () => {
   const agencyOptions = useAppSelector(selectAgencyDropdown);
 
   const { data: caseData, isLoading } = useGraphQLQuery(GET_CASE_FILE, {
-    queryKey: ["caseMomsSpaghettiFile", id],
+    queryKey: ["caseFile", id],
     variables: { caseIdentifier: id },
     enabled: isEditMode,
   });
 
   const createCaseMutation = useGraphQLMutation(CREATE_CASE_MUTATION, {
-    invalidateQueries: ["searchCaseMomsSpaghettiFiles"],
+    invalidateQueries: ["searchCaseFiles"],
     onSuccess: (data: any) => {
       ToggleSuccess("Case created successfully");
-      navigate(`/case/${data.createCaseMomsSpaghettiFile.caseIdentifier}`);
+      navigate(`/case/${data.createCaseFile.caseIdentifier}`);
     },
     onError: (error: any) => {
       console.error("Error creating case:", error);
@@ -106,7 +113,7 @@ const CaseEdit: FC = () => {
   });
 
   const updateCaseMutation = useGraphQLMutation(UPDATE_CASE_MUTATION, {
-    invalidateQueries: [["caseMomsSpaghettiFile", id], "searchCaseMomsSpaghettiFiles"],
+    invalidateQueries: [["caseFile", id], "searchCaseFiles"],
     onSuccess: (data: any) => {
       ToggleSuccess("Case updated successfully");
       navigate(`/case/${id}`);
@@ -119,16 +126,16 @@ const CaseEdit: FC = () => {
 
   const defaultValues = useMemo(() => {
     // If there is case data set the default state of the form to the case data
-    if (isEditMode && caseData?.caseMomsSpaghettiFile) {
+    if (isEditMode && caseData?.caseFile) {
       return {
-        caseStatus: caseData.caseMomsSpaghettiFile.caseStatus?.caseStatusCode || "",
-        leadAgencyCode: caseData.caseMomsSpaghettiFile.leadAgency?.agencyCode || "",
-        description: caseData.caseMomsSpaghettiFile.description || "",
+        caseStatus: caseData.caseFile.caseStatus?.caseStatusCode || "",
+        leadAgency: caseData.caseFile.leadAgency?.agencyCode || "",
+        description: caseData.caseFile.description || "",
       };
     }
     return {
       caseStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
-      leadAgencyCode: getUserAgency(),
+      leadAgency: getUserAgency(),
       description: "",
     };
   }, [isEditMode, caseData]);
@@ -137,9 +144,10 @@ const CaseEdit: FC = () => {
     defaultValues,
     onSubmit: async ({ value }) => {
       if (isEditMode) {
-        const updateInput: CaseMomsSpaghettiFileUpdateInput = {
+        const updateInput: CaseFileUpdateInput = {
           caseStatus: value.caseStatus,
-          leadAgencyCode: value.leadAgencyCode,
+          leadAgency: value.leadAgency,
+          description: value.description,
         };
 
         updateCaseMutation.mutate({
@@ -147,9 +155,10 @@ const CaseEdit: FC = () => {
           input: updateInput,
         });
       } else {
-        const createInput: CaseMomsSpaghettiFileCreateInput = {
+        const createInput: CaseFileCreateInput = {
           caseStatus: value.caseStatus,
-          leadAgencyCode: value.leadAgencyCode,
+          leadAgency: value.leadAgency,
+          description: value.description,
         };
 
         createCaseMutation.mutate({ input: createInput });
@@ -230,7 +239,7 @@ const CaseEdit: FC = () => {
 
             <FormField
               form={form}
-              name="leadAgencyCode"
+              name="leadAgency"
               label="Lead agency"
               required
               validators={{ onChange: z.string().min(1, "Lead agency is required") }}
@@ -260,7 +269,7 @@ const CaseEdit: FC = () => {
               validators={{ onChange: z.string().min(1, "Description is required") }}
               render={(field) => (
                 <ValidationTextArea
-                  id="case-description"
+                  id="description"
                   className="comp-form-control comp-details-input"
                   rows={4}
                   defaultValue={field.state.value}

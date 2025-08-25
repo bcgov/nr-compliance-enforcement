@@ -1,5 +1,5 @@
-import { BaseCaseFileInput } from "../base-case-file-input";
+import { BaseComplaintOutcomeInput } from "../base-complaint-outcome-input";
 
-export interface CreateNoteInput extends BaseCaseFileInput {
+export interface CreateNoteInput extends BaseComplaintOutcomeInput {
   note: string;
 }

@@ -39,7 +39,7 @@ export interface OfficeGUID {
   update_user_id: string;
   update_utc_timestamp: Date;
   cos_geo_org_unit: CosGeoOrgUnit;
-  agency_code: Agency;
+  agency_code_ref: string;
   reported_by_code: ReportedByCode;
 }
 

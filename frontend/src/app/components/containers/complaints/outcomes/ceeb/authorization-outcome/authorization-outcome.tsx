@@ -2,15 +2,15 @@ import { FC, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
-import { setIsInEdit } from "@store/reducers/cases";
-import { selectCeebAuthorization } from "@store/reducers/case-selectors";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
+import { selectCeebAuthorization } from "@/app/store/reducers/complaint-outcome-selectors";
 import { Button, Card } from "react-bootstrap";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { AuthoizationOutcomeForm } from "./authorization-outcome-form";
 import { AuthoizationOutcomeItem } from "./authorization-outcome-item";
 import { openModal } from "@store/reducers/app";
 import { DELETE_CONFIRM } from "@apptypes/modal/modal-types";
-import { deleteAuthorizationOutcome, getCaseFile } from "@store/reducers/case-thunks";
+import { deleteAuthorizationOutcome, getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 
 export const AuthoizationOutcome: FC = () => {
@@ -20,12 +20,12 @@ export const AuthoizationOutcome: FC = () => {
   //-- select the authorization
   const data = useAppSelector(selectCeebAuthorization);
 
-  const isInEdit = useAppSelector((state) => state.cases.isInEdit);
+  const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const [editable, setEditable] = useState(true);
   const showSectionErrors = isInEdit.showSectionErrors;
 
-  const cases = useAppSelector((state) => state.cases);
-  const hasAuthorization = !cases.authorization;
+  const complaintOutcomes = useAppSelector((state) => state.complaintOutcomes);
+  const hasAuthorization = !complaintOutcomes.authorization;
 
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 

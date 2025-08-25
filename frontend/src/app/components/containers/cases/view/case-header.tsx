@@ -1,20 +1,21 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
-import { Badge, Dropdown } from "react-bootstrap";
+import { Badge } from "react-bootstrap";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
-import { CaseMomsSpaghettiFile } from "@/generated/graphql";
+import { CaseFile } from "@/generated/graphql";
+import { ActionMenu } from "@/app/components/common/action-menu";
 
 interface CaseHeaderProps {
-  caseData?: CaseMomsSpaghettiFile;
+  caseData?: CaseFile;
 }
 
 export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
   const caseId = caseData?.caseIdentifier || "Unknown";
-  const caseStatus = caseData?.caseStatus?.shortDescription || "Active";
+  const status = caseData?.caseStatus?.shortDescription || "Active";
   const caseType = "Investispection";
   const leadAgency = caseData?.leadAgency?.longDescription || "Unknown Agency";
-  const dateLogged = caseData?.caseOpenedTimestamp ? new Date(caseData.caseOpenedTimestamp).toString() : undefined;
-  const lastUpdated = caseData?.caseOpenedTimestamp ? new Date(caseData.caseOpenedTimestamp).toString() : undefined;
+  const dateLogged = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
+  const lastUpdated = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
   const officerAssigned = "Not Assigned";
   const createdBy = "Unknown";
 
@@ -52,58 +53,12 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
             <div className="comp-details-badge-container">
               <Badge
                 id="comp-details-status-text-id"
-                className={`badge ${applyStatusClass(caseStatus)}`}
+                className={`badge ${applyStatusClass(status)}`}
               >
-                {caseStatus}
+                {status}
               </Badge>
             </div>
-
-            {/* Action Buttons */}
-            <div className="comp-header-actions">
-              <div className="comp-header-actions-mobile">
-                <Dropdown>
-                  <Dropdown.Toggle
-                    aria-label="Actions Menu"
-                    variant="outline-primary"
-                    className="icon-btn"
-                    id="dropdown-basic"
-                  >
-                    <i className="bi bi-three-dots-vertical"></i>
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu align="end">
-                    <Dropdown.Item
-                      as="button"
-                      disabled={true}
-                    >
-                      <i className="bi bi-gear"></i>
-                      <span>Placeholder Action</span>
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-              <div className="comp-header-actions-desktop">
-                <Dropdown className="comp-header-kebab-menu">
-                  <Dropdown.Toggle
-                    aria-label="Actions Menu"
-                    variant="outline-light"
-                    className="kebab-btn"
-                    id="dropdown-basic"
-                  >
-                    <i className="bi bi-three-dots-vertical"></i>
-                    <span>More actions</span>
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu align="end">
-                    <Dropdown.Item
-                      as="button"
-                      disabled={true}
-                    >
-                      <i className="bi bi-gear"></i>
-                      <span>Placeholder Action</span>
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-            </div>
+            <ActionMenu />
           </div>
 
           {/* Case Type Details */}

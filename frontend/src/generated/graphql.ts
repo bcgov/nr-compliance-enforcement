@@ -32,15 +32,6 @@ export type AgencyCode = {
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
   agencyCode?: Maybe<Scalars['String']['output']>;
   displayOrder?: Maybe<Scalars['Int']['output']>;
-  longDescription?: Maybe<Scalars['String']['output']>;
-  shortDescription?: Maybe<Scalars['String']['output']>;
-};
-
-export type AgencyMomsSpaghettiCode = {
-  __typename?: 'AgencyMomsSpaghettiCode';
-  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
-  agencyCode?: Maybe<Scalars['String']['output']>;
-  displayOrder?: Maybe<Scalars['Int']['output']>;
   externalAgencyIndicator?: Maybe<Scalars['Boolean']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
@@ -54,7 +45,6 @@ export type Assessment = {
   actionJustificationShortDescription?: Maybe<Scalars['String']['output']>;
   actionNotRequired?: Maybe<Scalars['Boolean']['output']>;
   actions?: Maybe<Array<Maybe<CaseFileAction>>>;
-  agencyCode?: Maybe<Scalars['String']['output']>;
   attended?: Maybe<Scalars['Boolean']['output']>;
   cat1Actions?: Maybe<Array<Maybe<CaseFileAction>>>;
   categoryLevel?: Maybe<KeyValuePair>;
@@ -62,6 +52,7 @@ export type Assessment = {
   contactedComplainant?: Maybe<Scalars['Boolean']['output']>;
   id?: Maybe<Scalars['String']['output']>;
   locationType?: Maybe<KeyValuePair>;
+  outcomeAgencyCode?: Maybe<Scalars['String']['output']>;
 };
 
 export type AssessmentActionInput = {
@@ -87,10 +78,16 @@ export type AssessmentInput = {
   locationType?: InputMaybe<KeyValuePairInput>;
 };
 
+export type Business = {
+  __typename?: 'Business';
+  businessGuid?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
 export type CaseActivity = {
   __typename?: 'CaseActivity';
+  activityType?: Maybe<CaseActivityTypeCode>;
   caseActivityIdentifier?: Maybe<Scalars['String']['output']>;
-  caseActivityType?: Maybe<CaseActivityTypeCode>;
   effectiveDate?: Maybe<Scalars['Date']['output']>;
   expiryDate?: Maybe<Scalars['Date']['output']>;
 };
@@ -106,17 +103,12 @@ export type CaseActivityTypeCode = {
 
 export type CaseFile = {
   __typename?: 'CaseFile';
-  assessment?: Maybe<Array<Maybe<Assessment>>>;
-  authorization?: Maybe<PermitSite>;
+  activities?: Maybe<Array<Maybe<CaseActivity>>>;
   caseIdentifier?: Maybe<Scalars['String']['output']>;
-  decision?: Maybe<Decision>;
-  equipment?: Maybe<Array<Maybe<EquipmentDetails>>>;
-  isReviewRequired?: Maybe<Scalars['Boolean']['output']>;
-  leadIdentifier?: Maybe<Scalars['String']['output']>;
-  notes?: Maybe<Array<Maybe<Note>>>;
-  prevention?: Maybe<Array<Maybe<Prevention>>>;
-  reviewComplete?: Maybe<CaseFileAction>;
-  subject?: Maybe<Array<Maybe<Wildlife>>>;
+  caseStatus?: Maybe<CaseStatusCode>;
+  description?: Maybe<Scalars['String']['output']>;
+  leadAgency?: Maybe<AgencyCode>;
+  openedTimestamp?: Maybe<Scalars['Date']['output']>;
 };
 
 export type CaseFileAction = {
@@ -133,6 +125,34 @@ export type CaseFileAction = {
   shortDescription: Scalars['String']['output'];
 };
 
+export type CaseFileCreateInput = {
+  caseStatus: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  leadAgency: Scalars['String']['input'];
+};
+
+export type CaseFileFilters = {
+  caseStatus?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['Date']['input']>;
+  leadAgency?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['Date']['input']>;
+};
+
+export type CaseFileResult = {
+  __typename?: 'CaseFileResult';
+  items: Array<CaseFile>;
+  pageInfo: PageInfo;
+};
+
+export type CaseFileUpdateInput = {
+  caseStatus?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  leadAgency?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CaseLocationCode = {
   __typename?: 'CaseLocationCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -142,41 +162,6 @@ export type CaseLocationCode = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
-export type CaseMomsSpaghettiFile = {
-  __typename?: 'CaseMomsSpaghettiFile';
-  caseActivities?: Maybe<Array<Maybe<CaseActivity>>>;
-  caseIdentifier?: Maybe<Scalars['String']['output']>;
-  caseOpenedTimestamp?: Maybe<Scalars['Date']['output']>;
-  caseStatus?: Maybe<CaseStatusCode>;
-  leadAgency?: Maybe<AgencyMomsSpaghettiCode>;
-};
-
-export type CaseMomsSpaghettiFileCreateInput = {
-  caseStatus: Scalars['String']['input'];
-  leadAgencyCode: Scalars['String']['input'];
-};
-
-export type CaseMomsSpaghettiFileFilters = {
-  agencyCode?: InputMaybe<Scalars['String']['input']>;
-  caseStatus?: InputMaybe<Scalars['String']['input']>;
-  endDate?: InputMaybe<Scalars['Date']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
-  sortBy?: InputMaybe<Scalars['String']['input']>;
-  sortOrder?: InputMaybe<Scalars['String']['input']>;
-  startDate?: InputMaybe<Scalars['Date']['input']>;
-};
-
-export type CaseMomsSpaghettiFileResult = {
-  __typename?: 'CaseMomsSpaghettiFileResult';
-  items: Array<CaseMomsSpaghettiFile>;
-  pageInfo: PageInfo;
-};
-
-export type CaseMomsSpaghettiFileUpdateInput = {
-  caseStatus?: InputMaybe<Scalars['String']['input']>;
-  leadAgencyCode?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type CaseStatusCode = {
   __typename?: 'CaseStatusCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -184,6 +169,21 @@ export type CaseStatusCode = {
   displayOrder?: Maybe<Scalars['Int']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type ComplaintOutcome = {
+  __typename?: 'ComplaintOutcome';
+  assessment?: Maybe<Array<Maybe<Assessment>>>;
+  authorization?: Maybe<PermitSite>;
+  complaintId?: Maybe<Scalars['String']['output']>;
+  complaintOutcomeGuid?: Maybe<Scalars['String']['output']>;
+  decision?: Maybe<Decision>;
+  equipment?: Maybe<Array<Maybe<EquipmentDetails>>>;
+  isReviewRequired?: Maybe<Scalars['Boolean']['output']>;
+  notes?: Maybe<Array<Maybe<Note>>>;
+  prevention?: Maybe<Array<Maybe<Prevention>>>;
+  reviewComplete?: Maybe<CaseFileAction>;
+  subject?: Maybe<Array<Maybe<Wildlife>>>;
 };
 
 export type Configuration = {
@@ -216,62 +216,55 @@ export type ContactMethodInput = {
 };
 
 export type CreateAssessmentInput = {
-  agencyCode: Scalars['String']['input'];
   assessment: AssessmentInput;
-  caseCode: Scalars['String']['input'];
-  caseIdentifier?: InputMaybe<Scalars['String']['input']>;
+  complaintId?: InputMaybe<Scalars['String']['input']>;
+  complaintOutcomeGuid?: InputMaybe<Scalars['String']['input']>;
   createUserId: Scalars['String']['input'];
-  leadIdentifier?: InputMaybe<Scalars['String']['input']>;
+  outcomeAgencyCode: Scalars['String']['input'];
 };
 
 export type CreateAuthorizationOutcomeInput = {
-  agencyCode: Scalars['String']['input'];
-  caseCode: Scalars['String']['input'];
+  complaintId: Scalars['String']['input'];
   createUserId: Scalars['String']['input'];
   input: PermitSiteInput;
-  leadIdentifier: Scalars['String']['input'];
+  outcomeAgencyCode: Scalars['String']['input'];
 };
 
 export type CreateDecisionInput = {
   actor?: InputMaybe<Scalars['String']['input']>;
-  agencyCode?: InputMaybe<Scalars['String']['input']>;
-  caseCode?: InputMaybe<Scalars['String']['input']>;
+  complaintId?: InputMaybe<Scalars['String']['input']>;
   createUserId?: InputMaybe<Scalars['String']['input']>;
   decision?: InputMaybe<DecisionInput>;
-  leadIdentifier?: InputMaybe<Scalars['String']['input']>;
+  outcomeAgencyCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateEquipmentInput = {
-  agencyCode: Scalars['String']['input'];
-  caseCode: Scalars['String']['input'];
+  complaintId: Scalars['String']['input'];
   createUserId: Scalars['String']['input'];
   equipment: Array<InputMaybe<EquipmentDetailsInput>>;
-  leadIdentifier: Scalars['String']['input'];
+  outcomeAgencyCode: Scalars['String']['input'];
 };
 
 export type CreateNoteInput = {
   actor: Scalars['String']['input'];
-  agencyCode: Scalars['String']['input'];
-  caseCode: Scalars['String']['input'];
+  complaintId: Scalars['String']['input'];
   createUserId: Scalars['String']['input'];
-  leadIdentifier: Scalars['String']['input'];
   note: Scalars['String']['input'];
+  outcomeAgencyCode: Scalars['String']['input'];
 };
 
 export type CreatePreventionInput = {
-  agencyCode: Scalars['String']['input'];
-  caseCode: Scalars['String']['input'];
-  caseIdentifier?: InputMaybe<Scalars['String']['input']>;
+  complaintId?: InputMaybe<Scalars['String']['input']>;
+  complaintOutcomeGuid?: InputMaybe<Scalars['String']['input']>;
   createUserId: Scalars['String']['input'];
-  leadIdentifier?: InputMaybe<Scalars['String']['input']>;
+  outcomeAgencyCode: Scalars['String']['input'];
   prevention: PreventionInput;
 };
 
 export type CreateWildlifeInput = {
-  agencyCode: Scalars['String']['input'];
-  caseCode: Scalars['String']['input'];
+  complaintId: Scalars['String']['input'];
   createUserId: Scalars['String']['input'];
-  leadIdentifier: Scalars['String']['input'];
+  outcomeAgencyCode: Scalars['String']['input'];
   wildlife: WildlifeInput;
 };
 
@@ -314,7 +307,7 @@ export type DecisionInput = {
 };
 
 export type DeleteAuthorizationOutcomeInput = {
-  caseIdentifier: Scalars['String']['input'];
+  complaintOutcomeGuid: Scalars['String']['input'];
   id: Scalars['String']['input'];
   updateUserId: Scalars['String']['input'];
 };
@@ -326,20 +319,20 @@ export type DeleteEquipmentInput = {
 
 export type DeleteNoteInput = {
   actor: Scalars['String']['input'];
-  caseIdentifier: Scalars['String']['input'];
+  complaintOutcomeGuid: Scalars['String']['input'];
   id: Scalars['String']['input'];
   updateUserId: Scalars['String']['input'];
 };
 
 export type DeletePreventionInput = {
+  complaintId: Scalars['String']['input'];
   id: Scalars['String']['input'];
-  leadIdentifier: Scalars['String']['input'];
   updateUserId: Scalars['String']['input'];
 };
 
 export type DeleteWildlifeInput = {
   actor: Scalars['String']['input'];
-  caseIdentifier: Scalars['String']['input'];
+  complaintOutcomeGuid: Scalars['String']['input'];
   updateUserId: Scalars['String']['input'];
   wildlifeId: Scalars['String']['input'];
 };
@@ -516,9 +509,27 @@ export type IPMAuthCategoryCodeType = {
 export type InactionJustificationType = {
   __typename?: 'InactionJustificationType';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
-  agencyCode: Scalars['String']['output'];
   displayOrder?: Maybe<Scalars['Int']['output']>;
   inactionJustificationCode: Scalars['String']['output'];
+  longDescription?: Maybe<Scalars['String']['output']>;
+  outcomeAgencyCode: Scalars['String']['output'];
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type Investigation = {
+  __typename?: 'Investigation';
+  description?: Maybe<Scalars['String']['output']>;
+  investigationGuid?: Maybe<Scalars['String']['output']>;
+  investigationStatus?: Maybe<InvestigationStatusCode>;
+  leadAgency?: Maybe<Scalars['String']['output']>;
+  openedTimestamp?: Maybe<Scalars['Date']['output']>;
+};
+
+export type InvestigationStatusCode = {
+  __typename?: 'InvestigationStatusCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  investigationStatusCode?: Maybe<Scalars['String']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
@@ -536,38 +547,38 @@ export type KeyValuePairInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createAssessment: CaseFile;
-  createAuthorizationOutcome: CaseFile;
-  createCaseMomsSpaghettiFile: CaseMomsSpaghettiFile;
-  createDecision: CaseFile;
-  createEquipment: CaseFile;
-  createNote: CaseFile;
+  createAssessment: ComplaintOutcome;
+  createAuthorizationOutcome: ComplaintOutcome;
+  createCaseFile: CaseFile;
+  createDecision: ComplaintOutcome;
+  createEquipment: ComplaintOutcome;
+  createNote: ComplaintOutcome;
   createPark: Park;
   createParkArea: ParkArea;
   createPerson: Person;
-  createPrevention: CaseFile;
-  createReview: CaseFile;
-  createWildlife: CaseFile;
-  deleteAuthorizationOutcome: CaseFile;
+  createPrevention: ComplaintOutcome;
+  createReview: ComplaintOutcome;
+  createWildlife: ComplaintOutcome;
+  deleteAuthorizationOutcome: ComplaintOutcome;
   deleteEquipment: Scalars['Boolean']['output'];
-  deleteNote: CaseFile;
+  deleteNote: ComplaintOutcome;
   deletePark: Park;
   deleteParkArea: ParkArea;
   deletePerson: Person;
-  deletePrevention: CaseFile;
-  deleteWildlife: CaseFile;
-  updateAssessment: CaseFile;
-  updateAuthorizationOutcome: CaseFile;
-  updateCaseMomsSpaghettiFile: CaseMomsSpaghettiFile;
-  updateDecision: CaseFile;
-  updateEquipment: CaseFile;
-  updateNote: CaseFile;
+  deletePrevention: ComplaintOutcome;
+  deleteWildlife: ComplaintOutcome;
+  updateAssessment: ComplaintOutcome;
+  updateAuthorizationOutcome: ComplaintOutcome;
+  updateCaseFile: CaseFile;
+  updateDecision: ComplaintOutcome;
+  updateEquipment: ComplaintOutcome;
+  updateNote: ComplaintOutcome;
   updatePark: Park;
   updateParkArea: ParkArea;
   updatePerson: Person;
-  updatePrevention: CaseFile;
-  updateReview: CaseFile;
-  updateWildlife: CaseFile;
+  updatePrevention: ComplaintOutcome;
+  updateReview: ComplaintOutcome;
+  updateWildlife: ComplaintOutcome;
 };
 
 
@@ -581,8 +592,8 @@ export type MutationcreateAuthorizationOutcomeArgs = {
 };
 
 
-export type MutationcreateCaseMomsSpaghettiFileArgs = {
-  input: CaseMomsSpaghettiFileCreateInput;
+export type MutationcreateCaseFileArgs = {
+  input: CaseFileCreateInput;
 };
 
 
@@ -681,9 +692,9 @@ export type MutationupdateAuthorizationOutcomeArgs = {
 };
 
 
-export type MutationupdateCaseMomsSpaghettiFileArgs = {
+export type MutationupdateCaseFileArgs = {
   caseIdentifier: Scalars['String']['input'];
-  input: CaseMomsSpaghettiFileUpdateInput;
+  input: CaseFileUpdateInput;
 };
 
 
@@ -746,9 +757,18 @@ export type NonComplianceCode = {
 export type Note = {
   __typename?: 'Note';
   actions?: Maybe<Array<Maybe<CaseFileAction>>>;
-  agencyCode?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['String']['output']>;
   note?: Maybe<Scalars['String']['output']>;
+  outcomeAgencyCode?: Maybe<Scalars['String']['output']>;
+};
+
+export type OutcomeAgencyCode = {
+  __typename?: 'OutcomeAgencyCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  outcomeAgencyCode?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
 export type PageInfo = {
@@ -788,6 +808,17 @@ export type ParkInput = {
   parkAreas?: InputMaybe<Array<ParkAreaInput>>;
 };
 
+export type Party = {
+  __typename?: 'Party';
+  business?: Maybe<Business>;
+  createdDateTime?: Maybe<Scalars['Date']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  partyIdentifier?: Maybe<Scalars['String']['output']>;
+  partyTypeCode?: Maybe<Scalars['String']['output']>;
+  person?: Maybe<Person>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type PermitSite = {
   __typename?: 'PermitSite';
   id?: Maybe<Scalars['String']['output']>;
@@ -822,8 +853,8 @@ export type PersonInput = {
 export type Prevention = {
   __typename?: 'Prevention';
   actions?: Maybe<Array<Maybe<CaseFileAction>>>;
-  agencyCode?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['String']['output']>;
+  outcomeAgencyCode?: Maybe<Scalars['String']['output']>;
 };
 
 export type PreventionActionInput = {
@@ -846,10 +877,10 @@ export type Query = {
   HWCRPreventionActions: Array<Maybe<CaseFileAction>>;
   ageCodes: Array<Maybe<AgeCode>>;
   agencyCodes: Array<Maybe<AgencyCode>>;
-  agencyMomsSpaghettiCodes: Array<Maybe<AgencyMomsSpaghettiCode>>;
+  caseFile?: Maybe<CaseFile>;
+  caseFileByActivityId: CaseFile;
+  caseFiles: Array<CaseFile>;
   caseLocationCodes: Array<Maybe<CaseLocationCode>>;
-  caseMomsSpaghettiFile?: Maybe<CaseMomsSpaghettiFile>;
-  caseMomsSpaghettiFiles: Array<CaseMomsSpaghettiFile>;
   configurationCodes: Array<Maybe<Configuration>>;
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
   dischargeCodes: Array<Maybe<DischargeCode>>;
@@ -859,10 +890,12 @@ export type Query = {
   earCodes: Array<Maybe<EarCode>>;
   equipmentCodes: Array<Maybe<EquipmentCode>>;
   equipmentStatusCodes: Array<Maybe<EquipmentStatusCode>>;
-  getCaseFile?: Maybe<CaseFile>;
-  getCaseFileByLeadId?: Maybe<CaseFile>;
-  getCaseFilesByLeadId?: Maybe<Array<Maybe<CaseFile>>>;
-  getCasesFilesBySearchString?: Maybe<Array<Maybe<CaseFile>>>;
+  getComplaintOutcome?: Maybe<ComplaintOutcome>;
+  getComplaintOutcomeByComplaintId?: Maybe<ComplaintOutcome>;
+  getComplaintOutcomesByComplaintId?: Maybe<Array<Maybe<ComplaintOutcome>>>;
+  getComplaintOutcomesBySearchString?: Maybe<Array<Maybe<ComplaintOutcome>>>;
+  getInvestigation?: Maybe<Investigation>;
+  getInvestigations?: Maybe<Array<Maybe<Investigation>>>;
   getLeadsByActionTaken?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByEquipment?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByOutcomeAnimal?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -872,27 +905,35 @@ export type Query = {
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
   nonComplianceCodes: Array<Maybe<NonComplianceCode>>;
+  outcomeAgencyCodes: Array<Maybe<OutcomeAgencyCode>>;
   park?: Maybe<Park>;
   parkArea?: Maybe<ParkArea>;
   parkAreas: Array<Maybe<ParkArea>>;
   parks?: Maybe<Array<Maybe<Park>>>;
+  party?: Maybe<Party>;
   people?: Maybe<Array<Maybe<Person>>>;
   person?: Maybe<Person>;
   scheduleCodes: Array<Maybe<ScheduleCode>>;
   scheduleSectorXrefs: Array<Maybe<ScheduleSectorXref>>;
-  searchCaseMomsSpaghettiFiles: CaseMomsSpaghettiFileResult;
+  searchCaseFiles: CaseFileResult;
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
 };
 
 
-export type QuerycaseMomsSpaghettiFileArgs = {
+export type QuerycaseFileArgs = {
   caseIdentifier: Scalars['String']['input'];
 };
 
 
-export type QuerycaseMomsSpaghettiFilesArgs = {
+export type QuerycaseFileByActivityIdArgs = {
+  activityIdentifier: Scalars['String']['input'];
+  activityType: Scalars['String']['input'];
+};
+
+
+export type QuerycaseFilesArgs = {
   caseIdentifiers: Array<Scalars['String']['input']>;
 };
 
@@ -902,23 +943,34 @@ export type QueryconfigurationCodesArgs = {
 };
 
 
-export type QuerygetCaseFileArgs = {
-  caseIdentifier: Scalars['String']['input'];
+export type QuerygetComplaintOutcomeArgs = {
+  complaintOutcomeGuid: Scalars['String']['input'];
 };
 
 
-export type QuerygetCaseFileByLeadIdArgs = {
-  leadIdentifier: Scalars['String']['input'];
+export type QuerygetComplaintOutcomeByComplaintIdArgs = {
+  complaintId: Scalars['String']['input'];
 };
 
 
-export type QuerygetCaseFilesByLeadIdArgs = {
-  leadIdentifiers: Array<Scalars['String']['input']>;
+export type QuerygetComplaintOutcomesByComplaintIdArgs = {
+  complaintIds: Array<Scalars['String']['input']>;
 };
 
 
-export type QuerygetCasesFilesBySearchStringArgs = {
+export type QuerygetComplaintOutcomesBySearchStringArgs = {
+  complaintType: Scalars['String']['input'];
   searchString: Scalars['String']['input'];
+};
+
+
+export type QuerygetInvestigationArgs = {
+  investigationGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerygetInvestigationsArgs = {
+  ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 
@@ -947,7 +999,7 @@ export type QuerygetParksByAreaArgs = {
 
 
 export type QueryinactionJustificationCodesArgs = {
-  agencyCode?: InputMaybe<Scalars['String']['input']>;
+  outcomeAgencyCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -968,13 +1020,18 @@ export type QueryparksArgs = {
 };
 
 
+export type QuerypartyArgs = {
+  partyIdentifier: Scalars['String']['input'];
+};
+
+
 export type QuerypersonArgs = {
   personGuid: Scalars['String']['input'];
 };
 
 
-export type QuerysearchCaseMomsSpaghettiFilesArgs = {
-  filters?: InputMaybe<CaseMomsSpaghettiFileFilters>;
+export type QuerysearchCaseFilesArgs = {
+  filters?: InputMaybe<CaseFileFilters>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -988,11 +1045,10 @@ export type ReviewActionInput = {
 };
 
 export type ReviewInput = {
-  agencyCode: Scalars['String']['input'];
-  caseCode: Scalars['String']['input'];
-  caseIdentifier?: InputMaybe<Scalars['String']['input']>;
+  complaintId: Scalars['String']['input'];
+  complaintOutcomeGuid?: InputMaybe<Scalars['String']['input']>;
   isReviewRequired: Scalars['Boolean']['input'];
-  leadIdentifier: Scalars['String']['input'];
+  outcomeAgencyCode: Scalars['String']['input'];
   reviewComplete?: InputMaybe<ReviewActionInput>;
   userId: Scalars['String']['input'];
 };
@@ -1044,58 +1100,53 @@ export type ThreatLevelCode = {
 };
 
 export type UpdateAssessmentInput = {
-  agencyCode: Scalars['String']['input'];
   assessment: AssessmentInput;
-  caseCode: Scalars['String']['input'];
-  caseIdentifier: Scalars['String']['input'];
-  leadIdentifier?: InputMaybe<Scalars['String']['input']>;
+  complaintId?: InputMaybe<Scalars['String']['input']>;
+  complaintOutcomeGuid: Scalars['String']['input'];
+  outcomeAgencyCode: Scalars['String']['input'];
   updateUserId: Scalars['String']['input'];
 };
 
 export type UpdateAuthorizationOutcomeInput = {
-  agencyCode?: InputMaybe<Scalars['String']['input']>;
-  caseCode?: InputMaybe<Scalars['String']['input']>;
-  caseIdentifier?: InputMaybe<Scalars['String']['input']>;
+  complaintOutcomeGuid?: InputMaybe<Scalars['String']['input']>;
   input?: InputMaybe<PermitSiteInput>;
+  outcomeAgencyCode?: InputMaybe<Scalars['String']['input']>;
   updateUserId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateDecisionInput = {
   actor?: InputMaybe<Scalars['String']['input']>;
-  agencyCode?: InputMaybe<Scalars['String']['input']>;
-  caseCode?: InputMaybe<Scalars['String']['input']>;
-  caseIdentifier?: InputMaybe<Scalars['String']['input']>;
+  complaintOutcomeGuid?: InputMaybe<Scalars['String']['input']>;
   decision?: InputMaybe<DecisionInput>;
+  outcomeAgencyCode?: InputMaybe<Scalars['String']['input']>;
   updateUserId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateEquipmentInput = {
-  agencyCode: Scalars['String']['input'];
-  caseCode: Scalars['String']['input'];
+  complaintId: Scalars['String']['input'];
   equipment: Array<InputMaybe<EquipmentDetailsInput>>;
-  leadIdentifier: Scalars['String']['input'];
+  outcomeAgencyCode: Scalars['String']['input'];
   updateUserId: Scalars['String']['input'];
 };
 
 export type UpdateNoteInput = {
   actor: Scalars['String']['input'];
-  caseIdentifier: Scalars['String']['input'];
+  complaintOutcomeGuid: Scalars['String']['input'];
   id: Scalars['String']['input'];
   note: Scalars['String']['input'];
   updateUserId: Scalars['String']['input'];
 };
 
 export type UpdatePreventionInput = {
-  agencyCode: Scalars['String']['input'];
-  caseCode: Scalars['String']['input'];
-  caseIdentifier: Scalars['String']['input'];
-  leadIdentifier?: InputMaybe<Scalars['String']['input']>;
+  complaintId?: InputMaybe<Scalars['String']['input']>;
+  complaintOutcomeGuid: Scalars['String']['input'];
+  outcomeAgencyCode: Scalars['String']['input'];
   prevention: PreventionInput;
   updateUserId: Scalars['String']['input'];
 };
 
 export type UpdateWildlifeInput = {
-  caseIdentifier: Scalars['String']['input'];
+  complaintOutcomeGuid: Scalars['String']['input'];
   updateUserId: Scalars['String']['input'];
   wildlife: WildlifeInput;
 };

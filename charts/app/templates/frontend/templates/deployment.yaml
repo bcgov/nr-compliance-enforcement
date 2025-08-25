@@ -66,6 +66,10 @@ spec:
                 secretKeyRef:
                   name: react-app
                   key: environment-name
+            - name: REDIRECT_MODE
+              value: "false"
+            - name: REDIRECT_HOST_NAME
+              value: ""
           ports:
             - name: http
               containerPort: 3000

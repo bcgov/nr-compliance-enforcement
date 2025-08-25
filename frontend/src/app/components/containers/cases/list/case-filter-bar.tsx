@@ -104,11 +104,11 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
           />
         )}
 
-        {hasFilter("agencyCode") && (
+        {hasFilter("leadAgency") && (
           <FilterButton
             id="case-agency-filter-pill"
-            label={leadAgencyOptions.find((option) => option.value === searchValues.agencyCode)?.label || "Agency"}
-            name="agencyCode"
+            label={leadAgencyOptions.find((option) => option.value === searchValues.leadAgency)?.label || "Agency"}
+            name="leadAgency"
             clear={removeFilter}
           />
         )}

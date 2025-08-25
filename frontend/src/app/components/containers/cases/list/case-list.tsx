@@ -52,7 +52,7 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
           "caseIdentifier",
           "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
         )}
-        {renderSortableHeader("Date Opened", "caseOpenedTimestamp", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("Date Opened", "openedTimestamp", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Status", "caseStatus", "comp-cell-width-110")}
         {renderSortableHeader("Agency", "leadAgency")}
         <th className="unsortable sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col case-table-actions-cell">
