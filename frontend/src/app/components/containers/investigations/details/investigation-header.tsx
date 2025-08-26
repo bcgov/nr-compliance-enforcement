@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import { Investigation } from "@/generated/graphql";
 import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
+import { useAppSelector } from "@/app/hooks/hooks";
+import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
+import Option from "@apptypes/app/option";
 
 interface InvestigationHeaderProps {
   investigation?: Investigation;
@@ -10,7 +13,11 @@ interface InvestigationHeaderProps {
 
 export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigation }) => {
   const investigationGuid = investigation?.investigationGuid;
-  const leadAgency = investigation?.leadAgency || "Unknown Agency";
+
+  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
+  const agencyText = leadAgencyOptions.find((option: Option) => option.value === investigation?.leadAgency);
+  const leadAgency = agencyText ? agencyText.label : "Unknown";
+
   const dateLogged = investigation?.openedTimestamp ? new Date(investigation.openedTimestamp).toString() : undefined;
   const lastUpdated = investigation?.openedTimestamp ? new Date(investigation.openedTimestamp).toString() : undefined;
   const officerAssigned = "Not Assigned";
