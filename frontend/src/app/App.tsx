@@ -35,6 +35,8 @@ import { isFeatureActive } from "@store/reducers/app";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { PartyView } from "./components/containers/parties/view";
 import InvestigationEdit from "@/app/components/containers/investigations/edit/investigation-edit";
+import Redirect from "./components/containers/pages/redirect";
+import config from "@/config";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -50,6 +52,10 @@ const App: FC = () => {
 
   const investigationsActive = useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATIONS));
 
+  const { REDIRECT_MODE, REDIRECT_HOST_NAME } = config;
+  const redirectMode = REDIRECT_MODE === "true";
+  const redirectUrl = REDIRECT_HOST_NAME;
+
   return (
     <GenericErrorBoundary>
       <AppUpdate />
@@ -59,108 +65,117 @@ const App: FC = () => {
         <PageLoader />
         <ToastContainer />
         <Routes>
-          <Route element={<ProtectedRoutes roles={coreRoles} />}>
+          {redirectMode ? (
             <Route
-              path="/"
-              element={<ComplaintsRouteWrapper />}
+              path="*"
+              element={<Redirect url={redirectUrl} />}
             />
-            <Route
-              path="/complaints/:type?"
-              element={<ComplaintsRouteWrapper />}
-            />
-            <Route
-              path="/cases"
-              element={<Cases />}
-            />
-            <Route
-              path="/case/create"
-              element={<CaseEdit />}
-            />
-            <Route
-              path="/case/:id"
-              element={<CaseView />}
-            />
-            <Route
-              path="/case/:id/edit"
-              element={<CaseEdit />}
-            />
-            <Route
-              path="/compliments"
-              element={<Compliments />}
-            />
-            <Route
-              path="/party/:id"
-              element={<PartyView />}
-            />
-            {investigationsActive && (
+          ) : (
+            <>
+              <Route element={<ProtectedRoutes roles={coreRoles} />}>
+                <Route
+                  path="/"
+                  element={<ComplaintsRouteWrapper />}
+                />
+                <Route
+                  path="/complaints/:type?"
+                  element={<ComplaintsRouteWrapper />}
+                />
+                <Route
+                  path="/cases"
+                  element={<Cases />}
+                />
+                <Route
+                  path="/case/create"
+                  element={<CaseEdit />}
+                />
+                <Route
+                  path="/case/:id"
+                  element={<CaseView />}
+                />
+                <Route
+                  path="/case/:id/edit"
+                  element={<CaseEdit />}
+                />
+                <Route
+                  path="/compliments"
+                  element={<Compliments />}
+                />
+                <Route
+                  path="/party/:id"
+                  element={<PartyView />}
+                />
+                {investigationsActive && (
+                  <Route
+                    path="/investigations"
+                    element={<Investigations />}
+                  />
+                )}
+                {investigationsActive && (
+                  <Route
+                    path="/investigation/:investigationGuid"
+                    element={<InvestigationDetails />}
+                  />
+                )}
+                {investigationsActive && (
+                  <Route
+                    path="/case/:caseIdentifier/createInvestigation"
+                    element={<InvestigationEdit />}
+                  />
+                )}
+                {investigationsActive && (
+                  <Route
+                    path="/investigation/:id/edit"
+                    element={<InvestigationEdit />}
+                  />
+                )}
+                <Route
+                  path="/complaint/:complaintType/:id"
+                  element={<ComplaintDetailsEdit />}
+                />
+                <Route
+                  path="/zone/at-a-glance"
+                  element={<ZoneAtAGlance />}
+                />
+                <Route
+                  path="/complaint/createComplaint"
+                  element={<CreateComplaint />}
+                />
+              </Route>
+              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+                <Route
+                  path="/admin/user"
+                  element={<UserManagement />}
+                />
+              </Route>
+              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+                <Route
+                  path="/admin/feature"
+                  element={<FeatureManagement />}
+                />
+              </Route>
               <Route
-                path="/investigations"
-                element={<Investigations />}
+                path="/verification"
+                element={<VerifyAccess />}
               />
-            )}
-            {investigationsActive && (
               <Route
-                path="/investigation/:investigationGuid"
-                element={<InvestigationDetails />}
+                path="/not-authorized"
+                element={<NotAuthorized />}
               />
-            )}
-            {investigationsActive && (
               <Route
-                path="/case/:caseIdentifier/createInvestigation"
-                element={<InvestigationEdit />}
+                path="*"
+                element={<NotFound />}
               />
-            )}
-            {investigationsActive && (
               <Route
-                path="/investigation/:id/edit"
-                element={<InvestigationEdit />}
+                path="/reference"
+                element={
+                  <>
+                    <ColorReference /> <MiscReference /> <SpaceReference />
+                  </>
+                }
               />
-            )}
-            <Route
-              path="/complaint/:complaintType/:id"
-              element={<ComplaintDetailsEdit />}
-            />
-            <Route
-              path="/zone/at-a-glance"
-              element={<ZoneAtAGlance />}
-            />
-            <Route
-              path="/complaint/createComplaint"
-              element={<CreateComplaint />}
-            />
-          </Route>
-          <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
-            <Route
-              path="/admin/user"
-              element={<UserManagement />}
-            />
-          </Route>
-          <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
-            <Route
-              path="/admin/feature"
-              element={<FeatureManagement />}
-            />
-          </Route>
-          <Route
-            path="/verification"
-            element={<VerifyAccess />}
-          />
-          <Route
-            path="/not-authorized"
-            element={<NotAuthorized />}
-          />
-          <Route
-            path="*"
-            element={<NotFound />}
-          />
-          <Route
-            path="/reference"
-            element={
-              <>
-                <ColorReference /> <MiscReference /> <SpaceReference />
-              </>
-            }
-          />
+            </>
+          )}
         </Routes>
       </Router>
     </GenericErrorBoundary>

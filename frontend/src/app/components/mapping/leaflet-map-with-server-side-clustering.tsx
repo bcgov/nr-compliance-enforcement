@@ -100,8 +100,15 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
           ),
         );
 
-        // Fit the map to the bounds. Disable animation due to known Leaflet issue if map unmounts while animating: https://github.com/Leaflet/Leaflet/issues/9527
-        mapRef?.current?.flyToBounds(bounds, { padding: [35, 35], animate: false });
+        // Check if bounds have a non-zero area before fitting
+        if (bounds.isValid() && !bounds.getSouthWest().equals(bounds.getNorthEast())) {
+          // Fit the map to the bounds. Disable animation due to known Leaflet issue if map unmounts while animating: https://github.com/Leaflet/Leaflet/issues/9527
+          mapRef?.current?.fitBounds(bounds, { padding: [35, 35], animate: false });
+        } else {
+          // All coordinates are the same, fallback to setView with a reasonable zoom level
+          const center = bounds.getCenter();
+          mapRef?.current?.setView(center, 12, { animate: false });
+        }
       } else if (defaultClusterView.center && defaultClusterView.zoom) {
         mapRef?.current?.setView(defaultClusterView.center, defaultClusterView.zoom);
       }

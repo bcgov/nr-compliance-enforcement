@@ -13,6 +13,8 @@ const config = {
   COMS_BUCKET: window.VITE_COMS_BUCKET || import.meta.env.VITE_COMS_BUCKET,
   ENVIRONMENT_NAME: (window.VITE_ENVIRONMENT_NAME || import.meta.env.VITE_ENVIRONMENT_NAME) ?? "production",
   GRAPHQL_URL: window.VITE_GRAPHQL_URL || import.meta.env.VITE_GRAPHQL_URL || "http://localhost:3003/graphql",
+  REDIRECT_MODE: window.VITE_REDIRECT_MODE || import.meta.env.VITE_REDIRECT_MODE || false,
+  REDIRECT_HOST_NAME: window.VITE_REDIRECT_HOST_NAME || import.meta.env.VITE_REDIRECT_HOST_NAME,
 };
 
 export default config;
