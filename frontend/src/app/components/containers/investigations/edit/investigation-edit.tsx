@@ -14,7 +14,7 @@ import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { CreateInvestigationInput, CaseFileUpdateInput, UpdateInvestigationInput } from "@/generated/graphql";
+import { CreateInvestigationInput, UpdateInvestigationInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
 
 const CREATE_INVESTIGATION_MUTATION = gql`
