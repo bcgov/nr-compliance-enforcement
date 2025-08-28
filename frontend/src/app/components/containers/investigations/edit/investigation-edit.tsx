@@ -35,9 +35,10 @@ const CREATE_INVESTIGATION_MUTATION = gql`
 const UPDATE_INVESTIGATION_MUTATION = gql`
   mutation UpdateInvestigation($investigationGuid: String!, $input: UpdateInvestigationInput!) {
     updateInvestigation(investigationGuid: $investigationGuid, input: $input) {
+      investigationGuid
       description
       investigationStatus {
-        caseStatusCode
+        investigationStatusCode
         shortDescription
         longDescription
       }
@@ -95,7 +96,7 @@ const InvestigationEdit: FC = () => {
   });
 
   const updateInvestigationMutation = useGraphQLMutation(UPDATE_INVESTIGATION_MUTATION, {
-    invalidateQueries: [["investigation", id], "searchInvestiagations"],
+    invalidateQueries: [["getInvestigation", id], "searchInvestiagations"],
     onSuccess: (data: any) => {
       ToggleSuccess("Investigation updated successfully");
       navigate(`/investigation/${id}`);
@@ -128,11 +129,12 @@ const InvestigationEdit: FC = () => {
       if (isEditMode) {
         const updateInput: UpdateInvestigationInput = {
           leadAgency: value.leadAgency,
+          investigationStatus: value.investigationStatus,
           description: value.description,
         };
 
         updateInvestigationMutation.mutate({
-          investigationGuid: caseIdentifier,
+          investigationGuid: id,
           input: updateInput,
         });
       } else {
@@ -185,7 +187,8 @@ const InvestigationEdit: FC = () => {
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
         isEditMode={isEditMode}
-        caseIdentifier={id}
+        caseIdentifier={caseIdentifier}
+        investigationGuid={id}
       />
 
       <section className="comp-details-body comp-details-form comp-container">
