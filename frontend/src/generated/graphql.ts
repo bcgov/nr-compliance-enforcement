@@ -533,6 +533,16 @@ export type Investigation = {
   openedTimestamp?: Maybe<Scalars['Date']['output']>;
 };
 
+export type InvestigationFilters = {
+  endDate?: InputMaybe<Scalars['Date']['input']>;
+  investigationStatus?: InputMaybe<Scalars['String']['input']>;
+  leadAgency?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['Date']['input']>;
+};
+
 export type InvestigationResult = {
   __typename?: 'InvestigationResult';
   items: Array<Investigation>;
@@ -1066,6 +1076,7 @@ export type QuerysearchCaseFilesArgs = {
 
 
 export type QuerysearchInvestigationsArgs = {
+  filters?: InputMaybe<InvestigationFilters>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
