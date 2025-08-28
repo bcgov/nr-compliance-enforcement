@@ -34,6 +34,7 @@ import { InvestigationDetails } from "@/app/components/containers/investigations
 import { isFeatureActive } from "@store/reducers/app";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { PartyView } from "./components/containers/parties/view";
+import InvestigationEdit from "@/app/components/containers/investigations/edit/investigation-edit";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -101,6 +102,18 @@ const App: FC = () => {
               <Route
                 path="/investigation/:investigationGuid"
                 element={<InvestigationDetails />}
+              />
+            )}
+            {investigationsActive && (
+              <Route
+                path="/case/:caseIdentifier/createInvestigation"
+                element={<InvestigationEdit />}
+              />
+            )}
+            {investigationsActive && (
+              <Route
+                path="/investigation/:id/edit"
+                element={<InvestigationEdit />}
               />
             )}
             <Route
