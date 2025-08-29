@@ -18,23 +18,22 @@ import { ToggleError, ToggleSuccess } from "@common/toast";
 
 type Props = {
   linkedComplaintData: LinkedComplaint[];
-  currentComplaintId?: string;
+  id?: string;
 };
 
-export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, currentComplaintId }) => {
+export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id }) => {
   const dispatch = useAppDispatch();
   const [expandedComplaints, setExpandedComplaints] = useState<Record<string, boolean>>({});
   const [viewMoreDuplicates, setViewMoreDuplicates] = useState<boolean>(false);
   const [viewMoreLinked, setViewMoreLinked] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("linked");
 
-  // Code tables for display
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
   const natureOfComplaints = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.NATURE_OF_COMPLAINT));
   const girTypeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GIR_TYPE));
   const violationCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.VIOLATIONS));
 
-  // Helper functions to get descriptions
+  // Helper functions to get description
   const getAgencyDescription = (agencyCode: string): string => {
     const agency = agencies?.find((item: any) => item.agency === agencyCode);
     return agency?.longDescription || agencyCode || "";
@@ -43,7 +42,6 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, currentCom
   const getIssueDescription = (data: LinkedComplaint): string => {
     if (!data.issueType) return "";
 
-    // Get the description based on complaint type
     if (data.complaintType === "HWCR") {
       const code = natureOfComplaints?.find((item: any) => item.natureOfComplaint === data.issueType);
       return code?.longDescription || data.issueType;
@@ -66,7 +64,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, currentCom
   };
 
   const handleUnlinkComplaint = (linkedComplaintId: string) => {
-    if (!currentComplaintId) return;
+    if (!id) return;
 
     dispatch(
       openModal({
@@ -77,21 +75,21 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, currentCom
           description: (
             <Alert variant="warning">
               <i className="bi bi-exclamation-triangle-fill"></i>
-              <span>{` #${currentComplaintId} will no longer be linked to #${linkedComplaintId}`}</span>
+              <span>{` #${id} will no longer be linked to #${linkedComplaintId}`}</span>
             </Alert>
           ),
           confirmText: "unlink",
           deleteConfirmed: async () => {
             try {
               const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/unlink-complaints`, {
-                complaintId: currentComplaintId,
+                complaintId: id,
                 linkedComplaintId: linkedComplaintId,
               });
               await post(dispatch, parameters);
 
               ToggleSuccess(`Complaint #${linkedComplaintId} unlinked successfully`);
-              // Refresh the linked complaints list
-              dispatch(getLinkedComplaints(currentComplaintId));
+              // Refresh the linked complaints lis
+              dispatch(getLinkedComplaints(id));
             } catch (error) {
               console.error("Error unlinking complaint:", error);
               ToggleError("Failed to unlink complaint");
@@ -133,9 +131,9 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, currentCom
 
   // Separate duplicates and linked complaints
   const duplicateComplaints = linkedComplaintData.filter(
-    (item: any) => !item.linkage_type || item.linkage_type === "DUPLICATE",
+    (item: any) => !item.link_type || item.link_type === "DUPLICATE",
   );
-  const linkedComplaints = linkedComplaintData.filter((item: any) => item.linkage_type === "LINK");
+  const linkedComplaints = linkedComplaintData.filter((item: any) => item.link_type === "LINK");
 
   // If no complaints to display, return null
   if (linkedComplaintData.length === 0) {
@@ -205,7 +203,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, currentCom
                 {getIssueDescription(data) && <div>{getIssueDescription(data)}</div>}
                 <div className="comp-details-badge-container ms-auto">
                   <Badge className={`badge ${applyStatusClass(data.status)}`}>{data.status}</Badge>
-                  {type === "linked" && currentComplaintId && (
+                  {type === "linked" && id && (
                     <a
                       href="#"
                       className="ms-2 text-primary"

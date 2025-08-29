@@ -8,7 +8,7 @@ export interface LinkedComplaint {
   status: string;
   issueType?: string;
   parent: boolean;
-  linkage_type?: string;
+  link_type?: string;
   agency?: string;
   complaintType?: string;
 }

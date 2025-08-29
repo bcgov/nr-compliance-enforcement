@@ -151,9 +151,12 @@ export class ComplaintController {
 
   @Get("/linked-complaints/:complaint_id")
   @Roles(coreRoles)
-  async findLinkedComplaintsById(@Param("complaint_id") complaintId: string) {
-    const relatedComplaints = await this.linkedComplaintXrefService.findAllRelatedComplaints(complaintId);
-    return relatedComplaints;
+  async findLinkedComplaintsById(@Param("complaint_id") complaintId: string, @Query("related") related?: boolean) {
+    if (related) {
+      return await this.linkedComplaintXrefService.findAllRelatedComplaints(complaintId);
+    } else {
+      return await this.linkedComplaintXrefService.findDirectLinks(complaintId);
+    }
   }
 
   @Post("/link-complaints")

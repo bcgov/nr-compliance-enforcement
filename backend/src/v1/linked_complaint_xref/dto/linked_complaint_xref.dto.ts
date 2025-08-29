@@ -55,18 +55,18 @@ export class LinkedComplaintXrefDto {
 
   @ApiProperty({
     example: "DUPLICATE",
-    description: "The type of linkage between complaints. For example: DUPLICATE or LINK",
+    description: "The type of link between complaints. For example: DUPLICATE or LINK",
   })
-  public linkage_type: string;
+  public link_type: string;
 
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-    description: "The person who created the linkage between complaints",
+    description: "The person who created the link between complaints",
   })
   public person_guid: UUID;
 
   @ApiProperty({
-    description: "The person who created the linkage",
+    description: "The person who created the link",
   })
   public person: Person;
 }

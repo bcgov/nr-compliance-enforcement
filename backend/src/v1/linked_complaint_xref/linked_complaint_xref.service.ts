@@ -29,104 +29,89 @@ export class LinkedComplaintXrefService {
     return newLinkedComplaintXref;
   }
 
-  /**
-   * Helper method to build the query for finding linked complaints
-   * @param complaintId - The complaint identifier to search for
-   * @param isParent - Whether we're looking for parent (true) or child (false) complaints
-   * @returns Array of linked complaint data
-   */
   private async findLinkedComplaintsByRelationship(complaintId: string, isParent: boolean) {
-    try {
-      // Determine which field to join on based on the relationship direction
-      const joinField = isParent
-        ? "linkedComplaint.complaint_identifier"
-        : "linkedComplaint.linked_complaint_identifier";
-      const whereField = isParent
-        ? "linkedComplaint.linked_complaint_identifier"
-        : "linkedComplaint.complaint_identifier";
+    const joinField = isParent ? "linkedComplaint.complaint_identifier" : "linkedComplaint.linked_complaint_identifier";
+    const whereField = isParent
+      ? "linkedComplaint.linked_complaint_identifier"
+      : "linkedComplaint.complaint_identifier";
 
-      const builder = this.linkedComplaintXrefRepository
-        .createQueryBuilder("linkedComplaint")
-        .leftJoinAndMapOne(
-          "linkedComplaint.complaint",
-          Complaint,
-          "complaint",
-          `${joinField} = complaint.complaint_identifier`,
-        )
-        .leftJoin("complaint.complaint_status_code", "complaint_status")
-        .addSelect(["complaint_status.complaint_status_code", "complaint_status.short_description"])
-        .leftJoin("complaint.complaint_type_code", "complaint_type")
-        .addSelect(["complaint_type.complaint_type_code"])
-        .addSelect(["complaint.owned_by_agency_code_ref"])
-        .leftJoinAndMapOne(
-          "linkedComplaint.hwcr_complaint",
-          HwcrComplaint,
-          "hwcr_complaint",
-          `${joinField} = hwcr_complaint.complaint_identifier`,
-        )
-        .leftJoin("hwcr_complaint.species_code", "species_code")
-        .addSelect(["species_code.species_code", "species_code.short_description"])
-        .leftJoin("hwcr_complaint.hwcr_complaint_nature_code", "complaint_nature_code")
-        .addSelect(["complaint_nature_code.hwcr_complaint_nature_code", "complaint_nature_code.long_description"])
-        .leftJoinAndMapOne(
-          "linkedComplaint.allegation_complaint",
-          AllegationComplaint,
-          "allegation_complaint",
-          `${joinField} = allegation_complaint.complaint_identifier`,
-        )
-        .leftJoin("allegation_complaint.violation_code", "violation_code")
-        .addSelect(["violation_code.violation_code", "violation_code.long_description"])
-        .leftJoinAndMapOne(
-          "linkedComplaint.gir_complaint",
-          GirComplaint,
-          "gir_complaint",
-          `${joinField} = gir_complaint.complaint_identifier`,
-        )
-        .leftJoin("gir_complaint.gir_type_code", "gir_type_code")
-        .addSelect(["gir_type_code.gir_type_code", "gir_type_code.long_description"])
-        .where(`${whereField} = :id`, { id: complaintId })
-        .andWhere("linkedComplaint.active_ind = :active", { active: true });
+    const builder = this.linkedComplaintXrefRepository
+      .createQueryBuilder("linkedComplaint")
+      .leftJoinAndMapOne(
+        "linkedComplaint.complaint",
+        Complaint,
+        "complaint",
+        `${joinField} = complaint.complaint_identifier`,
+      )
+      .leftJoin("complaint.complaint_status_code", "complaint_status")
+      .addSelect(["complaint_status.complaint_status_code", "complaint_status.short_description"])
+      .leftJoin("complaint.complaint_type_code", "complaint_type")
+      .addSelect(["complaint_type.complaint_type_code"])
+      .addSelect(["complaint.owned_by_agency_code_ref"])
+      .leftJoinAndMapOne(
+        "linkedComplaint.hwcr_complaint",
+        HwcrComplaint,
+        "hwcr_complaint",
+        `${joinField} = hwcr_complaint.complaint_identifier`,
+      )
+      .leftJoin("hwcr_complaint.species_code", "species_code")
+      .addSelect(["species_code.species_code", "species_code.short_description"])
+      .leftJoin("hwcr_complaint.hwcr_complaint_nature_code", "complaint_nature_code")
+      .addSelect(["complaint_nature_code.hwcr_complaint_nature_code", "complaint_nature_code.long_description"])
+      .leftJoinAndMapOne(
+        "linkedComplaint.allegation_complaint",
+        AllegationComplaint,
+        "allegation_complaint",
+        `${joinField} = allegation_complaint.complaint_identifier`,
+      )
+      .leftJoin("allegation_complaint.violation_code", "violation_code")
+      .addSelect(["violation_code.violation_code", "violation_code.long_description"])
+      .leftJoinAndMapOne(
+        "linkedComplaint.gir_complaint",
+        GirComplaint,
+        "gir_complaint",
+        `${joinField} = gir_complaint.complaint_identifier`,
+      )
+      .leftJoin("gir_complaint.gir_type_code", "gir_type_code")
+      .addSelect(["gir_type_code.gir_type_code", "gir_type_code.long_description"])
+      .where(`${whereField} = :id`, { id: complaintId })
+      .andWhere("linkedComplaint.active_ind = :active", { active: true });
 
-      // Add ordering for child complaints (chronological)
-      if (!isParent) {
-        builder.orderBy("complaint.incident_utc_datetime", "DESC");
+    if (!isParent) {
+      builder.orderBy("complaint.incident_utc_datetime", "DESC");
+    }
+
+    const data = await builder.getMany();
+
+    const result = data.map((item: any) => {
+      // Determine issueType based on complaint type
+      let issueType = null;
+      const complaintType = item.complaint.complaint_type_code?.complaint_type_code;
+
+      if (complaintType === "HWCR") {
+        issueType = item.hwcr_complaint?.hwcr_complaint_nature_code?.hwcr_complaint_nature_code || null;
+      } else if (complaintType === "ERS") {
+        issueType = item.allegation_complaint?.violation_code?.violation_code || null;
+      } else if (complaintType === "GIR") {
+        issueType = item.gir_complaint?.gir_type_code?.gir_type_code || null;
       }
 
-      const data = await builder.getMany();
+      return {
+        id: item.complaint.complaint_identifier,
+        issueType: issueType,
+        details: item.complaint.detail_text,
+        name: item.complaint.caller_name,
+        address: item.complaint.caller_address,
+        phone: item.complaint.caller_phone_1,
+        status: item.complaint.complaint_status_code.short_description,
+        parent: isParent,
+        link_type: item.link_type,
+        agency: item.complaint.owned_by_agency_code_ref || null,
+        complaintType: complaintType || null,
+      };
+    });
 
-      const result = data.map((item: any) => {
-        // Determine issueType based on complaint type
-        let issueType = null;
-        const complaintType = item.complaint.complaint_type_code?.complaint_type_code;
-
-        if (complaintType === "HWCR") {
-          issueType = item.hwcr_complaint?.hwcr_complaint_nature_code?.hwcr_complaint_nature_code || null;
-        } else if (complaintType === "ERS") {
-          issueType = item.allegation_complaint?.violation_code?.violation_code || null;
-        } else if (complaintType === "GIR") {
-          issueType = item.gir_complaint?.gir_type_code?.gir_type_code || null;
-        }
-
-        return {
-          id: item.complaint.complaint_identifier,
-          issueType: issueType,
-          details: item.complaint.detail_text,
-          name: item.complaint.caller_name,
-          address: item.complaint.caller_address,
-          phone: item.complaint.caller_phone_1,
-          status: item.complaint.complaint_status_code.short_description,
-          parent: isParent,
-          linkage_type: item.linkage_type,
-          agency: item.complaint.owned_by_agency_code_ref || null,
-          complaintType: complaintType || null,
-        };
-      });
-
-      return result ?? [];
-    } catch (err) {
-      this.logger.error(err);
-      return []; // Return empty array on error
-    }
+    return result ?? [];
   }
 
   async findChildComplaints(parentComplaintId: string) {
@@ -137,11 +122,25 @@ export class LinkedComplaintXrefService {
     return this.findLinkedComplaintsByRelationship(childComplaintId, true);
   }
 
-  /**
-   * Finds all related complaints in the entire tree (parents, children, siblings, etc.)
-   * @param complaintId - The complaint identifier to start from
-   * @returns Array of all related complaints in the tree
-   */
+  async findDirectLinks(complaintId: string) {
+    try {
+      const parents = await this.findLinkedComplaintsByRelationship(complaintId, true);
+      const children = await this.findLinkedComplaintsByRelationship(complaintId, false);
+
+      const combined = [...parents, ...children];
+
+      const uniqueMap = new Map();
+      combined.forEach((complaint) => {
+        uniqueMap.set(complaint.id, complaint);
+      });
+
+      return Array.from(uniqueMap.values());
+    } catch (err) {
+      this.logger.error(`Error finding direct links: ${err}`);
+      return [];
+    }
+  }
+
   async findAllRelatedComplaints(complaintId: string) {
     try {
       const visited = new Set<string>();
@@ -156,11 +155,9 @@ export class LinkedComplaintXrefService {
         }
         visited.add(currentId);
 
-        // Get both parent and child relationships for current complaint
         const parents = await this.findLinkedComplaintsByRelationship(currentId, true);
         const children = await this.findLinkedComplaintsByRelationship(currentId, false);
 
-        // Add all related complaints to result and queue
         for (const parent of parents) {
           if (!visited.has(parent.id)) {
             result.push(parent);
@@ -176,7 +173,6 @@ export class LinkedComplaintXrefService {
         }
       }
 
-      // Sort by complaint ID for consistent ordering
       result.sort((a, b) => a.id.localeCompare(b.id));
 
       return result;
@@ -196,7 +192,6 @@ export class LinkedComplaintXrefService {
     try {
       const idir = getIdirFromRequest(this.request);
 
-      // Get the officer record by auth_user_guid, which includes the person
       const officer = await this.officerRepository.findOne({
         where: { auth_user_guid: user.auth_user_guid },
         relations: ["person_guid"],
@@ -208,7 +203,6 @@ export class LinkedComplaintXrefService {
 
       const person_guid = officer.person_guid.person_guid;
 
-      // Check if link already exists
       const existingLink = await this.linkedComplaintXrefRepository.findOne({
         where: {
           complaint_id: parentComplaintId,
@@ -218,9 +212,8 @@ export class LinkedComplaintXrefService {
       });
 
       if (existingLink) {
-        // Update existing link if linkage type changed
-        if (existingLink.linkage_type !== linkType) {
-          existingLink.linkage_type = linkType;
+        if (existingLink.link_type !== linkType) {
+          existingLink.link_type = linkType;
           existingLink.update_user_id = idir;
           existingLink.update_utc_timestamp = new Date();
           existingLink.person_guid = person_guid;
@@ -229,11 +222,10 @@ export class LinkedComplaintXrefService {
         return existingLink;
       }
 
-      // Create new link
       const newLink = this.linkedComplaintXrefRepository.create({
         complaint_id: parentComplaintId,
         linked_complaint_id: childComplaintId,
-        linkage_type: linkType,
+        link_type: linkType,
         active_ind: true,
         create_user_id: idir,
         create_utc_timestamp: new Date(),
@@ -273,7 +265,6 @@ export class LinkedComplaintXrefService {
         throw new Error("Link not found");
       }
 
-      // Soft delete by setting active_ind to false
       link.active_ind = false;
       link.update_user_id = idir;
       link.update_utc_timestamp = new Date();

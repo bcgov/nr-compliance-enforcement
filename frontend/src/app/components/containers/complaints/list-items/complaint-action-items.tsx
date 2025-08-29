@@ -96,7 +96,6 @@ export const ComplaintActionItems: FC<Props> = ({
           complaint_type: complaint_type,
         },
         callback: () => {
-          // Refresh linked complaints after successfully linking
           dispatch(getLinkedComplaints(complaint_identifier));
         },
       }),

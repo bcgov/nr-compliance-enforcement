@@ -9,6 +9,6 @@ export class CreateLinkedComplaintXrefDto extends PickType(LinkedComplaintXrefDt
   "complaint_identifier",
   "linked_complaint_identifier",
   "active_ind",
-  "linkage_type",
+  "link_type",
   "person_guid",
 ] as const) {}

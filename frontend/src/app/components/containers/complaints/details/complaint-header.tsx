@@ -195,7 +195,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           complaint_type: complaintType,
         },
         callback: () => {
-          // Refresh linked complaints after successfully linking
           dispatch(getLinkedComplaints(id));
         },
       }),

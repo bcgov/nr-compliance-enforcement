@@ -79,6 +79,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
   const [showLinkedWarning, setShowLinkedWarning] = useState<boolean>(false);
   const [isDuplicateChild, setIsDuplicateChild] = useState<boolean>(false);
   const [isAlreadyLinked, setIsAlreadyLinked] = useState<boolean>(false);
+  const [parentComplaintId, setParentComplaintId] = useState<string | null>(null);
 
   const getStatusDescription = (input: string): string => {
     const code = statusCodes?.find((item: any) => item.complaintStatus === input);
@@ -141,23 +142,38 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
       setHintText(isFocused && complaint ? `${complaint.id}, ${complaint.type || ""}, ${issue}` : "");
 
       // Check if the selected complaint has linked complaints
+      // Use related=true to check the entire tree for already linked complaints
       try {
         const parameters = generateApiParameters(
-          `${config.API_BASE_URL}/v1/complaint/linked-complaints/${complaint.id}`,
+          `${config.API_BASE_URL}/v1/complaint/linked-complaints/${complaint.id}?related=true`,
         );
         const response: any = await get(dispatch, parameters, {}, false);
         if (response && response.length > 0) {
           setLinkedComplaints(response);
 
-          // Check if this complaint is a duplicate child (has a parent with DUPLICATE linkage)
-          const hasParentDuplicate = response.some(
-            (linked: any) => linked.parent === true && linked.linkage_type === "DUPLICATE",
+          // Check if this complaint is a duplicate child (has a parent with DUPLICATE link)
+          const duplicateParents = response.filter(
+            (linked: any) => linked.parent === true && linked.link_type === "DUPLICATE",
           );
+
+          let topLevelParentId = null;
+          if (duplicateParents.length > 0) {
+            // If there are multiple duplicate parents, find the most parent (top-level)
+            // This would be the parent that doesn't appear as a child in the response
+            const allChildIds = response
+              .filter((linked: any) => !linked.parent && linked.link_type === "DUPLICATE")
+              .map((linked: any) => linked.id);
+
+            // Find the parent that is not also a child (top-level parent)
+            topLevelParentId =
+              duplicateParents.find((parent: any) => !allChildIds.includes(parent.id))?.id || duplicateParents[0].id; // Fallback to first parent if logic fails
+          }
 
           // Check if the selected complaint is already linked to the current complaint
           const alreadyLinked = response.some((linked: any) => linked.id === complaint_identifier);
 
-          setIsDuplicateChild(hasParentDuplicate);
+          setIsDuplicateChild(duplicateParents.length > 0);
+          setParentComplaintId(topLevelParentId);
           setIsAlreadyLinked(alreadyLinked);
           setShowLinkedWarning(true);
         } else {
@@ -165,6 +181,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
           setShowLinkedWarning(false);
           setIsDuplicateChild(false);
           setIsAlreadyLinked(false);
+          setParentComplaintId(null);
         }
       } catch (error) {
         console.error("Error fetching linked complaints:", error);
@@ -175,6 +192,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
       setShowLinkedWarning(false);
       setIsDuplicateChild(false);
       setIsAlreadyLinked(false);
+      setParentComplaintId(null);
     }
   };
 
@@ -186,7 +204,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
 
     // Prevent linking to a duplicate child complaint
     if (isDuplicateChild) {
-      ToggleError("Cannot link to a duplicate complaint. Please select a parent complaint");
+      ToggleError(`Cannot link to a duplicate complaint. Please select a parent complaint (${parentComplaintId})`);
       return;
     }
 
@@ -222,14 +240,14 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
       )}
       <Modal.Body>
         {showLinkedWarning && (
-          <Alert variant="warning">
-            <i className="bi bi-exclamation-triangle-fill"></i>
+          <Alert variant={isAlreadyLinked ? "warning" : "info"}>
+            <i className={`bi bi-${isAlreadyLinked ? "exclamation-triangle-fill" : "info-circle-fill"}`}></i>
             <span>
               {" "}
               {isAlreadyLinked
                 ? "These complaints are already linked"
                 : isDuplicateChild
-                  ? "The complaint you selected is marked as duplicate. Please select a parent complaint"
+                  ? `The complaint you selected is marked as duplicate. Please select its parent complaint #${parentComplaintId}`
                   : `This complaint is linked to ${linkedComplaints.length} other complaint${linkedComplaints.length > 1 ? "s" : ""}`}
             </span>
           </Alert>

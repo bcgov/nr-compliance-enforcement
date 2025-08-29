@@ -36,8 +36,8 @@ export class LinkedComplaintXref {
   @Column("character varying", { name: "linked_complaint_identifier" })
   linked_complaint_id: string;
 
-  @Column("character varying", { name: "linkage_type", length: 20, default: "DUPLICATE" })
-  linkage_type: string;
+  @Column("character varying", { name: "link_type", length: 20, default: "DUPLICATE" })
+  link_type: string;
 
   @Column("uuid", { name: "person_guid", nullable: true })
   person_guid: UUID;
