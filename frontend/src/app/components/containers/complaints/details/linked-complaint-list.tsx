@@ -100,16 +100,16 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id }) => {
     );
   };
 
-  const toggleViewMore = (type: "duplicates" | "linked") => {
-    if (type === "duplicates") {
+  const toggleViewMore = (type: "DUPLICATE" | "LINK") => {
+    if (type === "DUPLICATE") {
       setViewMoreDuplicates(!viewMoreDuplicates);
     } else {
       setViewMoreLinked(!viewMoreLinked);
     }
   };
 
-  const renderViewMore = (complaints: LinkedComplaint[], type: "duplicates" | "linked") => {
-    const viewMore = type === "duplicates" ? viewMoreDuplicates : viewMoreLinked;
+  const renderViewMore = (complaints: LinkedComplaint[], type: "DUPLICATE" | "LINK") => {
+    const viewMore = type === "DUPLICATE" ? viewMoreDuplicates : viewMoreLinked;
     if (complaints.length > 5) {
       if (!viewMore) {
         return (
@@ -157,13 +157,11 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id }) => {
     }
   }, [hasLinkedComplaints, hasDuplicateComplaints]);
 
-  const renderComplaintList = (complaints: LinkedComplaint[], type: "duplicates" | "linked") => {
-    const viewMore = type === "duplicates" ? viewMoreDuplicates : viewMoreLinked;
+  const renderComplaintList = (complaints: LinkedComplaint[], type: "DUPLICATE" | "LINK") => {
+    const viewMore = type === "DUPLICATE" ? viewMoreDuplicates : viewMoreLinked;
 
     if (complaints.length === 0) {
-      return (
-        <div className="text-muted p-3">No {type === "duplicates" ? "duplicate" : "linked"} complaints found.</div>
-      );
+      return <div className="text-muted p-3">No {type === "DUPLICATE" ? "duplicate" : "linked"} complaints found.</div>;
     }
 
     return (
@@ -203,7 +201,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id }) => {
                 {getIssueDescription(data) && <div>{getIssueDescription(data)}</div>}
                 <div className="comp-details-badge-container ms-auto">
                   <Badge className={`badge ${applyStatusClass(data.status)}`}>{data.status}</Badge>
-                  {type === "linked" && id && (
+                  {type === "LINK" && id && (
                     <a
                       href="#"
                       className="ms-2 text-primary"
@@ -276,22 +274,22 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id }) => {
           >
             {hasLinkedComplaints && (
               <Nav.Item>
-                <Nav.Link eventKey="linked">Linked complaints ({linkedComplaints.length})</Nav.Link>
+                <Nav.Link eventKey="LINK">Linked complaints ({linkedComplaints.length})</Nav.Link>
               </Nav.Item>
             )}
             {hasDuplicateComplaints && (
               <Nav.Item>
-                <Nav.Link eventKey="duplicates">Duplicate complaints ({duplicateComplaints.length})</Nav.Link>
+                <Nav.Link eventKey="DUPLICATE">Duplicate complaints ({duplicateComplaints.length})</Nav.Link>
               </Nav.Item>
             )}
           </Nav>
 
           <Tab.Content>
             {hasLinkedComplaints && (
-              <Tab.Pane eventKey="linked">{renderComplaintList(linkedComplaints, "linked")}</Tab.Pane>
+              <Tab.Pane eventKey="LINK">{renderComplaintList(linkedComplaints, "LINK")}</Tab.Pane>
             )}
             {hasDuplicateComplaints && (
-              <Tab.Pane eventKey="duplicates">{renderComplaintList(duplicateComplaints, "duplicates")}</Tab.Pane>
+              <Tab.Pane eventKey="DUPLICATE">{renderComplaintList(duplicateComplaints, "DUPLICATE")}</Tab.Pane>
             )}
           </Tab.Content>
         </Tab.Container>
@@ -300,13 +298,13 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id }) => {
           {hasLinkedComplaints && (
             <>
               <h3 className="mb-3">Linked complaints ({linkedComplaints.length})</h3>
-              {renderComplaintList(linkedComplaints, "linked")}
+              {renderComplaintList(linkedComplaints, "LINK")}
             </>
           )}
           {hasDuplicateComplaints && (
             <>
               <h3 className="mb-3">Duplicate complaints ({duplicateComplaints.length})</h3>
-              {renderComplaintList(duplicateComplaints, "duplicates")}
+              {renderComplaintList(duplicateComplaints, "DUPLICATE")}
             </>
           )}
         </div>

@@ -103,6 +103,13 @@ export const HWCRAssessmentLinkComplaintSearch: FC<Props> = ({
         : "",
     );
   };
+
+  const handleInputChange = (text: string) => {
+    if (text.length > 0) {
+      setHintText("");
+    }
+  };
+
   const handleSearch = async (query: string) => {
     const parameters = generateApiParameters(
       `${config.API_BASE_URL}/v1/complaint/search/HWCR?sortBy=incident_reported_utc_timestmp&orderBy=DESC&page=1&pageSize=10&query=${query}`,
@@ -120,6 +127,7 @@ export const HWCRAssessmentLinkComplaintSearch: FC<Props> = ({
         id={id}
         labelKey="id"
         minLength={2}
+        onInputChange={handleInputChange}
         onSearch={handleSearch}
         onChange={handleChange}
         onFocus={() => setIsFocused(true)}

@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { FC, useState } from "react";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
@@ -15,6 +15,14 @@ import { ToggleSuccess, ToggleError } from "@common/toast";
 type LinkComplaintModalProps = {
   close: () => void;
   submit: () => void;
+};
+
+type ValidationResult = {
+  isValid: boolean;
+  alertType?: "warning" | "info";
+  message?: string;
+  hasLinkedComplaints?: boolean;
+  linkedCount?: number;
 };
 
 type HintProps = {
@@ -68,52 +76,86 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
   const girTypeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GIR_TYPE));
   const violationCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.VIOLATIONS));
 
-  const { title, complaint_identifier, complaint_type } = modalData;
+  const { title, complaint_identifier } = modalData;
 
   const [selectedComplaint, setSelectedComplaint] = useState<any>(null);
   const [complaintData, setComplaintData] = useState<any[]>([]);
-  const [linkedComplaints, setLinkedComplaints] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hintText, setHintText] = useState<string>("");
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [showLinkedWarning, setShowLinkedWarning] = useState<boolean>(false);
-  const [isDuplicateChild, setIsDuplicateChild] = useState<boolean>(false);
-  const [isAlreadyLinked, setIsAlreadyLinked] = useState<boolean>(false);
-  const [parentComplaintId, setParentComplaintId] = useState<string | null>(null);
+  const [validation, setValidation] = useState<ValidationResult>({ isValid: true });
 
-  const getStatusDescription = (input: string): string => {
-    const code = statusCodes?.find((item: any) => item.complaintStatus === input);
-    return code?.longDescription || input;
+  const getIssueDescription = (complaint: any): string => {
+    const { type, issueType } = complaint;
+    const codeMap = {
+      HWCR: () => natureOfComplaints.find((item) => item.natureOfComplaint === issueType)?.longDescription,
+      GIR: () => girTypeCodes.find((item) => item.girType === issueType)?.longDescription,
+      ERS: () => violationCodes.find((item) => item.violation === issueType)?.longDescription,
+    };
+    return codeMap[type as keyof typeof codeMap]?.() || "";
   };
 
-  const getNatureOfComplaint = (input: string): string => {
-    const code = natureOfComplaints.find((item) => item.natureOfComplaint === input);
-    return code.longDescription;
+  const getStatusDescription = (status: string): string => {
+    return statusCodes?.find((item: any) => item.complaintStatus === status)?.longDescription || status;
   };
 
-  const getGirTypeDescription = (input: string): string => {
-    const code = girTypeCodes.find((item) => item.girType === input);
-    return code.longDescription;
+  const validateComplaintLinking = async (complaint: any): Promise<ValidationResult> => {
+    const parameters = generateApiParameters(
+      `${config.API_BASE_URL}/v1/complaint/linked-complaints/${complaint.id}?related=true`,
+    );
+    const linkedComplaints: any = await get(dispatch, parameters, {}, false);
+
+    if (!linkedComplaints || linkedComplaints.length === 0) {
+      return { isValid: true };
+    }
+
+    const alreadyLinked = linkedComplaints.some((linked: any) => linked.id === complaint_identifier);
+    if (alreadyLinked) {
+      return {
+        isValid: false,
+        alertType: "warning",
+        message: "These complaints are already linked",
+      };
+    }
+
+    const isDuplicate = linkedComplaints.some(
+      (linked: any) => linked.parent === true && linked.link_type === "DUPLICATE",
+    );
+
+    if (isDuplicate) {
+      const parentId = linkedComplaints.find(
+        (linked: any) => linked.parent === true && linked.link_type === "DUPLICATE",
+      )?.id;
+      return {
+        isValid: false,
+        alertType: "warning",
+        message: `The complaint you selected is marked as duplicate. Please select its parent complaint #${parentId}`,
+      };
+    }
+
+    return {
+      isValid: true,
+      alertType: "info",
+      message: `This complaint is linked to ${linkedComplaints.length} other complaint${linkedComplaints.length > 1 ? "s" : ""}`,
+      hasLinkedComplaints: true,
+      linkedCount: linkedComplaints.length,
+    };
   };
 
-  const getViolationDescription = (input: string): string => {
-    const code = violationCodes.find((item) => item.violation === input);
-    return code.longDescription;
+  const handleInputChange = (text: string) => {
+    if (text.length > 0) {
+      setHintText("");
+    }
   };
 
   const handleSearch = async (query: string) => {
     setIsLoading(true);
     try {
-      // Search using SECTOR type to get all complaint types
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/search/SECTOR?sortBy=incident_reported_utc_timestmp&orderBy=DESC&page=1&pageSize=10&query=${query}`,
       );
       const response: any = await get(dispatch, parameters, {}, false);
-      if (response?.complaints) {
-        setComplaintData(response.complaints);
-      } else {
-        setComplaintData([]);
-      }
+      setComplaintData(response?.complaints || []);
     } catch (error) {
       console.error("Error searching complaints:", error);
       setComplaintData([]);
@@ -123,77 +165,21 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
   };
 
   const handleComplaintSelect = async (selected: any[]) => {
-    if (selected.length > 0) {
-      const complaint = selected[0];
-      let issue = "";
-      switch (complaint.type) {
-        case "HWCR":
-          issue = getNatureOfComplaint(complaint.issueType);
-          break;
-        case "GIR":
-          issue = getGirTypeDescription(complaint.issueType);
-          break;
-        case "ERS":
-          issue = getViolationDescription(complaint.issueType);
-          break;
-      }
-      setSelectedComplaint(complaint);
-      // SECTOR results have a generic structure
-      setHintText(isFocused && complaint ? `${complaint.id}, ${complaint.type || ""}, ${issue}` : "");
-
-      // Check if the selected complaint has linked complaints
-      // Use related=true to check the entire tree for already linked complaints
-      try {
-        const parameters = generateApiParameters(
-          `${config.API_BASE_URL}/v1/complaint/linked-complaints/${complaint.id}?related=true`,
-        );
-        const response: any = await get(dispatch, parameters, {}, false);
-        if (response && response.length > 0) {
-          setLinkedComplaints(response);
-
-          // Check if this complaint is a duplicate child (has a parent with DUPLICATE link)
-          const duplicateParents = response.filter(
-            (linked: any) => linked.parent === true && linked.link_type === "DUPLICATE",
-          );
-
-          let topLevelParentId = null;
-          if (duplicateParents.length > 0) {
-            // If there are multiple duplicate parents, find the most parent (top-level)
-            // This would be the parent that doesn't appear as a child in the response
-            const allChildIds = response
-              .filter((linked: any) => !linked.parent && linked.link_type === "DUPLICATE")
-              .map((linked: any) => linked.id);
-
-            // Find the parent that is not also a child (top-level parent)
-            topLevelParentId =
-              duplicateParents.find((parent: any) => !allChildIds.includes(parent.id))?.id || duplicateParents[0].id; // Fallback to first parent if logic fails
-          }
-
-          // Check if the selected complaint is already linked to the current complaint
-          const alreadyLinked = response.some((linked: any) => linked.id === complaint_identifier);
-
-          setIsDuplicateChild(duplicateParents.length > 0);
-          setParentComplaintId(topLevelParentId);
-          setIsAlreadyLinked(alreadyLinked);
-          setShowLinkedWarning(true);
-        } else {
-          setLinkedComplaints([]);
-          setShowLinkedWarning(false);
-          setIsDuplicateChild(false);
-          setIsAlreadyLinked(false);
-          setParentComplaintId(null);
-        }
-      } catch (error) {
-        console.error("Error fetching linked complaints:", error);
-      }
-    } else {
+    if (selected.length === 0) {
       setSelectedComplaint(null);
-      setLinkedComplaints([]);
-      setShowLinkedWarning(false);
-      setIsDuplicateChild(false);
-      setIsAlreadyLinked(false);
-      setParentComplaintId(null);
+      setHintText("");
+      setValidation({ isValid: true });
+      return;
     }
+
+    const complaint = selected[0];
+    setSelectedComplaint(complaint);
+
+    const issue = getIssueDescription(complaint);
+    setHintText(isFocused ? `${complaint.id}, ${complaint.type || ""}, ${issue}` : "");
+
+    const validationResult = await validateComplaintLinking(complaint);
+    setValidation(validationResult);
   };
 
   const handleLinkComplaints = async () => {
@@ -202,15 +188,8 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
       return;
     }
 
-    // Prevent linking to a duplicate child complaint
-    if (isDuplicateChild) {
-      ToggleError(`Cannot link to a duplicate complaint. Please select a parent complaint (${parentComplaintId})`);
-      return;
-    }
-
-    // Prevent linking to an already linked complaint
-    if (isAlreadyLinked) {
-      ToggleError("These complaints are already linked");
+    if (!validation.isValid) {
+      ToggleError(validation.message || "Cannot link this complaint");
       return;
     }
 
@@ -222,7 +201,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
       });
       await post(dispatch, parameters);
 
-      ToggleSuccess(`Complaints successfully linked`);
+      ToggleSuccess("Complaints successfully linked");
       submit();
       close();
     } catch (error) {
@@ -239,17 +218,12 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
         </Modal.Header>
       )}
       <Modal.Body>
-        {showLinkedWarning && (
-          <Alert variant={isAlreadyLinked ? "warning" : "info"}>
-            <i className={`bi bi-${isAlreadyLinked ? "exclamation-triangle-fill" : "info-circle-fill"}`}></i>
-            <span>
-              {" "}
-              {isAlreadyLinked
-                ? "These complaints are already linked"
-                : isDuplicateChild
-                  ? `The complaint you selected is marked as duplicate. Please select its parent complaint #${parentComplaintId}`
-                  : `This complaint is linked to ${linkedComplaints.length} other complaint${linkedComplaints.length > 1 ? "s" : ""}`}
-            </span>
+        {validation.message && (
+          <Alert variant={validation.alertType || "info"}>
+            <i
+              className={`bi bi-${validation.alertType === "warning" ? "exclamation-triangle-fill" : "info-circle-fill"}`}
+            ></i>
+            <span> {validation.message}</span>
           </Alert>
         )}
         <Form className="comp-details-section">
@@ -261,6 +235,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
                 id="complaint-search"
                 labelKey="id"
                 minLength={2}
+                onInputChange={handleInputChange}
                 onSearch={handleSearch}
                 onChange={handleComplaintSelect}
                 onFocus={() => setIsFocused(true)}
@@ -294,11 +269,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
                       </div>
                     </div>
                     <dt>
-                      <small>
-                        {option.type === "HWCR" && getNatureOfComplaint(option.issueType)}
-                        {option.type === "GIR" && getGirTypeDescription(option.issueType)}
-                        {option.type === "ERS" && getViolationDescription(option.issueType)}
-                      </small>
+                      <small>{getIssueDescription(option)}</small>
                     </dt>
                   </>
                 )}
@@ -317,7 +288,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
         <Button
           variant="primary"
           onClick={handleLinkComplaints}
-          disabled={isDuplicateChild || isAlreadyLinked}
+          disabled={!validation.isValid}
         >
           Save and Close
         </Button>
