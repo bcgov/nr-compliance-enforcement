@@ -360,6 +360,7 @@ export class PersonComplaintXrefService {
       .andWhere("person_complaint_xref.person_complaint_xref_code = :code", {
         code: PersonComplaintXrefCodeEnum.COLLABORATOR,
       })
+      .andWhere("person_complaint_xref.active_ind = true")
       .andWhere("officer.person_guid = person.person_guid")
       .addSelect(["officer.auth_user_guid", "officer.agency_code_ref"])
       .addSelect("person_complaint_xref.active_ind")

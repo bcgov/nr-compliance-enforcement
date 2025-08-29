@@ -122,8 +122,9 @@ export class ComplaintController {
   async findComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
+    @Request() req,
   ): Promise<ComplaintDtoAlias> {
-    return (await this.service.findById(id, complaintType)) as ComplaintDtoAlias;
+    return (await this.service.findById(id, complaintType, req)) as ComplaintDtoAlias;
   }
   @Get("/related-data/:id")
   @Roles(coreRoles)
