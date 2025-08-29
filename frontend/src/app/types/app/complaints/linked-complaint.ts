@@ -6,7 +6,9 @@ export interface LinkedComplaint {
   email: string;
   phone: string;
   status: string;
-  species: string;
-  natureOfComplaint: string;
+  issueType?: string;
   parent: boolean;
+  linkage_type?: string;
+  agency?: string;
+  complaintType?: string;
 }

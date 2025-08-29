@@ -795,7 +795,10 @@ export const ComplaintDetailsEdit: FC = () => {
         <hr className="comp-details-body-spacer"></hr>
 
         {readOnly && linkedComplaintData.length > 0 && (
-          <LinkedComplaintList linkedComplaintData={linkedComplaintData} />
+          <LinkedComplaintList
+            linkedComplaintData={linkedComplaintData}
+            currentComplaintId={id}
+          />
         )}
         {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
 

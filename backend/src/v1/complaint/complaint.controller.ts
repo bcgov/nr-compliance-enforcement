@@ -152,12 +152,47 @@ export class ComplaintController {
   @Get("/linked-complaints/:complaint_id")
   @Roles(coreRoles)
   async findLinkedComplaintsById(@Param("complaint_id") complaintId: string) {
-    const childComplaints = await this.linkedComplaintXrefService.findChildComplaints(complaintId);
-    if (childComplaints.length > 0) return childComplaints;
-    else {
-      const parentComplaint = await this.linkedComplaintXrefService.findParentComplaint(complaintId);
-      return parentComplaint;
-    }
+    // Get all related complaints in the entire tree
+    const relatedComplaints = await this.linkedComplaintXrefService.findAllRelatedComplaints(complaintId);
+    return relatedComplaints;
+  }
+
+  @Post("/link-complaints")
+  @Roles(coreRoles)
+  async linkComplaints(
+    @Body()
+    linkComplaintDto: {
+      parentComplaintId: string;
+      childComplaintId: string;
+      linkageType: string;
+    },
+    @User() user: any,
+    @Token() token: string,
+  ) {
+    return await this.linkedComplaintXrefService.linkComplaints(
+      linkComplaintDto.parentComplaintId,
+      linkComplaintDto.childComplaintId,
+      linkComplaintDto.linkageType,
+      user,
+      token,
+    );
+  }
+
+  @Post("/unlink-complaints")
+  @Roles(coreRoles)
+  async unlinkComplaints(
+    @Body()
+    unlinkComplaintDto: {
+      complaintId: string;
+      linkedComplaintId: string;
+    },
+    @User() user: any,
+  ) {
+    return await this.linkedComplaintXrefService.unlinkComplaints(
+      unlinkComplaintDto.complaintId,
+      unlinkComplaintDto.linkedComplaintId,
+      user,
+    );
   }
 
   // Collaborator routes

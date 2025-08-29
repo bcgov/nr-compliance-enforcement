@@ -1,11 +1,11 @@
 import { FC } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { isFeatureActive, openModal } from "@store/reducers/app";
-import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE } from "@apptypes/modal/modal-types";
+import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE, LINK_COMPLAINT } from "@apptypes/modal/modal-types";
 import { Dropdown } from "react-bootstrap";
 import { getAssessment, getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
-import { getComplaintById } from "@/app/store/reducers/complaints";
+import { getComplaintById, getLinkedComplaints } from "@/app/store/reducers/complaints";
 
 type Props = {
   complaint_identifier: string;
@@ -84,6 +84,25 @@ export const ComplaintActionItems: FC<Props> = ({
     );
   };
 
+  const openLinkComplaintModal = () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: LINK_COMPLAINT,
+        data: {
+          title: `Link complaint: #${complaint_identifier}`,
+          complaint_identifier: complaint_identifier,
+          complaint_type: complaint_type,
+        },
+        callback: () => {
+          // Refresh linked complaints after successfully linking
+          dispatch(getLinkedComplaints(complaint_identifier));
+        },
+      }),
+    );
+  };
+
   return (
     <Dropdown
       id="quick-action-button"
@@ -135,6 +154,16 @@ export const ComplaintActionItems: FC<Props> = ({
             Quick close
           </Dropdown.Item>
         )}
+        <Dropdown.Item
+          onClick={openLinkComplaintModal}
+          disabled={complaint_status === "CLOSED"}
+        >
+          <i
+            className="bi bi-link-45deg"
+            id="link-complaint-icon"
+          />{" "}
+          Link complaint
+        </Dropdown.Item>
         {showExperimentalFeature && (
           <>
             <Dropdown.Item onClick={openStatusChangeModal}>

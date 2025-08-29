@@ -4,6 +4,7 @@ import COMPLAINT_TYPES, { complaintTypeToName } from "@apptypes/app/complaint-ty
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import {
   getComplaintCollaboratorsByComplaintId,
+  getLinkedComplaints,
   selectActiveComplaintCollaborators,
   selectComplaintHeader,
   selectComplaintViewMode,
@@ -20,6 +21,7 @@ import {
   MANAGE_COLLABORATORS,
   QUICK_CLOSE,
   REFER_COMPLAINT,
+  LINK_COMPLAINT,
 } from "@apptypes/modal/modal-types";
 import { exportComplaint } from "@store/reducers/documents-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
@@ -181,6 +183,25 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     );
   };
 
+  const openLinkComplaintModal = () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: LINK_COMPLAINT,
+        data: {
+          title: `Link complaint: #${id}`,
+          complaint_identifier: id,
+          complaint_type: complaintType,
+        },
+        callback: () => {
+          // Refresh linked complaints after successfully linking
+          dispatch(getLinkedComplaints(id));
+        },
+      }),
+    );
+  };
+
   const exportComplaintToPdf = () => {
     dispatch(exportComplaint(complaintType, id, new Date(loggedDate)));
   };
@@ -233,6 +254,15 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           <span>Quick close</span>
         </Dropdown.Item>
       )}
+      <Dropdown.Item
+        as="button"
+        id="link-complaint-button"
+        onClick={openLinkComplaintModal}
+        disabled={status === "Closed"}
+      >
+        <i className="bi bi-link-45deg"></i>
+        <span>Link complaint</span>
+      </Dropdown.Item>
       {showComplaintReferrals && (
         <Dropdown.Item
           as="button"

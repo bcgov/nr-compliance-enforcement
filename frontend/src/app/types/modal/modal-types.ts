@@ -12,6 +12,7 @@ export const TOGGLE_DEACTIVATE = "TOGGLE_DEACTIVATE";
 export const REFER_COMPLAINT = "REFER_COMPLAINT";
 export const MANAGE_COLLABORATORS = "MANAGE_COLLABORATORS";
 export const MAP_MODAL = "MAP_MODAL";
+export const LINK_COMPLAINT = "LINK_COMPLAINT";
 
 export interface ModalProps {
   modalType: string;

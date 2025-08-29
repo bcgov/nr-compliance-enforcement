@@ -1,4 +1,5 @@
 import { Complaint } from "../../complaint/entities/complaint.entity";
+import { Person } from "../../person/entities/person.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { UUID } from "crypto";
 
@@ -35,6 +36,12 @@ export class LinkedComplaintXref {
   @Column("character varying", { name: "linked_complaint_identifier" })
   linked_complaint_id: string;
 
+  @Column("character varying", { name: "linkage_type", length: 20, default: "DUPLICATE" })
+  linkage_type: string;
+
+  @Column("uuid", { name: "person_guid", nullable: true })
+  person_guid: UUID;
+
   @ManyToOne(() => Complaint, (complaint) => complaint.linked_complaint_xref)
   @JoinColumn([{ name: "complaint_identifier", referencedColumnName: "complaint_identifier" }])
   complaint_identifier: Complaint;
@@ -42,4 +49,8 @@ export class LinkedComplaintXref {
   @ManyToOne(() => Complaint, (complaint) => complaint.linked_complaint_xref)
   @JoinColumn([{ name: "linked_complaint_identifier", referencedColumnName: "complaint_identifier" }])
   linked_complaint_identifier: Complaint;
+
+  @ManyToOne(() => Person)
+  @JoinColumn([{ name: "person_guid", referencedColumnName: "person_guid" }])
+  person: Person;
 }
