@@ -152,7 +152,6 @@ export class ComplaintController {
   @Get("/linked-complaints/:complaint_id")
   @Roles(coreRoles)
   async findLinkedComplaintsById(@Param("complaint_id") complaintId: string) {
-    // Get all related complaints in the entire tree
     const relatedComplaints = await this.linkedComplaintXrefService.findAllRelatedComplaints(complaintId);
     return relatedComplaints;
   }
@@ -164,7 +163,7 @@ export class ComplaintController {
     linkComplaintDto: {
       parentComplaintId: string;
       childComplaintId: string;
-      linkageType: string;
+      linkType: string;
     },
     @User() user: any,
     @Token() token: string,
@@ -172,7 +171,7 @@ export class ComplaintController {
     return await this.linkedComplaintXrefService.linkComplaints(
       linkComplaintDto.parentComplaintId,
       linkComplaintDto.childComplaintId,
-      linkComplaintDto.linkageType,
+      linkComplaintDto.linkType,
       user,
       token,
     );

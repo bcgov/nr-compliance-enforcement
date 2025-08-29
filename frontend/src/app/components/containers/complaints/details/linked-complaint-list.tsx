@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { applyStatusClass } from "@common/methods";
 import { Alert, Badge, Nav, Tab } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -142,6 +142,23 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, currentCom
     return null;
   }
 
+  // Determine which tabs to show
+  const hasLinkedComplaints = linkedComplaints.length > 0;
+  const hasDuplicateComplaints = duplicateComplaints.length > 0;
+  const showTabs = hasLinkedComplaints && hasDuplicateComplaints;
+
+  // Set active tab based on available data
+  useEffect(() => {
+    if (!hasLinkedComplaints && hasDuplicateComplaints) {
+      setActiveTab("duplicates");
+    } else if (hasLinkedComplaints && !hasDuplicateComplaints) {
+      setActiveTab("linked");
+    } else if (hasLinkedComplaints && hasDuplicateComplaints) {
+      // Both exist, keep "linked" as default
+      setActiveTab("linked");
+    }
+  }, [hasLinkedComplaints, hasDuplicateComplaints]);
+
   const renderComplaintList = (complaints: LinkedComplaint[], type: "duplicates" | "linked") => {
     const viewMore = type === "duplicates" ? viewMoreDuplicates : viewMoreLinked;
 
@@ -249,28 +266,53 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, currentCom
         <h2>Associated complaints</h2>
       </div>
 
-      <Tab.Container
-        id="linked-complaints-tabs"
-        activeKey={activeTab}
-        onSelect={(k) => setActiveTab(k || "linked")}
-      >
-        <Nav
-          variant="tabs"
-          className="mb-3"
+      {showTabs ? (
+        <Tab.Container
+          id="linked-complaints-tabs"
+          activeKey={activeTab}
+          onSelect={(k) => setActiveTab(k || "linked")}
         >
-          <Nav.Item>
-            <Nav.Link eventKey="linked">Linked complaints ({linkedComplaints.length})</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="duplicates">Duplicate complaints ({duplicateComplaints.length})</Nav.Link>
-          </Nav.Item>
-        </Nav>
+          <Nav
+            variant="tabs"
+            className="mb-3"
+          >
+            {hasLinkedComplaints && (
+              <Nav.Item>
+                <Nav.Link eventKey="linked">Linked complaints ({linkedComplaints.length})</Nav.Link>
+              </Nav.Item>
+            )}
+            {hasDuplicateComplaints && (
+              <Nav.Item>
+                <Nav.Link eventKey="duplicates">Duplicate complaints ({duplicateComplaints.length})</Nav.Link>
+              </Nav.Item>
+            )}
+          </Nav>
 
-        <Tab.Content>
-          <Tab.Pane eventKey="linked">{renderComplaintList(linkedComplaints, "linked")}</Tab.Pane>
-          <Tab.Pane eventKey="duplicates">{renderComplaintList(duplicateComplaints, "duplicates")}</Tab.Pane>
-        </Tab.Content>
-      </Tab.Container>
+          <Tab.Content>
+            {hasLinkedComplaints && (
+              <Tab.Pane eventKey="linked">{renderComplaintList(linkedComplaints, "linked")}</Tab.Pane>
+            )}
+            {hasDuplicateComplaints && (
+              <Tab.Pane eventKey="duplicates">{renderComplaintList(duplicateComplaints, "duplicates")}</Tab.Pane>
+            )}
+          </Tab.Content>
+        </Tab.Container>
+      ) : (
+        <div>
+          {hasLinkedComplaints && (
+            <>
+              <h3 className="mb-3">Linked complaints ({linkedComplaints.length})</h3>
+              {renderComplaintList(linkedComplaints, "linked")}
+            </>
+          )}
+          {hasDuplicateComplaints && (
+            <>
+              <h3 className="mb-3">Duplicate complaints ({duplicateComplaints.length})</h3>
+              {renderComplaintList(duplicateComplaints, "duplicates")}
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };

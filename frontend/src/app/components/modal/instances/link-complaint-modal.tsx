@@ -78,6 +78,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [showLinkedWarning, setShowLinkedWarning] = useState<boolean>(false);
   const [isDuplicateChild, setIsDuplicateChild] = useState<boolean>(false);
+  const [isAlreadyLinked, setIsAlreadyLinked] = useState<boolean>(false);
 
   const getStatusDescription = (input: string): string => {
     const code = statusCodes?.find((item: any) => item.complaintStatus === input);
@@ -153,12 +154,17 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
             (linked: any) => linked.parent === true && linked.linkage_type === "DUPLICATE",
           );
 
+          // Check if the selected complaint is already linked to the current complaint
+          const alreadyLinked = response.some((linked: any) => linked.id === complaint_identifier);
+
           setIsDuplicateChild(hasParentDuplicate);
+          setIsAlreadyLinked(alreadyLinked);
           setShowLinkedWarning(true);
         } else {
           setLinkedComplaints([]);
           setShowLinkedWarning(false);
           setIsDuplicateChild(false);
+          setIsAlreadyLinked(false);
         }
       } catch (error) {
         console.error("Error fetching linked complaints:", error);
@@ -168,6 +174,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
       setLinkedComplaints([]);
       setShowLinkedWarning(false);
       setIsDuplicateChild(false);
+      setIsAlreadyLinked(false);
     }
   };
 
@@ -183,11 +190,17 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
       return;
     }
 
+    // Prevent linking to an already linked complaint
+    if (isAlreadyLinked) {
+      ToggleError("These complaints are already linked");
+      return;
+    }
+
     try {
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/link-complaints`, {
         parentComplaintId: complaint_identifier,
         childComplaintId: selectedComplaint.id,
-        linkageType: "LINK",
+        linkType: "LINK",
       });
       await post(dispatch, parameters);
 
@@ -213,9 +226,11 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
             <i className="bi bi-exclamation-triangle-fill"></i>
             <span>
               {" "}
-              {isDuplicateChild
-                ? "The complaint you selected is marked as duplicate. Please select a parent complaint"
-                : `This complaint is linked to ${linkedComplaints.length} other complaint${linkedComplaints.length > 1 ? "s" : ""}`}
+              {isAlreadyLinked
+                ? "These complaints are already linked"
+                : isDuplicateChild
+                  ? "The complaint you selected is marked as duplicate. Please select a parent complaint"
+                  : `This complaint is linked to ${linkedComplaints.length} other complaint${linkedComplaints.length > 1 ? "s" : ""}`}
             </span>
           </Alert>
         )}
@@ -284,8 +299,9 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
         <Button
           variant="primary"
           onClick={handleLinkComplaints}
+          disabled={isDuplicateChild || isAlreadyLinked}
         >
-          Link Complaints
+          Save and Close
         </Button>
       </Modal.Footer>
     </>

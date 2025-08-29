@@ -189,7 +189,7 @@ export class LinkedComplaintXrefService {
   async linkComplaints(
     parentComplaintId: string,
     childComplaintId: string,
-    linkageType: string,
+    linkType: string,
     user: any,
     token: string,
   ) {
@@ -219,8 +219,8 @@ export class LinkedComplaintXrefService {
 
       if (existingLink) {
         // Update existing link if linkage type changed
-        if (existingLink.linkage_type !== linkageType) {
-          existingLink.linkage_type = linkageType;
+        if (existingLink.linkage_type !== linkType) {
+          existingLink.linkage_type = linkType;
           existingLink.update_user_id = idir;
           existingLink.update_utc_timestamp = new Date();
           existingLink.person_guid = person_guid;
@@ -233,7 +233,7 @@ export class LinkedComplaintXrefService {
       const newLink = this.linkedComplaintXrefRepository.create({
         complaint_id: parentComplaintId,
         linked_complaint_id: childComplaintId,
-        linkage_type: linkageType,
+        linkage_type: linkType,
         active_ind: true,
         create_user_id: idir,
         create_utc_timestamp: new Date(),
