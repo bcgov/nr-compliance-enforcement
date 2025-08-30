@@ -36,6 +36,13 @@ export const SideBar: FC = () => {
       hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATIONS)),
     },
     {
+      id: "inspections-link",
+      name: "Inspections",
+      icon: "bi bi-ui-checks",
+      route: "/inspections",
+      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.INSPECTIONS)),
+    },
+    {
       id: "zone-at-a-glance-link",
       name: "Zone at a glance",
       icon: "bi bi-buildings",

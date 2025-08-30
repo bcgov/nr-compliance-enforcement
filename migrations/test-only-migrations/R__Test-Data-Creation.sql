@@ -2000,6 +2000,22 @@ SET active_ind = 'Y'
 WHERE feature_code = 'COMPCOLLAB';
 
 ---------------------
+-- Enable investigations in dev/test for all users
+---------------------
+
+UPDATE feature_agency_xref
+SET active_ind = 'Y'
+WHERE feature_code = 'INVESTIGTN';
+
+---------------------
+-- Enable inspections in dev/test for all users
+---------------------
+
+UPDATE feature_agency_xref
+SET active_ind = 'Y'
+WHERE feature_code = 'INSPECTION';
+
+---------------------
 -- Disable referral emails in dev and test for all users
 ---------------------
 

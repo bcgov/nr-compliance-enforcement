@@ -36,6 +36,8 @@ import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { PartyView } from "./components/containers/parties/view";
 import Redirect from "./components/containers/pages/redirect";
 import config from "@/config";
+import { InspectionDetails } from "@/app/components/containers/instpections/details/inspection-details";
+import Inspections from "@/app/components/containers/instpections/inspections";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -50,6 +52,7 @@ const App: FC = () => {
   }, [dispatch]);
 
   const investigationsActive = useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATIONS));
+  const inspectionsActive = useAppSelector(isFeatureActive(FEATURE_TYPES.INSPECTIONS));
 
   const { REDIRECT_MODE, REDIRECT_HOST_NAME } = config;
   const redirectMode = REDIRECT_MODE === "true";
@@ -114,6 +117,18 @@ const App: FC = () => {
                   <Route
                     path="/investigation/:investigationGuid"
                     element={<InvestigationDetails />}
+                  />
+                )}
+                {inspectionsActive && (
+                  <Route
+                    path="/inspections"
+                    element={<Inspections />}
+                  />
+                )}
+                {inspectionsActive && (
+                  <Route
+                    path="/inspection/:inspectionGuid"
+                    element={<InspectionDetails />}
                   />
                 )}
                 <Route
