@@ -15,10 +15,10 @@ complaint_h
 attractant_hwcr_xref_h
 allegation_complaint_h
 action_taken_h
+linked_complaint_xref
 staging_complaint
 person_complaint_xref
 officer_team_xref
-linked_complaint_xref
 gir_complaint
 geo_org_unit_structure
 attractant_hwcr_xref
@@ -43,6 +43,7 @@ staging_status_code
 staging_activity_code
 species_code
 person_complaint_xref_code
+linked_complaint_xref_type_code
 hwcr_complaint_nature_code
 gir_type_code
 geo_org_unit_type_code

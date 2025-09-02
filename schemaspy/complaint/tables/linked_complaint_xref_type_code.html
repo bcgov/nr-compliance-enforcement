@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>officer - default.complaint</title>
+        <title>linked_complaint_xref_type_code - default.complaint</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>officer</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <h1>linked_complaint_xref_type_code</h1><p><span id="recordNumber">-1</span> rows</p><br />
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <i class="fa fa-file-text-o"></i>
@@ -84,7 +84,7 @@
                             </div>
                         </div><!-- /.box-header -->
                         <div class="box-body clearfix">
-                            <p>An officer is a subtype of a person who can be identified through their IDIR.</p>
+                            <p>Code table for different types of complaint link types</p>
                         </div><!-- /.box-body -->
                     </div>
                 </section>
@@ -122,22 +122,17 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="officer_guid">officer_guid</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="linked_complaint_xref_type_code">linked_complaint_xref_type_code</span></td>
+                                    <td>varchar</td>
+                                    <td>20</td>
                                     <td title=''></td>
                                     <td title=''></td>
-                                    <td>complaint.uuid_generate_v4()</td>
+                                    <td>null</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="complaint_referral.officer_guid references officer.officer_guid via FK_cmplreferral__officer_guid"><a href='complaint_referral.html'>complaint_referral</a><span class='relatedKey'>.officer_guid</span></td>
-                                                <td class="constraint detail">FK_cmplreferral__officer_guid</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td title="officer_team_xref.officer_guid references officer.officer_guid via officer_team_xref_officer_fk"><a href='officer_team_xref.html'>officer_team_xref</a><span class='relatedKey'>.officer_guid</span></td>
-                                                <td class="constraint detail">officer_team_xref_officer_fk</td>
+                                                <td title="linked_complaint_xref.link_type references linked_complaint_xref_type_code.linked_complaint_xref_type_code via FK_lnkcmplxref_link_type"><a href='linked_complaint_xref.html'>linked_complaint_xref</a><span class='relatedKey'>.link_type</span></td>
+                                                <td class="constraint detail">FK_lnkcmplxref_link_type</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
@@ -146,12 +141,12 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>System generated unique key for an officer. This key should never be exposed to users via any system utilizing the tables.</p></td>
+                                    <td><p>A human readable code used to identify a link type between complaints</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="user_id">user_id</span></td>
+                                    <td><span id="short_description">short_description</span></td>
                                     <td>varchar</td>
-                                    <td>32</td>
+                                    <td>50</td>
                                     <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -163,7 +158,58 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The IDIR ID issued to the user by the Government of British Columbia as part of their employment.</p></td>
+                                    <td><p>The short description of the link type</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="long_description">long_description</span></td>
+                                    <td>varchar</td>
+                                    <td>250</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The long description of the link type</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="display_order">display_order</span></td>
+                                    <td>int4</td>
+                                    <td>10</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The order in which the values should be displayed when presented to a user in a list</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="active_ind">active_ind</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>true</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Flag indicating if the link type is active</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -180,7 +226,24 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that created the officer.</p></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="create_user_guid">create_user_guid</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_utc_timestamp">create_utc_timestamp</span></td>
@@ -197,7 +260,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the officer was created.  The timestamp is stored in UTC with no Offset.</p></td>
+                                    <td><p>The timestamp when the linked complaint type code was created.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_id">update_user_id</span></td>
@@ -214,7 +277,24 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that updated the officer.</p></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="update_user_guid">update_user_guid</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_utc_timestamp">update_utc_timestamp</span></td>
@@ -231,136 +311,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the officer was updated.  The timestamp is stored in UTC with no Offset.</p></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="person_guid">person_guid</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="officer.person_guid references person.person_guid via FK_officer_person"><a href='person.html'>person</a><span class='relatedKey'>.person_guid</span></td>
-                                                <td class="constraint detail">FK_officer_person</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td><p>System generated unique key for an person.</p></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="office_guid">office_guid</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="officer.office_guid references office.office_guid via FK_officer_office"><a href='office.html'>office</a><span class='relatedKey'>.office_guid</span></td>
-                                                <td class="constraint detail">FK_officer_office</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td><p>System generated unique key for an office. The primary office an officer is assigned to.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="auth_user_guid">auth_user_guid</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The SiteMinder guid returned to the application from KeyCloak.   Used to uniquely identify a user over the course of their lifecycle.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="coms_enrolled_ind">coms_enrolled_ind</span></td>
-                                    <td>bool</td>
-                                    <td>1</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>false</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="deactivate_ind">deactivate_ind</span></td>
-                                    <td>bool</td>
-                                    <td>1</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>false</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>A boolean indicator representing if an officer has been deactivated</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="agency_code_ref">agency_code_ref</span></td>
-                                    <td>varchar</td>
-                                    <td>6</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Key representing an agency stored in the agency_code table of the shared schema.  The agency that employs the Officer.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="park_area_guid">park_area_guid</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>System generated unique identifier for a park area.</p></td>
+                                    <td><p>The timestamp when the linked complaint type code was updated.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -393,16 +344,10 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_officer</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_linked_complaint_xref_type_code</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>officer_guid</td>
-                                </tr>
-                                <tr>
-                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> UQ_officer</td>
-                                    <td>Must be unique</td>
-                                    <td><span title='Ascending'>Asc</span></td>
-                                    <td>person_guid</td>
+                                    <td>linked_complaint_xref_type_code</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -427,29 +372,19 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="728,5,1005,181">
-<area shape="rect" id="node2" href="officer.html" target="_top" title="officer" alt="" coords="317,143,684,593">
-<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="5,403,273,549">
-<area shape="rect" id="node4" href="person.html" target="_top" title="person" alt="" coords="23,268,255,385">
-<area shape="rect" id="node5" href="officer_team_xref.html" target="_top" title="officer_team_xref" alt="" coords="751,199,983,375">
+<area shape="rect" id="node1" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="495,5,761,269">
+<area shape="rect" id="node2" href="linked_complaint_xref_type_code.html" target="_top" title="linked_complaint_xref_type_code" alt="" coords="5,120,451,512">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/officer.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/linked_complaint_xref_type_code.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="402,64,562,152">
-<area shape="rect" id="node2" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,200,304,288">
-<area shape="rect" id="node3" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="1071,89,1348,265">
-<area shape="rect" id="node4" href="officer.html" target="_top" title="officer" alt="" coords="660,275,1027,725">
-<area shape="rect" id="node7" href="person.html" target="_top" title="person" alt="" coords="366,169,598,287">
-<area shape="rect" id="node8" href="office.html" target="_top" title="office" alt="" coords="348,393,616,540">
-<area shape="rect" id="node5" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="1392,92,1701,180">
-<area shape="rect" id="node6" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="716,64,971,152">
-<area shape="rect" id="node9" href="officer_team_xref.html" target="_top" title="officer_team_xref" alt="" coords="1093,417,1325,593">
-<area shape="rect" id="node10" href="team.html" target="_top" title="team" alt="" coords="783,743,904,831">
-<area shape="rect" id="node11" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="713,169,974,257">
+<area shape="rect" id="node1" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="495,5,761,269">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="148,25,308,113">
+<area shape="rect" id="node3" href="linked_complaint_xref_type_code.html" target="_top" title="linked_complaint_xref_type_code" alt="" coords="5,131,451,523">
+<area shape="rect" id="node4" href="person.html" target="_top" title="person" alt="" coords="161,540,295,628">
 </map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/officer.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/linked_complaint_xref_type_code.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

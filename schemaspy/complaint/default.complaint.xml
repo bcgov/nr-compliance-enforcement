@@ -676,15 +676,40 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the complaint linkage was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the complaint linkage." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the complaint linkage was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="'DUPLICATE'::character varying" digits="0" id="8" name="link_type" nullable="false" remarks="The type of link between complaints, DUPLICATE or LINK" size="20" type="varchar" typeCode="12">
+            <parent column="linked_complaint_xref_type_code" foreignKey="FK_lnkcmplxref_link_type" implied="false" onDeleteCascade="false" schema="complaint" table="linked_complaint_xref_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="person_guid" nullable="true" remarks="The person who created the link between complaints" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="person_guid" foreignKey="FK_lnkcmplxref_person_guid" implied="false" onDeleteCascade="false" schema="complaint" table="person"/>
+         </column>
          <primaryKey column="linked_complaint_xref_guid" sequenceNumberInPK="1"/>
          <index name="PK_lnkcmplxref" unique="true">
             <column ascending="true" name="linked_complaint_xref_guid"/>
          </index>
-         <index name="linked_complaint_xref_linked_complaint_identifier_active_in_idx" unique="true">
+         <index name="linked_complaint_xref_linked_complaint_identifier_active_in_idx" unique="false">
             <column ascending="true" name="linked_complaint_identifier"/>
             <column ascending="true" name="active_ind"/>
          </index>
          <checkConstraint constraint="(((complaint_identifier)::text &lt;&gt; (linked_complaint_identifier)::text))" name="NE_lnkcmplxref_no_self_link"/>
+      </table>
+      <table name="linked_complaint_xref_type_code" remarks="Code table for different types of complaint link types" schema="complaint" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="linked_complaint_xref_type_code" nullable="false" remarks="A human readable code used to identify a link type between complaints" size="20" type="varchar" typeCode="12">
+            <child column="link_type" foreignKey="FK_lnkcmplxref_link_type" implied="false" onDeleteCascade="false" schema="complaint" table="linked_complaint_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the link type" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the link type" size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values should be displayed when presented to a user in a list" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="Flag indicating if the link type is active" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the linked complaint type code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the linked complaint type code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="linked_complaint_xref_type_code" sequenceNumberInPK="1"/>
+         <index name="PK_linked_complaint_xref_type_code" unique="true">
+            <column ascending="true" name="linked_complaint_xref_type_code"/>
+         </index>
       </table>
       <table name="office" remarks="An office is a physical location that serves as a central organization point for groups of users of the system." schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="office_guid" nullable="false" remarks="System generated unique key for an office. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
@@ -788,6 +813,7 @@
       </table>
       <table name="person" remarks="A person is an individual that is being tracked explicitly within the system.  The criteria for being included as a trackable individual is the possession of a unique identifier that can be used for dealiasing.  For example an IDIR or a BC Drivers Licence." schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="complaint.uuid_generate_v4()" digits="0" id="0" name="person_guid" nullable="false" remarks="System generated unique key for an person. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="person_guid" foreignKey="FK_lnkcmplxref_person_guid" implied="false" onDeleteCascade="false" schema="complaint" table="linked_complaint_xref"/>
             <child column="person_guid" foreignKey="FK_officer_person" implied="false" onDeleteCascade="false" schema="complaint" table="officer"/>
             <child column="person_guid" foreignKey="FK_person_complaint_xref__person_guid" implied="false" onDeleteCascade="false" schema="complaint" table="person_complaint_xref"/>
          </column>
