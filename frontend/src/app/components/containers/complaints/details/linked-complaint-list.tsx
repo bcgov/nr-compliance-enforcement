@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from "react";
 import { applyStatusClass } from "@common/methods";
-import { Alert, Badge, Nav, Tab } from "react-bootstrap";
+import { Alert, Badge, Button, Nav, Tab } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 import { formatPhoneNumber } from "react-phone-number-input/input";
@@ -193,17 +193,16 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id }) => {
                 <div className="comp-details-badge-container ms-auto">
                   <Badge className={`badge ${applyStatusClass(data.status)}`}>{data.status}</Badge>
                   {type === "LINK" && id && (
-                    <a
-                      href="#"
-                      className="ms-2 text-primary"
+                    <Button
+                      variant="link"
+                      className="ms-2 text-primary p-0"
                       onClick={(e) => {
-                        e.preventDefault();
                         e.stopPropagation();
                         handleUnlinkComplaint(data.id);
                       }}
                     >
                       Unlink
-                    </a>
+                    </Button>
                   )}
                 </div>
               </div>

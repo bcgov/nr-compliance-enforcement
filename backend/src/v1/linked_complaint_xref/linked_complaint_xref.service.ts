@@ -7,7 +7,6 @@ import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity"
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { Complaint } from "../complaint/entities/complaint.entity";
-import { Person } from "../person/entities/person.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { REQUEST } from "@nestjs/core";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
@@ -22,7 +21,7 @@ export class LinkedComplaintXrefService {
 
   private readonly logger = new Logger(LinkedComplaintXrefService.name);
 
-  constructor(@Inject(REQUEST) private request: Request) {}
+  constructor(@Inject(REQUEST) private readonly request: Request) {}
 
   async create(createLinkedComplaintXrefDto: CreateLinkedComplaintXrefDto): Promise<LinkedComplaintXref> {
     const newLinkedComplaintXref = this.linkedComplaintXrefRepository.create(createLinkedComplaintXrefDto);
@@ -148,7 +147,7 @@ export class LinkedComplaintXrefService {
       const queue: string[] = [complaintId];
 
       while (queue.length > 0) {
-        const currentId = queue.shift()!;
+        const currentId = queue.shift();
 
         if (visited.has(currentId)) {
           continue;
@@ -197,7 +196,7 @@ export class LinkedComplaintXrefService {
         relations: ["person_guid"],
       });
 
-      if (!officer || !officer.person_guid) {
+      if (!officer?.person_guid) {
         throw new Error("Officer not found");
       }
 
