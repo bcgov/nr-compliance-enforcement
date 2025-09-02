@@ -1056,7 +1056,7 @@ export class ComplaintService {
             (result as AllegationComplaint).complaint_identifier.owned_by_agency_code_ref === "COS";
           if (isCOSComplaint) {
             if (!hasCOSRole && !isCollab) {
-              return { error: "Unauthorized" } as any;
+              throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
             }
           }
           return this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
