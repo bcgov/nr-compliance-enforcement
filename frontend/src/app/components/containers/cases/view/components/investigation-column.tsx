@@ -2,6 +2,7 @@ import { FC } from "react";
 import { Investigation } from "@/generated/graphql";
 import { ActivityColumn } from "./activity-column";
 import { InvestigationCard } from "./investigation-card";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface InvestigationColumnProps {
   investigations?: Investigation[];
@@ -9,8 +10,10 @@ interface InvestigationColumnProps {
 }
 
 export const InvestigationColumn: FC<InvestigationColumnProps> = ({ investigations, isLoading = false }) => {
+  const { id } = useParams<{ id?: string }>();
+  const navigate = useNavigate();
   const handleAddInvestigation = () => {
-    console.log("Add investigation clicked");
+    navigate(`/case/${id}/createInvestigation`);
   };
   return (
     <ActivityColumn
@@ -18,7 +21,7 @@ export const InvestigationColumn: FC<InvestigationColumnProps> = ({ investigatio
       items={investigations}
       ItemComponent={InvestigationCard}
       keyProperty="investigationGuid"
-      addButtonText="Add investigation"
+      addButtonText="Create investigation"
       isLoading={isLoading}
       loadingText="Loading investigations..."
       onAddClick={handleAddInvestigation}
