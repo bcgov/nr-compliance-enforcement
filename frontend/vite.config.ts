@@ -35,14 +35,7 @@ export default defineConfig({
         const manifestPath = path.resolve(__dirname, "dist/manifest.json");
 
         const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
-
-        // If the version property doesn't exist, initialize it
-        if (!manifest.version) {
-          manifest.version = `${packageJson.version}.${Date.now()}`;
-        } else {
-          // If the version exists, just update it
-          manifest.version = `${packageJson.version}.${Date.now()}`;
-        }
+        manifest.version = `${packageJson.version}.${Date.now()}`;
         // Write the updated version back to the manifest file
         fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
       },
