@@ -36,6 +36,7 @@ import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { PartyView } from "./components/containers/parties/view";
 import Redirect from "./components/containers/pages/redirect";
 import config from "@/config";
+import PartyEdit from "./components/containers/parties/edit/party-edit";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -103,6 +104,14 @@ const App: FC = () => {
                 <Route
                   path="/party/:id"
                   element={<PartyView />}
+                />
+                <Route
+                  path="/party/create"
+                  element={<PartyEdit />}
+                />
+                <Route
+                  path="/party/:id/edit"
+                  element={<PartyEdit />}
                 />
                 {investigationsActive && (
                   <Route

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { PartyHeader } from "./party-header";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
@@ -34,6 +34,7 @@ export type PartyParams = {
 
 export const PartyView: FC = () => {
   const { id = "" } = useParams<PartyParams>();
+  const navigate = useNavigate();
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -44,7 +45,7 @@ export const PartyView: FC = () => {
   const partyData = data?.party;
 
   const editButtonClick = () => {
-    window.alert("Navigating to the party edit view");
+    navigate(`/party/${id}/edit`);
   };
 
   const displayName = () => {
