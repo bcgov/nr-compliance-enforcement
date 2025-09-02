@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { UUID } from "crypto";
 import { Complaint } from "../../complaint/entities/complaint.entity";
+import { Person } from "../../person/entities/person.entity";
 
 export class LinkedComplaintXrefDto {
   @ApiProperty({
@@ -36,13 +37,13 @@ export class LinkedComplaintXrefDto {
 
   @ApiProperty({
     example: "24-007007",
-    description: "System generated unique key for a hwcr complaint.",
+    description: "System generated unique key for a complaint.",
   })
   public linked_complaint_identifier: Complaint;
 
   @ApiProperty({
     example: "23-007007",
-    description: "System generated unique key for a hwcr complaint.",
+    description: "System generated unique key for a complaint.",
   })
   public complaint_identifier: Complaint;
 
@@ -51,4 +52,21 @@ export class LinkedComplaintXrefDto {
     description: "A boolean indicator to determine if the linked complaint is active.",
   })
   public active_ind: boolean;
+
+  @ApiProperty({
+    example: "DUPLICATE",
+    description: "The type of link between complaints. For example: DUPLICATE or LINK",
+  })
+  public link_type: string;
+
+  @ApiProperty({
+    example: "903f87c8-76dd-427c-a1bb-4d179e443252",
+    description: "The person who created the link between complaints",
+  })
+  public person_guid: UUID;
+
+  @ApiProperty({
+    description: "The person who created the link",
+  })
+  public person: Person;
 }

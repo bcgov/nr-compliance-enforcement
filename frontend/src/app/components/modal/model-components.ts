@@ -11,6 +11,7 @@ import {
   REFER_COMPLAINT,
   MANAGE_COLLABORATORS,
   MAP_MODAL,
+  LINK_COMPLAINT,
 } from "@apptypes/modal/modal-types";
 
 import {
@@ -27,6 +28,7 @@ import {
 } from "./instances";
 import { CancelConfirmModal } from "./instances/cancel-confirm-modal";
 import { MapModal } from "@/app/components/modal/instances/map-modal";
+import { LinkComplaintModal } from "./instances/link-complaint-modal";
 
 export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [Sample]: SampleModal,
@@ -41,4 +43,5 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [REFER_COMPLAINT]: ReferComplaintModal,
   [MANAGE_COLLABORATORS]: ManageCollaboratorsModal,
   [MAP_MODAL]: MapModal,
+  [LINK_COMPLAINT]: LinkComplaintModal,
 };
