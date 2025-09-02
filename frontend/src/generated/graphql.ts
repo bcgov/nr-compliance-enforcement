@@ -518,11 +518,18 @@ export type InactionJustificationType = {
 
 export type Investigation = {
   __typename?: 'Investigation';
+  caseIdentifier?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
   investigationStatus?: Maybe<InvestigationStatusCode>;
   leadAgency?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['Date']['output']>;
+};
+
+export type InvestigationResult = {
+  __typename?: 'InvestigationResult';
+  items: Array<Investigation>;
+  pageInfo: PageInfo;
 };
 
 export type InvestigationStatusCode = {
@@ -916,6 +923,7 @@ export type Query = {
   scheduleCodes: Array<Maybe<ScheduleCode>>;
   scheduleSectorXrefs: Array<Maybe<ScheduleSectorXref>>;
   searchCaseFiles: CaseFileResult;
+  searchInvestigations: InvestigationResult;
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
@@ -1032,6 +1040,12 @@ export type QuerypersonArgs = {
 
 export type QuerysearchCaseFilesArgs = {
   filters?: InputMaybe<CaseFileFilters>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QuerysearchInvestigationsArgs = {
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
