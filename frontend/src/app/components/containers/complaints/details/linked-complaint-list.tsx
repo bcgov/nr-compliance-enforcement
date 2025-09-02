@@ -161,8 +161,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id, canUnl
         <div>
           {complaints.map((data, index) => (
             <div
-              className="comp-linked-complaint-item"
-              style={{ display: `${index > 4 && !viewMore ? "none" : "flex"}` }}
+              className={`comp-linked-complaint-item ${index > 4 && !viewMore ? "hide-item" : "show-item"}`}
               key={data.id}
               role="button"
               tabIndex={index}
@@ -193,11 +192,10 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id, canUnl
                 {getIssueDescription(data) && <div>{getIssueDescription(data)}</div>}
                 <div className="comp-details-badge-container ms-auto">
                   <Badge className={`badge ${applyStatusClass(data.status)}`}>{data.status}</Badge>
-                  {type === "LINK" && id && (
+                  {type === "LINK" && id && canUnlink && (
                     <Button
                       variant="link"
                       className="ms-2 text-primary p-0"
-                      disabled={!canUnlink}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleUnlinkComplaint(data.id);

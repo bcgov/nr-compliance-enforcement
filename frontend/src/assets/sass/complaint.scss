@@ -1263,6 +1263,14 @@ p {
         margin-top: 13px;
       }
     }
+
+    &.show-item {
+      display: flex;
+    }
+
+    &.hide-item {
+      display: none;
+    }
   }
 
   .viewMore {
