@@ -26,7 +26,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id }) => {
   const [expandedComplaints, setExpandedComplaints] = useState<Record<string, boolean>>({});
   const [viewMoreDuplicates, setViewMoreDuplicates] = useState<boolean>(false);
   const [viewMoreLinked, setViewMoreLinked] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<string>("linked");
+  const [activeTab, setActiveTab] = useState<string>("LINK");
 
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
   const natureOfComplaints = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.NATURE_OF_COMPLAINT));
@@ -129,33 +129,24 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id }) => {
     }
   };
 
-  // Separate duplicates and linked complaints
   const duplicateComplaints = linkedComplaintData.filter(
     (item: any) => !item.link_type || item.link_type === "DUPLICATE",
   );
   const linkedComplaints = linkedComplaintData.filter((item: any) => item.link_type === "LINK");
 
-  // If no complaints to display, return null
-  if (linkedComplaintData.length === 0) {
-    return null;
-  }
-
-  // Determine which tabs to show
   const hasLinkedComplaints = linkedComplaints.length > 0;
   const hasDuplicateComplaints = duplicateComplaints.length > 0;
   const showTabs = hasLinkedComplaints && hasDuplicateComplaints;
 
-  // Set active tab based on available data
   useEffect(() => {
     if (!hasLinkedComplaints && hasDuplicateComplaints) {
-      setActiveTab("duplicates");
+      setActiveTab("DUPLICATE");
     } else if (hasLinkedComplaints && !hasDuplicateComplaints) {
-      setActiveTab("linked");
+      setActiveTab("LINK");
     } else if (hasLinkedComplaints && hasDuplicateComplaints) {
-      // Both exist, keep "linked" as default
-      setActiveTab("linked");
+      setActiveTab("LINK");
     }
-  }, [hasLinkedComplaints, hasDuplicateComplaints]);
+  }, [hasLinkedComplaints, hasDuplicateComplaints, showTabs]);
 
   const renderComplaintList = (complaints: LinkedComplaint[], type: "DUPLICATE" | "LINK") => {
     const viewMore = type === "DUPLICATE" ? viewMoreDuplicates : viewMoreLinked;
@@ -256,7 +247,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id }) => {
     );
   };
 
-  return (
+  return linkedComplaintData.length === 0 ? null : (
     <div className="comp-complaint-details-block">
       <div>
         <h2>Associated complaints</h2>
@@ -266,7 +257,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id }) => {
         <Tab.Container
           id="linked-complaints-tabs"
           activeKey={activeTab}
-          onSelect={(k) => setActiveTab(k || "linked")}
+          onSelect={(k) => setActiveTab(k || "LINK")}
         >
           <Nav
             variant="tabs"
