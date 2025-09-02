@@ -84,7 +84,7 @@ const InvestigationEdit: FC = () => {
   });
 
   const createInvestigationMutation = useGraphQLMutation(CREATE_INVESTIGATION_MUTATION, {
-    invalidateQueries: ["searchInvestigations"],
+    invalidateQueries: ["searchInvestigations", ["caseFile", caseIdentifier]],
     onSuccess: (data: any) => {
       ToggleSuccess("Investigation created successfully");
       navigate(`/investigation/${data.createInvestigation.investigationGuid}`);
@@ -96,7 +96,7 @@ const InvestigationEdit: FC = () => {
   });
 
   const updateInvestigationMutation = useGraphQLMutation(UPDATE_INVESTIGATION_MUTATION, {
-    invalidateQueries: [["getInvestigation", id], "searchInvestiagations"],
+    invalidateQueries: [["getInvestigation", id], ["getInvestigations", id], "searchInvestiagations"],
     onSuccess: (data: any) => {
       ToggleSuccess("Investigation updated successfully");
       navigate(`/investigation/${id}`);

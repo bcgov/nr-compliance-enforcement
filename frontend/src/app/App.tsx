@@ -142,6 +142,8 @@ const App: FC = () => {
                   <Route
                     path="/inspection/:inspectionGuid"
                     element={<InspectionDetails />}
+                  />
+                )}
                 <Route
                   path="/complaint/:complaintType/:id"
                   element={<ComplaintDetailsEdit />}
