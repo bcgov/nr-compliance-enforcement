@@ -1,6 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import fs from "fs";
+import packageJson from "./package.json";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -24,6 +26,18 @@ export default defineConfig({
             },
           ],
         };
+      },
+    },
+    {
+      name: "update-manifest-version", // Custom plugin to update the manifest version
+      apply: "build",
+      writeBundle() {
+        const manifestPath = path.resolve(__dirname, "dist/manifest.json");
+
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
+        manifest.version = `${packageJson.version}.${Date.now()}`;
+        // Write the updated version back to the manifest file
+        fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
       },
     },
   ],

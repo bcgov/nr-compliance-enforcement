@@ -34,6 +34,7 @@ import { InvestigationDetails } from "@/app/components/containers/investigations
 import { isFeatureActive } from "@store/reducers/app";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { PartyView } from "./components/containers/parties/view";
+import InvestigationEdit from "@/app/components/containers/investigations/edit/investigation-edit";
 import Redirect from "./components/containers/pages/redirect";
 import config from "@/config";
 import { InspectionDetails } from "@/app/components/containers/instpections/details/inspection-details";
@@ -119,6 +120,18 @@ const App: FC = () => {
                     element={<InvestigationDetails />}
                   />
                 )}
+                {investigationsActive && (
+                  <Route
+                    path="/case/:caseIdentifier/createInvestigation"
+                    element={<InvestigationEdit />}
+                  />
+                )}
+                {investigationsActive && (
+                  <Route
+                    path="/investigation/:id/edit"
+                    element={<InvestigationEdit />}
+                  />
+                )}
                 {inspectionsActive && (
                   <Route
                     path="/inspections"
@@ -129,8 +142,6 @@ const App: FC = () => {
                   <Route
                     path="/inspection/:inspectionGuid"
                     element={<InspectionDetails />}
-                  />
-                )}
                 <Route
                   path="/complaint/:complaintType/:id"
                   element={<ComplaintDetailsEdit />}

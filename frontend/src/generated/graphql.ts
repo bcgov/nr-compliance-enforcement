@@ -245,6 +245,13 @@ export type CreateEquipmentInput = {
   outcomeAgencyCode: Scalars['String']['input'];
 };
 
+export type CreateInvestigationInput = {
+  caseIdentifier: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  investigationStatus?: InputMaybe<Scalars['String']['input']>;
+  leadAgency: Scalars['String']['input'];
+};
+
 export type CreateNoteInput = {
   actor: Scalars['String']['input'];
   complaintId: Scalars['String']['input'];
@@ -604,6 +611,7 @@ export type Mutation = {
   createCaseFile: CaseFile;
   createDecision: ComplaintOutcome;
   createEquipment: ComplaintOutcome;
+  createInvestigation: Investigation;
   createNote: ComplaintOutcome;
   createPark: Park;
   createParkArea: ParkArea;
@@ -624,6 +632,7 @@ export type Mutation = {
   updateCaseFile: CaseFile;
   updateDecision: ComplaintOutcome;
   updateEquipment: ComplaintOutcome;
+  updateInvestigation: Investigation;
   updateNote: ComplaintOutcome;
   updatePark: Park;
   updateParkArea: ParkArea;
@@ -656,6 +665,11 @@ export type MutationcreateDecisionArgs = {
 
 export type MutationcreateEquipmentArgs = {
   createEquipmentInput: CreateEquipmentInput;
+};
+
+
+export type MutationcreateInvestigationArgs = {
+  input: CreateInvestigationInput;
 };
 
 
@@ -757,6 +771,12 @@ export type MutationupdateDecisionArgs = {
 
 export type MutationupdateEquipmentArgs = {
   updateEquipmentInput: UpdateEquipmentInput;
+};
+
+
+export type MutationupdateInvestigationArgs = {
+  input: UpdateInvestigationInput;
+  investigationGuid: Scalars['String']['input'];
 };
 
 
@@ -1207,6 +1227,12 @@ export type UpdateEquipmentInput = {
   equipment: Array<InputMaybe<EquipmentDetailsInput>>;
   outcomeAgencyCode: Scalars['String']['input'];
   updateUserId: Scalars['String']['input'];
+};
+
+export type UpdateInvestigationInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  investigationStatus?: InputMaybe<Scalars['String']['input']>;
+  leadAgency?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateNoteInput = {
