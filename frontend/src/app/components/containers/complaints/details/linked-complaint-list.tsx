@@ -19,9 +19,10 @@ import { ToggleError, ToggleSuccess } from "@common/toast";
 type Props = {
   linkedComplaintData: LinkedComplaint[];
   id?: string;
+  canUnlink?: boolean;
 };
 
-export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id }) => {
+export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id, canUnlink }) => {
   const dispatch = useAppDispatch();
   const [expandedComplaints, setExpandedComplaints] = useState<Record<string, boolean>>({});
   const [viewMoreDuplicates, setViewMoreDuplicates] = useState<boolean>(false);
@@ -196,6 +197,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id }) => {
                     <Button
                       variant="link"
                       className="ms-2 text-primary p-0"
+                      disabled={!canUnlink}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleUnlinkComplaint(data.id);

@@ -118,7 +118,7 @@ export const ComplaintDetailsEdit: FC = () => {
     parkGuid,
   } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
-  const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
+  const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode, status } = useAppSelector(
     selectComplaintHeader(complaintType),
   );
 
@@ -798,6 +798,7 @@ export const ComplaintDetailsEdit: FC = () => {
           <LinkedComplaintList
             id={id}
             linkedComplaintData={linkedComplaintData}
+            canUnlink={status !== "Closed"}
           />
         )}
         {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
