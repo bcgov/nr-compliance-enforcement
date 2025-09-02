@@ -149,14 +149,16 @@ export class ComplaintController {
     return this.service.getZoneAtAGlanceStatistics(complaintType, zone);
   }
 
+  @Get("/linked-complaints/:complaint_id/related")
+  @Roles(coreRoles)
+  async findAllRelatedComplaints(@Param("complaint_id") complaintId: string) {
+    return await this.linkedComplaintXrefService.findAllRelatedComplaints(complaintId);
+  }
+
   @Get("/linked-complaints/:complaint_id")
   @Roles(coreRoles)
-  async findLinkedComplaintsById(@Param("complaint_id") complaintId: string, @Query("related") related?: boolean) {
-    if (related) {
-      return await this.linkedComplaintXrefService.findAllRelatedComplaints(complaintId);
-    } else {
-      return await this.linkedComplaintXrefService.findDirectLinks(complaintId);
-    }
+  async findDirectLinkedComplaints(@Param("complaint_id") complaintId: string) {
+    return await this.linkedComplaintXrefService.findDirectLinks(complaintId);
   }
 
   @Post("/link-complaints")
