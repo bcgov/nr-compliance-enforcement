@@ -8,6 +8,7 @@ import { QuickCloseModal } from "./quick-close-modal";
 import { ToggleDeactivateModal } from "@/app/components/modal/instances/toggle-deactivate-modal";
 import { ReferComplaintModal } from "@/app/components/modal/instances/refer-complaint-modal";
 import { ManageCollaboratorsModal } from "./manage-collaborators-modal";
+import { LinkComplaintModal } from "./link-complaint-modal";
 
 export {
   SampleModal,
@@ -20,4 +21,5 @@ export {
   ToggleDeactivateModal,
   ReferComplaintModal,
   ManageCollaboratorsModal,
+  LinkComplaintModal,
 };

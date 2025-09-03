@@ -84,7 +84,7 @@ const InvestigationEdit: FC = () => {
   });
 
   const createInvestigationMutation = useGraphQLMutation(CREATE_INVESTIGATION_MUTATION, {
-    invalidateQueries: ["searchInvestigations"],
+    invalidateQueries: ["searchInvestigations", ["caseFile", caseIdentifier]],
     onSuccess: (data: any) => {
       ToggleSuccess("Investigation created successfully");
       navigate(`/investigation/${data.createInvestigation.investigationGuid}`);

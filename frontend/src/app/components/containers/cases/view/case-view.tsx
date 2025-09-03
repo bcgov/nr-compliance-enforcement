@@ -93,7 +93,6 @@ export const CaseView: FC = () => {
     queryKey: ["getInvestigations", JSON.stringify(linkedInvestigationIds)],
     variables: { ids: linkedInvestigationIds || [] },
     enabled: !!caseData && !!linkedInvestigationIds && linkedInvestigationIds.length > 0,
-    staleTime: 0, // Force fresh data on navigation
   });
 
   useEffect(() => {
