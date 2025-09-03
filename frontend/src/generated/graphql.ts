@@ -84,6 +84,10 @@ export type Business = {
   name?: Maybe<Scalars['String']['output']>;
 };
 
+export type BusinessInput = {
+  name: Scalars['String']['input'];
+};
+
 export type CaseActivity = {
   __typename?: 'CaseActivity';
   activityType?: Maybe<CaseActivityTypeCode>;
@@ -580,6 +584,7 @@ export type Mutation = {
   createNote: ComplaintOutcome;
   createPark: Park;
   createParkArea: ParkArea;
+  createParty: Party;
   createPerson: Person;
   createPrevention: ComplaintOutcome;
   createReview: ComplaintOutcome;
@@ -601,6 +606,7 @@ export type Mutation = {
   updateNote: ComplaintOutcome;
   updatePark: Park;
   updateParkArea: ParkArea;
+  updateParty: Party;
   updatePerson: Person;
   updatePrevention: ComplaintOutcome;
   updateReview: ComplaintOutcome;
@@ -650,6 +656,11 @@ export type MutationcreateParkArgs = {
 
 export type MutationcreateParkAreaArgs = {
   input: ParkAreaInput;
+};
+
+
+export type MutationcreatePartyArgs = {
+  input: PartyCreateInput;
 };
 
 
@@ -762,6 +773,12 @@ export type MutationupdateParkAreaArgs = {
 };
 
 
+export type MutationupdatePartyArgs = {
+  input: PartyUpdateInput;
+  partyIdentifier: Scalars['String']['input'];
+};
+
+
 export type MutationupdatePersonArgs = {
   input: PersonInput;
   personGuid: Scalars['String']['input'];
@@ -854,6 +871,22 @@ export type Party = {
   partyTypeCode?: Maybe<Scalars['String']['output']>;
   person?: Maybe<Person>;
   shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type PartyCreateInput = {
+  business?: InputMaybe<BusinessInput>;
+  longDescription?: InputMaybe<Scalars['String']['input']>;
+  partyTypeCode: Scalars['String']['input'];
+  person?: InputMaybe<PersonInput>;
+  shortDescription?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PartyUpdateInput = {
+  business?: InputMaybe<BusinessInput>;
+  longDescription?: InputMaybe<Scalars['String']['input']>;
+  partyTypeCode: Scalars['String']['input'];
+  person?: InputMaybe<PersonInput>;
+  shortDescription?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PermitSite = {
