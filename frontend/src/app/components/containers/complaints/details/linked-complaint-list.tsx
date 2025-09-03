@@ -22,7 +22,7 @@ type Props = {
   canUnlink?: boolean;
 };
 
-export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id, canUnlink }) => {
+export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id, canUnlink = true }) => {
   const dispatch = useAppDispatch();
   const [expandedComplaints, setExpandedComplaints] = useState<Record<string, boolean>>({});
   const [viewMoreDuplicates, setViewMoreDuplicates] = useState<boolean>(false);

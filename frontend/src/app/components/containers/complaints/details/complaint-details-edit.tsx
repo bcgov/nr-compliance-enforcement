@@ -245,10 +245,7 @@ export const ComplaintDetailsEdit: FC = () => {
   }, [coordinates]);
 
   useEffect(() => {
-    //getLinkedComplaints api only applies for hwcr, for now
-    if (complaintType === "HWCR") {
-      dispatch(getLinkedComplaints(id));
-    }
+    dispatch(getLinkedComplaints(id));
   }, [dispatch, id, complaintType, details]);
 
   //-- events
@@ -798,7 +795,6 @@ export const ComplaintDetailsEdit: FC = () => {
           <LinkedComplaintList
             id={id}
             linkedComplaintData={linkedComplaintData}
-            canUnlink={status !== "Closed"}
           />
         )}
         {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
