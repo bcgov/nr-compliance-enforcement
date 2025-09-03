@@ -7,7 +7,7 @@ test.describe("CEEB user cannot access COS Enforcement", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.CEEB });
 
   test("CEEB user cannot access COS Enforcement", async ({ page }) => {
-    await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-007890", false, page);
+    await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-007890", true, page);
     await waitForSpinner(page);
     await expect(page).toHaveURL(/not-authorized/);
   });
