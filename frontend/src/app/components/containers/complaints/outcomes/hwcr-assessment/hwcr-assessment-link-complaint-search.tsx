@@ -1,7 +1,7 @@
-import { AsyncTypeahead, Highlighter, useHint } from "react-bootstrap-typeahead";
+import { AsyncTypeahead, Highlighter } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
-import { FC, useState, ReactNode } from "react";
+import { FC, useState } from "react";
 import { Badge, Form } from "react-bootstrap";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
@@ -10,56 +10,13 @@ import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { generateApiParameters, get } from "@common/api";
 import { applyStatusClass } from "@common/methods";
 import config from "@/config";
+import { CustomHint } from "@components/common/custom-hint";
 
 type Props = {
   id?: string;
   onChange?: (selected: Option | null, status: string | null) => void;
   errorMessage?: string;
   value?: Option | null;
-};
-
-type HintProps = {
-  children: ReactNode;
-  className?: string;
-  hintText: string;
-};
-
-// To override the hintText value, from react-bootstrap-typeahead docs
-const CustomHint = ({ children, className, hintText }: HintProps) => {
-  const { hintRef } = useHint();
-
-  return (
-    <div
-      className={className}
-      style={{
-        display: "flex",
-        flex: 1,
-        height: "100%",
-        position: "relative",
-      }}
-    >
-      {children}
-      <input
-        aria-hidden
-        className="rbt-input-hint"
-        ref={hintRef}
-        readOnly
-        style={{
-          backgroundColor: "transparent",
-          borderColor: "transparent",
-          boxShadow: "none",
-          color: "rgba(0, 0, 0, 0.54)",
-          left: 0,
-          pointerEvents: "none",
-          position: "absolute",
-          top: 0,
-          width: "100%",
-        }}
-        tabIndex={-1}
-        value={hintText}
-      />
-    </div>
-  );
 };
 
 export const HWCRAssessmentLinkComplaintSearch: FC<Props> = ({
@@ -103,6 +60,13 @@ export const HWCRAssessmentLinkComplaintSearch: FC<Props> = ({
         : "",
     );
   };
+
+  const handleInputChange = (text: string) => {
+    if (text.length > 0) {
+      setHintText("");
+    }
+  };
+
   const handleSearch = async (query: string) => {
     const parameters = generateApiParameters(
       `${config.API_BASE_URL}/v1/complaint/search/HWCR?sortBy=incident_reported_utc_timestmp&orderBy=DESC&page=1&pageSize=10&query=${query}`,
@@ -120,6 +84,7 @@ export const HWCRAssessmentLinkComplaintSearch: FC<Props> = ({
         id={id}
         labelKey="id"
         minLength={2}
+        onInputChange={handleInputChange}
         onSearch={handleSearch}
         onChange={handleChange}
         onFocus={() => setIsFocused(true)}
