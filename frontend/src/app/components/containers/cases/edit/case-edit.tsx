@@ -23,7 +23,7 @@ const CREATE_CASE_MUTATION = gql`
       caseIdentifier
       openedTimestamp
       description
-      status {
+      caseStatus {
         caseStatusCode
         shortDescription
         longDescription

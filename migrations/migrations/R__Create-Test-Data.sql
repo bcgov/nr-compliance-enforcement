@@ -1102,32 +1102,6 @@ INSERT INTO
   )
 VALUES
   (
-    '5b9bcbf6-73b4-4b56-8fc3-d979bb3c1ff7'::uuid,
-    'Mike',
-    NULL,
-    NULL,
-    'Sears',
-    'FLYWAY',
-    '2023-06-29 22:16:16.754',
-    'FLYWAY',
-    '2023-06-29 22:16:16.754'
-  ) ON CONFLICT
-DO NOTHING;
-
-INSERT INTO
-  person (
-    person_guid,
-    first_name,
-    middle_name_1,
-    middle_name_2,
-    last_name,
-    create_user_id,
-    create_utc_timestamp,
-    update_user_id,
-    update_utc_timestamp
-  )
-VALUES
-  (
     '666c0f30-d707-4ade-b67f-9b888fe234e6'::uuid,
     'Alec',
     NULL,
@@ -1519,32 +1493,6 @@ INSERT INTO
   )
 VALUES
   (
-    'd19893fa-0af9-4646-9def-1312e8d67202'::uuid,
-    'Darryl',
-    NULL,
-    NULL,
-    'Struthers',
-    'FLYWAY',
-    '2024-01-22 22:16:16.754',
-    'FLYWAY',
-    '2024-01-22 22:16:16.754'
-  ) ON CONFLICT
-DO NOTHING;
-
-INSERT INTO
-  person (
-    person_guid,
-    first_name,
-    middle_name_1,
-    middle_name_2,
-    last_name,
-    create_user_id,
-    create_utc_timestamp,
-    update_user_id,
-    update_utc_timestamp
-  )
-VALUES
-  (
     '1c64cc35-f5f7-4cf5-84b3-4e4233f9c6a1'::uuid,
     'Breanna',
     NULL,
@@ -1703,32 +1651,6 @@ INSERT INTO
   )
 VALUES
   (
-    '2eaffabd-720d-48ed-aa82-b31f828487c4'::uuid,
-    'Brad',
-    NULL,
-    NULL,
-    'Lacey',
-    'FLYWAY',
-    '2024-01-22 22:16:16.754',
-    'FLYWAY',
-    '2024-01-22 22:16:16.754'
-  ) ON CONFLICT
-DO NOTHING;
-
-INSERT INTO
-  person (
-    person_guid,
-    first_name,
-    middle_name_1,
-    middle_name_2,
-    last_name,
-    create_user_id,
-    create_utc_timestamp,
-    update_user_id,
-    update_utc_timestamp
-  )
-VALUES
-  (
     '0667495f-61a5-4d3b-b756-1ee58cb38e23'::uuid,
     'Ryan',
     NULL,
@@ -1824,32 +1746,6 @@ values
 DO NOTHING;
 
 -- COS HQ / Application Team --
-INSERT INTO
-  officer (
-    officer_guid,
-    user_id,
-    create_user_id,
-    create_utc_timestamp,
-    update_user_id,
-    update_utc_timestamp,
-    person_guid,
-    office_guid,
-    auth_user_guid
-  )
-VALUES
-  (
-    '65dbad8b-790a-43cb-b394-c8019f4c86e2'::uuid,
-    'M2SEARS',
-    'FLYWAY',
-    '2023-06-29 22:16:16.754',
-    'FLYWAY',
-    '2023-06-29 22:16:16.754',
-    '5b9bcbf6-73b4-4b56-8fc3-d979bb3c1ff7'::uuid,
-    'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid,
-    NULL
-  ) ON CONFLICT
-DO NOTHING;
-
 INSERT INTO
   officer (
     officer_guid,
@@ -2296,30 +2192,6 @@ INSERT INTO
   )
 VALUES
   (
-    '8d4316b8-b690-493e-bebb-0f4205e48a8b'::uuid,
-    'DJSTRUTH',
-    'FLYWAY',
-    '2024-01-22 22:16:16.754',
-    'FLYWAY',
-    '2024-01-22 22:20:48.186',
-    'd19893fa-0af9-4646-9def-1312e8d67202'::uuid,
-    'e0ad7fe3-59da-4e1a-a611-46ccf7ea7396'::uuid
-  ) ON CONFLICT
-DO NOTHING;
-
-INSERT INTO
-  officer (
-    officer_guid,
-    user_id,
-    create_user_id,
-    create_utc_timestamp,
-    update_user_id,
-    update_utc_timestamp,
-    person_guid,
-    office_guid
-  )
-VALUES
-  (
     'a2b20131-5f9e-455e-87fb-acadfce83e54'::uuid,
     'BCARUTH',
     'FLYWAY',
@@ -2449,30 +2321,6 @@ VALUES
     'FLYWAY',
     '2024-01-22 22:20:48.186',
     'b136509d-0e1c-4c81-99b5-2ca3236f6f54'::uuid,
-    '4a5a94b1-bd47-4611-a577-861d97089903'::uuid
-  ) ON CONFLICT
-DO NOTHING;
-
-INSERT INTO
-  officer (
-    officer_guid,
-    user_id,
-    create_user_id,
-    create_utc_timestamp,
-    update_user_id,
-    update_utc_timestamp,
-    person_guid,
-    office_guid
-  )
-VALUES
-  (
-    '9989f64b-27ee-49bb-9a90-35546223f87f'::uuid,
-    'BALACEY',
-    'FLYWAY',
-    '2024-01-22 22:16:16.754',
-    'FLYWAY',
-    '2024-01-22 22:20:48.186',
-    '2eaffabd-720d-48ed-aa82-b31f828487c4'::uuid,
     '4a5a94b1-bd47-4611-a577-861d97089903'::uuid
   ) ON CONFLICT
 DO NOTHING;

@@ -4,6 +4,8 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { LinkedComplaintXref } from "./entities/linked_complaint_xref.entity";
+import { Officer } from "../officer/entities/officer.entity";
+import { REQUEST } from "@nestjs/core";
 
 describe("LinkedComplaintXrefService", () => {
   let service: LinkedComplaintXrefService;
@@ -17,13 +19,21 @@ describe("LinkedComplaintXrefService", () => {
           useValue: {},
         },
         {
+          provide: getRepositoryToken(Officer),
+          useValue: {},
+        },
+        {
+          provide: REQUEST,
+          useValue: {},
+        },
+        {
           provide: DataSource,
           useFactory: dataSourceMockFactory,
         },
       ],
     }).compile();
 
-    service = module.get<LinkedComplaintXrefService>(LinkedComplaintXrefService);
+    service = await module.resolve<LinkedComplaintXrefService>(LinkedComplaintXrefService);
   });
 
   it("should be defined", () => {

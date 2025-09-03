@@ -39,6 +39,7 @@ import Redirect from "./components/containers/pages/redirect";
 import config from "@/config";
 import { InspectionDetails } from "@/app/components/containers/instpections/details/inspection-details";
 import Inspections from "@/app/components/containers/instpections/inspections";
+import PartyEdit from "./components/containers/parties/edit/party-edit";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -107,6 +108,14 @@ const App: FC = () => {
                 <Route
                   path="/party/:id"
                   element={<PartyView />}
+                />
+                <Route
+                  path="/party/create"
+                  element={<PartyEdit />}
+                />
+                <Route
+                  path="/party/:id/edit"
+                  element={<PartyEdit />}
                 />
                 {investigationsActive && (
                   <Route

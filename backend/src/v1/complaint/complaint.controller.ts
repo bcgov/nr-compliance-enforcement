@@ -149,15 +149,54 @@ export class ComplaintController {
     return this.service.getZoneAtAGlanceStatistics(complaintType, zone);
   }
 
+  @Get("/linked-complaints/:complaint_id/related")
+  @Roles(coreRoles)
+  async findAllRelatedComplaints(@Param("complaint_id") complaintId: string) {
+    return await this.linkedComplaintXrefService.findAllRelatedComplaints(complaintId);
+  }
+
   @Get("/linked-complaints/:complaint_id")
   @Roles(coreRoles)
-  async findLinkedComplaintsById(@Param("complaint_id") complaintId: string) {
-    const childComplaints = await this.linkedComplaintXrefService.findChildComplaints(complaintId);
-    if (childComplaints.length > 0) return childComplaints;
-    else {
-      const parentComplaint = await this.linkedComplaintXrefService.findParentComplaint(complaintId);
-      return parentComplaint;
-    }
+  async findDirectLinkedComplaints(@Param("complaint_id") complaintId: string) {
+    return await this.linkedComplaintXrefService.findDirectLinks(complaintId);
+  }
+
+  @Post("/link-complaints")
+  @Roles(coreRoles)
+  async linkComplaints(
+    @Body()
+    linkComplaintDto: {
+      parentComplaintId: string;
+      childComplaintId: string;
+      linkType: string;
+    },
+    @User() user: any,
+    @Token() token: string,
+  ) {
+    return await this.linkedComplaintXrefService.linkComplaints(
+      linkComplaintDto.parentComplaintId,
+      linkComplaintDto.childComplaintId,
+      linkComplaintDto.linkType,
+      user,
+      token,
+    );
+  }
+
+  @Post("/unlink-complaints")
+  @Roles(coreRoles)
+  async unlinkComplaints(
+    @Body()
+    unlinkComplaintDto: {
+      complaintId: string;
+      linkedComplaintId: string;
+    },
+    @User() user: any,
+  ) {
+    return await this.linkedComplaintXrefService.unlinkComplaints(
+      unlinkComplaintDto.complaintId,
+      unlinkComplaintDto.linkedComplaintId,
+      user,
+    );
   }
 
   // Collaborator routes

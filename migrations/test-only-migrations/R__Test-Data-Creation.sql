@@ -221,10 +221,6 @@ VALUES('c20cc5d4-237c-4559-8091-89caca659bb8'::uuid, 'Chris', NULL, NULL, 'Nesmi
 ON CONFLICT DO NOTHING;
 INSERT INTO person
 (person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('5b9bcbf6-73b4-4b56-8fc3-d979bb3c1ff7'::uuid, 'Mike', NULL, NULL, 'Sears', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
-ON CONFLICT DO NOTHING;
-INSERT INTO person
-(person_guid, first_name, middle_name_1, middle_name_2, last_name, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
 VALUES('666c0f30-d707-4ade-b67f-9b888fe234e6'::uuid, 'Alec', NULL, NULL, 'Wilcox', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO person
@@ -307,10 +303,6 @@ ON CONFLICT DO NOTHING;
 INSERT INTO officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
 VALUES('6d3b09a9-867b-40d5-93d2-ea9e4951544f'::uuid, 'CNESMITH', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', 'c20cc5d4-237c-4559-8091-89caca659bb8'::uuid, 'cdd9964e-7878-44c1-b4a2-0290c6345dec'::uuid, NULL)
-ON CONFLICT DO NOTHING;
-INSERT INTO officer
-(officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
-VALUES('65dbad8b-790a-43cb-b394-c8019f4c86e2'::uuid, 'M2SEARS', 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754', '5b9bcbf6-73b4-4b56-8fc3-d979bb3c1ff7'::uuid, 'db343458-8eca-42c2-91ec-070b3e6de663'::uuid, NULL)
 ON CONFLICT DO NOTHING;
 INSERT INTO officer
 (officer_guid, user_id, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp, person_guid, office_guid, auth_user_guid)
@@ -416,7 +408,6 @@ UPDATE officer SET office_guid = 'c8aeb3d9-3718-49d9-b8b5-6c84671546eb' WHERE us
 UPDATE officer SET office_guid = 'b494082e-35a3-468f-8955-4aa002066b36' WHERE user_id='SKOT';
 UPDATE officer SET office_guid = '313f4ec3-e88a-41c2-9956-78c7b18cb71d' WHERE user_id='BFALK';
 UPDATE officer SET office_guid = 'db343458-8eca-42c2-91ec-070b3e6de663' WHERE user_id='TSPRADO';
-UPDATE officer SET office_guid = 'db343458-8eca-42c2-91ec-070b3e6de663' WHERE user_id='M2SEARS';
 UPDATE officer SET office_guid = '79fe321b-7716-413f-b878-c5fd6100317d' WHERE user_id='GRLAVERY';
 UPDATE officer SET office_guid = '9fc7327b-b206-4a5c-88f1-2875a456eb49' WHERE user_id='JFUNK';
 UPDATE officer SET office_guid = '4a5a94b1-bd47-4611-a577-861d97089903' WHERE user_id='RRONDEAU';
@@ -1551,12 +1542,6 @@ WHERE
 
 UPDATE officer
 SET
-  auth_user_guid = 'a6620175-84d0-436b-b13e-d97457d69588'
-WHERE
-  user_id = 'M2SEARS';
-
-UPDATE officer
-SET
   auth_user_guid = '287d4e72-8409-4dd1-991a-8b1117b8eb2a'
 WHERE
   user_id = 'AWILCOX';
@@ -1701,12 +1686,6 @@ WHERE
 
 UPDATE officer
 SET
-  auth_user_guid = 'd6f05035-df0f-4e6c-aff5-91dc75fe2eaa'
-WHERE
-  user_id = 'BALACEY';
-
-UPDATE officer
-SET
   auth_user_guid = 'fa4fc3b6-346c-401b-8a29-cd76a097e7b2'
 WHERE
   user_id = 'SNORRIS';
@@ -1735,11 +1714,6 @@ SET
 WHERE
   user_id = 'CELDER';
 
-UPDATE officer
-SET
-  auth_user_guid = '08a17082-bd02-4ef3-9a38-d6d61f5c365f'
-WHERE
-  user_id = 'DJSTRUTH';
 
 UPDATE officer
 SET
@@ -1815,12 +1789,6 @@ WHERE
 
 UPDATE officer
 SET
-  auth_user_guid = 'd6f05035-df0f-4e6c-aff5-91dc75fe2eaa'
-WHERE
-  user_id = 'BALACEY';
-
-UPDATE officer
-SET
   auth_user_guid = 'ba9f3a7f-9434-4ccb-a861-307622a2d339'
 WHERE
   user_id = 'BEPARKER';
@@ -1854,12 +1822,6 @@ SET
   auth_user_guid = 'da2fe7e1-fb07-4679-9e2f-1b66df8e7e1b'
 WHERE
   user_id = 'JDAMERT';
-
-UPDATE officer
-SET
-  auth_user_guid = '08a17082-bd02-4ef3-9a38-d6d61f5c365f'
-WHERE
-  user_id = 'DJSTRUTH';
 
 UPDATE officer
 SET
