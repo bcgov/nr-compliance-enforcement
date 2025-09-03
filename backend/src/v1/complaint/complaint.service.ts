@@ -1047,16 +1047,18 @@ export class ComplaintService {
 
       switch (complaintType) {
         case "ERS": {
-          const hasCOSRole = hasRole(req, Role.COS);
-          const collaborators = await this._personService.getCollaborators(id);
-          const isCollab = collaborators.some(
-            (collab: any) => collab.authUserGuid.split("-").join("") === req.user.idir_user_guid.toLowerCase(),
-          );
-          const isCOSComplaint =
-            (result as AllegationComplaint).complaint_identifier.owned_by_agency_code_ref === "COS";
-          if (isCOSComplaint) {
-            if (!hasCOSRole && !isCollab) {
-              throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
+          if (req) {
+            const hasCOSRole = hasRole(req, Role.COS);
+            const collaborators = await this._personService.getCollaborators(id);
+            const isCollab = collaborators.some(
+              (collab: any) => collab.authUserGuid.split("-").join("") === req.user.idir_user_guid.toLowerCase(),
+            );
+            const isCOSComplaint =
+              (result as AllegationComplaint).complaint_identifier.owned_by_agency_code_ref === "COS";
+            if (isCOSComplaint) {
+              if (!hasCOSRole && !isCollab) {
+                throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
+              }
             }
           }
           return this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
