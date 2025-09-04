@@ -245,10 +245,7 @@ export const ComplaintDetailsEdit: FC = () => {
   }, [coordinates]);
 
   useEffect(() => {
-    //getLinkedComplaints api only applies for hwcr, for now
-    if (complaintType === "HWCR") {
-      dispatch(getLinkedComplaints(id));
-    }
+    dispatch(getLinkedComplaints(id));
   }, [dispatch, id, complaintType, details]);
 
   //-- events

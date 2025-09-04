@@ -153,10 +153,7 @@ export const ComplaintActionItems: FC<Props> = ({
             Quick close
           </Dropdown.Item>
         )}
-        <Dropdown.Item
-          onClick={openLinkComplaintModal}
-          disabled={complaint_status === "CLOSED"}
-        >
+        <Dropdown.Item onClick={openLinkComplaintModal}>
           <i
             className="bi bi-link-45deg"
             id="link-complaint-icon"
