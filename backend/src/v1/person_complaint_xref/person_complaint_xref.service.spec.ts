@@ -7,6 +7,8 @@ import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { ComplaintService } from "../complaint/complaint.service";
 import { EmailService } from "../email/email.service";
 import { WebeocService } from "../../external_api/webeoc/webeoc.service";
+import { OfficerService } from "../officer/officer.service";
+import { FeatureFlagService } from "../feature_flag/feature_flag.service";
 
 describe("PersonComplaintXrefService", () => {
   let service: PersonComplaintXrefService;
@@ -34,6 +36,14 @@ describe("PersonComplaintXrefService", () => {
         },
         {
           provide: WebeocService,
+          useValue: {},
+        },
+        {
+          provide: FeatureFlagService,
+          useValue: {},
+        },
+        {
+          provide: OfficerService,
           useValue: {},
         },
       ],
