@@ -1155,13 +1155,11 @@ export type QuerysearchCaseFilesArgs = {
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
 
-
 export type QuerysearchInspectionsArgs = {
   filters?: InputMaybe<InspectionFilters>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
-
 
 export type QuerysearchInvestigationsArgs = {
   filters?: InputMaybe<InvestigationFilters>;
