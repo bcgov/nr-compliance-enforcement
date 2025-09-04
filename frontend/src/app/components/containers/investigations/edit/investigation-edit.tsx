@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { gql } from "graphql-request";
-import { CaseEditHeader } from "./case-edit-header";
+import { InvestigationEditHeader } from "./investigation-edit-header";
 import { CompSelect } from "@components/common/comp-select";
 import { FormField } from "@components/common/form-field";
 import { ValidationTextArea } from "@common/validation-textarea";
@@ -14,154 +14,138 @@ import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { CaseFileCreateInput, CaseFileUpdateInput } from "@/generated/graphql";
+import { CreateInvestigationInput, UpdateInvestigationInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
 
-const CREATE_CASE_MUTATION = gql`
-  mutation CreateCaseFile($input: CaseFileCreateInput!) {
-    createCaseFile(input: $input) {
-      caseIdentifier
-      openedTimestamp
+const CREATE_INVESTIGATION_MUTATION = gql`
+  mutation CreateInvestigation($input: CreateInvestigationInput!) {
+    createInvestigation(input: $input) {
+      investigationGuid
       description
-      caseStatus {
-        caseStatusCode
+      investigationStatus {
+        investigationStatusCode
         shortDescription
         longDescription
       }
-      leadAgency {
-        agencyCode
-        shortDescription
-        longDescription
-      }
+      leadAgency
     }
   }
 `;
 
-const UPDATE_CASE_MUTATION = gql`
-  mutation UpdateCaseFile($caseIdentifier: String!, $input: CaseFileUpdateInput!) {
-    updateCaseFile(caseIdentifier: $caseIdentifier, input: $input) {
-      caseIdentifier
-      openedTimestamp
+const UPDATE_INVESTIGATION_MUTATION = gql`
+  mutation UpdateInvestigation($investigationGuid: String!, $input: UpdateInvestigationInput!) {
+    updateInvestigation(investigationGuid: $investigationGuid, input: $input) {
+      investigationGuid
       description
-      caseStatus {
-        caseStatusCode
+      investigationStatus {
+        investigationStatusCode
         shortDescription
         longDescription
       }
-      leadAgency {
-        agencyCode
-        shortDescription
-        longDescription
-      }
+      leadAgency
     }
   }
 `;
 
-const GET_CASE_FILE = gql`
-  query GetCaseFile($caseIdentifier: String!) {
-    caseFile(caseIdentifier: $caseIdentifier) {
+const GET_INVESTIGATION = gql`
+  query GetInvestigation($investigationGuid: String!) {
+    getInvestigation(investigationGuid: $investigationGuid) {
       __typename
-      caseIdentifier
-      openedTimestamp
+      investigationGuid
       description
-      caseStatus {
-        caseStatusCode
+      openedTimestamp
+      investigationStatus {
+        investigationStatusCode
         shortDescription
         longDescription
       }
-      leadAgency {
-        agencyCode
-        shortDescription
-        longDescription
-      }
-      activities {
-        __typename
-        caseActivityIdentifier
-        activityType {
-          caseActivityTypeCode
-        }
-      }
+      leadAgency
+    }
+    caseFileByActivityId(activityType: "INVSTGTN", activityIdentifier: $investigationGuid) {
+      caseIdentifier
     }
   }
 `;
 
-const CaseEdit: FC = () => {
+const InvestigationEdit: FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { id } = useParams<{ id?: string }>();
+  const { caseIdentifier, id } = useParams<{ caseIdentifier?: string; id?: string }>();
+
   const isEditMode = !!id;
 
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
 
-  const { data: caseData, isLoading } = useGraphQLQuery(GET_CASE_FILE, {
-    queryKey: ["caseFile", id],
-    variables: { caseIdentifier: id },
+  const { data: investigationData, isLoading } = useGraphQLQuery(GET_INVESTIGATION, {
+    queryKey: ["getInvestigation", id],
+    variables: { investigationGuid: id },
     enabled: isEditMode,
   });
 
-  const createCaseMutation = useGraphQLMutation(CREATE_CASE_MUTATION, {
-    invalidateQueries: ["searchCaseFiles"],
+  const createInvestigationMutation = useGraphQLMutation(CREATE_INVESTIGATION_MUTATION, {
+    invalidateQueries: ["searchInvestigations", ["caseFile", caseIdentifier]],
     onSuccess: (data: any) => {
-      ToggleSuccess("Case created successfully");
-      navigate(`/case/${data.createCaseFile.caseIdentifier}`);
+      ToggleSuccess("Investigation created successfully");
+      navigate(`/investigation/${data.createInvestigation.investigationGuid}`);
     },
     onError: (error: any) => {
-      console.error("Error creating case:", error);
-      ToggleError("Failed to create case");
+      console.error("Error creating investigation:", error);
+      ToggleError("Failed to create investigation");
     },
   });
 
-  const updateCaseMutation = useGraphQLMutation(UPDATE_CASE_MUTATION, {
-    invalidateQueries: [["caseFile", id], "searchCaseFiles"],
+  const updateInvestigationMutation = useGraphQLMutation(UPDATE_INVESTIGATION_MUTATION, {
+    invalidateQueries: [["getInvestigation", id], "searchInvestiagations"],
     onSuccess: (data: any) => {
-      ToggleSuccess("Case updated successfully");
-      navigate(`/case/${id}`);
+      ToggleSuccess("Investigation updated successfully");
+      navigate(`/investigation/${id}`);
     },
     onError: (error: any) => {
-      console.error("Error updating case:", error);
-      ToggleError("Failed to update case");
+      console.error("Error updating investigation:", error);
+      ToggleError("Failed to update investigation");
     },
   });
 
   const defaultValues = useMemo(() => {
-    // If there is case data set the default state of the form to the case data
-    if (isEditMode && caseData?.caseFile) {
+    // If there is investigation data set the default state of the form to the investigation data
+    if (isEditMode && investigationData?.getInvestigation) {
       return {
-        caseStatus: caseData.caseFile.caseStatus?.caseStatusCode || "",
-        leadAgency: caseData.caseFile.leadAgency?.agencyCode || "",
-        description: caseData.caseFile.description || "",
+        investigationStatus: investigationData.getInvestigation.investigationStatus?.investigationStatusCode || "",
+        leadAgency: investigationData.getInvestigation.leadAgency || "",
+        description: investigationData.getInvestigation.description || "",
       };
     }
     return {
-      caseStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
+      investigationStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
       leadAgency: getUserAgency(),
       description: "",
     };
-  }, [isEditMode, caseData]);
+  }, [isEditMode, investigationData]);
 
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value }) => {
       if (isEditMode) {
-        const updateInput: CaseFileUpdateInput = {
-          caseStatus: value.caseStatus,
+        const updateInput: UpdateInvestigationInput = {
           leadAgency: value.leadAgency,
+          investigationStatus: value.investigationStatus,
           description: value.description,
         };
 
-        updateCaseMutation.mutate({
-          caseIdentifier: id,
+        updateInvestigationMutation.mutate({
+          investigationGuid: id,
           input: updateInput,
         });
       } else {
-        const createInput: CaseFileCreateInput = {
-          caseStatus: value.caseStatus,
+        const createInput: CreateInvestigationInput = {
+          caseIdentifier: caseIdentifier as string,
           leadAgency: value.leadAgency,
           description: value.description,
+          investigationStatus: value.investigationStatus,
         };
 
-        createCaseMutation.mutate({ input: createInput });
+        createInvestigationMutation.mutate({ input: createInput });
       }
     },
   });
@@ -170,11 +154,11 @@ const CaseEdit: FC = () => {
     form.reset();
 
     if (isEditMode && id) {
-      navigate(`/case/${id}`);
+      navigate(`/investigation/${id}`);
     } else {
-      navigate("/cases");
+      navigate(`/case/${caseIdentifier}`);
     }
-  }, [navigate, isEditMode, id, form]);
+  }, [navigate, isEditMode, caseIdentifier, id, form]);
 
   const cancelButtonClick = useCallback(() => {
     dispatch(
@@ -194,40 +178,41 @@ const CaseEdit: FC = () => {
     form.handleSubmit();
   }, [form]);
 
-  const isSubmitting = createCaseMutation.isPending || updateCaseMutation.isPending;
+  const isSubmitting = createInvestigationMutation.isPending || updateInvestigationMutation.isPending;
   const isDisabled = isSubmitting || isLoading;
 
   return (
-    <div className="comp-complaint-details">
-      <CaseEditHeader
+    <div className="comp-complaintinvestigation-edit-headerdetails">
+      <InvestigationEditHeader
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
         isEditMode={isEditMode}
-        caseIdentifier={id}
+        caseIdentifier={caseIdentifier}
+        investigationGuid={id}
       />
 
       <section className="comp-details-body comp-details-form comp-container">
         <div className="comp-details-section-header">
-          <h2>Case Details</h2>
+          <h2>Investigation Details</h2>
         </div>
 
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>
             <FormField
               form={form}
-              name="caseStatus"
-              label="Case status"
+              name="investigationStatus"
+              label="Investigation status"
               required
-              validators={{ onChange: z.string().min(1, "Case status is required") }}
+              validators={{ onChange: z.string().min(1, "Investigation status is required") }}
               render={(field) => (
                 <CompSelect
-                  id="case-status-select"
+                  id="investigation-status-select"
                   classNamePrefix="comp-select"
                   className="comp-details-input"
                   options={statusOptions}
                   value={statusOptions.find((opt) => opt.value === field.state.value)}
                   onChange={(option) => field.handleChange(option?.value || "")}
-                  placeholder="Select case status"
+                  placeholder="Select investigation status"
                   isClearable={true}
                   showInactive={false}
                   enableValidation={true}
@@ -264,7 +249,7 @@ const CaseEdit: FC = () => {
             <FormField
               form={form}
               name="description"
-              label="Case description"
+              label="Investigation description"
               required
               validators={{ onChange: z.string().min(1, "Description is required") }}
               render={(field) => (
@@ -274,7 +259,7 @@ const CaseEdit: FC = () => {
                   rows={4}
                   defaultValue={field.state.value}
                   onChange={(value: string) => field.handleChange(value)}
-                  placeholderText="Enter case description..."
+                  placeholderText="Enter investigation description..."
                   maxLength={4000}
                   errMsg={field.state.meta.errors?.[0]?.message || ""}
                   disabled={isDisabled}
@@ -288,4 +273,4 @@ const CaseEdit: FC = () => {
   );
 };
 
-export default CaseEdit;
+export default InvestigationEdit;

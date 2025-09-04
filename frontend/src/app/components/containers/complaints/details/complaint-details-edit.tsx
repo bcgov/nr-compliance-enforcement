@@ -118,7 +118,7 @@ export const ComplaintDetailsEdit: FC = () => {
     parkGuid,
   } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
-  const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode } = useAppSelector(
+  const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode, status } = useAppSelector(
     selectComplaintHeader(complaintType),
   );
 
@@ -245,10 +245,7 @@ export const ComplaintDetailsEdit: FC = () => {
   }, [coordinates]);
 
   useEffect(() => {
-    //getLinkedComplaints api only applies for hwcr, for now
-    if (complaintType === "HWCR") {
-      dispatch(getLinkedComplaints(id));
-    }
+    dispatch(getLinkedComplaints(id));
   }, [dispatch, id, complaintType, details]);
 
   //-- events
@@ -795,7 +792,10 @@ export const ComplaintDetailsEdit: FC = () => {
         <hr className="comp-details-body-spacer"></hr>
 
         {readOnly && linkedComplaintData.length > 0 && (
-          <LinkedComplaintList linkedComplaintData={linkedComplaintData} />
+          <LinkedComplaintList
+            id={id}
+            linkedComplaintData={linkedComplaintData}
+          />
         )}
         {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
 
