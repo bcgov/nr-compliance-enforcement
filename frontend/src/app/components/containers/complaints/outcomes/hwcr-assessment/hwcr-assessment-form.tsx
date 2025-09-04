@@ -409,15 +409,11 @@ export const HWCRAssessmentForm: FC<Props> = ({
         );
         return true;
       }
-
-      const duplicateComplaints =
-        linkedComplaintData?.filter((complaint: any) => complaint.link_type === "DUPLICATE") || [];
-
       if (
         selectedActionRequired?.value === "No" &&
         selectedJustification?.value === "DUPLICATE" &&
-        duplicateComplaints.length > 0 &&
-        !duplicateComplaints[0].parent
+        linkedComplaintData?.length > 0 &&
+        !linkedComplaintData[0].parent
       ) {
         setJustificationRequiredErrorMessage(
           "Other complaints are linked to this complaint. This complaint cannot be closed as a duplicate.",
