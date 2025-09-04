@@ -70,7 +70,7 @@ services:
       POSTGRESQL_PASSWORD: default
       POSTGRESQL_DATABASE: postgres
     hostname: backend
-    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
+    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:47c5528b5e0d533fd723749e853ceb5464a1b444286d5efc3bacbb4326112562
     links:
       - database
     ports:
@@ -124,7 +124,7 @@ services:
       - "-c"
       - "npm i && npm run start"
     hostname: webeoc
-    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
+    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:47c5528b5e0d533fd723749e853ceb5464a1b444286d5efc3bacbb4326112562
     links:
       - nats
     ports:
