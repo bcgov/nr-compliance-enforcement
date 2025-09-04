@@ -103,6 +103,9 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
     if (text.length > 0) {
       setHintText("");
     }
+    if (text.length >= 2) {
+      handleSearch(text);
+    }
   };
 
   const handleSearch = async (query: string) => {
@@ -193,10 +196,11 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
                 labelKey="id"
                 minLength={2}
                 onInputChange={handleInputChange}
-                onSearch={handleSearch}
+                onSearch={() => {}}
                 onChange={handleComplaintSelect}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
+                useCache={false}
                 selected={selectedComplaint ? [selectedComplaint] : []}
                 filterBy={() => true}
                 isLoading={isLoading}
