@@ -17,7 +17,7 @@ import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CreateInspectionInput, UpdateInspectionInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
 
-const CREATE_INspecTION_MUTATION = gql`
+const CREATE_INSPECTION_MUTATION = gql`
   mutation CreateInspection($input: CreateInspectionInput!) {
     createInspection(input: $input) {
       inspectionGuid
@@ -83,7 +83,7 @@ const InspectionEdit: FC = () => {
     enabled: isEditMode,
   });
 
-  const createInspectionMutation = useGraphQLMutation(CREATE_INspecTION_MUTATION, {
+  const createInspectionMutation = useGraphQLMutation(CREATE_INSPECTION_MUTATION, {
     invalidateQueries: ["searchInspections", ["caseFile", caseIdentifier]],
     onSuccess: (data: any) => {
       ToggleSuccess("Inspection created successfully");
