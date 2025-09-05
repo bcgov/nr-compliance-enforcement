@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UseGuards, Query, Post, Logger, Request } from "@nestjs/common";
+import { Controller, Get, Body, Patch, Param, UseGuards, Query, Post, Logger, Request, Response } from "@nestjs/common";
 import { ComplaintService } from "./complaint.service";
 import { Role, coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -122,9 +122,16 @@ export class ComplaintController {
   async findComplaintById(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
+    @Request() req,
+    @Response() res,
   ): Promise<ComplaintDtoAlias> {
-    return (await this.service.findById(id, complaintType)) as ComplaintDtoAlias;
+    const result = (await this.service.findById(id, complaintType, req)) as ComplaintDtoAlias;
+    if (!result) {
+      return res.status(401).send({ message: "Unauthorized" });
+    }
+    return res.status(200).json(result);
   }
+
   @Get("/related-data/:id")
   @Roles(coreRoles)
   async findRelatedDataById(@Param("id") id: string): Promise<RelatedDataDto> {

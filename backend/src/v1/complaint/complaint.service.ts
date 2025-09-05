@@ -85,6 +85,7 @@ import { Role } from "../../enum/role.enum";
 import { ComplaintDtoAlias } from "src/types/models/complaints/dtos/complaint-dto-alias";
 import { ParkDto } from "../shared_data/dto/park.dto";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
+import { hasRole } from "../../common/has-role";
 
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
@@ -1000,6 +1001,7 @@ export class ComplaintService {
   findById = async (
     id: string,
     complaintType?: COMPLAINT_TYPE,
+    req?: any,
   ): Promise<
     ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto | SectorComplaintDto
   > => {
@@ -1045,6 +1047,20 @@ export class ComplaintService {
 
       switch (complaintType) {
         case "ERS": {
+          if (req) {
+            const hasCOSRole = hasRole(req, Role.COS);
+            const collaborators = await this._personService.getCollaborators(id);
+            const isCollab = collaborators.some(
+              (collab: any) => collab.authUserGuid.split("-").join("") === req.user.idir_user_guid.toLowerCase(),
+            );
+            const isCOSComplaint =
+              (result as AllegationComplaint).complaint_identifier.owned_by_agency_code_ref === "COS";
+            if (isCOSComplaint) {
+              if (!hasCOSRole && !isCollab) {
+                throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
+              }
+            }
+          }
           return this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
             result as AllegationComplaint,
             "AllegationComplaint",
