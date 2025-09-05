@@ -527,6 +527,41 @@ export type InactionJustificationType = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type Inspection = {
+  __typename?: 'Inspection';
+  caseIdentifier?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  inspectionGuid?: Maybe<Scalars['String']['output']>;
+  inspectionStatus?: Maybe<InspectionStatusCode>;
+  leadAgency?: Maybe<Scalars['String']['output']>;
+  openedTimestamp?: Maybe<Scalars['Date']['output']>;
+};
+
+export type InspectionFilters = {
+  endDate?: InputMaybe<Scalars['Date']['input']>;
+  inspectionStatus?: InputMaybe<Scalars['String']['input']>;
+  leadAgency?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['Date']['input']>;
+};
+
+export type InspectionResult = {
+  __typename?: 'InspectionResult';
+  items: Array<Inspection>;
+  pageInfo: PageInfo;
+};
+
+export type InspectionStatusCode = {
+  __typename?: 'InspectionStatusCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  inspectionStatusCode?: Maybe<Scalars['String']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type Investigation = {
   __typename?: 'Investigation';
   caseIdentifier?: Maybe<Scalars['String']['output']>;
@@ -964,6 +999,8 @@ export type Query = {
   getComplaintOutcomeByComplaintId?: Maybe<ComplaintOutcome>;
   getComplaintOutcomesByComplaintId?: Maybe<Array<Maybe<ComplaintOutcome>>>;
   getComplaintOutcomesBySearchString?: Maybe<Array<Maybe<ComplaintOutcome>>>;
+  getInspection?: Maybe<Inspection>;
+  getInspections?: Maybe<Array<Maybe<Inspection>>>;
   getInvestigation?: Maybe<Investigation>;
   getInvestigations?: Maybe<Array<Maybe<Investigation>>>;
   getLeadsByActionTaken?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -986,6 +1023,7 @@ export type Query = {
   scheduleCodes: Array<Maybe<ScheduleCode>>;
   scheduleSectorXrefs: Array<Maybe<ScheduleSectorXref>>;
   searchCaseFiles: CaseFileResult;
+  searchInspections: InspectionResult;
   searchInvestigations: InvestigationResult;
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
@@ -1032,6 +1070,16 @@ export type QuerygetComplaintOutcomesByComplaintIdArgs = {
 export type QuerygetComplaintOutcomesBySearchStringArgs = {
   complaintType: Scalars['String']['input'];
   searchString: Scalars['String']['input'];
+};
+
+
+export type QuerygetInspectionArgs = {
+  inspectionGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerygetInspectionsArgs = {
+  ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 
@@ -1107,6 +1155,11 @@ export type QuerysearchCaseFilesArgs = {
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type QuerysearchInspectionsArgs = {
+  filters?: InputMaybe<InspectionFilters>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
 
 export type QuerysearchInvestigationsArgs = {
   filters?: InputMaybe<InvestigationFilters>;
