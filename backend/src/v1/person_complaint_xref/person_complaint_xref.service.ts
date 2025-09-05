@@ -12,6 +12,8 @@ import { UUID } from "crypto";
 import { EmailService } from "../email/email.service";
 import { SendCollaboratorEmalDto } from "../email/dto/send_collaborator_email.dto";
 import { WebeocService } from "../../external_api/webeoc/webeoc.service";
+import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
+import { OfficerService } from "../../v1/officer/officer.service";
 
 @Injectable()
 export class PersonComplaintXrefService {
@@ -28,6 +30,9 @@ export class PersonComplaintXrefService {
     private readonly _webeocService: WebeocService,
     @Inject(REQUEST)
     private readonly request: Request,
+    @Inject(FeatureFlagService)
+    private readonly _featureFlagService: FeatureFlagService,
+    private readonly _officerService: OfficerService,
   ) {}
 
   async create(createPersonComplaintXrefDto: CreatePersonComplaintXrefDto): Promise<PersonComplaintXref> {
@@ -300,7 +305,20 @@ export class PersonComplaintXrefService {
       throw new BadRequestException(err);
     } finally {
       await queryRunner.release();
-      if (sendEmail) {
+
+      // Check if feature is enabled for both agencies involved
+      const idir = getIdirFromRequest(this.request);
+      const invitingOfficer = await this._officerService.findByUserId(idir);
+      const leadAgencyActive = await this._featureFlagService.checkActiveByAgencyAndFeatureCode(
+        invitingOfficer.agency_code_ref,
+        "COLEMAIL",
+      );
+      const collaboratorOfficer = await this._officerService.findByPersonGuid(personGuid);
+      const collaboratorAgencyActive = await this._featureFlagService.checkActiveByAgencyAndFeatureCode(
+        collaboratorOfficer.agency_code_ref,
+        "COLEMAIL",
+      );
+      if (sendEmail && leadAgencyActive && collaboratorAgencyActive) {
         try {
           await this._emailService.sendCollaboratorEmail(complaintIdentifier, sendCollaboratorEmailDto, user, token);
         } catch (error) {

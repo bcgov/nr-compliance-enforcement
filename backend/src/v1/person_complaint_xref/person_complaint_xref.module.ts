@@ -6,6 +6,8 @@ import { PersonComplaintXref } from "./entities/person_complaint_xref.entity";
 import { ComplaintModule } from "../complaint/complaint.module";
 import { EmailModule } from "../email/email.module";
 import { WebeocModule } from "src/external_api/webeoc/webeoc.module";
+import { OfficerModule } from "../officer/officer.module";
+import { FeatureFlagModule } from "../feature_flag/feature_flag.module";
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { WebeocModule } from "src/external_api/webeoc/webeoc.module";
     forwardRef(() => ComplaintModule),
     EmailModule,
     WebeocModule,
+    OfficerModule,
+    FeatureFlagModule,
   ],
   controllers: [PersonComplaintXrefController],
   providers: [PersonComplaintXrefService],
