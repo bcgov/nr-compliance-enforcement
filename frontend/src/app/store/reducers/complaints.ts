@@ -359,6 +359,8 @@ export const getComplaints =
       areaFilter,
       zoneCodeFilter,
       officerFilter,
+      agency,
+      complaintType,
       natureOfComplaintFilter,
       speciesCodeFilter,
       startDateFilter,
@@ -392,6 +394,8 @@ export const getComplaints =
         park: parkFilter?.value,
         area: areaFilter?.value,
         officerAssigned: officerFilter?.value,
+        agency: agency?.value,
+        complaintTypeFilter: complaintType?.value,
         natureOfComplaint: natureOfComplaintFilter?.value,
         speciesCode: speciesCodeFilter?.value,
         incidentReportedStart: startDateFilter,
@@ -687,10 +691,10 @@ export const getComplaintById =
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
       );
       const response = await get<ComplaintDtoAlias>(dispatch, parameters);
+
       dispatch(setComplaint({ ...response }));
     } catch (error) {
-      dispatch(setComplaint(null));
-      window.location.href = "/not-authorized";
+      //-- handle the error
     }
   };
 

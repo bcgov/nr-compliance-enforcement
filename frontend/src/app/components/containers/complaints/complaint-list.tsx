@@ -44,6 +44,8 @@ export const generateComplaintRequestPayload = (
   sortOrder: string,
 ): ComplaintRequestPayload => {
   const {
+    agency,
+    complaintType: filterComplaintType, // awkward name due to existing complaintType in component props
     region,
     zone,
     community,
@@ -70,6 +72,8 @@ export const generateComplaintRequestPayload = (
   const common = {
     sortColumn,
     sortOrder,
+    agencyFilter: agency,
+    complaintTypeFilter: filterComplaintType,
     regionCodeFilter: region,
     zoneCodeFilter: zone,
     areaCodeFilter: community,
@@ -113,6 +117,13 @@ export const generateComplaintRequestPayload = (
     default:
       return {
         ...common,
+        speciesCodeFilter: species,
+        natureOfComplaintFilter: natureOfComplaint,
+        violationFilter: violationType,
+        outcomeAnimalFilter: outcomeAnimal,
+        outcomeAnimalStartDateFilter: outcomeAnimalStartDate,
+        outcomeAnimalEndDateFilter: outcomeAnimalEndDate,
+        outcomeActionedByFilter: outcomeActionedBy,
       } as ComplaintRequestPayload;
   }
 };
