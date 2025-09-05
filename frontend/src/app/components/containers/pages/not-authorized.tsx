@@ -12,7 +12,7 @@ const NotAuthorized: FC = () => {
         <div className="message">
           <BsPersonFillSlash />
           <div className="message-details">
-            <h1 className="comp-padding-top-25">Sorry, you are not authorized to access this site.</h1>
+            <h1 className="comp-padding-top-25">Sorry, you are not authorized to access this page.</h1>
 
             <p>
               If you believe you should have access, return to the <Link to="/complaints/">home page</Link> to try

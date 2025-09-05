@@ -795,6 +795,7 @@ export const ComplaintDetailsEdit: FC = () => {
           <LinkedComplaintList
             id={id}
             linkedComplaintData={linkedComplaintData}
+            canUnlink={status !== "Closed"}
           />
         )}
         {readOnly && <WebEOCComplaintUpdateList complaintIdentifier={id} />}
