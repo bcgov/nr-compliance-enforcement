@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { Inspection } from "@/generated/graphql";
 import { ActivityColumn } from "./activity-column";
 import { Inspection } from "@/generated/graphql";
 import { useNavigate, useParams } from "react-router-dom";
