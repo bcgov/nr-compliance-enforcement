@@ -85,7 +85,7 @@ export const PartyView: FC = () => {
               </div>
               <div className="party-details-summary-info">
                 <h3>{displayName()}</h3>
-                <p>Desciption</p>
+                <p>Description</p>
                 <p>Id</p>
               </div>
               <div className="comp-details-section-header-actions party-details-summary-actions">
