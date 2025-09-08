@@ -128,15 +128,13 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
             <h1>{storedComplaintType === COMPLAINT_TYPES.SECTOR ? "Sector view" : "Complaints"}</h1>
             {complaintType === COMPLAINT_TYPES.SECTOR && (
               <p className="permission-info">
-                <i className="bi bi-info-circle-fill"></i>
-                Sensitive complaints are hidden based on agency permissions.
+                <i className="bi bi-info-circle-fill"></i>Sensitive complaints are hidden based on agency permissions.
               </p>
             )}
           </div>
           {!UserService.hasRole(Roles.SECTOR) && (
             <Button onClick={() => handleCreateClick()}>
-              <i className="bi bi-plus-circle"></i>
-              Create complaint
+              <i className="bi bi-plus-circle"></i>Create complaint
             </Button>
           )}
         </div>
