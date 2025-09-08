@@ -11,6 +11,7 @@ import { ComplaintSuspectWitness } from "@apptypes/complaints/details/complaint-
 import ComplaintType from "@constants/complaint-types";
 import { ZoneAtAGlanceStats } from "@apptypes/complaints/zone-at-a-glance-stats";
 import { ComplaintFilters } from "@apptypes/complaints/complaint-filters";
+import { ComplaintRequestPayload } from "@apptypes/complaints/complaint-filters/complaint-request-payload";
 import { generateApiParameters, get, patch, post } from "@common/api";
 import { Feature } from "@apptypes/maps/bcGeocoderType";
 import { ToggleSuccess, ToggleError } from "@common/toast";
@@ -348,7 +349,7 @@ export const refreshComplaints =
     dispatch(getComplaints(complaintType, complaintSearchParameters));
   };
 export const getComplaints =
-  (complaintType: string, payload: ComplaintFilters): AppThunk =>
+  (complaintType: string, payload: ComplaintRequestPayload): AppThunk =>
   async (dispatch, getState) => {
     const {
       sortColumn,
@@ -359,8 +360,8 @@ export const getComplaints =
       areaFilter,
       zoneCodeFilter,
       officerFilter,
-      agency,
-      complaintType,
+      agencyFilter,
+      complaintTypeFilter,
       natureOfComplaintFilter,
       speciesCodeFilter,
       startDateFilter,
@@ -394,8 +395,8 @@ export const getComplaints =
         park: parkFilter?.value,
         area: areaFilter?.value,
         officerAssigned: officerFilter?.value,
-        agency: agency?.value,
-        complaintTypeFilter: complaintType?.value,
+        agency: agencyFilter?.value,
+        complaintTypeFilter: complaintTypeFilter?.value,
         natureOfComplaint: natureOfComplaintFilter?.value,
         speciesCode: speciesCodeFilter?.value,
         incidentReportedStart: startDateFilter,

@@ -15,8 +15,8 @@ import {
   selectAllWildlifeComplaintOutcome,
   selectAllEquipmentDropdown,
   selectOutcomeActionedByOptions,
-  selectAgencySectorDropdown,
-  selectComplaintTypeDropdown,
+  selectAgencyDropdown,
+  selectCreatableComplaintTypeDropdown,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
 import { selectDecisionTypeDropdown, selectEquipmentStatusDropdown } from "@store/reducers/code-table-selectors";
@@ -97,8 +97,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
 
   const activeFilters = useAppSelector(listActiveFilters());
   const parkAreasList = useAppSelector(selectParkAreasDropdown);
-  const agencyDropdown = useAppSelector(selectAgencySectorDropdown);
-  const complaintTypeDropdown = useAppSelector(selectComplaintTypeDropdown);
+  const agencyDropdown = useAppSelector(selectAgencyDropdown);
+  const complaintTypeDropdown = useAppSelector(selectCreatableComplaintTypeDropdown);
 
   const setFilter = useCallback(
     (name: string, value?: Option | Date | null) => {
@@ -464,7 +464,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         {/* props */}
         <div className="comp-filter-container">
           {/* <!-- tombstone --> */}
-          {activeFilters.showRegionFilter && (
+          {activeFilters.showRegionFilter && type !== COMPLAINT_TYPES.SECTOR && (
             <div id="comp-filter-region-id">
               {/* <!-- region --> */}
               <label htmlFor="region-select-filter-id">Region</label>
@@ -488,7 +488,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               </div>
             </div>
           )}
-          {activeFilters.showZoneFilter && (
+          {activeFilters.showZoneFilter && type !== COMPLAINT_TYPES.SECTOR && (
             <div id="comp-filter-zone-id">
               <label htmlFor="zone-select-id">Zone</label>
               <div className="filter-select-padding">

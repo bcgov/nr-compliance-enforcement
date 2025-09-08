@@ -347,6 +347,8 @@ export class ComplaintService {
   private _applyFilters(
     builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     {
+      agency,
+      complaintTypeFilter,
       community,
       zone,
       region,
@@ -363,6 +365,18 @@ export class ComplaintService {
     }: ComplaintFilterParameters,
     complaintType: COMPLAINT_TYPE,
   ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> {
+    if (agency) {
+      builder.andWhere("complaint.owned_by_agency_code_ref = :Agency", {
+        Agency: agency,
+      });
+    }
+
+    if (complaintTypeFilter) {
+      builder.andWhere("complaint_type.complaint_type_code = :ComplaintTypeFilter", {
+        ComplaintTypeFilter: complaintTypeFilter,
+      });
+    }
+
     if (community) {
       builder.andWhere("cos_organization.area_code = :Community", {
         Community: community,
@@ -1172,11 +1186,17 @@ export class ComplaintService {
         sortBy !== "update_utc_timestamp" ? `${sortTable}.${sortBy}` : "complaint.comp_last_upd_utc_timestamp";
 
       //-- generate initial query
-      let builder = this._generateQueryBuilder(complaintType);
+      // For SECTOR with compaint type based filters, use the filtered complaint type to generate the query builder
+      let filterComplaintType: COMPLAINT_TYPE =
+        complaintType === "SECTOR" && filters.complaintTypeFilter
+          ? (filters.complaintTypeFilter as COMPLAINT_TYPE)
+          : complaintType;
+
+      let builder = this._generateQueryBuilder(filterComplaintType);
 
       //-- apply filters if used
       if (Object.keys(filters).length !== 0) {
-        builder = this._applyFilters(builder, filters as ComplaintFilterParameters, complaintType);
+        builder = this._applyFilters(builder, filters as ComplaintFilterParameters, filterComplaintType);
       }
       builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
@@ -1228,7 +1248,7 @@ export class ComplaintService {
 
       //-- apply search
       if (query) {
-        builder = await this._applySearch(builder, complaintType, query, token);
+        builder = await this._applySearch(builder, filterComplaintType, query, token);
       }
 
       //-- apply sort if provided
@@ -1302,8 +1322,29 @@ export class ComplaintService {
         }
         case "SECTOR":
         default: {
+          let baseComplaints: Array<Complaint>;
+
+          if (filterComplaintType === "SECTOR") {
+            baseComplaints = complaints as Array<Complaint>;
+          } else {
+            // Extract base complaint from specialized entities
+            switch (filterComplaintType) {
+              case "HWCR":
+                baseComplaints = (complaints as Array<HwcrComplaint>).map((hwcr) => hwcr.complaint_identifier);
+                break;
+              case "ERS":
+                baseComplaints = (complaints as Array<AllegationComplaint>).map((ers) => ers.complaint_identifier);
+                break;
+              case "GIR":
+                baseComplaints = (complaints as Array<GirComplaint>).map((gir) => gir.complaint_identifier);
+                break;
+              default:
+                baseComplaints = complaints as Array<Complaint>;
+            }
+          }
+
           const items = this.mapper.mapArray<Complaint, SectorComplaintDto>(
-            complaints as Array<Complaint>,
+            baseComplaints,
             "Complaint",
             "SectorComplaintDto",
           );
@@ -1401,16 +1442,22 @@ export class ComplaintService {
       //-- search for complaints
       // Only these options require the cos_geo_org_unit_flat_mvw view (cos_organization), which is very slow.
       const includeCosOrganization: boolean = Boolean(query || filters.community || filters.zone || filters.region);
-      let builder = this._generateMapQueryBuilder(complaintType, includeCosOrganization, count);
+
+      // For SECTOR with compaint type based filters, use the filtered complaint type to generate the query builder
+      const filterComplaintType: COMPLAINT_TYPE = filters.complaintTypeFilter
+        ? (filters.complaintTypeFilter as COMPLAINT_TYPE)
+        : complaintType;
+
+      let builder = this._generateMapQueryBuilder(filterComplaintType, includeCosOrganization, count);
 
       //-- apply filters if used
       if (Object.keys(filters).length !== 0) {
-        builder = this._applyFilters(builder, filters as ComplaintFilterParameters, complaintType);
+        builder = this._applyFilters(builder, filters as ComplaintFilterParameters, filterComplaintType);
       }
 
       //-- apply search
       if (query) {
-        builder = await this._applySearch(builder, complaintType, query, token);
+        builder = await this._applySearch(builder, filterComplaintType, query, token);
       }
       builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
