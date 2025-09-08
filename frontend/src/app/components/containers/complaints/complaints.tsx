@@ -124,10 +124,19 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     <div className="comp-page-container comp-page-container--noscroll">
       <div className="comp-page-header">
         <div className="comp-page-title-container">
-          <h1>Complaints</h1>
+          <div className="title-text-container">
+            <h1>{storedComplaintType === COMPLAINT_TYPES.SECTOR ? "Sector view" : "Complaints"}</h1>
+            {complaintType === COMPLAINT_TYPES.SECTOR && (
+              <p className="permission-info">
+                <i className="bi bi-info-circle-fill"></i>
+                Sensitive complaints are hidden based on agency permissions.
+              </p>
+            )}
+          </div>
           {!UserService.hasRole(Roles.SECTOR) && (
             <Button onClick={() => handleCreateClick()}>
-              <i className="bi bi-plus-circle"></i>Create complaint
+              <i className="bi bi-plus-circle"></i>
+              Create complaint
             </Button>
           )}
         </div>
