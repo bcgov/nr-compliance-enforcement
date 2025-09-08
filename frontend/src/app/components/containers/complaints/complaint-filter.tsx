@@ -81,7 +81,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     { value: "REFERRED", label: "Referred" },
   ];
 
-  const violationTypes = useAppSelector(selectViolationCodeDropdown(agency));
+  const violationTypes = useAppSelector(selectViolationCodeDropdown(agency?.value || ""));
   const girTypes = useAppSelector(selectGirTypeCodeDropdown);
   const outcomeAnimalTypes = useAppSelector(selectAllWildlifeComplaintOutcome); //want to see inactive items in the filter
   const equipmentStatusTypes = useAppSelector(selectEquipmentStatusDropdown);
@@ -563,8 +563,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 <label htmlFor="park-select-id">Park</label>
                 <div className="filter-select-padding">
                   <ParkSelect
-                    id={`comp-details-park-${park}`}
-                    initialParkGuid={park}
+                    id={`comp-details-park-${park?.value || "none"}`}
+                    initialParkGuid={park?.value}
                     isInEdit={true}
                     onChange={(option) => {
                       setFilter("park", option);
