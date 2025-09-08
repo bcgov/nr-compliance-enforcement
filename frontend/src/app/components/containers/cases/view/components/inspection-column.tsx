@@ -1,8 +1,8 @@
 import { FC } from "react";
 import { Inspection } from "@/generated/graphql";
 import { ActivityColumn } from "./activity-column";
-import { InspectionCard } from "./inspection-card";
 import { useNavigate, useParams } from "react-router-dom";
+import { InspectionCard } from "./inspection-card";
 
 interface InspectionColumnProps {
   inspections?: Inspection[];
