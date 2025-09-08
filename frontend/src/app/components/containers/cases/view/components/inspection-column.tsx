@@ -1,17 +1,29 @@
 import { FC } from "react";
+import { Inspection } from "@/generated/graphql";
 import { ActivityColumn } from "./activity-column";
+import { useNavigate, useParams } from "react-router-dom";
+import { InspectionCard } from "./inspection-card";
 
-interface InspectionColumnProps {}
+interface InspectionColumnProps {
+  inspections?: Inspection[];
+  isLoading?: boolean;
+}
 
-export const InspectionColumn: FC<InspectionColumnProps> = () => {
+export const InspectionColumn: FC<InspectionColumnProps> = ({ inspections, isLoading = false }) => {
+  const { id } = useParams<{ id?: string }>();
+  const navigate = useNavigate();
   const handleAddInspection = () => {
-    console.log("Add inspection clicked");
+    navigate(`/case/${id}/createInspection`);
   };
-
   return (
     <ActivityColumn
       title="Inspections"
-      addButtonText="Add inspection"
+      items={inspections}
+      ItemComponent={InspectionCard}
+      keyProperty="inspectionGuid"
+      addButtonText="Create inspection"
+      isLoading={isLoading}
+      loadingText="Loading inspections..."
       onAddClick={handleAddInspection}
     />
   );

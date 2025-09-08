@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { CaseHeader } from "./case-header";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
-import { CaseFile, Investigation } from "@/generated/graphql";
+import { CaseFile, Inspection, Investigation } from "@/generated/graphql";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { getComplaintById, selectComplaint, setComplaint } from "@/app/store/reducers/complaints";
@@ -54,6 +54,23 @@ const GET_INVESTIGATIONS = gql`
   }
 `;
 
+const GET_INSPECTIONS = gql`
+  query GetInspections($ids: [String]) {
+    getInspections(ids: $ids) {
+      __typename
+      inspectionGuid
+      description
+      openedTimestamp
+      inspectionStatus {
+        inspectionStatusCode
+        shortDescription
+        longDescription
+      }
+      leadAgency
+    }
+  }
+`;
+
 export type CaseParams = {
   id: string;
 };
@@ -85,6 +102,12 @@ export const CaseView: FC = () => {
       return item?.caseActivityIdentifier;
     });
 
+  const linkedInspectionIds = caseData?.activities
+    ?.filter((activity) => activity?.activityType?.caseActivityTypeCode === "INSPECTION")
+    .map((item) => {
+      return item?.caseActivityIdentifier;
+    });
+
   const [linkedComplaints, setLinkedComplaints] = useState<Complaint[]>([]);
 
   const { data: investigationsData, isLoading: investigationsLoading } = useGraphQLQuery<{
@@ -93,6 +116,14 @@ export const CaseView: FC = () => {
     queryKey: ["getInvestigations", JSON.stringify(linkedInvestigationIds)],
     variables: { ids: linkedInvestigationIds || [] },
     enabled: !!caseData && !!linkedInvestigationIds && linkedInvestigationIds.length > 0,
+  });
+
+  const { data: inspectionsData, isLoading: inspectionsLoading } = useGraphQLQuery<{
+    getInspections: Inspection[];
+  }>(GET_INSPECTIONS, {
+    queryKey: ["getInspections", JSON.stringify(linkedInspectionIds)],
+    variables: { ids: linkedInspectionIds || [] },
+    enabled: !!caseData && !!linkedInspectionIds && linkedInspectionIds.length > 0,
   });
 
   useEffect(() => {
@@ -175,7 +206,10 @@ export const CaseView: FC = () => {
                 investigations={investigationsData?.getInvestigations}
                 isLoading={investigationsLoading && linkedInvestigationIds && linkedInvestigationIds.length > 0}
               />
-              <InspectionColumn />
+              <InspectionColumn
+                inspections={inspectionsData?.getInspections}
+                isLoading={inspectionsLoading && linkedInspectionIds && linkedInspectionIds.length > 0}
+              />
               <RecordColumn />
             </div>
           </div>
