@@ -37,7 +37,11 @@ import { PartyView } from "./components/containers/parties/view";
 import InvestigationEdit from "@/app/components/containers/investigations/edit/investigation-edit";
 import Redirect from "./components/containers/pages/redirect";
 import config from "@/config";
+import { InspectionDetails } from "@/app/components/containers/instpections/details/inspection-details";
+import Inspections from "@/app/components/containers/instpections/inspections";
+
 import PartyEdit from "./components/containers/parties/edit/party-edit";
+import InspectionEdit from "@/app/components/containers/instpections/edit/inspection-edit";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -52,6 +56,7 @@ const App: FC = () => {
   }, [dispatch]);
 
   const investigationsActive = useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATIONS));
+  const inspectionsActive = useAppSelector(isFeatureActive(FEATURE_TYPES.INSPECTIONS));
 
   const { REDIRECT_MODE, REDIRECT_HOST_NAME } = config;
   const redirectMode = REDIRECT_MODE === "true";
@@ -136,6 +141,30 @@ const App: FC = () => {
                   <Route
                     path="/investigation/:id/edit"
                     element={<InvestigationEdit />}
+                  />
+                )}
+                {inspectionsActive && (
+                  <Route
+                    path="/inspections"
+                    element={<Inspections />}
+                  />
+                )}
+                {inspectionsActive && (
+                  <Route
+                    path="/inspection/:inspectionGuid"
+                    element={<InspectionDetails />}
+                  />
+                )}
+                {inspectionsActive && (
+                  <Route
+                    path="/case/:caseIdentifier/createInspection"
+                    element={<InspectionEdit />}
+                  />
+                )}
+                {inspectionsActive && (
+                  <Route
+                    path="/inspection/:id/edit"
+                    element={<InspectionEdit />}
                   />
                 )}
                 <Route
