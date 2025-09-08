@@ -41,6 +41,7 @@ import { InspectionDetails } from "@/app/components/containers/instpections/deta
 import Inspections from "@/app/components/containers/instpections/inspections";
 
 import PartyEdit from "./components/containers/parties/edit/party-edit";
+import InspectionEdit from "@/app/components/containers/instpections/edit/inspection-edit";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -152,6 +153,18 @@ const App: FC = () => {
                   <Route
                     path="/inspection/:inspectionGuid"
                     element={<InspectionDetails />}
+                  />
+                )}
+                {inspectionsActive && (
+                  <Route
+                    path="/case/:caseIdentifier/createInspection"
+                    element={<InspectionEdit />}
+                  />
+                )}
+                {inspectionsActive && (
+                  <Route
+                    path="/inspection/:id/edit"
+                    element={<InspectionEdit />}
                   />
                 )}
                 <Route
