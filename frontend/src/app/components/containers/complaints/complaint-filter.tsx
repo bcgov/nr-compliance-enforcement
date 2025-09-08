@@ -81,7 +81,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     { value: "REFERRED", label: "Referred" },
   ];
 
-  const violationTypes = useAppSelector(selectViolationCodeDropdown(agency?.value || ""));
+  const violationTypes = useAppSelector(selectViolationCodeDropdown(agency?.value || userAgency));
   const girTypes = useAppSelector(selectGirTypeCodeDropdown);
   const outcomeAnimalTypes = useAppSelector(selectAllWildlifeComplaintOutcome); //want to see inactive items in the filter
   const equipmentStatusTypes = useAppSelector(selectEquipmentStatusDropdown);
