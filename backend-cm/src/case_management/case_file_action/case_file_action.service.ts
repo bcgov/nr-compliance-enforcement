@@ -51,7 +51,7 @@ export class CaseFileActionService {
     try {
       let actionResult = await actionContext.findFirst({
         where: {
-          case_guid: caseId,
+          complaint_outcome_guid: caseId,
           action_type_action_xref_guid: actionXrefGuid,
         },
         select: {
@@ -242,7 +242,7 @@ export class CaseFileActionService {
     try {
       const actionResult = await actionContext.findFirst({
         where: {
-          case_guid: caseId,
+          complaint_outcome_guid: caseId,
           action_type_action_xref: {
             action_code_action_type_action_xref_action_codeToaction_code: {
               action_code: actionCaseCode,
@@ -282,7 +282,7 @@ export class CaseFileActionService {
     try {
       let actionResult = await this.prisma.action.findMany({
         where: {
-          case_guid: caseId,
+          complaint_outcome_guid: caseId,
           active_ind: true,
           action_type_action_xref: {
             action_type_code: actionTypeCode,

@@ -18,7 +18,7 @@ const generateHWCRCaseData = () => {
   const action_not_required_ind = faker.datatype.boolean(); // 50% chance of action required / not required.
 
   let generatedCase = {
-    case_file_guid: faker.datatype.uuid(), // Generates a random GUID (UUID)
+    complaint_outcome_guid: faker.datatype.uuid(), // Generates a random GUID (UUID)
     case_code: 'HWCR',
     owned_by_agency_code: 'COS',
     action_not_required_ind: action_not_required_ind,
@@ -46,23 +46,23 @@ const generateHWCRCaseData = () => {
 // Params:
 //     year = prefix for constructing complaint identifier
 //     num = sequence for constructing complaint identifier
-//     case_file_guid = Fk to case table
-const generateLeadData = (year, num, case_file_guid) => {
+//     complaint_outcome_guid = Fk to case table
+const generateLeadData = (year, num, complaint_outcome_guid) => {
   return {
     lead_identifier: `${year}-${num.toString().padStart(6, '0')}`, //Format into YY-###### format
-    case_identifier: case_file_guid
+    case_identifier: complaint_outcome_guid
   }
 }
 
 // Generates data for the action table.   
 // Params:
-//    case_file_guid = foreign key to case
+//    complaint_outcome_guid = foreign key to case
 //    actions = an array of actions to select from (allows caller to control type they want)
 //    wildlife_guid = optional foreign key to wildlife record
-const generateActionData = (case_file_guid, actions, wildlife_guid = null)  => {
+const generateActionData = (complaint_outcome_guid, actions, wildlife_guid = null)  => {
   return {
     action_guid: faker.datatype.uuid(), // Generates a random GUID (UUID)
-    case_guid: case_file_guid,
+    complaint_outcome_guid: complaint_outcome_guid,
     action_type_action_xref_guid: faker.random.arrayElement(actions),
     actor_guid: faker.datatype.uuid(), // Generates a random GUID (UUID) - This won't render properly in the app
     action_date: faker.date.recent().toISOString(),
@@ -75,17 +75,16 @@ const generateActionData = (case_file_guid, actions, wildlife_guid = null)  => {
 
 // Generates data for the wildlife table
 // Params:
-//    case_file_guid = foreign key to case
-const generateWildlifeData = async (case_file_guid) => {
+//    complaint_outcome_guid = foreign key to case
+const generateWildlifeData = async (complaint_outcome_guid) => {
   return {
     wildlife_guid: faker.datatype.uuid(), 
-    case_file_guid: case_file_guid,
+    complaint_outcome_guid: complaint_outcome_guid,
     threat_level_code: faker.random.arrayElement(['1', '2', '3', 'U']), // Random threat level code
     sex_code: faker.random.arrayElement(['M', 'F', 'U']), // Random sex code
     age_code: faker.random.arrayElement(['ADLT', 'YRLN', 'YOFY', 'UNKN']), // Random age code
     hwcr_outcome_code: faker.random.arrayElement(['LESSLETHAL', 
-      'DEADONARR', 'GONEONARR', 'REFRTOBIO', 'SHRTRELOC', 'TRANSLCTD', 'TRANSREHB', 
-      'EUTHCOS', 'EUTHOTH', 'DESTRYCOS', 'DESTRYOTH']), // Random outcome code
+      'DEADONARR', 'GONEONARR', 'REFRTOBIO', 'SHRTRELOC', 'TRANSLCTD', 'TRANSREHB']), // Random outcome code
     species_code: faker.random.arrayElement(['BISON', 
       'BLKBEAR', 'RACCOON', 'MTNGOAT', 'MOOSE', 'WOLVERN', 'LYNX', 
       'FERALHOG', 'GRZBEAR', 'FOX', 'ELK']), // Random outcome code
@@ -96,11 +95,11 @@ const generateWildlifeData = async (case_file_guid) => {
 
 // Generates data for the site table
 // Params:
-//    case_file_guid = foreign key to case
-const generateSiteData = (case_file_guid) => {
+//    complaint_outcome_guid = foreign key to case
+const generateSiteData = (complaint_outcome_guid) => {
   return {
     site_guid:faker.datatype.uuid(), // Generates a random GUID (UUID)
-    case_file_guid: case_file_guid,
+    complaint_outcome_guid: complaint_outcome_guid,
     site_id: faker.datatype.number({ min: 1, max: 9999999999 }).toString(),
     active_ind: true
   }
@@ -108,11 +107,11 @@ const generateSiteData = (case_file_guid) => {
 
 // Generates data for the authorization_permit table
 // Params:
-//    case_file_guid = foreign key to case
-const generateAuthorizationData = (case_file_guid) => {
+//    complaint_outcome_guid = foreign key to case
+const generateAuthorizationData = (complaint_outcome_guid) => {
   return {
     authorization_permit_guid: faker.datatype.uuid(), //Generates a random GUID (UUID)
-    case_file_guid: case_file_guid,
+    complaint_outcome_guid: complaint_outcome_guid,
     authorization_permit_id: faker.datatype.number({ min: 1, max: 9999999999 }).toString(),
     active_ind: true
   }
@@ -156,15 +155,15 @@ const generateBulkData = async (year, num, type, startingSequence) => {
   if(type === 'HWCR') {
     for (let i = startingSequence; i < num + startingSequence; i++) {
       const generatedCase = generateHWCRCaseData();
-      const generatedLead = generateLeadData(year, i, generatedCase.case_file_guid);
-      const generatedAssessmentAction = generateActionData(generatedCase.case_file_guid, assessmentActions);
+      const generatedLead = generateLeadData(year, i, generatedCase.complaint_outcome_guid);
+      const generatedAssessmentAction = generateActionData(generatedCase.complaint_outcome_guid, assessmentActions);
 
       let generatedWildlife = null; // Default value if action is not requried
       let generatedWildifeAction = null;  // Default value if action is not requried
       if(!generatedCase.action_not_required_ind)
       {
-         generatedWildlife = await generateWildlifeData(generatedCase.case_file_guid);
-         generatedWildifeAction = generateActionData(generatedCase.case_file_guid, outcomeActions, generatedWildlife.wildlife_guid);
+         generatedWildlife = await generateWildlifeData(generatedCase.complaint_outcome_guid);
+         generatedWildifeAction = generateActionData(generatedCase.complaint_outcome_guid, outcomeActions, generatedWildlife.wildlife_guid);
       }
 
       cases.push({
@@ -178,17 +177,17 @@ const generateBulkData = async (year, num, type, startingSequence) => {
   } else if (type === 'CEEB') {  // Intentional repeated code here to avoid needing to do multi-pass inserts
     for (let i = startingSequence; i < num + startingSequence; i++) {
       const generatedCase = generateHWCRCaseData();
-      const generatedLead = generateLeadData(year, i, generatedCase.case_file_guid);
+      const generatedLead = generateLeadData(year, i, generatedCase.complaint_outcome_guid);
       
       let generatedSite = null;
       let generatedAuthorization = null;
       
       if (i % 2 === 0) {
         // Even iterator - generate site data
-        generatedSite = generateSiteData(generatedCase.case_file_guid);
+        generatedSite = generateSiteData(generatedCase.complaint_outcome_guid);
       } else {
         // Odd iterator - generate authorization data
-        generatedAuthorization = generateAuthorizationData(generatedCase.case_file_guid);
+        generatedAuthorization = generateAuthorizationData(generatedCase.complaint_outcome_guid);
       }
       
       cases.push({
@@ -226,7 +225,7 @@ const insertHWCRData = async (records) => {
     records.forEach((caseFile) => {
       // Prepare case data
       caseValues.push([
-        caseFile.case.case_file_guid,
+        caseFile.case.complaint_outcome_guid,
         caseFile.case.case_code,
         caseFile.case.owned_by_agency_code,
         caseFile.case.inaction_reason_code,
@@ -256,7 +255,7 @@ const insertHWCRData = async (records) => {
       // Prepare assessment action data
       assessmentActionValues.push([
         caseFile.assessmentAction.action_guid,
-        caseFile.assessmentAction.case_guid,
+        caseFile.assessmentAction.complaint_outcome_guid,
         caseFile.assessmentAction.action_type_action_xref_guid,
         caseFile.assessmentAction.actor_guid,
         caseFile.assessmentAction.action_date,
@@ -274,7 +273,7 @@ const insertHWCRData = async (records) => {
       if (caseFile.wildlife) {
         wildlifeValues.push([
           caseFile.wildlife.wildlife_guid,
-          caseFile.wildlife.case_file_guid,
+          caseFile.wildlife.complaint_outcome_guid,
           caseFile.wildlife.threat_level_code,
           caseFile.wildlife.sex_code,
           caseFile.wildlife.age_code,
@@ -293,7 +292,7 @@ const insertHWCRData = async (records) => {
       if (caseFile.wildlife) {
         wildlifeActionValues.push([
           caseFile.wildlifeAction.action_guid,
-          caseFile.wildlifeAction.case_guid,
+          caseFile.wildlifeAction.complaint_outcome_guid,
           caseFile.wildlifeAction.action_type_action_xref_guid,
           caseFile.wildlifeAction.actor_guid,
           caseFile.wildlifeAction.action_date,
@@ -313,7 +312,7 @@ const insertHWCRData = async (records) => {
     if (caseValues.length > 0) {
       await client.query(
         `INSERT INTO case_management.case_file (
-          case_file_guid, 
+          complaint_outcome_guid, 
           case_code, 
           owned_by_agency_code, 
           inaction_reason_code, 
@@ -355,7 +354,7 @@ const insertHWCRData = async (records) => {
       await client.query(
         `INSERT INTO case_management.action (
           action_guid,
-          case_guid,
+          complaint_outcome_guid,
           action_type_action_xref_guid, 
           actor_guid,
           action_date,
@@ -378,7 +377,7 @@ const insertHWCRData = async (records) => {
       await client.query(
         `INSERT INTO case_management.wildlife (
           wildlife_guid,
-          case_file_guid,
+          complaint_outcome_guid,
           threat_level_code,
           sex_code,
           age_code,
@@ -401,7 +400,7 @@ const insertHWCRData = async (records) => {
       await client.query(
         `INSERT INTO case_management.action (
           action_guid,
-          case_guid,
+          complaint_outcome_guid,
           action_type_action_xref_guid, 
           actor_guid,
           action_date,
@@ -449,7 +448,7 @@ const insertCEEBData = async (records) => {
     records.forEach((caseFile) => {
       // Prepare case data
       caseValues.push([
-        caseFile.case.case_file_guid,
+        caseFile.case.complaint_outcome_guid,
         caseFile.case.case_code,
         caseFile.case.owned_by_agency_code,
         caseFile.case.inaction_reason_code,
@@ -480,7 +479,7 @@ const insertCEEBData = async (records) => {
       if (caseFile.authorization) {
         authorizationValues.push([
           caseFile.authorization.authorization_permit_guid,
-          caseFile.authorization.case_file_guid,
+          caseFile.authorization.complaint_outcome_guid,
           caseFile.authorization.authorization_permit_id,
           caseFile.authorization.active_ind,
           'Bulk Data Load', // create_user_id
@@ -494,7 +493,7 @@ const insertCEEBData = async (records) => {
     if (caseFile.site) {
       siteValues.push([
         caseFile.site.site_guid,
-        caseFile.site.case_file_guid,
+        caseFile.site.complaint_outcome_guid,
         caseFile.site.site_id,
         caseFile.site.active_ind,
         'Bulk Data Load', // create_user_id
@@ -511,7 +510,7 @@ const insertCEEBData = async (records) => {
     if (caseValues.length > 0) {
       await client.query(
         `INSERT INTO case_management.case_file (
-          case_file_guid, 
+          complaint_outcome_guid, 
           case_code, 
           owned_by_agency_code, 
           inaction_reason_code, 
@@ -553,7 +552,7 @@ const insertCEEBData = async (records) => {
       await client.query(
         `INSERT INTO case_management.authorization_permit (
           authorization_permit_guid,
-          case_file_guid,
+          complaint_outcome_guid,
           authorization_permit_id, 
           active_ind,
           create_user_id, 
@@ -571,7 +570,7 @@ const insertCEEBData = async (records) => {
       await client.query(
         `INSERT INTO case_management.site (
           site_guid,
-          case_file_guid,
+          complaint_outcome_guid,
           site_id, 
           active_ind,
           create_user_id, 

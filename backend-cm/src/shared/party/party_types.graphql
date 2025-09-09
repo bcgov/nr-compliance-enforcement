@@ -1,0 +1,27 @@
+scalar Date
+
+type Party {
+  partyIdentifier: String
+  partyTypeCode: String
+  longDescription: String
+  shortDescription: String
+  createdDateTime: Date
+  person: Person
+  business: Business
+}
+
+input PartyCreateInput {
+  partyTypeCode: String!
+  longDescription: String
+  shortDescription: String
+  person: PersonInput
+  business: BusinessInput
+}
+
+input PartyUpdateInput {
+  partyTypeCode: String!
+  longDescription: String
+  shortDescription: String
+  person: PersonInput
+  business: BusinessInput
+}

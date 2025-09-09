@@ -1,0 +1,279 @@
+scalar Date
+
+input KeyValuePairInput {
+  key: String
+  value: String
+}
+
+input CreateAssessmentInput {
+  complaintOutcomeGuid: String
+  complaintId: String
+  assessment: AssessmentInput!
+  outcomeAgencyCode: String!
+  createUserId: String!
+}
+
+input AssessmentInput {
+  id: String
+  actionNotRequired: Boolean!
+  actionJustificationCode: String
+  actions: [AssessmentActionInput]!
+  actionLinkedComplaintIdentifier: String
+  actionCloseComplaint: Boolean
+  contactedComplainant: Boolean
+  attended: Boolean
+  locationType: KeyValuePairInput
+  conflictHistory: KeyValuePairInput
+  categoryLevel: KeyValuePairInput
+  cat1Actions: [AssessmentActionInput]
+}
+
+input AssessmentActionInput {
+  actor: String!
+  date: Date!
+  actionCode: String!
+  activeIndicator: Boolean!
+  isLegacy: Boolean
+}
+
+input UpdateAssessmentInput {
+  complaintOutcomeGuid: String!
+  complaintId: String
+  assessment: AssessmentInput!
+  outcomeAgencyCode: String!
+  updateUserId: String!
+}
+
+input CreatePreventionInput {
+  complaintOutcomeGuid: String
+  complaintId: String
+  prevention: PreventionInput!
+  outcomeAgencyCode: String!
+  createUserId: String!
+}
+
+input PreventionInput {
+  id: String
+  actions: [PreventionActionInput]!
+}
+
+input PreventionActionInput {
+  actor: String!
+  date: Date!
+  actionCode: String!
+  activeIndicator: Boolean!
+}
+
+input UpdatePreventionInput {
+  complaintOutcomeGuid: String!
+  complaintId: String
+  prevention: PreventionInput!
+  outcomeAgencyCode: String!
+  updateUserId: String!
+}
+
+input DeletePreventionInput {
+  complaintId: String!
+  id: String!
+  updateUserId: String!
+}
+
+input ReviewInput {
+  complaintId: String!
+  outcomeAgencyCode: String!
+  userId: String!
+  isReviewRequired: Boolean!
+  complaintOutcomeGuid: String
+  reviewComplete: ReviewActionInput
+}
+
+input ReviewActionInput {
+  actor: String!
+  date: Date!
+  actionCode: String!
+  actionId: String
+  activeIndicator: Boolean
+}
+
+input CreateNoteInput {
+  complaintId: String!
+  note: String!
+  actor: String!
+  outcomeAgencyCode: String!
+  createUserId: String!
+}
+
+input UpdateNoteInput {
+  complaintOutcomeGuid: String!
+  id: String!
+  note: String!
+  actor: String!
+  updateUserId: String!
+}
+
+input DeleteNoteInput {
+  complaintOutcomeGuid: String!
+  id: String!
+  actor: String!
+  updateUserId: String!
+}
+
+input CreateEquipmentInput {
+  complaintId: String!
+  createUserId: String!
+  outcomeAgencyCode: String!
+  equipment: [EquipmentDetailsInput]!
+}
+
+input UpdateEquipmentInput {
+  complaintId: String!
+  updateUserId: String!
+  outcomeAgencyCode: String!
+  equipment: [EquipmentDetailsInput]!
+}
+
+input DeleteEquipmentInput {
+  id: String!
+  updateUserId: String!
+}
+
+input EquipmentDetailsInput {
+  id: String
+  typeCode: String!
+  activeIndicator: Boolean!
+  address: String
+  xCoordinate: String
+  yCoordinate: String
+  actions: [EquipmentActionInput]!
+  wasAnimalCaptured: String
+  quantity: Int
+}
+
+input EquipmentActionInput {
+  actionGuid: String
+  date: Date
+  actor: String
+  activeIndicator: Boolean
+  actionCode: String
+}
+
+input DeleteWildlifeInput {
+  complaintOutcomeGuid: String!
+  wildlifeId: String!
+  actor: String!
+  updateUserId: String!
+}
+
+input CreateWildlifeInput {
+  complaintId: String!
+  outcomeAgencyCode: String!
+  createUserId: String!
+  wildlife: WildlifeInput!
+}
+
+input UpdateWildlifeInput {
+  complaintOutcomeGuid: String!
+  updateUserId: String!
+  wildlife: WildlifeInput!
+}
+
+input WildlifeInput {
+  id: String
+  species: String!
+  sex: String
+  age: String
+  categoryLevel: String
+  outcome: String
+  outcomeActionedBy: String
+  tags: [EarTagInput]
+  drugs: [DrugInput]
+  actions: [WildlifeActionInput]
+  identifyingFeatures: String
+}
+
+input EarTagInput {
+  id: String
+  ear: String!
+  identifier: String!
+
+  order: Int
+}
+
+input DrugInput {
+  id: String
+
+  vial: String!
+  drug: String!
+  amountUsed: String!
+  injectionMethod: String!
+
+  remainingUse: String
+  additionalComments: String
+
+  order: Int
+}
+
+input WildlifeActionInput {
+  id: String
+  actor: String
+  date: Date
+  action: String
+  activeIndicator: Boolean
+}
+
+input CreateDecisionInput {
+  complaintId: String
+  outcomeAgencyCode: String
+  actor: String
+  createUserId: String
+  decision: DecisionInput
+}
+
+input UpdateDecisionInput {
+  complaintOutcomeGuid: String
+  outcomeAgencyCode: String
+  actor: String
+  updateUserId: String
+  decision: DecisionInput
+}
+
+input DecisionInput {
+  id: String
+  schedule: String
+  sector: String
+  discharge: String
+  nonCompliance: String
+  ipmAuthCategory: String
+  rationale: String
+  inspectionNumber: String
+  leadAgency: String
+  assignedTo: String
+  actionTaken: String
+  actionTakenDate: Date
+}
+
+input CreateAuthorizationOutcomeInput {
+  complaintId: String!
+  outcomeAgencyCode: String!
+  createUserId: String!
+  input: PermitSiteInput!
+}
+
+input UpdateAuthorizationOutcomeInput {
+  complaintOutcomeGuid: String
+  outcomeAgencyCode: String
+  updateUserId: String
+  input: PermitSiteInput
+}
+
+input DeleteAuthorizationOutcomeInput {
+  complaintOutcomeGuid: String!
+  updateUserId: String!
+  id: String!
+}
+
+input PermitSiteInput {
+  id: String
+  type: String!
+  value: String!
+}

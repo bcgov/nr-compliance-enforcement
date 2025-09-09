@@ -10,7 +10,7 @@ export class contact_method {
   person_guid: string;
 
   @ApiProperty({ type: String })
-  contact_method_type_code: string;
+  contact_method_type: string;
 
   @ApiPropertyOptional({ type: String })
   contact_value?: string;
@@ -31,5 +31,5 @@ export class contact_method {
   person: person;
 
   @ApiProperty({ type: () => contact_method_type_code })
-  contact_method_type_code_contact_method_contact_method_type_codeTocontact_method_type_code: contact_method_type_code;
+  contact_method_type_code: contact_method_type_code;
 }
