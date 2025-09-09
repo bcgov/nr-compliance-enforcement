@@ -2224,7 +2224,8 @@ export class ComplaintService {
       }
     };
 
-    const _applyAssessmentData = async (assessment, assessmentActions) => {
+    const _applyAssessmentData = async (assessment, assessmentActions, index) => {
+      assessment.order = index + 1;
       //-- Convert booleans to Yes/No
 
       //Note this one is backwards since the variable is action NOT required but the report is action required
@@ -2536,7 +2537,7 @@ export class ComplaintService {
       //-- Add UA to unpermitted sites
       if (
         outcomeData.getComplaintOutcomeByComplaintId.authorization &&
-        outcomeData.getComplaintOutcomeByLeadId.authorization.type !== "permit"
+        outcomeData.getComplaintOutcomeByComplaintId.authorization.type !== "permit"
       ) {
         outcomeData.getComplaintOutcomeByComplaintId.authorization.value =
           "UA" + outcomeData.getComplaintOutcomeByComplaintId.authorization.value;
@@ -2551,13 +2552,13 @@ export class ComplaintService {
 
       if (outcomeData.getComplaintOutcomeByComplaintId?.assessment?.length > 0) {
         hasOutcome = true;
-        await outcomeData.getComplaintOutcomeByComplaintId.assessment.forEach(async (assessment) => {
+        await outcomeData.getComplaintOutcomeByComplaintId.assessment.forEach(async (assessment, index) => {
           const assessmentActions = [
             ...(Array.isArray(assessment?.actions) ? assessment.actions : []),
             ...(Array.isArray(assessment?.cat1Actions) ? assessment.cat1Actions : []),
           ];
 
-          await _applyAssessmentData(assessment, assessmentActions);
+          await _applyAssessmentData(assessment, assessmentActions, index);
         });
       }
 
