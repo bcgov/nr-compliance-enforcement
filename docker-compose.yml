@@ -163,7 +163,11 @@ services:
 
   backend-cm:
     container_name: backend-cm
-    entrypoint: sh -c "npm i && npm run prisma-generate-cm && npm run prisma-generate-shared && npm run start:dev"
+    entrypoint: sh -c "npm i && npm run prisma-generate-cm && \
+      npm run prisma-generate-shared && \
+      npm run prisma-generate-investigation && \
+      npm run prisma-generate-inspection && \
+      npm run start:dev"
     environment:
       <<: *postgres-vars
       NODE_ENV: development
