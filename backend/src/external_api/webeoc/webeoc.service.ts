@@ -4,7 +4,9 @@ import { Cache } from "cache-manager";
 import axios, { AxiosRequestConfig } from "axios";
 import { ConfigurationService } from "../../v1/configuration/configuration.service";
 import { format } from "date-fns";
+import { HttpsProxyAgent } from "https-proxy-agent";
 
+const httpsProxyAgent = process.env.HTTPS_PROXY ? new HttpsProxyAgent(process.env.HTTPS_PROXY) : undefined;
 @Injectable()
 export class WebeocService {
   private readonly logger = new Logger(WebeocService.name);
@@ -59,6 +61,15 @@ export class WebeocService {
       },
     };
 
+    if (process.env.HTTPS_PROXY) {
+      this.logger.debug(`using HTTPS proxy: ${process.env.HTTPS_PROXY}`);
+      config = {
+        ...config,
+        proxy: false,
+        httpsAgent: httpsProxyAgent,
+      };
+    }
+
     try {
       let response;
       if (action === "POST") {
@@ -100,6 +111,15 @@ export class WebeocService {
         Cookie: cachedCookie || "",
       },
     };
+
+    if (process.env.HTTPS_PROXY) {
+      this.logger.debug(`using HTTPS proxy: ${process.env.HTTPS_PROXY}`);
+      config = {
+        ...config,
+        proxy: false,
+        httpsAgent: httpsProxyAgent,
+      };
+    }
 
     // construct the body of the request
     const params = {
