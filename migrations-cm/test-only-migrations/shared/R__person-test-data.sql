@@ -23,10 +23,12 @@ VALUES
     ('550e8400-e29b-41d4-a716-446655440020', 'David', NULL, NULL, 'Wallace', 'system', NOW()),
     ('550e8400-e29b-41d4-a716-446655440021', 'Roy', NULL, NULL, 'Anderson', 'system', NOW()),
     ('550e8400-e29b-41d4-a716-446655440022', 'Gabe', NULL, NULL, 'Lewis', 'system', NOW()),
-    ('550e8400-e29b-41d4-a716-446655440023', 'Nellie', NULL, NULL, 'Bertram', 'system', NOW());
+    ('550e8400-e29b-41d4-a716-446655440023', 'Nellie', NULL, NULL, 'Bertram', 'system', NOW())
+on conflict do nothing;
+
 
 -- Insert contact methods
-INSERT INTO shared.contact_method (contact_method_guid, person_guid, contact_method_type_code, contact_value, create_user_id, create_utc_timestamp)
+INSERT INTO shared.contact_method (contact_method_guid, person_guid, contact_method_type, contact_value, create_user_id, create_utc_timestamp)
 VALUES
     ('660e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440001', 'PRIMPHONE', '570-555-0001', 'system', NOW()),
     ('660e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440002', 'EMAILADDR', 'jim.halpert@dundermifflin.com', 'system', NOW()),
@@ -39,5 +41,6 @@ VALUES
     ('660e8400-e29b-41d4-a716-446655440009', '550e8400-e29b-41d4-a716-446655440009', 'PRIMPHONE', '570-555-0009', 'system', NOW()),
     ('660e8400-e29b-41d4-a716-446655440010', '550e8400-e29b-41d4-a716-446655440010', 'EMAILADDR', 'meredith.palmer@dundermifflin.com', 'system', NOW()),
     ('660e8400-e29b-41d4-a716-446655440011', '550e8400-e29b-41d4-a716-446655440011', 'PRIMPHONE', '570-555-0011', 'system', NOW()),
-    ('660e8400-e29b-41d4-a716-446655440012', '550e8400-e29b-41d4-a716-446655440012', 'EMAILADDR', 'kelly.kapoor@dundermifflin.com', 'system', NOW());
+    ('660e8400-e29b-41d4-a716-446655440012', '550e8400-e29b-41d4-a716-446655440012', 'EMAILADDR', 'kelly.kapoor@dundermifflin.com', 'system', NOW())
+on conflict do nothing;
 

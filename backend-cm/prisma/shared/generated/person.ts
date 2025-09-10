@@ -1,4 +1,5 @@
 import { contact_method } from "./contact_method";
+import { party } from "./party";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class person {
@@ -29,6 +30,12 @@ export class person {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiPropertyOptional({ type: String })
+  party_guid?: string;
+
   @ApiProperty({ isArray: true, type: () => contact_method })
   contact_method: contact_method[];
+
+  @ApiPropertyOptional({ type: () => party })
+  party?: party;
 }

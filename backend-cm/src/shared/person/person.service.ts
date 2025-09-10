@@ -26,8 +26,8 @@ export class PersonService {
         contact_method: {
           select: {
             contact_value: true,
-            contact_method_type_code: true,
-            contact_method_type_code_contact_method_contact_method_type_codeTocontact_method_type_code: {
+            contact_method_type: true,
+            contact_method_type_code: {
               select: {
                 short_description: true,
                 long_description: true,
@@ -49,7 +49,7 @@ export class PersonService {
       include: {
         contact_method: {
           include: {
-            contact_method_type_code_contact_method_contact_method_type_codeTocontact_method_type_code: true,
+            contact_method_type_code: true,
           },
         },
       },
@@ -86,7 +86,7 @@ export class PersonService {
       include: {
         contact_method: {
           include: {
-            contact_method_type_code_contact_method_contact_method_type_codeTocontact_method_type_code: true,
+            contact_method_type_code: true,
           },
         },
       },
@@ -107,21 +107,11 @@ export class PersonService {
         middle_name: input.middleName,
         middle_name_2: input.middleName2,
         last_name: input.lastName,
-        // contact_method: input.contactMethods
-        //   ? ({
-        //       deleteMany: {}, // Remove old contacts
-        //       create: input.contactMethods.map((cm) => ({
-        //         contact_value: cm.value,
-        //         contact_method_type_code: cm.typeCode,
-        //         create_user_id: "system",
-        //       })),
-        //     } as any)
-        //   : undefined,
       },
       include: {
         contact_method: {
           include: {
-            contact_method_type_code_contact_method_contact_method_type_codeTocontact_method_type_code: true,
+            contact_method_type_code: true,
           },
         },
       },
@@ -141,7 +131,7 @@ export class PersonService {
       include: {
         contact_method: {
           include: {
-            contact_method_type_code_contact_method_contact_method_type_codeTocontact_method_type_code: true,
+            contact_method_type_code: true,
           },
         },
       },

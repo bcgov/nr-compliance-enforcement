@@ -1,0 +1,134 @@
+scalar Date
+
+type KeyValuePair {
+  key: String
+  value: String
+}
+
+type ComplaintOutcome {
+  complaintOutcomeGuid: String
+  complaintId: String
+  assessment: [Assessment]
+  prevention: [Prevention]
+  notes: [Note]
+  equipment: [EquipmentDetails]
+  isReviewRequired: Boolean
+  reviewComplete: CaseFileAction
+  subject: [Wildlife]
+  decision: Decision
+  authorization: PermitSite
+}
+
+type Assessment {
+  id: String
+  outcomeAgencyCode: String
+  actionNotRequired: Boolean
+  actionJustificationCode: String
+  actionJustificationShortDescription: String
+  actionJustificationLongDescription: String
+  actionJustificationActiveIndicator: Boolean
+  actions: [CaseFileAction]
+  contactedComplainant: Boolean
+  attended: Boolean
+  locationType: KeyValuePair
+  conflictHistory: KeyValuePair
+  categoryLevel: KeyValuePair
+  cat1Actions: [CaseFileAction]
+}
+
+type Prevention {
+  id: String
+  outcomeAgencyCode: String
+  actions: [CaseFileAction]
+}
+
+type Note {
+  id: String
+  note: String
+  outcomeAgencyCode: String
+  actions: [CaseFileAction]
+}
+
+type EquipmentDetails {
+  id: String
+  typeCode: String
+  typeDescription: String
+  activeIndicator: Boolean
+  address: String
+  xCoordinate: String
+  yCoordinate: String
+  createDate: Date
+  actions: [CaseFileAction]
+  wasAnimalCaptured: String
+  quantity: Int
+}
+
+type Wildlife {
+  id: String
+  species: String!
+  sex: String
+  sexDescription: String
+  age: String
+  ageDescription: String
+  categoryLevel: String
+  categoryLevelDescription: String
+  identifyingFeatures: String
+  outcome: String
+  outcomeDescription: String
+  outcomeActionedBy: String
+  outcomeActionedByDescription: String
+  tags: [EarTag]
+  drugs: [Drug]
+  actions: [CaseFileAction]
+  order: Int
+}
+
+type EarTag {
+  id: String
+  ear: String
+  earDescription: String
+  identifier: String
+  order: Int
+}
+
+type Drug {
+  id: String
+  vial: String
+  drug: String
+  drugDescription: String
+  amountUsed: String
+  injectionMethod: String
+  injectionMethodDescription: String
+  remainingUse: String
+  remainingUseDescription: String
+  additionalComments: String
+  order: Int
+}
+
+type Decision {
+  id: String
+  schedule: String
+  scheduleLongDescription: String
+  sector: String
+  sectorLongDescription: String
+  discharge: String
+  dischargeLongDescription: String
+  nonCompliance: String
+  nonComplianceLongDescription: String
+  ipmAuthCategory: String
+  ipmAuthCategoryLongDescription: String
+  rationale: String
+  inspectionNumber: String
+  leadAgency: String
+  leadAgencyLongDescription: String
+  assignedTo: String
+  actionTaken: String
+  actionTakenLongDescription: String
+  actionTakenDate: Date
+}
+
+type PermitSite {
+  id: String
+  type: String
+  value: String
+}
