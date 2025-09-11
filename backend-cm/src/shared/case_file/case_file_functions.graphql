@@ -1,0 +1,11 @@
+type Query {
+  caseFile(caseIdentifier: String!): CaseFile
+  caseFiles(caseIdentifiers: [String!]!): [CaseFile!]!
+  caseFileByActivityId(activityType: String!, activityIdentifier: String!): CaseFile!
+  searchCaseFiles(page: Int = 1, pageSize: Int = 25, filters: CaseFileFilters): CaseFileResult!
+}
+
+type Mutation {
+  createCaseFile(input: CaseFileCreateInput!): CaseFile!
+  updateCaseFile(caseIdentifier: String!, input: CaseFileUpdateInput!): CaseFile!
+}
