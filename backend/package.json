@@ -1,6 +1,6 @@
 {
   "name": "nr-compliance-enforcement",
-  "version": "2.0.63",
+  "version": "2.0.68",
   "description": "BCGov devops quickstart. For reference, testing and new projects.",
   "main": "index.js",
   "scripts": {
@@ -71,6 +71,7 @@
     "fix-esm": "^1.0.1",
     "form-data": "^4.0.0",
     "geojson": "^0.5.0",
+    "https-proxy-agent": "^7.0.6",
     "jest-mock": "^29.6.1",
     "jwks-rsa": "^3.0.1",
     "linq-to-typescript": "^11.0.0",

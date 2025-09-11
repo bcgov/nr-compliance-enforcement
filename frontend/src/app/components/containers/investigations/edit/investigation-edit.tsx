@@ -96,7 +96,7 @@ const InvestigationEdit: FC = () => {
   });
 
   const updateInvestigationMutation = useGraphQLMutation(UPDATE_INVESTIGATION_MUTATION, {
-    invalidateQueries: [["getInvestigation", id], "searchInvestiagations"],
+    invalidateQueries: [["getInvestigation", id], ["getInvestigations", id], "searchInvestiagations"],
     onSuccess: (data: any) => {
       ToggleSuccess("Investigation updated successfully");
       navigate(`/investigation/${id}`);

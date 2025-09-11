@@ -1,0 +1,114 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../../node_modules/.prisma/inspection"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+generator prismaClassGenerator {
+  provider = "prisma-class-generator"
+  output   = "./generated"
+  dryRun   = "false"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("INS_POSTGRES_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inspection {
+  inspection_guid                 String                    @id(map: "PK_inspection_guid") @default(dbgenerated("case_management.uuid_generate_v4()")) @db.Uuid
+  inspection_description          String?                   @db.VarChar(4000)
+  owned_by_agency_ref             String                    @db.VarChar(10)
+  inspection_status               String                    @db.VarChar(10)
+  inspection_opened_utc_timestamp DateTime                  @db.Timestamp(6)
+  create_user_id                  String                    @db.VarChar(32)
+  create_utc_timestamp            DateTime                  @db.Timestamp(6)
+  update_user_id                  String?                   @db.VarChar(32)
+  update_utc_timestamp            DateTime?                 @db.Timestamp(6)
+  inspection_status_code          inspection_status_code    @relation(fields: [inspection_status], references: [inspection_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_inspection__inspection_status")
+  officer_inspection_xref         officer_inspection_xref[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inspection_h {
+  h_inspection_guid             String   @id(map: "PK_h_inspection") @default(dbgenerated("case_management.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inspection_status_code {
+  inspection_status_code String       @id(map: "PK_ingestigation_status_code") @db.VarChar(10)
+  short_description      String       @db.VarChar(50)
+  long_description       String?      @db.VarChar(250)
+  display_order          Int
+  active_ind             Boolean
+  create_user_id         String       @db.VarChar(32)
+  create_utc_timestamp   DateTime     @db.Timestamp(6)
+  update_user_id         String       @db.VarChar(32)
+  update_utc_timestamp   DateTime     @db.Timestamp(6)
+  inspection             inspection[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inspection_status_code_h {
+  h_inspection_status_code_guid String   @id(map: "PK_h_inspection_status_code") @default(dbgenerated("case_management.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.VarChar(20)
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model officer_inspection_xref {
+  officer_inspection_xref_guid                                                                                    String                       @id(map: "PK_officer_inspection_xref_guid") @default(dbgenerated("case_management.uuid_generate_v4()")) @db.Uuid
+  officer_guid_ref                                                                                                String                       @db.Uuid
+  inspection_guid                                                                                                 String                       @db.Uuid
+  officer_inspection_xref_code                                                                                    String                       @db.VarChar(10)
+  create_user_id                                                                                                  String                       @db.VarChar(32)
+  create_utc_timestamp                                                                                            DateTime                     @db.Timestamp(6)
+  update_user_id                                                                                                  String                       @db.VarChar(32)
+  update_utc_timestamp                                                                                            DateTime                     @db.Timestamp(6)
+  active_ind                                                                                                      Boolean
+  inspection                                                                                                      inspection                   @relation(fields: [inspection_guid], references: [inspection_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_officer_inspection_xref__inspection_guid")
+  officer_inspection_xref_code_officer_inspection_xref_officer_inspection_xref_codeToofficer_inspection_xref_code officer_inspection_xref_code @relation("officer_inspection_xref_officer_inspection_xref_codeToofficer_inspection_xref_code", fields: [officer_inspection_xref_code], references: [officer_inspection_xref_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_officer_inspection_xref__officer_inspection_xref_code")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model officer_inspection_xref_code {
+  officer_inspection_xref_code                                                                               String                    @id(map: "PK_officer_inspection_xref_code") @db.VarChar(10)
+  short_description                                                                                          String                    @db.VarChar(50)
+  long_description                                                                                           String?                   @db.VarChar(250)
+  display_order                                                                                              Int
+  active_ind                                                                                                 Boolean                   @default(true)
+  create_user_id                                                                                             String                    @db.VarChar(32)
+  create_utc_timestamp                                                                                       DateTime                  @db.Timestamp(6)
+  update_user_id                                                                                             String                    @db.VarChar(32)
+  update_utc_timestamp                                                                                       DateTime                  @db.Timestamp(6)
+  officer_inspection_xref_officer_inspection_xref_officer_inspection_xref_codeToofficer_inspection_xref_code officer_inspection_xref[] @relation("officer_inspection_xref_officer_inspection_xref_codeToofficer_inspection_xref_code")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model officer_inspection_xref_code_h {
+  h_officer_inspection_xref_code_guid String   @id(map: "PK_h_officer_inspection_xref_code") @default(dbgenerated("case_management.uuid_generate_v4()")) @db.Uuid
+  target_row_id                       String   @db.VarChar(20)
+  operation_type                      String   @db.Char(1)
+  operation_user_id                   String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at               DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation       Json?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model officer_inspection_xref_h {
+  h_officer_inspection_xref_guid String   @id(map: "PK_h_officer_inspection_xref") @default(dbgenerated("case_management.uuid_generate_v4()")) @db.Uuid
+  target_row_id                  String   @db.Uuid
+  operation_type                 String   @db.Char(1)
+  operation_user_id              String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at          DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation  Json?
+}

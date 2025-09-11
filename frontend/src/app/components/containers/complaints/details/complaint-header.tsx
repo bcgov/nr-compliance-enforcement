@@ -257,6 +257,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         as="button"
         id="link-complaint-button"
         onClick={openLinkComplaintModal}
+        disabled={status === "Closed"}
       >
         <i className="bi bi-link-45deg"></i>
         <span>Link complaint</span>
