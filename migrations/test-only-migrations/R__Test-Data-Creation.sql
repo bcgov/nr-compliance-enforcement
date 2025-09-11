@@ -1801,12 +1801,6 @@ WHERE
 
 UPDATE officer
 SET
-  auth_user_guid = 'e7d909cb-57c7-4e3d-b4fc-17a732111070'
-WHERE
-  user_id = 'JCLANCY';
-
-UPDATE officer
-SET
   auth_user_guid = 'fef9665c-35ee-4caa-88ff-05864f400115'
 WHERE
   user_id = 'BCARUTH';
@@ -1876,13 +1870,7 @@ SET
   auth_user_guid = 'ba9f3a7f-9434-4ccb-a861-307622a2d339'
 WHERE
   user_id = 'BEPARKER';
-
-UPDATE officer
-SET
-  auth_user_guid = 'e7d909cb-57c7-4e3d-b4fc-17a732111070'
-WHERE
-  user_id = 'JCLANCY';
-
+  
 UPDATE officer
 SET
   auth_user_guid = 'a5354b38-ab6a-4b5d-8046-5f4bd1bc3c4b'
