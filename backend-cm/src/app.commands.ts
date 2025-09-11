@@ -29,6 +29,7 @@ export class ImportCommand extends CommandRunner {
     }
   }
 
+  
   @Option({
     flags: "-j, --job <jobName>",
     description: "Job name to run",
