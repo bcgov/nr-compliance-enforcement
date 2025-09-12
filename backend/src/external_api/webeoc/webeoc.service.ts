@@ -6,7 +6,7 @@ import { ConfigurationService } from "../../v1/configuration/configuration.servi
 import { format } from "date-fns";
 import { HttpsProxyAgent } from "https-proxy-agent";
 
-const httpsProxyAgent = process.env.HTTPS_PROXY ? new HttpsProxyAgent(process.env.HTTPS_PROXY) : undefined;
+const httpsProxyAgent = process.env.WEBEOC_HTTPS_PROXY ? new HttpsProxyAgent(process.env.WEBEOC_HTTPS_PROXY) : undefined;
 @Injectable()
 export class WebeocService {
   private readonly logger = new Logger(WebeocService.name);
@@ -61,8 +61,13 @@ export class WebeocService {
       },
     };
 
+<<<<<<< HEAD
     if (process.env.HTTPS_PROXY) {
       this.logger.debug(`using HTTPS proxy: ${process.env.HTTPS_PROXY}`);
+=======
+    if (process.env.WEBEOC_HTTPS_PROXY) {
+      this.logger.debug(`using HTTPS proxy: ${process.env.WEBEOC_HTTPS_PROXY}`);
+>>>>>>> fce683714f464d3c91b714b4760819d29d637c2e
       config = {
         ...config,
         proxy: false,
@@ -112,8 +117,13 @@ export class WebeocService {
       },
     };
 
+<<<<<<< HEAD
     if (process.env.HTTPS_PROXY) {
       this.logger.debug(`using HTTPS proxy: ${process.env.HTTPS_PROXY}`);
+=======
+    if (process.env.WEBEOC_HTTPS_PROXY) {
+      this.logger.debug(`using HTTPS proxy: ${process.env.WEBEOC_HTTPS_PROXY}`);
+>>>>>>> fce683714f464d3c91b714b4760819d29d637c2e
       config = {
         ...config,
         proxy: false,
