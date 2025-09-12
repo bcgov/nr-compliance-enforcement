@@ -11,7 +11,6 @@ export class UserService {
   }
 
   getIdirUsername(): string {
-    this.logger.log(this.getUser());
     try {
       return this.getUser()?.idir_username || "system";
     } catch {
