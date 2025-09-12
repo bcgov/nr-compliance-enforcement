@@ -692,7 +692,6 @@ export const getComplaintById =
         `${config.API_BASE_URL}/v1/complaint/by-complaint-identifier/${complaintType}/${id}`,
       );
       const response = await get<ComplaintDtoAlias>(dispatch, parameters);
-
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       dispatch(setComplaint(null));

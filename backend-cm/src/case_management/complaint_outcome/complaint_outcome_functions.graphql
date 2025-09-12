@@ -1,0 +1,37 @@
+type Query {
+  getComplaintOutcome(complaintOutcomeGuid: String!): ComplaintOutcome
+  getComplaintOutcomeByComplaintId(complaintId: String!): ComplaintOutcome
+  getComplaintOutcomesByComplaintId(complaintIds: [String!]!): [ComplaintOutcome]
+  getComplaintOutcomesBySearchString(complaintType: String!, searchString: String!): [ComplaintOutcome]
+}
+
+type Mutation {
+  createAssessment(input: CreateAssessmentInput!): ComplaintOutcome!
+  updateAssessment(input: UpdateAssessmentInput!): ComplaintOutcome!
+
+  createPrevention(input: CreatePreventionInput!): ComplaintOutcome!
+  updatePrevention(input: UpdatePreventionInput!): ComplaintOutcome!
+  deletePrevention(input: DeletePreventionInput!): ComplaintOutcome!
+
+  createReview(reviewInput: ReviewInput!): ComplaintOutcome!
+  updateReview(reviewInput: ReviewInput!): ComplaintOutcome!
+
+  createNote(input: CreateNoteInput!): ComplaintOutcome!
+  updateNote(input: UpdateNoteInput!): ComplaintOutcome!
+  deleteNote(input: DeleteNoteInput!): ComplaintOutcome!
+
+  createEquipment(createEquipmentInput: CreateEquipmentInput!): ComplaintOutcome!
+  updateEquipment(updateEquipmentInput: UpdateEquipmentInput!): ComplaintOutcome!
+  deleteEquipment(deleteEquipmentInput: DeleteEquipmentInput!): Boolean!
+
+  createWildlife(input: CreateWildlifeInput!): ComplaintOutcome!
+  updateWildlife(input: UpdateWildlifeInput!): ComplaintOutcome!
+  deleteWildlife(input: DeleteWildlifeInput!): ComplaintOutcome!
+
+  createDecision(input: CreateDecisionInput!): ComplaintOutcome!
+  updateDecision(input: UpdateDecisionInput!): ComplaintOutcome!
+
+  createAuthorizationOutcome(input: CreateAuthorizationOutcomeInput!): ComplaintOutcome!
+  updateAuthorizationOutcome(input: UpdateAuthorizationOutcomeInput!): ComplaintOutcome!
+  deleteAuthorizationOutcome(input: DeleteAuthorizationOutcomeInput!): ComplaintOutcome!
+}

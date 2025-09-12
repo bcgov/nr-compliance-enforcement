@@ -1,0 +1,46 @@
+scalar Date
+
+type CaseFile {
+  caseIdentifier: String
+  leadAgency: AgencyCode
+  caseStatus: CaseStatusCode
+  openedTimestamp: Date
+  description: String
+  activities: [CaseActivity]
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  totalCount: Int!
+  totalPages: Int!
+  currentPage: Int!
+  pageSize: Int!
+}
+
+type CaseFileResult {
+  items: [CaseFile!]!
+  pageInfo: PageInfo!
+}
+
+input CaseFileCreateInput {
+  leadAgency: String!
+  caseStatus: String!
+  description: String
+}
+
+input CaseFileUpdateInput {
+  leadAgency: String
+  caseStatus: String
+  description: String
+}
+
+input CaseFileFilters {
+  search: String
+  leadAgency: String
+  caseStatus: String
+  startDate: Date
+  endDate: Date
+  sortBy: String
+  sortOrder: String
+}

@@ -30,5 +30,5 @@ export class contact_method_type_code {
   update_utc_timestamp?: Date;
 
   @ApiProperty({ isArray: true, type: () => contact_method })
-  contact_method_contact_method_contact_method_type_codeTocontact_method_type_code: contact_method[];
+  contact_method: contact_method[];
 }

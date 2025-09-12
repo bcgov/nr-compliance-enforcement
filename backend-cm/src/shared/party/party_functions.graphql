@@ -1,0 +1,8 @@
+type Query {
+  party(partyIdentifier: String!): Party
+}
+
+type Mutation {
+  createParty(input: PartyCreateInput!): Party!
+  updateParty(partyIdentifier: String!, input: PartyUpdateInput!): Party!
+}
