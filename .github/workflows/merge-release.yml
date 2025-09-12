@@ -54,13 +54,13 @@ jobs:
           [
             backend,
             frontend,
-            migrations-complaint,
+            migration-complaint,
             webeoc,
             backend-cm,
-            migrations-complaint-outcome,
-            migrations-investigation,
-            migrations-inspection,
-            migrations-shared,
+            migration-complaint-outcome,
+            migration-investigation,
+            migration-inspection,
+            migration-shared,
           ]
     timeout-minutes: 1
     steps:

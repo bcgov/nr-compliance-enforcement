@@ -43,17 +43,17 @@ services:
       retries: 3
     volumes:
       - /pgdata
-  migrations-complaint:
+  migration-complaint:
     image: flyway/flyway:10-alpine
-    container_name: migrations-complaint
+    container_name: migration-complaint
     command:
       - info
       - migrate
       - -outOfOrder=true
     volumes:
-      - "./migrations-complaint/migrations:/flyway/sql"
-      - "./migrations-complaint/test-only-migrations:/flyway/sql-test"
-      - "./migrations-complaint/baseline:/flyway/baseline"
+      - "./migration-complaint/migrations:/flyway/sql"
+      - "./migration-complaint/test-only-migrations:/flyway/sql-test"
+      - "./migration-complaint/baseline:/flyway/baseline"
     environment:
       FLYWAY_URL: jdbc:postgresql://database:5432/postgres?currentSchema=complaint,public
       FLYWAY_USER: postgres
@@ -65,17 +65,17 @@ services:
     depends_on:
       database:
         condition: service_healthy
-  migrations-investigation:
+  migration-investigation:
     image: flyway/flyway:10-alpine
-    container_name: migrations-investigation
+    container_name: migration-investigation
     command:
       - info
       - migrate
       - -outOfOrder=true
     volumes:
-      - "./migrations-investigation/migrations:/flyway/sql"
-      - "./migrations-investigation/test-only-migrations:/flyway/sql-test"
-      - "./migrations-investigation/baseline:/flyway/baseline"
+      - "./migration-investigation/migrations:/flyway/sql"
+      - "./migration-investigation/test-only-migrations:/flyway/sql-test"
+      - "./migration-investigation/baseline:/flyway/baseline"
     environment:
       FLYWAY_URL: jdbc:postgresql://database:5432/postgres?currentSchema=investigation,public
       FLYWAY_USER: postgres
@@ -87,17 +87,17 @@ services:
     depends_on:
       database:
         condition: service_healthy
-  migrations-inspection:
+  migration-inspection:
     image: flyway/flyway:10-alpine
-    container_name: migrations-inspection
+    container_name: migration-inspection
     command:
       - info
       - migrate
       - -outOfOrder=true
     volumes:
-      - "./migrations-inspection/migrations:/flyway/sql"
-      - "./migrations-inspection/test-only-migrations:/flyway/sql-test"
-      - "./migrations-inspection/baseline:/flyway/baseline"
+      - "./migration-inspection/migrations:/flyway/sql"
+      - "./migration-inspection/test-only-migrations:/flyway/sql-test"
+      - "./migration-inspection/baseline:/flyway/baseline"
     environment:
       FLYWAY_URL: jdbc:postgresql://database:5432/postgres?currentSchema=inspection,public
       FLYWAY_USER: postgres
@@ -109,17 +109,17 @@ services:
     depends_on:
       database:
         condition: service_healthy
-  migrations-shared:
+  migration-shared:
     image: flyway/flyway:10-alpine
-    container_name: migrations-shared
+    container_name: migration-shared
     command:
       - info
       - migrate
       - -outOfOrder=true
     volumes:
-      - "./migrations-shared/migrations:/flyway/sql"
-      - "./migrations-shared/test-only-migrations:/flyway/sql-test"
-      - "./migrations-shared/baseline:/flyway/baseline"
+      - "./migration-shared/migrations:/flyway/sql"
+      - "./migration-shared/test-only-migrations:/flyway/sql-test"
+      - "./migration-shared/baseline:/flyway/baseline"
     environment:
       FLYWAY_URL: jdbc:postgresql://database:5432/postgres?currentSchema=shared,public
       FLYWAY_USER: postgres
@@ -131,17 +131,17 @@ services:
     depends_on:
       database:
         condition: service_healthy
-  migrations-complaint-outcome:
+  migration-complaint-outcome:
     image: flyway/flyway:10-alpine
-    container_name: migrations-complaint-outcome
+    container_name: migration-complaint-outcome
     command:
       - info
       - migrate
       - -outOfOrder=true
     volumes:
-      - "./migrations-complaint-outcome/migrations:/flyway/sql"
-      - "./migrations-complaint-outcome/test-only-migrations:/flyway/sql-test"
-      - "./migrations-complaint-outcome/baseline:/flyway/baseline"
+      - "./migration-complaint-outcome/migrations:/flyway/sql"
+      - "./migration-complaint-outcome/test-only-migrations:/flyway/sql-test"
+      - "./migration-complaint-outcome/baseline:/flyway/baseline"
     environment:
       FLYWAY_URL: jdbc:postgresql://database:5432/postgres?currentSchema=complaint_outcome,public
       FLYWAY_USER: postgres
@@ -179,7 +179,7 @@ services:
     depends_on:
       database:
         condition: service_healthy
-      migrations-complaint:
+      migration-complaint:
         condition: service_started
   frontend:
     container_name: frontend
@@ -253,11 +253,11 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api"]
     working_dir: "/app"
     depends_on:
-      migrations-complaint-outcome:
+      migration-complaint-outcome:
         condition: service_completed_successfully
-      migrations-inspection:
+      migration-inspection:
         condition: service_completed_successfully
-      migrations-investigation:
+      migration-investigation:
         condition: service_completed_successfully
-      migrations-shared:
+      migration-shared:
         condition: service_completed_successfully
