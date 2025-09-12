@@ -255,3 +255,9 @@ services:
     depends_on:
       migrations-complaint-outcome:
         condition: service_completed_successfully
+      migrations-inspection:
+        condition: service_completed_successfully
+      migrations-investigation:
+        condition: service_completed_successfully
+      migrations-shared:
+        condition: service_completed_successfully
