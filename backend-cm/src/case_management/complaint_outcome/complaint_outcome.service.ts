@@ -5,7 +5,7 @@ import {
   CreatePreventionInput,
 } from "./dto/create-case_file.input";
 import { UpdateAssessmentInput, UpdateEquipmentInput, UpdatePreventionInput } from "./dto/update-case_file.input";
-import { CaseManagementPrismaService } from "../../prisma/cm/prisma.cm.service";
+import { ComplaintOutcomePrismaService } from "../../prisma/complaint_outcome/prisma.complaint_outcome.service";
 import { ComplaintOutcome } from "./entities/complaint_outcome.entity";
 import { GraphQLError } from "graphql";
 import { ACTION_CODES } from "../../common/action_codes";
@@ -17,7 +17,7 @@ import { ReviewInput } from "./dto/review-input";
 import { CaseFileActionService } from "../case_file_action/case_file_action.service";
 import { Equipment } from "./entities/equipment.entity";
 import { DeleteEquipmentInput } from "./dto/equipment/delete-equipment.input";
-import { action, Prisma, PrismaClient } from ".prisma/case_management";
+import { action, Prisma, PrismaClient } from ".prisma/complaint_outcome";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import { CreateWildlifeInput } from "./dto/wildlife/create-wildlife-input";
 import { WildlifeInput } from "./dto/wildlife/wildlife-input";
@@ -46,7 +46,7 @@ import { DeletePreventionInput } from "./dto/delete-prevention.input";
 @Injectable()
 export class ComplaintOutcomeService {
   constructor(
-    private readonly prisma: CaseManagementPrismaService,
+    private readonly prisma: ComplaintOutcomePrismaService,
     private readonly caseFileActionService: CaseFileActionService,
   ) {}
 

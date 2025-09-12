@@ -4,7 +4,7 @@ import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { HTTPLoggerMiddleware } from "./middleware/req.res.logger";
-import { PrismaModuleCaseManagement } from "./prisma/cm/prisma.cm.module";
+import { PrismaModuleComplaintOutcome } from "./prisma/complaint_outcome/prisma.complaint_outcome.module";
 import { PrismaModuleShared } from "./prisma/shared/prisma.shared.module";
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
@@ -56,7 +56,7 @@ import { PartyTypeCodeModule } from "./shared/party_type_code/party_type_code.mo
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    PrismaModuleCaseManagement,
+    PrismaModuleComplaintOutcome,
     PrismaModuleShared,
     PrismaModuleInvestigation,
     PrismaModuleInspection,

@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  output          = "../../node_modules/.prisma/case_management"
+  output          = "../../node_modules/.prisma/complaint_outcome"
   previewFeatures = ["prismaSchemaFolder"]
   binaryTargets   = ["native", "debian-openssl-1.1.x"]
 }

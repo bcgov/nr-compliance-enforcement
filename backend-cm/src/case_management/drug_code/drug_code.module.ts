@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
 import { DrugCodeService } from "./drug_code.service";
 import { DrugCodeResolver } from "./drug_code.resolver";
-import { PrismaModuleCaseManagement } from "../../prisma/cm/prisma.cm.module";
+import { PrismaModuleComplaintOutcome } from "../../prisma/complaint_outcome/prisma.complaint_outcome.module";
 
 @Module({
-  imports: [PrismaModuleCaseManagement],
+  imports: [PrismaModuleComplaintOutcome],
   providers: [DrugCodeResolver, DrugCodeService],
 })
 export class DrugCodeModule {}

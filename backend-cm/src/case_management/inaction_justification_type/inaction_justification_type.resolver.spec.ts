@@ -1,14 +1,14 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { InactionJustificationTypeResolver } from "./inaction_justification_type.resolver";
 import { InactionJustificationTypeService } from "./inaction_justification_type.service";
-import { PrismaModuleCaseManagement } from "../../prisma/cm/prisma.cm.module";
+import { PrismaModuleComplaintOutcome } from "../../prisma/complaint_outcome/prisma.complaint_outcome.module";
 
 describe("InactionJustificationTypeResolver", () => {
   let resolver: InactionJustificationTypeResolver;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModuleCaseManagement],
+      imports: [PrismaModuleComplaintOutcome],
       providers: [InactionJustificationTypeResolver, InactionJustificationTypeService],
     }).compile();
 

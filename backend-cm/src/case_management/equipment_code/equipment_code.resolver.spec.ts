@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { EquipmentCodeResolver } from "./equipment_code.resolver";
-import { PrismaModuleCaseManagement } from "../../prisma/cm/prisma.cm.module";
+import { PrismaModuleComplaintOutcome } from "../../prisma/complaint_outcome/prisma.complaint_outcome.module";
 import { EquipmentCodeService } from "./equipment_code.service";
 
 describe("EquipmentCodeResolver", () => {
@@ -8,7 +8,7 @@ describe("EquipmentCodeResolver", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModuleCaseManagement],
+      imports: [PrismaModuleComplaintOutcome],
       providers: [EquipmentCodeResolver, EquipmentCodeService],
     }).compile();
 

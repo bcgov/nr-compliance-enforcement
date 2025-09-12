@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
 import { HwcrOutcomeCodeService } from "./hwcr_outcome_code.service";
 import { HwcrOutcomeCodeResolver } from "./hwcr_outcome_code.resolver";
-import { PrismaModuleCaseManagement } from "../../prisma/cm/prisma.cm.module";
+import { PrismaModuleComplaintOutcome } from "../../prisma/complaint_outcome/prisma.complaint_outcome.module";
 
 @Module({
-  imports: [PrismaModuleCaseManagement],
+  imports: [PrismaModuleComplaintOutcome],
   providers: [HwcrOutcomeCodeResolver, HwcrOutcomeCodeService],
 })
 export class HwcrOutcomeCodeModule {}

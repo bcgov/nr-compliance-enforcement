@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CaseManagementPrismaService } from "../../prisma/cm/prisma.cm.service";
+import { ComplaintOutcomePrismaService } from "../../prisma/complaint_outcome/prisma.complaint_outcome.service";
 import { OutcomeAgencyCode } from "./entities/outcome_agency_code.entity";
 
 @Injectable()
 export class OutcomeAgencyCodeService {
-  constructor(private readonly prisma: CaseManagementPrismaService) {}
+  constructor(private readonly prisma: ComplaintOutcomePrismaService) {}
 
   async findAll() {
     const prismaAgencyCodes = await this.prisma.outcome_agency_code.findMany({

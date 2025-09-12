@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CaseManagementPrismaService } from "../../prisma/cm/prisma.cm.service";
+import { ComplaintOutcomePrismaService } from "../../prisma/complaint_outcome/prisma.complaint_outcome.service";
 import { InactionJustificationCode } from "./entities/inaction_justification_code.entity";
 
 @Injectable()
 export class InactionJustificationTypeService {
-  constructor(private readonly prisma: CaseManagementPrismaService) {}
+  constructor(private readonly prisma: ComplaintOutcomePrismaService) {}
 
   async find(outcomeAgencyCode?: string) {
     let queryResult = null;

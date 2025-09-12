@@ -233,7 +233,7 @@ services:
     working_dir: "/app"
   backend-cm:
     container_name: backend-cm
-    entrypoint: sh -c "npm i && npm run prisma-generate-cm && \
+    entrypoint: sh -c "npm i && npm run prisma-generate-complaint-outcome && \
       npm run prisma-generate-shared && \
       npm run prisma-generate-investigation && \
       npm run prisma-generate-inspection && \

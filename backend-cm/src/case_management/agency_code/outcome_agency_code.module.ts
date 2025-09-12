@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
 import { OutcomeAgencyCodeService } from "./outcome_agency_code.service";
 import { OutcomeAgencyCodeResolver } from "./outcome_agency_code.resolver";
-import { PrismaModuleCaseManagement } from "../../prisma/cm/prisma.cm.module";
+import { PrismaModuleComplaintOutcome } from "../../prisma/complaint_outcome/prisma.complaint_outcome.module";
 
 @Module({
-  imports: [PrismaModuleCaseManagement],
+  imports: [PrismaModuleComplaintOutcome],
   providers: [OutcomeAgencyCodeResolver, OutcomeAgencyCodeService],
 })
 export class OutcomeAgencyCodeModule {}

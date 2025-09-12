@@ -1,11 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CaseManagementPrismaService } from "../../prisma/cm/prisma.cm.service";
+import { ComplaintOutcomePrismaService } from "../../prisma/complaint_outcome/prisma.complaint_outcome.service";
 import { CaseFileAction } from "./entities/case_file_action.entity";
 import { GraphQLError } from "graphql";
 
 @Injectable()
 export class CaseFileActionService {
-  constructor(private readonly prisma: CaseManagementPrismaService) {}
+  constructor(private readonly prisma: ComplaintOutcomePrismaService) {}
   private readonly logger = new Logger(CaseFileActionService.name);
 
   //helper method that is used to map the Prisma result set into a useable object

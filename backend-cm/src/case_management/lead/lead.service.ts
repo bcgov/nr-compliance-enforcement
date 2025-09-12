@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { CaseManagementPrismaService } from "../../prisma/cm/prisma.cm.service";
+import { ComplaintOutcomePrismaService } from "../../prisma/complaint_outcome/prisma.complaint_outcome.service";
 import { ACTION_TYPE_CODES } from "../../common/action_type_codes";
 import { ACTION_CODES } from "../../common/action_codes";
 import { EQUIPMENT_STATUS_CODES } from "../../common/equipment_status_codes";
 
 @Injectable()
 export class LeadService {
-  constructor(private readonly prisma: CaseManagementPrismaService) {}
+  constructor(private readonly prisma: ComplaintOutcomePrismaService) {}
 
   async getLeadsByActionTaken(actionCode: string): Promise<string[]> {
     /**

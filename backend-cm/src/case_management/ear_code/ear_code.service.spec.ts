@@ -1,13 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { EarCodeService } from "./ear_code.service";
-import { PrismaModuleCaseManagement } from "../../prisma/cm/prisma.cm.module";
+import { PrismaModuleComplaintOutcome } from "../../prisma/complaint_outcome/prisma.complaint_outcome.module";
 
 describe("EarCodeService", () => {
   let service: EarCodeService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModuleCaseManagement],
+      imports: [PrismaModuleComplaintOutcome],
       providers: [EarCodeService],
     }).compile();
 

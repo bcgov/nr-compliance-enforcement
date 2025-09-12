@@ -1,8 +1,8 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from "@nestjs/common";
-import { PrismaClient } from ".prisma/case_management";
+import { PrismaClient } from ".prisma/complaint_outcome";
 
 @Injectable()
-export class CaseManagementPrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+export class ComplaintOutcomePrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     //hello world
     if (true) {
