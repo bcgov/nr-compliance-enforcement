@@ -26,7 +26,7 @@ import { getIdirFromRequest } from "../../../common/get-idir-from-request";
 import { CodeTableService } from "../../code-table/code-table.service";
 import { Complaint } from "../../complaint/entities/complaint.entity";
 import { CreateLinkedComplaintXrefDto } from "../../linked_complaint_xref/dto/create-linked_complaint_xref.dto";
-import { CaseManagementError } from "../../../enum/case_management_error.enum";
+import { ComplaintOutcomeError } from "../../../enum/complaint_outcome_error.enum";
 import { CreateAssessmentInput } from "src/types/models/case-files/assessment/create-assessment-input";
 import { UpdateAssessmentInput } from "src/types/models/case-files/assessment/update-assessment-input";
 import { CreatePreventionInput } from "src/types/models/case-files/prevention/create-prevention-input";
@@ -549,12 +549,12 @@ export class ComplaintOutcomeService {
   createDecision = async (
     token: any,
     model: CreateDecisionInput,
-  ): Promise<ComplaintOutcomeDto | CaseManagementError> => {
+  ): Promise<ComplaintOutcomeDto | ComplaintOutcomeError> => {
     const { complaintId: leadId } = model;
     const caseFile = await this.find(leadId, token);
 
     if (caseFile?.decision?.actionTaken) {
-      return CaseManagementError.DECISION_ACTION_EXIST;
+      return ComplaintOutcomeError.DECISION_ACTION_EXIST;
     }
 
     const result = await post(token, {

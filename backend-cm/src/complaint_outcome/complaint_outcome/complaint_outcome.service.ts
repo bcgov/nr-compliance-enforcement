@@ -1688,9 +1688,9 @@ export class ComplaintOutcomeService {
 
           // update the equipment record to set the coordinates
           // using raw query because prisma can't handle the awesomeness
-          await this.prisma.$executeRaw`SET search_path TO public, case_management`;
+          await this.prisma.$executeRaw`SET search_path TO public, complaint_outcome`;
           const geometryUpdateQuery = `
-          UPDATE case_management.equipment
+          UPDATE complaint_outcome.equipment
           SET equipment_geometry_point = public.ST_GeomFromText($1, 4326)
           WHERE equipment_guid = $2::uuid;
         `;
@@ -1793,9 +1793,9 @@ export class ComplaintOutcomeService {
 
         // update the equipment record to set the coordinates
         // using raw query because prisma can't handle the awesomeness
-        await this.prisma.$executeRaw`SET search_path TO public, case_management`;
+        await this.prisma.$executeRaw`SET search_path TO public, complaint_outcome`;
         const geometryUpdateQuery = `
-          UPDATE case_management.equipment
+          UPDATE complaint_outcome.equipment
           SET equipment_geometry_point = public.ST_GeomFromText($1, 4326)
           WHERE equipment_guid = $2::uuid;
         `;
@@ -1993,7 +1993,7 @@ export class ComplaintOutcomeService {
         // Parse the geometry string into a GeoJSON object
 
         // Correctly setting the search path using Prisma
-        await this.prisma.$executeRaw`SET search_path TO public, case_management`;
+        await this.prisma.$executeRaw`SET search_path TO public, complaint_outcome`;
 
         // get the latitude and longitude using a raw query
         const result = await this.prisma.$queryRaw<{ longitude: number; latitude: number }[]>`
@@ -2001,7 +2001,7 @@ export class ComplaintOutcomeService {
               public.st_x(equipment_geometry_point::geometry) AS longitude, 
               public.st_y(equipment_geometry_point::geometry) AS latitude
             FROM 
-              ${Prisma.raw("case_management.equipment")}
+              ${Prisma.raw("complaint_outcome.equipment")}
             WHERE 
               equipment_guid = ${Prisma.raw(`'${equipment.equipment_guid}'::uuid`)}
           `;

@@ -241,7 +241,7 @@ services:
     environment:
       <<: *postgres-vars
       NODE_ENV: development
-      POSTGRESQL_URL: "postgresql://postgres:{POSTGRES_PASSWORD}@cm-database:5432/postgres?schema=case_management"
+      POSTGRESQL_URL: "postgresql://postgres:{POSTGRES_PASSWORD}@cm-database:5432/postgres?schema=public,shared,investgation,inspection,complaint_outcome"
       BACKEND_PORT: "3000"
       KEYCLOCK_CLIENT_ID: compliance-and-enforcement-digital-services-web-4794
       JWKS_URI: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs
