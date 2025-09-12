@@ -1,1 +1,0 @@
-ALTER TABLE shared.park ALTER COLUMN external_id TYPE VARCHAR(32);
