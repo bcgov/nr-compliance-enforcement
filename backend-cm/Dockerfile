@@ -10,6 +10,8 @@ COPY ./prisma ./prisma
 RUN npm ci --ignore-scripts --no-update-notifier
 RUN npm run prisma-generate-cm 
 RUN npm run prisma-generate-shared
+RUN npm run prisma-generate-investigation
+RUN npm run prisma-generate-inspection
 FROM node:20.19.0-bullseye-slim AS build
 
 # Install packages, build and keep only prod packages
