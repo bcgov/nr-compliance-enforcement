@@ -83,7 +83,7 @@ export const InspectionList: FC<Props> = ({ inspections, totalItems = 0, isLoadi
     return (
       <tr>
         <td
-          colSpan={5}
+          colSpan={6}
           className="text-center p-4"
         >
           <div className={`d-flex align-items-center justify-content-center${variant || ""}`}>
