@@ -1,15 +1,27 @@
 import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import { case_activity } from "../../../../prisma/shared/generated/case_activity";
 import { CaseActivityTypeCode } from "../../case_activity_type_code/dto/case_activity_type_code";
+import { Field, InputType } from "@nestjs/graphql";
 
 export class CaseActivity {
   caseActivityGuid: string;
   caseFileGuid: string;
   activityType: CaseActivityTypeCode;
   activityIdentifier: string;
-  caseActivityIdentifier: string;
   effectiveDate: Date;
   expiryDate: Date;
+}
+
+@InputType()
+export class CaseActivityCreateInput {
+  @Field(() => String)
+  caseFileGuid: string;
+
+  @Field(() => String)
+  activityType: string;
+
+  @Field(() => String)
+  activityIdentifier: string;
 }
 
 export const mapPrismaCaseActivityToCaseActivity = (mapper: Mapper) => {
@@ -27,10 +39,6 @@ export const mapPrismaCaseActivityToCaseActivity = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.activityIdentifier,
-      mapFrom((src) => src.activity_identifier_ref),
-    ),
-    forMember(
-      (dest) => dest.caseActivityIdentifier,
       mapFrom((src) => src.activity_identifier_ref),
     ),
     forMember(

@@ -90,10 +90,18 @@ export type BusinessInput = {
 
 export type CaseActivity = {
   __typename?: 'CaseActivity';
+  activityIdentifier?: Maybe<Scalars['String']['output']>;
   activityType?: Maybe<CaseActivityTypeCode>;
-  caseActivityIdentifier?: Maybe<Scalars['String']['output']>;
+  caseActivityGuid?: Maybe<Scalars['String']['output']>;
+  caseFileGuid?: Maybe<Scalars['String']['output']>;
   effectiveDate?: Maybe<Scalars['Date']['output']>;
   expiryDate?: Maybe<Scalars['Date']['output']>;
+};
+
+export type CaseActivityCreateInput = {
+  activityIdentifier?: InputMaybe<Scalars['String']['input']>;
+  activityType: Scalars['String']['input'];
+  caseFileGuid: Scalars['String']['input'];
 };
 
 export type CaseActivityTypeCode = {
@@ -617,8 +625,10 @@ export type KeyValuePairInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addComplaintToCaseFile: CaseFile;
   createAssessment: ComplaintOutcome;
   createAuthorizationOutcome: ComplaintOutcome;
+  createCaseActivity: CaseActivity;
   createCaseFile: CaseFile;
   createDecision: ComplaintOutcome;
   createEquipment: ComplaintOutcome;
@@ -658,6 +668,12 @@ export type Mutation = {
 };
 
 
+export type MutationaddComplaintToCaseFileArgs = {
+  caseIdentifier: Scalars['String']['input'];
+  complaintIdentifier: Scalars['String']['input'];
+};
+
+
 export type MutationcreateAssessmentArgs = {
   input: CreateAssessmentInput;
 };
@@ -665,6 +681,11 @@ export type MutationcreateAssessmentArgs = {
 
 export type MutationcreateAuthorizationOutcomeArgs = {
   input: CreateAuthorizationOutcomeInput;
+};
+
+
+export type MutationcreateCaseActivityArgs = {
+  input: CaseActivityCreateInput;
 };
 
 

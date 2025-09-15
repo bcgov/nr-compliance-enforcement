@@ -76,7 +76,7 @@ const GET_CASE_FILE = gql`
       }
       activities {
         __typename
-        caseActivityIdentifier
+        activityIdentifier
         activityType {
           caseActivityTypeCode
         }

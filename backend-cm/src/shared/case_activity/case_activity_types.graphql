@@ -1,8 +1,16 @@
 scalar Date
 
 type CaseActivity {
+  caseActivityGuid: String
+  caseFileGuid: String
   activityType: CaseActivityTypeCode
-  caseActivityIdentifier: String
+  activityIdentifier: String
   effectiveDate: Date
   expiryDate: Date
+}
+
+input CaseActivityCreateInput {
+  caseFileGuid: String!
+  activityType: String!
+  activityIdentifier: String!
 }
