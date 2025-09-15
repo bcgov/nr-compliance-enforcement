@@ -73,7 +73,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [migrations, backend, frontend, webeoc]
+        package: [backend, frontend, migrations, webeoc, backend-cm, migrations-cm]
     timeout-minutes: 1
     steps:
       - uses: shrink/actions-docker-registry-tag@v4

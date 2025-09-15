@@ -1505,32 +1505,6 @@ VALUES
   ) ON CONFLICT
 DO NOTHING;
 
--- Peace Pilot Users: Fort Nelson --
-INSERT INTO
-  person (
-    person_guid,
-    first_name,
-    middle_name_1,
-    middle_name_2,
-    last_name,
-    create_user_id,
-    create_utc_timestamp,
-    update_user_id,
-    update_utc_timestamp
-  )
-VALUES
-  (
-    '1db006c7-221e-47fa-a795-c5529258d090'::uuid,
-    'Jeff',
-    NULL,
-    NULL,
-    'Clancy',
-    'FLYWAY',
-    '2024-01-22 22:16:16.754',
-    'FLYWAY',
-    '2024-01-22 22:16:16.754'
-  ) ON CONFLICT
-DO NOTHING;
 
 INSERT INTO
   person (
@@ -2204,30 +2178,6 @@ VALUES
 DO NOTHING;
 
 -- Peace Pilot Users: Fort Nelson --
-INSERT INTO
-  officer (
-    officer_guid,
-    user_id,
-    create_user_id,
-    create_utc_timestamp,
-    update_user_id,
-    update_utc_timestamp,
-    person_guid,
-    office_guid
-  )
-VALUES
-  (
-    '33e113c0-a199-4bb4-b6c4-6b3ceb52b04c'::uuid,
-    'JCLANCY',
-    'FLYWAY',
-    '2024-01-22 22:16:16.754',
-    'FLYWAY',
-    '2024-01-22 22:20:48.186',
-    '1db006c7-221e-47fa-a795-c5529258d090'::uuid,
-    'edd4b298-ced7-4b10-9232-87512ec640b3'::uuid
-  ) ON CONFLICT
-DO NOTHING;
-
 INSERT INTO
   officer (
     officer_guid,

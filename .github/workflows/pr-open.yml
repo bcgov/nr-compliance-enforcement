@@ -81,7 +81,7 @@ jobs:
   tests:
     name: Tests
     if: (! github.event.pull_request.draft)
-    needs: [build]
+    needs: [builds]
     uses: ./.github/workflows/.tests.yml
     with:
       target: ${{ github.event.number }}
