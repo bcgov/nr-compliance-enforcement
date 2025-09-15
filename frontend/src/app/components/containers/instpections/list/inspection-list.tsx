@@ -3,18 +3,18 @@ import { Table } from "react-bootstrap";
 import { SortableHeader } from "@components/common/sortable-header";
 import Paginator from "@/app/components/common/paginator";
 import { SORT_TYPES } from "@constants/sort-direction";
-import { InvestigationListItem } from "./investigation-list-item";
-import { useInvestigationSearch } from "../hooks/use-investigation-search";
+import { InspectionListItem } from "./inspection-list-item";
+import { useInspectionSearch } from "../hooks/use-inspection-search";
 
 type Props = {
-  investigations: any[];
+  inspections: any[];
   totalItems?: number;
   isLoading?: boolean;
   error?: Error | null;
 };
 
-export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, isLoading = false, error = null }) => {
-  const { searchValues, setValues, setSort } = useInvestigationSearch();
+export const InspectionList: FC<Props> = ({ inspections, totalItems = 0, isLoading = false, error = null }) => {
+  const { searchValues, setValues, setSort } = useInspectionSearch();
 
   const handleSort = (sortInput: string) => {
     const currentSortBy = searchValues.sortBy;
@@ -44,17 +44,17 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
     />
   );
 
-  const renderInvestigationListHeader = (): JSX.Element => (
+  const renderInspectionListHeader = (): JSX.Element => (
     <thead className="sticky-table-header">
       <tr>
         {renderSortableHeader(
-          "Investigation #",
-          "investigationGuid",
+          "Inspection #",
+          "inspectionGuid",
           "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
         )}
         {renderSortableHeader("Case #", "caseIdentifier", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Date Opened", "openedTimestamp", "comp-cell-width-160 comp-cell-min-width-160")}
-        {renderSortableHeader("Status", "investigationStatus", "comp-cell-width-110")}
+        {renderSortableHeader("Status", "inspectionStatus", "comp-cell-width-110")}
         {renderSortableHeader("Agency", "leadAgency")}
         <th className="unsortable sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col case-table-actions-cell">
           <div className="header-label">Actions</div>
@@ -73,7 +73,7 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
           <div className="spinner-border spinner-border-sm me-2">
             <span className="visually-hidden">Loading...</span>
           </div>
-          <span>Loading investigations...</span>
+          <span>Loading inspections...</span>
         </div>
       </td>
     </tr>
@@ -98,19 +98,19 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
   const renderErrorMessage = () =>
     renderMessage(
       "exclamation-triangle-fill",
-      `Error loading investigations: ${error?.message || "An unexpected error occurred"}`,
+      `Error loading inspections: ${error?.message || "An unexpected error occurred"}`,
       "text-danger",
     );
 
-  const renderInvestigationListItems = () => {
+  const renderInspectionListItems = () => {
     if (isLoading) return renderLoadingSpinner();
     if (!isLoading && error) return renderErrorMessage();
-    if (!isLoading && !error && investigations.length === 0)
-      return renderMessage("info-circle-fill", "No investigations found.");
-    return investigations.map((investigation) => (
-      <InvestigationListItem
-        key={investigation.investigationGuid}
-        data={investigation}
+    if (!isLoading && !error && inspections.length === 0)
+      return renderMessage("info-circle-fill", "No inspections found.");
+    return inspections.map((inspection) => (
+      <InspectionListItem
+        key={inspection.inspectionGuid}
+        data={inspection}
       />
     ));
   };
@@ -120,10 +120,10 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
       <div className="comp-table-scroll-container">
         <Table
           className="comp-table"
-          id="investigation-list"
+          id="inspection-list"
         >
-          {renderInvestigationListHeader()}
-          <tbody>{renderInvestigationListItems()}</tbody>
+          {renderInspectionListHeader()}
+          <tbody>{renderInspectionListItems()}</tbody>
         </Table>
       </div>
 
