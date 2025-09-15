@@ -2015,3 +2015,11 @@ LEFT JOIN gir_complaint gc ON c2.complaint_identifier = gc.complaint_identifier
 WHERE c1.complaint_identifier = c2.complaint_identifier;
 
 UPDATE complaint SET complaint_type_code = 'HWCR' WHERE complaint_identifier = '23-007000';
+
+---------------------
+-- Enable parties of interest in dev/test
+---------------------
+
+UPDATE feature_agency_xref
+SET active_ind = 'Y'
+WHERE feature_code = 'PARTY';

@@ -103,3 +103,13 @@ export const fetchEmailReference = (): AppThunk => async (dispatch) => {
     dispatch(setCodeTable(payload));
   }
 };
+
+export const fetchPartyTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.PARTY_TYPE}`);
+
+  const response = await get<Array<EmailReference>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.PARTY_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};

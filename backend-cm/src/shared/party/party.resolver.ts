@@ -1,11 +1,11 @@
 import { Logger, UseGuards } from "@nestjs/common";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
-import { Args, Query, Resolver, Mutation } from "@nestjs/graphql";
+import { Args, Query, Resolver, Mutation, Int } from "@nestjs/graphql";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { coreRoles } from "../../enum/role.enum";
 import { GraphQLError } from "graphql";
 import { PartyService } from "./party.service";
-import { PartyCreateInput, PartyUpdateInput } from "./dto/party";
+import { PartyCreateInput, PartyFilters, PartyUpdateInput } from "./dto/party";
 
 @UseGuards(JwtRoleGuard)
 @Resolver("Party")
@@ -21,6 +21,40 @@ export class PartyResolver {
     } catch (error) {
       this.logger.error(error);
       throw new GraphQLError("Error fetching data from Shared schema", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
+  }
+
+  @Query("parties")
+  @Roles(coreRoles)
+  async findMany(@Args("partyIdentifiers", { type: () => [String] }) ids: string[]) {
+    try {
+      return await this.partyService.findMany(ids);
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error fetching parties by IDs from Shared schema", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
+  }
+
+  @Query("searchParties")
+  @Roles(coreRoles)
+  async search(
+    @Args("page", { type: () => Int, nullable: true, defaultValue: 1 }) page: number,
+    @Args("pageSize", { type: () => Int, nullable: true, defaultValue: 25 }) pageSize: number,
+    @Args("filters", { nullable: true }) filters?: PartyFilters,
+  ) {
+    try {
+      return await this.partyService.search(page, pageSize, filters);
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error searching paginated data from Shared schema", {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
         },

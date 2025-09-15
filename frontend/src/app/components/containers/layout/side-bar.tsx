@@ -56,6 +56,13 @@ export const SideBar: FC = () => {
       route: "/admin/user",
       requiredRoles: [Roles.TEMPORARY_TEST_ADMIN],
     },
+    {
+      id: "parties-link",
+      name: "Parties of interest",
+      icon: "bi bi-file-earmark-image",
+      route: "/parties",
+      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.PARTIES_OF_INTEREST)),
+    },
   ];
 
   const bottomMenuItem: MenuItem = {
