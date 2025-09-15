@@ -3632,12 +3632,7 @@ export class ComplaintOutcomeService {
           await this._updateAuthorizationOutcome(db, current.id, type, value, updateUserId, timestamp);
         } else {
           await this._removeAuthorizationOutcome(db, current.id, current.type, updateUserId, timestamp);
-
-          if (current.type === "permit") {
-            await this._addAuthorizationOutcome(db, complaintOutcomeGuid, type, value, updateUserId);
-          } else {
-            await this._addAuthorizationOutcome(db, complaintOutcomeGuid, type, value, updateUserId);
-          }
+          await this._addAuthorizationOutcome(db, complaintOutcomeGuid, type, value, updateUserId);
         }
       });
 
