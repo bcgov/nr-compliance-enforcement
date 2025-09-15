@@ -32,15 +32,6 @@ export const PartyListItem: FC<Props> = ({ party }) => {
     );
   };
 
-  const displayName = () => {
-    let result = "";
-    if (party?.person) result = `${party.person?.lastName}, ${party.person?.firstName}`;
-    else if (party?.business) {
-      result = `${party.business?.name}`;
-    }
-    return result;
-  };
-
   return (
     <tr key={party.partyIdentifier}>
       <td className="comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center">
