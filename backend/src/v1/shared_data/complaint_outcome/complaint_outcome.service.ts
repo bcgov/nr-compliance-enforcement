@@ -106,6 +106,7 @@ export class ComplaintOutcomeService {
           where: {
             linked_complaint_identifier: { complaint_identifier: complaintBeingLinkedId },
             active_ind: true,
+            link_type: "DUPLICATE",
           },
         });
 
@@ -128,15 +129,18 @@ export class ComplaintOutcomeService {
             .andWhere({
               active_ind: true,
             })
+            .andWhere({
+              link_type: "DUPLICATE",
+            })
             .returning("*")
             .execute();
 
           if (trailingComplaints.affected > 0) {
             trailingComplaints.raw.forEach(async (row) => {
               const linkString = this._linkedComplaintXrefRepository.create(<CreateLinkedComplaintXrefDto>{
-                // ...row,
                 complaint_identifier: { complaint_identifier: linkingToComplaintId },
                 linked_complaint_identifier: row.linked_complaint_identifier,
+                link_type: "DUPLICATE",
                 active_ind: true,
                 create_user_id: idir,
                 create_utc_timestamp: dateLinkCreated,
@@ -151,6 +155,7 @@ export class ComplaintOutcomeService {
             where: {
               linked_complaint_identifier: { complaint_identifier: linkingToComplaintId },
               active_ind: true,
+              link_type: "DUPLICATE",
             },
           });
 
@@ -167,6 +172,7 @@ export class ComplaintOutcomeService {
               complaint_identifier: linkingToComplaintId,
             },
             linked_complaint_identifier: <Complaint>{ complaint_identifier: complaintBeingLinkedId },
+            link_type: "DUPLICATE",
             active_ind: true,
             create_user_id: idir,
             create_utc_timestamp: dateLinkCreated,
