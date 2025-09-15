@@ -226,20 +226,24 @@ export class PartyService {
       const validSortOrder = filters.sortOrder.toLowerCase() === "asc" ? "asc" : "desc";
 
       switch (filters?.sortBy) {
-        case "firstName":
+        case "firstName": {
           orderBy = { person: { first_name: validSortOrder } };
           break;
-        case "lastName":
+        }
+        case "lastName": {
           orderBy = { person: { last_name: validSortOrder } };
           break;
-        case "name":
+        }
+        case "name": {
           orderBy = { business: { name: validSortOrder } };
           break;
-        default:
+        }
+        default: {
           const dbField = sortFieldMap[filters.sortBy];
           if (dbField) {
             orderBy = { [dbField]: validSortOrder };
           }
+        }
       }
     }
 
