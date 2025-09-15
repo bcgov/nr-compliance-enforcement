@@ -59,32 +59,42 @@ import { DeletePreventionInput } from "@/app/types/app/complaint-outcomes/preven
 export const findCase =
   (complaintIdentifier?: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch) => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/${complaintIdentifier}`);
-    const response = await get<ComplaintOutcomeDto>(dispatch, parameters);
-    return response?.complaintOutcomeGuid;
+    try {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/${complaintIdentifier}`);
+      const response = await get<ComplaintOutcomeDto>(dispatch, parameters);
+      return response?.complaintOutcomeGuid;
+    } catch (error) {
+      console.warn("Unauthorized resource request", error);
+      window.location.href = "/not-authorized";
+    }
   };
 
 export const getCaseFile =
   (complaintIdentifier?: string): AppThunk =>
   async (dispatch, getState) => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/${complaintIdentifier}`);
-    const response = await get<ComplaintOutcomeDto>(dispatch, parameters);
-    dispatch(setCaseFile(response));
-    // If there is a case file parse and set the assessment details which is not handled by setCaseFile
-    if (response) {
-      const {
-        officers: { officers },
-      } = getState();
-      const assessments = await parseAssessmentResponse(response, officers);
-      dispatch(setAssessments(assessments));
-      const updatedPreventionData = await parsePreventionResponse(response, officers);
-      dispatch(setPreventions(updatedPreventionData));
-      dispatch(setIsReviewedRequired(response.isReviewRequired));
-      dispatch(setReviewComplete(response.reviewComplete));
-    } else {
-      // If there is no case file clear the assessment and prevention sections
-      dispatch(setAssessments([]));
-      dispatch(setPreventions([]));
+    try {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-outcome/${complaintIdentifier}`);
+      const response = await get<ComplaintOutcomeDto>(dispatch, parameters);
+      dispatch(setCaseFile(response));
+      // If there is a case file parse and set the assessment details which is not handled by setCaseFile
+      if (response) {
+        const {
+          officers: { officers },
+        } = getState();
+        const assessments = await parseAssessmentResponse(response, officers);
+        dispatch(setAssessments(assessments));
+        const updatedPreventionData = await parsePreventionResponse(response, officers);
+        dispatch(setPreventions(updatedPreventionData));
+        dispatch(setIsReviewedRequired(response.isReviewRequired));
+        dispatch(setReviewComplete(response.reviewComplete));
+      } else {
+        // If there is no case file clear the assessment and prevention sections
+        dispatch(setAssessments([]));
+        dispatch(setPreventions([]));
+      }
+    } catch (error) {
+      console.warn("Unauthorized resource request", error);
+      window.location.href = "/not-authorized";
     }
   };
 
