@@ -21,12 +21,7 @@ export const PartyHeader: FC<PartyHeaderProps> = ({ partyData }) => {
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item comp-nav-item-name-inverted">
-                <Link
-                  to=""
-                  onClick={() => window.alert("Navigating to the list of parties")}
-                >
-                  Parties of Interest
-                </Link>
+                <Link to="/parties">Parties of Interest</Link>
               </li>
               <li
                 className="breadcrumb-item"

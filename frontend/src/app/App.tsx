@@ -42,6 +42,7 @@ import Inspections from "@/app/components/containers/instpections/inspections";
 
 import PartyEdit from "./components/containers/parties/edit/party-edit";
 import InspectionEdit from "@/app/components/containers/instpections/edit/inspection-edit";
+import Parties from "@/app/components/containers/parties/parties";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -106,6 +107,10 @@ const App: FC = () => {
                 <Route
                   path="/compliments"
                   element={<Compliments />}
+                />
+                <Route
+                  path="/parties"
+                  element={<Parties />}
                 />
                 <Route
                   path="/party/:id"
