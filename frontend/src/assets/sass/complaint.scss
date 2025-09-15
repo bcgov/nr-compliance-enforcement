@@ -50,6 +50,20 @@
   .btn {
     font-size: 0.875rem;
   }
+
+  .title-text-container {
+    display: flex;
+    align-items: center;
+    .permission-info {
+      font-size: 14px;
+      margin-left: 15px;
+      margin-bottom: 0;
+      i {
+        margin-right: 4px;
+        color: $bc-gov-primary-400;
+      }
+    }
+  }
 }
 
 // FILTER COMPONENT
