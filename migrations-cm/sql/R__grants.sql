@@ -15,6 +15,14 @@ GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA case_management TO case_managemen
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA shared TO proxy_js_shared;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA shared TO proxy_js_shared;
 
+-- Grant privileges to investigation schema objects
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA investigation TO investigation;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA investigation TO investigation;
+
+-- Grant privileges to inspection schema objects
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA inspection TO inspection;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA inspection TO inspection;
+
 -- Grant future privileges to case management objects
 ALTER DEFAULT PRIVILEGES IN SCHEMA case_management GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO case_management;
 ALTER DEFAULT PRIVILEGES IN SCHEMA case_management GRANT USAGE, SELECT ON SEQUENCES TO case_management;
@@ -22,3 +30,11 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA case_management GRANT USAGE, SELECT ON SEQUEN
 -- Grant future privileges to shared schema objects
 ALTER DEFAULT PRIVILEGES IN SCHEMA shared GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO proxy_js_shared;
 ALTER DEFAULT PRIVILEGES IN SCHEMA shared GRANT USAGE, SELECT ON SEQUENCES TO proxy_js_shared;
+
+-- Grant future privileges to investigation schema objects
+ALTER DEFAULT PRIVILEGES IN SCHEMA investigation GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO investigation;
+ALTER DEFAULT PRIVILEGES IN SCHEMA investigation GRANT USAGE, SELECT ON SEQUENCES TO investigation;
+
+-- Grant future privileges to inspection schema objects
+ALTER DEFAULT PRIVILEGES IN SCHEMA inspection GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO inspection;
+ALTER DEFAULT PRIVILEGES IN SCHEMA inspection GRANT USAGE, SELECT ON SEQUENCES TO inspection;

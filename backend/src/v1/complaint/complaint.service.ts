@@ -1014,6 +1014,43 @@ export class ComplaintService {
     }
   };
 
+  canViewComplaint = async (id: string, req?: any): Promise<boolean> => {
+    let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
+
+    try {
+      builder = this.complaintsRepository
+        .createQueryBuilder("complaint")
+        .leftJoin("complaint.complaint_type_code", "complaint_type")
+        .addSelect([
+          "complaint_type.complaint_type_code",
+          "complaint_type.short_description",
+          "complaint_type.long_description",
+        ]);
+
+      builder.where("complaint.complaint_identifier = :id", { id });
+
+      const res = await builder.getOne();
+      const { owned_by_agency_code_ref, complaint_type_code } = res;
+
+      if (complaint_type_code.complaint_type_code === "ERS") {
+        const hasCOSRole = hasRole(req, Role.COS);
+        const collaborators = await this._personService.getCollaborators(id);
+        const isCollab = collaborators.some(
+          (collab: any) => collab.authUserGuid.split("-").join("") === req.user.idir_user_guid.toLowerCase(),
+        );
+        const isCOSComplaint = owned_by_agency_code_ref === "COS";
+        if (isCOSComplaint) {
+          if (!hasCOSRole && !isCollab) {
+            return false;
+          }
+        }
+      }
+      return true;
+    } catch (e) {
+      this.logger.error(e);
+    }
+  };
+
   findById = async (
     id: string,
     complaintType?: COMPLAINT_TYPE,
@@ -1064,17 +1101,9 @@ export class ComplaintService {
       switch (complaintType) {
         case "ERS": {
           if (req) {
-            const hasCOSRole = hasRole(req, Role.COS);
-            const collaborators = await this._personService.getCollaborators(id);
-            const isCollab = collaborators.some(
-              (collab: any) => collab.authUserGuid.split("-").join("") === req.user.idir_user_guid.toLowerCase(),
-            );
-            const isCOSComplaint =
-              (result as AllegationComplaint).complaint_identifier.owned_by_agency_code_ref === "COS";
-            if (isCOSComplaint) {
-              if (!hasCOSRole && !isCollab) {
-                throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
-              }
+            const canViewComplaint = await this.canViewComplaint(id, req);
+            if (!canViewComplaint) {
+              throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
             }
           }
           return this.mapper.map<AllegationComplaint, AllegationComplaintDto>(

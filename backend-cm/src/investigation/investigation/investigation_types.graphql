@@ -1,0 +1,45 @@
+type Investigation {
+  investigationGuid: String
+  description: String
+  leadAgency: String
+  investigationStatus: InvestigationStatusCode
+  openedTimestamp: Date
+  caseIdentifier: String
+}
+
+input CreateInvestigationInput {
+  caseIdentifier: String!
+  leadAgency: String!
+  description: String
+  investigationStatus: String
+}
+
+input UpdateInvestigationInput {
+  leadAgency: String
+  description: String
+  investigationStatus: String
+}
+
+input InvestigationFilters {
+  search: String
+  leadAgency: String
+  investigationStatus: String
+  startDate: Date
+  endDate: Date
+  sortBy: String
+  sortOrder: String
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  totalCount: Int!
+  totalPages: Int!
+  currentPage: Int!
+  pageSize: Int!
+}
+
+type InvestigationResult {
+  items: [Investigation!]!
+  pageInfo: PageInfo!
+}

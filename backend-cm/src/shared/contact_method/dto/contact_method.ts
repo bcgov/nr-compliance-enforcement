@@ -15,23 +15,15 @@ export const mapPrismaContactMethodToContactMethod = (mapper: Mapper) => {
     "ContactMethod",
     forMember(
       (dest) => dest.typeCode,
-      mapFrom((src) => src.contact_method_type_code),
+      mapFrom((src) => src.contact_method_type),
     ),
     forMember(
       (dest) => dest.typeShortDescription,
-      mapFrom(
-        (src) =>
-          src.contact_method_type_code_contact_method_contact_method_type_codeTocontact_method_type_code
-            ?.short_description,
-      ),
+      mapFrom((src) => src.contact_method_type_code?.short_description),
     ),
     forMember(
       (dest) => dest.typeDescription,
-      mapFrom(
-        (src) =>
-          src.contact_method_type_code_contact_method_contact_method_type_codeTocontact_method_type_code
-            ?.long_description,
-      ),
+      mapFrom((src) => src.contact_method_type_code?.long_description),
     ),
     forMember(
       (dest) => dest.value,

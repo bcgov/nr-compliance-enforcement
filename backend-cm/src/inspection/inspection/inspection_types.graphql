@@ -1,0 +1,45 @@
+type Inspection {
+  inspectionGuid: String
+  description: String
+  leadAgency: String
+  inspectionStatus: InspectionStatusCode
+  openedTimestamp: Date
+  caseIdentifier: String
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  totalCount: Int!
+  totalPages: Int!
+  currentPage: Int!
+  pageSize: Int!
+}
+
+type InspectionResult {
+  items: [Inspection!]!
+  pageInfo: PageInfo!
+}
+
+input InspectionFilters {
+  search: String
+  leadAgency: String
+  inspectionStatus: String
+  startDate: Date
+  endDate: Date
+  sortBy: String
+  sortOrder: String
+}
+
+input CreateInspectionInput {
+  caseIdentifier: String!
+  leadAgency: String!
+  description: String
+  inspectionStatus: String
+}
+
+input UpdateInspectionInput {
+  leadAgency: String
+  description: String
+  inspectionStatus: String
+}
