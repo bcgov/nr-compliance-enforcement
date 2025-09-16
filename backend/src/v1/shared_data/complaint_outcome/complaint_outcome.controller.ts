@@ -11,6 +11,7 @@ import {
   Logger,
   HttpException,
   HttpStatus,
+  Request,
 } from "@nestjs/common";
 import { ComplaintOutcomeService } from "./complaint_outcome.service";
 import { Role, coreRoles } from "../../../enum/role.enum";
@@ -131,8 +132,8 @@ export class ComplaintOutcomeController {
 
   @Get("/:complaint_id")
   @Roles(coreRoles)
-  find(@Param("complaint_id") complaint_id: string, @Token() token) {
-    return this.service.find(complaint_id, token);
+  find(@Param("complaint_id") complaint_id: string, @Token() token, @Request() req) {
+    return this.service.find(complaint_id, token, req);
   }
 
   @Post("/note")
@@ -201,8 +202,12 @@ export class ComplaintOutcomeController {
 
   @Post("/decision")
   @Roles(Role.CEEB)
-  async createDecision(@Token() token, @Body() model: CreateDecisionInput): Promise<ComplaintOutcomeDto> {
-    const result = await this.service.createDecision(token, model);
+  async createDecision(
+    @Token() token,
+    @Body() model: CreateDecisionInput,
+    @Request() req,
+  ): Promise<ComplaintOutcomeDto> {
+    const result = await this.service.createDecision(token, model, req);
     if (result === ComplaintOutcomeError.DECISION_ACTION_EXIST) {
       throw new HttpException("Decision Action Exist", HttpStatus.CONFLICT);
     } else {
