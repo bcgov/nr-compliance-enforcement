@@ -1,4 +1,6 @@
 export interface ComplaintFilterParameters {
+  agency?: string;
+  complaintTypeFilter?: string;
   community?: string;
   zone?: string;
   region?: string;

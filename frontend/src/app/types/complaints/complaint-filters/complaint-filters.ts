@@ -4,9 +4,12 @@ import Option from "@apptypes/app/option";
 export type ComplaintFilters = {
   [key: string]: any;
 
+  agency: DropdownOption | null;
+  complaintType: DropdownOption | null;
   region: DropdownOption | null;
   zone: DropdownOption | null;
   community: DropdownOption | null;
+  park: DropdownOption | null;
   area: DropdownOption | null;
   officer: DropdownOption | null;
 

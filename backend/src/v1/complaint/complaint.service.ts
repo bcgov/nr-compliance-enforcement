@@ -194,6 +194,7 @@ export class ComplaintService {
     type: COMPLAINT_TYPE,
     includeCosOrganization: boolean,
     count: boolean,
+    excludeCOSEnforcement?: boolean,
   ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
     let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
 
@@ -221,7 +222,14 @@ export class ComplaintService {
         break;
       case "SECTOR":
       default:
-        builder = this.complaintsRepository.createQueryBuilder("complaint");
+        if (excludeCOSEnforcement) {
+          builder = this.complaintsRepository
+            .createQueryBuilder("complaint")
+            .andWhere(
+              "NOT (complaint.owned_by_agency_code_ref = :agency AND complaint.complaint_type_code = :complaintType)",
+              { agency: "COS", complaintType: "ERS" },
+            );
+        } else builder = this.complaintsRepository.createQueryBuilder("complaint");
         break;
     }
 
@@ -255,6 +263,7 @@ export class ComplaintService {
 
   private readonly _generateQueryBuilder = (
     type: COMPLAINT_TYPE,
+    excludeCOSEnforcement?: boolean,
   ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
     let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
     switch (type) {
@@ -309,7 +318,14 @@ export class ComplaintService {
         break;
       case "SECTOR":
       default:
-        builder = this.complaintsRepository.createQueryBuilder("complaint");
+        if (excludeCOSEnforcement) {
+          builder = this.complaintsRepository
+            .createQueryBuilder("complaint")
+            .andWhere(
+              "NOT (complaint.owned_by_agency_code_ref = :agency AND complaint.complaint_type_code = :complaintType)",
+              { agency: "COS", complaintType: "ERS" },
+            );
+        } else builder = this.complaintsRepository.createQueryBuilder("complaint");
         break;
     }
 
@@ -347,6 +363,8 @@ export class ComplaintService {
   private _applyFilters(
     builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     {
+      agency,
+      complaintTypeFilter,
       community,
       zone,
       region,
@@ -363,6 +381,18 @@ export class ComplaintService {
     }: ComplaintFilterParameters,
     complaintType: COMPLAINT_TYPE,
   ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> {
+    if (agency) {
+      builder.andWhere("complaint.owned_by_agency_code_ref = :Agency", {
+        Agency: agency,
+      });
+    }
+
+    if (complaintTypeFilter) {
+      builder.andWhere("complaint_type.complaint_type_code = :ComplaintTypeFilter", {
+        ComplaintTypeFilter: complaintTypeFilter,
+      });
+    }
+
     if (community) {
       builder.andWhere("cos_organization.area_code = :Community", {
         Community: community,
@@ -1201,11 +1231,20 @@ export class ComplaintService {
         sortBy !== "update_utc_timestamp" ? `${sortTable}.${sortBy}` : "complaint.comp_last_upd_utc_timestamp";
 
       //-- generate initial query
-      let builder = this._generateQueryBuilder(complaintType);
+      // For SECTOR with compaint type based filters, use the filtered complaint type to generate the query builder
+      let filterComplaintType: COMPLAINT_TYPE =
+        complaintType === "SECTOR" && filters.complaintTypeFilter
+          ? (filters.complaintTypeFilter as COMPLAINT_TYPE)
+          : complaintType;
+
+      //-- exclude COS's enforcement complaints in Sector view if the user does not have COS role
+      const excludeCosEnforcement: boolean = !agencies.includes(Role.COS);
+
+      let builder = this._generateQueryBuilder(filterComplaintType, excludeCosEnforcement);
 
       //-- apply filters if used
       if (Object.keys(filters).length !== 0) {
-        builder = this._applyFilters(builder, filters as ComplaintFilterParameters, complaintType);
+        builder = this._applyFilters(builder, filters as ComplaintFilterParameters, filterComplaintType);
       }
       builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
@@ -1257,7 +1296,7 @@ export class ComplaintService {
 
       //-- apply search
       if (query) {
-        builder = await this._applySearch(builder, complaintType, query, token);
+        builder = await this._applySearch(builder, filterComplaintType, query, token);
       }
 
       //-- apply sort if provided
@@ -1331,8 +1370,29 @@ export class ComplaintService {
         }
         case "SECTOR":
         default: {
+          let baseComplaints: Array<Complaint>;
+
+          if (filterComplaintType === "SECTOR") {
+            baseComplaints = complaints as Array<Complaint>;
+          } else {
+            // Extract base complaint from specialized entities
+            switch (filterComplaintType) {
+              case "HWCR":
+                baseComplaints = (complaints as Array<HwcrComplaint>).map((hwcr) => hwcr.complaint_identifier);
+                break;
+              case "ERS":
+                baseComplaints = (complaints as Array<AllegationComplaint>).map((ers) => ers.complaint_identifier);
+                break;
+              case "GIR":
+                baseComplaints = (complaints as Array<GirComplaint>).map((gir) => gir.complaint_identifier);
+                break;
+              default:
+                baseComplaints = complaints as Array<Complaint>;
+            }
+          }
+
           const items = this.mapper.mapArray<Complaint, SectorComplaintDto>(
-            complaints as Array<Complaint>,
+            baseComplaints,
             "Complaint",
             "SectorComplaintDto",
           );
@@ -1430,16 +1490,30 @@ export class ComplaintService {
       //-- search for complaints
       // Only these options require the cos_geo_org_unit_flat_mvw view (cos_organization), which is very slow.
       const includeCosOrganization: boolean = Boolean(query || filters.community || filters.zone || filters.region);
-      let builder = this._generateMapQueryBuilder(complaintType, includeCosOrganization, count);
+
+      // For SECTOR with compaint type based filters, use the filtered complaint type to generate the query builder
+      const filterComplaintType: COMPLAINT_TYPE = filters.complaintTypeFilter
+        ? (filters.complaintTypeFilter as COMPLAINT_TYPE)
+        : complaintType;
+
+      const excludeCosEnforcement: boolean = !agencies.includes(Role.COS);
+      let builder = this._generateMapQueryBuilder(
+        filterComplaintType,
+        includeCosOrganization,
+        count,
+        excludeCosEnforcement,
+      );
+
+      //HERE 1
 
       //-- apply filters if used
       if (Object.keys(filters).length !== 0) {
-        builder = this._applyFilters(builder, filters as ComplaintFilterParameters, complaintType);
+        builder = this._applyFilters(builder, filters as ComplaintFilterParameters, filterComplaintType);
       }
 
       //-- apply search
       if (query) {
-        builder = await this._applySearch(builder, complaintType, query, token);
+        builder = await this._applySearch(builder, filterComplaintType, query, token);
       }
       builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
@@ -2253,7 +2327,8 @@ export class ComplaintService {
       }
     };
 
-    const _applyAssessmentData = async (assessment, assessmentActions) => {
+    const _applyAssessmentData = async (assessment, assessmentActions, index) => {
+      assessment.order = index + 1;
       //-- Convert booleans to Yes/No
 
       //Note this one is backwards since the variable is action NOT required but the report is action required
@@ -2565,7 +2640,7 @@ export class ComplaintService {
       //-- Add UA to unpermitted sites
       if (
         outcomeData.getComplaintOutcomeByComplaintId.authorization &&
-        outcomeData.getComplaintOutcomeByLeadId.authorization.type !== "permit"
+        outcomeData.getComplaintOutcomeByComplaintId.authorization.type !== "permit"
       ) {
         outcomeData.getComplaintOutcomeByComplaintId.authorization.value =
           "UA" + outcomeData.getComplaintOutcomeByComplaintId.authorization.value;
@@ -2580,13 +2655,13 @@ export class ComplaintService {
 
       if (outcomeData.getComplaintOutcomeByComplaintId?.assessment?.length > 0) {
         hasOutcome = true;
-        await outcomeData.getComplaintOutcomeByComplaintId.assessment.forEach(async (assessment) => {
+        await outcomeData.getComplaintOutcomeByComplaintId.assessment.forEach(async (assessment, index) => {
           const assessmentActions = [
             ...(Array.isArray(assessment?.actions) ? assessment.actions : []),
             ...(Array.isArray(assessment?.cat1Actions) ? assessment.cat1Actions : []),
           ];
 
-          await _applyAssessmentData(assessment, assessmentActions);
+          await _applyAssessmentData(assessment, assessmentActions, index);
         });
       }
 
