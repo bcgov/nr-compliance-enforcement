@@ -9,6 +9,8 @@ export interface ComplaintFilters {
   parkFilter?: Option;
   areaFilter?: Option;
   officerFilter?: Option;
+  agency?: Option;
+  complaintType?: Option;
   natureOfComplaintFilter?: Option;
   speciesCodeFilter?: Option;
   violationFilter?: Option;

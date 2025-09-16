@@ -10,6 +10,7 @@ import { useAppDispatch } from "@hooks/hooks";
 import { generateComplaintRequestPayload } from "./complaint-list";
 import { getComplaints } from "@store/reducers/complaints";
 import { SORT_TYPES } from "@constants/sort-direction";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 
 type Props = {
   toggleViewType: (view: "map" | "list") => void;
@@ -75,6 +76,8 @@ export const ComplaintFilterBar: FC<Props> = ({
     outcomeActionedBy,
     equipmentStatus,
     equipmentTypes,
+    agency,
+    complaintType: complaintTypeFilter,
   } = filters;
 
   const dateRangeLabel = (startDate: Date | undefined | null, endDate: Date | undefined | null): string | undefined => {
@@ -125,6 +128,14 @@ export const ComplaintFilterBar: FC<Props> = ({
         case "outcomeAnimal":
           dispatch(clearFilter("outcomeAnimal"));
           dispatch(clearFilter("outcomeActionedBy"));
+          break;
+        case "complaintType":
+          dispatch(clearFilter("complaintType"));
+          // Clear type-specific filters when complaint type is removed
+          dispatch(clearFilter("natureOfComplaint"));
+          dispatch(clearFilter("species"));
+          dispatch(clearFilter("violationType"));
+          dispatch(clearFilter("girType"));
           break;
         default:
           dispatch(clearFilter(name));
@@ -204,6 +215,24 @@ export const ComplaintFilterBar: FC<Props> = ({
             id="comp-officer-filter"
             label={officer?.label}
             name="officer"
+            clear={removeFilter}
+          />
+        )}
+
+        {complaintType === COMPLAINT_TYPES.SECTOR && hasFilter("agency") && (
+          <FilterButton
+            id="comp-agency-filter"
+            label={agency?.label}
+            name="agency"
+            clear={removeFilter}
+          />
+        )}
+
+        {complaintType === COMPLAINT_TYPES.SECTOR && hasFilter("complaintType") && (
+          <FilterButton
+            id="comp-complaint-type-filter"
+            label={complaintTypeFilter?.label}
+            name="complaintType"
             clear={removeFilter}
           />
         )}
