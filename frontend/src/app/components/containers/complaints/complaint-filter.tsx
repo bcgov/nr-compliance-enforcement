@@ -6,6 +6,7 @@ import {
   selectHwcrNatureOfComplaintCodeDropdown,
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
+  selectAllViolationCodeDropdown,
   selectCascadedRegion,
   selectCascadedZone,
   selectCascadedCommunity,
@@ -15,7 +16,7 @@ import {
   selectAllWildlifeComplaintOutcome,
   selectAllEquipmentDropdown,
   selectOutcomeActionedByOptions,
-  selectAgencyDropdown,
+  selectAgencyExternalDropdown,
   selectCreatableComplaintTypeDropdown,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
@@ -81,7 +82,11 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     { value: "REFERRED", label: "Referred" },
   ];
 
-  const violationTypes = useAppSelector(selectViolationCodeDropdown(agency?.value || userAgency));
+  const violationTypes = useAppSelector(
+    type === COMPLAINT_TYPES.SECTOR
+      ? selectAllViolationCodeDropdown
+      : selectViolationCodeDropdown(agency?.value || userAgency),
+  );
   const girTypes = useAppSelector(selectGirTypeCodeDropdown);
   const outcomeAnimalTypes = useAppSelector(selectAllWildlifeComplaintOutcome); //want to see inactive items in the filter
   const equipmentStatusTypes = useAppSelector(selectEquipmentStatusDropdown);
@@ -95,10 +100,28 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const complaintMethods = useAppSelector(selectComplaintReceivedMethodDropdown);
   const decisionTypeDropdown = useAppSelector(selectDecisionTypeDropdown);
 
-  const activeFilters = useAppSelector(listActiveFilters());
+  const baseActiveFilters = useAppSelector(listActiveFilters());
   const parkAreasList = useAppSelector(selectParkAreasDropdown);
-  const agencyDropdown = useAppSelector(selectAgencyDropdown);
+  const agencyDropdown = useAppSelector(selectAgencyExternalDropdown);
   const complaintTypeDropdown = useAppSelector(selectCreatableComplaintTypeDropdown);
+
+  // Override activeFilters for sector view
+  const activeFilters =
+    type === COMPLAINT_TYPES.SECTOR
+      ? {
+          ...baseActiveFilters,
+          showRegionFilter: false,
+          showZoneFilter: false,
+          showOfficerFilter: false,
+          showNatureComplaintFilter: true,
+          showSpeciesFilter: true,
+          showViolationFilter: true,
+          showGirTypeFilter: true,
+          showOutcomeAnimalFilter: true,
+          showOutcomeActionedByFilter: true,
+          showOutcomeAnimalDateFilter: true,
+        }
+      : baseActiveFilters;
 
   const setFilter = useCallback(
     (name: string, value?: Option | Date | null) => {
@@ -464,7 +487,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         {/* props */}
         <div className="comp-filter-container">
           {/* <!-- tombstone --> */}
-          {activeFilters.showRegionFilter && type !== COMPLAINT_TYPES.SECTOR && (
+          {activeFilters.showRegionFilter && (
             <div id="comp-filter-region-id">
               {/* <!-- region --> */}
               <label htmlFor="region-select-filter-id">Region</label>
@@ -488,7 +511,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               </div>
             </div>
           )}
-          {activeFilters.showZoneFilter && type !== COMPLAINT_TYPES.SECTOR && (
+          {activeFilters.showZoneFilter && (
             <div id="comp-filter-zone-id">
               <label htmlFor="zone-select-id">Zone</label>
               <div className="filter-select-padding">
