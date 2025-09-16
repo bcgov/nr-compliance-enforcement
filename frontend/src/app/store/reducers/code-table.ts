@@ -44,6 +44,7 @@ import {
   fetchEquipmentStatus,
   fetchParkAreas,
   fetchEmailReference,
+  fetchPartyTypes,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -94,6 +95,7 @@ const initialState: CodeTableState = {
   "equipment-status": [],
   "park-area": [],
   "email-reference": [],
+  "party-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -162,6 +164,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "equipment-status": equipmentStatus,
       "park-area": parkArea,
       "email-reference": emailReference,
+      "party-type": partyType,
     },
   } = state;
 
@@ -302,6 +305,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(emailReference).any()) {
       dispatch(fetchEmailReference());
     }
+    if (!from(partyType).any()) {
+      dispatch(fetchPartyTypes());
+    }
   } catch (error) {}
 };
 
@@ -356,6 +362,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchIPMAuthCategories());
     dispatch(fetchEquipmentStatus());
     dispatch(fetchParkAreas());
+    dispatch(fetchPartyTypes());
   } catch (error) {
     console.error(error);
   }

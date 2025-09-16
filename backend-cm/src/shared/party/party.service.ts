@@ -3,8 +3,10 @@ import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { party } from "../../../prisma/shared/generated/party";
-import { Party, PartyCreateInput, PartyUpdateInput } from "./dto/party";
+import { Party, PartyCreateInput, PartyFilters, PartyResult, PartyUpdateInput } from "./dto/party";
+import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
+import { PageInfo } from "../case_file/dto/case_file";
 
 @Injectable()
 export class PartyService {
@@ -12,6 +14,7 @@ export class PartyService {
     private readonly user: UserService,
     private readonly prisma: SharedPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
+    private readonly paginationUtility: PaginationUtility,
   ) {}
 
   private readonly logger = new Logger(PartyService.name);
@@ -52,6 +55,51 @@ export class PartyService {
       return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
     } catch (error) {
       this.logger.error("Error mapping party of interest", error);
+    }
+  }
+
+  async findMany(ids: string[]): Promise<Party[]> {
+    if (!ids || ids.length === 0) {
+      return [];
+    }
+    const prismaParties = await this.prisma.party.findMany({
+      where: {
+        party_guid: {
+          in: ids,
+        },
+      },
+      select: {
+        party_guid: true,
+        party_type: true,
+        create_utc_timestamp: true,
+        person: {
+          select: {
+            person_guid: true,
+            first_name: true,
+            last_name: true,
+          },
+        },
+        business: {
+          select: {
+            business_guid: true,
+            name: true,
+          },
+        },
+        party_type_code: {
+          select: {
+            party_type_code: true,
+            short_description: true,
+            long_description: true,
+          },
+        },
+      },
+    });
+
+    try {
+      return this.mapper.mapArray<party, Party>(prismaParties as Array<party>, "party", "Party");
+    } catch (error) {
+      this.logger.error("Error fetching parties by IDs:", error);
+      throw error;
     }
   }
 
@@ -145,5 +193,99 @@ export class PartyService {
       this.logger.error("Error updating party:", error);
       throw error;
     }
+  }
+
+  async search(page: number = 1, pageSize: number = 25, filters?: PartyFilters): Promise<PartyResult> {
+    const where: any = {};
+
+    if (filters?.search) {
+      if (/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(filters.search)) {
+        where.OR = [{ party_guid: { equals: filters.search } }];
+      } else {
+        where.OR = [
+          { party_type: { equals: filters.search } },
+          { business: { name: { contains: filters.search, mode: "insensitive" } } },
+          { person: { first_name: { contains: filters.search, mode: "insensitive" } } },
+          { person: { last_name: { contains: filters.search, mode: "insensitive" } } },
+        ];
+      }
+    }
+
+    if (filters?.partyTypeCode) {
+      where.party_type = filters.partyTypeCode;
+    }
+
+    const sortFieldMap: Record<string, string> = {
+      partyIdentifier: "party_guid",
+      partyType: "party_type",
+    };
+
+    let orderBy: any = { party_guid: "desc" }; // Default sort
+
+    if (filters?.sortBy && filters?.sortOrder) {
+      const validSortOrder = filters.sortOrder.toLowerCase() === "asc" ? "asc" : "desc";
+
+      switch (filters?.sortBy) {
+        case "firstName": {
+          orderBy = { person: { first_name: validSortOrder } };
+          break;
+        }
+        case "lastName": {
+          orderBy = { person: { last_name: validSortOrder } };
+          break;
+        }
+        case "name": {
+          orderBy = { business: { name: validSortOrder } };
+          break;
+        }
+        default: {
+          const dbField = sortFieldMap[filters.sortBy];
+          if (dbField) {
+            orderBy = { [dbField]: validSortOrder };
+          }
+        }
+      }
+    }
+
+    // Use the pagination utility to handle pagination logic and return pageInfo meta
+    const result = await this.paginationUtility.paginate<party, Party>(
+      { page, pageSize },
+      {
+        prismaService: this.prisma,
+        modelName: "party",
+        sourceTypeName: "party",
+        destinationTypeName: "Party",
+        mapper: this.mapper,
+        whereClause: where,
+        includeClause: {
+          party_type_code: {
+            select: {
+              party_type_code: true,
+              short_description: true,
+              long_description: true,
+            },
+          },
+          business: {
+            select: {
+              business_guid: true,
+              name: true,
+            },
+          },
+          person: {
+            select: {
+              person_guid: true,
+              first_name: true,
+              last_name: true,
+            },
+          },
+        },
+        orderByClause: orderBy,
+      },
+    );
+
+    return {
+      items: result.items,
+      pageInfo: result.pageInfo as PageInfo,
+    };
   }
 }
