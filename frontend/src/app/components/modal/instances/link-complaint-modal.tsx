@@ -60,9 +60,31 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
     const parameters = generateApiParameters(
       `${config.API_BASE_URL}/v1/complaint/linked-complaints/${complaint.id}?related=true`,
     );
-    const linkedComplaints: any = await get(dispatch, parameters, {}, false);
+    const allRelatedComplaints: any = await get(dispatch, parameters, {}, false);
+    // Split the linked complaints into duplcaites and non-duplicates
+    const [duplicateComplaints, linkedComplaints] = allRelatedComplaints.reduce(
+      (accumulator: [any[], any[]], link: any) => {
+        if (link.link_type === "DUPLICATE") {
+          accumulator[0].push(link); // Add to the 'duplicateComplaints' array
+        } else {
+          accumulator[1].push(link); // Add to the 'linkedComplaints' array
+        }
+        return accumulator;
+      },
+      [[], []], // Initial accumulator: an array containing two empty arrays
+    );
 
-    if (!linkedComplaints || linkedComplaints.length === 0) {
+    const isDuplicate = duplicateComplaints.some((duplicate: any) => duplicate.parent === true);
+    if (isDuplicate) {
+      const parentId = duplicateComplaints.find((linked: any) => linked.parent === true)?.id;
+      return {
+        isValid: false,
+        alertType: "warning",
+        message: `The complaint you selected is marked as duplicate. Please select its parent complaint #${parentId}`,
+      };
+    }
+
+    if (linkedComplaints.length === 0) {
       return { isValid: true };
     }
 
@@ -72,21 +94,6 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
         isValid: false,
         alertType: "warning",
         message: "These complaints are already linked",
-      };
-    }
-
-    const isDuplicate = linkedComplaints.some(
-      (linked: any) => linked.parent === true && linked.link_type === "DUPLICATE",
-    );
-
-    if (isDuplicate) {
-      const parentId = linkedComplaints.find(
-        (linked: any) => linked.parent === true && linked.link_type === "DUPLICATE",
-      )?.id;
-      return {
-        isValid: false,
-        alertType: "warning",
-        message: `The complaint you selected is marked as duplicate. Please select its parent complaint #${parentId}`,
       };
     }
 
