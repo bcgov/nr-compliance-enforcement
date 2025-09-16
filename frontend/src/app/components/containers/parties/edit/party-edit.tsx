@@ -6,7 +6,7 @@ import { gql } from "graphql-request";
 import { PartyEditHeader } from "./party-edit-header";
 import { CompSelect } from "@components/common/comp-select";
 import { FormField } from "@components/common/form-field";
-import { useAppDispatch } from "@hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@common/toast";
@@ -14,6 +14,7 @@ import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { PartyCreateInput, PartyUpdateInput } from "@/generated/graphql";
 import { CompInput } from "@/app/components/common/comp-input";
+import { selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 
 const GET_PARTY = gql`
   query GetParty($partyIdentifier: String!) {
@@ -33,18 +34,6 @@ const GET_PARTY = gql`
         businessGuid
         name
       }
-    }
-  }
-`;
-
-const GET_PARTY_TYPE_CODES = gql`
-  query GetPartyTypeCodes {
-    partyTypeCodes {
-      partyTypeCode
-      shortDescription
-      longDescription
-      displayOrder
-      activeIndicator
     }
   }
 `;
@@ -96,23 +85,20 @@ const PartyEdit: FC = () => {
   const isEditMode = !!id;
   const dispatch = useAppDispatch();
 
+  const partyTypes = useAppSelector(selectPartyTypeDropdown);
+
   const { data: partyData, isLoading } = useGraphQLQuery(GET_PARTY, {
     queryKey: ["party", id],
     variables: { partyIdentifier: id },
     enabled: isEditMode,
   });
 
-  const { data } = useGraphQLQuery(GET_PARTY_TYPE_CODES, {
-    queryKey: ["partyTypeCodes"],
-    enabled: true,
-  });
-
-  const partyTypeCodes = data?.partyTypeCodes
+  const partyTypeCodes = partyTypes
     ?.sort((left: any, right: any) => left.displayOrder - right.displayOrder)
     .map((code: any) => {
       return {
-        value: code.partyTypeCode,
-        label: code.shortDescription,
+        value: code.value,
+        label: code.label,
       };
     });
 
@@ -186,7 +172,7 @@ const PartyEdit: FC = () => {
   const partyTypeValue = useStore(form.store, (state) => state.values.partyType);
 
   const navigateToPartyList = () => {
-    window.alert("Navigating to the party list view");
+    navigate(`/parties`);
   };
 
   const confirmCancelChanges = useCallback(() => {
@@ -275,7 +261,7 @@ const PartyEdit: FC = () => {
                       inputClass="comp-form-control comp-details-input"
                       defaultValue={field.state.value}
                       error={field.state.meta.errors?.[0]?.message || ""}
-                      maxLength={10}
+                      maxLength={50}
                       onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
                       placeholder="Enter first name..."
                       disabled={isDisabled}
@@ -296,7 +282,7 @@ const PartyEdit: FC = () => {
                       inputClass="comp-form-control comp-details-input"
                       defaultValue={field.state.value}
                       error={field.state.meta.errors?.[0]?.message || ""}
-                      maxLength={10}
+                      maxLength={50}
                       onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
                       placeholder="Enter last name..."
                       disabled={isDisabled}

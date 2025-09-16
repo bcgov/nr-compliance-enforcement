@@ -6,6 +6,8 @@ import { Person } from "src/shared/person/dto/person";
 import { Business } from "src/shared/business/dto/business";
 import { Field, InputType, ObjectType, Int } from "@nestjs/graphql";
 import { IsOptional } from "class-validator";
+import { PaginatedResult } from "src/common/pagination.utility";
+import { PageInfo } from "src/shared/case_file/dto/case_file";
 
 export class Party {
   partyIdentifier: String;
@@ -43,6 +45,25 @@ export class PartyUpdateInput {
   @Field(() => Business, { nullable: true })
   @IsOptional()
   business?: Business;
+}
+
+@InputType()
+export class PartyFilters {
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  search?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  partyTypeCode?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  sortBy?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  sortOrder?: string;
 }
 
 export const mapPrismaPartyToParty = (mapper: Mapper) => {
@@ -87,3 +108,12 @@ export const mapPrismaPartyToParty = (mapper: Mapper) => {
     ),
   );
 };
+
+@ObjectType()
+export class PartyResult implements PaginatedResult<Party> {
+  @Field(() => [Party])
+  items: Party[];
+
+  @Field(() => PageInfo)
+  pageInfo: PageInfo;
+}

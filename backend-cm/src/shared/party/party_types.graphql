@@ -10,6 +10,20 @@ type Party {
   business: Business
 }
 
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  totalCount: Int!
+  totalPages: Int!
+  currentPage: Int!
+  pageSize: Int!
+}
+
+type PartyResult {
+  items: [Party!]!
+  pageInfo: PageInfo!
+}
+
 input PartyCreateInput {
   partyTypeCode: String!
   longDescription: String
@@ -24,4 +38,11 @@ input PartyUpdateInput {
   shortDescription: String
   person: PersonInput
   business: BusinessInput
+}
+
+input PartyFilters {
+  search: String
+  partyTypeCode: String
+  sortBy: String
+  sortOrder: String
 }
