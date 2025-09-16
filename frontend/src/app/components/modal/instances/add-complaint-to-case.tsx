@@ -1,15 +1,14 @@
 import { FC, memo, useEffect, useState } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
-import { useAppSelector, useAppDispatch } from "@hooks/hooks";
+import { useAppSelector } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
-import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import Option from "@apptypes/app/option";
-import { HWCRAssessmentLinkComplaintSearch } from "@/app/components/containers/complaints/outcomes/hwcr-assessment/hwcr-assessment-link-complaint-search";
 import { gql } from "graphql-request";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useQueryClient } from "@tanstack/react-query";
 import { CaseActivityCreateInput } from "@/generated/graphql";
+import { ComplaintListSearch } from "@/app/components/common/complaint-list-search";
 
 const ADD_COMPLAINT_TO_CASE_MUTATION = gql`
   mutation CreateCaseActivity($input: CaseActivityCreateInput!) {
@@ -37,15 +36,13 @@ type AddComplaintToCaseModalProps = {
 };
 export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ close, submit }) => {
   const queryClient = useQueryClient();
-  // Hooks
-  const dispatch = useAppDispatch();
 
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
 
   // Vars
-  const { title, caseId } = modalData;
+  const { title, caseId, addedComplaints } = modalData;
 
   // State
   const [selectedComplaint, setSelectedComplaint] = useState<Option | null>();
@@ -53,10 +50,16 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
 
   // Effects
   useEffect(() => {
-    dispatch(setIsInEdit({ showSectionErrors: false }));
-  }, [dispatch]);
+    if (selectedComplaint) {
+      if (addedComplaints?.some((comp: any) => comp.id === selectedComplaint.value)) {
+        setAddComplaintErrorMessage("This complaint is already added.");
+      } else setAddComplaintErrorMessage("");
+    } else {
+      setAddComplaintErrorMessage("");
+    }
+  }, [selectedComplaint, addedComplaints]);
 
-  const handleAddComplaintChange = (selected: Option | null, status: string | null) => {
+  const handleAddComplaintChange = (selected: Option | null) => {
     if (selected) {
       setSelectedComplaint(selected);
     } else {
@@ -77,10 +80,11 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
 
   const handleAddComplaint = async () => {
     if (!selectedComplaint) {
-      ToggleError("Please select a complaint to link");
+      setAddComplaintErrorMessage("Please select a complaint to add.");
       return;
     }
 
+    if (addComplaintErrorMessage) return;
     const createInput: CaseActivityCreateInput = {
       caseFileGuid: caseId,
       activityType: "COMP",
@@ -120,11 +124,10 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
               className="comp-details-input full-width"
               style={{ width: "100%" }}
             >
-              <HWCRAssessmentLinkComplaintSearch
+              <ComplaintListSearch
                 id="addComplaintToCase"
-                onChange={(e: Option | null, s: string | null) => handleAddComplaintChange(e, s)}
+                onChange={(e: Option | null) => handleAddComplaintChange(e)}
                 errorMessage={addComplaintErrorMessage}
-                value={selectedComplaint}
               />
             </div>
           </div>

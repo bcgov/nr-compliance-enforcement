@@ -26,6 +26,7 @@ export const ComplaintColumn: FC<ComplaintColumnProps> = ({ complaints, isLoadin
           title: "Add complaint to case",
           description: "",
           caseId: id,
+          addedComplaints: complaints,
         },
       }),
     );
