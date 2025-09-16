@@ -14,6 +14,8 @@ type ProviderProps = {
 };
 
 let initialState: ComplaintFilters = {
+  agency: null,
+  complaintType: null,
   region: null,
   zone: null,
   community: null,
@@ -44,6 +46,8 @@ const convertFilterNames = (complaintFilters: Partial<ComplaintFilters>) => {
    * to preserve the filters when navigating away from then back to the complaints search page.
    */
   const {
+    agencyFilter,
+    complaintTypeFilter,
     regionCodeFilter,
     zoneCodeFilter,
     areaCodeFilter,
@@ -89,6 +93,8 @@ const convertFilterNames = (complaintFilters: Partial<ComplaintFilters>) => {
   }
 
   const allFilters: Partial<ComplaintFilters> = {
+    agency: agencyFilter,
+    complaintType: complaintTypeFilter,
     region: regionCodeFilter,
     zone: zoneCodeFilter,
     community: areaCodeFilter,
