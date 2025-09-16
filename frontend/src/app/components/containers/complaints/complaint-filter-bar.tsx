@@ -129,6 +129,14 @@ export const ComplaintFilterBar: FC<Props> = ({
           dispatch(clearFilter("outcomeAnimal"));
           dispatch(clearFilter("outcomeActionedBy"));
           break;
+        case "complaintType":
+          dispatch(clearFilter("complaintType"));
+          // Clear type-specific filters when complaint type is removed
+          dispatch(clearFilter("natureOfComplaint"));
+          dispatch(clearFilter("species"));
+          dispatch(clearFilter("violationType"));
+          dispatch(clearFilter("girType"));
+          break;
         default:
           dispatch(clearFilter(name));
           break;
