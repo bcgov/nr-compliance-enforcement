@@ -261,7 +261,7 @@ const PartyEdit: FC = () => {
                       inputClass="comp-form-control comp-details-input"
                       defaultValue={field.state.value}
                       error={field.state.meta.errors?.[0]?.message || ""}
-                      maxLength={10}
+                      maxLength={50}
                       onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
                       placeholder="Enter first name..."
                       disabled={isDisabled}
@@ -282,7 +282,7 @@ const PartyEdit: FC = () => {
                       inputClass="comp-form-control comp-details-input"
                       defaultValue={field.state.value}
                       error={field.state.meta.errors?.[0]?.message || ""}
-                      maxLength={10}
+                      maxLength={50}
                       onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
                       placeholder="Enter last name..."
                       disabled={isDisabled}
