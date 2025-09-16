@@ -6371,7 +6371,10 @@ INSERT INTO complaint.feature_agency_xref VALUES ('ca321bc6-b803-48ec-ba56-7e121
 INSERT INTO complaint.feature_agency_xref VALUES ('a10e0465-08f7-4012-97a1-7e1a873892dc', 'SECTORVIEW', 'EPO', false, 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905');
 INSERT INTO complaint.feature_agency_xref VALUES ('eff91a27-bc73-48a7-b053-35e6f1c14b01', 'SECTORVIEW', 'NRS', false, 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905');
 INSERT INTO complaint.feature_agency_xref VALUES ('b8d47ae2-2a12-4625-b635-ccb5b04803d9', 'SECTORVIEW', 'PARKS', false, 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905');
-
+INSERT INTO complaint.feature_agency_xref VALUES ('f9c90327-fefc-4dc8-b616-6f4b9fbe037d', 'PARTY', 'COS', false, 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905');
+INSERT INTO complaint.feature_agency_xref VALUES ('75f6cb84-50dd-4a79-a9de-36f91569ab2b', 'PARTY', 'EPO', false, 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905');
+INSERT INTO complaint.feature_agency_xref VALUES ('adef82ed-0272-456e-84a9-a3baaa8d0098', 'PARTY', 'PARKS', false, 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905');
+INSERT INTO complaint.feature_agency_xref VALUES ('62fe547e-3492-4214-85d2-ab8407ca53cf', 'PARTY', 'NRS', false, 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905');
 
 --
 -- Data for Name: feature_code; Type: TABLE DATA; Schema: complaint; Owner: -
@@ -6407,7 +6410,7 @@ INSERT INTO complaint.feature_code VALUES ('SECTORVIEW', 'Enable Sector View of 
 INSERT INTO complaint.feature_code VALUES ('CASES', 'Enable Cases', 'Enables the high level navigation to cases and case details.', 300, true, 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905');
 INSERT INTO complaint.feature_code VALUES ('INVESTIGTN', 'Enable Investigations', 'Enables the high level navigation to investigations and investigation details.', 300, true, 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905');
 INSERT INTO complaint.feature_code VALUES ('INSPECTION', 'Enable Inspections', 'Enables the high level navigation to inspections and inspection details.', 300, true, 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905');
-
+INSERT INTO complaint.feature_code VALUES ('PARTY', 'Enable Parties of Interest', 'Enables the high level navigation to parties of interest.', 360, 'Y', 'postgres', now(), 'postgres', now());
 
 --
 -- Data for Name: geo_org_unit_structure; Type: TABLE DATA; Schema: complaint; Owner: -
