@@ -2,6 +2,10 @@ import { FC } from "react";
 import { Complaint } from "@/app/types/app/complaints/complaint";
 import { ActivityColumn } from "./activity-column";
 import { ComplaintCard } from "./complaint-card";
+import { openModal } from "@/app/store/reducers/app";
+import { ADD_COMPLAINT_TO_CASE } from "@/app/types/modal/modal-types";
+import { useAppDispatch } from "@/app/hooks/hooks";
+import { useParams } from "react-router-dom";
 
 interface ComplaintColumnProps {
   complaints?: Complaint[];
@@ -9,8 +13,23 @@ interface ComplaintColumnProps {
 }
 
 export const ComplaintColumn: FC<ComplaintColumnProps> = ({ complaints, isLoading = false }) => {
+  const dispatch = useAppDispatch();
+  const { id } = useParams<{ id?: string }>();
+
   const handleAddComplaint = () => {
-    console.log("Add complaint clicked");
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: ADD_COMPLAINT_TO_CASE,
+        data: {
+          title: "Add complaint to case",
+          description: "",
+          caseId: id,
+          addedComplaints: complaints,
+        },
+      }),
+    );
   };
 
   return (

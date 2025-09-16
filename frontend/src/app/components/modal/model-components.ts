@@ -12,6 +12,7 @@ import {
   MANAGE_COLLABORATORS,
   MAP_MODAL,
   LINK_COMPLAINT,
+  ADD_COMPLAINT_TO_CASE,
 } from "@apptypes/modal/modal-types";
 
 import {
@@ -29,6 +30,7 @@ import {
 import { CancelConfirmModal } from "./instances/cancel-confirm-modal";
 import { MapModal } from "@/app/components/modal/instances/map-modal";
 import { LinkComplaintModal } from "./instances/link-complaint-modal";
+import { AddComplaintToCaseModal } from "./instances/add-complaint-to-case";
 
 export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [Sample]: SampleModal,
@@ -44,4 +46,5 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [MANAGE_COLLABORATORS]: ManageCollaboratorsModal,
   [MAP_MODAL]: MapModal,
   [LINK_COMPLAINT]: LinkComplaintModal,
+  [ADD_COMPLAINT_TO_CASE]: AddComplaintToCaseModal,
 };
