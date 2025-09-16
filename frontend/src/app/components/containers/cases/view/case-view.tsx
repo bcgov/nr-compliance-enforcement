@@ -28,7 +28,7 @@ const GET_CASE_FILE = gql`
         longDescription
       }
       activities {
-        caseActivityIdentifier
+        activityIdentifier
         activityType {
           caseActivityTypeCode
         }
@@ -93,19 +93,19 @@ export const CaseView: FC = () => {
   const linkedComplaintIds = caseData?.activities
     ?.filter((activity) => activity?.activityType?.caseActivityTypeCode === "COMP")
     .map((item) => {
-      return item?.caseActivityIdentifier;
+      return item?.activityIdentifier;
     });
 
   const linkedInvestigationIds = caseData?.activities
     ?.filter((activity) => activity?.activityType?.caseActivityTypeCode === "INVSTGTN")
     .map((item) => {
-      return item?.caseActivityIdentifier;
+      return item?.activityIdentifier;
     });
 
   const linkedInspectionIds = caseData?.activities
     ?.filter((activity) => activity?.activityType?.caseActivityTypeCode === "INSPECTION")
     .map((item) => {
-      return item?.caseActivityIdentifier;
+      return item?.activityIdentifier;
     });
 
   const [linkedComplaints, setLinkedComplaints] = useState<Complaint[]>([]);
