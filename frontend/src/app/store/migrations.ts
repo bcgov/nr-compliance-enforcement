@@ -34,6 +34,7 @@ import { MultiplePreventions } from "@/app/store/migrations/migration-34";
 import { ExternalAgencies } from "@/app/store/migrations/migration-35";
 import { AddEmailReference } from "@/app/store/migrations/migration-36";
 import { AddSectorComplaints } from "@/app/store/migrations/migration-37";
+import { AddPartyType } from "./migrations/migration-38";
 const BaseMigration = {
   0: (state: any) => {
     return {
@@ -81,6 +82,7 @@ migration = {
   ...ExternalAgencies,
   ...AddEmailReference,
   ...AddSectorComplaints,
+  ...AddPartyType,
 };
 
 export default migration;

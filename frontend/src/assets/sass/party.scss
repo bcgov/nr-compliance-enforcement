@@ -31,3 +31,29 @@
   padding: 1em;
   border-radius: 10px;
 }
+
+#party-list {
+  border-collapse: initial;
+  border-spacing: 0px;
+  font-style: normal;
+
+  thead {
+    th + th {
+      border-left: 1px solid $gray-300;
+    }
+  }
+
+  tbody {
+    tr {
+      cursor: pointer;
+
+      &:hover {
+        background-color: $gray-110;
+      }
+    }
+
+    .comp-table-row-hover-style {
+      background-color: $gray-110;
+    }
+  }
+}

@@ -936,6 +936,19 @@ export type PartyCreateInput = {
   shortDescription?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type PartyFilters = {
+  partyTypeCode?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PartyResult = {
+  __typename?: 'PartyResult';
+  items: Array<Party>;
+  pageInfo: PageInfo;
+};
+
 export type PartyTypeCode = {
   __typename?: 'PartyTypeCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -1046,6 +1059,7 @@ export type Query = {
   parkArea?: Maybe<ParkArea>;
   parkAreas: Array<Maybe<ParkArea>>;
   parks?: Maybe<Array<Maybe<Park>>>;
+  parties: Array<Party>;
   party?: Maybe<Party>;
   partyTypeCodes: Array<Maybe<PartyTypeCode>>;
   people?: Maybe<Array<Maybe<Person>>>;
@@ -1055,6 +1069,7 @@ export type Query = {
   searchCaseFiles: CaseFileResult;
   searchInspections: InspectionResult;
   searchInvestigations: InvestigationResult;
+  searchParties: PartyResult;
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
@@ -1169,6 +1184,11 @@ export type QueryparksArgs = {
 };
 
 
+export type QuerypartiesArgs = {
+  partyIdentifiers: Array<Scalars['String']['input']>;
+};
+
+
 export type QuerypartyArgs = {
   partyIdentifier: Scalars['String']['input'];
 };
@@ -1195,6 +1215,13 @@ export type QuerysearchInspectionsArgs = {
 
 export type QuerysearchInvestigationsArgs = {
   filters?: InputMaybe<InvestigationFilters>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QuerysearchPartiesArgs = {
+  filters?: InputMaybe<PartyFilters>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
