@@ -777,6 +777,18 @@ export const selectCreatableComplaintTypeDropdown = createSelector(
     })),
 );
 
+export const selectAgencyExternalDropdown = createSelector(
+  (state: RootState) => state.codeTables.agency,
+  (agencyItems) =>
+    agencyItems
+      .filter((agency) => agency.agency !== "NRS") // filter out the NRS agency
+      .map(({ agency, longDescription, isActive }) => ({
+        label: longDescription,
+        value: agency,
+        isActive,
+      })),
+);
+
 export const selectAgencyDropdown = createSelector(
   (state: RootState) => state.codeTables.agency,
   (agencyItems) =>
@@ -883,6 +895,18 @@ export const selectViolationCodeDropdown = (agency: string) =>
           isActive,
         })),
   );
+
+export const selectAllViolationCodeDropdown = createSelector(
+  (state: RootState) => state.codeTables.violation,
+  (violation) =>
+    violation
+      .map(({ violation, longDescription, isActive }) => ({
+        label: longDescription,
+        value: violation,
+        isActive,
+      }))
+      .filter((item, index, self) => self.findIndex((v) => v.value === item.value) === index), // Remove duplicates
+);
 
 export const selectGirTypeCodeDropdown = createSelector(
   (state: RootState) => state.codeTables["gir-type"],
