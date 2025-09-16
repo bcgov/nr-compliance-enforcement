@@ -133,6 +133,16 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
     }
 
     const complaint = selected[0];
+
+    if (complaint.id === complaint_identifier) {
+      setValidation({
+        isValid: false,
+        alertType: "warning",
+        message: "Cannot link a complaint to itself. Please select a different complaint.",
+      });
+      return;
+    }
+
     setSelectedComplaint(complaint);
 
     const issue = getIssueDescription(complaint);
