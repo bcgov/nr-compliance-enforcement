@@ -50,3 +50,13 @@ export const selectParkAreasDropdown = createSelector([selectCodeTables], (codeT
   const { "park-area": items } = codeTables;
   return items.map(({ parkAreaGuid: value, name: label }) => ({ label, value }));
 });
+
+export const selectPartyTypeDropdown = createSelector([selectCodeTables], (codeTables) => {
+  const { "party-type": items } = codeTables;
+  return items.map(({ partyTypeCode: value, shortDescription: label, isActive, displayOrder }) => ({
+    label,
+    value,
+    isActive,
+    displayOrder,
+  }));
+});

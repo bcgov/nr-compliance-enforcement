@@ -23,12 +23,7 @@ export const PartyEditHeader: FC<PartyEditHeaderProps> = ({
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item comp-nav-item-name-inverted">
-                <Link
-                  to=""
-                  onClick={() => window.alert("Navigating to the list of parties")}
-                >
-                  Parties
-                </Link>
+                <Link to="/parties">Parties</Link>
               </li>
               <li
                 className="breadcrumb-item"

@@ -3,6 +3,8 @@ import Option from "@apptypes/app/option";
 export interface ComplaintRequestPayload {
   sortColumn: string;
   sortOrder: string;
+  agencyFilter?: Option;
+  complaintTypeFilter?: Option;
   regionCodeFilter?: Option;
   zoneCodeFilter?: Option;
   areaCodeFilter?: Option;
@@ -12,6 +14,7 @@ export interface ComplaintRequestPayload {
   natureOfComplaintFilter?: Option;
   speciesCodeFilter?: Option;
   violationFilter?: Option;
+  girTypeFilter?: Option;
   startDateFilter?: Date;
   endDateFilter?: Date;
   complaintStatusFilter?: Option;
@@ -23,5 +26,7 @@ export interface ComplaintRequestPayload {
   outcomeAnimalEndDateFilter?: Date;
   equipmentStatusFilter?: Option;
   equipmentTypesFilter?: Option[];
+  page?: number;
+  pageSize?: number;
   query?: string;
 }

@@ -113,7 +113,6 @@ export const ComplaintActionItems: FC<Props> = ({
         id={`tt-${complaint_identifier}`}
         size="sm"
         variant="outline-primary"
-        disabled={complaint_status === "Referred"}
       >
         Actions
       </Dropdown.Toggle>
@@ -133,7 +132,7 @@ export const ComplaintActionItems: FC<Props> = ({
         <Dropdown.Item
           id="update-assignee-menu-item"
           onClick={openAssignOfficerModal}
-          disabled={complaint_status === "CLOSED"}
+          disabled={complaint_status === "CLOSED" || complaint_status === "Referred"}
         >
           <i
             className="bi bi-person-up"
@@ -144,7 +143,7 @@ export const ComplaintActionItems: FC<Props> = ({
         {complaint_type === "HWCR" && (
           <Dropdown.Item
             onClick={openQuickCloseModal}
-            disabled={complaint_status === "CLOSED"}
+            disabled={complaint_status === "CLOSED" || complaint_status === "Referred"}
           >
             <i
               className="bi bi-journal-x"
