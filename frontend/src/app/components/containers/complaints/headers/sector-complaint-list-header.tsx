@@ -30,13 +30,9 @@ export const SectorComplaintListHeader: FC<Props> = ({ handleSort, sortKey, sort
           sortDirection={sortDirection}
           className="comp-cell-width-160 comp-cell-min-width-160"
         />
-        <SortableHeader
-          title="Agency"
-          sortFnc={handleSort}
-          sortKey="owned_by_agency_code_ref"
-          currentSort={sortKey}
-          sortDirection={sortDirection}
-        />
+        <th className="unsortable-header">
+          <div className="header-label">Agency</div>
+        </th>
 
         <SortableHeader
           title="Complaint type"
