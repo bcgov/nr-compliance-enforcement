@@ -19,6 +19,7 @@ import { business_h as _business_h } from "./business_h";
 import { party as _party } from "./party";
 import { party_h as _party_h } from "./party_h";
 import { party_type_code as _party_type_code } from "./party_type_code";
+import { flyway_schema_history as _flyway_schema_history } from "./flyway_schema_history";
 
 export namespace PrismaModel {
   export class contact_method extends _contact_method {}
@@ -42,6 +43,7 @@ export namespace PrismaModel {
   export class party extends _party {}
   export class party_h extends _party_h {}
   export class party_type_code extends _party_type_code {}
+  export class flyway_schema_history extends _flyway_schema_history {}
 
   export const extraModels = [
     contact_method,
@@ -65,5 +67,6 @@ export namespace PrismaModel {
     party,
     party_h,
     party_type_code,
+    flyway_schema_history,
   ];
 }

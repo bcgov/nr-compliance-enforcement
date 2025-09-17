@@ -4,38 +4,38 @@ import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { HTTPLoggerMiddleware } from "./middleware/req.res.logger";
-import { PrismaModuleCaseManagement } from "./prisma/cm/prisma.cm.module";
+import { PrismaModuleComplaintOutcome } from "./prisma/complaint_outcome/prisma.complaint_outcome.module";
 import { PrismaModuleShared } from "./prisma/shared/prisma.shared.module";
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { JwtAuthModule } from "./auth/jwtauth.module";
-import { AgeCodeModule } from "./case_management/age_code/age_code.module";
-import { EquipmentCodeModule } from "./case_management/equipment_code/equipment_code.module";
-import { SexCodeModule } from "./case_management/sex_code/sex_code.module";
-import { ThreatLevelCodeModule } from "./case_management/threat_level_code/threat_level_code.module";
-import { ConflictHistoryCodeModule } from "./case_management/conflict_history_code/conflict_history_code.module";
-import { EarCodeModule } from "./case_management/ear_code/ear_code.module";
-import { DrugCodeModule } from "./case_management/drug_code/drug_code.module";
-import { DrugMethodCodeModule } from "./case_management/drug_method_code/drug_method_code.module";
-import { DrugRemainingOutcomeCodeModule } from "./case_management/drug_remaining_outcome_code/drug_remaining_outcome_code.module";
-import { HwcrOutcomeCodeModule } from "./case_management/hwcr_outcome_code/hwcr_outcome_code.module";
-import { HwcrOutcomeActionedByCodeModule } from "./case_management/hwcr_outcome_actioned_by_code/hwcr_outcome_actioned_by_code.module";
-import { ConfigurationModule } from "./case_management/configuration/configuration.module";
-import { ComplaintOutcomeModule } from "./case_management/complaint_outcome/complaint_outcome.module";
-import { InactionJustificationTypeModule } from "./case_management/inaction_justification_type/inaction_justification_type.module";
+import { AgeCodeModule } from "./complaint_outcome/age_code/age_code.module";
+import { EquipmentCodeModule } from "./complaint_outcome/equipment_code/equipment_code.module";
+import { SexCodeModule } from "./complaint_outcome/sex_code/sex_code.module";
+import { ThreatLevelCodeModule } from "./complaint_outcome/threat_level_code/threat_level_code.module";
+import { ConflictHistoryCodeModule } from "./complaint_outcome/conflict_history_code/conflict_history_code.module";
+import { EarCodeModule } from "./complaint_outcome/ear_code/ear_code.module";
+import { DrugCodeModule } from "./complaint_outcome/drug_code/drug_code.module";
+import { DrugMethodCodeModule } from "./complaint_outcome/drug_method_code/drug_method_code.module";
+import { DrugRemainingOutcomeCodeModule } from "./complaint_outcome/drug_remaining_outcome_code/drug_remaining_outcome_code.module";
+import { HwcrOutcomeCodeModule } from "./complaint_outcome/hwcr_outcome_code/hwcr_outcome_code.module";
+import { HwcrOutcomeActionedByCodeModule } from "./complaint_outcome/hwcr_outcome_actioned_by_code/hwcr_outcome_actioned_by_code.module";
+import { ConfigurationModule } from "./complaint_outcome/configuration/configuration.module";
+import { ComplaintOutcomeModule } from "./complaint_outcome/complaint_outcome/complaint_outcome.module";
+import { InactionJustificationTypeModule } from "./complaint_outcome/inaction_justification_type/inaction_justification_type.module";
 import { DateScalar } from "./common/custom_scalars";
-import { HWCRPreventionActionModule } from "./case_management/hwcr_prevention_action/hwcr_prevention_action.module";
-import { HWCRAssessmentActionModule } from "./case_management/hwcr_assessment_action/hwcr_assessment_action.module";
-import { ScheduleCodeModule } from "./case_management/code-tables/schedule_code/schedule_code.module";
-import { DischargeCodeModule } from "./case_management/code-tables/discharge_code/discharge_code.module";
-import { NonComplianceCodeModule } from "./case_management/code-tables/non_compliance_code/non_compliance_code.module";
-import { SectorCodeModule } from "./case_management/code-tables/sector_code/sector_code.module";
-import { CEEBDecisionActionModule } from "./case_management/ceeb_decision_action/ceeb_decision_action.module";
-import { OutcomeAgencyCodeModule } from "./case_management/agency_code/outcome_agency_code.module";
-import { ScheduleSectorXrefModule } from "./case_management/schedule_sector_xref/schedule_sector_xref.module";
-import { LeadModule } from "./case_management/lead/lead.module";
-import { CaseLocationCodeModule } from "./case_management/code-tables/case_location_code/case_location_code.module";
-import { IpmAuthCategoryCodeModule } from "./case_management/ipm_auth_category_code/ipm_auth_category_code.module";
+import { HWCRPreventionActionModule } from "./complaint_outcome/hwcr_prevention_action/hwcr_prevention_action.module";
+import { HWCRAssessmentActionModule } from "./complaint_outcome/hwcr_assessment_action/hwcr_assessment_action.module";
+import { ScheduleCodeModule } from "./complaint_outcome/code-tables/schedule_code/schedule_code.module";
+import { DischargeCodeModule } from "./complaint_outcome/code-tables/discharge_code/discharge_code.module";
+import { NonComplianceCodeModule } from "./complaint_outcome/code-tables/non_compliance_code/non_compliance_code.module";
+import { SectorCodeModule } from "./complaint_outcome/code-tables/sector_code/sector_code.module";
+import { CEEBDecisionActionModule } from "./complaint_outcome/ceeb_decision_action/ceeb_decision_action.module";
+import { OutcomeAgencyCodeModule } from "./complaint_outcome/agency_code/outcome_agency_code.module";
+import { ScheduleSectorXrefModule } from "./complaint_outcome/schedule_sector_xref/schedule_sector_xref.module";
+import { LeadModule } from "./complaint_outcome/lead/lead.module";
+import { CaseLocationCodeModule } from "./complaint_outcome/code-tables/case_location_code/case_location_code.module";
+import { IpmAuthCategoryCodeModule } from "./complaint_outcome/ipm_auth_category_code/ipm_auth_category_code.module";
 import { PersonModule } from "./shared/person/person.module";
 import { ParkModule } from "./shared/park/park.module";
 import { AgencyCodeModule } from "./shared/agency_code/agency_code.module";
@@ -43,7 +43,7 @@ import { AutomapperModule, InjectMapper } from "@automapper/nestjs";
 import { pojos } from "@automapper/pojos";
 import { Mapper } from "@automapper/core";
 import { initializeMappings } from "./middleware/mapper";
-import { EquipmentStatusCodeModule } from "src/case_management/equipment_status_code/equipment_status_code.module";
+import { EquipmentStatusCodeModule } from "src/complaint_outcome/equipment_status_code/equipment_status_code.module";
 import { ImportCommand } from "./app.commands";
 import { InvestigationModule } from "./investigation/investigation/investigation.module";
 import { PrismaModuleInvestigation } from "./prisma/investigation/prisma.investigation.module";
@@ -57,7 +57,7 @@ import { CaseActivityModule } from "src/shared/case_activity/case_activity.modul
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    PrismaModuleCaseManagement,
+    PrismaModuleComplaintOutcome,
     PrismaModuleShared,
     PrismaModuleInvestigation,
     PrismaModuleInspection,

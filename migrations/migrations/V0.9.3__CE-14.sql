@@ -1,1 +1,0 @@
-alter table complaint rename column incident_datetime to incident_utc_datetime;

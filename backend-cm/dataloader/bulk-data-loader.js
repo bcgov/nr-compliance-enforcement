@@ -125,7 +125,7 @@ const getActionXrefs = async (type, action = null) => {
   try {
     let query = `
     SELECT action_type_action_xref_guid
-    FROM case_management.action_type_action_xref
+    FROM complaint_outcome.action_type_action_xref
     WHERE action_type_code = '${type}'
   `;
 
@@ -311,7 +311,7 @@ const insertHWCRData = async (records) => {
     // Bulk insert for case files
     if (caseValues.length > 0) {
       await client.query(
-        `INSERT INTO case_management.case_file (
+        `INSERT INTO complaint_outcome.case_file (
           complaint_outcome_guid, 
           case_code, 
           owned_by_agency_code, 
@@ -336,7 +336,7 @@ const insertHWCRData = async (records) => {
     // Bulk insert for leads
     if (leadValues.length > 0) {
       await client.query(
-        `INSERT INTO case_management.lead (
+        `INSERT INTO complaint_outcome.lead (
           lead_identifier,
           case_identifier, 
           create_user_id, 
@@ -352,7 +352,7 @@ const insertHWCRData = async (records) => {
     // Bulk insert for assessment actions
     if (assessmentActionValues.length > 0) {
       await client.query(
-        `INSERT INTO case_management.action (
+        `INSERT INTO complaint_outcome.action (
           action_guid,
           complaint_outcome_guid,
           action_type_action_xref_guid, 
@@ -375,7 +375,7 @@ const insertHWCRData = async (records) => {
     // Bulk insert for wildlife (only if data exists)
     if (wildlifeValues.length > 0) {
       await client.query(
-        `INSERT INTO case_management.wildlife (
+        `INSERT INTO complaint_outcome.wildlife (
           wildlife_guid,
           complaint_outcome_guid,
           threat_level_code,
@@ -398,7 +398,7 @@ const insertHWCRData = async (records) => {
     // Bulk insert for wildlife actions (only if data exists)
     if (wildlifeActionValues.length > 0) {
       await client.query(
-        `INSERT INTO case_management.action (
+        `INSERT INTO complaint_outcome.action (
           action_guid,
           complaint_outcome_guid,
           action_type_action_xref_guid, 
@@ -509,7 +509,7 @@ const insertCEEBData = async (records) => {
     // Bulk insert for case files
     if (caseValues.length > 0) {
       await client.query(
-        `INSERT INTO case_management.case_file (
+        `INSERT INTO complaint_outcome.case_file (
           complaint_outcome_guid, 
           case_code, 
           owned_by_agency_code, 
@@ -534,7 +534,7 @@ const insertCEEBData = async (records) => {
     // Bulk insert for leads
     if (leadValues.length > 0) {
       await client.query(
-        `INSERT INTO case_management.lead (
+        `INSERT INTO complaint_outcome.lead (
           lead_identifier,
           case_identifier, 
           create_user_id, 
@@ -550,7 +550,7 @@ const insertCEEBData = async (records) => {
     // Bulk insert for authorizations
     if (authorizationValues.length > 0) {
       await client.query(
-        `INSERT INTO case_management.authorization_permit (
+        `INSERT INTO complaint_outcome.authorization_permit (
           authorization_permit_guid,
           complaint_outcome_guid,
           authorization_permit_id, 
@@ -568,7 +568,7 @@ const insertCEEBData = async (records) => {
     // Bulk insert for sites
     if (siteValues.length >0) {
       await client.query(
-        `INSERT INTO case_management.site (
+        `INSERT INTO complaint_outcome.site (
           site_guid,
           complaint_outcome_guid,
           site_id, 

@@ -8,7 +8,7 @@ COPY *.json ./
 COPY ./src ./src
 COPY ./prisma ./prisma
 RUN npm ci --ignore-scripts --no-update-notifier
-RUN npm run prisma-generate-cm 
+RUN npm run prisma-generate-complaint-outcome 
 RUN npm run prisma-generate-shared
 RUN npm run prisma-generate-investigation
 RUN npm run prisma-generate-inspection

@@ -6,6 +6,7 @@ import { officer_inspection_xref as _officer_inspection_xref } from "./officer_i
 import { officer_inspection_xref_code as _officer_inspection_xref_code } from "./officer_inspection_xref_code";
 import { officer_inspection_xref_code_h as _officer_inspection_xref_code_h } from "./officer_inspection_xref_code_h";
 import { officer_inspection_xref_h as _officer_inspection_xref_h } from "./officer_inspection_xref_h";
+import { flyway_schema_history as _flyway_schema_history } from "./flyway_schema_history";
 
 export namespace PrismaModel {
   export class inspection extends _inspection {}
@@ -16,6 +17,7 @@ export namespace PrismaModel {
   export class officer_inspection_xref_code extends _officer_inspection_xref_code {}
   export class officer_inspection_xref_code_h extends _officer_inspection_xref_code_h {}
   export class officer_inspection_xref_h extends _officer_inspection_xref_h {}
+  export class flyway_schema_history extends _flyway_schema_history {}
 
   export const extraModels = [
     inspection,
@@ -26,5 +28,6 @@ export namespace PrismaModel {
     officer_inspection_xref_code,
     officer_inspection_xref_code_h,
     officer_inspection_xref_h,
+    flyway_schema_history,
   ];
 }

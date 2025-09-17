@@ -4,11 +4,11 @@
   "main": "index.js",
   "scripts": {
     "prebuild": "rimraf dist",
-    "prisma-pull-cm": "prisma db pull --schema=prisma/case_management/case_management.prisma",
+    "prisma-pull-complaint-outcome": "prisma db pull --schema=prisma/complaint_outcome/complaint_outcome.prisma",
     "prisma-pull-shared": "prisma db pull --schema=prisma/shared/shared.prisma",
     "prisma-pull-investigation": "prisma db pull --schema=prisma/investigation/investigation.prisma",
     "prisma-pull-inspection": "prisma db pull --schema=prisma/inspection/inspection.prisma",
-    "prisma-generate-cm": "prisma generate --schema=prisma/case_management/case_management.prisma",
+    "prisma-generate-complaint-outcome": "prisma generate --schema=prisma/complaint_outcome/complaint_outcome.prisma",
     "prisma-generate-shared": "prisma generate --schema=prisma/shared/shared.prisma",
     "prisma-generate-investigation": "prisma generate --schema=prisma/investigation/investigation.prisma",
     "prisma-generate-inspection": "prisma generate --schema=prisma/inspection/inspection.prisma",

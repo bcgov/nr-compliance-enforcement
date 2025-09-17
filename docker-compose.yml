@@ -4,16 +4,22 @@ version: "3.8"
 x-var:
   - &POSTGRES_USER postgres
   - &POSTGRES_PASSWORD default
-  - &SHARED_PASSWORD default2
-  - &CM_PASSWORD default3
+  - &COMPLAINT_PASSWORD default
+  - &COMPLAINT_OUTCOME_PASSWORD default2
+  - &INS_PASSWORD default3
+  - &INV_PASSWORD default4
+  - &SHARED_PASSWORD default5
   - &POSTGRES_DATABASE postgres
 
 x-postgres-vars: &postgres-vars
   POSTGRES_HOST: database
   POSTGRES_USER: *POSTGRES_USER
   POSTGRES_PASSWORD: *POSTGRES_PASSWORD
+  COMPLAINT_PASSWORD: *COMPLAINT_PASSWORD
+  COMPLAINT_OUTCOME_PASSWORD: *COMPLAINT_OUTCOME_PASSWORD
+  INS_PASSWORD: *INS_PASSWORD 
+  INV_PASSWORD: *INV_PASSWORD 
   SHARED_PASSWORD: *SHARED_PASSWORD
-  CM_PASSWORD: *CM_PASSWORD
   POSTGRES_DATABASE: *POSTGRES_DATABASE
 
 services:
@@ -37,23 +43,113 @@ services:
       retries: 3
     volumes:
       - /pgdata
-  database-migrations:
+  migration-complaint:
     image: flyway/flyway:10-alpine
-    container_name: backend-migrations
+    container_name: migration-complaint
     command:
       - info
       - migrate
       - -outOfOrder=true
     volumes:
-      - "./migrations/migrations:/flyway/sql"
-      - "./migrations/test-only-migrations:/flyway/sql-test"
+      - "./migration-complaint/migrations:/flyway/sql"
+      - "./migration-complaint/test-only-migrations:/flyway/sql-test"
+      - "./migration-complaint/baseline:/flyway/baseline"
     environment:
-      - FLYWAY_URL=jdbc:postgresql://database:5432/postgres?currentSchema=complaint,case_management,public
-      - FLYWAY_USER=postgres
-      - FLYWAY_PASSWORD=default
-      - FLYWAY_BASELINE_ON_MIGRATE=true
-      - FLYWAY_DEFAULT_SCHEMA=complaint
-      - FLYWAY_LOCATIONS=filesystem:./sql, filesystem:./sql-test
+      FLYWAY_URL: jdbc:postgresql://database:5432/postgres?currentSchema=complaint,public
+      FLYWAY_USER: postgres
+      FLYWAY_PASSWORD: default
+      FLYWAY_PLACEHOLDERS_COMPLAINT_PASSWORD: *COMPLAINT_PASSWORD
+      FLYWAY_BASELINE_ON_MIGRATE: true
+      FLYWAY_DEFAULT_SCHEMA: complaint
+      FLYWAY_LOCATIONS: filesystem:./sql, filesystem:./sql-test, filesystem:./baseline
+    depends_on:
+      database:
+        condition: service_healthy
+  migration-investigation:
+    image: flyway/flyway:10-alpine
+    container_name: migration-investigation
+    command:
+      - info
+      - migrate
+      - -outOfOrder=true
+    volumes:
+      - "./migration-investigation/migrations:/flyway/sql"
+      - "./migration-investigation/test-only-migrations:/flyway/sql-test"
+      - "./migration-investigation/baseline:/flyway/baseline"
+    environment:
+      FLYWAY_URL: jdbc:postgresql://database:5432/postgres?currentSchema=investigation,public
+      FLYWAY_USER: postgres
+      FLYWAY_PASSWORD: default
+      FLYWAY_PLACEHOLDERS_INVESTIGATION_PASSWORD: *INV_PASSWORD
+      FLYWAY_BASELINE_ON_MIGRATE: true
+      FLYWAY_DEFAULT_SCHEMA: investigation
+      FLYWAY_LOCATIONS: filesystem:./sql, filesystem:./sql-test, filesystem:./baseline
+    depends_on:
+      database:
+        condition: service_healthy
+  migration-inspection:
+    image: flyway/flyway:10-alpine
+    container_name: migration-inspection
+    command:
+      - info
+      - migrate
+      - -outOfOrder=true
+    volumes:
+      - "./migration-inspection/migrations:/flyway/sql"
+      - "./migration-inspection/test-only-migrations:/flyway/sql-test"
+      - "./migration-inspection/baseline:/flyway/baseline"
+    environment:
+      FLYWAY_URL: jdbc:postgresql://database:5432/postgres?currentSchema=inspection,public
+      FLYWAY_USER: postgres
+      FLYWAY_PASSWORD: default
+      FLYWAY_PLACEHOLDERS_INSPECTION_PASSWORD: *INS_PASSWORD
+      FLYWAY_BASELINE_ON_MIGRATE: true
+      FLYWAY_DEFAULT_SCHEMA: inspection
+      FLYWAY_LOCATIONS: filesystem:./sql, filesystem:./sql-test, filesystem:./baseline
+    depends_on:
+      database:
+        condition: service_healthy
+  migration-shared:
+    image: flyway/flyway:10-alpine
+    container_name: migration-shared
+    command:
+      - info
+      - migrate
+      - -outOfOrder=true
+    volumes:
+      - "./migration-shared/migrations:/flyway/sql"
+      - "./migration-shared/test-only-migrations:/flyway/sql-test"
+      - "./migration-shared/baseline:/flyway/baseline"
+    environment:
+      FLYWAY_URL: jdbc:postgresql://database:5432/postgres?currentSchema=shared,public
+      FLYWAY_USER: postgres
+      FLYWAY_PASSWORD: default
+      FLYWAY_BASELINE_ON_MIGRATE: true
+      FLYWAY_PLACEHOLDERS_SHARED_PASSWORD: *SHARED_PASSWORD
+      FLYWAY_DEFAULT_SCHEMA: shared
+      FLYWAY_LOCATIONS: filesystem:./sql, filesystem:./sql-test, filesystem:./baseline
+    depends_on:
+      database:
+        condition: service_healthy
+  migration-complaint-outcome:
+    image: flyway/flyway:10-alpine
+    container_name: migration-complaint-outcome
+    command:
+      - info
+      - migrate
+      - -outOfOrder=true
+    volumes:
+      - "./migration-complaint-outcome/migrations:/flyway/sql"
+      - "./migration-complaint-outcome/test-only-migrations:/flyway/sql-test"
+      - "./migration-complaint-outcome/baseline:/flyway/baseline"
+    environment:
+      FLYWAY_URL: jdbc:postgresql://database:5432/postgres?currentSchema=complaint_outcome,public
+      FLYWAY_USER: postgres
+      FLYWAY_PASSWORD: default
+      FLYWAY_BASELINE_ON_MIGRATE: true
+      FLYWAY_PLACEHOLDERS_COMPLAINT_OUTCOME_PASSWORD: *COMPLAINT_OUTCOME_PASSWORD
+      FLYWAY_DEFAULT_SCHEMA: complaint_outcome
+      FLYWAY_LOCATIONS: filesystem:./sql, filesystem:./sql-test, filesystem:./baseline
     depends_on:
       database:
         condition: service_healthy
@@ -83,7 +179,7 @@ services:
     depends_on:
       database:
         condition: service_healthy
-      database-migrations:
+      migration-complaint:
         condition: service_started
   frontend:
     container_name: frontend
@@ -135,35 +231,9 @@ services:
       - ./webeoc/logs:/mnt/data # this is just for the developer webeoc logging
     user: root
     working_dir: "/app"
-
-  migrations-cm:
-    image: flyway/flyway:9.22-alpine
-    container_name: migrations-cm
-    command:
-      - info
-      - migrate
-      - -outOfOrder=true
-    volumes:
-      - "./migrations-cm/sql:/flyway/sql:ro"
-      - "./migrations-cm/test-only-migrations:/flyway/sql-test:ro"
-    environment:
-      FLYWAY_URL: jdbc:postgresql://database:5432/postgres?currentSchema=complaint,case_management,public
-      FLYWAY_USER: *POSTGRES_USER
-      FLYWAY_PASSWORD: *POSTGRES_PASSWORD
-      FLYWAY_PLACEHOLDERS_SHARED_PASSWORD: *SHARED_PASSWORD
-      FLYWAY_PLACEHOLDERS_CM_PASSWORD: *CM_PASSWORD
-      FLYWAY_PLACEHOLDERS_INV_PASSWORD: *CM_PASSWORD
-      FLYWAY_PLACEHOLDERS_INS_PASSWORD: *CM_PASSWORD
-      FLYWAY_BASELINE_ON_MIGRATE: true
-      FLYWAY_DEFAULT_SCHEMA: case_management
-      FLYWAY_LOCATIONS: filesystem:./sql, filesystem:./sql-test
-    depends_on:
-      database:
-        condition: service_healthy
-
   backend-cm:
     container_name: backend-cm
-    entrypoint: sh -c "npm i && npm run prisma-generate-cm && \
+    entrypoint: sh -c "npm i && npm run prisma-generate-complaint-outcome && \
       npm run prisma-generate-shared && \
       npm run prisma-generate-investigation && \
       npm run prisma-generate-inspection && \
@@ -171,7 +241,7 @@ services:
     environment:
       <<: *postgres-vars
       NODE_ENV: development
-      POSTGRESQL_URL: "postgresql://postgres:{POSTGRES_PASSWORD}@cm-database:5432/postgres?schema=case_management"
+      POSTGRESQL_URL: "postgresql://postgres:{POSTGRES_PASSWORD}@cm-database:5432/postgres?schema=public,shared,investgation,inspection,complaint_outcome"
       BACKEND_PORT: "3000"
       KEYCLOCK_CLIENT_ID: compliance-and-enforcement-digital-services-web-4794
       JWKS_URI: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs
@@ -183,5 +253,11 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api"]
     working_dir: "/app"
     depends_on:
-      migrations-cm:
+      migration-complaint-outcome:
+        condition: service_completed_successfully
+      migration-inspection:
+        condition: service_completed_successfully
+      migration-investigation:
+        condition: service_completed_successfully
+      migration-shared:
         condition: service_completed_successfully

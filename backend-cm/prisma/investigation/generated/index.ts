@@ -6,6 +6,7 @@ import { officer_investigation_xref as _officer_investigation_xref } from "./off
 import { officer_investigation_xref_code as _officer_investigation_xref_code } from "./officer_investigation_xref_code";
 import { officer_investigation_xref_code_h as _officer_investigation_xref_code_h } from "./officer_investigation_xref_code_h";
 import { officer_investigation_xref_h as _officer_investigation_xref_h } from "./officer_investigation_xref_h";
+import { flyway_schema_history as _flyway_schema_history } from "./flyway_schema_history";
 
 export namespace PrismaModel {
   export class investigation extends _investigation {}
@@ -16,6 +17,7 @@ export namespace PrismaModel {
   export class officer_investigation_xref_code extends _officer_investigation_xref_code {}
   export class officer_investigation_xref_code_h extends _officer_investigation_xref_code_h {}
   export class officer_investigation_xref_h extends _officer_investigation_xref_h {}
+  export class flyway_schema_history extends _flyway_schema_history {}
 
   export const extraModels = [
     investigation,
@@ -26,5 +28,6 @@ export namespace PrismaModel {
     officer_investigation_xref_code,
     officer_investigation_xref_code_h,
     officer_investigation_xref_h,
+    flyway_schema_history,
   ];
 }
