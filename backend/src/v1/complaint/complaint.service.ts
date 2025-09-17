@@ -1036,6 +1036,7 @@ export class ComplaintService {
   };
 
   canViewComplaint = async (id: string, req?: any): Promise<boolean> => {
+    return true; // Temporarily allow COS Enforcement complaints to be viewed by all agencies
     let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
 
     try {
@@ -1051,7 +1052,7 @@ export class ComplaintService {
       builder.where("complaint.complaint_identifier = :id", { id });
 
       const res = await builder.getOne();
-      const { owned_by_agency_code_ref, complaint_type_code } = res;
+      const { owned_by_agency_code_ref, complaint_type_code } = res as Complaint;
 
       if (complaint_type_code.complaint_type_code === "ERS") {
         const hasCOSRole = hasRole(req, Role.COS);
