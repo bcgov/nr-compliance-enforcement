@@ -321,18 +321,18 @@
         "comments": "<p>The person who created the link between complaints<\/p>"
     },
     {
-        "tableName": "office_h",
-        "tableFileName": "office_h",
+        "tableName": "linked_complaint_xref_type_code",
+        "tableFileName": "linked_complaint_xref_type_code",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "operation_executed_at",
-        "type": "timestamp",
-        "length": 29,
-        "nullable": "",
+        "name": "update_user_guid",
+        "type": "uuid",
+        "length": 2147483647,
+        "nullable": "√",
         "autoUpdated": "",
-        "defaultValue": "now()",
-        "comments": "<p>The timestamp when the data in the office table was created or modified.  The timestamp is stored in UTC with no Offset.<\/p>"
+        "defaultValue": "null",
+        "comments": ""
     },
     {
         "tableName": "complaint_h",
@@ -685,18 +685,18 @@
         "comments": "<p>The long description of the relationship type between a person and a complaint.<\/p>"
     },
     {
-        "tableName": "linked_complaint_xref_type_code",
-        "tableFileName": "linked_complaint_xref_type_code",
+        "tableName": "office_h",
+        "tableFileName": "office_h",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "create_user_id",
-        "type": "varchar",
-        "length": 32,
-        "nullable": "",
+        "name": "data_after_executed_operation",
+        "type": "jsonb",
+        "length": 2147483647,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": ""
+        "comments": "<p>A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table.<\/p>"
     },
     {
         "tableName": "allegation_complaint",
@@ -816,13 +816,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "update_user_id",
+        "name": "long_description",
         "type": "varchar",
-        "length": 32,
-        "nullable": "",
+        "length": 250,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": ""
+        "comments": "<p>The long description of the link type<\/p>"
     },
     {
         "tableName": "complaint",
@@ -1175,18 +1175,18 @@
         "comments": "<p>A human readable code used to identify a complaint being referred.<\/p>"
     },
     {
-        "tableName": "linked_complaint_xref_type_code",
-        "tableFileName": "linked_complaint_xref_type_code",
+        "tableName": "office_h",
+        "tableFileName": "office_h",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "active_ind",
-        "type": "bool",
-        "length": 1,
+        "name": "operation_executed_at",
+        "type": "timestamp",
+        "length": 29,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "true",
-        "comments": "<p>Flag indicating if the link type is active<\/p>"
+        "defaultValue": "now()",
+        "comments": "<p>The timestamp when the data in the office table was created or modified.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
         "tableName": "violation_agency_xref",
@@ -1329,18 +1329,18 @@
         "comments": "<p>The id of the user that created or modified the data in the team table.  Defaults to the logged in user if not passed in by the application.<\/p>"
     },
     {
-        "tableName": "office_h",
-        "tableFileName": "office_h",
+        "tableName": "linked_complaint_xref_type_code",
+        "tableFileName": "linked_complaint_xref_type_code",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "data_after_executed_operation",
-        "type": "jsonb",
-        "length": 2147483647,
-        "nullable": "√",
+        "name": "update_utc_timestamp",
+        "type": "timestamp",
+        "length": 29,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table.<\/p>"
+        "comments": "<p>The timestamp when the linked complaint type code was updated.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
         "tableName": "attractant_hwcr_xref",
@@ -2298,15 +2298,15 @@
         "tableName": "linked_complaint_xref_type_code",
         "tableFileName": "linked_complaint_xref_type_code",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "create_user_guid",
-        "type": "uuid",
-        "length": 2147483647,
-        "nullable": "√",
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>linked_complaint_xref_type_code",
+        "type": "varchar",
+        "length": 20,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": ""
+        "comments": "<p>A human readable code used to identify a link type between complaints<\/p>"
     },
     {
         "tableName": "staging_activity_code",
@@ -2365,18 +2365,18 @@
         "comments": ""
     },
     {
-        "tableName": "office_h",
-        "tableFileName": "office_h",
+        "tableName": "linked_complaint_xref_type_code",
+        "tableFileName": "linked_complaint_xref_type_code",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "operation_type",
-        "type": "bpchar",
-        "length": 1,
+        "name": "create_utc_timestamp",
+        "type": "timestamp",
+        "length": 29,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The operation performed: I = Insert, U = Update, D = Delete<\/p>"
+        "comments": "<p>The timestamp when the linked complaint type code was created.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
         "tableName": "complaint_type_code",
@@ -3191,18 +3191,18 @@
         "comments": "<p>A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table.<\/p>"
     },
     {
-        "tableName": "office_h",
-        "tableFileName": "office_h",
+        "tableName": "linked_complaint_xref_type_code",
+        "tableFileName": "linked_complaint_xref_type_code",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "operation_user_id",
+        "name": "update_user_id",
         "type": "varchar",
         "length": 32,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "CURRENT_USER",
-        "comments": "<p>The id of the user that created or modified the data in the office table.  Defaults to the logged in user if not passed in by the application.<\/p>"
+        "defaultValue": "null",
+        "comments": ""
     },
     {
         "tableName": "attractant_hwcr_xref",
@@ -3653,18 +3653,18 @@
         "comments": "<p>The id of the user that updated the complaint linkage.<\/p>"
     },
     {
-        "tableName": "office_h",
-        "tableFileName": "office_h",
+        "tableName": "linked_complaint_xref_type_code",
+        "tableFileName": "linked_complaint_xref_type_code",
         "tableType": "Table",
-        "keyClass": "primaryKey",
-        "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>h_office_guid",
-        "type": "uuid",
-        "length": 2147483647,
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "create_user_id",
+        "type": "varchar",
+        "length": 32,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "complaint.uuid_generate_v4()",
-        "comments": "<p>System generated unique key for office history. This key should never be exposed to users via any system utilizing the tables.<\/p>"
+        "defaultValue": "null",
+        "comments": ""
     },
     {
         "tableName": "configuration_h",
@@ -3854,13 +3854,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "create_utc_timestamp",
-        "type": "timestamp",
-        "length": 29,
+        "name": "short_description",
+        "type": "varchar",
+        "length": 50,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The timestamp when the linked complaint type code was created.  The timestamp is stored in UTC with no Offset.<\/p>"
+        "comments": "<p>The short description of the link type<\/p>"
     },
     {
         "tableName": "officer_team_xref",
@@ -4260,13 +4260,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "update_utc_timestamp",
-        "type": "timestamp",
-        "length": 29,
+        "name": "active_ind",
+        "type": "bool",
+        "length": 1,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>The timestamp when the linked complaint type code was updated.  The timestamp is stored in UTC with no Offset.<\/p>"
+        "defaultValue": "true",
+        "comments": "<p>Flag indicating if the link type is active<\/p>"
     },
     {
         "tableName": "action_taken",
@@ -4633,18 +4633,18 @@
         "comments": "<p>System generated unique key for complaint history. This key should never be exposed to users via any system utilizing the tables.<\/p>"
     },
     {
-        "tableName": "office_h",
-        "tableFileName": "office_h",
+        "tableName": "linked_complaint_xref_type_code",
+        "tableFileName": "linked_complaint_xref_type_code",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "target_row_id",
+        "name": "create_user_guid",
         "type": "uuid",
         "length": 2147483647,
-        "nullable": "",
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The unique key for the office that has been created or modified.<\/p>"
+        "comments": ""
     },
     {
         "tableName": "configuration",
@@ -4745,18 +4745,18 @@
         "comments": "<p>A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table.<\/p>"
     },
     {
-        "tableName": "linked_complaint_xref_type_code",
-        "tableFileName": "linked_complaint_xref_type_code",
+        "tableName": "office_h",
+        "tableFileName": "office_h",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "short_description",
-        "type": "varchar",
-        "length": 50,
+        "name": "target_row_id",
+        "type": "uuid",
+        "length": 2147483647,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The short description of the link type<\/p>"
+        "comments": "<p>The unique key for the office that has been created or modified.<\/p>"
     },
     {
         "tableName": "feature_code",
@@ -4801,18 +4801,18 @@
         "comments": "<p>The unique key for the complaint update that has been created or modified.<\/p>"
     },
     {
-        "tableName": "linked_complaint_xref_type_code",
-        "tableFileName": "linked_complaint_xref_type_code",
+        "tableName": "office_h",
+        "tableFileName": "office_h",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "long_description",
-        "type": "varchar",
-        "length": 250,
-        "nullable": "√",
+        "name": "operation_type",
+        "type": "bpchar",
+        "length": 1,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The long description of the link type<\/p>"
+        "comments": "<p>The operation performed: I = Insert, U = Update, D = Delete<\/p>"
     },
     {
         "tableName": "complaint_referral",
@@ -5982,13 +5982,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "update_user_guid",
-        "type": "uuid",
-        "length": 2147483647,
-        "nullable": "√",
+        "name": "display_order",
+        "type": "int4",
+        "length": 10,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": ""
+        "comments": "<p>The order in which the values should be displayed when presented to a user in a list<\/p>"
     },
     {
         "tableName": "gir_type_code",
@@ -6005,18 +6005,18 @@
         "comments": ""
     },
     {
-        "tableName": "linked_complaint_xref_type_code",
-        "tableFileName": "linked_complaint_xref_type_code",
+        "tableName": "office_h",
+        "tableFileName": "office_h",
         "tableType": "Table",
         "keyClass": "primaryKey",
         "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>linked_complaint_xref_type_code",
-        "type": "varchar",
-        "length": 20,
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>h_office_guid",
+        "type": "uuid",
+        "length": 2147483647,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>A human readable code used to identify a link type between complaints<\/p>"
+        "defaultValue": "complaint.uuid_generate_v4()",
+        "comments": "<p>System generated unique key for office history. This key should never be exposed to users via any system utilizing the tables.<\/p>"
     },
     {
         "tableName": "attractant_hwcr_xref",
@@ -7321,18 +7321,18 @@
         "comments": "<p>The timestamp when the person was updated.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
-        "tableName": "linked_complaint_xref_type_code",
-        "tableFileName": "linked_complaint_xref_type_code",
+        "tableName": "office_h",
+        "tableFileName": "office_h",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "display_order",
-        "type": "int4",
-        "length": 10,
+        "name": "operation_user_id",
+        "type": "varchar",
+        "length": 32,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>The order in which the values should be displayed when presented to a user in a list<\/p>"
+        "defaultValue": "CURRENT_USER",
+        "comments": "<p>The id of the user that created or modified the data in the office table.  Defaults to the logged in user if not passed in by the application.<\/p>"
     },
     {
         "tableName": "complaint_status_code",
