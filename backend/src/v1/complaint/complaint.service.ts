@@ -204,6 +204,10 @@ export class ComplaintService {
           .createQueryBuilder("allegation")
           .leftJoin("allegation.complaint_identifier", "complaint")
           .leftJoin("allegation.violation_code", "violation_code");
+
+        if (excludeCOSEnforcement) {
+          builder.andWhere("NOT (complaint.owned_by_agency_code_ref = 'COS')");
+        }
         break;
       case "GIR":
         builder = this._girComplaintRepository
@@ -279,6 +283,9 @@ export class ComplaintService {
             "violation_code.long_description",
             "violation_agency_xref.agency_code_ref",
           ]);
+        if (excludeCOSEnforcement) {
+          builder.andWhere("NOT (complaint.owned_by_agency_code_ref = 'COS')");
+        }
         break;
       case "GIR":
         builder = this._girComplaintRepository
