@@ -95,6 +95,10 @@ export const ComplaintDetailsEdit: FC = () => {
     dispatch(getCaseFile(id));
   }, [id, dispatch, allOfficers]);
 
+  useEffect(() => {
+    dispatch(getComplaintById(id, complaintType));
+  }, [id, complaintType, dispatch]);
+
   //-- selectors
   const data = useAppSelector(selectComplaint);
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
@@ -225,12 +229,6 @@ export const ComplaintDetailsEdit: FC = () => {
       dispatch(setLinkedComplaints([]));
     };
   }, [dispatch]);
-
-  useEffect(() => {
-    if (id && (!data || data.id !== id)) {
-      dispatch(getComplaintById(id, complaintType));
-    }
-  }, [id, parkGuid, complaintType, data, dispatch]);
 
   useEffect(() => {
     const incidentDateTimeObject = incidentDateTime ? new Date(incidentDateTime) : null;

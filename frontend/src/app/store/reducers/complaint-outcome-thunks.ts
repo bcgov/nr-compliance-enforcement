@@ -64,8 +64,7 @@ export const findCase =
       const response = await get<ComplaintOutcomeDto>(dispatch, parameters);
       return response?.complaintOutcomeGuid;
     } catch (error) {
-      console.warn("Unauthorized resource request", error);
-      window.location.href = "/not-authorized";
+      console.warn(`Something went wrong requesting outcome identifier for ${complaintIdentifier}`, error);
     }
   };
 
@@ -93,8 +92,7 @@ export const getCaseFile =
         dispatch(setPreventions([]));
       }
     } catch (error) {
-      console.warn("Unauthorized resource request", error);
-      window.location.href = "/not-authorized";
+      console.warn(`Something went wrong requesting outcome for ${complaintIdentifier}`, error);
     }
   };
 
