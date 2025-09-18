@@ -39,6 +39,8 @@ import Redirect from "./components/containers/pages/redirect";
 import config from "@/config";
 import { InspectionDetails } from "@/app/components/containers/instpections/details/inspection-details";
 import Inspections from "@/app/components/containers/instpections/inspections";
+import LegalDocuments from "@/app/components/containers/legal-docs/legal-docs";
+import LegalDocumentsDetail from "@/app/components/containers/legal-docs/legal-docs-detail";
 
 import PartyEdit from "./components/containers/parties/edit/party-edit";
 import InspectionEdit from "@/app/components/containers/instpections/edit/inspection-edit";
@@ -137,6 +139,14 @@ const App: FC = () => {
                     element={<InvestigationEdit />}
                   />
                 )}
+                <Route
+                  path="/legal-docs"
+                  element={<LegalDocuments />}
+                />
+                <Route
+                  path="/legal-docs/:id"
+                  element={<LegalDocumentsDetail />}
+                />
                 {investigationsActive && (
                   <Route
                     path="/investigation/:id/edit"

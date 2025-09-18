@@ -1,0 +1,43 @@
+type LegalDocumentSource {
+  legalDocumentSourceGuid: ID!
+  sourceUrl: String!
+  lastProcessedUtcTimestamp: String
+}
+
+type LegalDocument {
+  legalDocumentGuid: ID!
+  documentType: String!
+  externalIdentifier: String
+  title: String
+  xmlContent: String!
+  chapter: String
+  yearEnacted: Int
+  assentedTo: String
+  source: LegalDocumentSource!
+  nodes(parentNodeGuid: ID): [LegalDocumentNode!]!
+}
+
+type LegalDocumentNode {
+  legalDocumentNodeGuid: ID!
+  legalDocumentGuid: ID!
+  parentNodeGuid: ID
+  elementName: String!
+  elementId: String
+  elementNumber: String
+  elementText: String
+  attributesJson: String
+  sortOrder: Int!
+}
+
+type Query {
+  legalDocuments(documentType: String): [LegalDocument!]!
+  legalDocument(legalDocumentGuid: ID!): LegalDocument
+  legalDocumentNodes(legalDocumentGuid: ID!, parentNodeGuid: ID): [LegalDocumentNode!]!
+  legalDocumentNodeByElementId(legalDocumentGuid: ID!, elementId: String!): LegalDocumentNode
+  legalDocumentWithNodes(legalDocumentGuid: ID!): LegalDocumentWithNodes
+}
+
+type LegalDocumentWithNodes {
+  legalDocument: LegalDocument!
+  nodes: [LegalDocumentNode!]!
+}

@@ -230,7 +230,7 @@ comment on column case_management.schedule_code.update_utc_timestamp is 'The tim
 --
 -- CREATE TABLE
 --   case_management.schedule_sector_xref (
---     schedule_sector_xref_guid uuid NOT NULL DEFAULT case_management.uuid_generate_v4 (),
+--     schedule_sector_xref_guid uuid NOT NULL DEFAULT uuid_generate_v4 (),
 --     schedule_code varchar(10) NOT NULL,
 --     sector_code varchar(10) NOT NULL,
 --     active_ind bool NOT NULL,
@@ -242,7 +242,7 @@ comment on column case_management.schedule_code.update_utc_timestamp is 'The tim
 --   );
 CREATE TABLE
   case_management.schedule_sector_xref (
-    schedule_sector_xref_guid uuid NULL DEFAULT case_management.uuid_generate_v4 (),
+    schedule_sector_xref_guid uuid NULL DEFAULT uuid_generate_v4 (),
     schedule_code varchar(10) NOT NULL,
     sector_code varchar(10) NOT NULL,
     active_ind bool NOT NULL,
@@ -256,20 +256,14 @@ CREATE TABLE
 --
 -- create table relationships
 --
-ALTER TABLE case_management.schedule_sector_xref
-ADD CONSTRAINT FK_schedule_sector_xref__schedule_code FOREIGN KEY (schedule_code) REFERENCES case_management.schedule_code (schedule_code);
+ALTER TABLE case_management.schedule_sector_xref ADD CONSTRAINT FK_schedule_sector_xref__schedule_code FOREIGN KEY (schedule_code) REFERENCES case_management.schedule_code (schedule_code);
 
-ALTER TABLE case_management.schedule_sector_xref
-ADD CONSTRAINT FK_schedule_sector_xref__sector_code FOREIGN KEY (sector_code) REFERENCES case_management.sector_code (sector_code);
+ALTER TABLE case_management.schedule_sector_xref ADD CONSTRAINT FK_schedule_sector_xref__sector_code FOREIGN KEY (sector_code) REFERENCES case_management.sector_code (sector_code);
 
-ALTER TABLE case_management.decision
-ADD CONSTRAINT FK_decision__schedule_sector_xref_guid FOREIGN KEY (schedule_sector_xref_guid) REFERENCES case_management.schedule_sector_xref (schedule_sector_xref_guid);
+ALTER TABLE case_management.decision ADD CONSTRAINT FK_decision__schedule_sector_xref_guid FOREIGN KEY (schedule_sector_xref_guid) REFERENCES case_management.schedule_sector_xref (schedule_sector_xref_guid);
 
-ALTER TABLE case_management.decision
-ADD CONSTRAINT FK_decision__case_file_guid FOREIGN KEY (case_file_guid) REFERENCES case_management.case_file (case_file_guid);
+ALTER TABLE case_management.decision ADD CONSTRAINT FK_decision__case_file_guid FOREIGN KEY (case_file_guid) REFERENCES case_management.case_file (case_file_guid);
 
-ALTER TABLE case_management.decision
-ADD CONSTRAINT FK_decision__discharge_code FOREIGN KEY (discharge_code) REFERENCES case_management.discharge_code (discharge_code);
+ALTER TABLE case_management.decision ADD CONSTRAINT FK_decision__discharge_code FOREIGN KEY (discharge_code) REFERENCES case_management.discharge_code (discharge_code);
 
-ALTER TABLE case_management.decision
-ADD CONSTRAINT FK_decision__rationale_code FOREIGN KEY (rationale_code) REFERENCES case_management.rationale_code (rationale_code);
+ALTER TABLE case_management.decision ADD CONSTRAINT FK_decision__rationale_code FOREIGN KEY (rationale_code) REFERENCES case_management.rationale_code (rationale_code);

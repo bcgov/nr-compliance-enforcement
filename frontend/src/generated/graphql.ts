@@ -615,6 +615,51 @@ export type KeyValuePairInput = {
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type LegalDocument = {
+  __typename?: 'LegalDocument';
+  assentedTo?: Maybe<Scalars['String']['output']>;
+  chapter?: Maybe<Scalars['String']['output']>;
+  documentType: Scalars['String']['output'];
+  externalIdentifier?: Maybe<Scalars['String']['output']>;
+  legalDocumentGuid: Scalars['ID']['output'];
+  nodes: Array<LegalDocumentNode>;
+  source: LegalDocumentSource;
+  title?: Maybe<Scalars['String']['output']>;
+  xmlContent: Scalars['String']['output'];
+  yearEnacted?: Maybe<Scalars['Int']['output']>;
+};
+
+
+export type LegalDocumentnodesArgs = {
+  parentNodeGuid?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type LegalDocumentNode = {
+  __typename?: 'LegalDocumentNode';
+  attributesJson?: Maybe<Scalars['String']['output']>;
+  elementId?: Maybe<Scalars['String']['output']>;
+  elementName: Scalars['String']['output'];
+  elementNumber?: Maybe<Scalars['String']['output']>;
+  elementText?: Maybe<Scalars['String']['output']>;
+  legalDocumentGuid: Scalars['ID']['output'];
+  legalDocumentNodeGuid: Scalars['ID']['output'];
+  parentNodeGuid?: Maybe<Scalars['ID']['output']>;
+  sortOrder: Scalars['Int']['output'];
+};
+
+export type LegalDocumentSource = {
+  __typename?: 'LegalDocumentSource';
+  lastProcessedUtcTimestamp?: Maybe<Scalars['String']['output']>;
+  legalDocumentSourceGuid: Scalars['ID']['output'];
+  sourceUrl: Scalars['String']['output'];
+};
+
+export type LegalDocumentWithNodes = {
+  __typename?: 'LegalDocumentWithNodes';
+  legalDocument: LegalDocument;
+  nodes: Array<LegalDocumentNode>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createAssessment: ComplaintOutcome;
@@ -1040,6 +1085,11 @@ export type Query = {
   hwcrOutcomeCodes: Array<Maybe<HWCROutcomeCode>>;
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
+  legalDocument?: Maybe<LegalDocument>;
+  legalDocumentNodeByElementId?: Maybe<LegalDocumentNode>;
+  legalDocumentNodes: Array<LegalDocumentNode>;
+  legalDocumentWithNodes?: Maybe<LegalDocumentWithNodes>;
+  legalDocuments: Array<LegalDocument>;
   nonComplianceCodes: Array<Maybe<NonComplianceCode>>;
   outcomeAgencyCodes: Array<Maybe<OutcomeAgencyCode>>;
   park?: Maybe<Park>;
@@ -1149,6 +1199,33 @@ export type QuerygetParksByAreaArgs = {
 
 export type QueryinactionJustificationCodesArgs = {
   outcomeAgencyCode?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerylegalDocumentArgs = {
+  legalDocumentGuid: Scalars['ID']['input'];
+};
+
+
+export type QuerylegalDocumentNodeByElementIdArgs = {
+  elementId: Scalars['String']['input'];
+  legalDocumentGuid: Scalars['ID']['input'];
+};
+
+
+export type QuerylegalDocumentNodesArgs = {
+  legalDocumentGuid: Scalars['ID']['input'];
+  parentNodeGuid?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QuerylegalDocumentWithNodesArgs = {
+  legalDocumentGuid: Scalars['ID']['input'];
+};
+
+
+export type QuerylegalDocumentsArgs = {
+  documentType?: InputMaybe<Scalars['String']['input']>;
 };
 
 

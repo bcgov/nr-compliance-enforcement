@@ -19,6 +19,9 @@ import { business_h as _business_h } from "./business_h";
 import { party as _party } from "./party";
 import { party_h as _party_h } from "./party_h";
 import { party_type_code as _party_type_code } from "./party_type_code";
+import { legal_document as _legal_document } from "./legal_document";
+import { legal_document_node as _legal_document_node } from "./legal_document_node";
+import { legal_document_source as _legal_document_source } from "./legal_document_source";
 
 export namespace PrismaModel {
   export class contact_method extends _contact_method {}
@@ -42,6 +45,9 @@ export namespace PrismaModel {
   export class party extends _party {}
   export class party_h extends _party_h {}
   export class party_type_code extends _party_type_code {}
+  export class legal_document extends _legal_document {}
+  export class legal_document_node extends _legal_document_node {}
+  export class legal_document_source extends _legal_document_source {}
 
   export const extraModels = [
     contact_method,
@@ -65,5 +71,8 @@ export namespace PrismaModel {
     party,
     party_h,
     party_type_code,
+    legal_document,
+    legal_document_node,
+    legal_document_source,
   ];
 }

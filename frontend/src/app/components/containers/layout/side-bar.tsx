@@ -43,6 +43,12 @@ export const SideBar: FC = () => {
       hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.INSPECTIONS)),
     },
     {
+      id: "legal-docs-link",
+      name: "Legal documents",
+      icon: "bi bi-journal-text",
+      route: "/legal-docs",
+    },
+    {
       id: "zone-at-a-glance-link",
       name: "Zone at a glance",
       icon: "bi bi-buildings",
