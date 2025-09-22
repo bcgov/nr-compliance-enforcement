@@ -28,5 +28,6 @@ export interface ComplaintRequestPayload {
   equipmentTypesFilter?: Option[];
   page?: number;
   pageSize?: number;
+  showReferrals?: boolean;
   query?: string;
 }
