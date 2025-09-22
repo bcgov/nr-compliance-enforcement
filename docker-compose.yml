@@ -128,7 +128,6 @@ services:
       FLYWAY_PLACEHOLDERS_SHARED_PASSWORD: *SHARED_PASSWORD
       FLYWAY_DEFAULT_SCHEMA: shared
       FLYWAY_LOCATIONS: filesystem:./sql, filesystem:./sql-test, filesystem:./baseline
-      FLYWAY_METABASE_READONLY_PASSWORD: *METABASE_READONLY_PASSWORD
     depends_on:
       database:
         condition: service_healthy
