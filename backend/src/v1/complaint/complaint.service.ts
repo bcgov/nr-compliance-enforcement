@@ -85,7 +85,6 @@ import { Role } from "../../enum/role.enum";
 import { ComplaintDtoAlias } from "src/types/models/complaints/dtos/complaint-dto-alias";
 import { ParkDto } from "../shared_data/dto/park.dto";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
-import { hasRole } from "../../common/has-role";
 
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
@@ -195,6 +194,8 @@ export class ComplaintService {
     includeCosOrganization: boolean,
     count: boolean,
     excludeCOSEnforcement?: boolean,
+    agencies?: string[],
+    showReferrals?: boolean,
   ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
     let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
 
@@ -203,17 +204,23 @@ export class ComplaintService {
         builder = this._allegationComplaintRepository
           .createQueryBuilder("allegation")
           .leftJoin("allegation.complaint_identifier", "complaint")
-          .leftJoin("allegation.violation_code", "violation_code");
+          .leftJoin("allegation.violation_code", "violation_code")
+          .leftJoin("complaint.complaint_referral", "complaint_referral");
 
         if (excludeCOSEnforcement) {
-          builder.andWhere("NOT (complaint.owned_by_agency_code_ref = 'COS')");
+          builder.andWhere(
+            `(complaint.owned_by_agency_code_ref != 'COS'
+              OR (:showReferrals = true AND complaint_referral.referred_by_agency_code_ref IN (:...agency_codes)))`,
+            { showReferrals, agency_codes: agencies },
+          );
         }
         break;
       case "GIR":
         builder = this._girComplaintRepository
           .createQueryBuilder("general")
           .leftJoin("general.complaint_identifier", "complaint")
-          .leftJoin("general.gir_type_code", "gir");
+          .leftJoin("general.gir_type_code", "gir")
+          .leftJoin("complaint.complaint_referral", "complaint_referral");
         break;
       case "HWCR":
         builder = this._wildlifeComplaintRepository
@@ -222,13 +229,15 @@ export class ComplaintService {
           .leftJoin("wildlife.species_code", "species_code")
           .leftJoin("wildlife.hwcr_complaint_nature_code", "complaint_nature_code")
           .leftJoin("wildlife.attractant_hwcr_xref", "attractants", "attractants.active_ind = true")
-          .leftJoin("attractants.attractant_code", "attractant_code");
+          .leftJoin("attractants.attractant_code", "attractant_code")
+          .leftJoin("complaint.complaint_referral", "complaint_referral");
         break;
       case "SECTOR":
       default:
         if (excludeCOSEnforcement) {
           builder = this.complaintsRepository
             .createQueryBuilder("complaint")
+            .leftJoin("complaint.complaint_referral", "complaint_referral")
             .andWhere(
               "NOT (complaint.owned_by_agency_code_ref = :agency AND complaint.complaint_type_code = :complaintType)",
               { agency: "COS", complaintType: "ERS" },
@@ -268,6 +277,8 @@ export class ComplaintService {
   private readonly _generateQueryBuilder = (
     type: COMPLAINT_TYPE,
     excludeCOSEnforcement?: boolean,
+    agencies?: string[],
+    showReferrals?: boolean,
   ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
     let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
     switch (type) {
@@ -277,6 +288,7 @@ export class ComplaintService {
           .leftJoinAndSelect("allegation.complaint_identifier", "complaint")
           .leftJoin("allegation.violation_code", "violation_code")
           .leftJoin("violation_code.violationAgencyXrefs", "violation_agency_xref")
+          .leftJoin("complaint.complaint_referral", "complaint_referral")
           .addSelect([
             "violation_code.violation_code",
             "violation_code.short_description",
@@ -284,7 +296,11 @@ export class ComplaintService {
             "violation_agency_xref.agency_code_ref",
           ]);
         if (excludeCOSEnforcement) {
-          builder.andWhere("NOT (complaint.owned_by_agency_code_ref = 'COS')");
+          builder.andWhere(
+            `(complaint.owned_by_agency_code_ref != 'COS'
+              OR (:showReferrals = true AND complaint_referral.referred_by_agency_code_ref IN (:...agency_codes)))`,
+            { showReferrals, agency_codes: agencies },
+          );
         }
         break;
       case "GIR":
@@ -1175,15 +1191,7 @@ export class ComplaintService {
     agencies?: string[],
     complaintType?: COMPLAINT_TYPE,
   ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
-    // Special handling for referral status
-    if (status === "REFERRED") {
-      builder.innerJoin("complaint.complaint_referral", "complaint_referral");
-    } else {
-      builder.leftJoin("complaint.complaint_referral", "complaint_referral");
-    }
-
     // search for complaints based on the user's role
-
     // No agencies, no results
     if (!agencies?.length) {
       builder.andWhere("1 = 0");
@@ -1193,7 +1201,8 @@ export class ComplaintService {
     // Handle referral status
     if (status === "REFERRED") {
       builder.andWhere(
-        `complaint.owned_by_agency_code_ref NOT IN (:...agency_codes)
+        `complaint_referral.complaint_identifier IS NOT NULL
+        AND complaint.owned_by_agency_code_ref NOT IN (:...agency_codes)
        AND complaint_referral.referred_by_agency_code_ref IS NOT NULL
        AND complaint_referral.referred_by_agency_code_ref IN (:...agency_codes)`,
         { agency_codes: agencies },
@@ -1232,7 +1241,7 @@ export class ComplaintService {
     try {
       let results: SearchResults = { totalCount: 0, complaints: [] };
 
-      const { orderBy, sortBy, page, pageSize, query, ...filters } = model;
+      const { showReferrals, orderBy, sortBy, page, pageSize, query, ...filters } = model;
 
       const skip = page && pageSize ? (page - 1) * pageSize : 0;
       const sortTable = this._getSortTable(sortBy);
@@ -1250,7 +1259,7 @@ export class ComplaintService {
       //-- exclude COS's enforcement complaints in Sector view if the user does not have COS role
       const excludeCosEnforcement: boolean = !agencies.includes(Role.COS);
 
-      let builder = this._generateQueryBuilder(filterComplaintType, excludeCosEnforcement);
+      let builder = this._generateQueryBuilder(filterComplaintType, excludeCosEnforcement, agencies, showReferrals);
 
       //-- apply filters if used
       if (Object.keys(filters).length !== 0) {
@@ -1512,6 +1521,8 @@ export class ComplaintService {
         includeCosOrganization,
         count,
         excludeCosEnforcement,
+        agencies,
+        model.showReferrals,
       );
 
       //HERE 1

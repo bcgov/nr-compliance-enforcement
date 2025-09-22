@@ -75,6 +75,7 @@ export const generateMapComplaintRequestPayload = (
     query: searchQuery,
     page,
     pageSize,
+    showReferrals: complaintType === "ERS",
   };
 
   switch (complaintType) {
@@ -184,6 +185,7 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
         outcomeAnimalEndDate: payload.outcomeAnimalEndDateFilter,
         equipmentStatus: payload.equipmentStatusFilter?.value,
         equipmentTypes: payload.equipmentTypesFilter?.map((type) => type.value),
+        showReferrals: payload.showReferrals,
         query: searchQuery,
       };
 

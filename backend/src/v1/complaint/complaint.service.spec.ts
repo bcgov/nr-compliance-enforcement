@@ -333,6 +333,7 @@ describe("Testing: Complaint Service", () => {
       page: 1,
       pageSize: 50,
       query: "bear",
+      showReferrals: true,
     };
 
     //-- act
@@ -362,6 +363,7 @@ describe("Testing: Complaint Service", () => {
       pageSize: undefined,
       sortBy: undefined,
       orderBy: undefined,
+      showReferrals: true,
     };
 
     //-- act
@@ -391,6 +393,7 @@ describe("Testing: Complaint Service", () => {
       pageSize: undefined,
       sortBy: undefined,
       orderBy: undefined,
+      showReferrals: true,
     };
 
     //-- act
