@@ -62,6 +62,10 @@ axios.interceptors.response.use(
   (error: AxiosError) => {
     const { response } = error;
 
+    if (response && response.status === STATUS_CODES.Unauthorized) {
+      globalThis.location.href = "/not-authorized";
+    }
+
     if (response && response.status === STATUS_CODES.Forbiden) {
       ToggleError("User is not authorized to perform this action");
     }
