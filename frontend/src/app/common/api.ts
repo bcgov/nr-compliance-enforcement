@@ -63,7 +63,7 @@ axios.interceptors.response.use(
     const { response } = error;
 
     if (response && response.status === STATUS_CODES.Unauthorized) {
-      window.location.href = "/not-authorized";
+      globalThis.location.href = "/not-authorized";
     }
 
     if (response && response.status === STATUS_CODES.Forbiden) {
