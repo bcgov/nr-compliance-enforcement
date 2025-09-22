@@ -841,6 +841,15 @@ export class CodeTableService {
         const results = data.parkAreas;
         return results;
       }
+
+      case "party-type": {
+        const { data } = await get(token, {
+          query: "{partyTypeCodes { partyTypeCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.partyTypeCodes;
+        return results;
+      }
+
       case "email-reference": {
         const data = await this._emailReferenceRepository.find({
           where: { active_ind: true },

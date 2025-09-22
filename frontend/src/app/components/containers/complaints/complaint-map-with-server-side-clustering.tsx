@@ -30,6 +30,8 @@ export const generateMapComplaintRequestPayload = (
   searchQuery: string,
 ): ComplaintRequestPayload => {
   const {
+    agency,
+    complaintType: filterComplaintType,
     region,
     zone,
     community,
@@ -42,6 +44,7 @@ export const generateMapComplaintRequestPayload = (
     species,
     natureOfComplaint,
     violationType,
+    girType,
     complaintMethod,
     actionTaken,
     outcomeAnimal,
@@ -55,6 +58,8 @@ export const generateMapComplaintRequestPayload = (
   let common = {
     sortColumn: sortColumn,
     sortOrder: sortOrder,
+    agencyFilter: agency,
+    complaintTypeFilter: filterComplaintType,
     regionCodeFilter: region,
     zoneCodeFilter: zone,
     areaCodeFilter: community,
@@ -70,25 +75,45 @@ export const generateMapComplaintRequestPayload = (
     query: searchQuery,
     page,
     pageSize,
+    showReferrals: complaintType === "ERS",
   };
 
   switch (complaintType) {
+    case COMPLAINT_TYPES.GIR:
+      return {
+        ...common,
+        girTypeFilter: girType,
+      } as ComplaintRequestPayload;
     case COMPLAINT_TYPES.ERS:
       return {
         ...common,
         violationFilter: violationType,
         complaintMethodFilter: complaintMethod,
+        actionTakenFilter: actionTaken,
       } as ComplaintRequestPayload;
     case COMPLAINT_TYPES.HWCR:
-    default:
       return {
         ...common,
         speciesCodeFilter: species,
         natureOfComplaintFilter: natureOfComplaint,
         outcomeAnimalFilter: outcomeAnimal,
+        outcomeAnimalStartDateFilter: outcomeAnimalStartDate,
+        outcomeAnimalEndDateFilter: outcomeAnimalEndDate,
         outcomeActionedByFilter: outcomeActionedBy,
         equipmentStatusFilter: equipmentStatus,
         equipmentTypesFilter: equipmentTypes,
+      } as ComplaintRequestPayload;
+    case COMPLAINT_TYPES.SECTOR:
+    default:
+      return {
+        ...common,
+        speciesCodeFilter: species,
+        natureOfComplaintFilter: natureOfComplaint,
+        violationFilter: violationType,
+        outcomeAnimalFilter: outcomeAnimal,
+        outcomeAnimalStartDateFilter: outcomeAnimalStartDate,
+        outcomeAnimalEndDateFilter: outcomeAnimalEndDate,
+        outcomeActionedByFilter: outcomeActionedBy,
       } as ComplaintRequestPayload;
   }
 };
@@ -143,11 +168,14 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
         park: payload.parkFilter?.value,
         area: payload.areaFilter?.value,
         officerAssigned: payload.officerFilter?.value,
+        agency: payload.agencyFilter?.value,
+        complaintTypeFilter: payload.complaintTypeFilter?.value,
         natureOfComplaint: payload.natureOfComplaintFilter?.value,
         speciesCode: payload.speciesCodeFilter?.value,
         incidentReportedStart: payload.startDateFilter,
         incidentReportedEnd: payload.endDateFilter,
         violationCode: payload.violationFilter?.value,
+        girTypeCode: payload.girTypeFilter?.value,
         status: payload.complaintStatusFilter?.value,
         complaintMethod: payload.complaintMethodFilter?.value,
         actionTaken: payload.actionTakenFilter?.value,
@@ -157,6 +185,7 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
         outcomeAnimalEndDate: payload.outcomeAnimalEndDateFilter,
         equipmentStatus: payload.equipmentStatusFilter?.value,
         equipmentTypes: payload.equipmentTypesFilter?.map((type) => type.value),
+        showReferrals: payload.showReferrals,
         query: searchQuery,
       };
 

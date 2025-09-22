@@ -1,1 +1,0 @@
-ALTER TABLE case_management."action" ADD CONSTRAINT "FK_action_action_type_action_xref" FOREIGN KEY (action_type_action_xref_guid) REFERENCES case_management.action_type_action_xref(action_type_action_xref_guid);

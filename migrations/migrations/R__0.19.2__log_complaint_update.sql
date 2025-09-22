@@ -1,3 +1,0 @@
----------
--- Deprecated:   See R__update_log_complaint_update.sql
----------

@@ -11,6 +11,7 @@ import {
   Logger,
   HttpException,
   HttpStatus,
+  Request,
 } from "@nestjs/common";
 import { ComplaintOutcomeService } from "./complaint_outcome.service";
 import { Role, coreRoles } from "../../../enum/role.enum";
@@ -31,7 +32,7 @@ import { UpdateDecisionInput } from "../../../types/models/case-files/ceeb/decis
 import { CreateAuthorizationOutcomeInput } from "../../../types/models/case-files/ceeb/site/create-authorization-outcome-input";
 import { UpdateAuthorizationOutcomeInput } from "../../../types/models/case-files/ceeb/site/update-authorization-outcome-input";
 import { DeleteAuthorizationOutcomeInput } from "../../../types/models/case-files/ceeb/site/delete-authorization-outcome-input";
-import { CaseManagementError } from "src/enum/case_management_error.enum";
+import { ComplaintOutcomeError } from "src/enum/complaint_outcome_error.enum";
 import { UpdateAssessmentInput } from "src/types/models/case-files/assessment/update-assessment-input";
 import { CreateAssessmentInput } from "src/types/models/case-files/assessment/create-assessment-input";
 import { UpdatePreventionInput } from "src/types/models/case-files/prevention/update-prevention-input";
@@ -131,8 +132,8 @@ export class ComplaintOutcomeController {
 
   @Get("/:complaint_id")
   @Roles(coreRoles)
-  find(@Param("complaint_id") complaint_id: string, @Token() token) {
-    return this.service.find(complaint_id, token);
+  find(@Param("complaint_id") complaint_id: string, @Token() token, @Request() req) {
+    return this.service.find(complaint_id, token, req);
   }
 
   @Post("/note")
@@ -201,9 +202,13 @@ export class ComplaintOutcomeController {
 
   @Post("/decision")
   @Roles(Role.CEEB)
-  async createDecision(@Token() token, @Body() model: CreateDecisionInput): Promise<ComplaintOutcomeDto> {
-    const result = await this.service.createDecision(token, model);
-    if (result === CaseManagementError.DECISION_ACTION_EXIST) {
+  async createDecision(
+    @Token() token,
+    @Body() model: CreateDecisionInput,
+    @Request() req,
+  ): Promise<ComplaintOutcomeDto> {
+    const result = await this.service.createDecision(token, model, req);
+    if (result === ComplaintOutcomeError.DECISION_ACTION_EXIST) {
       throw new HttpException("Decision Action Exist", HttpStatus.CONFLICT);
     } else {
       return result;

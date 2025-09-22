@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { CaseManagementPrismaService } from "./prisma/cm/prisma.cm.service";
+import { ComplaintOutcomePrismaService } from "./prisma/complaint_outcome/prisma.complaint_outcome.service";
 
 @Injectable()
 export class AppService {
-  constructor(private readonly prisma: CaseManagementPrismaService) {}
+  constructor(private readonly prisma: ComplaintOutcomePrismaService) {}
 
   getHello(): string {
     return "Hello from Emerald!";

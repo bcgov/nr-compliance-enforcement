@@ -67,6 +67,7 @@ export const AvailableCodeTables = [
   "equipment-status",
   "park-area",
   "email-reference",
+  "party-type",
 ];
 
 export const AvailableAgencies = ["cos"];

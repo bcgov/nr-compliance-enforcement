@@ -61,14 +61,14 @@ import { EmailReferenceModule } from "./v1/email_reference/email_reference.modul
 import { EmailModule } from "./v1/email/email.module";
 import { ComplaintReferralEmailLogModule } from "./v1/complaint_referral_email_log/complaint_referral_email_log.module";
 
-console.log("Var check - POSTGRESQL_HOST", process.env.POSTGRESQL_HOST);
-console.log("Var check - POSTGRESQL_DATABASE", process.env.POSTGRESQL_DATABASE);
-console.log("Var check - POSTGRESQL_USER", process.env.POSTGRESQL_USER);
-console.log("Var check - POSTGRESQL_ENABLE_LOGGING", process.env.POSTGRESQL_ENABLE_LOGGING);
-if (process.env.POSTGRESQL_PASSWORD != null) {
-  console.log("Var check - POSTGRESQL_PASSWORD present");
+console.log("Var check - COMPLAINT_POSTGRESQL_HOST", process.env.COMPLAINT_POSTGRESQL_HOST);
+console.log("Var check - COMPLAINT_POSTGRESQL_DATABASE", process.env.COMPLAINT_POSTGRESQL_DATABASE);
+console.log("Var check - COMPLAINT_POSTGRESQL_USER", process.env.COMPLAINT_POSTGRESQL_USER);
+console.log("Var check - COMPLAINT_POSTGRESQL_ENABLE_LOGGING", process.env.COMPLAINT_POSTGRESQL_ENABLE_LOGGING);
+if (process.env.COMPLAINT_POSTGRESQL_PASSWORD != null) {
+  console.log("Var check - COMPLAINT_POSTGRESQL_PASSWORD present");
 } else {
-  console.log("Var check - POSTGRESQL_PASSWORD not present");
+  console.log("Var check - COMPLAINT_POSTGRESQL_PASSWORD not present");
 }
 
 @Module({
@@ -78,11 +78,11 @@ if (process.env.POSTGRESQL_PASSWORD != null) {
       useFactory() {
         return {
           type: "postgres",
-          host: process.env.POSTGRESQL_HOST || "localhost",
+          host: process.env.COMPLAINT_POSTGRESQL_HOST || "localhost",
           port: 5432,
-          database: process.env.POSTGRESQL_DATABASE || "postgres",
-          username: process.env.POSTGRESQL_USER || "postgres",
-          password: process.env.POSTGRESQL_PASSWORD,
+          database: process.env.COMPLAINT_POSTGRESQL_DATABASE || "postgres",
+          username: process.env.COMPLAINT_POSTGRESQL_USER || "postgres",
+          password: process.env.COMPLAINT_POSTGRESQL_PASSWORD,
           schema: "complaint",
           autoLoadEntities: true, // Auto load all entities registered by typeorm forFeature method.
           logging: process.env.POSTGRESQL_ENABLE_LOGGING === "true",

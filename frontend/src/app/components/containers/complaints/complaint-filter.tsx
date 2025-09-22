@@ -6,6 +6,7 @@ import {
   selectHwcrNatureOfComplaintCodeDropdown,
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
+  selectAllViolationCodeDropdown,
   selectCascadedRegion,
   selectCascadedZone,
   selectCascadedCommunity,
@@ -15,6 +16,8 @@ import {
   selectAllWildlifeComplaintOutcome,
   selectAllEquipmentDropdown,
   selectOutcomeActionedByOptions,
+  selectAgencyExternalDropdown,
+  selectCreatableComplaintTypeDropdown,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgencyDropdownUsingPersonGuid } from "@store/reducers/officer";
 import { selectDecisionTypeDropdown, selectEquipmentStatusDropdown } from "@store/reducers/code-table-selectors";
@@ -39,6 +42,8 @@ type Props = {
 export const ComplaintFilter: FC<Props> = ({ type }) => {
   const {
     state: {
+      agency,
+      complaintType,
       region,
       zone,
       community,
@@ -64,8 +69,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     dispatch,
   } = useContext(ComplaintFilterContext);
 
-  const agency = UserService.getUserAgency();
-  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdownUsingPersonGuid(agency, type));
+  const userAgency = UserService.getUserAgency();
+  let officersByAgency = useAppSelector(selectOfficersByAgencyDropdownUsingPersonGuid(userAgency, type));
   if (officersByAgency && officersByAgency[0]?.value !== "Unassigned") {
     officersByAgency.unshift({ value: "Unassigned", label: "Unassigned" });
   }
@@ -77,22 +82,46 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     { value: "REFERRED", label: "Referred" },
   ];
 
-  const violationTypes = useAppSelector(selectViolationCodeDropdown(agency));
+  const violationTypes = useAppSelector(
+    type === COMPLAINT_TYPES.SECTOR
+      ? selectAllViolationCodeDropdown
+      : selectViolationCodeDropdown(agency?.value || userAgency),
+  );
   const girTypes = useAppSelector(selectGirTypeCodeDropdown);
   const outcomeAnimalTypes = useAppSelector(selectAllWildlifeComplaintOutcome); //want to see inactive items in the filter
   const equipmentStatusTypes = useAppSelector(selectEquipmentStatusDropdown);
   const equipmentTypesDropdown = useAppSelector(selectAllEquipmentDropdown).filter((item) => item.isActive === true); //only display active equipment_code
-  const outcomeActionedByOptions = useAppSelector(selectOutcomeActionedByOptions);
+  const outcomeActionedByDropdown = useAppSelector(selectOutcomeActionedByOptions);
 
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
   const communities = useAppSelector(selectCascadedCommunity(region?.value, zone?.value, community?.value));
 
   const complaintMethods = useAppSelector(selectComplaintReceivedMethodDropdown);
-  const decisionTypeOptions = useAppSelector(selectDecisionTypeDropdown);
+  const decisionTypeDropdown = useAppSelector(selectDecisionTypeDropdown);
 
-  const activeFilters = useAppSelector(listActiveFilters());
+  const baseActiveFilters = useAppSelector(listActiveFilters());
   const parkAreasList = useAppSelector(selectParkAreasDropdown);
+  const agencyDropdown = useAppSelector(selectAgencyExternalDropdown);
+  const complaintTypeDropdown = useAppSelector(selectCreatableComplaintTypeDropdown);
+
+  // Override activeFilters for sector view
+  const activeFilters =
+    type === COMPLAINT_TYPES.SECTOR
+      ? {
+          ...baseActiveFilters,
+          showRegionFilter: false,
+          showZoneFilter: false,
+          showOfficerFilter: false,
+          showNatureComplaintFilter: true,
+          showSpeciesFilter: true,
+          showViolationFilter: true,
+          showGirTypeFilter: true,
+          showOutcomeAnimalFilter: true,
+          showOutcomeActionedByFilter: true,
+          showOutcomeAnimalDateFilter: true,
+        }
+      : baseActiveFilters;
 
   const setFilter = useCallback(
     (name: string, value?: Option | Date | null) => {
@@ -141,6 +170,13 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
     }
   };
 
+  const showHWCRFilters =
+    COMPLAINT_TYPES.HWCR === type || (type === COMPLAINT_TYPES.SECTOR && complaintType?.value === COMPLAINT_TYPES.HWCR);
+  const showERSFilters =
+    COMPLAINT_TYPES.ERS === type || (type === COMPLAINT_TYPES.SECTOR && complaintType?.value === COMPLAINT_TYPES.ERS);
+  const showGIRFilters =
+    COMPLAINT_TYPES.GIR === type || (type === COMPLAINT_TYPES.SECTOR && complaintType?.value === COMPLAINT_TYPES.GIR);
+
   ///--
   /// Render out the filter drawer by the complaint type passed from the parent complaint component
   /// Each type of compplaint needs to have its own unique second row of filters specified
@@ -148,7 +184,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const renderComplaintFilters = (): JSX.Element => {
     return (
       <div className="comp-filter-container">
-        {COMPLAINT_TYPES.HWCR === type &&
+        {showHWCRFilters &&
           activeFilters.showNatureComplaintFilter &&
           activeFilters.showSpeciesFilter && ( // wildlife only filter
             <>
@@ -198,8 +234,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             </>
           )}
 
-        {COMPLAINT_TYPES.ERS === type &&
-          activeFilters.showViolationFilter && ( // wildlife only filter
+        {showERSFilters &&
+          activeFilters.showViolationFilter && ( // ERS only filter
             <div id="comp-filter-violation-id">
               {/* <!-- violation types --> */}
               <label htmlFor="violation-type-select-id">Violation type</label>
@@ -224,7 +260,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             </div>
           )}
 
-        {COMPLAINT_TYPES.GIR === type &&
+        {showGIRFilters &&
           activeFilters.showGirTypeFilter && ( // GIR only filter
             <div id="comp-filter-gir-id">
               <label htmlFor="gir-type-select-id">GIR type</label>
@@ -283,7 +319,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {COMPLAINT_TYPES.ERS === type && activeFilters.showMethodFilter && (
+        {showERSFilters && activeFilters.showMethodFilter && (
           <div id="comp-filter-complaint-method-id">
             <label htmlFor="complaint-method-select-id">Complaint method</label>
             <div className="filter-select-padding">
@@ -321,7 +357,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 classNames={{
                   menu: () => "top-layer-select",
                 }}
-                options={decisionTypeOptions}
+                options={decisionTypeDropdown}
                 placeholder="Select"
                 enableValidation={false}
                 value={actionTaken}
@@ -331,7 +367,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {COMPLAINT_TYPES.HWCR === type && activeFilters.showOutcomeAnimalFilter && (
+        {showHWCRFilters && activeFilters.showOutcomeAnimalFilter && (
           <div id="comp-filter-status-id">
             <label htmlFor="status-select-id">Outcome by animal</label>
             <div className="filter-select-padding">
@@ -355,7 +391,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {COMPLAINT_TYPES.HWCR === type &&
+        {showHWCRFilters &&
           activeFilters.showOutcomeActionedByFilter &&
           outcomeAnimal &&
           OUTCOMES_REQUIRING_ACTIONED_BY.includes(outcomeAnimal.value) && (
@@ -372,7 +408,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                   classNames={{
                     menu: () => "top-layer-select",
                   }}
-                  options={outcomeActionedByOptions}
+                  options={outcomeActionedByDropdown}
                   placeholder="Select"
                   enableValidation={false}
                   value={outcomeActionedBy}
@@ -382,7 +418,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             </div>
           )}
 
-        {COMPLAINT_TYPES.HWCR === type && activeFilters.showOutcomeAnimalDateFilter && (
+        {showHWCRFilters && activeFilters.showOutcomeAnimalDateFilter && (
           <FilterDate
             id="comp-filter-outcome-date-id"
             label="Outcome date"
@@ -392,7 +428,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           />
         )}
 
-        {COMPLAINT_TYPES.HWCR === type && (
+        {showHWCRFilters && (
           <div id="comp-filter-status-id">
             <label htmlFor="status-select-id">Equipment status</label>
             <div className="filter-select-padding">
@@ -420,7 +456,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {COMPLAINT_TYPES.HWCR === type && (
+        {showHWCRFilters && (
           <div id="comp-filter-status-id">
             <label htmlFor="status-select-id">Equipment type(s)</label>
             <div className="filter-select-padding">
@@ -550,8 +586,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 <label htmlFor="park-select-id">Park</label>
                 <div className="filter-select-padding">
                   <ParkSelect
-                    id={`comp-details-park-${park}`}
-                    initialParkGuid={park}
+                    id={`comp-details-park-${park?.value || "none"}`}
+                    initialParkGuid={park?.value}
                     isInEdit={true}
                     onChange={(option) => {
                       setFilter("park", option);
@@ -585,7 +621,65 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
               </div>
             </div>
           )}
+          {type === COMPLAINT_TYPES.SECTOR && (
+            <>
+              <div id="comp-filter-agency-id">
+                <label htmlFor="agency-select-filter-id">Agency</label>
+                <div className="filter-select-padding">
+                  <CompSelect
+                    id="agency-select-filter-id"
+                    showInactive={true}
+                    classNamePrefix="comp-select"
+                    onChange={(option) => {
+                      setFilter("agency", option);
+                    }}
+                    classNames={{
+                      menu: () => "top-layer-select",
+                    }}
+                    options={agencyDropdown}
+                    placeholder="Select"
+                    enableValidation={false}
+                    value={agency}
+                    isClearable={true}
+                  />
+                </div>
+              </div>
+              <div id="comp-filter-complaint-type-id">
+                <label htmlFor="complaint-type-select-filter-id">Complaint type</label>
+                <div className="filter-select-padding">
+                  <CompSelect
+                    id="complaint-type-select-filter-id"
+                    showInactive={false}
+                    classNamePrefix="comp-select"
+                    onChange={(option) => {
+                      setFilter("complaintType", option);
+                      // Clear type-specific filters when complaint type changes
+                      if (option?.value !== COMPLAINT_TYPES.HWCR) {
+                        setFilter("natureOfComplaint", null);
+                        setFilter("species", null);
+                      }
+                      if (option?.value !== COMPLAINT_TYPES.ERS) {
+                        setFilter("violationType", null);
+                      }
+                      if (option?.value !== COMPLAINT_TYPES.GIR) {
+                        setFilter("girType", null);
+                      }
+                    }}
+                    classNames={{
+                      menu: () => "top-layer-select",
+                    }}
+                    options={complaintTypeDropdown}
+                    placeholder="Select"
+                    enableValidation={false}
+                    value={complaintType}
+                    isClearable={true}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </div>
+
         {renderComplaintFilters()}
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, Scope } from "@nestjs/common";
+import { HttpException, HttpStatus, Inject, Injectable, Logger, Scope } from "@nestjs/common";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { caseFileQueryFields, get, post } from "../../../external_api/shared_data";
@@ -26,7 +26,7 @@ import { getIdirFromRequest } from "../../../common/get-idir-from-request";
 import { CodeTableService } from "../../code-table/code-table.service";
 import { Complaint } from "../../complaint/entities/complaint.entity";
 import { CreateLinkedComplaintXrefDto } from "../../linked_complaint_xref/dto/create-linked_complaint_xref.dto";
-import { CaseManagementError } from "../../../enum/case_management_error.enum";
+import { ComplaintOutcomeError } from "../../../enum/complaint_outcome_error.enum";
 import { CreateAssessmentInput } from "src/types/models/case-files/assessment/create-assessment-input";
 import { UpdateAssessmentInput } from "src/types/models/case-files/assessment/update-assessment-input";
 import { CreatePreventionInput } from "src/types/models/case-files/prevention/create-prevention-input";
@@ -48,7 +48,11 @@ export class ComplaintOutcomeService {
     this.mapper = mapper;
   }
 
-  find = async (complaint_id: string, token: string): Promise<ComplaintOutcomeDto> => {
+  find = async (complaint_id: string, token: string, req: any): Promise<ComplaintOutcomeDto> => {
+    const canViewRecord = await this.complaintService.canViewComplaint(complaint_id, req);
+    if (!canViewRecord) {
+      throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
     const { data, errors } = await get(token, {
       query: `{getComplaintOutcomeByComplaintId (complaintId: "${complaint_id}")
         ${caseFileQueryFields}
@@ -106,6 +110,7 @@ export class ComplaintOutcomeService {
           where: {
             linked_complaint_identifier: { complaint_identifier: complaintBeingLinkedId },
             active_ind: true,
+            link_type: "DUPLICATE",
           },
         });
 
@@ -128,15 +133,18 @@ export class ComplaintOutcomeService {
             .andWhere({
               active_ind: true,
             })
+            .andWhere({
+              link_type: "DUPLICATE",
+            })
             .returning("*")
             .execute();
 
           if (trailingComplaints.affected > 0) {
             trailingComplaints.raw.forEach(async (row) => {
               const linkString = this._linkedComplaintXrefRepository.create(<CreateLinkedComplaintXrefDto>{
-                // ...row,
                 complaint_identifier: { complaint_identifier: linkingToComplaintId },
                 linked_complaint_identifier: row.linked_complaint_identifier,
+                link_type: "DUPLICATE",
                 active_ind: true,
                 create_user_id: idir,
                 create_utc_timestamp: dateLinkCreated,
@@ -151,6 +159,7 @@ export class ComplaintOutcomeService {
             where: {
               linked_complaint_identifier: { complaint_identifier: linkingToComplaintId },
               active_ind: true,
+              link_type: "DUPLICATE",
             },
           });
 
@@ -167,6 +176,7 @@ export class ComplaintOutcomeService {
               complaint_identifier: linkingToComplaintId,
             },
             linked_complaint_identifier: <Complaint>{ complaint_identifier: complaintBeingLinkedId },
+            link_type: "DUPLICATE",
             active_ind: true,
             create_user_id: idir,
             create_utc_timestamp: dateLinkCreated,
@@ -549,12 +559,13 @@ export class ComplaintOutcomeService {
   createDecision = async (
     token: any,
     model: CreateDecisionInput,
-  ): Promise<ComplaintOutcomeDto | CaseManagementError> => {
+    req: any,
+  ): Promise<ComplaintOutcomeDto | ComplaintOutcomeError> => {
     const { complaintId: leadId } = model;
-    const caseFile = await this.find(leadId, token);
+    const caseFile = await this.find(leadId, token, req);
 
     if (caseFile?.decision?.actionTaken) {
-      return CaseManagementError.DECISION_ACTION_EXIST;
+      return ComplaintOutcomeError.DECISION_ACTION_EXIST;
     }
 
     const result = await post(token, {

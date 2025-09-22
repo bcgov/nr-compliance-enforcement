@@ -1,2 +1,0 @@
-ALTER TABLE complaint
-ALTER COLUMN detail_text TYPE TEXT;
