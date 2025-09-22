@@ -77,10 +77,10 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const natureOfComplaintTypes = useAppSelector(selectHwcrNatureOfComplaintCodeDropdown);
   const speciesTypes = useAppSelector(selectSpeciesCodeDropdown);
   // For the complaint search, inject a status type of REFERRED. This is a derived status used only on the search page.
-  const statusTypes = [
-    ...useAppSelector(selectComplaintStatusWithPendingCodeDropdown),
-    { value: "REFERRED", label: "Referred" },
-  ];
+  const statusTypes = [...useAppSelector(selectComplaintStatusWithPendingCodeDropdown)];
+  if (type !== COMPLAINT_TYPES.SECTOR) {
+    statusTypes.push({ value: "REFERRED", label: "Referred" });
+  }
 
   const violationTypes = useAppSelector(
     type === COMPLAINT_TYPES.SECTOR
