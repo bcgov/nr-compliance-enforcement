@@ -308,6 +308,7 @@ export class ComplaintService {
           .createQueryBuilder("general")
           .leftJoinAndSelect("general.complaint_identifier", "complaint")
           .leftJoin("general.gir_type_code", "gir")
+          .leftJoin("complaint.complaint_referral", "complaint_referral")
           .addSelect(["gir.gir_type_code", "gir.short_description", "gir.long_description"]);
         break;
       case "HWCR":
@@ -315,6 +316,7 @@ export class ComplaintService {
           .createQueryBuilder("wildlife") //-- alias the hwcr_complaint
           .leftJoinAndSelect("wildlife.complaint_identifier", "complaint")
           .leftJoin("wildlife.species_code", "species_code")
+          .leftJoin("complaint.complaint_referral", "complaint_referral")
           .addSelect([
             "species_code.species_code",
             "species_code.short_description",
