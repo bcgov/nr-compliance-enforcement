@@ -101,8 +101,9 @@ jobs:
     steps:
       - uses: bcgov/action-builder-ghcr@v2.2.0
         with:
-          package: frontend
-          build_file: Dockerfile.playwright
+          package: frontend-playwright
+          build_file: frontend/Dockerfile.playwright
+          build_context: frontend/
           tag: ${{ github.event.number }}
           tag_fallback: latest
       - uses: shrink/actions-docker-registry-tag@v4
