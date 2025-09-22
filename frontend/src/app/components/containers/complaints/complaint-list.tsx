@@ -86,6 +86,7 @@ export const generateComplaintRequestPayload = (
     girTypeFilter: girType,
     page,
     pageSize,
+    showReferrals: complaintType === "ERS",
   };
 
   switch (complaintType) {

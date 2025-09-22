@@ -379,6 +379,7 @@ export const getComplaints =
       equipmentTypesFilter,
       page,
       pageSize,
+      showReferrals,
       query,
     } = payload;
 
@@ -414,6 +415,7 @@ export const getComplaints =
         equipmentTypes: equipmentTypesFilter?.map((type) => type.value) ?? [],
         page: page,
         pageSize: pageSize,
+        showReferrals: showReferrals,
         query: query,
       });
 
