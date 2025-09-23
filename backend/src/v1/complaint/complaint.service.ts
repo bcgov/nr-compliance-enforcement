@@ -85,6 +85,7 @@ import { Role } from "../../enum/role.enum";
 import { ComplaintDtoAlias } from "src/types/models/complaints/dtos/complaint-dto-alias";
 import { ParkDto } from "../shared_data/dto/park.dto";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
+import { AgencyNames } from "src/types/agency-types";
 
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
@@ -2820,21 +2821,27 @@ export class ComplaintService {
       data.updates = await _getUpdates(id);
 
       //-- find the linked complaints
-      console.log(data.linkedComplaintIdentifier);
 
       data.associatedComplaints = data.linkedComplaintIdentifier
         ? await this._linkedComplaintsXrefService.findParentComplaint(id) //if there is a linkedComplaintIdentifer it's parent
         : await this._linkedComplaintsXrefService.findChildComplaints(id); //otherwise there may or may not be children
 
+      //-- convert the agency name
+      data.associatedComplaints.forEach(complaint => {
+        const agencyKey = complaint.agency;
+        if (AgencyNames[agencyKey]) {
+          complaint.agency = AgencyNames[agencyKey].long;
+        }
+      });
+
       data.linkedComplaints = data.associatedComplaints.filter(item => item.link_type === "LINK");
       data.duplicateComplaints = data.associatedComplaints.filter(item => item.link_type === "DUPLICATE");
-
-      console.log(data.linkedComplaints);
-      console.log(data.duplicateComplaints);
 
       //-- helper flag to easily hide/show linked complaint section
       data.hasLinkedComplaints = data.linkedComplaints?.length > 0;
       data.hasDuplicateComplaints = data.duplicateComplaints?.length > 0;
+
+      
 
       //-- this is a workaround to hide empty rows in the carbone templates
       //-- It could possibly be removed if the CDOGS version of Carbone is updated
