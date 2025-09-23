@@ -4,6 +4,7 @@ import { Badge } from "react-bootstrap";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
 import { CaseFile } from "@/generated/graphql";
 import { ActionMenu } from "@/app/components/common/action-menu";
+import { CaseTabs } from "./case-tabs";
 
 interface CaseHeaderProps {
   caseData?: CaseFile;
@@ -71,6 +72,11 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
         </div>
       </div>
 
+      <CaseTabs
+        caseTab="Summary"
+        caseTabItems={["Summary", "Case Records", "Case History", "Map View"]}
+        onTabChange={() => {}}
+      />
       {/* <!-- case status details start --> */}
       <section className="comp-details-body comp-container">
         <div className="comp-header-status-container">
