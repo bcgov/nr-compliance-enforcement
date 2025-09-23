@@ -2821,21 +2821,23 @@ export class ComplaintService {
       data.updates = await _getUpdates(id);
 
       //-- find the linked complaints
+      const [parentComplaints, childComplaints] = await Promise.all([
+        this._linkedComplaintsXrefService.findParentComplaint(id),
+        this._linkedComplaintsXrefService.findChildComplaints(id),
+      ]);
 
-      data.associatedComplaints = data.linkedComplaintIdentifier
-        ? await this._linkedComplaintsXrefService.findParentComplaint(id) //if there is a linkedComplaintIdentifer it's parent
-        : await this._linkedComplaintsXrefService.findChildComplaints(id); //otherwise there may or may not be children
+      const associatedComplaints = [...parentComplaints, ...childComplaints];
 
       //-- convert the agency name
-      data.associatedComplaints.forEach(complaint => {
+      associatedComplaints.forEach(complaint => {
         const agencyKey = complaint.agency;
         if (AgencyNames[agencyKey]) {
           complaint.agency = AgencyNames[agencyKey].long;
         }
       });
 
-      data.linkedComplaints = data.associatedComplaints.filter(item => item.link_type === "LINK");
-      data.duplicateComplaints = data.associatedComplaints.filter(item => item.link_type === "DUPLICATE");
+      data.linkedComplaints = associatedComplaints.filter(item => item.link_type === "LINK");
+      data.duplicateComplaints = associatedComplaints.filter(item => item.link_type === "DUPLICATE");
 
       //-- helper flag to easily hide/show linked complaint section
       data.hasLinkedComplaints = data.linkedComplaints?.length > 0;
