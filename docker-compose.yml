@@ -9,10 +9,8 @@ x-var:
   - &INS_PASSWORD default3
   - &INV_PASSWORD default4
   - &SHARED_PASSWORD default5
-  - &POSTGRES_DATABASE postgres
 
 x-postgres-vars: &postgres-vars
-  POSTGRES_HOST: database
   POSTGRES_USER: *POSTGRES_USER
   POSTGRES_PASSWORD: *POSTGRES_PASSWORD
   COMPLAINT_PASSWORD: *COMPLAINT_PASSWORD
@@ -20,7 +18,6 @@ x-postgres-vars: &postgres-vars
   INS_PASSWORD: *INS_PASSWORD 
   INV_PASSWORD: *INV_PASSWORD 
   SHARED_PASSWORD: *SHARED_PASSWORD
-  POSTGRES_DATABASE: *POSTGRES_DATABASE
 
 services:
   database:
@@ -161,7 +158,6 @@ services:
       - "npm i && npm run start"
     environment:
       NODE_ENV: development
-      POSTGRESQL_HOST: database
       POSTGRESQL_USER: postgres
       POSTGRESQL_PASSWORD: default
       POSTGRESQL_DATABASE: postgres
