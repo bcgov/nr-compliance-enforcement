@@ -10,6 +10,7 @@ x-var:
   - &INV_PASSWORD default4
   - &SHARED_PASSWORD default5
   - &POSTGRES_DATABASE postgres
+  - &METABASE_READONLY_PASSWORD default6
 
 x-postgres-vars: &postgres-vars
   POSTGRES_HOST: database
@@ -21,7 +22,8 @@ x-postgres-vars: &postgres-vars
   INV_PASSWORD: *INV_PASSWORD 
   SHARED_PASSWORD: *SHARED_PASSWORD
   POSTGRES_DATABASE: *POSTGRES_DATABASE
-
+  METABASE_READONLY_PASSWORD: *METABASE_READONLY_PASSWORD
+  
 services:
   database:
     build:
