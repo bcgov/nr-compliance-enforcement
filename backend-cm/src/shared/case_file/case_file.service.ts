@@ -93,6 +93,23 @@ export class CaseFileService {
     return await this.findOne(caseActivityXrefRecord.case_file_guid);
   }
 
+  async findAllCaseFilesByActivityId(activityType: string, activityIdentifier: string) {
+    const caseActivityXrefRecords = await this.prisma.case_activity.findMany({
+      where: {
+        activity_type: activityType,
+        activity_identifier_ref: activityIdentifier,
+      },
+    });
+
+    if (!caseActivityXrefRecords) {
+      throw new Error(
+        `No case activities found for activity type ${activityType} with identifier ${activityIdentifier}`,
+      );
+    }
+    const caseFileGuids = caseActivityXrefRecords.map((record) => record.case_file_guid);
+    return await this.findMany(caseFileGuids);
+  }
+
   async create(input: CaseFileCreateInput): Promise<CaseFile> {
     const caseFile = await this.prisma.case_file.create({
       data: {

@@ -99,7 +99,7 @@ export type CaseActivity = {
 };
 
 export type CaseActivityCreateInput = {
-  activityIdentifier?: InputMaybe<Scalars['String']['input']>;
+  activityIdentifier: Scalars['String']['input'];
   activityType: Scalars['String']['input'];
   caseFileGuid: Scalars['String']['input'];
 };
@@ -625,7 +625,6 @@ export type KeyValuePairInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addComplaintToCaseFile: CaseFile;
   createAssessment: ComplaintOutcome;
   createAuthorizationOutcome: ComplaintOutcome;
   createCaseActivity: CaseActivity;
@@ -665,12 +664,6 @@ export type Mutation = {
   updatePrevention: ComplaintOutcome;
   updateReview: ComplaintOutcome;
   updateWildlife: ComplaintOutcome;
-};
-
-
-export type MutationaddComplaintToCaseFileArgs = {
-  caseIdentifier: Scalars['String']['input'];
-  complaintIdentifier: Scalars['String']['input'];
 };
 
 
@@ -1045,6 +1038,7 @@ export type Query = {
   HWCRPreventionActions: Array<Maybe<CaseFileAction>>;
   ageCodes: Array<Maybe<AgeCode>>;
   agencyCodes: Array<Maybe<AgencyCode>>;
+  allCaseFilesByActivityId: Array<Maybe<CaseFile>>;
   caseFile?: Maybe<CaseFile>;
   caseFileByActivityId: CaseFile;
   caseFiles: Array<CaseFile>;
@@ -1094,6 +1088,12 @@ export type Query = {
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
+};
+
+
+export type QueryallCaseFilesByActivityIdArgs = {
+  activityIdentifier: Scalars['String']['input'];
+  activityType: Scalars['String']['input'];
 };
 
 

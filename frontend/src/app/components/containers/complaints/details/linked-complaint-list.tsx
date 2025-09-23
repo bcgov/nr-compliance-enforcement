@@ -15,19 +15,24 @@ import { getLinkedComplaints } from "@store/reducers/complaints";
 import { generateApiParameters, post } from "@common/api";
 import config from "@/config";
 import { ToggleError, ToggleSuccess } from "@common/toast";
+import { CaseFile } from "@/generated/graphql";
 
 type Props = {
   linkedComplaintData: LinkedComplaint[];
+  associatedCaseFiles: CaseFile[];
   id?: string;
   canUnlink?: boolean;
 };
 
-export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id, canUnlink = true }) => {
+type AssociatedDataType = "DUPLICATE" | "LINK" | "CASES";
+
+export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associatedCaseFiles, id, canUnlink = true }) => {
   const dispatch = useAppDispatch();
   const [expandedComplaints, setExpandedComplaints] = useState<Record<string, boolean>>({});
   const [viewMoreDuplicates, setViewMoreDuplicates] = useState<boolean>(false);
   const [viewMoreLinked, setViewMoreLinked] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<string>("LINK");
+  const [viewMoreCases, setViewMoreCases] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>("CASES");
 
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
   const natureOfComplaints = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.NATURE_OF_COMPLAINT));
@@ -101,17 +106,19 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id, canUnl
     );
   };
 
-  const toggleViewMore = (type: "DUPLICATE" | "LINK") => {
+  const toggleViewMore = (type: AssociatedDataType) => {
     if (type === "DUPLICATE") {
       setViewMoreDuplicates(!viewMoreDuplicates);
-    } else {
+    } else if (type === "LINK") {
       setViewMoreLinked(!viewMoreLinked);
+    } else if (type === "CASES") {
+      setViewMoreCases(!viewMoreCases);
     }
   };
 
-  const renderViewMore = (complaints: LinkedComplaint[], type: "DUPLICATE" | "LINK") => {
-    const viewMore = type === "DUPLICATE" ? viewMoreDuplicates : viewMoreLinked;
-    if (complaints.length > 5) {
+  const renderViewMore = (items: LinkedComplaint[] | CaseFile[], type: AssociatedDataType) => {
+    const viewMore = type === "DUPLICATE" ? viewMoreDuplicates : type === "LINK" ? viewMoreLinked : viewMoreCases;
+    if (items.length > 5) {
       if (!viewMore) {
         return (
           <>
@@ -137,20 +144,21 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id, canUnl
 
   const hasLinkedComplaints = linkedComplaints.length > 0;
   const hasDuplicateComplaints = duplicateComplaints.length > 0;
-  const showTabs = hasLinkedComplaints && hasDuplicateComplaints;
+  const hasAssociatedCaseFiles = associatedCaseFiles.length > 0;
+  const showTabs = [hasLinkedComplaints, hasDuplicateComplaints, hasAssociatedCaseFiles].filter(Boolean).length > 1;
 
   useEffect(() => {
-    if (!hasLinkedComplaints && hasDuplicateComplaints) {
+    if (hasAssociatedCaseFiles) {
+      setActiveTab("CASES");
+    } else if (hasLinkedComplaints) {
+      setActiveTab("LINK");
+    } else if (hasDuplicateComplaints) {
       setActiveTab("DUPLICATE");
-    } else if (hasLinkedComplaints && !hasDuplicateComplaints) {
-      setActiveTab("LINK");
-    } else if (hasLinkedComplaints && hasDuplicateComplaints) {
-      setActiveTab("LINK");
     }
   }, [hasLinkedComplaints, hasDuplicateComplaints, showTabs]);
 
   const renderComplaintList = (complaints: LinkedComplaint[], type: "DUPLICATE" | "LINK") => {
-    const viewMore = type === "DUPLICATE" ? viewMoreDuplicates : viewMoreLinked;
+    const viewMore = type === "DUPLICATE" ? viewMoreDuplicates : type === "LINK" ? viewMoreLinked : viewMoreCases;
 
     if (complaints.length === 0) {
       return <div className="text-muted p-3">No {type === "DUPLICATE" ? "duplicate" : "linked"} complaints found.</div>;
@@ -246,22 +254,76 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id, canUnl
     );
   };
 
-  return linkedComplaintData.length === 0 ? null : (
+  const renderCaseFileList = (caseFiles: CaseFile[]) => {
+    if (caseFiles.length === 0) {
+      return <div className="text-muted p-3">No associated case files found.</div>;
+    }
+
+    return (
+      <>
+        <div>
+          {caseFiles.map((data, index) => {
+            const caseStatus = data.caseStatus?.caseStatusCode;
+            return (
+              <div
+                className={`comp-linked-complaint-item ${index > 4 && !viewMoreCases ? "hide-item" : "show-item"}`}
+                key={data.caseIdentifier}
+                role="button"
+                tabIndex={index}
+              >
+                <div className="item-header">
+                  <div className="item-link">
+                    <Link to={`/case/${data.caseIdentifier}`}>{data.caseIdentifier}</Link>
+                  </div>
+                  {data.leadAgency && (
+                    <>
+                      <div>{data.leadAgency.longDescription}</div>
+                    </>
+                  )}
+                  {
+                    <div className="comp-details-badge-container ms-auto">
+                      <Badge className={`badge ${applyStatusClass(caseStatus!)}`}>
+                        {data.caseStatus?.shortDescription}
+                      </Badge>
+                    </div>
+                  }
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div
+          className="viewMore"
+          onClick={() => toggleViewMore("CASES")}
+          onKeyDown={() => toggleViewMore("CASES")}
+        >
+          {renderViewMore(caseFiles, "CASES")}
+        </div>
+      </>
+    );
+  };
+
+  return !hasAssociatedCaseFiles && !hasDuplicateComplaints && !hasLinkedComplaints ? null : (
     <div className="comp-complaint-details-block">
       <div>
-        <h2>Associated complaints</h2>
+        <h2>Associated data</h2>
       </div>
 
       {showTabs ? (
         <Tab.Container
-          id="linked-complaints-tabs"
+          id="associated-data-tabs"
           activeKey={activeTab}
-          onSelect={(k) => setActiveTab(k || "LINK")}
+          onSelect={(k) => setActiveTab(k || "CASES")}
         >
           <Nav
             variant="tabs"
             className="mb-3"
           >
+            {hasAssociatedCaseFiles && (
+              <Nav.Item>
+                <Nav.Link eventKey="CASES">Associated cases ({associatedCaseFiles.length})</Nav.Link>
+              </Nav.Item>
+            )}
             {hasLinkedComplaints && (
               <Nav.Item>
                 <Nav.Link eventKey="LINK">Linked complaints ({linkedComplaints.length})</Nav.Link>
@@ -275,6 +337,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id, canUnl
           </Nav>
 
           <Tab.Content>
+            {hasAssociatedCaseFiles && <Tab.Pane eventKey="CASES">{renderCaseFileList(associatedCaseFiles)}</Tab.Pane>}
             {hasLinkedComplaints && (
               <Tab.Pane eventKey="LINK">{renderComplaintList(linkedComplaints, "LINK")}</Tab.Pane>
             )}
@@ -285,6 +348,12 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, id, canUnl
         </Tab.Container>
       ) : (
         <div>
+          {hasAssociatedCaseFiles && (
+            <>
+              <h3 className="mb-3">Linked complaints ({associatedCaseFiles.length})</h3>
+              {renderCaseFileList(associatedCaseFiles)}
+            </>
+          )}
           {hasLinkedComplaints && (
             <>
               <h3 className="mb-3">Linked complaints ({linkedComplaints.length})</h3>
