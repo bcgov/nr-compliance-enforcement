@@ -9,6 +9,7 @@ x-var:
   - &INS_PASSWORD default3
   - &INV_PASSWORD default4
   - &SHARED_PASSWORD default5
+  - &METABASE_READONLY_PASSWORD default6
 
 x-postgres-vars: &postgres-vars
   POSTGRES_USER: *POSTGRES_USER
@@ -18,7 +19,8 @@ x-postgres-vars: &postgres-vars
   INS_PASSWORD: *INS_PASSWORD 
   INV_PASSWORD: *INV_PASSWORD 
   SHARED_PASSWORD: *SHARED_PASSWORD
-
+  METABASE_READONLY_PASSWORD: *METABASE_READONLY_PASSWORD
+  
 services:
   database:
     build:
@@ -125,6 +127,7 @@ services:
       FLYWAY_PLACEHOLDERS_SHARED_PASSWORD: *SHARED_PASSWORD
       FLYWAY_DEFAULT_SCHEMA: shared
       FLYWAY_LOCATIONS: filesystem:./sql, filesystem:./sql-test, filesystem:./baseline
+      FLYWAY_PLACEHOLDERS_METABASE_READONLY_PASSWORD: *METABASE_READONLY_PASSWORD
     depends_on:
       database:
         condition: service_healthy
