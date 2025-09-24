@@ -27,6 +27,8 @@ input CaseFileCreateInput {
   leadAgency: String!
   caseStatus: String!
   description: String
+  activityIdentifier: String
+  activityType: String
 }
 
 input CaseFileUpdateInput {

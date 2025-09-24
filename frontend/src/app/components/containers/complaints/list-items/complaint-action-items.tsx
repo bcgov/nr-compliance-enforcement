@@ -1,7 +1,13 @@
 import { FC } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { isFeatureActive, openModal } from "@store/reducers/app";
-import { ASSIGN_OFFICER, CHANGE_STATUS, QUICK_CLOSE, LINK_COMPLAINT } from "@apptypes/modal/modal-types";
+import {
+  ASSIGN_OFFICER,
+  CHANGE_STATUS,
+  QUICK_CLOSE,
+  LINK_COMPLAINT,
+  CREATE_ADD_CASE,
+} from "@apptypes/modal/modal-types";
 import { Dropdown } from "react-bootstrap";
 import { getAssessment, getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
@@ -102,6 +108,20 @@ export const ComplaintActionItems: FC<Props> = ({
     );
   };
 
+  const openCreateAddCaseModal = () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: CREATE_ADD_CASE,
+        data: {
+          title: "Create/add case",
+          complaint_identifier: complaint_identifier,
+        },
+      }),
+    );
+  };
+
   return (
     <Dropdown
       id="quick-action-button"
@@ -158,6 +178,16 @@ export const ComplaintActionItems: FC<Props> = ({
             id="link-complaint-icon"
           />{" "}
           Link complaint
+        </Dropdown.Item>
+        <Dropdown.Item
+          onClick={openCreateAddCaseModal}
+          disabled={complaint_status === "CLOSED" || complaint_status === "Referred"}
+        >
+          <i
+            className="bi bi-folder-plus"
+            id="link-conplaint-icon"
+          />{" "}
+          Create/Add case
         </Dropdown.Item>
         {showExperimentalFeature && (
           <>
