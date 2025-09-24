@@ -208,7 +208,7 @@ services:
       - "8222:8222" # NATS monitoring port
     environment:
       - NATS_USER=natsuser # this is just for the developer instance of nats
-      - NATS_PASSWORD=natspass # this is just for the developer instance of nats
+      - NATS_PASSWORD=natspass # this is just for the developer instance of nats.
   webeoc:
     container_name: webeoc
     entrypoint:
