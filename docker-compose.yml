@@ -207,7 +207,7 @@ services:
       - "-js"
       - "-DVV"
     ports:
-      - "4222:4222" # Default NATS client port
+      - "4222:4222" # Default NATS client port.
       - "8222:8222" # NATS monitoring port
     environment:
       - NATS_USER=natsuser # this is just for the developer instance of nats
