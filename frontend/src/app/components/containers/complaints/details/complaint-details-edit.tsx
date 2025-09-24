@@ -44,7 +44,7 @@ import notificationInvalid from "@assets/images/notification-invalid.png";
 import { CompSelect } from "@components/common/comp-select";
 import { CompInput } from "@components/common/comp-input";
 import { from } from "linq-to-typescript";
-import { openModal } from "@store/reducers/app";
+import { openModal, isFeatureActive } from "@store/reducers/app";
 import { useParams } from "react-router-dom";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { ToggleError } from "@common/toast";
@@ -82,6 +82,7 @@ import { isValidEmail } from "@/app/common/validate-email";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile } from "@/generated/graphql";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 const GET_ASSOCIATED_CASE_FILES = gql`
   query allCaseFilesByActivityId($activityIdentifier: String!) {
@@ -112,16 +113,19 @@ export const ComplaintDetailsEdit: FC = () => {
   const dispatch = useAppDispatch();
 
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
-
-  const { data: caseFilesData, isLoading } = useGraphQLQuery<{ allCaseFilesByActivityId: CaseFile[] }>(
-    GET_ASSOCIATED_CASE_FILES,
-    {
-      queryKey: ["allCaseFilesByActivityId", id],
-      variables: { activityIdentifier: id },
-      enabled: !!id,
-    },
-  );
-  const associatedCaseFiles = caseFilesData?.allCaseFilesByActivityId ?? [];
+  const casesActive = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
+  let associatedCaseFiles: CaseFile[] = [];
+  if (casesActive) {
+    const { data: caseFilesData } = useGraphQLQuery<{ allCaseFilesByActivityId: CaseFile[] }>(
+      GET_ASSOCIATED_CASE_FILES,
+      {
+        queryKey: ["allCaseFilesByActivityId", id],
+        variables: { activityIdentifier: id },
+        enabled: !!id,
+      },
+    );
+    associatedCaseFiles = caseFilesData?.allCaseFilesByActivityId ?? [];
+  }
 
   const allOfficers = useSelector((state: RootState) => selectOfficers(state));
 

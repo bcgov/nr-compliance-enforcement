@@ -9,13 +9,14 @@ import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { complaintTypeToName } from "@apptypes/app/complaint-types";
-import { openModal } from "@store/reducers/app";
+import { openModal, isFeatureActive } from "@store/reducers/app";
 import { DELETE_CONFIRM } from "@apptypes/modal/modal-types";
 import { getLinkedComplaints } from "@store/reducers/complaints";
 import { generateApiParameters, post } from "@common/api";
 import config from "@/config";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { CaseFile } from "@/generated/graphql";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 type Props = {
   linkedComplaintData: LinkedComplaint[];
@@ -28,11 +29,14 @@ type AssociatedDataType = "DUPLICATE" | "LINK" | "CASES";
 
 export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associatedCaseFiles, id, canUnlink = true }) => {
   const dispatch = useAppDispatch();
+
+  const casesActive = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
+
   const [expandedComplaints, setExpandedComplaints] = useState<Record<string, boolean>>({});
   const [viewMoreDuplicates, setViewMoreDuplicates] = useState<boolean>(false);
   const [viewMoreLinked, setViewMoreLinked] = useState<boolean>(false);
   const [viewMoreCases, setViewMoreCases] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<string>("CASES");
+  const [activeTab, setActiveTab] = useState<string>(casesActive ? "CASES" : "LINK");
 
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
   const natureOfComplaints = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.NATURE_OF_COMPLAINT));
@@ -313,13 +317,13 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
         <Tab.Container
           id="associated-data-tabs"
           activeKey={activeTab}
-          onSelect={(k) => setActiveTab(k || "CASES")}
+          onSelect={(k) => setActiveTab(k || casesActive ? "CASES" : "LINK")}
         >
           <Nav
             variant="tabs"
             className="mb-3"
           >
-            {hasAssociatedCaseFiles && (
+            {hasAssociatedCaseFiles && casesActive && (
               <Nav.Item>
                 <Nav.Link eventKey="CASES">Associated cases ({associatedCaseFiles.length})</Nav.Link>
               </Nav.Item>
@@ -337,7 +341,9 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
           </Nav>
 
           <Tab.Content>
-            {hasAssociatedCaseFiles && <Tab.Pane eventKey="CASES">{renderCaseFileList(associatedCaseFiles)}</Tab.Pane>}
+            {hasAssociatedCaseFiles && casesActive && (
+              <Tab.Pane eventKey="CASES">{renderCaseFileList(associatedCaseFiles)}</Tab.Pane>
+            )}
             {hasLinkedComplaints && (
               <Tab.Pane eventKey="LINK">{renderComplaintList(linkedComplaints, "LINK")}</Tab.Pane>
             )}
@@ -348,9 +354,9 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
         </Tab.Container>
       ) : (
         <div>
-          {hasAssociatedCaseFiles && (
+          {hasAssociatedCaseFiles && casesActive && (
             <>
-              <h3 className="mb-3">Linked complaints ({associatedCaseFiles.length})</h3>
+              <h3 className="mb-3">Associated cases ({associatedCaseFiles.length})</h3>
               {renderCaseFileList(associatedCaseFiles)}
             </>
           )}
