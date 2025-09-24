@@ -45,7 +45,7 @@ export class LinkedComplaintXrefService {
       .leftJoin("complaint.complaint_status_code", "complaint_status")
       .addSelect(["complaint_status.complaint_status_code", "complaint_status.short_description"])
       .leftJoin("complaint.complaint_type_code", "complaint_type")
-      .addSelect(["complaint_type.complaint_type_code"])
+      .addSelect(["complaint_type.complaint_type_code", "complaint_type.long_description"])
       .addSelect(["complaint.owned_by_agency_code_ref"])
       .leftJoinAndMapOne(
         "linkedComplaint.hwcr_complaint",
@@ -107,6 +107,11 @@ export class LinkedComplaintXrefService {
         link_type: item.link_type,
         agency: item.complaint.owned_by_agency_code_ref || null,
         complaintType: complaintType || null,
+        complaintTypeDescription: item.complaint.complaint_type_code.long_description,
+        species: item.hwcr_complaint?.species_code?.short_description,
+        natureOfComplaint: item.hwcr_complaint?.hwcr_complaint_nature_code?.long_description,
+        violationType: item.allegation_complaint?.violation_code?.long_description,
+        girType: item.gir_complaint?.gir_type_code?.long_description,
       };
     });
 
