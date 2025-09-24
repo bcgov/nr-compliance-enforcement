@@ -161,9 +161,6 @@ services:
       - "npm i && npm run start"
     environment:
       NODE_ENV: development
-      POSTGRESQL_USER: postgres
-      POSTGRESQL_PASSWORD: default
-      POSTGRESQL_DATABASE: postgres
     hostname: backend
     image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
     links:
