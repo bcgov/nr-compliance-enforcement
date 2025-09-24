@@ -199,7 +199,7 @@ services:
     user: root
     working_dir: "/app"
   nats:
-    image: nats:latest # Using the latest official NATS image.
+    image: nats:latest # Using the latest official NATS image
     command:
       - "-js"
       - "-DVV"
