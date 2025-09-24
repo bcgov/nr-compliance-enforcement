@@ -49,76 +49,74 @@ export const FeatureManagement: FC = () => {
   };
 
   // Filter feature data based on search query
-  const filteredFeatureData = !searchQuery
-    ? featureData
-    : featureData.filter((item) => {
+  const filteredFeatureData = searchQuery
+    ? featureData.filter((item) => {
         const agencyMatch = item.agency_code_ref?.toLowerCase().includes(searchQuery.toLowerCase());
         const featureMatch = item.feature_code?.short_description?.toLowerCase().includes(searchQuery.toLowerCase());
 
         return agencyMatch || featureMatch;
-      });
+      })
+    : featureData;
 
   return (
-    <>
-      <div className="comp-page-container">
-        <div className="comp-page-header">
-          <div className="comp-page-title-container">
-            <h1>Feature Management</h1>
-          </div>
-          <p>Manage features within different agency.</p>
-          <div className="mb-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by agency or feature description..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div className="comp-table">
-            <Table
-              bordered
-              hover
-              responsive="sm"
-              width={500}
-            >
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Agency</th>
-                  <th>Feature</th>
-                  <th style={{ width: "80px", textAlign: "center" }}>Active</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredFeatureData ? (
-                  filteredFeatureData.map((item, i) => {
-                    return (
-                      <tr key={item.feature_agency_xref_guid}>
-                        <td>{i + 1}</td>
-                        <td>{item.agency_code_ref}</td>
-                        <td style={{ maxWidth: "500px", wordWrap: "break-word", whiteSpace: "normal" }}>
-                          {item.feature_code.short_description}
-                        </td>
-                        <td style={{ width: "80px", textAlign: "center" }}>
-                          <input
-                            type="checkbox"
-                            id="feature1"
-                            checked={item.active_ind}
-                            onChange={() => handleChange(item)}
-                          />
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <></>
-                )}
-              </tbody>
-            </Table>
-          </div>
+    <div className="comp-page-container">
+      <div className="comp-page-header">
+        <div className="comp-page-title-container">
+          <h1>Feature Management</h1>
+        </div>
+        <p>Manage features within different agency.</p>
+        <div className="mb-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search by agency or feature description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="comp-table">
+          <Table
+            bordered
+            hover
+            responsive="sm"
+            width={500}
+          >
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Agency</th>
+                <th>Feature</th>
+                <th style={{ width: "80px", textAlign: "center" }}>Active</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredFeatureData ? (
+                filteredFeatureData.map((item, i) => {
+                  return (
+                    <tr key={item.feature_agency_xref_guid}>
+                      <td>{i + 1}</td>
+                      <td>{item.agency_code_ref}</td>
+                      <td style={{ maxWidth: "500px", wordWrap: "break-word", whiteSpace: "normal" }}>
+                        {item.feature_code.short_description}
+                      </td>
+                      <td style={{ width: "80px", textAlign: "center" }}>
+                        <input
+                          type="checkbox"
+                          id="feature1"
+                          checked={item.active_ind}
+                          onChange={() => handleChange(item)}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <></>
+              )}
+            </tbody>
+          </Table>
         </div>
       </div>
-    </>
+    </div>
   );
 };
