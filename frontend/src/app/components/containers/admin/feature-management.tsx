@@ -9,6 +9,7 @@ export const FeatureManagement: FC = () => {
   const dispatch = useAppDispatch();
 
   const [featureData, setFeatureData] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const updateFeatureFlag = async (id: string, active_ind: boolean) => {
     try {
@@ -37,12 +38,25 @@ export const FeatureManagement: FC = () => {
     getAllFeatureFlags();
   }, [dispatch]);
 
-  const handleChange = (item: any, i: number) => {
+  const handleChange = (item: any) => {
     const updateFeatureData = [...featureData];
-    updateFeatureData.splice(i, 1, { ...featureData[i], active_ind: !item.active_ind });
-    setFeatureData(updateFeatureData);
-    updateFeatureFlag(item.feature_agency_xref_guid, !item.active_ind);
+    const originalIndex = featureData.findIndex((f) => f.feature_agency_xref_guid === item.feature_agency_xref_guid);
+    if (originalIndex !== -1) {
+      updateFeatureData.splice(originalIndex, 1, { ...featureData[originalIndex], active_ind: !item.active_ind });
+      setFeatureData(updateFeatureData);
+      updateFeatureFlag(item.feature_agency_xref_guid, !item.active_ind);
+    }
   };
+
+  // Filter feature data based on search query
+  const filteredFeatureData = featureData.filter((item) => {
+    if (!searchQuery) return true;
+
+    const agencyMatch = item.agency_code_ref?.toLowerCase().includes(searchQuery.toLowerCase());
+    const featureMatch = item.feature_code?.short_description?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return agencyMatch || featureMatch;
+  });
 
   return (
     <>
@@ -52,6 +66,15 @@ export const FeatureManagement: FC = () => {
             <h1>Feature Management</h1>
           </div>
           <p>Manage features within different agency.</p>
+          <div className="mb-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search by agency or feature description..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
           <div className="comp-table">
             <Table
               bordered
@@ -68,8 +91,8 @@ export const FeatureManagement: FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {featureData ? (
-                  featureData.map((item, i) => {
+                {filteredFeatureData ? (
+                  filteredFeatureData.map((item, i) => {
                     return (
                       <tr key={item.feature_agency_xref_guid}>
                         <td>{i + 1}</td>
@@ -82,7 +105,7 @@ export const FeatureManagement: FC = () => {
                             type="checkbox"
                             id="feature1"
                             checked={item.active_ind}
-                            onChange={() => handleChange(item, i)}
+                            onChange={() => handleChange(item)}
                           />
                         </td>
                       </tr>
