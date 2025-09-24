@@ -49,14 +49,14 @@ export const FeatureManagement: FC = () => {
   };
 
   // Filter feature data based on search query
-  const filteredFeatureData = featureData.filter((item) => {
-    if (!searchQuery) return true;
+  const filteredFeatureData = !searchQuery
+    ? featureData
+    : featureData.filter((item) => {
+        const agencyMatch = item.agency_code_ref?.toLowerCase().includes(searchQuery.toLowerCase());
+        const featureMatch = item.feature_code?.short_description?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const agencyMatch = item.agency_code_ref?.toLowerCase().includes(searchQuery.toLowerCase());
-    const featureMatch = item.feature_code?.short_description?.toLowerCase().includes(searchQuery.toLowerCase());
-
-    return agencyMatch || featureMatch;
-  });
+        return agencyMatch || featureMatch;
+      });
 
   return (
     <>
