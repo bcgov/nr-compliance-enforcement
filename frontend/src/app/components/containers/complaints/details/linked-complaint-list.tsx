@@ -159,10 +159,10 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
     } else if (hasDuplicateComplaints) {
       setActiveTab("DUPLICATE");
     }
-  }, [hasLinkedComplaints, hasDuplicateComplaints, showTabs]);
+  }, [hasAssociatedCaseFiles, hasLinkedComplaints, hasDuplicateComplaints, showTabs]);
 
   const renderComplaintList = (complaints: LinkedComplaint[], type: "DUPLICATE" | "LINK") => {
-    const viewMore = type === "DUPLICATE" ? viewMoreDuplicates : type === "LINK" ? viewMoreLinked : viewMoreCases;
+    const viewMore = type === "DUPLICATE" ? viewMoreDuplicates : viewMoreLinked;
 
     if (complaints.length === 0) {
       return <div className="text-muted p-3">No {type === "DUPLICATE" ? "duplicate" : "linked"} complaints found.</div>;
@@ -317,7 +317,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
         <Tab.Container
           id="associated-data-tabs"
           activeKey={activeTab}
-          onSelect={(k) => setActiveTab(k || casesActive ? "CASES" : "LINK")}
+          onSelect={(k) => setActiveTab(k || "LINK")}
         >
           <Nav
             variant="tabs"

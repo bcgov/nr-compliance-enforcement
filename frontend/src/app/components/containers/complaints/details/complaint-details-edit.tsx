@@ -114,18 +114,12 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const casesActive = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
-  let associatedCaseFiles: CaseFile[] = [];
-  if (casesActive) {
-    const { data: caseFilesData } = useGraphQLQuery<{ allCaseFilesByActivityId: CaseFile[] }>(
-      GET_ASSOCIATED_CASE_FILES,
-      {
-        queryKey: ["allCaseFilesByActivityId", id],
-        variables: { activityIdentifier: id },
-        enabled: !!id,
-      },
-    );
-    associatedCaseFiles = caseFilesData?.allCaseFilesByActivityId ?? [];
-  }
+  const { data: caseFilesData } = useGraphQLQuery<{ allCaseFilesByActivityId: CaseFile[] }>(GET_ASSOCIATED_CASE_FILES, {
+    queryKey: ["allCaseFilesByActivityId", id],
+    variables: { activityIdentifier: id },
+    enabled: !!id,
+  });
+  const associatedCaseFiles: CaseFile[] = !casesActive ? [] : (caseFilesData?.allCaseFilesByActivityId ?? []);
 
   const allOfficers = useSelector((state: RootState) => selectOfficers(state));
 
