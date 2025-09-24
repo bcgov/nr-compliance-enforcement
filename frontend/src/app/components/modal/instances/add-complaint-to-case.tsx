@@ -88,7 +88,7 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
     const createInput: CaseActivityCreateInput = {
       caseFileGuid: caseId,
       activityType: "COMP",
-      activityIdentifier: selectedComplaint.value,
+      activityIdentifier: selectedComplaint.value!,
     };
     addComplaintToCaseMutation.mutate({
       input: createInput,
