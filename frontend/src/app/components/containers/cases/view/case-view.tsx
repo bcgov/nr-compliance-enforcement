@@ -172,33 +172,7 @@ export const CaseView: FC = () => {
       {caseData && (
         <div className="comp-complaint-details">
           <CaseHeader caseData={caseData} />
-          <section className="comp-details-body comp-container">
-            <hr className="comp-details-body-spacer"></hr>
 
-            <div className="comp-details-section-header">
-              <h2>Case details</h2>
-              <div className="comp-details-section-header-actions">
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  id="details-screen-edit-button"
-                  onClick={editButtonClick}
-                >
-                  <i className="bi bi-pencil"></i>
-                  <span>Edit case</span>
-                </Button>
-              </div>
-            </div>
-            <div className="comp-details-content">
-              <div className="row">
-                <div className="col-sm-12">
-                  <div className="border rounded p-3 mb-3 bg-white">
-                    <p>{caseData.description}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
           <div className="container-fluid px-4 py-3">
             <div className="row g-3">
               <ComplaintColumn complaints={linkedComplaints} />
