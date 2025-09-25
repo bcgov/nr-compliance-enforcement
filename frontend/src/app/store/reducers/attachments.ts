@@ -114,7 +114,8 @@ export const getAttachments =
   (complaint_identifier: string, attachmentType: AttachmentEnum): AppThunk =>
   async (dispatch) => {
     try {
-      const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
+      const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}&latest=true`);
+
       let response = await get<Array<COMSObject>>(dispatch, parameters, {
         "x-amz-meta-complaint-id": complaint_identifier,
         "x-amz-meta-is-thumb": "N",
