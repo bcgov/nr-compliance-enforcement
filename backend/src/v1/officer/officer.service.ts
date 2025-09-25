@@ -90,6 +90,9 @@ export class OfficerService {
       where: { auth_user_guid: auth_user_guid },
       relations: {
         person_guid: {},
+        office_guid: {
+          cos_geo_org_unit: true,
+        },
       },
     });
   }

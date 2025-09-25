@@ -1,26 +1,18 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import logoSm from "@assets/images/branding/BCgov-vert-sm.png";
 import logoLg from "@assets/images/branding/BCgov-lg.png";
 import { NavDropdown, Badge } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { alertCount, getTokenProfile, profileInitials, isFeatureActive } from "@store/reducers/app";
+import { useAppSelector } from "@hooks/hooks";
+import { alertCount, profileInitials, isFeatureActive } from "@store/reducers/app";
 import { Link } from "react-router-dom";
 import config from "@/config";
 import EnvironmentBanner from "./environment-banner";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
 export const Header: FC = () => {
-  const dispatch = useAppDispatch();
-
   const initials = useAppSelector(profileInitials);
   const alerts = useAppSelector(alertCount);
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
-
-  useEffect(() => {
-    if (!initials) {
-      dispatch(getTokenProfile());
-    }
-  }, [initials, dispatch]);
 
   const renderBadge = (): JSX.Element => {
     return (
