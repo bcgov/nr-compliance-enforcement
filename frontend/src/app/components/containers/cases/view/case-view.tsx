@@ -128,9 +128,17 @@ export const CaseView: FC = () => {
 
   useEffect(() => {
     if (complaintData != null) {
-      setLinkedComplaints((prev) =>
-        prev.some((item) => item.id === complaintData.id) ? prev : [...prev, complaintData],
-      );
+      setLinkedComplaints((prev) => {
+        /**
+         * When users arrive at this page from complaint details, the complaint data in state
+         * was not fetched as a secror complaint and can be missing values.
+         * This overwrites that data when the sector view of the complaint is fetched by this page.
+         * This is necessary because the selectComplaint call on this page tends to fire before
+         * the unmount of the previous page is complete, so complaint data in state is not yet null.
+         */
+        const existingIndex = prev.findIndex((item) => item.id === complaintData.id);
+        return existingIndex > -1 ? prev.splice(existingIndex, 1, complaintData) : [...prev, complaintData];
+      });
     }
   }, [complaintData?.id]);
 

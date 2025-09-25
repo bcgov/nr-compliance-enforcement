@@ -18,7 +18,7 @@ export const ComplaintCard: FC<ComplaintCardProps> = ({ item: complaint }) => {
   const girTypeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GIR_TYPE));
   const violationCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.VIOLATIONS));
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
-  debugger;
+
   const getLocationName = (input: string): string => {
     const code = areaCodes.find((item) => item.area === input);
     return code?.areaName || input;
