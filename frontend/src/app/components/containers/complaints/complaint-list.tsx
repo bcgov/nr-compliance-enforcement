@@ -151,23 +151,25 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   const storedTab = useAppSelector(selectActiveTab);
   const [activeTab, setActiveTab] = useState(storedTab);
 
-  // If the user changed tabs, reset sortKey and sortOrder
+  // Single useEffect for if tab, filters, sort or search is changed
   useEffect(() => {
+    // If tab changed, update state and return early (don't fetch yet)
     if (storedTab !== activeTab) {
       setActiveTab(storedTab);
       setSortKey("incident_reported_utc_timestmp");
       setSortDirection(SORT_TYPES.DESC);
+      return; // prevent fetch with old sort key
     }
-  }, [storedTab, activeTab]);
 
-  useEffect(() => {
-    let payload = generateComplaintRequestPayload(type, filters, page, pageSize, sortKey, sortDirection);
+    // Only run fetch when state is settled
+    const payload = generateComplaintRequestPayload(type, filters, page, pageSize, sortKey, sortDirection);
+
     if (searchQuery) {
-      payload = { ...payload, query: searchQuery };
+      payload.query = searchQuery;
     }
+
     dispatch(getComplaints(type, payload));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type, filters, sortKey, sortDirection, page, pageSize]);
+  }, [storedTab, activeTab, type, filters, sortKey, sortDirection, page, pageSize, searchQuery]);
 
   useEffect(() => {
     //Refresh the list with the current filters when the search is cleared
