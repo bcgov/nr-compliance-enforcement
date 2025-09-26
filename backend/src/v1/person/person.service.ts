@@ -48,8 +48,9 @@ export class PersonService {
     return this.personRepository.findOneBy({ person_guid: person_guid });
   }
 
-  update(id: number, updatePersonDto: UpdatePersonDto) {
-    return `This action updates a #${id} person`;
+  async update(id: UUID, updatePersonDto: UpdatePersonDto) {
+    await this.personRepository.update({ person_guid: id }, updatePersonDto);
+    return this.findOne(id);
   }
 
   remove(id: number) {
