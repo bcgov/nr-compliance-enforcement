@@ -211,6 +211,14 @@ export const saveAttachments =
       return;
     }
 
+    const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
+
+    let historicalComplaintAttachments = await get<Array<COMSObject>>(dispatch, params, {
+      "x-amz-meta-complaint-id": complaint_identifier,
+      "x-amz-meta-is-thumb": "N",
+      "x-amz-meta-attachment-type": attachmentType,
+    });
+
     for (const attachment of attachments) {
       const header = {
         "x-amz-meta-complaint-id": complaint_identifier,
@@ -223,7 +231,10 @@ export const saveAttachments =
       };
 
       try {
-        const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
+        const existingAttachment = historicalComplaintAttachments.find((item) => item.name === attachment.name);
+        const parameters = existingAttachment
+          ? generateApiParameters(`${config.COMS_URL}/object/${existingAttachment.id}`)
+          : generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
         const response = await putFile<COMSObject>(dispatch, parameters, header, attachment);
         switch (attachmentType) {
           case AttachmentEnum.COMPLAINT_ATTACHMENT:
