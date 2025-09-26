@@ -302,6 +302,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
         </div>
         <div
           className="viewMore"
+          role="button"
           onClick={() => toggleViewMore("CASES")}
           onKeyDown={() => toggleViewMore("CASES")}
         >
