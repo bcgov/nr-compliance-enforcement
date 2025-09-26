@@ -119,7 +119,7 @@ export const ComplaintDetailsEdit: FC = () => {
     variables: { activityIdentifier: id },
     enabled: !!id,
   });
-  const associatedCaseFiles: CaseFile[] = !casesActive ? [] : (caseFilesData?.allCaseFilesByActivityId ?? []);
+  const associatedCaseFiles: CaseFile[] = casesActive ? (caseFilesData?.allCaseFilesByActivityId ?? []) : [];
 
   const allOfficers = useSelector((state: RootState) => selectOfficers(state));
 

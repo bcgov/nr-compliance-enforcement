@@ -121,7 +121,15 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
   };
 
   const renderViewMore = (items: LinkedComplaint[] | CaseFile[], type: AssociatedDataType) => {
-    const viewMore = type === "DUPLICATE" ? viewMoreDuplicates : type === "LINK" ? viewMoreLinked : viewMoreCases;
+    let viewMore;
+    if (type === "DUPLICATE") {
+      viewMore = viewMoreDuplicates;
+    } else if (type === "CASES") {
+      viewMore = viewMoreCases;
+    } else {
+      viewMore = viewMoreLinked;
+    }
+
     if (items.length > 5) {
       if (!viewMore) {
         return (
@@ -279,11 +287,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
                   <div className="item-link">
                     <Link to={`/case/${data.caseIdentifier}`}>{data.caseIdentifier}</Link>
                   </div>
-                  {data.leadAgency && (
-                    <>
-                      <div>{data.leadAgency.longDescription}</div>
-                    </>
-                  )}
+                  {data.leadAgency && <div>{data.leadAgency.longDescription}</div>}
                   {
                     <div className="comp-details-badge-container ms-auto">
                       <Badge className={`badge ${applyStatusClass(caseStatus!)}`}>

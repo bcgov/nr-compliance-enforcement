@@ -7,8 +7,6 @@ import { CaseFile, Inspection, Investigation } from "@/generated/graphql";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import {
-  getComplaintById,
-  selectComplaint,
   setComplaint,
   getCaseFileComplaints,
   selectCaseFileComplaints,

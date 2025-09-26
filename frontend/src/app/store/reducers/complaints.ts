@@ -800,6 +800,7 @@ export const getCaseFileComplaints =
       const response = await get<ComplaintDtoAlias>(dispatch, parameters);
       dispatch(setCaseFileComplaints(response));
     } catch (error) {
+      console.error(`Unable to get complaints for case file`);
       dispatch(setCaseFileComplaints(null));
     }
   };
