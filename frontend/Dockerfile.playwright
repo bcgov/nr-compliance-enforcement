@@ -1,13 +1,34 @@
 FROM node:19-bullseye
 
+# Install system dependencies required by Playwright browsers
+RUN apt-get update && apt-get install -y \
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libdrm2 \
+    libxkbcommon0 \
+    libgtk-3-0 \
+    libgbm1 \
+    libasound2 \
+    libxrandr2 \
+    libpangocairo-1.0-0 \
+    libatk1.0-0 \
+    libcairo-gobject2 \
+    libgdk-pixbuf2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 COPY . .
 
-RUN npm ci --omit=dev && \
-    npm run build
-
+# Install dependencies (don't omit dev - Playwright needs them)
 RUN npm ci
 
-RUN npx playwright install --with-deps
+# Create directory for browsers and install them
+# explicitly list browsers to speed up build time
+RUN mkdir -p /app/playwright-browsers && \
+    PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers npx playwright install webkit --with-deps
+
+# Set environment variables for runtime
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
+ENV CI=true
 
 ENTRYPOINT ["npx", "playwright", "test"]
