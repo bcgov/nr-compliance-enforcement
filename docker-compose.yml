@@ -9,11 +9,9 @@ x-var:
   - &INS_PASSWORD default3
   - &INV_PASSWORD default4
   - &SHARED_PASSWORD default5
-  - &POSTGRES_DATABASE postgres
   - &METABASE_READONLY_PASSWORD default6
 
 x-postgres-vars: &postgres-vars
-  POSTGRES_HOST: database
   POSTGRES_USER: *POSTGRES_USER
   POSTGRES_PASSWORD: *POSTGRES_PASSWORD
   COMPLAINT_PASSWORD: *COMPLAINT_PASSWORD
@@ -21,7 +19,6 @@ x-postgres-vars: &postgres-vars
   INS_PASSWORD: *INS_PASSWORD 
   INV_PASSWORD: *INV_PASSWORD 
   SHARED_PASSWORD: *SHARED_PASSWORD
-  POSTGRES_DATABASE: *POSTGRES_DATABASE
   METABASE_READONLY_PASSWORD: *METABASE_READONLY_PASSWORD
   
 services:
@@ -134,6 +131,12 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      migration-complaint-outcome:
+        condition: service_completed_successfully
+      migration-inspection:
+        condition: service_completed_successfully
+      migration-investigation:
+        condition: service_completed_successfully
   migration-complaint-outcome:
     image: flyway/flyway:10-alpine
     container_name: migration-complaint-outcome
@@ -164,10 +167,6 @@ services:
       - "npm i && npm run start"
     environment:
       NODE_ENV: development
-      POSTGRESQL_HOST: database
-      POSTGRESQL_USER: postgres
-      POSTGRESQL_PASSWORD: default
-      POSTGRESQL_DATABASE: postgres
     hostname: backend
     image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
     links:
@@ -244,7 +243,6 @@ services:
     environment:
       <<: *postgres-vars
       NODE_ENV: development
-      POSTGRESQL_URL: "postgresql://postgres:{POSTGRES_PASSWORD}@cm-database:5432/postgres?schema=public,shared,investgation,inspection,complaint_outcome"
       BACKEND_PORT: "3000"
       KEYCLOCK_CLIENT_ID: compliance-and-enforcement-digital-services-web-4794
       JWKS_URI: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs

@@ -385,15 +385,28 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       let idir_user_guid_transformed: UUID;
       idir_user_guid_transformed = idir_user_guid as UUID;
 
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`);
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${idir_user_guid}`,
+      );
       const response = await get<Officer>(dispatch, parameters);
 
-      //Update auth_user_guid if there is no data
-      if (!response.auth_user_guid) {
-        const updateGuid = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${response.officer_guid}`, {
-          auth_user_guid: idir_user_guid_transformed,
+      //Update user_id and person name if the idir_username is different
+      if (response.user_id !== idir_username) {
+        const updateUserIdParams = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${response.officer_guid}`, {
+          user_id: idir_username,
+          coms_enrolled_ind: false,
         });
-        await patch<Officer>(dispatch, updateGuid);
+        await patch<Officer>(dispatch, updateUserIdParams);
+
+        // Also update related person name
+        const updatePersonParams = generateApiParameters(
+          `${config.API_BASE_URL}/v1/person/${response.person_guid.person_guid}`,
+          {
+            first_name: given_name,
+            last_name: family_name,
+          },
+        );
+        await patch<Officer>(dispatch, updatePersonParams);
       }
 
       let office = "";
