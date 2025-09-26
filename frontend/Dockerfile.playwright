@@ -1,6 +1,6 @@
 FROM node:19-bullseye
 
-# Install system dependencies required by Playwright browsers
+# Install system dependencies required by Playwright WebKit
 RUN apt-get update && apt-get install -y \
     libnss3 \
     libatk-bridge2.0-0 \
@@ -19,16 +19,20 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 COPY . .
 
-# Install dependencies (don't omit dev - Playwright needs them)
 RUN npm ci
 
-# Create directory for browsers and install them
-# explicitly list browsers to speed up build time
-RUN mkdir -p /app/playwright-browsers && \
-    PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers npx playwright install webkit --with-deps
-
-# Set environment variables for runtime
+# Create browser cache directory
+RUN mkdir -p /app/playwright-browsers
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
-ENV CI=true
+# Install WebKit browser
+RUN PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers npx playwright install --with-deps webkit
+
+# Create test-results directory with OpenShift-compatible permissions
+RUN mkdir -p /app/test-results && \
+    chgrp -R 0 /app && \
+    chmod -R g+rwX /app
+
+# Set environment variable for runtime
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
 
 ENTRYPOINT ["npx", "playwright", "test"]
