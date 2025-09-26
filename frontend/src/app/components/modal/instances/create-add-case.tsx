@@ -134,20 +134,8 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
     }
 
     switch (createOrAddOption) {
-      case "create":
-      default:
-        if (errorMessage) return;
-        const createInput: CaseFileCreateInput = {
-          caseStatus: "OPEN",
-          leadAgency: "COS",
-          activityType: "COMP",
-          activityIdentifier: complaint_identifier,
-          description: caseDescription,
-        };
-        createCaseMutation.mutate({ input: createInput });
-        break;
-      case "add":
-        if (selectedCase && selectedCase.value) {
+      case "add": {
+        if (selectedCase?.value) {
           const createCaseAcivityInput: CaseActivityCreateInput = {
             caseFileGuid: selectedCase?.value,
             activityType: "COMP",
@@ -158,8 +146,21 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           });
         }
         break;
+      }
+      case "create":
+      default: {
+        if (errorMessage) return;
+        const createInput: CaseFileCreateInput = {
+          caseStatus: "OPEN",
+          leadAgency: "COS",
+          activityType: "COMP",
+          activityIdentifier: complaint_identifier,
+          description: caseDescription,
+        };
+        createCaseMutation.mutate({ input: createInput });
+        break;
+      }
     }
-
     submit();
     close();
   };

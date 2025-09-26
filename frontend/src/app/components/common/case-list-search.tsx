@@ -28,7 +28,7 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
   const [searchString, setSearchString] = useState<string>("");
   const [caseFileData, setCaseFileData] = useState<any[]>([]);
 
-  const { data, isLoading: isSearchCaseLoading, error } = useCaseSearchQuery("");
+  const { data, isLoading: isSearchCaseLoading } = useCaseSearchQuery("");
 
   //Effects
   useEffect(() => {
