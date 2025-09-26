@@ -71,11 +71,14 @@ export class CaseFileResolver {
       return await this.caseFileService.findAllCaseFilesByActivityId(activityType, activityIdentifier);
     } catch (error) {
       this.logger.error(error);
-      throw new GraphQLError("Error fetching case files by activity ID from Shared schema", {
-        extensions: {
-          code: "INTERNAL_SERVER_ERROR",
+      throw new GraphQLError(
+        `Error fetching case files for ${activityType} ${activityIdentifier} from the Shared schema`,
+        {
+          extensions: {
+            code: "INTERNAL_SERVER_ERROR",
+          },
         },
-      });
+      );
     }
   }
 
