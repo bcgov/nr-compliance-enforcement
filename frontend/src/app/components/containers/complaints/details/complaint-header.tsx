@@ -65,6 +65,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   const showComplaintReferrals = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_REFERRALS));
   const showComplaintCollaboration = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_COLLABORATION));
+  const showCreateAddCase = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
   const userPersonGuid = useAppSelector(personGuid);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const collaborators = useAppSelector(selectActiveComplaintCollaborators);
@@ -276,14 +277,16 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         <i className="bi bi-link-45deg"></i>
         <span>Link complaint</span>
       </Dropdown.Item>
-      <Dropdown.Item
-        as="button"
-        id="create-add-case-button"
-        onClick={openCreateAddCaseModal}
-      >
-        <i className="bi bi-folder-plus"></i>
-        <span>Create/Add case</span>
-      </Dropdown.Item>
+      {showCreateAddCase && (
+        <Dropdown.Item
+          as="button"
+          id="create-add-case-button"
+          onClick={openCreateAddCaseModal}
+        >
+          <i className="bi bi-folder-plus"></i>
+          <span>Create/add case</span>
+        </Dropdown.Item>
+      )}
       {showComplaintReferrals && (
         <Dropdown.Item
           as="button"

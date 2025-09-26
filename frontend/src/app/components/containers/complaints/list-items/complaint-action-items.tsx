@@ -32,6 +32,7 @@ export const ComplaintActionItems: FC<Props> = ({
 }) => {
   const dispatch = useAppDispatch();
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
+  const showCreateAddCase = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
 
   const openAssignOfficerModal = () => {
     document.body.click();
@@ -179,16 +180,18 @@ export const ComplaintActionItems: FC<Props> = ({
           />{" "}
           Link complaint
         </Dropdown.Item>
-        <Dropdown.Item
-          onClick={openCreateAddCaseModal}
-          disabled={complaint_status === "CLOSED" || complaint_status === "Referred"}
-        >
-          <i
-            className="bi bi-folder-plus"
-            id="link-conplaint-icon"
-          />{" "}
-          Create/Add case
-        </Dropdown.Item>
+        {showCreateAddCase && (
+          <Dropdown.Item
+            onClick={openCreateAddCaseModal}
+            disabled={complaint_status === "CLOSED" || complaint_status === "Referred"}
+          >
+            <i
+              className="bi bi-folder-plus"
+              id="link-conplaint-icon"
+            />{" "}
+            Create/add case
+          </Dropdown.Item>
+        )}
         {showExperimentalFeature && (
           <>
             <Dropdown.Item onClick={openStatusChangeModal}>
