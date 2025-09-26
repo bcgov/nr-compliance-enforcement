@@ -6,7 +6,14 @@ import { gql } from "graphql-request";
 import { CaseFile, Inspection, Investigation } from "@/generated/graphql";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
-import { getComplaintById, selectComplaint, setComplaint } from "@/app/store/reducers/complaints";
+import {
+  getComplaintById,
+  selectComplaint,
+  setComplaint,
+  getCaseFileComplaints,
+  selectCaseFileComplaints,
+  setCaseFileComplaints,
+} from "@/app/store/reducers/complaints";
 import { Complaint } from "@/app/types/app/complaints/complaint";
 import { ComplaintColumn, InvestigationColumn, InspectionColumn, RecordColumn } from "./components";
 
@@ -86,8 +93,6 @@ export const CaseView: FC = () => {
     enabled: !!id,
   });
 
-  const complaintData = useAppSelector(selectComplaint) as Complaint;
-
   const caseData = data?.caseFile;
 
   const linkedComplaintIds = caseData?.activities
@@ -108,7 +113,12 @@ export const CaseView: FC = () => {
       return item?.activityIdentifier;
     });
 
-  const [linkedComplaints, setLinkedComplaints] = useState<Complaint[]>([]);
+  useEffect(() => {
+    if (linkedComplaintIds && linkedComplaintIds.length > 0) {
+      dispatch(getCaseFileComplaints(linkedComplaintIds as string[]));
+    }
+  }, [dispatch, caseData]);
+  const linkedComplaints = useAppSelector(selectCaseFileComplaints) ?? undefined;
 
   const { data: investigationsData, isLoading: investigationsLoading } = useGraphQLQuery<{
     getInvestigations: Investigation[];
@@ -127,35 +137,11 @@ export const CaseView: FC = () => {
   });
 
   useEffect(() => {
-    if (complaintData != null) {
-      setLinkedComplaints((prev) => {
-        /**
-         * When users arrive at this page from complaint details, the complaint data in state
-         * was not fetched as a secror complaint and can be missing values.
-         * This overwrites that data when the sector view of the complaint is fetched by this page.
-         * This is necessary because the selectComplaint call on this page tends to fire before
-         * the unmount of the previous page is complete, so complaint data in state is not yet null.
-         */
-        const existingIndex = prev.findIndex((item) => item.id === complaintData.id);
-        return existingIndex > -1 ? prev.splice(existingIndex, 1, complaintData) : [...prev, complaintData];
-      });
-    }
-  }, [complaintData?.id]);
-
-  useEffect(() => {
     return () => {
       dispatch(setComplaint(null));
-      setLinkedComplaints([]);
+      dispatch(setCaseFileComplaints([]));
     };
   }, [dispatch]);
-
-  useEffect(() => {
-    linkedComplaintIds?.map((id) => {
-      if (id) {
-        dispatch(getComplaintById(id, "SECTOR"));
-      }
-    });
-  }, [caseData, dispatch]);
 
   const editButtonClick = () => {
     navigate(`/case/${id}/edit`);

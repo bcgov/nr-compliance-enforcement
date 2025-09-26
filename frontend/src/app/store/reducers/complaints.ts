@@ -45,6 +45,7 @@ import { getUserAgency } from "@/app/service/user-service";
 import { Collaborator } from "@apptypes/app/complaints/collaborator";
 import { generateExportComplaintInputParams } from "@/app/store/reducers/documents-thunks";
 import { CodeTableState } from "@/app/types/state/code-table-state";
+import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
 
 type ComplaintDtoAlias = WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint;
 
@@ -80,6 +81,7 @@ const initialState: ComplaintState = {
   complaintView: {
     isReadOnly: false,
   },
+  caseFileComplaints: [],
 };
 export const complaintSlice = createSlice({
   name: "complaints",
@@ -141,6 +143,11 @@ export const complaintSlice = createSlice({
         }
       }
       return { ...state, complaint, complaintView: { isReadOnly } };
+    },
+
+    setCaseFileComplaints: (state, action) => {
+      const { payload } = action;
+      return { ...state, caseFileComplaints: payload };
     },
 
     clearComplaint: (state) => {
@@ -323,6 +330,7 @@ export const {
   setComplaints,
   setTotalCount,
   setComplaint,
+  setCaseFileComplaints,
   setComplaintCollaborators,
   setGeocodedComplaintCoordinates,
   setZoneAtAGlance,
@@ -782,6 +790,20 @@ export const getLinkedComplaints =
     }
   };
 
+export const getCaseFileComplaints =
+  (complaintIds: string[]): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/sector-complaints-by-ids`, {
+        ids: complaintIds,
+      });
+      const response = await get<ComplaintDtoAlias>(dispatch, parameters);
+      dispatch(setCaseFileComplaints(response));
+    } catch (error) {
+      dispatch(setCaseFileComplaints(null));
+    }
+  };
+
 export const createComplaint =
   (
     complaintType: string,
@@ -960,6 +982,13 @@ export const selectComplaint = (
     complaints: { complaint },
   } = state;
   return complaint;
+};
+
+export const selectCaseFileComplaints = (state: RootState): SectorComplaint[] | null => {
+  const {
+    complaints: { caseFileComplaints },
+  } = state;
+  return caseFileComplaints;
 };
 
 export const selectComplaintCollaborators = (state: RootState): Collaborator[] => {
