@@ -92,6 +92,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
         {
           autoClose: false,
           hideProgressBar: true,
+          closeOnClick: false,
         },
       );
     },
@@ -118,6 +119,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
         {
           autoClose: false,
           hideProgressBar: true,
+          closeOnClick: false,
         },
       );
     },

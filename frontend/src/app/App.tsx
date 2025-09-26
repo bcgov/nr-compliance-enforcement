@@ -80,6 +80,7 @@ const App: FC = () => {
         <ToastContainer //any options that might be overridden need to be given a default here
           autoClose={5000}
           hideProgressBar={false}
+          closeOnClick={true}
         />
         <Routes>
           {redirectMode ? (
