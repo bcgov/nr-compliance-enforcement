@@ -10,6 +10,7 @@ import { CaseActivityCreateInput, CaseFileCreateInput } from "@/generated/graphq
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CaseListSearch } from "@/app/components/common/case-list-search";
+import { Link } from "react-router-dom";
 
 const createOrAddOptions: Option[] = [
   { label: "Create a new case", value: "create" },
@@ -77,7 +78,22 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   const createCaseMutation = useGraphQLMutation(CREATE_CASE_MUTATION, {
     invalidateQueries: ["searchCaseFiles"],
     onSuccess: (data: any) => {
-      ToggleSuccess(`Case #${data.createCaseFile.caseIdentifier} auto-created from complaint #${complaint_identifier}`);
+      ToggleSuccess(
+        <div>
+          Case{" "}
+          <Link
+            to={`/case/${data.createCaseFile.caseIdentifier}`}
+            className="toast-link"
+          >
+            #{data.createCaseFile.caseIdentifier}
+          </Link>{" "}
+          auto-created from complaint #{complaint_identifier}
+        </div>,
+        {
+          autoClose: false,
+          hideProgressBar: true,
+        },
+      );
     },
     onError: (error: any) => {
       console.error("Error creating case:", error);
@@ -88,7 +104,22 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   const addComplaintToCaseMutation = useGraphQLMutation(ADD_COMPLAINT_TO_CASE_MUTATION, {
     invalidateQueries: ["caseFile", selectedCase?.value ?? ""],
     onSuccess: (data: any) => {
-      ToggleSuccess("Case successfully added");
+      console.log(data);
+      ToggleSuccess(
+        <div>
+          Complaint #{complaint_identifier} added to case{" "}
+          <Link
+            to={`/case/${selectedCase?.value}`}
+            className="toast-link"
+          >
+            #{selectedCase?.value}
+          </Link>
+        </div>,
+        {
+          autoClose: false,
+          hideProgressBar: true,
+        },
+      );
     },
     onError: (error: any) => {
       console.error("Error adding case to complaint:", error);
@@ -157,7 +188,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           <Modal.Title as="h3">{title}</Modal.Title>
         </Modal.Header>
       )}
-      <Modal.Body>
+      <Modal.Body className="modal-create-add-case">
         {loading && <ModalLoading />}
 
         <div

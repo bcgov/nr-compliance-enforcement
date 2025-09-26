@@ -70,7 +70,10 @@ const App: FC = () => {
         <ScrollToTop />
         <Modal />
         <PageLoader />
-        <ToastContainer />
+        <ToastContainer
+          autoClose={5000}
+          hideProgressBar={false}
+        />
         <Routes>
           {redirectMode ? (
             <Route
