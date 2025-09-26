@@ -25,7 +25,7 @@ RUN npm ci
 RUN mkdir -p /app/playwright-browsers
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
 # Install WebKit browser
-RUN PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers npx playwright install --with-deps webkit
+RUN PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers npx playwright install --with-deps
 
 # Create test-results directory with OpenShift-compatible permissions
 RUN mkdir -p /app/test-results && \
