@@ -131,22 +131,25 @@ describe("PersonService", () => {
 
   //This method is not properly implemented yet.  Leaving this here so the test gets written when it is done.
   it("should be able to update a value", async () => {
-    const person_guid = 111;
+    const person_guid = "81c5d19b-b188-4b52-8ca3-f00fa987ed88";
     const personDto = {
       person_guid: null,
-      first_name: "Miss",
-      middle_name_1: "Jane",
-      middle_name_2: "Angela",
-      last_name: "Marple",
+      first_name: "William",
+      middle_name_1: "Sherlock",
+      middle_name_2: "Scott",
+      last_name: "Holmes",
       create_user_id: "JEST",
       create_utc_timestamp: new Date(),
       update_user_id: null,
       update_utc_timestamp: null,
     };
 
-    let response = service.update(person_guid, personDto);
+    let response = await service.update(person_guid, personDto);
 
-    expect(response).toBe("This action updates a #111 person");
+    expect(response.first_name).toBe("William");
+    expect(response.middle_name_1).toBe("Sherlock");
+    expect(response.middle_name_2).toBe("Scott");
+    expect(response.last_name).toBe("Holmes");
   });
 
   //This method is not properly implemented yet.  Leaving this here so the test gets written when it is done.
