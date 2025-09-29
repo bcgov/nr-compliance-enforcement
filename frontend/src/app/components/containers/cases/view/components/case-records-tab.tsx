@@ -6,7 +6,7 @@ export const CaseRecordsTab: FC = () => {
       <div className="row g-3">
         <div className="col-12">
           <img
-            src="http://textfiles.com/underconstruction/YosemiteRapids2787constconstruction.gif"
+            src="/images/under-construction/YosemiteRapids2787constconstruction.gif"
             alt="Under Construction"
           />
         </div>

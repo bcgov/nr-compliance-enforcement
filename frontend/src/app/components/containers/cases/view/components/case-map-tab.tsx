@@ -6,7 +6,7 @@ export const CaseMapTab: FC = () => {
       <div className="row g-3">
         <div className="col-12">
           <img
-            src="http://textfiles.com/underconstruction/ruruggerwomangraphicsconstruction.gif"
+            src="/images/under-construction/ruruggerwomangraphicsconstruction.gif"
             alt="Under Construction"
           />
         </div>
