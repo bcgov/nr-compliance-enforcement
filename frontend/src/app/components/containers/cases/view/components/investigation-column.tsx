@@ -7,9 +7,14 @@ import { useNavigate, useParams } from "react-router-dom";
 interface InvestigationColumnProps {
   investigations?: Investigation[];
   isLoading?: boolean;
+  disableBorder?: boolean;
 }
 
-export const InvestigationColumn: FC<InvestigationColumnProps> = ({ investigations, isLoading = false }) => {
+export const InvestigationColumn: FC<InvestigationColumnProps> = ({
+  investigations,
+  isLoading = false,
+  disableBorder = false,
+}) => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const handleAddInvestigation = () => {
@@ -25,6 +30,7 @@ export const InvestigationColumn: FC<InvestigationColumnProps> = ({ investigatio
       isLoading={isLoading}
       loadingText="Loading investigations..."
       onAddClick={handleAddInvestigation}
+      disableBorder={disableBorder}
     />
   );
 };

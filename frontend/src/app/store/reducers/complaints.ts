@@ -697,7 +697,6 @@ export const getComplaintById =
       dispatch(setComplaint({ ...response }));
     } catch (error) {
       dispatch(setComplaint(null));
-      window.location.href = "/not-authorized";
     }
   };
 

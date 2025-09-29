@@ -50,7 +50,7 @@ export class PersonController {
   @Patch(":id")
   @Roles(Role.COS)
   update(@Param("id") id: string, @Body() updatePersonDto: UpdatePersonDto) {
-    return this.personService.update(+id, updatePersonDto);
+    return this.personService.update(id as UUID, updatePersonDto);
   }
 
   @Delete(":id")
