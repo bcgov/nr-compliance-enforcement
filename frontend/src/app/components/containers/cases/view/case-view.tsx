@@ -165,23 +165,6 @@ export const CaseView: FC = () => {
 
   const renderTabContent = () => {
     switch (currentTab) {
-      case "summary":
-        return (
-          <div className="container-fluid px-4 py-3">
-            <div className="row g-3">
-              <ComplaintColumn complaints={linkedComplaints} />
-              <InspectionColumn
-                inspections={inspectionsData?.getInspections}
-                isLoading={inspectionsLoading && linkedInspectionIds && linkedInspectionIds.length > 0}
-              />
-              <InvestigationColumn
-                investigations={investigationsData?.getInvestigations}
-                isLoading={investigationsLoading && linkedInvestigationIds && linkedInvestigationIds.length > 0}
-                disableBorder={true}
-              />
-            </div>
-          </div>
-        );
       case "records":
         return <CaseRecordsTab />;
       case "history":

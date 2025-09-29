@@ -22,7 +22,7 @@ export const CaseTabs: FC = () => {
   // Determine active tab based on current URL
   useEffect(() => {
     const paths = location.pathname.split("/");
-    const tabKey = paths[paths.length - 1];
+    const tabKey = paths.at(-1) ?? "";
 
     setActiveTab(tabKey === id ? "summary" : tabKey);
   }, [location.pathname, id]);
