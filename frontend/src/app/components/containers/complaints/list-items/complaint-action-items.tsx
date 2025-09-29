@@ -183,7 +183,7 @@ export const ComplaintActionItems: FC<Props> = ({
         {showCreateAddCase && (
           <Dropdown.Item
             onClick={openCreateAddCaseModal}
-            disabled={complaint_status === "CLOSED" || complaint_status === "Referred"}
+            disabled={complaint_status === "Referred"}
           >
             <i
               className="bi bi-folder-plus"

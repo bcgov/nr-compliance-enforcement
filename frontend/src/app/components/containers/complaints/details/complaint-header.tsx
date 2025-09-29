@@ -282,6 +282,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           as="button"
           id="create-add-case-button"
           onClick={openCreateAddCaseModal}
+          disabled={complaintAgency !== userAgency}
         >
           <i className="bi bi-folder-plus"></i>
           <span>Create/add case</span>
