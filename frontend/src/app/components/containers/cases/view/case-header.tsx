@@ -79,10 +79,15 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
       <CaseTabs />
       <section className="comp-details-body pb-0">
         <div className="comp-details-section-header">
-          <p>
-            <b>Case description</b>
-          </p>
-          <div className="comp-details-section-header-actions">
+          <div>
+            <dt className="mb-1 pb-0">Case description</dt>
+            <div className="comp-details-content">
+              <div className="row">
+                <p>{caseData?.description}</p>
+              </div>
+            </div>
+          </div>
+          <div className="comp-details-section-header-actions mb-0 pb-0">
             <Button
               variant="outline-primary"
               size="sm"
@@ -92,11 +97,6 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
               <i className="bi bi-pencil"></i>
               <span>Edit case</span>
             </Button>
-          </div>
-        </div>
-        <div className="comp-details-content">
-          <div className="row">
-            <p>{caseData?.description}</p>
           </div>
         </div>
       </section>
