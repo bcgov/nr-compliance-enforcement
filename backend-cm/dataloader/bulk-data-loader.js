@@ -5,11 +5,11 @@ const { Client } = require('pg');
 const faker = require('faker');
 
 const client = new Client({   
-  host: process.env.POSTGRES_HOST, //note make sure port not specified in .env file!
+  host: process.env.COMPLAINT_OUTCOME_POSTGRESQL_HOST, //note make sure port not specified in .env file!
   port: 5433,
-  database: process.env.POSTGRES_DATABASE,
-  user: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,});
+  database: process.env.COMPLAINT_OUTCOME_POSTGRESQL_DATABASE,
+  user: process.env.COMPLAINT_OUTCOME_POSTGRESQL_USER,
+  password: process.env.COMPLAINT_OUTCOME_POSTGRESQL_PASSWORD,});
 
 client.connect();
 
