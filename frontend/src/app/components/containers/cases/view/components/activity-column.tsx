@@ -47,7 +47,7 @@ export const ActivityColumn: FC<ActivityColumnProps> = ({
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h5 className="fw-bold mb-0">{title}</h5>
           <Button
-            variant="info"
+            variant="outline-primary"
             size="sm"
             onClick={onAddClick}
           >

@@ -25,7 +25,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
   const inProgressInd = violationInProgress ? "In Progress" : "";
 
   const userAgency = getUserAgency();
-  const derivedStatus = ownedBy !== userAgency ? "Referred" : status;
+  const derivedStatus = ownedBy !== userAgency && complaintType !== "SECTOR" ? "Referred" : status;
 
   return (
     <Popup
