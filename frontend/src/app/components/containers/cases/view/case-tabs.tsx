@@ -1,27 +1,56 @@
-import { FC } from "react";
+import { FC, useState, useEffect } from "react";
 import { Nav } from "react-bootstrap";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
-type props = {
-  caseTab: string;
-  caseTabItems: Array<string>;
-  onTabChange: Function;
+const CASE_TAB_ITEMS = {
+  summary: "Summary",
+  records: "Case Records",
+  history: "Case History",
+  map: "Map View",
 };
 
-export const CaseTabs: FC<props> = ({ caseTab, caseTabItems, onTabChange }) => {
+type CaseParams = {
+  id: string;
+};
+
+export const CaseTabs: FC = () => {
+  const navigate = useNavigate();
+  const { id } = useParams<CaseParams>();
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState<string>("summary");
+
+  // Determine active tab based on current URL
+  useEffect(() => {
+    const paths = location.pathname.split("/");
+    const tabKey = paths[paths.length - 1];
+
+    setActiveTab(tabKey === id ? "summary" : tabKey);
+  }, [location.pathname, id]);
+
+  const handleTabClick = (tabKey: string) => {
+    setActiveTab(tabKey);
+
+    if (tabKey === "summary") {
+      navigate(`/case/${id}`);
+    } else {
+      navigate(`/case/${id}/${tabKey}`);
+    }
+  };
+
   return (
     <Nav className="nav nav-tabs case-nav-tabs">
-      {caseTabItems.map((item) => {
+      {Object.entries(CASE_TAB_ITEMS).map(([key, label]) => {
         return (
           <Nav.Item
-            className={`nav-item case-tab case-tab-${item === caseTab ? "active" : "inactive"}`}
-            key={`${item}-tab-item`}
+            className={`nav-item case-tab case-tab-${key === activeTab ? "active" : "inactive"}`}
+            key={`${key}-tab-item`}
           >
             <Nav.Link
-              className={`nav-link ${item === caseTab ? "active" : "inactive"}`}
-              id={item}
-              onClick={() => onTabChange(item)}
+              className={`nav-link ${key === activeTab ? "active" : "inactive"}`}
+              id={key}
+              onClick={() => handleTabClick(key)}
             >
-              {item}
+              {label}
             </Nav.Link>
           </Nav.Item>
         );

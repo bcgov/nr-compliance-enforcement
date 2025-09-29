@@ -8,7 +8,14 @@ import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { getComplaintById, selectComplaint, setComplaint } from "@/app/store/reducers/complaints";
 import { Complaint } from "@/app/types/app/complaints/complaint";
-import { ComplaintColumn, InvestigationColumn, InspectionColumn, RecordColumn } from "./components";
+import {
+  ComplaintColumn,
+  InvestigationColumn,
+  InspectionColumn,
+  CaseRecordsTab,
+  CaseHistoryTab,
+  CaseMapTab,
+} from "./components";
 
 const GET_CASE_FILE = gql`
   query GetCaseFile($caseIdentifier: String!) {
@@ -73,12 +80,15 @@ const GET_INSPECTIONS = gql`
 
 export type CaseParams = {
   id: string;
+  tabKey?: string;
 };
 
 export const CaseView: FC = () => {
   const dispatch = useAppDispatch();
-  const { id = "" } = useParams<CaseParams>();
+  const { id = "", tabKey } = useParams<CaseParams>();
   const navigate = useNavigate();
+
+  const currentTab = tabKey || "summary";
 
   const { data, isLoading } = useGraphQLQuery<{ caseFile: CaseFile }>(GET_CASE_FILE, {
     queryKey: ["caseFile", id],
@@ -153,6 +163,51 @@ export const CaseView: FC = () => {
     navigate(`/case/${id}/edit`);
   };
 
+  const renderTabContent = () => {
+    switch (currentTab) {
+      case "summary":
+        return (
+          <div className="container-fluid px-4 py-3">
+            <div className="row g-3">
+              <ComplaintColumn complaints={linkedComplaints} />
+              <InspectionColumn
+                inspections={inspectionsData?.getInspections}
+                isLoading={inspectionsLoading && linkedInspectionIds && linkedInspectionIds.length > 0}
+              />
+              <InvestigationColumn
+                investigations={investigationsData?.getInvestigations}
+                isLoading={investigationsLoading && linkedInvestigationIds && linkedInvestigationIds.length > 0}
+                disableBorder={true}
+              />
+            </div>
+          </div>
+        );
+      case "records":
+        return <CaseRecordsTab />;
+      case "history":
+        return <CaseHistoryTab />;
+      case "map":
+        return <CaseMapTab />;
+      default:
+        return (
+          <div className="container-fluid px-4 py-3">
+            <div className="row g-3">
+              <ComplaintColumn complaints={linkedComplaints} />
+              <InspectionColumn
+                inspections={inspectionsData?.getInspections}
+                isLoading={inspectionsLoading && linkedInspectionIds && linkedInspectionIds.length > 0}
+              />
+              <InvestigationColumn
+                investigations={investigationsData?.getInvestigations}
+                isLoading={investigationsLoading && linkedInvestigationIds && linkedInvestigationIds.length > 0}
+                disableBorder={true}
+              />
+            </div>
+          </div>
+        );
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="comp-complaint-details">
@@ -172,21 +227,7 @@ export const CaseView: FC = () => {
       {caseData && (
         <div className="comp-complaint-details">
           <CaseHeader caseData={caseData} />
-
-          <div className="container-fluid px-4 py-3">
-            <div className="row g-3">
-              <ComplaintColumn complaints={linkedComplaints} />
-              <InvestigationColumn
-                investigations={investigationsData?.getInvestigations}
-                isLoading={investigationsLoading && linkedInvestigationIds && linkedInvestigationIds.length > 0}
-              />
-              <InspectionColumn
-                inspections={inspectionsData?.getInspections}
-                isLoading={inspectionsLoading && linkedInspectionIds && linkedInspectionIds.length > 0}
-              />
-              <RecordColumn />
-            </div>
-          </div>
+          {renderTabContent()}
         </div>
       )}
     </>

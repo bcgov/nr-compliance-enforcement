@@ -108,6 +108,10 @@ const App: FC = () => {
                   element={<CaseView />}
                 />
                 <Route
+                  path="/case/:id/:tabKey"
+                  element={<CaseView />}
+                />
+                <Route
                   path="/case/:id/edit"
                   element={<CaseEdit />}
                 />

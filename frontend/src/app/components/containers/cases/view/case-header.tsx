@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Badge, Button } from "react-bootstrap";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
@@ -13,13 +13,11 @@ interface CaseHeaderProps {
 export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
   const caseId = caseData?.caseIdentifier || "Unknown";
   const status = caseData?.caseStatus?.shortDescription || "Active";
-  const caseType = "Investispection";
   const leadAgency = caseData?.leadAgency?.longDescription || "Unknown Agency";
   const dateLogged = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
   const lastUpdated = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
   const officerAssigned = "Not Assigned";
   const createdBy = "Unknown";
-  const [activeTab, setActiveTab] = useState<string>("Summary");
   const navigate = useNavigate();
 
   const editButtonClick = () => {
@@ -75,27 +73,11 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
             </div>
             <ActionMenu />
           </div>
-
-          {/* Case Type Details */}
-          <div
-            className="mt-1 max-width-48ch"
-            id="comp-nature-of-complaint"
-          >
-            <span>{caseType}</span>
-          </div>
         </div>
       </div>
 
-      <CaseTabs
-        caseTab={activeTab}
-        caseTabItems={["Summary", "Case Records", "Case History", "Map View"]}
-        onTabChange={(tab: string) => {
-          setActiveTab(tab);
-        }}
-      />
-      <section className="comp-details-body">
-        <hr className="comp-details-body-spacer"></hr>
-
+      <CaseTabs />
+      <section className="comp-details-body pb-0">
         <div className="comp-details-section-header">
           <p>
             <b>Case description</b>
@@ -119,7 +101,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
         </div>
       </section>
       {/* <!-- case status details start --> */}
-      <section className="comp-details-body">
+      <section className="comp-details-body pt-0">
         <div className="comp-header-status-container">
           <div className="comp-details-status">
             <dl>
@@ -203,6 +185,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
         </div>
       </section>
       {/* <!-- case status details end --> */}
+      <hr className="mt-0 mb-2" />
     </>
   );
 };
