@@ -5,4 +5,6 @@ export { ActivityCard } from "./activity-card";
 export { ComplaintColumn } from "./complaint-column";
 export { InvestigationColumn } from "./investigation-column";
 export { InspectionColumn } from "./inspection-column";
-export { RecordColumn } from "./record-column";
+export { CaseRecordsTab } from "./case-records-tab";
+export { CaseHistoryTab } from "./case-history-tab";
+export { CaseMapTab } from "./case-map-tab";

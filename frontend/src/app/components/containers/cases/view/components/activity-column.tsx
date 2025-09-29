@@ -26,7 +26,7 @@ export const ActivityColumn: FC<ActivityColumnProps> = ({
 }) => {
   const [showBorder, setShowBorder] = useState(true);
 
-  // Check if the screen size will cause the four columns to be stacked, if so, don't show the border
+  // Check if the screen size will cause the three columns to be stacked, if so, don't show the border
   useEffect(() => {
     const checkScreenSize = () => {
       const mediaQuery = window.matchMedia("(min-width: 992px)");
@@ -42,9 +42,19 @@ export const ActivityColumn: FC<ActivityColumnProps> = ({
   }, []);
 
   return (
-    <div className="col-lg-3 d-flex flex-column">
-      <h5 className="fw-bold mb-3">{title}</h5>
+    <div className="col-lg-4 d-flex flex-column">
       <div className={`flex-grow-1 ${showBorder && !disableBorder ? "pe-3 border-end" : ""}`}>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h5 className="fw-bold mb-0">{title}</h5>
+          <Button
+            variant="info"
+            size="sm"
+            onClick={onAddClick}
+          >
+            <i className="bi bi-plus-circle me-1" />
+            {addButtonText}
+          </Button>
+        </div>
         {isLoading ? (
           <div className="border rounded p-3 mb-3 bg-white">
             <p className="mb-0">{loadingText}</p>
@@ -58,14 +68,6 @@ export const ActivityColumn: FC<ActivityColumnProps> = ({
             />
           ))
         )}
-        <Button
-          variant="primary"
-          className="w-100 mb-3"
-          onClick={onAddClick}
-        >
-          <i className="bi bi-plus-circle" />
-          <span>{addButtonText}</span>
-        </Button>
       </div>
     </div>
   );
