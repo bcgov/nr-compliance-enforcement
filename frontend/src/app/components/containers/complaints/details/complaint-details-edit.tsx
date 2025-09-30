@@ -91,14 +91,20 @@ export const ComplaintDetailsEdit: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const allOfficers = useSelector((state: RootState) => selectOfficers(state));
 
-  useEffect(() => {
-    dispatch(getCaseFile(id));
-  }, [id, dispatch, allOfficers]);
-
   //-- selectors
   const data = useAppSelector(selectComplaint);
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
+
+  useEffect(() => {
+    dispatch(getCaseFile(id));
+  }, [id, dispatch, allOfficers]);
+
+  useEffect(() => {
+    if (!data) {
+      dispatch(getComplaintById(id, complaintType));
+    }
+  }, [id, complaintType, dispatch, data]);
 
   const {
     details,
@@ -225,12 +231,6 @@ export const ComplaintDetailsEdit: FC = () => {
       dispatch(setLinkedComplaints([]));
     };
   }, [dispatch]);
-
-  useEffect(() => {
-    if (id && (!data || data.id !== id)) {
-      dispatch(getComplaintById(id, complaintType));
-    }
-  }, [id, parkGuid, complaintType, data, dispatch]);
 
   useEffect(() => {
     const incidentDateTimeObject = incidentDateTime ? new Date(incidentDateTime) : null;
