@@ -1,6 +1,7 @@
 FROM node:19-bullseye
 
 # Install system dependencies required by Playwright WebKit
+# plus dnsutils for network debugging
 RUN apt-get update && apt-get install -y \
     libnss3 \
     libatk-bridge2.0-0 \
@@ -14,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     libatk1.0-0 \
     libcairo-gobject2 \
     libgdk-pixbuf2.0-0 \
+    dnsutils \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
