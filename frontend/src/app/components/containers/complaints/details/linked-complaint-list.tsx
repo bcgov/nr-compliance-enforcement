@@ -280,7 +280,6 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
               <div
                 className={`comp-linked-complaint-item ${index > 4 && !viewMoreCases ? "hide-item" : "show-item"}`}
                 key={data.caseIdentifier}
-                role="button"
                 tabIndex={index}
               >
                 <div className="item-header">
@@ -302,7 +301,6 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
         </div>
         <div
           className="viewMore"
-          role="button"
           onClick={() => toggleViewMore("CASES")}
           onKeyDown={() => toggleViewMore("CASES")}
         >
