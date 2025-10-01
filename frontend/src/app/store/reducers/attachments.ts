@@ -114,7 +114,8 @@ export const getAttachments =
   (complaint_identifier: string, attachmentType: AttachmentEnum): AppThunk =>
   async (dispatch) => {
     try {
-      const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
+      const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}&latest=true`);
+
       let response = await get<Array<COMSObject>>(dispatch, parameters, {
         "x-amz-meta-complaint-id": complaint_identifier,
         "x-amz-meta-is-thumb": "N",
@@ -210,19 +211,31 @@ export const saveAttachments =
       return;
     }
 
+    const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
+
+    let historicalComplaintAttachments = await get<Array<COMSObject>>(dispatch, params, {
+      "x-amz-meta-complaint-id": complaint_identifier,
+      "x-amz-meta-is-thumb": "N",
+      "x-amz-meta-attachment-type": attachmentType,
+    });
+
     for (const attachment of attachments) {
+      const attachmentName = encodeURIComponent(
+        injectComplaintIdentifierToFilename(attachment.name, complaint_identifier, attachmentType),
+      );
+      const existingAttachment = historicalComplaintAttachments.find((item) => item.name === attachmentName);
       const header = {
         "x-amz-meta-complaint-id": complaint_identifier,
         "x-amz-meta-is-thumb": "N",
         "x-amz-meta-attachment-type": attachmentType,
-        "Content-Disposition": `attachment; filename="${encodeURIComponent(
-          injectComplaintIdentifierToFilename(attachment.name, complaint_identifier, attachmentType),
-        )}"`,
+        "Content-Disposition": `attachment; filename="${attachmentName}"`,
         "Content-Type": attachment?.type,
       };
 
       try {
-        const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
+        const parameters = existingAttachment
+          ? generateApiParameters(`${config.COMS_URL}/object/${existingAttachment.id}`)
+          : generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
         const response = await putFile<COMSObject>(dispatch, parameters, header, attachment);
         switch (attachmentType) {
           case AttachmentEnum.COMPLAINT_ATTACHMENT:
