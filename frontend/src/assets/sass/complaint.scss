@@ -2084,6 +2084,18 @@ p {
   color: #0f5132 !important;
 }
 
+.toast-link {
+  color: #004d00;
+  text-decoration: underline;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.toast-link:hover {
+  text-decoration: none;
+}
+
 .map-list-toggle {
   font-size: 12px;
   height: 38px;

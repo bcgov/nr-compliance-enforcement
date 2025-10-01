@@ -138,6 +138,8 @@ export type CaseFileAction = {
 };
 
 export type CaseFileCreateInput = {
+  activityIdentifier?: InputMaybe<Scalars['String']['input']>;
+  activityType?: InputMaybe<Scalars['String']['input']>;
   caseStatus: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
