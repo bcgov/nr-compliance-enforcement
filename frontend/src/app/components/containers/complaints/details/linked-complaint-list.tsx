@@ -299,13 +299,13 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
             );
           })}
         </div>
-        <div
+        <button
           className="viewMore"
           onClick={() => toggleViewMore("CASES")}
           onKeyDown={() => toggleViewMore("CASES")}
         >
           {renderViewMore(caseFiles, "CASES")}
-        </div>
+        </button>
       </>
     );
   };
