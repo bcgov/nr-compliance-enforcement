@@ -131,6 +131,12 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      migration-complaint-outcome:
+        condition: service_completed_successfully
+      migration-inspection:
+        condition: service_completed_successfully
+      migration-investigation:
+        condition: service_completed_successfully
   migration-complaint-outcome:
     image: flyway/flyway:10-alpine
     container_name: migration-complaint-outcome

@@ -14,6 +14,7 @@ export const MANAGE_COLLABORATORS = "MANAGE_COLLABORATORS";
 export const MAP_MODAL = "MAP_MODAL";
 export const LINK_COMPLAINT = "LINK_COMPLAINT";
 export const ADD_COMPLAINT_TO_CASE = "ADD_COMPLAINT_TO_CASE";
+export const CREATE_ADD_CASE = "CREATE_ADD_CASE";
 
 export interface ModalProps {
   modalType: string;

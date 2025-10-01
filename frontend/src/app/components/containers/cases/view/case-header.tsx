@@ -1,9 +1,10 @@
 import { FC } from "react";
-import { Link } from "react-router-dom";
-import { Badge } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import { Badge, Button } from "react-bootstrap";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
 import { CaseFile } from "@/generated/graphql";
 import { ActionMenu } from "@/app/components/common/action-menu";
+import { CaseTabs } from "./case-tabs";
 
 interface CaseHeaderProps {
   caseData?: CaseFile;
@@ -12,17 +13,24 @@ interface CaseHeaderProps {
 export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
   const caseId = caseData?.caseIdentifier || "Unknown";
   const status = caseData?.caseStatus?.shortDescription || "Active";
-  const caseType = "Investispection";
   const leadAgency = caseData?.leadAgency?.longDescription || "Unknown Agency";
   const dateLogged = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
   const lastUpdated = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
   const officerAssigned = "Not Assigned";
   const createdBy = "Unknown";
+  const navigate = useNavigate();
+
+  const editButtonClick = () => {
+    navigate(`/case/${caseData?.caseIdentifier}/edit`);
+  };
 
   return (
     <>
       <div className="comp-details-header">
-        <div className="comp-container">
+        <div
+          className="comp-container"
+          style={{ maxWidth: "initial" }}
+        >
           {/* <!-- breadcrumb start --> */}
           <div className="comp-complaint-breadcrumb">
             <nav aria-label="breadcrumb">
@@ -45,6 +53,11 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
           <div className="comp-details-title-container">
             <div className="comp-details-title-info">
               <h1 className="comp-box-complaint-id">
+                <i
+                  className="bi bi-folder-fill"
+                  style={{ fontSize: "xx-large" }}
+                ></i>{" "}
+                &nbsp;
                 <span>Case </span>#{caseId}
               </h1>
             </div>
@@ -60,19 +73,35 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
             </div>
             <ActionMenu />
           </div>
-
-          {/* Case Type Details */}
-          <div
-            className="mt-1 max-width-48ch"
-            id="comp-nature-of-complaint"
-          >
-            <span>{caseType}</span>
-          </div>
         </div>
       </div>
 
+      <CaseTabs />
+      <section className="comp-details-body pb-0">
+        <div className="comp-details-section-header">
+          <div>
+            <dt className="mb-1 pb-0">Case description</dt>
+            <div className="comp-details-content">
+              <div className="row">
+                <p>{caseData?.description}</p>
+              </div>
+            </div>
+          </div>
+          <div className="comp-details-section-header-actions mb-0 pb-0">
+            <Button
+              variant="outline-primary"
+              size="sm"
+              id="details-screen-edit-button"
+              onClick={editButtonClick}
+            >
+              <i className="bi bi-pencil"></i>
+              <span>Edit case</span>
+            </Button>
+          </div>
+        </div>
+      </section>
       {/* <!-- case status details start --> */}
-      <section className="comp-details-body comp-container">
+      <section className="comp-details-body pt-0">
         <div className="comp-header-status-container">
           <div className="comp-details-status">
             <dl>
@@ -156,6 +185,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
         </div>
       </section>
       {/* <!-- case status details end --> */}
+      <hr className="mt-0 mb-2" />
     </>
   );
 };

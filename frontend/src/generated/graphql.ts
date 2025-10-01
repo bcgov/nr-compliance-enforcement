@@ -99,7 +99,7 @@ export type CaseActivity = {
 };
 
 export type CaseActivityCreateInput = {
-  activityIdentifier?: InputMaybe<Scalars['String']['input']>;
+  activityIdentifier: Scalars['String']['input'];
   activityType: Scalars['String']['input'];
   caseFileGuid: Scalars['String']['input'];
 };
@@ -138,6 +138,8 @@ export type CaseFileAction = {
 };
 
 export type CaseFileCreateInput = {
+  activityIdentifier?: InputMaybe<Scalars['String']['input']>;
+  activityType?: InputMaybe<Scalars['String']['input']>;
   caseStatus: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
@@ -625,7 +627,6 @@ export type KeyValuePairInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addComplaintToCaseFile: CaseFile;
   createAssessment: ComplaintOutcome;
   createAuthorizationOutcome: ComplaintOutcome;
   createCaseActivity: CaseActivity;
@@ -665,12 +666,6 @@ export type Mutation = {
   updatePrevention: ComplaintOutcome;
   updateReview: ComplaintOutcome;
   updateWildlife: ComplaintOutcome;
-};
-
-
-export type MutationaddComplaintToCaseFileArgs = {
-  caseIdentifier: Scalars['String']['input'];
-  complaintIdentifier: Scalars['String']['input'];
 };
 
 

@@ -8,7 +8,14 @@ import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { getComplaintById, selectComplaint, setComplaint } from "@/app/store/reducers/complaints";
 import { Complaint } from "@/app/types/app/complaints/complaint";
-import { ComplaintColumn, InvestigationColumn, InspectionColumn, RecordColumn } from "./components";
+import {
+  ComplaintColumn,
+  InvestigationColumn,
+  InspectionColumn,
+  CaseRecordsTab,
+  CaseHistoryTab,
+  CaseMapTab,
+} from "./components";
 
 const GET_CASE_FILE = gql`
   query GetCaseFile($caseIdentifier: String!) {
@@ -73,12 +80,15 @@ const GET_INSPECTIONS = gql`
 
 export type CaseParams = {
   id: string;
+  tabKey?: string;
 };
 
 export const CaseView: FC = () => {
   const dispatch = useAppDispatch();
-  const { id = "" } = useParams<CaseParams>();
+  const { id = "", tabKey } = useParams<CaseParams>();
   const navigate = useNavigate();
+
+  const currentTab = tabKey || "summary";
 
   const { data, isLoading } = useGraphQLQuery<{ caseFile: CaseFile }>(GET_CASE_FILE, {
     queryKey: ["caseFile", id],
@@ -153,6 +163,34 @@ export const CaseView: FC = () => {
     navigate(`/case/${id}/edit`);
   };
 
+  const renderTabContent = () => {
+    switch (currentTab) {
+      case "records":
+        return <CaseRecordsTab />;
+      case "history":
+        return <CaseHistoryTab />;
+      case "map":
+        return <CaseMapTab />;
+      default:
+        return (
+          <div className="container-fluid px-4 py-3">
+            <div className="row g-3">
+              <ComplaintColumn complaints={linkedComplaints} />
+              <InspectionColumn
+                inspections={inspectionsData?.getInspections}
+                isLoading={inspectionsLoading && linkedInspectionIds && linkedInspectionIds.length > 0}
+              />
+              <InvestigationColumn
+                investigations={investigationsData?.getInvestigations}
+                isLoading={investigationsLoading && linkedInvestigationIds && linkedInvestigationIds.length > 0}
+                disableBorder={true}
+              />
+            </div>
+          </div>
+        );
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="comp-complaint-details">
@@ -172,47 +210,7 @@ export const CaseView: FC = () => {
       {caseData && (
         <div className="comp-complaint-details">
           <CaseHeader caseData={caseData} />
-          <section className="comp-details-body comp-container">
-            <hr className="comp-details-body-spacer"></hr>
-
-            <div className="comp-details-section-header">
-              <h2>Case details</h2>
-              <div className="comp-details-section-header-actions">
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  id="details-screen-edit-button"
-                  onClick={editButtonClick}
-                >
-                  <i className="bi bi-pencil"></i>
-                  <span>Edit case</span>
-                </Button>
-              </div>
-            </div>
-            <div className="comp-details-content">
-              <div className="row">
-                <div className="col-sm-12">
-                  <div className="border rounded p-3 mb-3 bg-white">
-                    <p>{caseData.description}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-          <div className="container-fluid px-4 py-3">
-            <div className="row g-3">
-              <ComplaintColumn complaints={linkedComplaints} />
-              <InvestigationColumn
-                investigations={investigationsData?.getInvestigations}
-                isLoading={investigationsLoading && linkedInvestigationIds && linkedInvestigationIds.length > 0}
-              />
-              <InspectionColumn
-                inspections={inspectionsData?.getInspections}
-                isLoading={inspectionsLoading && linkedInspectionIds && linkedInspectionIds.length > 0}
-              />
-              <RecordColumn />
-            </div>
-          </div>
+          {renderTabContent()}
         </div>
       )}
     </>

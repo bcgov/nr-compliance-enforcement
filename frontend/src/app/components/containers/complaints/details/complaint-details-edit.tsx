@@ -91,18 +91,20 @@ export const ComplaintDetailsEdit: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const allOfficers = useSelector((state: RootState) => selectOfficers(state));
 
+  //-- selectors
+  const data = useAppSelector(selectComplaint);
+  const privacyDropdown = useAppSelector(selectPrivacyDropdown);
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
+
   useEffect(() => {
     dispatch(getCaseFile(id));
   }, [id, dispatch, allOfficers]);
 
   useEffect(() => {
-    dispatch(getComplaintById(id, complaintType));
-  }, [id, complaintType, dispatch]);
-
-  //-- selectors
-  const data = useAppSelector(selectComplaint);
-  const privacyDropdown = useAppSelector(selectPrivacyDropdown);
-  const isReadOnly = useAppSelector(selectComplaintViewMode);
+    if (!data) {
+      dispatch(getComplaintById(id, complaintType));
+    }
+  }, [id, complaintType, dispatch, data]);
 
   const {
     details,
