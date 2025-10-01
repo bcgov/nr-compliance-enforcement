@@ -1040,6 +1040,7 @@ export type Query = {
   HWCRPreventionActions: Array<Maybe<CaseFileAction>>;
   ageCodes: Array<Maybe<AgeCode>>;
   agencyCodes: Array<Maybe<AgencyCode>>;
+  allCaseFilesByActivityId: Array<Maybe<CaseFile>>;
   caseFile?: Maybe<CaseFile>;
   caseFileByActivityId: CaseFile;
   caseFiles: Array<CaseFile>;
@@ -1089,6 +1090,12 @@ export type Query = {
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
+};
+
+
+export type QueryallCaseFilesByActivityIdArgs = {
+  activityIdentifier: Scalars['String']['input'];
+  activityType: Scalars['String']['input'];
 };
 
 
