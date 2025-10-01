@@ -114,6 +114,29 @@ jobs:
           tags: |
             ${{ github.sha }}
 
+  build-cypress:
+    name: Build Cypress
+    runs-on: ubuntu-22.04
+    outputs:
+      digest: ${{ steps.build-cypress.outputs.digest }}
+      sha: ${{ github.sha }}
+    timeout-minutes: 15
+    steps:
+      - uses: bcgov/action-builder-ghcr@v2.2.0
+        with:
+          package: frontend-cypress
+          build_file: frontend/Dockerfile.cypress
+          build_context: frontend/
+          tag: ${{ github.event.number }}
+          tag_fallback: latest
+      - uses: shrink/actions-docker-registry-tag@v4
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/frontend-cypress
+          target: ${{ github.event.number }}
+          tags: |
+            ${{ github.sha }}
+
   tests:
     name: Tests
     if: (! github.event.pull_request.draft)
@@ -134,7 +157,7 @@ jobs:
   ### Emerald Jobs ###
   deploy-emerald:
     name: Deploy Workloads To Emerald
-    needs: [builds, build-playwright, validate-flyway-migrations]
+    needs: [builds, build-playwright, build-cypress, validate-flyway-migrations]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout CD repo
