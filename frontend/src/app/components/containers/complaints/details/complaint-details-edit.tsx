@@ -44,7 +44,7 @@ import notificationInvalid from "@assets/images/notification-invalid.png";
 import { CompSelect } from "@components/common/comp-select";
 import { CompInput } from "@components/common/comp-input";
 import { from } from "linq-to-typescript";
-import { openModal } from "@store/reducers/app";
+import { openModal, isFeatureActive } from "@store/reducers/app";
 import { useParams } from "react-router-dom";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { ToggleError } from "@common/toast";
@@ -79,6 +79,30 @@ import { ParkSelect } from "@/app/components/common/park-select";
 import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
 import { selectEquipment } from "@/app/store/reducers/complaint-outcome-selectors";
 import { isValidEmail } from "@/app/common/validate-email";
+import { gql } from "graphql-request";
+import { useGraphQLQuery } from "@/app/graphql/hooks";
+import { CaseFile } from "@/generated/graphql";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+
+const GET_ASSOCIATED_CASE_FILES = gql`
+  query allCaseFilesByActivityId($activityIdentifier: String!) {
+    allCaseFilesByActivityId(activityType: "COMP", activityIdentifier: $activityIdentifier) {
+      __typename
+      caseIdentifier
+      description
+      leadAgency {
+        agencyCode
+        shortDescription
+        longDescription
+      }
+      caseStatus {
+        caseStatusCode
+        shortDescription
+        longDescription
+      }
+    }
+  }
+`;
 
 export type ComplaintParams = {
   id: string;
@@ -89,6 +113,14 @@ export const ComplaintDetailsEdit: FC = () => {
   const dispatch = useAppDispatch();
 
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
+  const casesActive = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
+  const { data: caseFilesData } = useGraphQLQuery<{ allCaseFilesByActivityId: CaseFile[] }>(GET_ASSOCIATED_CASE_FILES, {
+    queryKey: ["allCaseFilesByActivityId", id],
+    variables: { activityIdentifier: id },
+    enabled: !!id,
+  });
+  const associatedCaseFiles: CaseFile[] = casesActive ? (caseFilesData?.allCaseFilesByActivityId ?? []) : [];
+
   const allOfficers = useSelector((state: RootState) => selectOfficers(state));
 
   //-- selectors
@@ -791,10 +823,11 @@ export const ComplaintDetailsEdit: FC = () => {
       <section className="comp-details-body comp-container">
         <hr className="comp-details-body-spacer"></hr>
 
-        {readOnly && linkedComplaintData.length > 0 && (
+        {readOnly && (linkedComplaintData.length > 0 || associatedCaseFiles.length > 0) && (
           <LinkedComplaintList
             id={id}
             linkedComplaintData={linkedComplaintData}
+            associatedCaseFiles={associatedCaseFiles}
             canUnlink={status !== "Closed"}
           />
         )}

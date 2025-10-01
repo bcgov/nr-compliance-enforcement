@@ -29,6 +29,7 @@ import { PersonComplaintXrefService } from "../person_complaint_xref/person_comp
 import { UUID } from "crypto";
 import { SendCollaboratorEmalDto } from "../../v1/email/dto/send_collaborator_email.dto";
 import { User } from "../../auth/decorators/user.decorator";
+import { SectorComplaintDto } from "src/types/models/complaints/dtos/sector-complaint";
 @UseGuards(JwtRoleGuard)
 @ApiTags("complaint")
 @Controller({
@@ -43,6 +44,12 @@ export class ComplaintController {
     private readonly personComplaintXrefService: PersonComplaintXrefService,
   ) {}
   private readonly logger = new Logger(ComplaintController.name);
+
+  @Get("/sector-complaints-by-ids")
+  @Roles(coreRoles)
+  async findSectorComplaintsByIds(@Query("ids") complaintIds: string[]): Promise<SectorComplaintDto[]> {
+    return await this.service.getSectorComplaintsByIds(complaintIds);
+  }
 
   @Get(":complaintType")
   @Roles(coreRoles)
