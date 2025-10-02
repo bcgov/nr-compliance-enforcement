@@ -10,6 +10,7 @@ import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 import { ComplaintFilters } from "@apptypes/complaints/complaint-filters";
 import { ComplaintReferral } from "@/app/types/app/complaints/complaint-referral";
 import { Collaborator } from "@/app/types/app/complaints/collaborator";
+import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
 
 export interface ComplaintState {
   complaintSearchParameters: ComplaintFilters;
@@ -26,6 +27,7 @@ export interface ComplaintState {
   webeocChangeCount: number;
   linkedComplaints: [];
   complaintView: ComplaintView;
+  caseFileComplaints: SectorComplaint[];
 }
 
 export interface ComplaintCollection {

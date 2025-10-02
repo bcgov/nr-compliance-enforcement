@@ -30,8 +30,8 @@ test.describe("Complaint List Functionality", () => {
     await expect(allTableHeadTexts).toContain("Last updated");
     await expect(allTableHeadTexts).toContain("Actions");
     await waitForSpinner(page);
-    await expect(await page.locator("#complaint_pagination_container_id")).toBeVisible();
-    await expect(await page.locator('[id^="pagination_page_"]').count()).toBeGreaterThan(0);
+    await expect(await page.locator("#complaint-list")).toBeVisible();
+    await expect(await page.locator("#complaint-list tbody tr").count()).toBeGreaterThan(0);
   });
 
   test(`Verifies that the ERS is correct`, async ({ page }) => {
@@ -55,6 +55,9 @@ test.describe("Complaint List Functionality", () => {
     await expect(allTableHeadTexts).toContain("Officer assigned");
     await expect(allTableHeadTexts).toContain("Last updated");
     await expect(allTableHeadTexts).toContain("Actions");
+    await waitForSpinner(page);
+    await expect(await page.locator("#complaint-list")).toBeVisible();
+    await expect(await page.locator("#complaint-list tbody tr").count()).toBeGreaterThan(0);
   });
 
   test(`Verifies that the GIR is correct`, async ({ page }) => {
@@ -77,5 +80,8 @@ test.describe("Complaint List Functionality", () => {
     await expect(allTableHeadTexts).toContain("Officer assigned");
     await expect(allTableHeadTexts).toContain("Last updated");
     await expect(allTableHeadTexts).toContain("Actions");
+    await waitForSpinner(page);
+    await expect(await page.locator("#complaint-list")).toBeVisible();
+    await expect(await page.locator("#complaint-list tbody tr").count()).toBeGreaterThan(0);
   });
 });

@@ -2,7 +2,7 @@ import { AsyncTypeahead, Highlighter } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
 import { FC, useState } from "react";
-import { Badge, Form } from "react-bootstrap";
+import { Badge } from "react-bootstrap";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
@@ -10,7 +10,7 @@ import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { generateApiParameters, get } from "@common/api";
 import { applyStatusClass } from "@common/methods";
 import config from "@/config";
-import { CustomHint } from "@components/common/custom-hint";
+import { HintInputWrapper } from "@components/common/custom-hint";
 
 type Props = {
   id?: string;
@@ -109,17 +109,12 @@ export const ComplaintListSearch: FC<Props> = ({
         isInvalid={errorMessage.length > 0}
         className="comp-select comp-details-input full-width comp-async comp-async-text"
         renderInput={({ inputRef, referenceElementRef, ...inputProps }: any) => (
-          <CustomHint hintText={hintText}>
-            <Form.Control
-              {...inputProps}
-              ref={(node: any) => {
-                inputRef(node);
-                referenceElementRef(node);
-              }}
-              type="text"
-              className="rbt-input-text"
-            />
-          </CustomHint>
+          <HintInputWrapper
+            hintText={hintText}
+            inputProps={inputProps}
+            inputRef={inputRef}
+            referenceElementRef={referenceElementRef}
+          />
         )}
         renderMenuItemChildren={(option: any, props: any) => (
           <>

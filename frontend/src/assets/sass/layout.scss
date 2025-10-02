@@ -949,3 +949,20 @@ td.actions-col {
   right: 0;
   position: absolute;
 }
+
+.case-nav-tabs {
+  padding-left: 20px;
+  background: $bc-gov-primary-400;
+}
+
+.case-tab {
+  .nav-link {
+    padding: 10px 26px;
+    font-size: 0.875rem;
+    color: $bc-gov-primary-100;
+  }
+  .nav-link.active {
+    color: $bc-gov-primary-400;
+    font-weight: 700;
+  }
+}

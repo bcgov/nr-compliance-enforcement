@@ -7,11 +7,11 @@ const regions = require('./location-enum');
 
 // Database connection setup
 const connection = {
-  host: process.env.POSTGRESQL_HOST,
+  host: process.env.COMPLAINT_POSTGRESQL_HOST,
   port: 5432,
-  database: process.env.POSTGRESQL_DATABASE,
-  user: process.env.POSTGRESQL_USER,
-  password: process.env.POSTGRESQL_PASSWORD,
+  database: process.env.COMPLAINT_POSTGRESQL_DATABASE,
+  user: process.env.COMPLAINT_POSTGRESQL_USER,
+  password: process.env.COMPLAINT_POSTGRESQL_PASSWORD,
 };
 
 const pg = db(connection);
