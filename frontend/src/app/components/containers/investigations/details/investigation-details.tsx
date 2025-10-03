@@ -4,6 +4,10 @@ import { Link, useParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Investigation } from "@/generated/graphql";
+import { Button } from "react-bootstrap";
+import { openModal } from "@/app/store/reducers/app";
+import { useAppDispatch } from "@/app/hooks/hooks";
+import { ADD_PARTY } from "@/app/types/modal/modal-types";
 
 const GET_INVESTIGATION = gql`
   query GetInvestigation($investigationGuid: String!) {
@@ -30,6 +34,7 @@ export type InvestigationParams = {
 };
 
 export const InvestigationDetails: FC = () => {
+  const dispatch = useAppDispatch();
   const { investigationGuid = "" } = useParams<InvestigationParams>();
   const { data, isLoading } = useGraphQLQuery<{
     getInvestigation: Investigation;
@@ -39,6 +44,20 @@ export const InvestigationDetails: FC = () => {
     variables: { investigationGuid: investigationGuid },
     enabled: !!investigationGuid, // Only refresh query if id is provided
   });
+
+  const handleAddParty = () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: ADD_PARTY,
+        data: {
+          title: "Add party to investigation",
+          description: "",
+        },
+      }),
+    );
+  };
 
   if (isLoading) {
     return (
@@ -85,7 +104,13 @@ export const InvestigationDetails: FC = () => {
                   <div className="col-md-6">
                     <div className="form-group">
                       <strong>Case Identifier:</strong>
-                      {caseIdentifier ? <Link to={`/case/${caseIdentifier}`}>{caseIdentifier}</Link> : <p>N/A</p>}
+                      {caseIdentifier ? (
+                        <p>
+                          <Link to={`/case/${caseIdentifier}`}>{caseIdentifier}</Link>
+                        </p>
+                      ) : (
+                        <p>N/A</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -99,6 +124,23 @@ export const InvestigationDetails: FC = () => {
                     </div>
                   </div>
                 )}
+                <div className="row">
+                  <div className="col-12">
+                    <strong>Parties:</strong>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-12">
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={handleAddParty}
+                    >
+                      <i className="bi bi-plus-circle me-1" /> {/**/}
+                      Add Party
+                    </Button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
