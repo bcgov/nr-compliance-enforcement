@@ -269,7 +269,7 @@ services:
       - "-c"
       - "npm i && npm run start"
     hostname: event-worker
-    image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
+    image: node:22-bookworm-slim
     links:
       - nats
     ports:

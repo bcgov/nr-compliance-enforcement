@@ -1,4 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
+import { EventProcessorService } from "./event-processor.service";
 
-@Module({})
+@Module({
+  providers: [EventProcessorService],
+  exports: [EventProcessorService],
+})
 export class EventProcessorModule {}
