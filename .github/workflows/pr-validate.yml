@@ -30,6 +30,8 @@ jobs:
     with:
       markdown_links: |
         - [Frontend](https://f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite-frontend.apps.emerald.devops.gov.bc.ca)
+        - [GitOps App](https://gitops-shared.apps.emerald.devops.gov.bc.ca/applications/f208ae-tools/f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite)
+        - [E2E Reports](https://f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite-e2e.apps.emerald.devops.gov.bc.ca)
 
   results:
     name: Validate Results
