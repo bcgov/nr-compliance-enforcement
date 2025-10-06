@@ -2,8 +2,8 @@ import { FC, memo, useState } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
-import Option from "@apptypes/app/option";
 import { PartyListSearch } from "@/app/components/common/party-list-search";
+import { Party } from "@/generated/graphql";
 
 const ModalLoading: FC = memo(() => (
   <div className="modal-loader">
@@ -31,15 +31,11 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
   const { title } = modalData;
 
   // State
-  const [selectedParty, setSelectedParty] = useState<Option | null>();
+  const [selectedParty, setSelectedParty] = useState<Party | null>();
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const handleSearchPartyChange = (selected: Option | null) => {
-    if (selected) {
-      setSelectedParty(selected);
-    } else {
-      setSelectedParty(null);
-    }
+  const handleSearchPartyChange = (selected: Party) => {
+    setSelectedParty(selected);
   };
 
   return (
@@ -51,8 +47,8 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
       )}
       <Modal.Body className="modal-create-add-case">
         {loading && <ModalLoading />}
-
         <div
+          className="comp-details-body"
           style={{
             visibility: loading ? "hidden" : "inherit",
             display: "inherit",
@@ -60,7 +56,8 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
         >
           <div
             className="comp-details-form-row"
-            id="add-case-div"
+            id="add-party-div"
+            style={{ paddingBottom: "16px" }}
           >
             <label htmlFor="createAddCase">Search for an existing party</label>
             <div
@@ -69,11 +66,37 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
             >
               <PartyListSearch
                 id="createParty"
-                onChange={(e: Option | null) => handleSearchPartyChange(e)}
+                onChange={(e: Party) => handleSearchPartyChange(e)}
                 errorMessage={errorMessage}
               />
             </div>
           </div>
+          {selectedParty?.person && (
+            <>
+              <h4>Person details</h4>
+              <div className="comp-details-form-row">
+                <div className="col-md-6">
+                  <strong>First Name:</strong>
+                  <p id="selected-party-firstName">{selectedParty?.person?.firstName}</p>
+                </div>
+                <div className="col-md-6">
+                  <strong>Last Name:</strong>
+                  <p id="selected-party-firstName">{selectedParty?.person?.lastName}</p>
+                </div>
+              </div>
+            </>
+          )}
+          {selectedParty?.business && (
+            <>
+              <h4>Business details</h4>
+              <div className="comp-details-form-row">
+                <div className="col-md-6">
+                  <strong>Business name:</strong>
+                  <p id="selected-party-businessName">{selectedParty?.business?.name}</p>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </Modal.Body>
       <Modal.Footer>

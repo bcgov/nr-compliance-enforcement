@@ -2,35 +2,33 @@ import { AsyncTypeahead, Highlighter } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
 import { FC, useEffect, useState } from "react";
-import Option from "@apptypes/app/option";
 import { HintInputWrapper } from "@components/common/custom-hint";
 import { usePartySearchQuery } from "@/app/graphql/hooks/usePartySearchQuery";
 import { usePartySearch } from "@/app/components/containers/parties/hooks/use-party-search";
+import { Party } from "@/generated/graphql";
+import { Badge } from "react-bootstrap";
 
 type Props = {
   id?: string;
-  onChange?: (selected: Option | null) => void;
+  onChange?: (selected: Party) => void;
   errorMessage?: string;
 };
 
 export const PartyListSearch: FC<Props> = ({ id = "partyListSearch", onChange = () => {}, errorMessage = "" }) => {
   //States
-  const [selectedParty, setSelectedParty] = useState<any>(null);
+  const [selectedParty, setSelectedParty] = useState<Party | null>(null);
   const [hintText, setHintText] = useState<string>("");
-  const [partyData, setPartyData] = useState<any>([]);
+  const [partyData, setPartyData] = useState<Party[]>([]);
   const { searchValues, setValues } = usePartySearch();
   const { data, isLoading: isSearchPartyLoading } = usePartySearchQuery();
 
   //Effects
   useEffect(() => {
     if (data) {
-      const parties = data.searchParties.items.map((item) => ({
-        id: item.partyIdentifier,
-        first_name: item.person?.firstName || "",
-        last_name: item.person?.lastName || "",
-      }));
-      setPartyData(parties);
-    } else setPartyData([]);
+      setPartyData(data.searchParties.items);
+    } else {
+      setPartyData([]);
+    }
   }, [data, searchValues]);
 
   const handlePartySelect = (selected: any[]) => {
@@ -54,7 +52,9 @@ export const PartyListSearch: FC<Props> = ({ id = "partyListSearch", onChange = 
       <AsyncTypeahead
         clearButton
         id={id}
-        labelKey={(option: any) => `${option.first_name} ${option.last_name}`}
+        labelKey={(option: any) =>
+          `${option.business ? option.business?.name : option.person?.firstName + " " + option.person?.lastName}`
+        }
         minLength={2}
         onInputChange={handleInputChange}
         onSearch={handleSearch}
@@ -76,7 +76,10 @@ export const PartyListSearch: FC<Props> = ({ id = "partyListSearch", onChange = 
         )}
         renderMenuItemChildren={(option: any, props: any) => (
           <div>
-            <Highlighter search={props.text}>{`Party Name: ${option.first_name} ${option.last_name}`}</Highlighter>{" "}
+            <Highlighter
+              search={props.text}
+            >{`${option.business ? option.business.name : option.person?.firstName + " " + option.person?.lastName}`}</Highlighter>{" "}
+            <Badge bg="species-badge comp-species-badge">{`${option.business ? "Business" : "Person"}`}</Badge>
           </div>
         )}
       />
