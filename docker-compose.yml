@@ -20,7 +20,7 @@ x-postgres-vars: &postgres-vars
   INV_PASSWORD: *INV_PASSWORD
   SHARED_PASSWORD: *SHARED_PASSWORD
   METABASE_READONLY_PASSWORD: *METABASE_READONLY_PASSWORD
-  
+
 services:
   database:
     build:
@@ -262,3 +262,20 @@ services:
         condition: service_completed_successfully
       migration-shared:
         condition: service_completed_successfully
+  event-worker:
+    container_name: event-worker
+    entrypoint:
+      - "sh"
+      - "-c"
+      - "npm i && npm run start"
+    hostname: event-worker
+    image: node:22-bookworm-slim
+    links:
+      - nats
+    ports:
+      - "3006:3000"
+    volumes:
+      - ./event-worker:/app:z
+      - /app/node_modules
+    user: root
+    working_dir: "/app"
