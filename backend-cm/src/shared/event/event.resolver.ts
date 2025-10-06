@@ -1,0 +1,49 @@
+import { Logger, UseGuards } from "@nestjs/common";
+import { JwtRoleGuard } from "../../auth/jwtrole.guard";
+import { Args, Query, Mutation, Resolver, Int } from "@nestjs/graphql";
+import { Roles } from "../../auth/decorators/roles.decorator";
+import { coreRoles } from "../../enum/role.enum";
+import { GraphQLError } from "graphql";
+import { EventService } from "./event.service";
+import { EventCreateInput, EventFilters } from "./dto/event";
+
+@UseGuards(JwtRoleGuard)
+@Resolver("Event")
+export class EventResolver {
+  constructor(private readonly eventService: EventService) {}
+  private readonly logger = new Logger(EventResolver.name);
+
+  @Mutation("createEvent")
+  @Roles(coreRoles)
+  async create(@Args("input") input: EventCreateInput) {
+    try {
+      return await this.eventService.create(input);
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error creating event", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
+  }
+
+  @Query("searchEvents")
+  @Roles(coreRoles)
+  async search(
+    @Args("page") page?: number,
+    @Args("pageSize") pageSize?: number,
+    @Args("filters") filters?: EventFilters,
+  ) {
+    try {
+      return await this.eventService.search(page, pageSize, filters);
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error searching events", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
+  }
+}

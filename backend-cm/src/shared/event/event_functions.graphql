@@ -1,0 +1,7 @@
+type Query {
+  searchEvents(page: Int = 1, pageSize: Int = 25, filters: EventFilters): EventResult!
+}
+
+type Mutation {
+  createEvent(input: EventCreateInput!): Event!
+}
