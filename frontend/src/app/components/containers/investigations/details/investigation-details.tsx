@@ -54,6 +54,7 @@ export const InvestigationDetails: FC = () => {
         data: {
           title: "Add party to investigation",
           description: "",
+          investigationGuid: investigationGuid,
         },
       }),
     );

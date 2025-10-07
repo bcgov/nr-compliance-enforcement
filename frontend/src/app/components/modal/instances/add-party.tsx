@@ -3,7 +3,39 @@ import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
 import { PartyListSearch } from "@/app/components/common/party-list-search";
-import { Party } from "@/generated/graphql";
+import {
+  CreateInvestigationBusinessInput,
+  CreateInvestigationPartyInput,
+  CreateInvestigationPersonInput,
+  Party,
+} from "@/generated/graphql";
+import { gql } from "graphql-request";
+import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
+import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+
+const ADD_PARTY_MUTATION = gql`
+  mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
+    addPartyToInvestigation(investigationGuid: $investigationGuid, input: $input) {
+      investigationGuid
+      description
+      investigationStatus {
+        investigationStatusCode
+        shortDescription
+        longDescription
+      }
+      parties {
+        person {
+          firstName
+          lastName
+        }
+        business {
+          name
+        }
+      }
+      leadAgency
+    }
+  }
+`;
 
 const ModalLoading: FC = memo(() => (
   <div className="modal-loader">
@@ -28,14 +60,58 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
 
   // Vars
-  const { title } = modalData;
+  const { title, investigationGuid } = modalData;
 
   // State
   const [selectedParty, setSelectedParty] = useState<Party | null>();
   const [errorMessage, setErrorMessage] = useState<string>("");
 
+  const addPartyMutation = useGraphQLMutation(ADD_PARTY_MUTATION, {
+    invalidateQueries: ["investigations"],
+    onSuccess: () => {
+      ToggleSuccess("Party added successfully");
+    },
+    onError: (error: any) => {
+      console.error("Error adding party:", error);
+      ToggleError("Failed to add party");
+    },
+  });
+
   const handleSearchPartyChange = (selected: Party) => {
     setSelectedParty(selected);
+  };
+
+  const handleAddParty = async () => {
+    if (!selectedParty) {
+      setErrorMessage("Please select a party to add.");
+      return;
+    }
+
+    if (errorMessage) return;
+
+    const addPartyInput: CreateInvestigationPartyInput = {
+      partyTypeCode: selectedParty.partyTypeCode || "",
+      partyReference: selectedParty.partyIdentifier,
+      ...(selectedParty.person?.lastName && {
+        person: {
+          firstName: selectedParty.person?.firstName || "",
+          lastName: selectedParty.person?.lastName || "",
+          middleName: selectedParty.person?.middleName,
+          middleName2: selectedParty.person?.middleName2,
+          personReference: selectedParty.person?.personGuid,
+        },
+      }),
+      ...(selectedParty.business?.name && {
+        business: {
+          name: selectedParty.business.name,
+          businessReference: selectedParty.business.businessGuid,
+        },
+      }),
+    };
+    addPartyMutation.mutate({ investigationGuid: investigationGuid, input: addPartyInput });
+
+    submit();
+    close();
   };
 
   return (
@@ -113,6 +189,7 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
             variant="primary"
             id="add-party-save-button"
             title="Save Add Party"
+            onClick={handleAddParty}
           >
             <span>Save and Close</span>
           </Button>
