@@ -2,10 +2,12 @@ CREATE TABLE investigation_party (
     investigation_party_guid uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
     party_guid_ref uuid,
     party_type_code_ref character varying(16) NOT NULL,
+    investigation_guid uuid NOT NULL,
     create_user_id character varying(32) NOT NULL,
     create_utc_timestamp timestamp without time zone NOT NULL,
     update_user_id character varying(32),
-    update_utc_timestamp timestamp without time zone
+    update_utc_timestamp timestamp without time zone,
+    CONSTRAINT fk_investigation_guid FOREIGN KEY (investigation_guid) REFERENCES investigation (investigation_guid)
 );
 
 CREATE TABLE investigation_person (
@@ -70,6 +72,7 @@ COMMENT ON TABLE investigation_party IS 'A table that holds parties of interest 
 COMMENT ON COLUMN investigation_party.investigation_party_guid IS 'Primary key: System generated unique identifier for a party.';
 COMMENT ON COLUMN investigation_party.party_guid_ref IS 'Cross schema foreign key (unenforced) to shared.party table to indicate the shared party record this party was created from or currently linked to.';
 COMMENT ON COLUMN investigation_party.party_type_code_ref IS 'Cross schema foreign key (unenforced) to shared.party table to provide a human readable code representing a party type.';
+COMMENT ON COLUMN investigation_party.investigation_guid IS 'Foreign key: System generated unique identifier for an inspection';
 COMMENT ON COLUMN investigation_party.create_user_id IS 'The id of the user that created the party.';
 COMMENT ON COLUMN investigation_party.create_utc_timestamp IS 'The timestamp when the party was created. The timestamp is stored in UTC with no offset.';
 COMMENT ON COLUMN investigation_party.update_user_id IS 'The id of the user that updated the party.';

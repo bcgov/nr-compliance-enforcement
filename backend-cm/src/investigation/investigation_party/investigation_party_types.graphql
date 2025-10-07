@@ -1,0 +1,15 @@
+type InvestigationParty {
+  investigationPartyGuid: String!
+  partyTypeCode: String!
+  investigationGuid: String!
+  partyReference: String
+  person: InvestigationPerson
+  business: InvestigationBusiness
+}
+
+input CreateInvestigationPartyInput {
+  partyTypeCode: String!
+  partyReference: String
+  person: CreateInvestigationPersonInput
+  business: CreateInvestigationBusinessInput
+}

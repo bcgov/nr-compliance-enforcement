@@ -6,6 +6,7 @@ import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { PaginatedResult } from "src/common/pagination.utility";
 import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { IsOptional } from "class-validator";
+import { InvestigationParty } from "src/investigation/investigation_party/dto/investigation_party";
 
 export class Investigation {
   investigationGuid: string;
@@ -14,6 +15,7 @@ export class Investigation {
   investigationStatus: InvestigationStatusCode;
   openedTimestamp: Date;
   caseIdentifier: string;
+  parties: [InvestigationParty];
 }
 
 @InputType()
@@ -100,6 +102,10 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.openedTimestamp,
       mapFrom((src) => src.investigation_opened_utc_timestamp),
+    ),
+    forMember(
+      (dest) => dest.parties,
+      mapFrom((src) => mapper.mapArray(src.investigation_party ?? [], "investigation_party", "InvestigationParty")),
     ),
   );
 };

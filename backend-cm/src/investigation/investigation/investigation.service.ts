@@ -36,6 +36,12 @@ export class InvestigationService {
       },
       include: {
         investigation_status_code: true,
+        investigation_party: {
+          include: {
+            investigation_person: true,
+            investigation_business: true,
+          },
+        },
       },
     });
 
