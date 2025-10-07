@@ -17,6 +17,7 @@ export class InvestigationParty {
   partyReference?: string;
   person?: InvestigationPerson;
   business?: InvestigationBusiness;
+  isActive: boolean;
 }
 
 @InputType()
@@ -54,6 +55,10 @@ export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
     forMember(
       (dest) => dest.partyReference,
       mapFrom((src) => src.party_guid_ref),
+    ),
+    forMember(
+      (dest) => dest.isActive,
+      mapFrom((src) => src.active_ind),
     ),
     forMember(
       (dest) => dest.person,

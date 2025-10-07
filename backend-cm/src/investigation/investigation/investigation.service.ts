@@ -38,8 +38,19 @@ export class InvestigationService {
         investigation_status_code: true,
         investigation_party: {
           include: {
-            investigation_person: true,
-            investigation_business: true,
+            investigation_person: {
+              where: {
+                active_ind: true,
+              },
+            },
+            investigation_business: {
+              where: {
+                active_ind: true,
+              },
+            },
+          },
+          where: {
+            active_ind: true,
           },
         },
       },

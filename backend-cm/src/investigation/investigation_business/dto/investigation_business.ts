@@ -5,6 +5,7 @@ import { Field, InputType } from "@nestjs/graphql";
 export class InvestigationBusiness {
   businessGuid: string;
   name: string;
+  isActive: boolean;
   investigationPartyGuid: string;
   businessReference?: string;
 }
@@ -38,6 +39,10 @@ export const mapPrismaBusinessToInvestigationBusiness = (mapper: Mapper) => {
     forMember(
       (dest) => dest.businessReference,
       mapFrom((src) => src.business_guid_ref),
+    ),
+    forMember(
+      (dest) => dest.isActive,
+      mapFrom((src) => src.active_ind),
     ),
   );
 };

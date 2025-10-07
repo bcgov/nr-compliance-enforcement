@@ -3,12 +3,17 @@ CREATE TABLE investigation_party (
     party_guid_ref uuid,
     party_type_code_ref character varying(16) NOT NULL,
     investigation_guid uuid NOT NULL,
+    active_ind boolean default true NOT NULL,
     create_user_id character varying(32) NOT NULL,
     create_utc_timestamp timestamp without time zone NOT NULL,
     update_user_id character varying(32),
     update_utc_timestamp timestamp without time zone,
     CONSTRAINT fk_investigation_guid FOREIGN KEY (investigation_guid) REFERENCES investigation (investigation_guid)
 );
+
+CREATE UNIQUE INDEX uq_active_investigation_party_per_investigation
+ON investigation_party (investigation_guid, party_guid_ref)
+WHERE active_ind = true;
 
 CREATE TABLE investigation_person (
     investigation_person_guid uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
@@ -18,6 +23,7 @@ CREATE TABLE investigation_person (
     middle_name character varying(128),
     middle_name_2 character varying(128),
     last_name character varying(128) NOT NULL,
+    active_ind boolean default true NOT NULL,
     create_user_id character varying(32) NOT NULL,
     create_utc_timestamp timestamp without time zone DEFAULT now() NOT NULL,
     update_user_id character varying(32),
@@ -25,17 +31,26 @@ CREATE TABLE investigation_person (
     CONSTRAINT fk_investigation_party_guid FOREIGN KEY (investigation_party_guid) REFERENCES investigation_party (investigation_party_guid)
 );
 
+CREATE UNIQUE INDEX uq_active_investigation_person_per_party
+ON investigation_person (investigation_party_guid, person_guid_ref)
+WHERE active_ind = true;
+
 CREATE TABLE investigation_business (
     investigation_business_guid uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
     business_guid_ref uuid,
     investigation_party_guid uuid,
     name character varying(128) NOT NULL,
+    active_ind boolean default true NOT NULL,
     create_user_id character varying(32) NOT NULL,
     create_utc_timestamp timestamp without time zone DEFAULT now() NOT NULL,
     update_user_id character varying(32),
     update_utc_timestamp timestamp without time zone,
     CONSTRAINT fk_investigation_party_guid FOREIGN KEY (investigation_party_guid) REFERENCES investigation_party (investigation_party_guid)
 );
+
+CREATE UNIQUE INDEX uq_active_investigation_business_per_party
+ON investigation_business (investigation_party_guid, business_guid_ref)
+WHERE active_ind = true;
 
 CREATE TABLE investigation_party_h (
     h_investigation_party_guid uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
@@ -73,6 +88,7 @@ COMMENT ON COLUMN investigation_party.investigation_party_guid IS 'Primary key: 
 COMMENT ON COLUMN investigation_party.party_guid_ref IS 'Cross schema foreign key (unenforced) to shared.party table to indicate the shared party record this party was created from or currently linked to.';
 COMMENT ON COLUMN investigation_party.party_type_code_ref IS 'Cross schema foreign key (unenforced) to shared.party table to provide a human readable code representing a party type.';
 COMMENT ON COLUMN investigation_party.investigation_guid IS 'Foreign key: System generated unique identifier for an inspection';
+COMMENT ON COLUMN investigation_party.active_ind IS 'True if the party is currently attached to the investigation, false if it was previously attached and then removed.';
 COMMENT ON COLUMN investigation_party.create_user_id IS 'The id of the user that created the party.';
 COMMENT ON COLUMN investigation_party.create_utc_timestamp IS 'The timestamp when the party was created. The timestamp is stored in UTC with no offset.';
 COMMENT ON COLUMN investigation_party.update_user_id IS 'The id of the user that updated the party.';
@@ -86,6 +102,7 @@ COMMENT ON COLUMN investigation_person.first_name IS 'First or given name of the
 COMMENT ON COLUMN investigation_person.middle_name IS 'Second or middle name of the person.';
 COMMENT ON COLUMN investigation_person.middle_name_2 IS 'Additional Second or middle name of the person.';
 COMMENT ON COLUMN investigation_person.last_name IS 'Last name or surname of the person.';
+COMMENT ON COLUMN investigation_person.active_ind IS 'A value of true indicates this is the latest version of the record.   A value of false indicates that a newer version of the record is available.';
 COMMENT ON COLUMN investigation_person.create_user_id IS 'The id of the user that created the person.';
 COMMENT ON COLUMN investigation_person.create_utc_timestamp IS 'The timestamp when the person was created. The timestamp is stored in UTC with no offset.';
 COMMENT ON COLUMN investigation_person.update_user_id IS 'The id of the user that updated the person.';
@@ -96,6 +113,7 @@ COMMENT ON COLUMN investigation_business.investigation_business_guid IS 'Primary
 COMMENT ON COLUMN investigation_business.business_guid_ref IS 'Cross schema foreign key (unenforced) to shared.business table to indicate the shared business record this party was created from or currently linked to.';
 COMMENT ON COLUMN investigation_business.investigation_party_guid IS 'Foreign key: System generated unique identifier for a party.';
 COMMENT ON COLUMN investigation_business.name IS 'Name of the business.';
+COMMENT ON COLUMN investigation_business.active_ind IS 'A value of true indicates this is the latest version of the record.   A value of false indicates that a newer version of the record is available.';
 COMMENT ON COLUMN investigation_business.create_user_id IS 'The id of the user that created the business.';
 COMMENT ON COLUMN investigation_business.create_utc_timestamp IS 'The timestamp when the business was created. The timestamp is stored in UTC with no offset.';
 COMMENT ON COLUMN investigation_business.update_user_id IS 'The id of the user that updated the business.';

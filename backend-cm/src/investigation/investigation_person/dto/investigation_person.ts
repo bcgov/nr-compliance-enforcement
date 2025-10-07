@@ -10,6 +10,7 @@ export class InvestigationPerson {
   middleName?: string;
   middleName2?: string;
   lastName: string;
+  isActive: boolean;
 }
 
 @InputType()
@@ -62,6 +63,10 @@ export const mapPrismaPersonToInvestigationPerson = (mapper: Mapper) => {
     forMember(
       (dest) => dest.lastName,
       mapFrom((src) => src.last_name),
+    ),
+    forMember(
+      (dest) => dest.isActive,
+      mapFrom((src) => src.active_ind),
     ),
   );
 };
