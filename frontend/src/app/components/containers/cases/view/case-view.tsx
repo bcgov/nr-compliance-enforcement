@@ -160,7 +160,7 @@ export const CaseView: FC = () => {
       case "records":
         return <CaseRecordsTab />;
       case "history":
-        return <CaseHistoryTab />;
+        return <CaseHistoryTab caseIdentifier={id} />;
       case "map":
         return <CaseMapTab />;
       default:
