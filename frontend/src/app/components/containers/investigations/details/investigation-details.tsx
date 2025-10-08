@@ -7,6 +7,10 @@ import { CaseFile, Investigation } from "@/generated/graphql";
 import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
 import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
 import InvestigationRecords from "@/app/components/containers/investigations/details/investigation-records";
+import { InvestigationContraventions } from "@/app/components/containers/investigations/details/investigation-contraventions";
+import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
+import { InvestigationAdministration } from "@/app/components/containers/investigations/details/investigation-administration";
+import { InvestigationDocumentation } from "@/app/components/containers/investigations/details/investigation-documentation";
 
 const GET_INVESTIGATION = gql`
   query GetInvestigation($investigationGuid: String!) {
@@ -73,6 +77,14 @@ export const InvestigationDetails: FC = () => {
             investigationGuid={investigationGuid}
           />
         );
+      case "contraventions":
+        return <InvestigationContraventions />;
+      case "documents":
+        return <InvestigationDocumentation />;
+      case "continuation":
+        return <InvestigationContinuation />;
+      case "admin":
+        return <InvestigationAdministration />;
     }
   };
 

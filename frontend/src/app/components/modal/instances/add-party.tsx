@@ -3,10 +3,7 @@ import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
 import { PartyListSearch } from "@/app/components/common/party-list-search";
-import {
-  CreateInvestigationPartyInput,
-  Party,
-} from "@/generated/graphql";
+import { CreateInvestigationPartyInput, Party } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
@@ -65,7 +62,7 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const addPartyMutation = useGraphQLMutation(ADD_PARTY_MUTATION, {
-    invalidateQueries: ["investigations"],
+    invalidateQueries: ["getInvestigation"],
     onSuccess: () => {
       ToggleSuccess("Party added successfully");
     },
@@ -133,7 +130,7 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
             id="add-party-div"
             style={{ paddingBottom: "16px" }}
           >
-            <label htmlFor="createAddCase">Search for an existing party</label>
+            <label htmlFor="createParty">Search for an existing party</label>
             <div
               className="comp-details-input full-width"
               style={{ width: "100%" }}

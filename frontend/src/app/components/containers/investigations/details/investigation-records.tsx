@@ -3,7 +3,7 @@ import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_PARTY } from "@/app/types/modal/modal-types";
 import { Investigation, InvestigationParty } from "@/generated/graphql";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Button } from "react-bootstrap";
 
 interface InvestigationRecordsProps {
@@ -44,13 +44,8 @@ export const InvestigationSummary: FC<InvestigationRecordsProps> = ({ investigat
     <>
       <div className="row">
         <div className="col-12">
-          <strong>Parties:</strong>
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-12">
           <Button
-            variant="outline-primary"
+            variant="warning"
             size="sm"
             onClick={handleAddParty}
           >
