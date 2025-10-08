@@ -3,7 +3,7 @@ import { investigation_business } from "../../../../prisma/investigation/generat
 import { Field, InputType } from "@nestjs/graphql";
 
 export class InvestigationBusiness {
-  businessGuid: string;
+  investigationBusinessGuid: string;
   name: string;
   isActive: boolean;
   investigationPartyGuid: string;
@@ -25,7 +25,7 @@ export const mapPrismaBusinessToInvestigationBusiness = (mapper: Mapper) => {
     "investigation_business",
     "InvestigationBusiness",
     forMember(
-      (dest) => dest.businessGuid,
+      (dest) => dest.investigationBusinessGuid,
       mapFrom((src) => src.investigation_business_guid),
     ),
     forMember(

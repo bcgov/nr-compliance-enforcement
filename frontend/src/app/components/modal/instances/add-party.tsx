@@ -4,9 +4,7 @@ import { useAppSelector } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
 import { PartyListSearch } from "@/app/components/common/party-list-search";
 import {
-  CreateInvestigationBusinessInput,
   CreateInvestigationPartyInput,
-  CreateInvestigationPersonInput,
   Party,
 } from "@/generated/graphql";
 import { gql } from "graphql-request";
