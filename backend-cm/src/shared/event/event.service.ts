@@ -11,7 +11,7 @@ import { UserService } from "../../common/user.service";
 export class EventService {
   constructor(
     private readonly user: UserService,
-    private prisma: SharedPrismaService,
+    private readonly prisma: SharedPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly paginationUtility: PaginationUtility,
   ) {}

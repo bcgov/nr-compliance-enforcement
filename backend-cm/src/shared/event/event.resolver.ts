@@ -1,6 +1,6 @@
 import { Logger, UseGuards } from "@nestjs/common";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
-import { Args, Query, Mutation, Resolver, Int } from "@nestjs/graphql";
+import { Args, Query, Mutation, Resolver } from "@nestjs/graphql";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { coreRoles } from "../../enum/role.enum";
 import { GraphQLError } from "graphql";

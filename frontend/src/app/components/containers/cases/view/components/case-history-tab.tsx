@@ -51,7 +51,7 @@ interface CaseHistoryTabProps {
 
 export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
   const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(25);
+  const [pageSize] = useState<number>(25);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const { data, isLoading, error } = useGraphQLQuery<{ searchEvents: EventResult }>(SEARCH_EVENTS, {
@@ -79,13 +79,16 @@ export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
     if (events.length > 0 && allOfficers) {
       const userAuthGuids = new Set<string>();
 
-      // Collect user GUIDs from both source and actor fields
+      // Collect user GUIDs from source, actor, and target fields
       events.forEach((event) => {
         if (event.sourceEntityTypeCode?.eventEntityTypeCode === "USER" && event.sourceId) {
           userAuthGuids.add(event.sourceId);
         }
         if (event.actorEntityTypeCode?.eventEntityTypeCode === "USER" && event.actorId) {
           userAuthGuids.add(event.actorId);
+        }
+        if (event.targetEntityTypeCode?.eventEntityTypeCode === "USER" && event.targetId) {
+          userAuthGuids.add(event.targetId);
         }
       });
 
