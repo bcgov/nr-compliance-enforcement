@@ -23,6 +23,9 @@ export class investigation_person {
   @ApiProperty({ type: String })
   last_name: string;
 
+  @ApiProperty({ type: Boolean })
+  active_ind: boolean = true;
+
   @ApiProperty({ type: String })
   create_user_id: string;
 
