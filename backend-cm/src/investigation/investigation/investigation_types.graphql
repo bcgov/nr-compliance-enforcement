@@ -1,3 +1,5 @@
+scalar Point
+
 type Investigation {
   investigationGuid: String
   description: String
@@ -5,6 +7,7 @@ type Investigation {
   investigationStatus: InvestigationStatusCode
   openedTimestamp: Date
   caseIdentifier: String
+  locationGeometry: Point
 }
 
 input CreateInvestigationInput {
@@ -12,12 +15,14 @@ input CreateInvestigationInput {
   leadAgency: String!
   description: String
   investigationStatus: String
+  locationGeometry: Point
 }
 
 input UpdateInvestigationInput {
   leadAgency: String
   description: String
   investigationStatus: String
+  locationGeometry: Point
 }
 
 input InvestigationFilters {

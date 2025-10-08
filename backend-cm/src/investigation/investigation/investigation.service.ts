@@ -1,7 +1,7 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
 import { Injectable, Logger } from "@nestjs/common";
-import { investigation } from "../../../prisma/investigation/generated/investigation";
+import { investigation } from "../../../prisma/investigation/investigation.unsupported_types";
 import {
   CreateInvestigationInput,
   Investigation,
@@ -30,7 +30,7 @@ export class InvestigationService {
   private readonly logger = new Logger(InvestigationService.name);
 
   async findOne(investigationGuid: string) {
-    const prismaInvestigation = await this.prisma.investigation.findUnique({
+    const prismaInvestigation = await this.prisma.investigation.findUniqueWithGeometry({
       where: {
         investigation_guid: investigationGuid,
       },
@@ -60,7 +60,7 @@ export class InvestigationService {
       return [];
     }
 
-    const prismaInvestigations = await this.prisma.investigation.findMany({
+    const prismaInvestigations = await this.prisma.investigation.findManyWithGeometry({
       where: {
         investigation_guid: {
           in: ids,
@@ -98,19 +98,21 @@ export class InvestigationService {
     // Create the investigation
     let investigation;
     try {
-      investigation = await this.prisma.investigation.create({
-        data: {
-          investigation_status: input.investigationStatus,
-          investigation_description: input.description,
-          owned_by_agency_ref: input.leadAgency,
-          investigation_opened_utc_timestamp: new Date(),
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-        },
-        include: {
-          investigation_status_code: true,
-        },
+      investigation = await this.prisma.investigation.createWithGeometry({
+        investigation_status: input.investigationStatus,
+        investigation_description: input.description,
+        owned_by_agency_ref: input.leadAgency,
+        investigation_opened_utc_timestamp: new Date(),
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+        location_geometry_point: input.locationGeometry,
       });
+
+      // Fetch the investigation_status_code relation
+      const statusCode = await this.prisma.investigation_status_code.findUnique({
+        where: { investigation_status_code: investigation.investigation_status },
+      });
+      (investigation as any).investigation_status_code = statusCode;
     } catch (error) {
       this.logger.error("Error creating investigation:", error);
       throw error;
@@ -188,14 +190,20 @@ export class InvestigationService {
       if (input.description !== undefined) {
         updateData.investigation_description = input.description;
       }
+      if (input.locationGeometry !== undefined) {
+        updateData.location_geometry_point = input.locationGeometry;
+      }
       // Perform the update
-      updatedInvestigation = await this.prisma.investigation.update({
+      updatedInvestigation = await this.prisma.investigation.updateWithGeometry({
         where: { investigation_guid: investigationGuid },
         data: updateData,
-        include: {
-          investigation_status_code: true,
-        },
       });
+
+      // Fetch the investigation_status_code relation
+      const statusCode = await this.prisma.investigation_status_code.findUnique({
+        where: { investigation_status_code: updatedInvestigation.investigation_status },
+      });
+      (updatedInvestigation as any).investigation_status_code = statusCode;
     } catch (error) {
       this.logger.error(`Error updating investigation with guid ${investigationGuid}:`, error);
       throw error;
@@ -213,11 +221,16 @@ export class InvestigationService {
   }
 
   async search(page: number = 1, pageSize: number = 25, filters?: InvestigationFilters): Promise<InvestigationResult> {
+    // Validate pagination params
+    const validatedPage = Math.max(1, page);
+    const validatedPageSize = Math.min(Math.max(1, pageSize), 100);
+    const skip = (validatedPage - 1) * validatedPageSize;
+
     const where: any = {};
 
     if (filters?.search) {
       // UUID column only supports exact matching
-      where.OR = [{ investigation_guid: { equals: filters.search } }];
+      where.investigation_guid = { in: [filters.search] };
     }
 
     if (filters?.leadAgency) {
@@ -228,60 +241,70 @@ export class InvestigationService {
       where.investigation_status = filters.investigationStatus;
     }
 
-    if (filters?.startDate || filters?.endDate) {
-      where.investigation_opened_utc_timestamp = {};
+    // Get total count for pagination
+    const totalCount = await this.prisma.investigation.count({ where });
 
-      if (filters?.startDate) {
-        where.investigation_opened_utc_timestamp.gte = filters.startDate;
-      }
+    // Query with raw SQL to get geometry as GeoJSON
+    let prismaInvestigations: any[];
 
-      if (filters?.endDate) {
-        const endOfDay = new Date(filters.endDate);
-        endOfDay.setHours(23, 59, 59, 999);
-        where.investigation_opened_utc_timestamp.lte = endOfDay;
-      }
+    if (filters?.leadAgency) {
+      prismaInvestigations = await (this.prisma as any).$queryRaw`
+        SELECT
+          investigation_guid,
+          investigation_description,
+          owned_by_agency_ref,
+          investigation_status,
+          investigation_opened_utc_timestamp,
+          create_user_id,
+          create_utc_timestamp,
+          update_user_id,
+          update_utc_timestamp,
+          public.ST_AsGeoJSON(location_geometry_point::public.geometry)::json as location_geometry_point
+        FROM investigation
+        WHERE owned_by_agency_ref = ${filters.leadAgency}
+        ORDER BY investigation_opened_utc_timestamp DESC
+        LIMIT ${validatedPageSize}
+        OFFSET ${skip}
+      `;
+    } else {
+      prismaInvestigations = await (this.prisma as any).$queryRaw`
+        SELECT
+          investigation_guid,
+          investigation_description,
+          owned_by_agency_ref,
+          investigation_status,
+          investigation_opened_utc_timestamp,
+          create_user_id,
+          create_utc_timestamp,
+          update_user_id,
+          update_utc_timestamp,
+          ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
+        FROM investigation
+        ORDER BY investigation_opened_utc_timestamp DESC
+        LIMIT ${validatedPageSize}
+        OFFSET ${skip}
+      `;
     }
 
-    // map filters to db columns
-    const sortFieldMap: Record<string, string> = {
-      investigationGuid: "investigation_guid",
-      openedTimestamp: "investigation_opened_utc_timestamp",
-      leadAgency: "owned_by_agency_ref",
-      investigationStatus: "investigation_status",
-    };
-
-    let orderBy: any = { investigation_opened_utc_timestamp: "desc" }; // Default sort
-
-    if (filters?.sortBy && filters?.sortOrder) {
-      const dbField = sortFieldMap[filters.sortBy];
-      const validSortOrder = filters.sortOrder.toLowerCase() === "asc" ? "asc" : "desc";
-
-      if (dbField) {
-        orderBy = { [dbField]: validSortOrder };
-      }
+    // Manually fetch related investigation_status_code for each investigation
+    for (const inv of prismaInvestigations) {
+      const statusCode = await this.prisma.investigation_status_code.findUnique({
+        where: { investigation_status_code: inv.investigation_status },
+      });
+      inv.investigation_status_code = statusCode;
     }
 
-    // Use the pagination utility to handle pagination logic and return pageInfo meta
-    const result = await this.paginationUtility.paginate<investigation, Investigation>(
-      { page, pageSize },
-      {
-        prismaService: this.prisma,
-        modelName: "investigation",
-        sourceTypeName: "investigation",
-        destinationTypeName: "Investigation",
-        mapper: this.mapper,
-        whereClause: where,
-        includeClause: {
-          officer_investigation_xref: true,
-          investigation_status_code: true,
-        },
-        orderByClause: orderBy,
-      },
+    // Map to Investigation DTOs
+    const investigations = this.mapper.mapArray<investigation, Investigation>(
+      prismaInvestigations as Array<investigation>,
+      "investigation",
+      "Investigation",
     );
-    const res = await Promise.all(
-      result.items.map(async (inv) => {
-        const caseFile = await this.caseFileService.findCaseFileByActivityId("INVSTGTN", inv.investigationGuid);
 
+    // Add case identifiers
+    const res = await Promise.all(
+      investigations.map(async (inv) => {
+        const caseFile = await this.caseFileService.findCaseFileByActivityId("INVSTGTN", inv.investigationGuid);
         return { ...inv, caseIdentifier: caseFile.caseIdentifier };
       }),
     );
@@ -292,9 +315,20 @@ export class InvestigationService {
       } else res.sort((a, b) => a.caseIdentifier.localeCompare(b.caseIdentifier));
     }
 
+    // Calculate page info
+    const totalPages = Math.ceil(totalCount / validatedPageSize);
+    const pageInfo: PageInfo = {
+      hasNextPage: validatedPage < totalPages,
+      hasPreviousPage: validatedPage > 1,
+      totalCount,
+      totalPages,
+      currentPage: validatedPage,
+      pageSize: validatedPageSize,
+    };
+
     return {
       items: res,
-      pageInfo: result.pageInfo as PageInfo,
+      pageInfo,
     };
   }
 }

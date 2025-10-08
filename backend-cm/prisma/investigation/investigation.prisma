@@ -26,8 +26,11 @@ model investigation {
   create_utc_timestamp               DateTime                     @db.Timestamp(6)
   update_user_id                     String?                      @db.VarChar(32)
   update_utc_timestamp               DateTime?                    @db.Timestamp(6)
+  location_geometry_point            Unsupported("geometry")?
   investigation_status_code          investigation_status_code    @relation(fields: [investigation_status], references: [investigation_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_investigation__investigation_status")
   officer_investigation_xref         officer_investigation_xref[]
+
+  @@index([location_geometry_point], map: "idx_investigation_location_geometry_point", type: Gist)
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments

@@ -1,11 +1,12 @@
 import { createMap, forMember, mapFrom, Mapper, mapWithArguments } from "@automapper/core";
 
-import { investigation } from "../../../../prisma/investigation/generated/investigation";
+import { investigation } from "../../../../prisma/investigation/investigation.unsupported_types";
 import { InvestigationStatusCode } from "../../../investigation/investigation_status_code/dto/investigation_status_code";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { PaginatedResult } from "src/common/pagination.utility";
 import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { IsOptional } from "class-validator";
+import { Point, PointScalar } from "src/common/custom_scalars";
 
 export class Investigation {
   investigationGuid: string;
@@ -14,6 +15,7 @@ export class Investigation {
   investigationStatus: InvestigationStatusCode;
   openedTimestamp: Date;
   caseIdentifier: string;
+  locationGeometry?: Point;
 }
 
 @InputType()
@@ -60,6 +62,10 @@ export class CreateInvestigationInput {
 
   @Field(() => String)
   investigationStatus: string;
+
+  @Field(() => PointScalar, { nullable: true })
+  @IsOptional()
+  locationGeometry?: Point;
 }
 
 @InputType()
@@ -72,6 +78,10 @@ export class UpdateInvestigationInput {
 
   @Field(() => String)
   investigationStatus: string;
+
+  @Field(() => PointScalar, { nullable: true })
+  @IsOptional()
+  locationGeometry?: Point;
 }
 
 export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
@@ -100,6 +110,10 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.openedTimestamp,
       mapFrom((src) => src.investigation_opened_utc_timestamp),
+    ),
+    forMember(
+      (dest) => dest.locationGeometry,
+      mapFrom((src) => src.location_geometry_point),
     ),
   );
 };

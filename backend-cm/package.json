@@ -12,6 +12,8 @@
     "prisma-generate-shared": "prisma generate --schema=prisma/shared/shared.prisma",
     "prisma-generate-investigation": "prisma generate --schema=prisma/investigation/investigation.prisma",
     "prisma-generate-inspection": "prisma generate --schema=prisma/inspection/inspection.prisma",
+    "prisma-pull-all": "npm run prisma-pull-complaint-outcome && npm run prisma-pull-shared && npm run prisma-pull-investigation && npm run prisma-pull-inspection",
+    "prisma-generate-all": "npm run prisma-generate-complaint-outcome && npm run prisma-generate-shared && npm run prisma-generate-investigation && npm run prisma-generate-inspection",
     "build": "nest build && copyfiles -u 1 \"src/**/*.graphql\" dist",
     "build:cli": "nest build --entryFile=./src/cli.js && copyfiles -u 1 \"src/**/*.graphql\" dist/cli",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
