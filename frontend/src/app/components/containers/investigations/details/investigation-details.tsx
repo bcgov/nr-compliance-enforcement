@@ -1,14 +1,12 @@
 import { InvestigationHeader } from "@/app/components/containers/investigations/details/investigation-header";
 import { FC } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
-import { CaseFile, Investigation, InvestigationParty } from "@/generated/graphql";
-import { Button } from "react-bootstrap";
-import { openModal } from "@/app/store/reducers/app";
-import { useAppDispatch } from "@/app/hooks/hooks";
-import { ADD_PARTY } from "@/app/types/modal/modal-types";
-import RecordsList from "@/app/components/common/records-list";
+import { CaseFile, Investigation } from "@/generated/graphql";
+import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
+import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
+import InvestigationRecords from "@/app/components/containers/investigations/details/investigation-records";
 
 const GET_INVESTIGATION = gql`
   query GetInvestigation($investigationGuid: String!) {
@@ -43,11 +41,12 @@ const GET_INVESTIGATION = gql`
 
 export type InvestigationParams = {
   investigationGuid: string;
+  tabKey: string;
 };
 
 export const InvestigationDetails: FC = () => {
-  const dispatch = useAppDispatch();
-  const { investigationGuid = "" } = useParams<InvestigationParams>();
+  const { investigationGuid = "", tabKey } = useParams<InvestigationParams>();
+  const currentTab = tabKey || "summary";
   const { data, isLoading } = useGraphQLQuery<{
     getInvestigation: Investigation;
     caseFileByActivityId: CaseFile;
@@ -57,19 +56,24 @@ export const InvestigationDetails: FC = () => {
     enabled: !!investigationGuid, // Only refresh query if id is provided
   });
 
-  const handleAddParty = () => {
-    document.body.click();
-    dispatch(
-      openModal({
-        modalSize: "lg",
-        modalType: ADD_PARTY,
-        data: {
-          title: "Add party to investigation",
-          description: "",
-          investigationGuid: investigationGuid,
-        },
-      }),
-    );
+  const renderTabContent = () => {
+    switch (currentTab) {
+      case "summary":
+        return (
+          <InvestigationSummary
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+            caseGuid={caseIdentifier ?? ""}
+          />
+        );
+      case "records":
+        return (
+          <InvestigationRecords
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+          />
+        );
+    }
   };
 
   if (isLoading) {
@@ -88,97 +92,14 @@ export const InvestigationDetails: FC = () => {
   const investigationData = data?.getInvestigation;
   const caseIdentifier = data?.caseFileByActivityId?.caseIdentifier;
 
-  const parties = investigationData?.parties ?? [];
-
-  const { peopleParties, businessParties } = parties.reduce(
-    (acc, party) => {
-      if (party?.person) acc.peopleParties.push(party);
-      if (party?.business) acc.businessParties.push(party);
-      return acc;
-    },
-    { peopleParties: [] as typeof parties, businessParties: [] as typeof parties },
-  );
-
   return (
     <div className="comp-complaint-details">
       <InvestigationHeader investigation={investigationData} />
 
       <section className="comp-details-body comp-container">
         <hr className="comp-details-body-spacer"></hr>
-
-        <div className="comp-details-section-header">
-          <h2>Investigation details</h2>
-        </div>
-
-        {/* Investigation Details (View) */}
-        <div className="comp-details-view">
-          <div className="comp-details-content">
-            <h3>Investigation Information</h3>
-            {!investigationData && <p>No data found for ID: {investigationGuid}</p>}
-            {investigationData && (
-              <div>
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <strong>Investigation Identifier:</strong>
-                      <p>{investigationData.investigationGuid || "N/A"}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <strong>Case Identifier:</strong>
-                      {caseIdentifier ? (
-                        <p>
-                          <Link to={`/case/${caseIdentifier}`}>{caseIdentifier}</Link>
-                        </p>
-                      ) : (
-                        <p>N/A</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                {investigationData.description && (
-                  <div className="row">
-                    <div className="col-12">
-                      <div className="form-group">
-                        <strong>Description:</strong>
-                        <p>{investigationData.description}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div className="row">
-                  <div className="col-12">
-                    <strong>Parties:</strong>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-12">
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      onClick={handleAddParty}
-                    >
-                      <i className="bi bi-plus-circle me-1" /> {/**/}
-                      Add Party
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="col-4">
-                    <RecordsList
-                      companies={businessParties as InvestigationParty[]}
-                      people={peopleParties as InvestigationParty[]}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        <InvestigationTabs />
+        {renderTabContent()}
       </section>
     </div>
   );
