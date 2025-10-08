@@ -30,10 +30,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
   return (
     <>
       <div className="comp-details-header">
-        <div
-          className="comp-container"
-          style={{ maxWidth: "initial" }}
-        >
+        <div className="comp-container mw-100 px-5">
           {/* <!-- breadcrumb start --> */}
           <div className="comp-complaint-breadcrumb">
             <nav aria-label="breadcrumb">
@@ -81,7 +78,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
 
       <CaseTabs />
       {isOnSummaryTab && (
-        <>
+        <div className="px-4">
           <section className="comp-details-body pb-0">
             <div className="comp-details-section-header">
               <div>
@@ -191,7 +188,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
           </section>
           {/* <!-- case status details end --> */}
           <hr className="mt-0 mb-2" />
-        </>
+        </div>
       )}
     </>
   );

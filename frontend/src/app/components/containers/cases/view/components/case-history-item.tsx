@@ -25,6 +25,11 @@ const getIconByVerb = (verbCode: string): string => {
 type eventDescriptionTemplate = (sourceId?: string, targetId?: string) => ReactNode;
 const eventDescriptionMap: Record<string, Record<string, Record<string, eventDescriptionTemplate>>> = {
   CASE: {
+    CASE: {
+      CREATED: () => `created the case`,
+      CLOSED: () => `closed the case`,
+      OPENED: () => `opened the case`,
+    },
     COMPLAINT: {
       ADDED: (sourceId) => (
         <>
@@ -40,7 +45,7 @@ const eventDescriptionMap: Record<string, Record<string, Record<string, eventDes
     INSPECTION: {
       ADDED: (sourceId) => (
         <>
-          added inspection <Link to={`/inspection/${sourceId}`}>{sourceId}</Link> to the case
+          started inspection <Link to={`/inspection/${sourceId}`}>{sourceId}</Link> to the case
         </>
       ),
       REMOVED: (sourceId) => (

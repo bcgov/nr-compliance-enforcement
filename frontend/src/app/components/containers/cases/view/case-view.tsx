@@ -165,7 +165,7 @@ export const CaseView: FC = () => {
         return <CaseMapTab />;
       default:
         return (
-          <div className="container-fluid px-4 py-3">
+          <div className="container-fluid px-5 py-3">
             <div className="row g-3">
               <ComplaintColumn complaints={linkedComplaints} />
               <InspectionColumn

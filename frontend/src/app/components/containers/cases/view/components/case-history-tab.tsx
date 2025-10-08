@@ -8,6 +8,7 @@ import { selectOfficers } from "@/app/store/reducers/officer";
 import { Officer } from "@/app/types/person/person";
 import Paginator from "@/app/components/common/paginator";
 import { formatDate } from "@/app/common/methods";
+import { Button } from "react-bootstrap";
 
 const SEARCH_EVENTS = gql`
   query SearchEvents($page: Int, $pageSize: Int, $filters: EventFilters) {
@@ -51,16 +52,17 @@ interface CaseHistoryTabProps {
 export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(25);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const { data, isLoading, error } = useGraphQLQuery<{ searchEvents: EventResult }>(SEARCH_EVENTS, {
-    queryKey: ["searchEvents", caseIdentifier, page, pageSize],
+    queryKey: ["searchEvents", caseIdentifier, page, pageSize, sortOrder],
     variables: {
       page,
       pageSize,
       filters: {
         targetId: caseIdentifier,
         sortBy: "publishedTimestamp",
-        sortOrder: "desc",
+        sortOrder: sortOrder,
       },
     },
     enabled: !!caseIdentifier,
@@ -97,6 +99,11 @@ export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
     setPage(newPage);
   };
 
+  const toggleSortOrder = () => {
+    setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
+    setPage(1);
+  };
+
   const groupedEvents = useMemo(() => {
     return events.reduce(
       (groups, event) => {
@@ -130,14 +137,7 @@ export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
     return (
       <div className="container-fluid px-4 py-3">
         <div className="row g-3">
-          <div className="col-12">
-            <div
-              className="alert alert-danger"
-              role="alert"
-            >
-              Error loading history. Please try again later.
-            </div>
-          </div>
+          <div className="col-12">Error loading history. Please try again later.</div>
         </div>
       </div>
     );
@@ -147,14 +147,7 @@ export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
     return (
       <div className="container-fluid px-4 py-3">
         <div className="row g-3">
-          <div className="col-12">
-            <div
-              className="alert alert-info"
-              role="alert"
-            >
-              No history found for this case.
-            </div>
-          </div>
+          <div className="col-12">No history found for this case.</div>
         </div>
       </div>
     );
@@ -162,6 +155,18 @@ export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
 
   return (
     <div className="container-fluid px-4 py-4">
+      <div className="row g-3 pb-4 px-4">
+        <div className="col-12">
+          <Button
+            variant="outline-primary"
+            size="sm"
+            onClick={toggleSortOrder}
+          >
+            <i className={`bi bi-filter me-2`}></i>
+            {sortOrder === "desc" ? "Newest to Oldest" : "Oldest to Newest"}
+          </Button>
+        </div>
+      </div>
       <div className="row g-3">
         <div className="col-12">
           {Object.entries(groupedEvents).map(([dateKey, dateEvents]) => (
