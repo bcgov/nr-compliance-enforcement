@@ -16,6 +16,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   Date: { input: any; output: any; }
+  JSONObject: { input: any; output: any; }
 };
 
 export type AgeCode = {
@@ -507,6 +508,66 @@ export type EquipmentStatusCode = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type Event = {
+  __typename?: 'Event';
+  actorEntityTypeCode: EventEntityTypeCode;
+  actorId: Scalars['String']['output'];
+  content?: Maybe<Scalars['JSONObject']['output']>;
+  eventGuid: Scalars['String']['output'];
+  eventVerbTypeCode: EventVerbTypeCode;
+  publishedTimestamp: Scalars['Date']['output'];
+  sourceEntityTypeCode?: Maybe<EventEntityTypeCode>;
+  sourceId?: Maybe<Scalars['String']['output']>;
+  targetEntityTypeCode: EventEntityTypeCode;
+  targetId: Scalars['String']['output'];
+};
+
+export type EventCreateInput = {
+  actorEntityTypeCode: Scalars['String']['input'];
+  actorId: Scalars['String']['input'];
+  content?: InputMaybe<Scalars['JSONObject']['input']>;
+  eventVerbTypeCode: Scalars['String']['input'];
+  sourceEntityTypeCode?: InputMaybe<Scalars['String']['input']>;
+  sourceId?: InputMaybe<Scalars['String']['input']>;
+  targetEntityTypeCode: Scalars['String']['input'];
+  targetId: Scalars['String']['input'];
+};
+
+export type EventEntityTypeCode = {
+  __typename?: 'EventEntityTypeCode';
+  activeInd: Scalars['Boolean']['output'];
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  eventEntityTypeCode: Scalars['String']['output'];
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription: Scalars['String']['output'];
+};
+
+export type EventFilters = {
+  actorId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['Date']['input']>;
+  eventVerbTypeCode?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+  sourceId?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['Date']['input']>;
+  targetId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type EventResult = {
+  __typename?: 'EventResult';
+  items: Array<Event>;
+  pageInfo: PageInfo;
+};
+
+export type EventVerbTypeCode = {
+  __typename?: 'EventVerbTypeCode';
+  activeInd: Scalars['Boolean']['output'];
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  eventVerbTypeCode: Scalars['String']['output'];
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription: Scalars['String']['output'];
+};
+
 export type HWCROutcomeActionedByCode = {
   __typename?: 'HWCROutcomeActionedByCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -633,6 +694,7 @@ export type Mutation = {
   createCaseFile: CaseFile;
   createDecision: ComplaintOutcome;
   createEquipment: ComplaintOutcome;
+  createEvent: Event;
   createInspection: Inspection;
   createInvestigation: Investigation;
   createNote: ComplaintOutcome;
@@ -696,6 +758,11 @@ export type MutationcreateDecisionArgs = {
 
 export type MutationcreateEquipmentArgs = {
   createEquipmentInput: CreateEquipmentInput;
+};
+
+
+export type MutationcreateEventArgs = {
+  input: EventCreateInput;
 };
 
 
@@ -1084,6 +1151,7 @@ export type Query = {
   scheduleCodes: Array<Maybe<ScheduleCode>>;
   scheduleSectorXrefs: Array<Maybe<ScheduleSectorXref>>;
   searchCaseFiles: CaseFileResult;
+  searchEvents: EventResult;
   searchInspections: InspectionResult;
   searchInvestigations: InvestigationResult;
   searchParties: PartyResult;
@@ -1224,6 +1292,13 @@ export type QuerypersonArgs = {
 
 export type QuerysearchCaseFilesArgs = {
   filters?: InputMaybe<CaseFileFilters>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QuerysearchEventsArgs = {
+  filters?: InputMaybe<EventFilters>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
