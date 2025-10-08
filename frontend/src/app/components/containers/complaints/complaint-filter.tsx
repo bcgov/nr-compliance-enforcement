@@ -343,7 +343,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {UserService.hasRole(Roles.CEEB) && (
+        {UserService.hasRole(Roles.CEEB) && type !== COMPLAINT_TYPES.SECTOR && (
           <div id="comp-filter-action-taken-id">
             <label htmlFor="action-taken-select-id">Action taken</label>
             <div className="filter-select-padding">
@@ -559,7 +559,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
             </div>
           )}
 
-          {activeFilters.showParkFilter && (
+          {activeFilters.showParkFilter && type !== COMPLAINT_TYPES.SECTOR && (
             <>
               <div id="comp-filter-area-id">
                 <label htmlFor="community-select-id">Area</label>

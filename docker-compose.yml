@@ -20,7 +20,6 @@ x-postgres-vars: &postgres-vars
   INV_PASSWORD: *INV_PASSWORD
   SHARED_PASSWORD: *SHARED_PASSWORD
   METABASE_READONLY_PASSWORD: *METABASE_READONLY_PASSWORD
-
 services:
   database:
     build:
