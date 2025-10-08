@@ -3,7 +3,7 @@ import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_PARTY } from "@/app/types/modal/modal-types";
 import { Investigation, InvestigationParty } from "@/generated/graphql";
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { Button } from "react-bootstrap";
 
 interface InvestigationRecordsProps {

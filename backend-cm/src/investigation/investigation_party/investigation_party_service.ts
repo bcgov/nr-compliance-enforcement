@@ -4,7 +4,6 @@ import { Investigation } from "../../investigation/investigation/dto/investigati
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { UserService } from "../../common/user.service";
 import { InvestigationService } from "../investigation/investigation.service";
-import { person } from "prisma/shared/generated/person";
 
 @Injectable()
 export class InvestigationPartyService {
