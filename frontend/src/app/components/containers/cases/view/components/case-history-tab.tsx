@@ -80,7 +80,7 @@ export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
       const userAuthGuids = new Set<string>();
 
       // Collect user GUIDs from source, actor, and target fields
-      events.forEach((event) => {
+      for (const event of events) {
         if (event.sourceEntityTypeCode?.eventEntityTypeCode === "USER" && event.sourceId) {
           userAuthGuids.add(event.sourceId);
         }
@@ -90,7 +90,7 @@ export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
         if (event.targetEntityTypeCode?.eventEntityTypeCode === "USER" && event.targetId) {
           userAuthGuids.add(event.targetId);
         }
-      });
+      }
 
       const officers = allOfficers.filter((officer) => userAuthGuids.has(officer.auth_user_guid));
 
