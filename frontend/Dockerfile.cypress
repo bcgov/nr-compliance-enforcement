@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 COPY . .
 
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 # Cypress binary cache directory
 ENV CYPRESS_CACHE_FOLDER=/app/.cypress
