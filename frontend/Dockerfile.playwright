@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 COPY . .
 
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 # Create browser cache directory
 RUN mkdir -p /app/playwright-browsers
@@ -36,5 +36,6 @@ RUN mkdir -p /app/test-results && \
 
 # Set environment variable for runtime
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
+
 
 ENTRYPOINT ["npx", "playwright", "test"]
