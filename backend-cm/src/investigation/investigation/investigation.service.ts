@@ -15,6 +15,9 @@ import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { PaginationUtility } from "src/common/pagination.utility";
 import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { CaseFileService } from "src/shared/case_file/case_file.service";
+import { EventPublisherService } from "src/event-publisher/event-publisher.service";
+import { EventCreateInput } from "src/shared/event/dto/event";
+import { STREAM_TOPICS } from "src/common/nats_constants";
 
 @Injectable()
 export class InvestigationService {
@@ -25,6 +28,7 @@ export class InvestigationService {
     private readonly shared: SharedPrismaService,
     private readonly paginationUtility: PaginationUtility,
     private readonly caseFileService: CaseFileService,
+    private readonly eventPublisher: EventPublisherService,
   ) {}
 
   private readonly logger = new Logger(InvestigationService.name);
@@ -152,6 +156,16 @@ export class InvestigationService {
     }
 
     try {
+      const event: EventCreateInput = {
+        eventVerbTypeCode: "ADDED",
+        sourceId: investigation.investigation_guid,
+        sourceEntityTypeCode: "INVESTIGATION",
+        actorId: this.user.getUserGuid(),
+        actorEntityTypeCode: "USER",
+        targetId: input.caseIdentifier,
+        targetEntityTypeCode: "CASE",
+      };
+      this.eventPublisher.publishEvent(event, STREAM_TOPICS.INVESTIGATION_CREATED);
       return this.mapper.map<investigation, Investigation>(
         investigation as investigation,
         "investigation",

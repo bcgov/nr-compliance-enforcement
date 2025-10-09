@@ -13,8 +13,10 @@ export class EventResolver {
   constructor(private readonly eventService: EventService) {}
   private readonly logger = new Logger(EventResolver.name);
 
+  // This currently has no roles check since it is called by the event
+  // worker using an api key (rather than a user token) which means
+  // it has no roles to check against.
   @Mutation("createEvent")
-  @Roles(coreRoles)
   async create(@Args("input") input: EventCreateInput) {
     try {
       return await this.eventService.create(input);
