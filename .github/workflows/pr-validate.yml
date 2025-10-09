@@ -32,7 +32,7 @@ jobs:
         - [Frontend](https://f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite-frontend.apps.emerald.devops.gov.bc.ca)
         - [GitOps App](https://gitops-shared.apps.emerald.devops.gov.bc.ca/applications/f208ae-tools/f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite)
         - [GitOps E2E Logs](https://gitops-shared.apps.emerald.devops.gov.bc.ca/applications/f208ae-tools/f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite?resource=&node=batch/Job/f208ae-dev/f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-e2e-playwright/0&tab=logs) 
-        - [E2E Reports](https://f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite-e2e.apps.emerald.devops.gov.bc.ca)
+        - [E2E Reports](https://f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite-e2e.apps.emerald.devops.gov.bc.ca/playwright/)
 
   results:
     name: Validate Results
