@@ -1,5 +1,11 @@
 name: PR
 
+permissions:
+  contents: write
+  packages: write
+  pull-requests: write
+  repository-projects: write
+
 on:
   pull_request:
     branches:
