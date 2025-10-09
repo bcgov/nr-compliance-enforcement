@@ -49,6 +49,24 @@ interface CaseHistoryTabProps {
   caseIdentifier: string;
 }
 
+const getUserGuidsFromEvents = (events: Event[]): Set<string> => {
+  const userAuthGuids = new Set<string>();
+
+  for (const event of events) {
+    if (event.sourceEntityTypeCode?.eventEntityTypeCode === "USER" && event.sourceId) {
+      userAuthGuids.add(event.sourceId);
+    }
+    if (event.actorEntityTypeCode?.eventEntityTypeCode === "USER" && event.actorId) {
+      userAuthGuids.add(event.actorId);
+    }
+    if (event.targetEntityTypeCode?.eventEntityTypeCode === "USER" && event.targetId) {
+      userAuthGuids.add(event.targetId);
+    }
+  }
+
+  return userAuthGuids;
+};
+
 export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
   const [page, setPage] = useState<number>(1);
   const [pageSize] = useState<number>(25);
@@ -77,23 +95,8 @@ export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
   // Get officers by auth_user_guid when events are loaded
   useEffect(() => {
     if (events.length > 0 && allOfficers) {
-      const userAuthGuids = new Set<string>();
-
-      // Collect user GUIDs from source, actor, and target fields
-      for (const event of events) {
-        if (event.sourceEntityTypeCode?.eventEntityTypeCode === "USER" && event.sourceId) {
-          userAuthGuids.add(event.sourceId);
-        }
-        if (event.actorEntityTypeCode?.eventEntityTypeCode === "USER" && event.actorId) {
-          userAuthGuids.add(event.actorId);
-        }
-        if (event.targetEntityTypeCode?.eventEntityTypeCode === "USER" && event.targetId) {
-          userAuthGuids.add(event.targetId);
-        }
-      }
-
+      const userAuthGuids = getUserGuidsFromEvents(events);
       const officers = allOfficers.filter((officer) => userAuthGuids.has(officer.auth_user_guid));
-
       setEventOfficers(officers);
     }
   }, [events, allOfficers]);
