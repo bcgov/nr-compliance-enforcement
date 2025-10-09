@@ -1,6 +1,5 @@
 import { Logger, UseGuards } from "@nestjs/common";
-import { JwtRoleGuard } from "../../auth/jwtrole.guard";
-import { ApiKeyGuard } from "../../auth/apikey.guard";
+import { JwtOrApiKeyGuard } from "../../auth/jwt-or-apikey.guard";
 import { Args, Query, Mutation, Resolver } from "@nestjs/graphql";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { coreRoles } from "../../enum/role.enum";
@@ -8,7 +7,7 @@ import { GraphQLError } from "graphql";
 import { EventService } from "./event.service";
 import { EventCreateInput, EventFilters } from "./dto/event";
 
-@UseGuards(JwtRoleGuard, ApiKeyGuard)
+@UseGuards(JwtOrApiKeyGuard)
 @Resolver("Event")
 export class EventResolver {
   constructor(private readonly eventService: EventService) {}
