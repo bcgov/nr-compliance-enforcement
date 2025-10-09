@@ -246,6 +246,7 @@ services:
       KEYCLOCK_CLIENT_ID: compliance-and-enforcement-digital-services-web-4794
       JWKS_URI: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs
       JWT_ISSUER: https://dev.loginproxy.gov.bc.ca/auth/realms/standard
+      NATS_HOST: nats://nats:4222
     image: node:20-bullseye
     ports: ["3003:3000"]
     volumes: ["./backend-cm:/app", "/app/node_modules"]
@@ -261,6 +262,8 @@ services:
         condition: service_completed_successfully
       migration-shared:
         condition: service_completed_successfully
+      nats:
+        condition: service_started
   event-worker:
     container_name: event-worker
     entrypoint:
