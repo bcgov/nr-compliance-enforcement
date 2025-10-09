@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable, Logger } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { JwtAuthGuard } from "./jwtauth.guard";
 import { JwtRoleGuard } from "./jwtrole.guard";
