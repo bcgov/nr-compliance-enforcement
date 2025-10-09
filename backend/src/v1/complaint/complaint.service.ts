@@ -1187,6 +1187,27 @@ export class ComplaintService {
     }
   };
 
+  getSectorComplaintsByIds = async (ids: string[]): Promise<SectorComplaintDto[]> => {
+    let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
+
+    try {
+      builder = this._generateQueryBuilder("SECTOR");
+
+      builder.where({ complaint_identifier: In(ids) });
+      const complaints = await builder.getMany();
+      const sectorComplaints = this.mapper.mapArray<Complaint, SectorComplaintDto>(
+        complaints as Array<Complaint>,
+        "Complaint",
+        "SectorComplaintDto",
+      );
+      await this.setSectorComplaintIssueType(sectorComplaints);
+      return sectorComplaints;
+    } catch (error) {
+      this.logger.error(error);
+      throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
+    }
+  };
+
   private readonly _applyReferralFilters = (
     builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     status?: string,
@@ -2820,12 +2841,26 @@ export class ComplaintService {
       data.updates = await _getUpdates(id);
 
       //-- find the linked complaints
-      data.linkedComplaints = data.linkedComplaintIdentifier
-        ? await this._linkedComplaintsXrefService.findParentComplaint(id) //if there is a linkedComplaintIdentifer it's parent
-        : await this._linkedComplaintsXrefService.findChildComplaints(id); //otherwise there may or may not be children
+      const [parentComplaints, childComplaints] = await Promise.all([
+        this._linkedComplaintsXrefService.findParentComplaint(id),
+        this._linkedComplaintsXrefService.findChildComplaints(id),
+      ]);
+
+      const associatedComplaints = [...parentComplaints, ...childComplaints];
+
+      //-- convert the agency name
+      const agencyTable = await this._codeTableService.getCodeTableByName("agency", token);
+      for (const complaint of associatedComplaints) {
+        const agency_code = agencyTable?.find((agency: any) => agency.agency === complaint.agency)?.longDescription;
+        complaint.agency = agency_code;
+      }
+
+      data.linkedComplaints = associatedComplaints.filter((item) => item.link_type === "LINK");
+      data.duplicateComplaints = associatedComplaints.filter((item) => item.link_type === "DUPLICATE");
 
       //-- helper flag to easily hide/show linked complaint section
       data.hasLinkedComplaints = data.linkedComplaints?.length > 0;
+      data.hasDuplicateComplaints = data.duplicateComplaints?.length > 0;
 
       //-- this is a workaround to hide empty rows in the carbone templates
       //-- It could possibly be removed if the CDOGS version of Carbone is updated

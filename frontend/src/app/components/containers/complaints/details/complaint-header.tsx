@@ -22,6 +22,7 @@ import {
   QUICK_CLOSE,
   REFER_COMPLAINT,
   LINK_COMPLAINT,
+  CREATE_ADD_CASE,
 } from "@apptypes/modal/modal-types";
 import { exportComplaint } from "@store/reducers/documents-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
@@ -64,6 +65,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   const showComplaintReferrals = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_REFERRALS));
   const showComplaintCollaboration = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_COLLABORATION));
+  const showCreateAddCase = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
   const userPersonGuid = useAppSelector(personGuid);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const collaborators = useAppSelector(selectActiveComplaintCollaborators);
@@ -201,6 +203,20 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     );
   };
 
+  const openCreateAddCaseModal = () => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: CREATE_ADD_CASE,
+        data: {
+          title: "Create/add case",
+          complaint_identifier: id,
+        },
+      }),
+    );
+  };
+
   const exportComplaintToPdf = () => {
     dispatch(exportComplaint(complaintType, id, new Date(loggedDate)));
   };
@@ -261,6 +277,17 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         <i className="bi bi-link-45deg"></i>
         <span>Link complaint</span>
       </Dropdown.Item>
+      {showCreateAddCase && (
+        <Dropdown.Item
+          as="button"
+          id="create-add-case-button"
+          onClick={openCreateAddCaseModal}
+          disabled={complaintAgency !== userAgency}
+        >
+          <i className="bi bi-folder-plus"></i>
+          <span>Create/add case</span>
+        </Dropdown.Item>
+      )}
       {showComplaintReferrals && (
         <Dropdown.Item
           as="button"

@@ -20,7 +20,13 @@ import Cases from "./components/containers/cases/cases";
 import CaseEdit from "./components/containers/cases/edit/case-edit";
 import Compliments from "./components/containers/compliments/compliments";
 import COMPLAINT_TYPES from "./types/app/complaint-types";
-import { getCodeTableVersion, getConfigurations, getFeatureFlag, getOfficerDefaultZone } from "./store/reducers/app";
+import {
+  getCodeTableVersion,
+  getConfigurations,
+  getFeatureFlag,
+  getOfficerDefaultZone,
+  getTokenProfile,
+} from "./store/reducers/app";
 import { CreateComplaint } from "./components/containers/complaints/details/complaint-details-create";
 import { UserManagement } from "@components/containers/admin/user-management";
 import UserService from "./service/user-service";
@@ -54,6 +60,7 @@ const App: FC = () => {
     dispatch(getConfigurations());
     dispatch(getCodeTableVersion());
     dispatch(getFeatureFlag());
+    dispatch(getTokenProfile());
   }, [dispatch]);
 
   const investigationsActive = useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATIONS));
@@ -70,7 +77,11 @@ const App: FC = () => {
         <ScrollToTop />
         <Modal />
         <PageLoader />
-        <ToastContainer />
+        <ToastContainer //any options that might be overridden need to be given a default here
+          autoClose={5000}
+          hideProgressBar={false}
+          closeOnClick={true}
+        />
         <Routes>
           {redirectMode ? (
             <Route
@@ -98,6 +109,10 @@ const App: FC = () => {
                 />
                 <Route
                   path="/case/:id"
+                  element={<CaseView />}
+                />
+                <Route
+                  path="/case/:id/:tabKey"
                   element={<CaseView />}
                 />
                 <Route

@@ -27,6 +27,14 @@ export class CaseFileCreateInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   description?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  activityType?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  activityIdentifier?: string;
 }
 
 @InputType()

@@ -1298,6 +1298,8 @@ p {
     &:hover {
       color: $bc-brand-blue;
     }
+    border: none;
+    background: none;
   }
 
   .comp-complaint-update-count {
@@ -2082,6 +2084,18 @@ p {
   background: #d1e7dd !important;
   background-color: #d1e7dd !important;
   color: #0f5132 !important;
+}
+
+.toast-link {
+  color: #004d00;
+  text-decoration: underline;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.toast-link:hover {
+  text-decoration: none;
 }
 
 .map-list-toggle {
