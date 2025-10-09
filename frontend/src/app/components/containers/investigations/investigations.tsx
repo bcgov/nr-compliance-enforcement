@@ -19,6 +19,7 @@ const SEARCH_INVESTIGATIONS = gql`
         openedTimestamp
         leadAgency
         caseIdentifier
+        locationGeometry
         investigationStatus {
           investigationStatusCode
           shortDescription

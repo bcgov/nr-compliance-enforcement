@@ -11,7 +11,7 @@ import utmObj from "utm-latlng";
 
 type Props = {
   id?: string;
-  mode: "complaint" | "equipment";
+  mode: "complaint" | "equipment" | "investigation";
   utmZones?: Array<Option>;
   initXCoordinate?: string;
   initYCoordinate?: string;
@@ -368,13 +368,27 @@ export const CompCoordinateInput: FC<Props> = ({
 
   const openMapModal = () => {
     document.body.click();
+
+    const getModalTitle = () => {
+      switch (mode) {
+        case "complaint":
+          return "Select location from map";
+        case "equipment":
+          return "Select equipment from map";
+        case "investigation":
+          return "Select investigation location from map";
+        default:
+          return "Select location from map";
+      }
+    };
+
     dispatch(
       openModal({
         modalSize: "lg",
         modalType: MAP_MODAL,
         data: {
           mode: mode,
-          title: mode === "complaint" ? "Select location from map" : "Select equipment from map",
+          title: getModalTitle(),
           complaintCoords:
             sourceXCoordinate !== "0" && sourceYCoordinate !== "0"
               ? [Number(sourceXCoordinate), Number(sourceYCoordinate)]

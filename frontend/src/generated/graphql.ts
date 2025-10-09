@@ -16,6 +16,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   Date: { input: any; output: any; }
+  Point: { input: any; output: any; }
 };
 
 export type AgeCode = {
@@ -271,6 +272,7 @@ export type CreateInvestigationInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
+  locationGeometry?: InputMaybe<Scalars['Point']['input']>;
 };
 
 export type CreateNoteInput = {
@@ -586,6 +588,7 @@ export type Investigation = {
   investigationGuid?: Maybe<Scalars['String']['output']>;
   investigationStatus?: Maybe<InvestigationStatusCode>;
   leadAgency?: Maybe<Scalars['String']['output']>;
+  locationGeometry?: Maybe<Scalars['Point']['output']>;
   openedTimestamp?: Maybe<Scalars['Date']['output']>;
 };
 
@@ -1352,6 +1355,7 @@ export type UpdateInvestigationInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
+  locationGeometry?: InputMaybe<Scalars['Point']['input']>;
 };
 
 export type UpdateNoteInput = {

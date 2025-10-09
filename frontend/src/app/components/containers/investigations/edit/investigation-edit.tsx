@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
@@ -7,6 +7,7 @@ import { InvestigationEditHeader } from "./investigation-edit-header";
 import { CompSelect } from "@components/common/comp-select";
 import { FormField } from "@components/common/form-field";
 import { ValidationTextArea } from "@common/validation-textarea";
+import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
@@ -16,6 +17,8 @@ import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CreateInvestigationInput, UpdateInvestigationInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
+import { bcUtmZoneNumbers } from "@common/methods";
+import Option from "@apptypes/app/option";
 
 const CREATE_INVESTIGATION_MUTATION = gql`
   mutation CreateInvestigation($input: CreateInvestigationInput!) {
@@ -28,6 +31,7 @@ const CREATE_INVESTIGATION_MUTATION = gql`
         longDescription
       }
       leadAgency
+      locationGeometry
     }
   }
 `;
@@ -43,6 +47,7 @@ const UPDATE_INVESTIGATION_MUTATION = gql`
         longDescription
       }
       leadAgency
+      locationGeometry
     }
   }
 `;
@@ -60,6 +65,7 @@ const GET_INVESTIGATION = gql`
         longDescription
       }
       leadAgency
+      locationGeometry
     }
     caseFileByActivityId(activityType: "INVSTGTN", activityIdentifier: $investigationGuid) {
       caseIdentifier
@@ -73,6 +79,8 @@ const InvestigationEdit: FC = () => {
   const { caseIdentifier, id } = useParams<{ caseIdentifier?: string; id?: string }>();
 
   const isEditMode = !!id;
+
+  const [coordinateError, setCoordinateError] = useState(false);
 
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
@@ -114,12 +122,14 @@ const InvestigationEdit: FC = () => {
         investigationStatus: investigationData.getInvestigation.investigationStatus?.investigationStatusCode || "",
         leadAgency: investigationData.getInvestigation.leadAgency || "",
         description: investigationData.getInvestigation.description || "",
+        locationGeometry: investigationData.getInvestigation.locationGeometry || null,
       };
     }
     return {
       investigationStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
       leadAgency: getUserAgency(),
       description: "",
+      locationGeometry: null,
     };
   }, [isEditMode, investigationData]);
 
@@ -131,6 +141,7 @@ const InvestigationEdit: FC = () => {
           leadAgency: value.leadAgency,
           investigationStatus: value.investigationStatus,
           description: value.description,
+          locationGeometry: value.locationGeometry,
         };
 
         updateInvestigationMutation.mutate({
@@ -143,6 +154,7 @@ const InvestigationEdit: FC = () => {
           leadAgency: value.leadAgency,
           description: value.description,
           investigationStatus: value.investigationStatus,
+          locationGeometry: value.locationGeometry,
         };
 
         createInvestigationMutation.mutate({ input: createInput });
@@ -265,6 +277,39 @@ const InvestigationEdit: FC = () => {
                   disabled={isDisabled}
                 />
               )}
+            />
+            <FormField
+              form={form}
+              name="locationGeometry"
+              label="Location"
+              render={(field) => {
+                const coordinates = field.state.value?.coordinates;
+                const longitude = coordinates?.[0]?.toString() || "";
+                const latitude = coordinates?.[1]?.toString() || "";
+
+                return (
+                  <CompCoordinateInput
+                    id="investigation-coordinates"
+                    mode="investigation"
+                    utmZones={bcUtmZoneNumbers.map((zone: string) => ({ value: zone, label: zone } as Option))}
+                    initXCoordinate={longitude}
+                    initYCoordinate={latitude}
+                    syncCoordinates={(yCoordinate, xCoordinate) => {
+                      if (yCoordinate && xCoordinate && yCoordinate !== "" && xCoordinate !== "") {
+                        field.handleChange({
+                          type: "Point",
+                          coordinates: [parseFloat(xCoordinate), parseFloat(yCoordinate)],
+                        });
+                      } else {
+                        field.handleChange(null);
+                      }
+                    }}
+                    throwError={setCoordinateError}
+                    enableCopyCoordinates={false}
+                    validationRequired={false}
+                  />
+                );
+              }}
             />
           </fieldset>
         </form>

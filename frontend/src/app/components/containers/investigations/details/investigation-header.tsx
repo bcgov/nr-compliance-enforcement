@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import { Investigation } from "@/generated/graphql";
 import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
@@ -22,6 +22,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
   const lastUpdated = investigation?.openedTimestamp ? new Date(investigation.openedTimestamp).toString() : undefined;
   const officerAssigned = "Not Assigned";
   const createdBy = "Unknown";
+
 
   return (
     <>

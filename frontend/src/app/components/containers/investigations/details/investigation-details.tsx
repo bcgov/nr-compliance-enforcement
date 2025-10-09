@@ -1,9 +1,11 @@
 import { InvestigationHeader } from "@/app/components/containers/investigations/details/investigation-header";
 import { FC } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Investigation } from "@/generated/graphql";
+import { CompLocationInfo } from "@/app/components/common/comp-location-info";
+import Button from "react-bootstrap/esm/Button";
 
 const GET_INVESTIGATION = gql`
   query GetInvestigation($investigationGuid: String!) {
@@ -18,6 +20,7 @@ const GET_INVESTIGATION = gql`
         longDescription
       }
       leadAgency
+      locationGeometry
     }
     caseFileByActivityId(activityType: "INVSTGTN", activityIdentifier: $investigationGuid) {
       caseIdentifier
@@ -30,6 +33,9 @@ export type InvestigationParams = {
 };
 
 export const InvestigationDetails: FC = () => {
+  const navigate = useNavigate();
+
+
   const { investigationGuid = "" } = useParams<InvestigationParams>();
   const { data, isLoading } = useGraphQLQuery<{
     getInvestigation: Investigation;
@@ -39,6 +45,9 @@ export const InvestigationDetails: FC = () => {
     variables: { investigationGuid: investigationGuid },
     enabled: !!investigationGuid, // Only refresh query if id is provided
   });
+  const editButtonClick = () => {
+    navigate(`/investigation/${investigationData?.investigationGuid}/edit`);
+  };
 
   if (isLoading) {
     return (
@@ -64,7 +73,19 @@ export const InvestigationDetails: FC = () => {
 
         <div className="comp-details-section-header">
           <h2>Investigation details</h2>
+          <div className="comp-details-section-header-actions mb-0 pb-0">
+            <Button
+              variant="outline-primary"
+              size="sm"
+              id="details-screen-edit-button"
+              onClick={editButtonClick}
+            >
+              <i className="bi bi-pencil"></i>
+              <span>Edit Investigation</span>
+            </Button>
+          </div>
         </div>
+
 
         {/* Investigation Details (View) */}
         <div className="comp-details-view">
@@ -95,6 +116,18 @@ export const InvestigationDetails: FC = () => {
                       <div className="form-group">
                         <strong>Description:</strong>
                         <p>{investigationData.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {investigationData.locationGeometry && (
+                  <div className="row">
+                    <div className="col-12">
+                      <div className="form-group">
+                        <CompLocationInfo
+                          xCoordinate={investigationData.locationGeometry.coordinates?.[0] === 0 ? "" : investigationData.locationGeometry.coordinates?.[0].toString() ?? ""}
+                          yCoordinate={investigationData.locationGeometry.coordinates?.[1] === 0 ? "" : investigationData.locationGeometry.coordinates?.[1].toString() ?? ""}
+                        />
                       </div>
                     </div>
                   </div>
