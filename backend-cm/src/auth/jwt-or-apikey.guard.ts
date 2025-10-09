@@ -22,7 +22,7 @@ export class JwtOrApiKeyGuard implements CanActivate {
       return true;
     }
 
-    const jwtAuthResult = this.jwtAuthGuard.canActivate(context);
+    const jwtAuthResult = await this.jwtAuthGuard.canActivate(context);
     if (jwtAuthResult) {
       const jwtRoleResult = this.jwtRoleGuard.canActivate(context);
       if (jwtRoleResult) {
