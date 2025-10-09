@@ -66,7 +66,7 @@ COMMENT ON COLUMN shared.event_verb_type_code.update_utc_timestamp IS 'The times
 
 CREATE TABLE
     shared.event (
-        event_guid uuid DEFAULT public.uuid_generate_v4 () NOT NULL,
+        event_guid uuid DEFAULT public.uuid_generate_v4 () PRIMARY KEY UNIQUE NOT NULL,
         event_verb_type_code character varying(16) NOT NULL,
         published_utc_timestamp timestamp without time zone DEFAULT now () NOT NULL,
         source_id character varying(64),
