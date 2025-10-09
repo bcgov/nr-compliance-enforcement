@@ -1,5 +1,5 @@
 // src/guards/api-key-auth.guard.ts
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, Logger } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, Logger } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { Request } from "express";
 
