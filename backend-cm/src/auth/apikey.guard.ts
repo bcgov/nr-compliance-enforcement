@@ -15,8 +15,8 @@ export class ApiKeyGuard implements CanActivate {
 
     if (apiKey && apiKey === process.env.CASE_API_KEY) {
       return true;
-    } else {
-      throw new UnauthorizedException("Invalid or missing API key");
     }
+
+    return false;
   }
 }
