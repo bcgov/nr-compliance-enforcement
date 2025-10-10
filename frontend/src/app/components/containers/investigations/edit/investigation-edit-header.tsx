@@ -25,7 +25,7 @@ export const InvestigationEditHeader: FC<InvestigationEditHeaderProps> = ({
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item comp-nav-item-name-inverted">
-                <Link to="/investigations">Cases</Link>
+                <Link to="/case">Cases</Link>
               </li>
               {caseIdentifier && (
                 <li className="breadcrumb-item comp-nav-item-name-inverted">

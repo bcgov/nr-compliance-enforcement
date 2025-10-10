@@ -79,8 +79,7 @@ const InvestigationEdit: FC = () => {
   const { caseIdentifier, id } = useParams<{ caseIdentifier?: string; id?: string }>();
 
   const isEditMode = !!id;
-
-  const [coordinateError, setCoordinateError] = useState(false);
+  const [coordinateErrorsInd, setCoordinateErrorsInd] = useState<boolean>(false);
 
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
@@ -114,6 +113,10 @@ const InvestigationEdit: FC = () => {
       ToggleError("Failed to update investigation");
     },
   });
+
+  const throwError = (hasError: boolean) => {
+    setCoordinateErrorsInd(hasError);
+  };
 
   const defaultValues = useMemo(() => {
     // If there is investigation data set the default state of the form to the investigation data
@@ -168,7 +171,7 @@ const InvestigationEdit: FC = () => {
     if (isEditMode && id) {
       navigate(`/investigation/${id}`);
     } else {
-      navigate(`/case/${caseIdentifier}`);
+      navigate(`/investigations/${id}`);
     }
   }, [navigate, isEditMode, caseIdentifier, id, form]);
 
@@ -194,7 +197,7 @@ const InvestigationEdit: FC = () => {
   const isDisabled = isSubmitting || isLoading;
 
   return (
-    <div className="comp-complaintinvestigation-edit-headerdetails">
+    <div className="comp-investigation-edit-headerdetails">
       <InvestigationEditHeader
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
@@ -304,9 +307,11 @@ const InvestigationEdit: FC = () => {
                         field.handleChange(null);
                       }
                     }}
-                    throwError={setCoordinateError}
+                    throwError={throwError}
                     enableCopyCoordinates={false}
                     validationRequired={false}
+                    sourceXCoordinate={longitude}
+                    sourceYCoordinate={latitude}
                   />
                 );
               }}
