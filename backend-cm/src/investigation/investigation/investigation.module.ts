@@ -21,5 +21,6 @@ import { EventPublisherModule } from "src/event-publisher/event-publisher.module
     EventPublisherModule,
   ],
   providers: [InvestigationResolver, InvestigationService, CaseFileService],
+  exports: [InvestigationService],
 })
 export class InvestigationModule {}

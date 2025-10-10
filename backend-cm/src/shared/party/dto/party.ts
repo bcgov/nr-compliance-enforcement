@@ -2,18 +2,19 @@ import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import { party } from "../../../../prisma/shared/generated/party";
 import { person } from "../../../../prisma/shared/generated/person";
 import { business } from "../../../../prisma/shared/generated/business";
-import { Person } from "src/shared/person/dto/person";
-import { Business } from "src/shared/business/dto/business";
-import { Field, InputType, ObjectType, Int } from "@nestjs/graphql";
+import { Person } from "../../person/dto/person";
+import { Business } from "../../business/dto/business";
+import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsOptional } from "class-validator";
-import { PaginatedResult } from "src/common/pagination.utility";
-import { PageInfo } from "src/shared/case_file/dto/case_file";
+import { PaginatedResult } from "../../../common/pagination.utility";
+import { PageInfo } from "../../case_file/dto/case_file";
+import { PartyDto } from "../../../common/party";
 
-export class Party {
-  partyIdentifier: String;
-  partyTypeCode: String;
-  longDescription: String;
-  shortDescription: String;
+export class Party implements PartyDto {
+  partyIdentifier: string;
+  partyTypeCode: string;
+  longDescription: string;
+  shortDescription: string;
   createdDateTime: Date;
   person: Person;
   business: Business;

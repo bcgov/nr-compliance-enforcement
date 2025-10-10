@@ -54,7 +54,8 @@ import { PrismaModuleInspection } from "./prisma/inspection/prisma.inspection.mo
 import { PartyTypeCodeModule } from "./shared/party_type_code/party_type_code.module";
 import { CaseActivityModule } from "src/shared/case_activity/case_activity.module";
 import { EventModule } from "./shared/event/event.module";
-import { EventPublisherModule } from './event-publisher/event-publisher.module';
+import { EventPublisherModule } from "./event-publisher/event-publisher.module";
+import { InvestigationPartyModule } from "./investigation/investigation_party/investigation_party.module";
 
 @Module({
   imports: [
@@ -110,6 +111,7 @@ import { EventPublisherModule } from './event-publisher/event-publisher.module';
     CaseActivityModule,
     EventModule,
     EventPublisherModule,
+    InvestigationPartyModule,
   ],
   controllers: [AppController],
   providers: [AppService, ImportCommand, DateScalar, JSONObjectScalar],

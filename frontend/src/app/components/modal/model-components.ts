@@ -14,6 +14,7 @@ import {
   LINK_COMPLAINT,
   ADD_COMPLAINT_TO_CASE,
   CREATE_ADD_CASE,
+  ADD_PARTY,
 } from "@apptypes/modal/modal-types";
 
 import {
@@ -33,6 +34,7 @@ import { MapModal } from "@/app/components/modal/instances/map-modal";
 import { LinkComplaintModal } from "./instances/link-complaint-modal";
 import { AddComplaintToCaseModal } from "./instances/add-complaint-to-case";
 import { CreateAddCaseModal } from "@/app/components/modal/instances/create-add-case";
+import { AddPartyModal } from "@/app/components/modal/instances/add-party";
 
 export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [Sample]: SampleModal,
@@ -50,4 +52,5 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [LINK_COMPLAINT]: LinkComplaintModal,
   [ADD_COMPLAINT_TO_CASE]: AddComplaintToCaseModal,
   [CREATE_ADD_CASE]: CreateAddCaseModal,
+  [ADD_PARTY]: AddPartyModal,
 };
