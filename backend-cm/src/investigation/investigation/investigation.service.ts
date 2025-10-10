@@ -30,7 +30,6 @@ export class InvestigationService {
   private readonly logger = new Logger(InvestigationService.name);
 
   async findOne(investigationGuid: string) {
-    console.log(investigationGuid);
     const prismaInvestigation = await this.prisma.investigation.findUnique({
       where: {
         investigation_guid: investigationGuid,
@@ -56,8 +55,6 @@ export class InvestigationService {
         },
       },
     });
-
-    console.log(prismaInvestigation);
     if (!prismaInvestigation) {
       throw new Error(`Investigation with guid ${investigationGuid} not found`);
     }

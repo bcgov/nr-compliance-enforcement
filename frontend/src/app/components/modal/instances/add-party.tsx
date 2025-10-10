@@ -68,7 +68,7 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
     },
     onError: (error: any) => {
       console.error("Error adding party:", error);
-      ToggleError("Failed to add party");
+      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to add party");
     },
   });
 

@@ -45,46 +45,37 @@ export class InvestigationPartyService {
                 create_utc_timestamp: new Date(),
               },
             });
+          } else {
+            throw new Error("Record already exists on Investigation.");
           }
 
           // Only add the business if it's required
           if (input.business) {
-            const businessAlreadyExists = investigation.parties.some(
-              (p) => p.business && p.business.businessReference === input.business.businessReference,
-            );
-
-            if (!businessAlreadyExists) {
-              await tx.investigation_business.create({
-                data: {
-                  business_guid_ref: input.business.businessReference,
-                  investigation_party_guid: investigationParty.investigation_party_guid,
-                  name: input.business.name,
-                  create_user_id: this.user.getIdirUsername(),
-                  create_utc_timestamp: new Date(),
-                },
-              });
-            }
+            await tx.investigation_business.create({
+              data: {
+                business_guid_ref: input.business.businessReference,
+                investigation_party_guid: investigationParty.investigation_party_guid,
+                name: input.business.name,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              },
+            });
           }
 
           // Only add the person if it's required
           if (input.person) {
-            const personAlreadyExists = investigation.parties.some(
-              (p) => p.person && p.person.personReference === input.person.personReference,
-            );
-            if (!personAlreadyExists) {
-              await tx.investigation_person.create({
-                data: {
-                  person_guid_ref: input.person.personReference,
-                  investigation_party_guid: investigationParty.investigation_party_guid,
-                  first_name: input.person.firstName,
-                  middle_name: input.person.middleName,
-                  middle_name_2: input.person.middleName2,
-                  last_name: input.person.lastName,
-                  create_user_id: this.user.getIdirUsername(),
-                  create_utc_timestamp: new Date(),
-                },
-              });
-            }
+            await tx.investigation_person.create({
+              data: {
+                person_guid_ref: input.person.personReference,
+                investigation_party_guid: investigationParty.investigation_party_guid,
+                first_name: input.person.firstName,
+                middle_name: input.person.middleName,
+                middle_name_2: input.person.middleName2,
+                last_name: input.person.lastName,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              },
+            });
           }
         } catch (error) {
           this.logger.error("Error creating investigation party:", error);

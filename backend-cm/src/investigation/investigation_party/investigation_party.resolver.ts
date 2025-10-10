@@ -22,7 +22,10 @@ export class InvestigationPartyResolver {
     } catch (error) {
       this.logger.error("Update investigation error:", error);
       throw new GraphQLError("Error adding parties to investigation", {
-        extensions: { code: "INTERNAL_SERVER_ERROR" },
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+          originalError: error.message,
+        },
       });
     }
   }
