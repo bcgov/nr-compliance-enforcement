@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 COPY . .
 
-RUN npm ci --ignore-scripts
+RUN npm ci
 
 # Create browser cache directory
 RUN mkdir -p /app/playwright-browsers
