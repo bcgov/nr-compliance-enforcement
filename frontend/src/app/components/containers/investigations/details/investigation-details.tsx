@@ -6,6 +6,7 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Investigation } from "@/generated/graphql";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
 import Button from "react-bootstrap/esm/Button";
+import { InvestigationLocation } from "./investigation-location";
 
 const GET_INVESTIGATION = gql`
   query GetInvestigation($investigationGuid: String!) {
@@ -135,6 +136,15 @@ export const InvestigationDetails: FC = () => {
               </div>
             )}
           </div>
+          {investigationData?.locationGeometry?.coordinates && (
+            <InvestigationLocation
+              locationCoordinates={{
+                lat: investigationData.locationGeometry.coordinates[1],
+                lng: investigationData.locationGeometry.coordinates[0],
+              }}
+              draggable={false}
+            />
+          )}
         </div>
       </section>
     </div>
