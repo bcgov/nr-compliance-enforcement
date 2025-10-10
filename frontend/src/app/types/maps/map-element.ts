@@ -12,4 +12,5 @@ export interface MapElement {
 export enum MapObjectType {
   Complaint = "Complaint",
   Equipment = "Equipment",
+  Investigation = "Investigation",
 }
