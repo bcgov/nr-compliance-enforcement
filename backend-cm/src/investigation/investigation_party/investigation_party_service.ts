@@ -34,20 +34,19 @@ export class InvestigationPartyService {
             (p) => p.isActive && p.partyReference && p.partyReference === input.partyReference,
           );
 
-          let investigationParty;
-          if (!partyAlreadyExists) {
-            investigationParty = await tx.investigation_party.create({
-              data: {
-                party_guid_ref: input.partyReference,
-                party_type_code_ref: input.partyTypeCode,
-                investigation_guid: investigationGuid,
-                create_user_id: this.user.getIdirUsername(),
-                create_utc_timestamp: new Date(),
-              },
-            });
-          } else {
+          if (partyAlreadyExists) {
             throw new Error("Record already exists on Investigation.");
           }
+
+          const investigationParty = await tx.investigation_party.create({
+            data: {
+              party_guid_ref: input.partyReference,
+              party_type_code_ref: input.partyTypeCode,
+              investigation_guid: investigationGuid,
+              create_user_id: this.user.getIdirUsername(),
+              create_utc_timestamp: new Date(),
+            },
+          });
 
           // Only add the business if it's required
           if (input.business) {
