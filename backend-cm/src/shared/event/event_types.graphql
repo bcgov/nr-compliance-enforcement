@@ -1,0 +1,67 @@
+scalar Date
+scalar JSONObject
+
+type Event {
+  eventGuid: String!
+  eventVerbTypeCode: EventVerbTypeCode!
+  publishedTimestamp: Date!
+  sourceId: String
+  sourceEntityTypeCode: EventEntityTypeCode
+  actorId: String!
+  actorEntityTypeCode: EventEntityTypeCode!
+  targetId: String!
+  targetEntityTypeCode: EventEntityTypeCode!
+  content: JSONObject
+}
+
+type EventVerbTypeCode {
+  eventVerbTypeCode: String!
+  shortDescription: String!
+  longDescription: String
+  displayOrder: Int
+  activeInd: Boolean!
+}
+
+type EventEntityTypeCode {
+  eventEntityTypeCode: String!
+  shortDescription: String!
+  longDescription: String
+  displayOrder: Int
+  activeInd: Boolean!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  totalCount: Int!
+  totalPages: Int!
+  currentPage: Int!
+  pageSize: Int!
+}
+
+type EventResult {
+  items: [Event!]!
+  pageInfo: PageInfo!
+}
+
+input EventCreateInput {
+  eventVerbTypeCode: String!
+  sourceId: String
+  sourceEntityTypeCode: String
+  actorId: String!
+  actorEntityTypeCode: String!
+  targetId: String!
+  targetEntityTypeCode: String!
+  content: JSONObject
+}
+
+input EventFilters {
+  eventVerbTypeCode: String
+  sourceId: String
+  actorId: String
+  targetId: String
+  startDate: Date
+  endDate: Date
+  sortBy: String
+  sortOrder: String
+}

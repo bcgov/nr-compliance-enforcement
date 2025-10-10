@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { PassportModule } from "@nestjs/passport";
 import { APP_GUARD } from "@nestjs/core";
-import { JwtAuthGuard } from "./jwtauth.guard";
+import { JwtOrApiKeyGuard } from "./jwt-or-apikey.guard";
 import { JwtAuthStrategy } from "./jwtauth.strategy";
 @Module({
   imports: [PassportModule.register({ defaultStrategy: "jwt" })],
@@ -9,7 +9,7 @@ import { JwtAuthStrategy } from "./jwtauth.strategy";
     JwtAuthStrategy,
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
+      useClass: JwtOrApiKeyGuard,
     },
   ],
   exports: [PassportModule],
