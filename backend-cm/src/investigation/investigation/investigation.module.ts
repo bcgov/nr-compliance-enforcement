@@ -19,5 +19,6 @@ import { UserModule } from "src/common/user.module";
     UserModule,
   ],
   providers: [InvestigationResolver, InvestigationService, CaseFileService],
+  exports: [InvestigationService],
 })
 export class InvestigationModule {}

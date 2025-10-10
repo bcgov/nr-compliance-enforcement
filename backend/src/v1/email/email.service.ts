@@ -36,9 +36,8 @@ export class EmailService {
     private readonly _codeTableService: CodeTableService,
   ) {}
 
-  private async _buildRecipientList(externalAgencyInd, referredToAgencyCode, complaint, additionalRecipients) {
+  private async _buildRecipientList(referredToAgencyCode, complaint, additionalRecipients) {
     const recipientList = [...additionalRecipients];
-    if (externalAgencyInd) return recipientList;
 
     const emailReferences = await this._emailReferenceService.findActiveByAgency(referredToAgencyCode);
     for (const ref of emailReferences) {
@@ -50,6 +49,7 @@ export class EmailService {
           break;
         case "EPO":
         case "PARKS":
+        case "NROS":
           recipientList.push(ref.email_address);
           break;
         default: {
@@ -135,7 +135,6 @@ export class EmailService {
       const senderName = `${given_name} ${family_name}`;
 
       const recipientList = await this._buildRecipientList(
-        externalAgencyInd,
         referred_to_agency_code_ref,
         complaint,
         additionalEmailRecipients,

@@ -5,6 +5,7 @@ type Investigation {
   investigationStatus: InvestigationStatusCode
   openedTimestamp: Date
   caseIdentifier: String
+  parties: [InvestigationParty]
 }
 
 input CreateInvestigationInput {
