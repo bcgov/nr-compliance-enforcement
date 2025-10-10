@@ -98,6 +98,8 @@ export class InvestigationService {
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
         location_geometry_point: input.locationGeometry,
+        location_address: input.locationAddress,
+        location_description: input.locationDescription,
       });
 
       // Fetch the investigation_status_code relation
@@ -176,6 +178,8 @@ export class InvestigationService {
         investigation_status?: string;
         investigation_description?: string;
         location_geometry_point?: Point | null;
+        location_address?: string;
+        location_description?: string;
       } = {
         update_user_id: this.user.getIdirUsername(),
         update_utc_timestamp: new Date(),
@@ -192,6 +196,12 @@ export class InvestigationService {
       }
       if (input.locationGeometry !== undefined) {
         updateData.location_geometry_point = input.locationGeometry;
+      }
+      if (input.locationAddress !== undefined) {
+        updateData.location_address = input.locationAddress;
+      }
+      if (input.locationDescription !== undefined) {
+        updateData.location_description = input.locationDescription;
       }
       // Perform the update
       updatedInvestigation = await (this.prisma as unknown as ExtendedPrismaClient).updateInvestigationWithGeometry(
@@ -246,29 +256,14 @@ export class InvestigationService {
     const totalCount = await this.prisma.investigation.count({ where });
 
     // Query with raw SQL to get geometry as GeoJSON
-    let prismaInvestigations: investigation[];
-
-    prismaInvestigations = await (this.prisma as unknown as ExtendedPrismaClient).$queryRaw<investigation[]>`
-      SELECT
-        investigation_guid,
-        investigation_description,
-        owned_by_agency_ref,
-        investigation_status,
-        investigation_opened_utc_timestamp,
-        create_user_id,
-        create_utc_timestamp,
-        update_user_id,
-        update_utc_timestamp,
-        public.ST_AsGeoJSON(location_geometry_point)::json AS location_geometry_point
-      FROM investigation.investigation
-      ORDER BY investigation_opened_utc_timestamp DESC
-      LIMIT ${validatedPageSize}
-      OFFSET ${skip}
-    `;
-  
+    let investigationsList: investigation[];
+    investigationsList = await (this.prisma as unknown as ExtendedPrismaClient).getManyInvestigationsWithGeometry(
+      validatedPageSize,
+      skip,
+    );
 
     // Manually fetch related investigation_status_code for each investigation
-    for (const inv of prismaInvestigations) {
+    for (const inv of investigationsList) {
       const statusCode = await this.prisma.investigation_status_code.findUnique({
         where: { investigation_status_code: inv.investigation_status },
       });
@@ -277,7 +272,7 @@ export class InvestigationService {
 
     // Map to Investigation DTOs
     const investigations = this.mapper.mapArray<investigation, Investigation>(
-      prismaInvestigations,
+      investigationsList,
       "investigation",
       "Investigation",
     );

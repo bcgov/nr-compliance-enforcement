@@ -37,6 +37,8 @@ export const postgisExtension = Prisma.defineExtension({
           create_utc_timestamp,
           update_user_id,
           update_utc_timestamp,
+          location_address,
+          location_description,
           public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
         FROM investigation.investigation
         WHERE investigation_guid = '${investigationGuid}'::uuid
@@ -82,6 +84,8 @@ export const postgisExtension = Prisma.defineExtension({
         update_user_id?: string | null;
         update_utc_timestamp?: Date | null;
         location_geometry_point?: Point | null;
+        location_address?: string | null;
+        location_description?: string | null;
       }
     ): Promise<investigation> {
       const { location_geometry_point, ...rest } = data;
@@ -97,6 +101,8 @@ export const postgisExtension = Prisma.defineExtension({
             create_utc_timestamp,
             update_user_id,
             update_utc_timestamp,
+            location_address,
+            location_description,
             location_geometry_point
           )
           VALUES (
@@ -108,6 +114,8 @@ export const postgisExtension = Prisma.defineExtension({
             '${rest.create_utc_timestamp.toISOString()}',
             ${rest.update_user_id ? `'${rest.update_user_id}'` : 'NULL'},
             ${rest.update_utc_timestamp ? `'${rest.update_utc_timestamp.toISOString()}'` : 'NULL'},
+            ${rest.location_address ? `'${rest.location_address.replace(/'/g, "''")}'` : 'NULL'},
+            ${rest.location_description ? `'${rest.location_description.replace(/'/g, "''")}'` : 'NULL'},
             public.ST_GeomFromGeoJSON('${JSON.stringify(location_geometry_point).replace(/'/g, "''")}')
           )
           RETURNING
@@ -120,6 +128,8 @@ export const postgisExtension = Prisma.defineExtension({
             create_utc_timestamp,
             update_user_id,
             update_utc_timestamp,
+            location_address,
+            location_description,
             public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
         `;
         const result = (await this.$queryRawUnsafe(queryString)) as investigation[];
@@ -160,6 +170,8 @@ export const postgisExtension = Prisma.defineExtension({
           create_utc_timestamp,
           update_user_id,
           update_utc_timestamp,
+          location_address,
+          location_description,
           public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
         FROM investigation.investigation
         WHERE investigation_guid IN (${guidList})
@@ -180,6 +192,32 @@ export const postgisExtension = Prisma.defineExtension({
       return results;
     },
 
+    async getManyInvestigationsWithGeometry(
+      this: any,
+      validatedPageSize: number,
+      skip: number,
+    ): Promise<investigation[]> {
+      const queryString = `
+        SELECT
+          investigation_guid,
+          investigation_description,
+          owned_by_agency_ref,
+          investigation_status,
+          investigation_opened_utc_timestamp,
+          create_user_id,
+          create_utc_timestamp,
+          update_user_id,
+          update_utc_timestamp,
+          public.ST_AsGeoJSON(location_geometry_point)::json AS location_geometry_point
+        FROM investigation.investigation
+        ORDER BY investigation_opened_utc_timestamp DESC
+        LIMIT ${validatedPageSize}
+        OFFSET ${skip}
+      `;
+      const results = (await this.$queryRawUnsafe(queryString)) as investigation[];
+      return results;
+    },
+
     /**
      * Update investigation with PostGIS geometry support
      */
@@ -193,6 +231,8 @@ export const postgisExtension = Prisma.defineExtension({
         update_user_id?: string | null;
         update_utc_timestamp?: Date | null;
         location_geometry_point?: Point | null;
+        location_address?: string | null;
+        location_description?: string | null;
       }
     ): Promise<investigation> {
       const { location_geometry_point, ...rest } = data;
@@ -218,6 +258,14 @@ export const postgisExtension = Prisma.defineExtension({
           const escaped = rest.update_utc_timestamp ? `'${rest.update_utc_timestamp.toISOString()}'` : 'NULL';
           updates.push(`update_utc_timestamp = ${escaped}`);
         }
+        if (rest.location_address !== undefined) {
+          const escaped = rest.location_address ? `'${rest.location_address.replace(/'/g, "''")}'` : 'NULL';
+          updates.push(`location_address = ${escaped}`);
+        }
+        if (rest.location_description !== undefined) {
+          const escaped = rest.location_description ? `'${rest.location_description.replace(/'/g, "''")}'` : 'NULL';
+          updates.push(`location_description = ${escaped}`);
+        }
 
         if (location_geometry_point !== null) {
           updates.push(`location_geometry_point = public.ST_GeomFromGeoJSON('${JSON.stringify(location_geometry_point).replace(/'/g, "''")}')`);
@@ -239,6 +287,8 @@ export const postgisExtension = Prisma.defineExtension({
             create_utc_timestamp,
             update_user_id,
             update_utc_timestamp,
+            location_address,
+            location_description,
             public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
         `;
 

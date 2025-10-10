@@ -8,6 +8,8 @@ type Investigation {
   openedTimestamp: Date
   caseIdentifier: String
   locationGeometry: Point
+  locationAddress: String
+  locationDescription: String
 }
 
 input CreateInvestigationInput {
@@ -16,6 +18,8 @@ input CreateInvestigationInput {
   description: String
   investigationStatus: String
   locationGeometry: Point
+  locationAddress: String
+  locationDescription: String
 }
 
 input UpdateInvestigationInput {
@@ -23,6 +27,8 @@ input UpdateInvestigationInput {
   description: String
   investigationStatus: String
   locationGeometry: Point
+  locationAddress: String
+  locationDescription: String
 }
 
 input InvestigationFilters {

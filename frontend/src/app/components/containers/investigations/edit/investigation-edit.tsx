@@ -31,6 +31,8 @@ const CREATE_INVESTIGATION_MUTATION = gql`
         longDescription
       }
       leadAgency
+      locationAddress
+      locationDescription
       locationGeometry
     }
   }
@@ -47,6 +49,8 @@ const UPDATE_INVESTIGATION_MUTATION = gql`
         longDescription
       }
       leadAgency
+      locationAddress
+      locationDescription
       locationGeometry
     }
   }
@@ -65,6 +69,8 @@ const GET_INVESTIGATION = gql`
         longDescription
       }
       leadAgency
+      locationAddress
+      locationDescription
       locationGeometry
     }
     caseFileByActivityId(activityType: "INVSTGTN", activityIdentifier: $investigationGuid) {
@@ -125,6 +131,8 @@ const InvestigationEdit: FC = () => {
         investigationStatus: investigationData.getInvestigation.investigationStatus?.investigationStatusCode || "",
         leadAgency: investigationData.getInvestigation.leadAgency || "",
         description: investigationData.getInvestigation.description || "",
+        locationAddress: investigationData.getInvestigation.locationAddress || "",
+        locationDescription: investigationData.getInvestigation.locationDescription || "",
         locationGeometry: investigationData.getInvestigation.locationGeometry || null,
       };
     }
@@ -132,6 +140,8 @@ const InvestigationEdit: FC = () => {
       investigationStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
       leadAgency: getUserAgency(),
       description: "",
+      locationAddress: "",
+      locationDescription: "",
       locationGeometry: null,
     };
   }, [isEditMode, investigationData]);
@@ -144,6 +154,8 @@ const InvestigationEdit: FC = () => {
           leadAgency: value.leadAgency,
           investigationStatus: value.investigationStatus,
           description: value.description,
+          locationAddress: value.locationAddress,
+          locationDescription: value.locationDescription,
           locationGeometry: value.locationGeometry,
         };
 
@@ -157,6 +169,8 @@ const InvestigationEdit: FC = () => {
           leadAgency: value.leadAgency,
           description: value.description,
           investigationStatus: value.investigationStatus,
+          locationAddress: value.locationAddress,
+          locationDescription: value.locationDescription,
           locationGeometry: value.locationGeometry,
         };
 
@@ -236,7 +250,6 @@ const InvestigationEdit: FC = () => {
                 />
               )}
             />
-
             <FormField
               form={form}
               name="leadAgency"
@@ -260,7 +273,6 @@ const InvestigationEdit: FC = () => {
                 />
               )}
             />
-
             <FormField
               form={form}
               name="description"
@@ -275,6 +287,46 @@ const InvestigationEdit: FC = () => {
                   defaultValue={field.state.value}
                   onChange={(value: string) => field.handleChange(value)}
                   placeholderText="Enter investigation description..."
+                  maxLength={4000}
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
+                  disabled={isDisabled}
+                />
+              )}
+            />
+            <FormField
+              form={form}
+              name="locationAddress"
+              label="Location address"
+              // required
+              // validators={{ onChange: z.string().min(1, "Location address is required") }}
+              render={(field) => (
+                <ValidationTextArea
+                  id="locationAddress"
+                  className="comp-form-control comp-details-input"
+                  rows={1}
+                  defaultValue={field.state.value}
+                  onChange={(value: string) => field.handleChange(value)}
+                  placeholderText="Enter the address of the investigation..."
+                  maxLength={120}
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
+                  disabled={isDisabled}
+                />
+              )}
+            />
+            <FormField
+              form={form}
+              name="locationDescription"
+              label="Location description"
+              // required
+              // validators={{ onChange: z.string().min(1, "Location description is required") }}
+              render={(field) => (
+                <ValidationTextArea
+                  id="locationDescription"
+                  className="comp-form-control comp-details-input"
+                  rows={4}
+                  defaultValue={field.state.value}
+                  onChange={(value: string) => field.handleChange(value)}
+                  placeholderText="Enter a description of the location of this investigation..."
                   maxLength={4000}
                   errMsg={field.state.meta.errors?.[0]?.message || ""}
                   disabled={isDisabled}

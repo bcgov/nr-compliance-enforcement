@@ -16,6 +16,8 @@ export class Investigation {
   openedTimestamp: Date;
   caseIdentifier: string;
   locationGeometry?: Point;
+  locationAddress?: string;
+  locationDescription?: string;
 }
 
 @InputType()
@@ -66,6 +68,14 @@ export class CreateInvestigationInput {
   @Field(() => PointScalar, { nullable: true })
   @IsOptional()
   locationGeometry?: Point;
+
+  @Field(() => String)
+  @IsOptional()
+  locationDescription: string;
+  
+  @Field(() => String)
+  @IsOptional()
+  locationAddress: string;
 }
 
 @InputType()
@@ -82,6 +92,14 @@ export class UpdateInvestigationInput {
   @Field(() => PointScalar, { nullable: true })
   @IsOptional()
   locationGeometry?: Point;
+
+  @Field(() => String)
+  @IsOptional()
+  locationDescription: string;
+
+  @Field(() => String)
+  @IsOptional()
+  locationAddress: string;
 }
 
 export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
@@ -96,6 +114,14 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.description,
       mapFrom((src) => src.investigation_description),
+    ),
+    forMember(
+      (dest) => dest.locationDescription,
+      mapFrom((src) => src.location_description),
+    ),
+    forMember(
+      (dest) => dest.locationAddress,
+      mapFrom((src) => src.location_address),
     ),
     forMember(
       (dest) => dest.leadAgency,

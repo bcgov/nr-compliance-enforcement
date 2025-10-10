@@ -21,6 +21,8 @@ const GET_INVESTIGATION = gql`
         longDescription
       }
       leadAgency
+      locationAddress
+      locationDescription
       locationGeometry
     }
     caseFileByActivityId(activityType: "INVSTGTN", activityIdentifier: $investigationGuid) {
@@ -119,6 +121,16 @@ export const InvestigationDetails: FC = () => {
                         <p>{investigationData.description}</p>
                       </div>
                     </div>
+                  </div>
+                )}
+                {investigationData.locationAddress && (<div>
+                  <dt>Location/address</dt>
+                    <dd id="comp-details-location">{investigationData.locationAddress}</dd>
+                  </div>
+                )}
+                {investigationData.locationDescription && (<div>
+                  <dt>Location description</dt>
+                    <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
                   </div>
                 )}
                 {investigationData.locationGeometry && (
