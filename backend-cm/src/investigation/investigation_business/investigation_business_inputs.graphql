@@ -1,0 +1,11 @@
+type InvestigationBusiness {
+  businessGuid: String!
+  partyGuid: String!
+  businessReference: String
+  name: String!
+}
+
+input CreateInvestigationBusinessInput {
+  name: String!
+  businessReference: String
+}
