@@ -86,9 +86,6 @@ CREATE TABLE
         FOREIGN KEY (actor_entity_type_code) REFERENCES shared.event_entity_type_code (event_entity_type_code)
     );
 
-ALTER TABLE ONLY shared.event
-    ADD CONSTRAINT "PK_event" PRIMARY KEY (event_guid);
-
 COMMENT ON TABLE shared.event IS 'Stores activity events in the system, recording what action was performed, who performed it, and what entity was affected, with support for optional source and additional content data.';
 
 COMMENT ON COLUMN shared.event.event_guid IS 'Primary key: System generated unique identifier for an event.';
