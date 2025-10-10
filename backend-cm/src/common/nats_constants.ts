@@ -1,20 +1,21 @@
-export const NATS_DURABLE_EVENTS = "nats_durable_events";
-
+const eventsStreamName = process.env.EVENT_STREAM_NAME;
 export const STREAMS = {
-  EVENTS: "events",
+  EVENTS: eventsStreamName,
 };
 
 export const STREAM_TOPICS = {
-  CASE_CREATED: "event.case.created",
-  CASE_CLOSED: "event.case.closed",
-  COMPLAINT_ADDED_TO_CASE: "event.complaint.added_to_case",
-  COMPLAINT_REMOVED_FROM_CASE: "event.complaint.removed_from_case",
-  INVESTIGATION_CREATED: "event.investigation.created",
-  INVESTIGATION_CLOSED: "event.investigation.closed",
-  INSPECTION_CREATED: "event.inspection.created",
-  INSPECTION_CLOSED: "event.inspection.closed",
+  CASE_CREATED: `${eventsStreamName}.case.created`,
+  CASE_CLOSED: `${eventsStreamName}.case.closed`,
+  COMPLAINT_ADDED_TO_CASE: `${eventsStreamName}.complaint.added_to_case`,
+  COMPLAINT_REMOVED_FROM_CASE: `${eventsStreamName}.complaint.removed_from_case`,
+  INVESTIGATION_CREATED: `${eventsStreamName}.investigation.created`,
+  INVESTIGATION_CLOSED: `${eventsStreamName}.investigation.closed`,
+  INSPECTION_CREATED: `${eventsStreamName}.inspection.created`,
+  INSPECTION_CLOSED: `${eventsStreamName}.inspection.closed`,
 };
 
 export type StreamTopics = (typeof STREAM_TOPICS)[keyof typeof STREAM_TOPICS];
 
 export type EventVerbTypes = "OPENED" | "CLOSED" | "ADDED" | "REMOVED";
+
+export type EventEntityTypeCodes = "COMPLAINT" | "INVESTIGATION" | "INSPECTION" | "CASE";

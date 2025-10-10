@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { AckPolicy, connect, JetStreamManager, NatsConnection, StorageType, StringCodec } from "nats";
-import { NATS_DURABLE_EVENTS, STREAMS, STREAM_TOPICS } from "../common/constants";
+import { STREAMS, STREAM_TOPICS } from "../common/constants";
 import { GraphQLClient } from "graphql-request";
 
 const CREATE_EVENT_MUTATION = `
@@ -28,9 +28,7 @@ export class EventProcessorService implements OnModuleInit {
   private natsConnection: NatsConnection | null = null;
   private jsm: JetStreamManager | null = null;
   private graphqlClient: GraphQLClient;
-  private readonly _gqlHeaders = {
-    "x-api-key": `${process.env.CASE_API_KEY}`,
-  };
+  private eventStreamName = `${process.env.EVENT_STREAM_NAME}`;
 
   constructor() {
     const graphqlUrl = `${process.env.CASE_MANAGEMENT_API_URL}`;
@@ -121,7 +119,7 @@ export class EventProcessorService implements OnModuleInit {
       try {
         await this.jsm.consumers.add(STREAMS.EVENTS, {
           ack_policy: AckPolicy.Explicit,
-          durable_name: NATS_DURABLE_EVENTS,
+          durable_name: this.eventStreamName,
         });
         this.logger.log("Consumer created successfully");
       } catch (error) {
@@ -148,7 +146,7 @@ export class EventProcessorService implements OnModuleInit {
     try {
       const sc = StringCodec();
       this.logger.log(`Event processor service subscribing to stream: ${STREAMS.EVENTS}`);
-      const consumer = await this.natsConnection.jetstream().consumers.get(STREAMS.EVENTS, NATS_DURABLE_EVENTS);
+      const consumer = await this.natsConnection.jetstream().consumers.get(STREAMS.EVENTS, this.eventStreamName);
       const iter = await consumer.consume({ max_messages: 1 });
 
       this.logger.log("Subscription started, waiting for messages...");
