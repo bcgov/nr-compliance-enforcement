@@ -1,0 +1,41 @@
+FROM node:19-bullseye
+
+# Install system dependencies required by Playwright WebKit
+# plus dnsutils for network debugging
+RUN apt-get update && apt-get install -y \
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libdrm2 \
+    libxkbcommon0 \
+    libgtk-3-0 \
+    libgbm1 \
+    libasound2 \
+    libxrandr2 \
+    libpangocairo-1.0-0 \
+    libatk1.0-0 \
+    libcairo-gobject2 \
+    libgdk-pixbuf2.0-0 \
+    dnsutils \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY . .
+
+RUN npm ci --ignore-scripts
+
+# Create browser cache directory
+RUN mkdir -p /app/playwright-browsers
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
+# Install WebKit browser
+RUN PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers npx playwright install --with-deps
+
+# Create test-results directory with OpenShift-compatible permissions
+RUN mkdir -p /app/test-results && \
+    chgrp -R 0 /app && \
+    chmod -R g+rwX /app
+
+# Set environment variable for runtime
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
+
+
+ENTRYPOINT ["npx", "playwright", "test"]
