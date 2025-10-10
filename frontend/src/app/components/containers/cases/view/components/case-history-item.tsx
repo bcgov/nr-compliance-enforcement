@@ -45,7 +45,7 @@ const eventDescriptionMap: Record<string, Record<string, Record<string, eventDes
     INSPECTION: {
       ADDED: (sourceId) => (
         <>
-          started inspection <Link to={`/inspection/${sourceId}`}>{sourceId}</Link> to the case
+          added inspection <Link to={`/inspection/${sourceId}`}>{sourceId}</Link> to the case
         </>
       ),
       REMOVED: (sourceId) => (

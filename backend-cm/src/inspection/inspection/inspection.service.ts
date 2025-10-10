@@ -15,6 +15,9 @@ import { PageInfo } from "../../shared/case_file/dto/case_file";
 import { CaseFileService } from "../../shared/case_file/case_file.service";
 import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { UserService } from "../../common/user.service";
+import { EventCreateInput } from "../../shared/event/dto/event";
+import { EventPublisherService } from "../../event-publisher/event-publisher.service";
+import { STREAM_TOPICS } from "src/common/nats_constants";
 
 @Injectable()
 export class InspectionService {
@@ -25,6 +28,7 @@ export class InspectionService {
     private readonly caseFileService: CaseFileService,
     private readonly shared: SharedPrismaService,
     private readonly user: UserService,
+    private readonly eventPublisher: EventPublisherService,
   ) {}
 
   private readonly logger = new Logger(InspectionService.name);
@@ -234,6 +238,16 @@ export class InspectionService {
     }
 
     try {
+      const event: EventCreateInput = {
+        eventVerbTypeCode: "ADDED",
+        sourceId: inspection.inspection_guid,
+        sourceEntityTypeCode: "INSPECTION",
+        actorId: this.user.getUserGuid(),
+        actorEntityTypeCode: "USER",
+        targetId: input.caseIdentifier,
+        targetEntityTypeCode: "CASE",
+      };
+      this.eventPublisher.publishEvent(event, STREAM_TOPICS.INSPECTION_CREATED);
       return this.mapper.map<inspection, Inspection>(inspection as inspection, "inspection", "Inspection");
     } catch (error) {
       this.logger.error("Error mapping inspection:", error);

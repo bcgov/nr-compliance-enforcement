@@ -1,10 +1,25 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { AckPolicy, connect, JetStreamManager, NatsConnection, StorageType, StringCodec } from "nats";
 import { NATS_DURABLE_EVENTS, STREAMS, STREAM_TOPICS } from "../common/constants";
+import { GraphQLClient } from "graphql-request";
 
-interface EventData {
-  id?: string;
-  [key: string]: any;
+const CREATE_EVENT_MUTATION = `
+  mutation CreateEvent($input: EventCreateInput!) {
+    createEvent(input: $input) {
+      eventGuid
+    }
+  }
+`;
+
+interface EventCreateInput {
+  eventVerbTypeCode: string;
+  sourceId?: string;
+  sourceEntityTypeCode?: string;
+  actorId: string;
+  actorEntityTypeCode: string;
+  targetId: string;
+  targetEntityTypeCode: string;
+  content?: any;
 }
 
 @Injectable()
@@ -12,17 +27,28 @@ export class EventProcessorService implements OnModuleInit {
   private readonly logger = new Logger(EventProcessorService.name);
   private natsConnection: NatsConnection | null = null;
   private jsm: JetStreamManager | null = null;
+  private graphqlClient: GraphQLClient;
+  private readonly _gqlHeaders = {
+    "x-api-key": `${process.env.CASE_API_KEY}`,
+  };
 
-  constructor() {}
+  constructor() {
+    const graphqlUrl = `${process.env.CASE_MANAGEMENT_API_URL}`;
+    this.graphqlClient = new GraphQLClient(graphqlUrl, {
+      headers: {
+        "x-api-key": process.env.CASE_API_KEY || "",
+        Authorization: process.env.CASE_API_TOKEN ? `Bearer ${process.env.CASE_API_TOKEN}` : "",
+      },
+    });
+    this.logger.log(`GraphQL client initialized with URL: ${graphqlUrl}`);
+  }
 
   async onModuleInit() {
     try {
       this.logger.log("Initializing EventProcessorService...");
 
-      // Use default NATS connection if NATS_HOST is not set
-      const natsHost = process.env.NATS_HOST || "nats://nats:4222";
+      const natsHost = process.env.NATS_HOST;
       this.logger.log(`Connecting to NATS at: ${natsHost}`);
-
       this.natsConnection = await connect({ servers: natsHost, waitOnFirstConnect: true });
       this.jsm = await this.natsConnection.jetstreamManager();
       this.logger.log("Connected to NATS successfully");
@@ -132,22 +158,19 @@ export class EventProcessorService implements OnModuleInit {
         try {
           this.logger.debug(`Received message on subject: ${message.subject}`);
 
-          if (message.subject === STREAM_TOPICS.CASE_CREATED) {
-            await this.handleCaseCreated(message, JSON.parse(decodedData));
-          } else if (message.subject === STREAM_TOPICS.CASE_CLOSED) {
-            await this.handleCaseClosed(message, JSON.parse(decodedData));
-          } else if (message.subject === STREAM_TOPICS.COMPLAINT_ADDED_TO_CASE) {
-            await this.handleComplaintAddedToCase(message, JSON.parse(decodedData));
-          } else if (message.subject === STREAM_TOPICS.COMPLAINT_REMOVED_FROM_CASE) {
-            await this.handleComplaintRemovedFromCase(message, JSON.parse(decodedData));
-          } else if (message.subject === STREAM_TOPICS.INVESTIGATION_CREATED) {
-            await this.handleInvestigationCreated(message, JSON.parse(decodedData));
-          } else if (message.subject === STREAM_TOPICS.INVESTIGATION_CLOSED) {
-            await this.handleInvestigationClosed(message, JSON.parse(decodedData));
-          } else if (message.subject === STREAM_TOPICS.INSPECTION_CREATED) {
-            await this.handleInspectionCreated(message, JSON.parse(decodedData));
-          } else if (message.subject === STREAM_TOPICS.INSPECTION_CLOSED) {
-            await this.handleInspectionClosed(message, JSON.parse(decodedData));
+          if (Object.values(STREAM_TOPICS).includes(message.subject)) {
+            // Parse the decoded data as EventCreateInput
+            const eventData: EventCreateInput = JSON.parse(decodedData);
+
+            try {
+              const data: any = await this.graphqlClient.request(CREATE_EVENT_MUTATION, { input: eventData });
+              const eventId = data?.createEvent?.eventGuid ?? "";
+              this.logger.debug(`Successfully created event ${eventId} for subject: ${message.subject}`);
+              await message.ackAck(); // Acknowledge successful processing
+            } catch (graphqlError) {
+              this.logger.error(`GraphQL error creating event: ${graphqlError.message}`, graphqlError.stack);
+              throw graphqlError; // Re-throw to trigger the catch block below
+            }
           } else {
             this.logger.warn(`Unknown message subject: ${message.subject}`);
             await message.ackAck(); // Acknowledge unknown messages to prevent reprocessing
@@ -167,53 +190,5 @@ export class EventProcessorService implements OnModuleInit {
         });
       }, 5000);
     }
-  }
-
-  private async handleCaseCreated(message: any, eventData: EventData) {
-    console.log(`CASE CREATED: ${JSON.stringify(eventData)}`);
-    this.logger.debug(`Processing case created: ${eventData?.id || "unknown"}`);
-    await message.ackAck();
-  }
-
-  private async handleCaseClosed(message: any, eventData: EventData) {
-    console.log(`CASE CLOSED: ${JSON.stringify(eventData)}`);
-    this.logger.debug(`Processing case closed: ${eventData?.id || "unknown"}`);
-    await message.ackAck();
-  }
-
-  private async handleComplaintAddedToCase(message: any, eventData: EventData) {
-    console.log(`COMPLAINT ADDED TO CASE: ${JSON.stringify(eventData)}`);
-    this.logger.debug(`Processing complaint added to case: ${eventData?.id || "unknown"}`);
-    await message.ackAck();
-  }
-
-  private async handleComplaintRemovedFromCase(message: any, eventData: EventData) {
-    console.log(`COMPLAINT REMOVED FROM CASE: ${JSON.stringify(eventData)}`);
-    this.logger.debug(`Processing complaint removed from case: ${eventData?.id || "unknown"}`);
-    await message.ackAck();
-  }
-
-  private async handleInvestigationCreated(message: any, eventData: EventData) {
-    console.log(`INVESTIGATION CREATED: ${JSON.stringify(eventData)}`);
-    this.logger.debug(`Processing investigation created: ${eventData?.id || "unknown"}`);
-    await message.ackAck();
-  }
-
-  private async handleInvestigationClosed(message: any, eventData: EventData) {
-    console.log(`INVESTIGATION CLOSED: ${JSON.stringify(eventData)}`);
-    this.logger.debug(`Processing investigation closed: ${eventData?.id || "unknown"}`);
-    await message.ackAck();
-  }
-
-  private async handleInspectionCreated(message: any, eventData: EventData) {
-    console.log(`INSPECTION CREATED: ${JSON.stringify(eventData)}`);
-    this.logger.debug(`Processing inspection created: ${eventData?.id || "unknown"}`);
-    await message.ackAck();
-  }
-
-  private async handleInspectionClosed(message: any, eventData: EventData) {
-    console.log(`INSPECTION CLOSED: ${JSON.stringify(eventData)}`);
-    this.logger.debug(`Processing inspection closed: ${eventData?.id || "unknown"}`);
-    await message.ackAck();
   }
 }
