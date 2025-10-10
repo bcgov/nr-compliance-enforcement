@@ -73,6 +73,7 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
   });
 
   const handleSearchPartyChange = (selected: Party) => {
+    setErrorMessage("");
     setSelectedParty(selected);
   };
 
