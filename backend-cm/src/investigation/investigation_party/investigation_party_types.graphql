@@ -1,5 +1,5 @@
 type InvestigationParty {
-  investigationPartyGuid: String!
+  partyIdentifier: String!
   partyTypeCode: String!
   investigationGuid: String!
   partyReference: String

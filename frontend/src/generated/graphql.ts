@@ -612,10 +612,10 @@ export type Investigation = {
 
 export type InvestigationBusiness = {
   __typename?: 'InvestigationBusiness';
+  businessGuid: Scalars['String']['output'];
   businessReference?: Maybe<Scalars['String']['output']>;
-  investigationBusinessGuid: Scalars['String']['output'];
-  investigationPartyGuid: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  partyGuid: Scalars['String']['output'];
 };
 
 export type InvestigationFilters = {
@@ -632,7 +632,7 @@ export type InvestigationParty = {
   __typename?: 'InvestigationParty';
   business?: Maybe<InvestigationBusiness>;
   investigationGuid: Scalars['String']['output'];
-  investigationPartyGuid: Scalars['String']['output'];
+  partyIdentifier: Scalars['String']['output'];
   partyReference?: Maybe<Scalars['String']['output']>;
   partyTypeCode: Scalars['String']['output'];
   person?: Maybe<InvestigationPerson>;
@@ -641,11 +641,11 @@ export type InvestigationParty = {
 export type InvestigationPerson = {
   __typename?: 'InvestigationPerson';
   firstName: Scalars['String']['output'];
-  investigationPartyGuid: Scalars['String']['output'];
-  investigationPersonGuid: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
   middleName?: Maybe<Scalars['String']['output']>;
   middleName2?: Maybe<Scalars['String']['output']>;
+  partyGuid: Scalars['String']['output'];
+  personGuid: Scalars['String']['output'];
   personReference?: Maybe<Scalars['String']['output']>;
 };
 

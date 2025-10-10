@@ -27,7 +27,7 @@ const RecordsList: React.FC<Props> = ({ companies, people }) => {
               <ListGroup variant="flush">
                 {people.map((party) => (
                   <ListGroup.Item
-                    key={party.person?.investigationPersonGuid}
+                    key={party.person?.personGuid}
                     className="d-flex justify-content-between align-items-center"
                   >
                     <div>
@@ -51,7 +51,7 @@ const RecordsList: React.FC<Props> = ({ companies, people }) => {
               <ListGroup variant="flush">
                 {companies.map((party) => (
                   <ListGroup.Item
-                    key={party.business?.investigationBusinessGuid}
+                    key={party.business?.businessGuid}
                     className="d-flex justify-content-between align-items-center"
                   >
                     <div>

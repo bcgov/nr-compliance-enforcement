@@ -1,6 +1,6 @@
 type InvestigationBusiness {
-  investigationBusinessGuid: String!
-  investigationPartyGuid: String!
+  businessGuid: String!
+  partyGuid: String!
   businessReference: String
   name: String!
 }

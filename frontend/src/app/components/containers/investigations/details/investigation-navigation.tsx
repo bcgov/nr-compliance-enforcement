@@ -40,7 +40,7 @@ export const InvestigationTabs: FC = () => {
   };
 
   return (
-    <Nav className="nav nav-pills investigation-nav-pills">
+    <Nav className="nav nav-pills investigation-nav-pills mb-3">
       {Object.entries(INVESTIGATION_TAB_ITEMS).map(([key, label]) => {
         return (
           <Nav.Item
@@ -48,7 +48,7 @@ export const InvestigationTabs: FC = () => {
             key={`${key}-tab-item`}
           >
             <Nav.Link
-              className={`nav-link investigation-nav-link ${key === activeTab ? "active" : "inactive"}`}
+              className={`nav-link me-4 investigation-nav-link ${key === activeTab ? "active" : "inactive"}`}
               id={key}
               onClick={() => handleTabClick(key)}
             >

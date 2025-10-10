@@ -9,15 +9,16 @@ import {
 } from "../../investigation_person/dto/investigation_person";
 import { investigation_party } from "../../../../prisma/investigation/generated/investigation_party";
 import { Field, InputType } from "@nestjs/graphql";
+import { PartyDto } from "../../../common/party";
 
-export class InvestigationParty {
-  investigationPartyGuid: string;
+export class InvestigationParty implements PartyDto {
+  partyIdentifier: string;
   partyTypeCode: string;
-  investigationGuid: string;
-  partyReference?: string;
   person?: InvestigationPerson;
   business?: InvestigationBusiness;
   isActive: boolean;
+  investigationGuid: string;
+  partyReference?: string;
 }
 
 @InputType()
@@ -41,7 +42,7 @@ export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
     "investigation_party",
     "InvestigationParty",
     forMember(
-      (dest) => dest.investigationPartyGuid,
+      (dest) => dest.partyIdentifier,
       mapFrom((src) => src.investigation_party_guid),
     ),
     forMember(

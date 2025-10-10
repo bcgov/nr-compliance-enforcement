@@ -1,10 +1,11 @@
 import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import { investigation_person } from "../../../../prisma/investigation/generated/investigation_person";
 import { Field, InputType } from "@nestjs/graphql";
+import { PersonDto } from "../../../common/party";
 
-export class InvestigationPerson {
-  investigationPersonGuid: string;
-  investigationPartyGuid: string;
+export class InvestigationPerson implements PersonDto {
+  personGuid: string;
+  partyGuid: string;
   personReference?: string;
   firstName: string;
   middleName?: string;
@@ -37,11 +38,11 @@ export const mapPrismaPersonToInvestigationPerson = (mapper: Mapper) => {
     "investigation_person",
     "InvestigationPerson",
     forMember(
-      (dest) => dest.investigationPersonGuid,
+      (dest) => dest.personGuid,
       mapFrom((src) => src.investigation_person_guid),
     ),
     forMember(
-      (dest) => dest.investigationPartyGuid,
+      (dest) => dest.partyGuid,
       mapFrom((src) => src.investigation_party_guid),
     ),
     forMember(

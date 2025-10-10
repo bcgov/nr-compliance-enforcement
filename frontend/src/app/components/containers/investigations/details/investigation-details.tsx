@@ -28,11 +28,11 @@ const GET_INVESTIGATION = gql`
         person {
           firstName
           lastName
-          investigationPersonGuid
+          personGuid
         }
         business {
           name
-          investigationBusinessGuid
+          businessGuid
         }
       }
       leadAgency

@@ -1,6 +1,6 @@
 type InvestigationPerson {
-  investigationPersonGuid: String!
-  investigationPartyGuid: String!
+  personGuid: String!
+  partyGuid: String!
   personReference: String
   firstName: String!
   middleName: String
