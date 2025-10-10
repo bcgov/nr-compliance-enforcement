@@ -14,9 +14,8 @@ interface Props {
 
 export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complaintType }) => {
   const navigate = useNavigate();
-  const { officerAssigned, natureOfComplaint, species, violationType, loggedDate, status, girType } = useAppSelector(
-    selectComplaintHeader(complaintType),
-  );
+  const { officerAssigned, natureOfComplaint, species, violationType, loggedDate, status, girType, complaintAgency } =
+    useAppSelector(selectComplaintHeader(complaintType));
 
   const { violationInProgress, location, area, ownedBy } = useAppSelector((state) =>
     selectComplaintDetails(state, complaintType),
@@ -35,7 +34,21 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
       <div>
         <div className="comp-map-popup-header">
           <div className="comp-map-popup-header-title">
-            <h2>{complaint_identifier}</h2>
+            {complaintType === "HWCR" && (
+              <h2 className="mb-0">
+                <span className="comp-box-species-type">{species}</span> • <span>{natureOfComplaint}</span>
+              </h2>
+            )}
+            {complaintType === "ERS" && (
+              <h2 className="mb-0">
+                {violationType}
+                {inProgressInd ? " • " + inProgressInd : ""}
+              </h2>
+            )}
+            {complaintType === "GIR" && <h2 className="mb-0">{girType}</h2>}
+          </div>
+          <div className="comp-map-popup-header-meta">
+            <h3>{complaint_identifier}</h3>
             <Badge
               id="comp-details-status-text-id"
               className={`badge ${applyStatusClass(derivedStatus)}`}
@@ -43,44 +56,41 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
               {derivedStatus}
             </Badge>
           </div>
-          <div className="comp-map-popup-header-meta">
-            {complaintType === "HWCR" && (
-              <div>
-                <span className="comp-box-species-type">{species}</span> • <span>{natureOfComplaint}</span>
-              </div>
-            )}
-            {complaintType === "ERS" && (
-              <div>
-                {violationType} • {inProgressInd}
-              </div>
-            )}
-            {complaintType === "GIR" && <div>{girType}</div>}
-          </div>
         </div>
         <div className="comp-map-popup-details">
           <dl>
             <div>
-              <dt className="comp-summary-popup-details">Date logged</dt>
+              <dt className="comp-summary-popup-details">
+                <i className="bi bi-calendar-fill" /> Logged
+              </dt>
               <dd>{formatDate(loggedDate)}</dd>
             </div>
             <div>
-              <dt className="comp-summary-popup-details">Officer assigned</dt>
-              <dd id="comp-details-assigned-officer-name-text-id">{officerAssigned}</dd>
+              <dt className="comp-summary-popup-details">
+                <i className="bi bi-person-fill" /> Officer
+              </dt>
+              <dd id="comp-details-assigned-officer-name-text-id">
+                <i className="bi bi-exclamation-triangle-fill text-warning"></i>{" "}
+                <strong>
+                  {officerAssigned} ({complaintAgency})
+                </strong>
+              </dd>
             </div>
             <div>
-              <dt className="comp-summary-popup-details">Community</dt>
-              <dd id="popup-community-label">{area}</dd>
-            </div>
-            <div>
-              <dt className="comp-summary-popup-details">Location</dt>
-              <dd>{location}</dd>
+              <dt className="comp-summary-popup-details">
+                <i className="bi bi-geo-alt-fill" /> Location
+              </dt>
+              <dd className="comp-summary-popup-location">
+                {location}
+                {area && ` (${area})`}
+              </dd>
             </div>
           </dl>
           <Button
             as="a"
-            variant="primary"
+            variant="outline-primary"
             size="sm"
-            className="comp-map-popup-details-btn"
+            className="comp-map-popup-details-btn w-100"
             id="view-complaint-details-button-id"
             onClick={() => navigate(`/complaint/${complaintType}/${complaint_identifier}`)}
           >
