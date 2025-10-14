@@ -119,8 +119,8 @@ export type CaseFile = {
   caseIdentifier?: Maybe<Scalars['String']['output']>;
   caseStatus?: Maybe<CaseStatusCode>;
   description?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
   leadAgency?: Maybe<AgencyCode>;
+  name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['Date']['output']>;
 };
 
@@ -143,8 +143,8 @@ export type CaseFileCreateInput = {
   activityType?: InputMaybe<Scalars['String']['input']>;
   caseStatus: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
   leadAgency: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type CaseFileFilters = {
@@ -166,8 +166,8 @@ export type CaseFileResult = {
 export type CaseFileUpdateInput = {
   caseStatus?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CaseLocationCode = {
@@ -265,9 +265,9 @@ export type CreateEquipmentInput = {
 export type CreateInspectionInput = {
   caseIdentifier: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
   inspectionStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type CreateInvestigationBusinessInput = {
@@ -278,9 +278,9 @@ export type CreateInvestigationBusinessInput = {
 export type CreateInvestigationInput = {
   caseIdentifier: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type CreateInvestigationPartyInput = {
@@ -571,12 +571,11 @@ export type InactionJustificationType = {
 
 export type Inspection = {
   __typename?: 'Inspection';
-  caseIdentifier?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
   inspectionGuid?: Maybe<Scalars['String']['output']>;
   inspectionStatus?: Maybe<InspectionStatusCode>;
   leadAgency?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['Date']['output']>;
 };
 
@@ -607,12 +606,11 @@ export type InspectionStatusCode = {
 
 export type Investigation = {
   __typename?: 'Investigation';
-  caseIdentifier?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
   investigationStatus?: Maybe<InvestigationStatusCode>;
   leadAgency?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['Date']['output']>;
   parties?: Maybe<Array<Maybe<InvestigationParty>>>;
 };
@@ -1108,6 +1106,7 @@ export type Query = {
   caseFile?: Maybe<CaseFile>;
   caseFileByActivityId: CaseFile;
   caseFiles: Array<CaseFile>;
+  caseFilesByActivityIds: Array<CaseFile>;
   caseLocationCodes: Array<Maybe<CaseLocationCode>>;
   configurationCodes: Array<Maybe<Configuration>>;
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
@@ -1159,7 +1158,6 @@ export type Query = {
 
 export type QueryallCaseFilesByActivityIdArgs = {
   activityIdentifier: Scalars['String']['input'];
-  activityType: Scalars['String']['input'];
 };
 
 
@@ -1170,12 +1168,17 @@ export type QuerycaseFileArgs = {
 
 export type QuerycaseFileByActivityIdArgs = {
   activityIdentifier: Scalars['String']['input'];
-  activityType: Scalars['String']['input'];
 };
 
 
 export type QuerycaseFilesArgs = {
   caseIdentifiers: Array<Scalars['String']['input']>;
+};
+
+
+export type QuerycaseFilesByActivityIdsArgs = {
+  activityIdentifiers: Array<Scalars['String']['input']>;
+  activityType: Scalars['String']['input'];
 };
 
 
@@ -1408,16 +1411,16 @@ export type UpdateEquipmentInput = {
 
 export type UpdateInspectionInput = {
   description?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
   inspectionStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateInvestigationInput = {
   description?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateNoteInput = {

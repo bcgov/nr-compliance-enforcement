@@ -104,7 +104,6 @@ const CaseEdit: FC = () => {
   });
 
   const createCaseMutation = useGraphQLMutation(CREATE_CASE_MUTATION, {
-    invalidateQueries: ["searchCaseFiles"],
     onSuccess: (data: any) => {
       ToggleSuccess("Case created successfully");
       navigate(`/case/${data.createCaseFile.caseIdentifier}`);
@@ -116,14 +115,6 @@ const CaseEdit: FC = () => {
   });
 
   const updateCaseMutation = useGraphQLMutation(UPDATE_CASE_MUTATION, {
-    invalidateQueries: [
-      ["caseFile", id], 
-      "searchCaseFiles", 
-      "searchInspections", 
-      "searchInvestigations",
-      "getInspections",
-      "getInvestigations"
-    ],
     onSuccess: (data: any) => {
       ToggleSuccess("Case updated successfully");
       navigate(`/case/${id}`);

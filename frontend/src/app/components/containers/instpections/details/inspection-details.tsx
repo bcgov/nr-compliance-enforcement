@@ -5,7 +5,7 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Inspection } from "@/generated/graphql";
 import { InspectionHeader } from "@/app/components/containers/instpections/details/inspection-header";
 
-const GET_INspection = gql`
+const GET_INSPECTION = gql`
   query GetInspection($inspectionGuid: String!) {
     getInspection(inspectionGuid: $inspectionGuid) {
       __typename
@@ -20,7 +20,7 @@ const GET_INspection = gql`
       }
       leadAgency
     }
-    caseFileByActivityId(activityType: "INSPECTION", activityIdentifier: $inspectionGuid) {
+    caseFileByActivityId(activityIdentifier: $inspectionGuid) {
       caseIdentifier
       name
     }
@@ -36,7 +36,7 @@ export const InspectionDetails: FC = () => {
   const { data, isLoading } = useGraphQLQuery<{
     getInspection: Inspection;
     caseFileByActivityId: CaseFile;
-  }>(GET_INspection, {
+  }>(GET_INSPECTION, {
     queryKey: ["getInspection", inspectionGuid],
     variables: { inspectionGuid: inspectionGuid },
     enabled: !!inspectionGuid, // Only refresh query if id is provided

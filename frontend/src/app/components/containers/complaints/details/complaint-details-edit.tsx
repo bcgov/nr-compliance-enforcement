@@ -86,7 +86,7 @@ import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 const GET_ASSOCIATED_CASE_FILES = gql`
   query allCaseFilesByActivityId($activityIdentifier: String!) {
-    allCaseFilesByActivityId(activityType: "COMP", activityIdentifier: $activityIdentifier) {
+    allCaseFilesByActivityId(activityIdentifier: $activityIdentifier) {
       __typename
       caseIdentifier
       description

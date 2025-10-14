@@ -64,7 +64,7 @@ const GET_INspecTION = gql`
       }
       leadAgency
     }
-    caseFileByActivityId(activityType: "INSPECTION", activityIdentifier: $inspectionGuid) {
+    caseFileByActivityId(activityIdentifier: $inspectionGuid) {
       caseIdentifier
     }
   }
@@ -87,7 +87,6 @@ const InspectionEdit: FC = () => {
   });
 
   const createInspectionMutation = useGraphQLMutation(CREATE_INSPECTION_MUTATION, {
-    invalidateQueries: ["searchInspections", ["caseFile", caseIdentifier]],
     onSuccess: (data: any) => {
       ToggleSuccess("Inspection created successfully");
       navigate(`/inspection/${data.createInspection.inspectionGuid}`);
@@ -99,7 +98,6 @@ const InspectionEdit: FC = () => {
   });
 
   const updateInspectionMutation = useGraphQLMutation(UPDATE_INspecTION_MUTATION, {
-    invalidateQueries: [["getInspection", id], ["getInspections", id], "searchInspections"],
     onSuccess: (data: any) => {
       ToggleSuccess("Inspection updated successfully");
       navigate(`/inspection/${id}`);
