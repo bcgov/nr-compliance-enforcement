@@ -2,7 +2,7 @@ import { FC } from "react";
 import { selectComplaintDetails, selectComplaintHeader } from "@store/reducers/complaints";
 import { useAppSelector } from "@hooks/hooks";
 import { applyStatusClass, formatDate } from "@common/methods";
-import { Badge, Button } from "react-bootstrap";
+import { Badge, Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Popup } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import { getUserAgency } from "@/app/service/user-service";
@@ -21,6 +21,9 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
     selectComplaintDetails(state, complaintType),
   );
 
+  const agencyCodes = useAppSelector((state) => state.codeTables.agency);
+  const agencyName = agencyCodes?.find(({ agency }) => agency === complaintAgency)?.longDescription ?? "Unknown Agency";
+
   const inProgressInd = violationInProgress ? "In Progress" : "";
 
   const userAgency = getUserAgency();
@@ -31,8 +34,8 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
       keepInView={true}
       className="comp-map-popup"
     >
-      <div>
-        <div className="comp-map-popup-header">
+      <div className="ms-2 me-2">
+        <div className="comp-map-popup-header mb-2 pt-2">
           <div className="comp-map-popup-header-title">
             {complaintType === "HWCR" && (
               <h2 className="mb-0">
@@ -63,7 +66,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
               <dt className="comp-summary-popup-details">
                 <i className="bi bi-calendar-fill" /> Logged
               </dt>
-              <dd>{formatDate(loggedDate)}</dd>
+              <dd>{formatDate(loggedDate, true)}</dd>
             </div>
             <div>
               <dt className="comp-summary-popup-details">
@@ -72,7 +75,20 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
               <dd id="comp-details-assigned-officer-name-text-id">
                 <i className="bi bi-exclamation-triangle-fill text-warning"></i>{" "}
                 <strong>
-                  {officerAssigned} ({complaintAgency})
+                  {officerAssigned}{" "}
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip
+                        id="map-overlay-trigger"
+                        className="comp-tooltip comp-tooltip-top"
+                      >
+                        {agencyName}
+                      </Tooltip>
+                    }
+                  >
+                    <span className="comp-tooltip-hint">({complaintAgency})</span>
+                  </OverlayTrigger>
                 </strong>
               </dd>
             </div>
@@ -81,8 +97,8 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
                 <i className="bi bi-geo-alt-fill" /> Location
               </dt>
               <dd className="comp-summary-popup-location">
-                {location}
-                {area && ` (${area})`}
+                {location} <br></br>
+                {area && <em>{area}</em>}
               </dd>
             </div>
           </dl>
@@ -94,7 +110,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             id="view-complaint-details-button-id"
             onClick={() => navigate(`/complaint/${complaintType}/${complaint_identifier}`)}
           >
-            View details
+            View complaint details
           </Button>
         </div>
       </div>

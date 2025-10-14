@@ -18,6 +18,7 @@ import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complai
 import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 import { ToggleError } from "./toast";
 import utmObj from "utm-latlng";
+import { formatDistanceToNow } from "date-fns";
 
 type Coordinate = number[] | string[] | undefined;
 
@@ -137,19 +138,26 @@ export const getFileExtension = (filename: string) => {
   return filename.slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2).toLowerCase();
 };
 
-export const formatDate = (input: string | undefined): string => {
+export const formatDate = (input: string | undefined, includeRelative: boolean = false): string => {
   if (!input) {
     return "";
   }
 
   try {
-    const parsedDate = Date.parse(input);
+    const date = new Date(input);
 
-    if (isNaN(parsedDate)) {
+    if (isNaN(date.getTime())) {
       throw new Error("Invalid date format");
     }
 
-    return format(parsedDate, "yyyy-MM-dd");
+    const formattedDate = format(date, "yyyy-MM-dd");
+
+    if (includeRelative) {
+      const relative = formatDistanceToNow(date, { addSuffix: true });
+      return `${formattedDate} (${relative})`;
+    }
+
+    return formattedDate;
   } catch (error) {
     console.error("Error formatting date:", error);
     return "";
