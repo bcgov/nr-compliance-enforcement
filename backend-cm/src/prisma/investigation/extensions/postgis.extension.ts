@@ -15,7 +15,10 @@ export const postgisExtension = Prisma.defineExtension({
     // Utility func to 'neatly' format data for raw SQL queries in one place
     // TODO: can we move this out to a shared utility since it's used in multiple places?
     // Important note: could encounter write errors if the data dict order =/= the column order of a insert
-    templateData(this, data: Dictionary<any>): string[] {
+    templateData(
+      this: any,
+      data: Dictionary<any>
+    ): string[] {
       const timestamp_pattern = /timestamp$/;
       const geometry_pattern = /geometry_point$/;
       const queryData: string[] = [];
@@ -40,14 +43,14 @@ export const postgisExtension = Prisma.defineExtension({
       });
       return queryData;
     },
-    async findInvestigation(
+    async findOne(
       this: any,
-      investigationGuid: string,
-      include?: {
-        investigation_status_code?: boolean;
-        officer_investigation_xref?: boolean;
-      }
+      investigationGuid: string
     ): Promise<investigation | null> {
+      const include = {
+        investigation_status_code: true,
+        officer_investigation_xref: true,
+      }
       const queryString = `
         SELECT
           investigation_guid,
@@ -91,7 +94,70 @@ export const postgisExtension = Prisma.defineExtension({
       return inv;
     },
 
-    async createInvestigation(
+    async findUnique(
+      this: any,
+      requested: {
+        where: { investigation_guid: string },
+        include: {
+          investigation_status_code?: any;
+          officer_investigation_xref?: any;
+          investigation_party?: any;
+        }
+      }
+    ): Promise<investigation | null> {
+      const queryString = `
+        SELECT
+          investigation_guid,
+          investigation_description,
+          owned_by_agency_ref,
+          investigation_status,
+          investigation_opened_utc_timestamp,
+          create_user_id,
+          create_utc_timestamp,
+          update_user_id,
+          update_utc_timestamp,
+          location_address,
+          location_description,
+          public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
+        FROM investigation.investigation
+        WHERE investigation_guid = '${requested.where.investigation_guid}'::uuid
+        LIMIT 1
+      `;
+
+      const result = (await this.$queryRawUnsafe(queryString)) as investigation[];
+
+      if (result.length === 0) return null;
+      
+      const inv = result[0];
+
+      // Handle includes manually
+      if (requested.include?.investigation_status_code) {
+        const statusCode = await this.investigation_status_code.findUnique({
+          where: { investigation_status_code: inv.investigation_status }
+        });
+        inv.investigation_status_code = statusCode;
+      }
+
+      if (requested.include?.officer_investigation_xref) {
+        const xrefs = await this.officer_investigation_xref.findMany({
+          where: { investigation_guid: inv.investigation_guid }
+        });
+        inv.officer_investigation_xref = xrefs;
+      }
+      if (requested.include?.investigation_party) {
+        const parties = await this.investigation_party.findMany({
+          where: { investigation_guid: inv.investigation_guid },
+          include: {
+            investigation_person: requested.include?.investigation_party?.investigation_person,
+            investigation_business: requested.include?.investigation_party?.investigation_business,
+          },
+        });
+        inv.investigation_party = parties;
+      }
+      return inv;
+    },
+
+    async create(
       this: any,
       data: {
         investigation_status: string;
@@ -141,10 +207,7 @@ export const postgisExtension = Prisma.defineExtension({
       return result[0];
     },
 
-    /**
-     * Find multiple investigations by IDs with geometry as GeoJSON
-     */
-    async findManyInvestigations(
+    async findMany(
       this: any,
       investigationGuids: string[],
       include?: {
@@ -189,7 +252,7 @@ export const postgisExtension = Prisma.defineExtension({
       return results;
     },
 
-    async getManyInvestigations(
+    async getMany(
       this: any,
       validatedPageSize: number,
       skip: number,
