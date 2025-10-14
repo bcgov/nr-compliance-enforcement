@@ -222,7 +222,7 @@ const InvestigationEdit: FC = () => {
 
       <section className="comp-details-body comp-details-form comp-container">
         <div className="comp-details-section-header">
-          <h2>Investigation Details</h2>
+          <h2>Investigation details</h2>
         </div>
 
         <form onSubmit={form.handleSubmit}>

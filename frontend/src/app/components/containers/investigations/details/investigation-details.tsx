@@ -84,7 +84,7 @@ export const InvestigationDetails: FC = () => {
               onClick={editButtonClick}
             >
               <i className="bi bi-pencil"></i>
-              <span>Edit Investigation</span>
+              <span>Edit investigation</span>
             </Button>
           </div>
         </div>
@@ -93,14 +93,14 @@ export const InvestigationDetails: FC = () => {
         {/* Investigation Details (View) */}
         <div className="comp-details-view">
           <div className="comp-details-content">
-            <h3>Investigation Information</h3>
+            <h3>Investigation information</h3>
             {!investigationData && <p>No data found for ID: {investigationGuid}</p>}
             {investigationData && (
               <div>
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-group">
-                      <strong>Investigation Identifier:</strong>
+                      <strong>Investigation identifier:</strong>
                       <p>{investigationData.investigationGuid || "N/A"}</p>
                     </div>
                   </div>
@@ -108,7 +108,7 @@ export const InvestigationDetails: FC = () => {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-group">
-                      <strong>Case Identifier:</strong>
+                      <strong>Case identifier:</strong>
                       {caseIdentifier ? <Link to={`/case/${caseIdentifier}`}>{caseIdentifier}</Link> : <p>N/A</p>}
                     </div>
                   </div>
