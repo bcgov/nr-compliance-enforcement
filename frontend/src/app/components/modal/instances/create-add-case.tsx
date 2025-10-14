@@ -76,7 +76,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   const [caseDescription, setCaseDescription] = useState<string>("");
 
   const createCaseMutation = useGraphQLMutation(CREATE_CASE_MUTATION, {
-    invalidateQueries: ["searchCaseFiles"],
+    invalidateQueries: ["searchCaseFiles", "allCaseFilesByActivityId"],
     onSuccess: (data: any) => {
       ToggleSuccess(
         <div>
@@ -103,7 +103,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   });
 
   const addComplaintToCaseMutation = useGraphQLMutation(ADD_COMPLAINT_TO_CASE_MUTATION, {
-    invalidateQueries: ["caseFile", selectedCase?.value ?? ""],
+    invalidateQueries: ["caseFile", selectedCase?.value ?? "", "allCaseFilesByActivityId"],
     onSuccess: (data: any) => {
       console.log(data);
       ToggleSuccess(
