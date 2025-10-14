@@ -4,13 +4,6 @@ import { InvestigationPrismaService } from "./prisma.investigation.service";
 import { PrismaClient } from ".prisma/investigation"; // NOSONAR
 import { postgisExtension } from "./extensions/postgis.extension";
 
-/**
- * Investigation Prisma Module
- *
- * This module uses a factory provider pattern to apply the PostGIS extension
- * to the Prisma client. This allows custom methods for handling PostGIS geometry
- * types (like Point) and converting them to/from GeoJSON.
- */
 @Module({
   providers: [
     {

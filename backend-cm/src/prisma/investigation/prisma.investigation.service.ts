@@ -7,16 +7,6 @@ import { postgisExtension } from "./extensions/postgis.extension";
 const extendedPrismaClient = new PrismaClient().$extends(postgisExtension);
 export type ExtendedPrismaClient = typeof extendedPrismaClient;
 
-/**
- * Investigation Prisma Service with PostGIS extension
- *
- * Note: This service uses a factory provider pattern (see module) to apply
- * the PostGIS extension. This is different from other Prisma services that
- * don't require extensions and can use simpler patterns.
- *
- * At runtime, instances will be ExtendedPrismaClient which includes
- * all the PostGIS extension methods.
- */
 @Injectable()
 export class InvestigationPrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {

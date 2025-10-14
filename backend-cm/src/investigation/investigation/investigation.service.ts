@@ -32,7 +32,8 @@ export class InvestigationService {
   private readonly logger = new Logger(InvestigationService.name);
 
   async findOne(investigationGuid: string) {
-    const prismaInvestigation = await (this.prisma as unknown as ExtendedPrismaClient).findInvestigationWithGeometry(
+    const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
+    const prismaInvestigation = await PostGISPrismaClient.findInvestigationWithGeometry(
       investigationGuid,
       { investigation_status_code: true }
     );
@@ -57,8 +58,8 @@ export class InvestigationService {
     if (!ids || ids.length === 0) {
       return [];
     }
-
-    const prismaInvestigations = await (this.prisma as unknown as ExtendedPrismaClient).findManyInvestigationsWithGeometry(
+    const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
+    const prismaInvestigations = await PostGISPrismaClient.findManyInvestigationsWithGeometry(
       ids,
       { investigation_status_code: true }
     );
@@ -90,7 +91,8 @@ export class InvestigationService {
     // Create the investigation
     let investigation;
     try {
-      investigation = await (this.prisma as unknown as ExtendedPrismaClient).createInvestigationWithGeometry({
+      const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
+      investigation = await PostGISPrismaClient.createInvestigationWithGeometry({
         investigation_status: input.investigationStatus,
         investigation_description: input.description,
         owned_by_agency_ref: input.leadAgency,
@@ -162,7 +164,8 @@ export class InvestigationService {
 
   async update(investigationGuid: string, input: UpdateInvestigationInput): Promise<Investigation> {
     // Check if the investigation exists
-    const existingInvestigation = await this.prisma.investigation.findUnique({
+    const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
+    const existingInvestigation = await PostGISPrismaClient.investigation.findUnique({
       where: { investigation_guid: investigationGuid },
     });
 
@@ -204,7 +207,8 @@ export class InvestigationService {
         updateData.location_description = input.locationDescription;
       }
       // Perform the update
-      updatedInvestigation = await (this.prisma as unknown as ExtendedPrismaClient).updateInvestigationWithGeometry(
+
+      updatedInvestigation = await PostGISPrismaClient.updateInvestigationWithGeometry(
         investigationGuid,
         updateData
       );
@@ -238,6 +242,7 @@ export class InvestigationService {
     const skip = (validatedPage - 1) * validatedPageSize;
 
     const where: Prisma.investigationWhereInput = {};
+    const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
 
     if (filters?.search) {
       // UUID column only supports exact matching
@@ -257,7 +262,7 @@ export class InvestigationService {
 
     // Query with raw SQL to get geometry as GeoJSON
     let investigationsList: investigation[];
-    investigationsList = await (this.prisma as unknown as ExtendedPrismaClient).getManyInvestigationsWithGeometry(
+    investigationsList = await PostGISPrismaClient.getManyInvestigationsWithGeometry(
       validatedPageSize,
       skip,
     );
