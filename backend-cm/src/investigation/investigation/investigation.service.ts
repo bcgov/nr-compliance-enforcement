@@ -33,10 +33,31 @@ export class InvestigationService {
 
   async findOne(investigationGuid: string) {
     const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
-    const prismaInvestigation = await PostGISPrismaClient.findInvestigation(
-      investigationGuid,
-      { investigation_status_code: true }
-    );
+    const prismaInvestigation = await PostGISPrismaClient.findUnique({
+      where: {
+        investigation_guid: investigationGuid,
+      },
+      include: {
+        investigation_status_code: true,
+        investigation_party: {
+          include: {
+            investigation_person: {
+              where: {
+                active_ind: true,
+              },
+            },
+            investigation_business: {
+              where: {
+                active_ind: true,
+              },
+            },
+          },
+          where: {
+            active_ind: true,
+          },
+        },
+      },
+    });
 
     if (!prismaInvestigation) {
       throw new Error(`Investigation with guid ${investigationGuid} not found`);
@@ -59,7 +80,7 @@ export class InvestigationService {
       return [];
     }
     const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
-    const prismaInvestigations = await PostGISPrismaClient.findManyInvestigations(
+    const prismaInvestigations = await PostGISPrismaClient.findMany(
       ids,
       { investigation_status_code: true }
     );
@@ -92,7 +113,7 @@ export class InvestigationService {
     let investigation;
     try {
       const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
-      investigation = await PostGISPrismaClient.createInvestigation({
+      investigation = await PostGISPrismaClient.create({
         investigation_status: input.investigationStatus,
         investigation_description: input.description,
         owned_by_agency_ref: input.leadAgency,
@@ -262,7 +283,7 @@ export class InvestigationService {
 
     // Query with raw SQL to get geometry as GeoJSON
     let investigationsList: investigation[];
-    investigationsList = await PostGISPrismaClient.getManyInvestigations(
+    investigationsList = await PostGISPrismaClient.getMany(
       validatedPageSize,
       skip,
     );

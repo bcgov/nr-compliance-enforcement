@@ -1,8 +1,10 @@
-import { Mapper, createMap, forMember, mapFrom, mapWithArguments } from "@automapper/core";
+import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
 import { business } from "../../../../prisma/shared/generated/business";
+import { BusinessDto } from "../../../common/party";
 
-export class Business {
+export class Business implements BusinessDto {
   businessGuid: string;
+  partyGuid: string;
   name: string;
 }
 

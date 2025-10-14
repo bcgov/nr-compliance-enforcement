@@ -1,9 +1,11 @@
 import { ContactMethod } from "../../contact_method/dto/contact_method";
 import { Mapper, createMap, forMember, mapFrom, mapWithArguments } from "@automapper/core";
 import { person } from "../../../../prisma/shared/generated/person";
+import { PersonDto } from "../../../common/party";
 
-export class Person {
+export class Person implements PersonDto {
   personGuid: string;
+  partyGuid: string;
   firstName: string;
   middleName?: string;
   middleName2?: string;

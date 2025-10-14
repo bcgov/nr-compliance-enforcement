@@ -10,6 +10,7 @@ type Investigation {
   locationGeometry: Point
   locationAddress: String
   locationDescription: String
+  parties: [InvestigationParty]
 }
 
 input CreateInvestigationInput {

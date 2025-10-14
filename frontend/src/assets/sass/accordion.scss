@@ -1,0 +1,40 @@
+/* Records Accordion styles */
+
+/* No borders */
+.record-accordion .accordion-item {
+  border: none !important;
+}
+
+/* Header styles */
+.record-accordion .accordion-button {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding-left: 0;
+  font-weight: 600;
+}
+
+/* Expanded state styling */
+.record-accordion .accordion-button:not(.collapsed) {
+  color: inherit !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* tighter spacing between sections */
+.record-accordion .accordion-body {
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0.25rem;
+  padding-bottom: 0;
+}
+
+/* tighter spacing below the header */
+.record-accordion .accordion-header {
+  margin-bottom: 0px;
+}
+
+/* Add extra line on the bottom element */
+.record-accordion .list-group-item:last-child {
+  border-bottom: 1px solid #dee2e6 !important;
+}

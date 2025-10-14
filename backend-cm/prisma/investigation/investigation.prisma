@@ -30,6 +30,7 @@ model investigation {
   location_address                   String?                      @db.VarChar(120)
   location_description               String?                      @db.VarChar(120)
   investigation_status_code          investigation_status_code    @relation(fields: [investigation_status], references: [investigation_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_investigation__investigation_status")
+  investigation_party                investigation_party[]
   officer_investigation_xref         officer_investigation_xref[]
 
   @@index([location_geometry_point], map: "idx_investigation_location_geometry_point", type: Gist)
@@ -131,4 +132,81 @@ model flyway_schema_history {
   success        Boolean
 
   @@index([success], map: "flyway_schema_history_s_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_business {
+  investigation_business_guid String               @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  business_guid_ref           String?              @db.Uuid
+  investigation_party_guid    String?              @db.Uuid
+  name                        String               @db.VarChar(128)
+  active_ind                  Boolean              @default(true)
+  create_user_id              String               @db.VarChar(32)
+  create_utc_timestamp        DateTime             @default(now()) @db.Timestamp(6)
+  update_user_id              String?              @db.VarChar(32)
+  update_utc_timestamp        DateTime?            @db.Timestamp(6)
+  investigation_party         investigation_party? @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_party_guid")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_business_h {
+  h_investigation_business_guid String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_party {
+  investigation_party_guid String                   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  party_guid_ref           String?                  @db.Uuid
+  party_type_code_ref      String                   @db.VarChar(16)
+  investigation_guid       String                   @db.Uuid
+  active_ind               Boolean                  @default(true)
+  create_user_id           String                   @db.VarChar(32)
+  create_utc_timestamp     DateTime                 @db.Timestamp(6)
+  update_user_id           String?                  @db.VarChar(32)
+  update_utc_timestamp     DateTime?                @db.Timestamp(6)
+  investigation_business   investigation_business[]
+  investigation            investigation            @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
+  investigation_person     investigation_person[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_party_h {
+  h_investigation_party_guid    String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_person {
+  investigation_person_guid String               @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  person_guid_ref           String?              @db.Uuid
+  investigation_party_guid  String?              @db.Uuid
+  first_name                String               @db.VarChar(128)
+  middle_name               String?              @db.VarChar(128)
+  middle_name_2             String?              @db.VarChar(128)
+  last_name                 String               @db.VarChar(128)
+  active_ind                Boolean              @default(true)
+  create_user_id            String               @db.VarChar(32)
+  create_utc_timestamp      DateTime             @default(now()) @db.Timestamp(6)
+  update_user_id            String?              @db.VarChar(32)
+  update_utc_timestamp      DateTime?            @db.Timestamp(6)
+  investigation_party       investigation_party? @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_party_guid")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_person_h {
+  h_investigation_person_guid   String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
 }

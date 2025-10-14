@@ -7,6 +7,13 @@ import { CaseFile, Investigation } from "@/generated/graphql";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
 import Button from "react-bootstrap/esm/Button";
 import { InvestigationLocation } from "./investigation-location";
+import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
+import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
+import InvestigationRecords from "@/app/components/containers/investigations/details/investigation-records";
+import { InvestigationContraventions } from "@/app/components/containers/investigations/details/investigation-contraventions";
+import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
+import { InvestigationAdministration } from "@/app/components/containers/investigations/details/investigation-administration";
+import { InvestigationDocumentation } from "@/app/components/containers/investigations/details/investigation-documentation";
 
 const GET_INVESTIGATION = gql`
   query GetInvestigation($investigationGuid: String!) {
@@ -19,6 +26,17 @@ const GET_INVESTIGATION = gql`
         investigationStatusCode
         shortDescription
         longDescription
+      }
+      parties {
+        person {
+          firstName
+          lastName
+          personGuid
+        }
+        business {
+          name
+          businessGuid
+        }
       }
       leadAgency
       locationAddress
@@ -33,13 +51,13 @@ const GET_INVESTIGATION = gql`
 
 export type InvestigationParams = {
   investigationGuid: string;
+  tabKey: string;
 };
 
 export const InvestigationDetails: FC = () => {
   const navigate = useNavigate();
-
-
-  const { investigationGuid = "" } = useParams<InvestigationParams>();
+  const { investigationGuid = "", tabKey } = useParams<InvestigationParams>();
+  const currentTab = tabKey || "summary";
   const { data, isLoading } = useGraphQLQuery<{
     getInvestigation: Investigation;
     caseFileByActivityId: CaseFile;
@@ -50,6 +68,34 @@ export const InvestigationDetails: FC = () => {
   });
   const editButtonClick = () => {
     navigate(`/investigation/${investigationData?.investigationGuid}/edit`);
+  };
+
+  const renderTabContent = () => {
+    switch (currentTab) {
+      case "summary":
+        return (
+          <InvestigationSummary
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+            caseGuid={caseIdentifier ?? ""}
+          />
+        );
+      case "records":
+        return (
+          <InvestigationRecords
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+          />
+        );
+      case "contraventions":
+        return <InvestigationContraventions />;
+      case "documents":
+        return <InvestigationDocumentation />;
+      case "continuation":
+        return <InvestigationContinuation />;
+      case "admin":
+        return <InvestigationAdministration />;
+    }
   };
 
   if (isLoading) {
@@ -67,97 +113,103 @@ export const InvestigationDetails: FC = () => {
 
   const investigationData = data?.getInvestigation;
   const caseIdentifier = data?.caseFileByActivityId?.caseIdentifier;
+
   return (
     <div className="comp-complaint-details">
       <InvestigationHeader investigation={investigationData} />
 
       <section className="comp-details-body comp-container">
         <hr className="comp-details-body-spacer"></hr>
+        {/* Investigation Details Header */}
+        {
+        // <div className="comp-details-section-header">
+        //   <h2>Investigation details</h2>
+        //   <div className="comp-details-section-header-actions mb-0 pb-0">
+        //     <Button
+        //       variant="outline-primary"
+        //       size="sm"
+        //       id="details-screen-edit-button"
+        //       onClick={editButtonClick}
+        //     >
+        //       <i className="bi bi-pencil"></i>
+        //       <span>Edit investigation</span>
+        //     </Button>
+        //   </div>
+        // </div>
 
-        <div className="comp-details-section-header">
-          <h2>Investigation details</h2>
-          <div className="comp-details-section-header-actions mb-0 pb-0">
-            <Button
-              variant="outline-primary"
-              size="sm"
-              id="details-screen-edit-button"
-              onClick={editButtonClick}
-            >
-              <i className="bi bi-pencil"></i>
-              <span>Edit investigation</span>
-            </Button>
-          </div>
-        </div>
 
-
-        {/* Investigation Details (View) */}
-        <div className="comp-details-view">
-          <div className="comp-details-content">
-            <h3>Investigation information</h3>
-            {!investigationData && <p>No data found for ID: {investigationGuid}</p>}
-            {investigationData && (
-              <div>
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <strong>Investigation identifier:</strong>
-                      <p>{investigationData.investigationGuid || "N/A"}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <strong>Case identifier:</strong>
-                      {caseIdentifier ? <Link to={`/case/${caseIdentifier}`}>{caseIdentifier}</Link> : <p>N/A</p>}
-                    </div>
-                  </div>
-                </div>
-                {investigationData.description && (
-                  <div className="row">
-                    <div className="col-12">
-                      <div className="form-group">
-                        <strong>Description:</strong>
-                        <p>{investigationData.description}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {investigationData.locationAddress && (<div>
-                  <dt>Location/address</dt>
-                    <dd id="comp-details-location">{investigationData.locationAddress}</dd>
-                  </div>
-                )}
-                {investigationData.locationDescription && (<div>
-                  <dt>Location description</dt>
-                    <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
-                  </div>
-                )}
-                {investigationData.locationGeometry && (
-                  <div className="row">
-                    <div className="col-12">
-                      <div className="form-group">
-                        <CompLocationInfo
-                          xCoordinate={investigationData.locationGeometry.coordinates?.[0] === 0 ? "" : investigationData.locationGeometry.coordinates?.[0].toString() ?? ""}
-                          yCoordinate={investigationData.locationGeometry.coordinates?.[1] === 0 ? "" : investigationData.locationGeometry.coordinates?.[1].toString() ?? ""}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-          {investigationData?.locationGeometry?.coordinates && (
-            <InvestigationLocation
-              locationCoordinates={{
-                lat: investigationData.locationGeometry.coordinates[1],
-                lng: investigationData.locationGeometry.coordinates[0],
-              }}
-              draggable={false}
-            />
-          )}
-        </div>
+        // {/* Investigation Details (View) */}
+        // <div className="comp-details-view">
+        //   <div className="comp-details-content">
+        //     <h3>Investigation information</h3>
+        //     {!investigationData && <p>No data found for ID: {investigationGuid}</p>}
+        //     {investigationData && (
+        //       <div>
+        //         <div className="row">
+        //           <div className="col-md-6">
+        //             <div className="form-group">
+        //               <strong>Investigation identifier:</strong>
+        //               <p>{investigationData.investigationGuid || "N/A"}</p>
+        //             </div>
+        //           </div>
+        //         </div>
+        //         <div className="row">
+        //           <div className="col-md-6">
+        //             <div className="form-group">
+        //               <strong>Case identifier:</strong>
+        //               {caseIdentifier ? <Link to={`/case/${caseIdentifier}`}>{caseIdentifier}</Link> : <p>N/A</p>}
+        //             </div>
+        //           </div>
+        //         </div>
+        //         {investigationData.description && (
+        //           <div className="row">
+        //             <div className="col-12">
+        //               <div className="form-group">
+        //                 <strong>Description:</strong>
+        //                 <p>{investigationData.description}</p>
+        //               </div>
+        //             </div>
+        //           </div>
+        //         )}
+        //         {investigationData.locationAddress && (<div>
+        //           <dt>Location/address</dt>
+        //             <dd id="comp-details-location">{investigationData.locationAddress}</dd>
+        //           </div>
+        //         )}
+        //         {investigationData.locationDescription && (<div>
+        //           <dt>Location description</dt>
+        //             <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
+        //           </div>
+        //         )}
+        //         {investigationData.locationGeometry && (
+        //           <div className="row">
+        //             <div className="col-12">
+        //               <div className="form-group">
+        //                 <CompLocationInfo
+        //                   xCoordinate={investigationData.locationGeometry.coordinates?.[0] === 0 ? "" : investigationData.locationGeometry.coordinates?.[0].toString() ?? ""}
+        //                   yCoordinate={investigationData.locationGeometry.coordinates?.[1] === 0 ? "" : investigationData.locationGeometry.coordinates?.[1].toString() ?? ""}
+        //                 />
+        //               </div>
+        //             </div>
+        //           </div>
+        //         )}
+        //       </div>
+        //     )}
+        //   </div>
+        //   {investigationData?.locationGeometry?.coordinates && (
+        //     <InvestigationLocation
+        //       locationCoordinates={{
+        //         lat: investigationData.locationGeometry.coordinates[1],
+        //         lng: investigationData.locationGeometry.coordinates[0],
+        //       }}
+        //       draggable={false}
+        //     />
+        //   )}
+        // </div>
+        }
+        {/* Investigation Tabs */}
+        <InvestigationTabs />
+        {renderTabContent()}
       </section>
     </div>
   );

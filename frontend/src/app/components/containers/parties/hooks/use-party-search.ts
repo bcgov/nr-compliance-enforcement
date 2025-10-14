@@ -51,6 +51,7 @@ const serializeSearchValueToUrl = (key: keyof PartySearchParams, value: any): st
 };
 
 export const usePartySearch = () => {
+  
   const [searchParams, setSearchParams] = useSearchParams();
 
   const searchValues: PartySearchParams = useMemo(

@@ -53,6 +53,7 @@ import { InspectionModule } from "./inspection/inspection/inspection.module";
 import { PrismaModuleInspection } from "./prisma/inspection/prisma.inspection.module";
 import { PartyTypeCodeModule } from "./shared/party_type_code/party_type_code.module";
 import { CaseActivityModule } from "src/shared/case_activity/case_activity.module";
+import { InvestigationPartyModule } from "./investigation/investigation_party/investigation_party.module";
 
 @Module({
   imports: [
@@ -106,6 +107,7 @@ import { CaseActivityModule } from "src/shared/case_activity/case_activity.modul
     InspectionModule,
     PartyTypeCodeModule,
     CaseActivityModule,
+    InvestigationPartyModule,
   ],
   controllers: [AppController],
   providers: [AppService, ImportCommand, DateScalar, PointScalar],

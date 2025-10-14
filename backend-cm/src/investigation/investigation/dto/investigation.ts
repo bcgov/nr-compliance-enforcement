@@ -7,6 +7,7 @@ import { PaginatedResult } from "src/common/pagination.utility";
 import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { IsOptional } from "class-validator";
 import { Point, PointScalar } from "src/common/custom_scalars";
+import { InvestigationParty } from "src/investigation/investigation_party/dto/investigation_party";
 
 export class Investigation {
   investigationGuid: string;
@@ -18,6 +19,7 @@ export class Investigation {
   locationGeometry?: Point;
   locationAddress?: string;
   locationDescription?: string;
+  parties: [InvestigationParty];
 }
 
 @InputType()
@@ -140,6 +142,10 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.locationGeometry,
       mapFrom((src) => src.location_geometry_point),
+    ),
+    forMember(
+      (dest) => dest.parties,
+      mapFrom((src) => mapper.mapArray(src.investigation_party ?? [], "investigation_party", "InvestigationParty")),
     ),
   );
 };

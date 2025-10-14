@@ -267,6 +267,11 @@ export type CreateInspectionInput = {
   leadAgency: Scalars['String']['input'];
 };
 
+export type CreateInvestigationBusinessInput = {
+  businessReference?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
 export type CreateInvestigationInput = {
   caseIdentifier: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
@@ -275,6 +280,21 @@ export type CreateInvestigationInput = {
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
+};
+
+export type CreateInvestigationPartyInput = {
+  business?: InputMaybe<CreateInvestigationBusinessInput>;
+  partyReference?: InputMaybe<Scalars['String']['input']>;
+  partyTypeCode: Scalars['String']['input'];
+  person?: InputMaybe<CreateInvestigationPersonInput>;
+};
+
+export type CreateInvestigationPersonInput = {
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  middleName?: InputMaybe<Scalars['String']['input']>;
+  middleName2?: InputMaybe<Scalars['String']['input']>;
+  personReference?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateNoteInput = {
@@ -594,6 +614,15 @@ export type Investigation = {
   locationDescription?: Maybe<Scalars['String']['output']>;
   locationGeometry?: Maybe<Scalars['Point']['output']>;
   openedTimestamp?: Maybe<Scalars['Date']['output']>;
+  parties?: Maybe<Array<Maybe<InvestigationParty>>>;
+};
+
+export type InvestigationBusiness = {
+  __typename?: 'InvestigationBusiness';
+  businessGuid: Scalars['String']['output'];
+  businessReference?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  partyGuid: Scalars['String']['output'];
 };
 
 export type InvestigationFilters = {
@@ -604,6 +633,27 @@ export type InvestigationFilters = {
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
   startDate?: InputMaybe<Scalars['Date']['input']>;
+};
+
+export type InvestigationParty = {
+  __typename?: 'InvestigationParty';
+  business?: Maybe<InvestigationBusiness>;
+  investigationGuid: Scalars['String']['output'];
+  partyIdentifier: Scalars['String']['output'];
+  partyReference?: Maybe<Scalars['String']['output']>;
+  partyTypeCode: Scalars['String']['output'];
+  person?: Maybe<InvestigationPerson>;
+};
+
+export type InvestigationPerson = {
+  __typename?: 'InvestigationPerson';
+  firstName: Scalars['String']['output'];
+  lastName: Scalars['String']['output'];
+  middleName?: Maybe<Scalars['String']['output']>;
+  middleName2?: Maybe<Scalars['String']['output']>;
+  partyGuid: Scalars['String']['output'];
+  personGuid: Scalars['String']['output'];
+  personReference?: Maybe<Scalars['String']['output']>;
 };
 
 export type InvestigationResult = {
@@ -634,6 +684,7 @@ export type KeyValuePairInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addPartyToInvestigation: Investigation;
   createAssessment: ComplaintOutcome;
   createAuthorizationOutcome: ComplaintOutcome;
   createCaseActivity: CaseActivity;
@@ -673,6 +724,12 @@ export type Mutation = {
   updatePrevention: ComplaintOutcome;
   updateReview: ComplaintOutcome;
   updateWildlife: ComplaintOutcome;
+};
+
+
+export type MutationaddPartyToInvestigationArgs = {
+  input: Array<InputMaybe<CreateInvestigationPartyInput>>;
+  investigationGuid: Scalars['String']['input'];
 };
 
 
