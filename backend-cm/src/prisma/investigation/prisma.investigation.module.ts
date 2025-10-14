@@ -12,8 +12,8 @@ import { postgisExtension } from "./extensions/postgis.extension";
         const client = new PrismaClient();
         const extended = client.$extends(postgisExtension);
 
-        // Add lifecycle hooks to the extended client
-        // TypeScript doesn't know about these properties on the extended client
+        // Add lifecycle hooks & methods to the extended client so linting and compilation succeeds
+        // https://www.prisma.io/docs/orm/prisma-client/client-extensions#usage-of-client-level-methods-in-extended-clients
         type ExtendedClient = typeof extended & {
           onModuleInit?: () => Promise<void>;
           onModuleDestroy?: () => Promise<void>;

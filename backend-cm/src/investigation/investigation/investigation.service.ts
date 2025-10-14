@@ -33,7 +33,7 @@ export class InvestigationService {
 
   async findOne(investigationGuid: string) {
     const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
-    const prismaInvestigation = await PostGISPrismaClient.findInvestigationWithGeometry(
+    const prismaInvestigation = await PostGISPrismaClient.findInvestigation(
       investigationGuid,
       { investigation_status_code: true }
     );
@@ -59,7 +59,7 @@ export class InvestigationService {
       return [];
     }
     const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
-    const prismaInvestigations = await PostGISPrismaClient.findManyInvestigationsWithGeometry(
+    const prismaInvestigations = await PostGISPrismaClient.findManyInvestigations(
       ids,
       { investigation_status_code: true }
     );
@@ -92,7 +92,7 @@ export class InvestigationService {
     let investigation;
     try {
       const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
-      investigation = await PostGISPrismaClient.createInvestigationWithGeometry({
+      investigation = await PostGISPrismaClient.createInvestigation({
         investigation_status: input.investigationStatus,
         investigation_description: input.description,
         owned_by_agency_ref: input.leadAgency,
@@ -208,7 +208,7 @@ export class InvestigationService {
       }
       // Perform the update
 
-      updatedInvestigation = await PostGISPrismaClient.updateInvestigationWithGeometry(
+      updatedInvestigation = await PostGISPrismaClient.updateInvestigation(
         investigationGuid,
         updateData
       );
@@ -262,7 +262,7 @@ export class InvestigationService {
 
     // Query with raw SQL to get geometry as GeoJSON
     let investigationsList: investigation[];
-    investigationsList = await PostGISPrismaClient.getManyInvestigationsWithGeometry(
+    investigationsList = await PostGISPrismaClient.getManyInvestigations(
       validatedPageSize,
       skip,
     );

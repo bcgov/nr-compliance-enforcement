@@ -1,24 +1,46 @@
 import { Prisma } from '@prisma/client';
 import { Point } from '../../../common/custom_scalars';
 import { investigation } from '../../../../prisma/investigation/investigation.unsupported_types';
+import { Logger } from 'winston';
+import { Dictionary } from '@automapper/core';
 
 /**
  * PostGIS extension for Prisma Client
  * Adds custom CLIENT methods to handle PostGIS geometry types with GeoJSON Point conversion
  *
- * Custom client methods (accessed via prisma.methodName()):
- * - findInvestigationWithGeometry(guid, include?): Find single investigation with geometry as GeoJSON
- * - findManyInvestigationsWithGeometry(guids, include?): Find multiple investigations with geometry as GeoJSON
- * - createInvestigationWithGeometry(data): Create investigation with Point geometry
- * - updateInvestigationWithGeometry(guid, data): Update investigation with Point geometry support
  */
 export const postgisExtension = Prisma.defineExtension({
   name: 'postgis',
   client: {
-    /**
-     * Find a single investigation with geometry converted to GeoJSON
-     */
-    async findInvestigationWithGeometry(
+    // Utility func to 'neatly' format data for raw SQL queries in one place
+    // TODO: can we move this out to a shared utility since it's used in multiple places?
+    // Important note: could encounter write errors if the data dict order =/= the column order of a insert
+    templateData(this, data: Dictionary<any>): string[] {
+      const timestamp_pattern = /timestamp$/;
+      const geometry_pattern = /geometry_point$/;
+      const queryData: string[] = [];
+      Object.keys(data).forEach((key) => {
+        let value = (data as any)[key];
+        if (key.match(geometry_pattern)) {
+          if (value !== null && value !== undefined) {
+            value = `public.ST_GeomFromGeoJSON('${JSON.stringify(data.location_geometry_point)}')`;
+          } else {
+            value = 'NULL';
+          }
+        } else if (key.match(timestamp_pattern)) {
+          if (value !== null && value !== undefined) {
+            value = `'${(value as Date).toISOString()}'`;
+          } else {
+            value = 'NULL';
+          }
+        } else {
+          value = `'${value}'`;
+        }
+        queryData.push(`${key} = ${value}`);
+      });
+      return queryData;
+    },
+    async findInvestigation(
       this: any,
       investigationGuid: string,
       include?: {
@@ -69,10 +91,7 @@ export const postgisExtension = Prisma.defineExtension({
       return inv;
     },
 
-    /**
-     * Create an investigation with PostGIS geometry support
-     */
-    async createInvestigationWithGeometry(
+    async createInvestigation(
       this: any,
       data: {
         investigation_status: string;
@@ -83,71 +102,49 @@ export const postgisExtension = Prisma.defineExtension({
         create_utc_timestamp: Date;
         update_user_id?: string | null;
         update_utc_timestamp?: Date | null;
-        location_geometry_point?: Point | null;
         location_address?: string | null;
         location_description?: string | null;
+        location_geometry_point?: Point | null;
       }
     ): Promise<investigation> {
-      const { location_geometry_point, ...rest } = data;
-
-      if (location_geometry_point) {
-        const queryString = `
-          INSERT INTO investigation.investigation (
-            investigation_status,
-            investigation_description,
-            owned_by_agency_ref,
-            investigation_opened_utc_timestamp,
-            create_user_id,
-            create_utc_timestamp,
-            update_user_id,
-            update_utc_timestamp,
-            location_address,
-            location_description,
-            location_geometry_point
-          )
-          VALUES (
-            '${rest.investigation_status}',
-            ${rest.investigation_description ? `'${rest.investigation_description.replace(/'/g, "''")}'` : 'NULL'},
-            '${rest.owned_by_agency_ref}',
-            '${rest.investigation_opened_utc_timestamp.toISOString()}',
-            '${rest.create_user_id}',
-            '${rest.create_utc_timestamp.toISOString()}',
-            ${rest.update_user_id ? `'${rest.update_user_id}'` : 'NULL'},
-            ${rest.update_utc_timestamp ? `'${rest.update_utc_timestamp.toISOString()}'` : 'NULL'},
-            ${rest.location_address ? `'${rest.location_address.replace(/'/g, "''")}'` : 'NULL'},
-            ${rest.location_description ? `'${rest.location_description.replace(/'/g, "''")}'` : 'NULL'},
-            public.ST_GeomFromGeoJSON('${JSON.stringify(location_geometry_point).replace(/'/g, "''")}')
-          )
-          RETURNING
-            investigation_guid,
-            investigation_description,
-            owned_by_agency_ref,
-            investigation_status,
-            investigation_opened_utc_timestamp,
-            create_user_id,
-            create_utc_timestamp,
-            update_user_id,
-            update_utc_timestamp,
-            location_address,
-            location_description,
-            public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-        `;
-        const result = (await this.$queryRawUnsafe(queryString)) as investigation[];
-        return result[0];
-      } else {
-        return await this.investigation.create({
-          data: {
-            ...rest,
-            location_geometry_point: null,
-          }
-        });
-      }
+      const result = (await this.$queryRaw`
+        INSERT INTO investigation.investigation (
+          investigation_status,
+          investigation_description,
+          owned_by_agency_ref,
+          investigation_opened_utc_timestamp,
+          create_user_id,
+          create_utc_timestamp,
+          update_user_id,
+          update_utc_timestamp,
+          location_address,
+          location_description,
+          location_geometry_point
+        )
+        VALUES (
+          ${this.templateData(data).join(', ')}
+        )
+        RETURNING
+          investigation_guid,
+          investigation_description,
+          owned_by_agency_ref,
+          investigation_status,
+          investigation_opened_utc_timestamp,
+          create_user_id,
+          create_utc_timestamp,
+          update_user_id,
+          update_utc_timestamp,
+          location_address,
+          location_description,
+          public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
+      `) as investigation[];
+      return result[0];
     },
 
     /**
      * Find multiple investigations by IDs with geometry as GeoJSON
      */
-    async findManyInvestigationsWithGeometry(
+    async findManyInvestigations(
       this: any,
       investigationGuids: string[],
       include?: {
@@ -192,7 +189,7 @@ export const postgisExtension = Prisma.defineExtension({
       return results;
     },
 
-    async getManyInvestigationsWithGeometry(
+    async getManyInvestigations(
       this: any,
       validatedPageSize: number,
       skip: number,
@@ -218,10 +215,7 @@ export const postgisExtension = Prisma.defineExtension({
       return results;
     },
 
-    /**
-     * Update investigation with PostGIS geometry support
-     */
-    async updateInvestigationWithGeometry(
+    async updateInvestigation(
       this: any,
       investigationGuid: string,
       data: {
@@ -235,71 +229,26 @@ export const postgisExtension = Prisma.defineExtension({
         location_description?: string | null;
       }
     ): Promise<investigation> {
-      const { location_geometry_point, ...rest } = data;
-
-      if (location_geometry_point !== undefined) {
-        const updates: string[] = [];
-
-        if (rest.investigation_description !== undefined) {
-          const escaped = rest.investigation_description ? `'${rest.investigation_description.replace(/'/g, "''")}'` : 'NULL';
-          updates.push(`investigation_description = ${escaped}`);
-        }
-        if (rest.owned_by_agency_ref !== undefined) {
-          updates.push(`owned_by_agency_ref = '${rest.owned_by_agency_ref}'`);
-        }
-        if (rest.investigation_status !== undefined) {
-          updates.push(`investigation_status = '${rest.investigation_status}'`);
-        }
-        if (rest.update_user_id !== undefined) {
-          const escaped = rest.update_user_id ? `'${rest.update_user_id}'` : 'NULL';
-          updates.push(`update_user_id = ${escaped}`);
-        }
-        if (rest.update_utc_timestamp !== undefined) {
-          const escaped = rest.update_utc_timestamp ? `'${rest.update_utc_timestamp.toISOString()}'` : 'NULL';
-          updates.push(`update_utc_timestamp = ${escaped}`);
-        }
-        if (rest.location_address !== undefined) {
-          const escaped = rest.location_address ? `'${rest.location_address.replace(/'/g, "''")}'` : 'NULL';
-          updates.push(`location_address = ${escaped}`);
-        }
-        if (rest.location_description !== undefined) {
-          const escaped = rest.location_description ? `'${rest.location_description.replace(/'/g, "''")}'` : 'NULL';
-          updates.push(`location_description = ${escaped}`);
-        }
-
-        if (location_geometry_point !== null) {
-          updates.push(`location_geometry_point = public.ST_GeomFromGeoJSON('${JSON.stringify(location_geometry_point).replace(/'/g, "''")}')`);
-        } else {
-          updates.push(`location_geometry_point = NULL`);
-        }
-
-        const queryString = `
-          UPDATE investigation.investigation
-          SET ${updates.join(', ')}
-          WHERE investigation_guid = '${investigationGuid}'::uuid
-          RETURNING
-            investigation_guid,
-            investigation_description,
-            owned_by_agency_ref,
-            investigation_status,
-            investigation_opened_utc_timestamp,
-            create_user_id,
-            create_utc_timestamp,
-            update_user_id,
-            update_utc_timestamp,
-            location_address,
-            location_description,
-            public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-        `;
-
-        const result = await this.$queryRawUnsafe(queryString);
-        return result[0] || null;
-      } else {
-        return await this.investigation.update({
-          where: { investigation_guid: investigationGuid },
-          data: rest
-        });
-      }
+      const queryString = `
+        UPDATE investigation.investigation
+        SET ${this.templateData(data).join(', ')}
+        WHERE investigation_guid = '${investigationGuid}'::uuid
+        RETURNING
+          investigation_guid,
+          investigation_description,
+          owned_by_agency_ref,
+          investigation_status,
+          investigation_opened_utc_timestamp,
+          create_user_id,
+          create_utc_timestamp,
+          update_user_id,
+          update_utc_timestamp,
+          location_address,
+          location_description,
+          public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
+      `;
+      const result = await this.$queryRawUnsafe(queryString);
+      return result[0] || null;
     },
   },
 });
