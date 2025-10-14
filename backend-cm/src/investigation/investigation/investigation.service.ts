@@ -15,7 +15,7 @@ import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { PaginationUtility } from "src/common/pagination.utility";
 import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { CaseFileService } from "src/shared/case_file/case_file.service";
-import { EventPublisherService } from "src/event-publisher/event-publisher.service";
+import { EventPublisherService } from "src/event_publisher/event_publisher.service";
 import { EventCreateInput } from "src/shared/event/dto/event";
 import { STREAM_TOPICS } from "src/common/nats_constants";
 
@@ -181,7 +181,12 @@ export class InvestigationService {
         targetId: input.caseIdentifier,
         targetEntityTypeCode: "CASE",
       };
-      this.eventPublisher.publishEvent(event, STREAM_TOPICS.INVESTIGATION_CREATED);
+      this.eventPublisher.publishEvent(event, STREAM_TOPICS.INVESTIGATION_ADDED_TO_CASE);
+    } catch (error) {
+      this.logger.error(`Error publishing event ${STREAM_TOPICS.INVESTIGATION_ADDED_TO_CASE}`);
+    }
+
+    try {
       return this.mapper.map<investigation, Investigation>(
         investigation as investigation,
         "investigation",
@@ -229,6 +234,19 @@ export class InvestigationService {
     } catch (error) {
       this.logger.error(`Error updating investigation with guid ${investigationGuid}:`, error);
       throw error;
+    }
+
+    if (input.investigationStatus !== undefined) {
+      try {
+        this.eventPublisher.publishActivityStatusChangeEvents(
+          "INVESTIGATION",
+          investigationGuid,
+          input.investigationStatus,
+        );
+      } catch (error) {
+        this.logger.error(`Error publishing status change for ${investigationGuid}`, error);
+        throw error;
+      }
     }
     try {
       return this.mapper.map<investigation, Investigation>(

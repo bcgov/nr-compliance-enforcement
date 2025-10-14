@@ -35,7 +35,6 @@ export class EventProcessorService implements OnModuleInit {
     this.graphqlClient = new GraphQLClient(graphqlUrl, {
       headers: {
         "x-api-key": process.env.CASE_API_KEY || "",
-        Authorization: process.env.CASE_API_TOKEN ? `Bearer ${process.env.CASE_API_TOKEN}` : "",
       },
     });
     this.logger.log(`GraphQL client initialized with URL: ${graphqlUrl}`);
@@ -81,14 +80,16 @@ export class EventProcessorService implements OnModuleInit {
     const streamConfig = {
       name: STREAMS.EVENTS,
       subjects: [
-        STREAM_TOPICS.CASE_CREATED,
+        STREAM_TOPICS.CASE_OPENED,
         STREAM_TOPICS.CASE_CLOSED,
         STREAM_TOPICS.COMPLAINT_ADDED_TO_CASE,
         STREAM_TOPICS.COMPLAINT_REMOVED_FROM_CASE,
-        STREAM_TOPICS.INVESTIGATION_CREATED,
+        STREAM_TOPICS.INVESTIGATION_OPENED,
         STREAM_TOPICS.INVESTIGATION_CLOSED,
-        STREAM_TOPICS.INSPECTION_CREATED,
+        STREAM_TOPICS.INVESTIGATION_ADDED_TO_CASE,
+        STREAM_TOPICS.INSPECTION_OPENED,
         STREAM_TOPICS.INSPECTION_CLOSED,
+        STREAM_TOPICS.INSPECTION_ADDED_TO_CASE,
       ],
       storage: StorageType.Memory,
       max_age: 10 * 60 * 60 * 1e9, // 10 minutes in nanoseconds

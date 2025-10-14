@@ -1,15 +1,19 @@
-const eventsStreamName = process.env.EVENT_STREAM_NAME;
+const eventsStreamName = `${process.env.EVENT_STREAM_NAME}`;
 export const STREAMS = {
   EVENTS: eventsStreamName,
 };
 
 export const STREAM_TOPICS = {
-  CASE_CREATED: `${eventsStreamName}.case.created`,
+  CASE_OPENED: `${eventsStreamName}.case.opened`,
   CASE_CLOSED: `${eventsStreamName}.case.closed`,
   COMPLAINT_ADDED_TO_CASE: `${eventsStreamName}.complaint.added_to_case`,
   COMPLAINT_REMOVED_FROM_CASE: `${eventsStreamName}.complaint.removed_from_case`,
-  INVESTIGATION_CREATED: `${eventsStreamName}.investigation.created`,
+  COMPLAINT_OPENED: `${eventsStreamName}.complaint.added_to_case`,
+  COMPLAINT_CLOSED: `${eventsStreamName}.complaint.removed_from_case`,
+  INVESTIGATION_OPENED: `${eventsStreamName}.investigation.opened`,
   INVESTIGATION_CLOSED: `${eventsStreamName}.investigation.closed`,
-  INSPECTION_CREATED: `${eventsStreamName}.inspection.created`,
+  INVESTIGATION_ADDED_TO_CASE: `${eventsStreamName}.investigation.added_to_case`,
+  INSPECTION_OPENED: `${eventsStreamName}.inspection.opened`,
   INSPECTION_CLOSED: `${eventsStreamName}.inspection.closed`,
+  INSPECTION_ADDED_TO_CASE: `${eventsStreamName}.inspection.added_to_case`,
 };

@@ -19,18 +19,3 @@ export type StreamTopic = (typeof STREAM_TOPICS)[keyof typeof STREAM_TOPICS];
 
 export const eventVerbs = ["OPENED", "CLOSED", "ADDED", "REMOVED"] as const;
 export type EventVerbType = (typeof eventVerbs)[number];
-
-export type EventEntityTypeCodes = "COMPLAINT" | "INVESTIGATION" | "INSPECTION" | "CASE";
-
-export const EventEntityToActivityType: Record<EventEntityTypeCodes, string> = {
-  COMPLAINT: "COMP",
-  INVESTIGATION: "INVSTGTN",
-  INSPECTION: "INSPECTION",
-  CASE: "CASE",
-};
-export const ActivityTypeToEventEntity: Record<string, string> = {
-  COMP: "COMPLAINT",
-  INVSTGTN: "INVESTIGATION",
-  INSPECTION: "INSPECTION",
-  CASE: "CASE",
-};

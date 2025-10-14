@@ -85,6 +85,7 @@ import { Role } from "../../enum/role.enum";
 import { ComplaintDtoAlias } from "src/types/models/complaints/dtos/complaint-dto-alias";
 import { ParkDto } from "../shared_data/dto/park.dto";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
+import { EventPublisherService } from "src/v1/event_publisher/event_publisher.service";
 
 const WorldBounds: Array<number> = [-180, -90, 180, 90];
 type complaintAlias = HwcrComplaint | AllegationComplaint | GirComplaint;
@@ -128,6 +129,7 @@ export class ComplaintService {
     private readonly _officerService: OfficerService,
     private readonly _linkedComplaintsXrefService: LinkedComplaintXrefService,
     private readonly dataSource: DataSource,
+    private readonly eventPublisherService: EventPublisherService,
   ) {
     this.mapper = mapper;
 
@@ -1779,7 +1781,7 @@ export class ComplaintService {
     }
   };
 
-  updateComplaintStatusById = async (id: string, status: string): Promise<ComplaintDto> => {
+  updateComplaintStatusById = async (id: string, status: string, token: string): Promise<ComplaintDto> => {
     try {
       const idir = getIdirFromRequest(this.request);
       const timestamp = new Date();
@@ -1795,6 +1797,7 @@ export class ComplaintService {
       //-- check to make sure that only one record was updated
       if (result.affected === 1) {
         const complaint = await this.findById(id);
+        this.eventPublisherService.publishComplaintStatusChangeEvents(id, status, complaint.type, token);
         return complaint as ComplaintDto;
       } else {
         this.logger.error(`Unable to update complaint: ${id} complaint status to ${status}`);

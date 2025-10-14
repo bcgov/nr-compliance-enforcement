@@ -16,7 +16,7 @@ import { CaseFileService } from "../../shared/case_file/case_file.service";
 import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { UserService } from "../../common/user.service";
 import { EventCreateInput } from "../../shared/event/dto/event";
-import { EventPublisherService } from "../../event-publisher/event-publisher.service";
+import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 import { STREAM_TOPICS } from "src/common/nats_constants";
 
 @Injectable()
@@ -247,7 +247,12 @@ export class InspectionService {
         targetId: input.caseIdentifier,
         targetEntityTypeCode: "CASE",
       };
-      this.eventPublisher.publishEvent(event, STREAM_TOPICS.INSPECTION_CREATED);
+      this.eventPublisher.publishEvent(event, STREAM_TOPICS.INSPECTION_OPENED);
+    } catch (error) {
+      this.logger.error(`Error publishing event ${STREAM_TOPICS.INVESTIGATION_OPENED}`);
+    }
+
+    try {
       return this.mapper.map<inspection, Inspection>(inspection as inspection, "inspection", "Inspection");
     } catch (error) {
       this.logger.error("Error mapping inspection:", error);
@@ -291,6 +296,14 @@ export class InspectionService {
     } catch (error) {
       this.logger.error(`Error updating inspection with guid ${inspectionGuid}:`, error);
       throw error;
+    }
+    if (input.inspectionStatus !== undefined) {
+      try {
+        this.eventPublisher.publishActivityStatusChangeEvents("INSPECTION", inspectionGuid, input.inspectionStatus);
+      } catch (error) {
+        this.logger.error(`Error publishing status change for ${inspectionGuid}`, error);
+        throw error;
+      }
     }
     try {
       return this.mapper.map<inspection, Inspection>(updatedInspection as inspection, "inspection", "Inspection");
