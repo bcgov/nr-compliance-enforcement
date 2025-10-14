@@ -146,7 +146,7 @@ export const formatDate = (input: string | undefined, includeRelative: boolean =
   try {
     const date = new Date(input);
 
-    if (isNaN(date.getTime())) {
+    if (Number.isNaN(date.getTime())) {
       throw new Error("Invalid date format");
     }
 
