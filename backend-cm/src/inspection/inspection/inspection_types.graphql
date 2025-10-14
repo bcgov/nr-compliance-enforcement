@@ -4,7 +4,7 @@ type Inspection {
   leadAgency: String
   inspectionStatus: InspectionStatusCode
   openedTimestamp: Date
-  caseIdentifier: String
+  name: String
 }
 
 type PageInfo {
@@ -36,10 +36,12 @@ input CreateInspectionInput {
   leadAgency: String!
   description: String
   inspectionStatus: String
+  name: String!
 }
 
 input UpdateInspectionInput {
   leadAgency: String
   description: String
   inspectionStatus: String
+  name: String
 }

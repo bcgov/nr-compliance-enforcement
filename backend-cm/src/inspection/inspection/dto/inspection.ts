@@ -13,7 +13,7 @@ export class Inspection {
   leadAgency: string;
   inspectionStatus: InspectionStatusCode;
   openedTimestamp: Date;
-  caseIdentifier: string;
+  name: string;
 }
 
 @InputType()
@@ -60,6 +60,9 @@ export class CreateInspectionInput {
 
   @Field(() => String)
   inspectionStatus: string;
+
+  @Field(() => String)
+  name: string;
 }
 
 @InputType()
@@ -72,6 +75,10 @@ export class UpdateInspectionInput {
 
   @Field(() => String)
   inspectionStatus: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  name?: string;
 }
 
 export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
@@ -98,6 +105,10 @@ export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
     forMember(
       (dest) => dest.openedTimestamp,
       mapFrom((src) => src.inspection_opened_utc_timestamp),
+    ),
+    forMember(
+      (dest) => dest.name,
+      mapFrom((src) => src.name),
     ),
   );
 };

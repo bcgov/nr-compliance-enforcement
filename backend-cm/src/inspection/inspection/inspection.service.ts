@@ -83,8 +83,10 @@ export class InspectionService {
     const where: any = {};
 
     if (filters?.search) {
-      // UUID column only supports exact matching
-      where.OR = [{ inspection_guid: { equals: filters.search } }];
+      where.OR = [
+        { display_name: { contains: filters.search, mode: "insensitive" } },
+        { inspection_guid: { equals: filters.search } },
+      ];
     }
 
     if (filters?.leadAgency) {
@@ -115,6 +117,7 @@ export class InspectionService {
       openedTimestamp: "inspection_opened_utc_timestamp",
       leadAgency: "owned_by_agency_ref",
       inspectionStatus: "inspection_status",
+      name: "name",
     };
 
     let orderBy: any = { inspection_opened_utc_timestamp: "desc" }; // Default sort
@@ -145,22 +148,8 @@ export class InspectionService {
         orderByClause: orderBy,
       },
     );
-    const res = await Promise.all(
-      result.items.map(async (ins) => {
-        const caseFile = await this.caseFileService.findCaseFileByActivityId("INSPECTION", ins.inspectionGuid);
-
-        return { ...ins, caseIdentifier: caseFile.caseIdentifier };
-      }),
-    );
-
-    if (filters?.sortBy === "caseIdentifier") {
-      if (filters?.sortOrder?.toLowerCase() === "desc") {
-        res.sort((a, b) => b.caseIdentifier.localeCompare(a.caseIdentifier));
-      } else res.sort((a, b) => a.caseIdentifier.localeCompare(b.caseIdentifier));
-    }
-
     return {
-      items: res,
+      items: result.items,
       pageInfo: result.pageInfo as PageInfo,
     };
   }
@@ -185,6 +174,7 @@ export class InspectionService {
           inspection_status: input.inspectionStatus,
           inspection_description: input.description,
           owned_by_agency_ref: input.leadAgency,
+          name: input.name,
           inspection_opened_utc_timestamp: new Date(),
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
@@ -265,6 +255,9 @@ export class InspectionService {
       }
       if (input.description !== undefined) {
         updateData.inspection_description = input.description;
+      }
+      if (input.name !== undefined) {
+        updateData.name = input.name;
       }
       // Perform the update
       updatedInspection = await this.prisma.inspection.update({

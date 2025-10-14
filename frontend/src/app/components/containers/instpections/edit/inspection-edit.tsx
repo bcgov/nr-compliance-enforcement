@@ -22,6 +22,7 @@ const CREATE_INSPECTION_MUTATION = gql`
     createInspection(input: $input) {
       inspectionGuid
       description
+      name
       inspectionStatus {
         inspectionStatusCode
         shortDescription
@@ -37,6 +38,7 @@ const UPDATE_INspecTION_MUTATION = gql`
     updateInspection(inspectionGuid: $inspectionGuid, input: $input) {
       inspectionGuid
       description
+      name
       inspectionStatus {
         inspectionStatusCode
         shortDescription
@@ -53,6 +55,7 @@ const GET_INspecTION = gql`
       __typename
       inspectionGuid
       description
+      name
       openedTimestamp
       inspectionStatus {
         inspectionStatusCode
@@ -114,12 +117,14 @@ const InspectionEdit: FC = () => {
         inspectionStatus: inspectionData.getInspection.inspectionStatus?.inspectionStatusCode || "",
         leadAgency: inspectionData.getInspection.leadAgency || "",
         description: inspectionData.getInspection.description || "",
+        name: inspectionData.getInspection.name || "",
       };
     }
     return {
       inspectionStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
       leadAgency: getUserAgency(),
       description: "",
+      name: "",
     };
   }, [isEditMode, inspectionData]);
 
@@ -131,6 +136,7 @@ const InspectionEdit: FC = () => {
           leadAgency: value.leadAgency,
           inspectionStatus: value.inspectionStatus,
           description: value.description,
+          name: value.name,
         };
 
         updateInspectionMutation.mutate({
@@ -142,6 +148,7 @@ const InspectionEdit: FC = () => {
           caseIdentifier: caseIdentifier as string,
           leadAgency: value.leadAgency,
           description: value.description,
+          name: value.name,
           inspectionStatus: value.inspectionStatus,
         };
 
@@ -242,6 +249,27 @@ const InspectionEdit: FC = () => {
                   enableValidation={true}
                   errorMessage={field.state.meta.errors?.[0]?.message || ""}
                   isDisabled={true}
+                />
+              )}
+            />
+
+            <FormField
+              form={form}
+              name="name"
+              label="Name"
+              required
+              validators={{ onChange: z.string().min(1, "Name is required").max(100, "Name must be 100 characters or less") }}
+              render={(field) => (
+                <input
+                  type="text"
+                  id="display-name"
+                  className="form-control comp-details-input"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  placeholder="Enter name..."
+                  maxLength={100}
+                  disabled={isDisabled}
+                  style={{ borderColor: field.state.meta.errors?.[0] ? '#dc3545' : '' }}
                 />
               )}
             />

@@ -2,6 +2,7 @@ type Query {
   caseFile(caseIdentifier: String!): CaseFile
   caseFiles(caseIdentifiers: [String!]!): [CaseFile!]!
   caseFileByActivityId(activityType: String!, activityIdentifier: String!): CaseFile!
+  caseFilesByActivityIds(activityType: String!, activityIdentifiers: [String!]!): [CaseFile!]!
   allCaseFilesByActivityId(activityType: String!, activityIdentifier: String!): [CaseFile]!
   searchCaseFiles(page: Int = 1, pageSize: Int = 25, filters: CaseFileFilters): CaseFileResult!
 }

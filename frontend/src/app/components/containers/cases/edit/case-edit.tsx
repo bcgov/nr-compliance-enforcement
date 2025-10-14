@@ -23,6 +23,7 @@ const CREATE_CASE_MUTATION = gql`
       caseIdentifier
       openedTimestamp
       description
+      name
       caseStatus {
         caseStatusCode
         shortDescription
@@ -43,6 +44,7 @@ const UPDATE_CASE_MUTATION = gql`
       caseIdentifier
       openedTimestamp
       description
+      name
       caseStatus {
         caseStatusCode
         shortDescription
@@ -64,6 +66,7 @@ const GET_CASE_FILE = gql`
       caseIdentifier
       openedTimestamp
       description
+      name
       caseStatus {
         caseStatusCode
         shortDescription
@@ -113,7 +116,14 @@ const CaseEdit: FC = () => {
   });
 
   const updateCaseMutation = useGraphQLMutation(UPDATE_CASE_MUTATION, {
-    invalidateQueries: [["caseFile", id], "searchCaseFiles"],
+    invalidateQueries: [
+      ["caseFile", id], 
+      "searchCaseFiles", 
+      "searchInspections", 
+      "searchInvestigations",
+      "getInspections",
+      "getInvestigations"
+    ],
     onSuccess: (data: any) => {
       ToggleSuccess("Case updated successfully");
       navigate(`/case/${id}`);
@@ -131,12 +141,14 @@ const CaseEdit: FC = () => {
         caseStatus: caseData.caseFile.caseStatus?.caseStatusCode || "",
         leadAgency: caseData.caseFile.leadAgency?.agencyCode || "",
         description: caseData.caseFile.description || "",
+        name: caseData.caseFile.name || "",
       };
     }
     return {
       caseStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
       leadAgency: getUserAgency(),
       description: "",
+      name: "",
     };
   }, [isEditMode, caseData]);
 
@@ -148,6 +160,7 @@ const CaseEdit: FC = () => {
           caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
           description: value.description,
+          name: value.name,
         };
 
         updateCaseMutation.mutate({
@@ -159,6 +172,7 @@ const CaseEdit: FC = () => {
           caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
           description: value.description,
+          name: value.name,
         };
 
         createCaseMutation.mutate({ input: createInput });
@@ -257,6 +271,27 @@ const CaseEdit: FC = () => {
                   enableValidation={true}
                   errorMessage={field.state.meta.errors?.[0]?.message || ""}
                   isDisabled={true}
+                />
+              )}
+            />
+
+            <FormField
+              form={form}
+              name="name"
+              label="Name"
+              required
+              validators={{ onChange: z.string().min(1, "Name is required").max(100, "Name must be 100 characters or less") }}
+              render={(field) => (
+                <input
+                  type="text"
+                  id="display-name"
+                  className="form-control comp-details-input"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  placeholder="Enter name..."
+                  maxLength={100}
+                  disabled={isDisabled}
+                  style={{ borderColor: field.state.meta.errors?.[0] ? '#dc3545' : '' }}
                 />
               )}
             />

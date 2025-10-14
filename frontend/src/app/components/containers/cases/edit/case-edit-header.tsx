@@ -40,7 +40,7 @@ export const CaseEditHeader: FC<CaseEditHeaderProps> = ({
           <div className="comp-details-title-info">
             <h1 className="comp-box-complaint-id">
               {isEditMode && caseIdentifier ? (
-                <span>Case #{caseIdentifier}</span>
+                <span>Case {caseIdentifier}</span>
               ) : (
                 <span>{isEditMode ? "Edit case" : "Create case"} </span>
               )}

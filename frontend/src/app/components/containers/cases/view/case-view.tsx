@@ -27,6 +27,7 @@ const GET_CASE_FILE = gql`
     caseFile(caseIdentifier: $caseIdentifier) {
       __typename
       caseIdentifier
+      name
       openedTimestamp
       description
       caseStatus {
@@ -54,6 +55,7 @@ const GET_INVESTIGATIONS = gql`
     getInvestigations(ids: $ids) {
       __typename
       investigationGuid
+      name
       description
       openedTimestamp
       investigationStatus {
@@ -71,6 +73,7 @@ const GET_INSPECTIONS = gql`
     getInspections(ids: $ids) {
       __typename
       inspectionGuid
+      name
       description
       openedTimestamp
       inspectionStatus {

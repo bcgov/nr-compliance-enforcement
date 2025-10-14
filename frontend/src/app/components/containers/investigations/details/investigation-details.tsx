@@ -17,6 +17,7 @@ const GET_INVESTIGATION = gql`
     getInvestigation(investigationGuid: $investigationGuid) {
       __typename
       investigationGuid
+      name
       description
       openedTimestamp
       investigationStatus {
@@ -39,6 +40,7 @@ const GET_INVESTIGATION = gql`
     }
     caseFileByActivityId(activityType: "INVSTGTN", activityIdentifier: $investigationGuid) {
       caseIdentifier
+      name
     }
   }
 `;
@@ -60,6 +62,10 @@ export const InvestigationDetails: FC = () => {
     enabled: !!investigationGuid, // Only refresh query if id is provided
   });
 
+  const investigationData = data?.getInvestigation;
+  const caseIdentifier = data?.caseFileByActivityId?.caseIdentifier;
+  const caseName = data?.caseFileByActivityId?.name;
+
   const renderTabContent = () => {
     switch (currentTab) {
       case "summary":
@@ -68,6 +74,7 @@ export const InvestigationDetails: FC = () => {
             investigationData={investigationData}
             investigationGuid={investigationGuid}
             caseGuid={caseIdentifier ?? ""}
+            caseName={caseName}
           />
         );
       case "records":
@@ -100,9 +107,6 @@ export const InvestigationDetails: FC = () => {
       </div>
     );
   }
-
-  const investigationData = data?.getInvestigation;
-  const caseIdentifier = data?.caseFileByActivityId?.caseIdentifier;
 
   return (
     <div className="comp-complaint-details">

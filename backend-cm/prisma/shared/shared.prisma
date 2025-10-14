@@ -188,9 +188,12 @@ model case_file {
   update_user_id       String?          @db.VarChar(32)
   update_utc_timestamp DateTime?        @db.Timestamp(6)
   description          String?
+  name                 String           @default("") @db.VarChar(100)
   case_activity        case_activity[]
   agency_code          agency_code      @relation(fields: [lead_agency], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_case_file__agency_code")
   case_status_code     case_status_code @relation(fields: [case_status], references: [case_status_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_case_file__case_status_code")
+
+  @@unique([name], map: "uq_case_file_name")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments

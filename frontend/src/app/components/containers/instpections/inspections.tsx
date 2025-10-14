@@ -1,14 +1,15 @@
-import { FC, useState, useCallback } from "react";
+import { FC, useState, useCallback, useMemo } from "react";
 import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
-import { InspectionResult } from "@/generated/graphql";
+import { InspectionResult, CaseFile } from "@/generated/graphql";
 import { InspectionFilter } from "./list/inspection-filter";
 import { InspectionList } from "./list";
 import { InspectionFilterBar } from "./list/inspection-filter-bar";
 import { InspectionMap } from "./map/inspection-map";
 import { useInspectionSearch } from "./hooks/use-inspection-search";
+import { uniq, compact } from "lodash";
 
 const SEARCH_INSPECTIONS = gql`
   query SearchInspections($page: Int, $pageSize: Int, $filters: InspectionFilters) {
@@ -16,9 +17,9 @@ const SEARCH_INSPECTIONS = gql`
       items {
         __typename
         inspectionGuid
+        name
         openedTimestamp
         leadAgency
-        caseIdentifier
         inspectionStatus {
           inspectionStatusCode
           shortDescription
@@ -30,6 +31,18 @@ const SEARCH_INSPECTIONS = gql`
         pageSize
         totalPages
         totalCount
+      }
+    }
+  }
+`;
+
+const GET_CASE_FILES_BY_ACTIVITIES = gql`
+  query GetCaseFilesByActivityIds($activityType: String!, $activityIdentifiers: [String!]!) {
+    caseFilesByActivityIds(activityType: $activityType, activityIdentifiers: $activityIdentifiers) {
+      caseIdentifier
+      name
+      activities {
+        activityIdentifier
       }
     }
   }
@@ -62,6 +75,32 @@ const Inspections: FC = () => {
     },
     placeholderData: (previousData) => previousData,
   });
+
+  const inspectionGuids = useMemo(() => data?.searchInspections?.items ? uniq(compact(data.searchInspections.items.map(item => item.inspectionGuid))) :  [], [data?.searchInspections?.items]);
+
+  const { data: caseData } = useGraphQLQuery<{ caseFilesByActivityIds: CaseFile[] }>(
+    GET_CASE_FILES_BY_ACTIVITIES,
+    {
+      queryKey: ["caseFilesByActivityIds", "INSPECTION", ...inspectionGuids],
+      variables: { activityType: "INSPECTION", activityIdentifiers: inspectionGuids },
+      enabled: inspectionGuids.length > 0,
+    }
+  );
+
+  // Map of activityIdentifier -> related cases
+  const cases = useMemo(() => {
+    const map = new Map<string, CaseFile[]>();
+    for (const casefile of caseData?.caseFilesByActivityIds || []) {
+      for (const activity of casefile.activities || []) {
+        if (activity?.activityIdentifier) {
+          const existing = map.get(activity.activityIdentifier) || [];
+          map.set(activity.activityIdentifier, [...existing, casefile]);
+        }
+      }
+    }
+    return map;
+  }, [caseData]);
+
 
   const toggleShowMobileFilters = useCallback(() => setShowMobileFilters((prevShow) => !prevShow), []);
   const toggleShowDesktopFilters = useCallback(() => setShowDesktopFilters((prevShow) => !prevShow), []);
@@ -113,12 +152,13 @@ const Inspections: FC = () => {
     const totalInspections = data?.searchInspections?.pageInfo?.totalCount || 0;
 
     return searchValues.viewType === "list" ? (
-      <InspectionList
-        inspections={inspections}
-        totalItems={totalInspections}
-        isLoading={isLoading}
-        error={error}
-      />
+        <InspectionList
+          inspections={inspections}
+          totalItems={totalInspections}
+          isLoading={isLoading}
+          error={error}
+          cases={cases}
+        />
     ) : (
       <InspectionMap
         inspections={inspections}

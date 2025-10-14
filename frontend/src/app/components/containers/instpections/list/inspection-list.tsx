@@ -8,12 +8,13 @@ import { useInspectionSearch } from "../hooks/use-inspection-search";
 
 type Props = {
   inspections: any[];
+  cases?: Map<string, any[]>;
   totalItems?: number;
   isLoading?: boolean;
   error?: Error | null;
 };
 
-export const InspectionList: FC<Props> = ({ inspections, totalItems = 0, isLoading = false, error = null }) => {
+export const InspectionList: FC<Props> = ({ inspections, totalItems = 0, isLoading = false, error = null, cases = new Map() }) => {
   const { searchValues, setValues, setSort } = useInspectionSearch();
 
   const handleSort = (sortInput: string) => {
@@ -48,11 +49,11 @@ export const InspectionList: FC<Props> = ({ inspections, totalItems = 0, isLoadi
     <thead className="sticky-table-header">
       <tr>
         {renderSortableHeader(
-          "Inspection #",
-          "inspectionGuid",
+          "Name",
+          "name",
           "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
         )}
-        {renderSortableHeader("Case #", "caseIdentifier", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("Case", "caseIdentifier", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Date Opened", "openedTimestamp", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Status", "inspectionStatus", "comp-cell-width-110")}
         {renderSortableHeader("Agency", "leadAgency")}
@@ -111,6 +112,7 @@ export const InspectionList: FC<Props> = ({ inspections, totalItems = 0, isLoadi
       <InspectionListItem
         key={inspection.inspectionGuid}
         data={inspection}
+        cases={cases.get(inspection.inspectionGuid) || []}
       />
     ));
   };

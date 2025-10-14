@@ -93,6 +93,26 @@ export class CaseFileService {
     return await this.findOne(caseActivityXrefRecord.case_file_guid);
   }
 
+  async findCaseFilesByActivityIds(activityType: string, activityIdentifiers: string[]): Promise<CaseFile[]> {
+    if (!activityIdentifiers || activityIdentifiers.length === 0) {
+      return [];
+    }
+
+    const caseActivityXrefRecords = await this.prisma.case_activity.findMany({
+      where: {
+        activity_type: activityType,
+        activity_identifier_ref: {
+          in: activityIdentifiers,
+        },
+      },
+    });
+
+    const caseFileGuids = caseActivityXrefRecords.map((record) => record.case_file_guid);
+    const uniqueCaseFileGuids = [...new Set(caseFileGuids)];
+
+    return await this.findMany(uniqueCaseFileGuids);
+  }
+
   async findAllCaseFilesByActivityId(activityType: string, activityIdentifier: string) {
     const caseActivityXrefRecords = await this.prisma.case_activity.findMany({
       where: {
@@ -116,6 +136,7 @@ export class CaseFileService {
         lead_agency: input.leadAgency,
         case_status: input.caseStatus,
         description: input.description,
+        name: input.name,
         opened_utc_timestamp: new Date(),
         create_user_id: this.user.getIdirUsername(),
       },
@@ -171,6 +192,9 @@ export class CaseFileService {
     if (input.description !== undefined) {
       updateData.description = input.description;
     }
+    if (input.name !== undefined) {
+      updateData.name = input.name;
+    }
 
     const caseFile = await this.prisma.case_file.update({
       where: { case_file_guid: caseIdentifier },
@@ -198,8 +222,10 @@ export class CaseFileService {
     const where: any = {};
 
     if (filters?.search) {
-      // UUID column only supports exact matching
-      where.OR = [{ case_file_guid: { equals: filters.search } }];
+      where.OR = [
+        { display_name: { contains: filters.search, mode: "insensitive" } },
+        { case_file_guid: { equals: filters.search } },
+      ];
     }
 
     if (filters?.leadAgency) {
@@ -230,6 +256,7 @@ export class CaseFileService {
       openedTimestamp: "opened_utc_timestamp",
       leadAgency: "lead_agency",
       caseStatus: "case_status",
+      name: "name",
     };
 
     let orderBy: any = { opened_utc_timestamp: "desc" }; // Default sort

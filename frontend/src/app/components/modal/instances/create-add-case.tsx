@@ -23,6 +23,7 @@ const CREATE_CASE_MUTATION = gql`
       caseIdentifier
       openedTimestamp
       description
+      name
       caseStatus {
         caseStatusCode
         shortDescription
@@ -74,6 +75,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   const [createOrAddOption, setCreateOrAddOption] = useState<string>("create");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [caseDescription, setCaseDescription] = useState<string>("");
+  const [name, setDisplayName] = useState<string>("");
 
   const createCaseMutation = useGraphQLMutation(CREATE_CASE_MUTATION, {
     invalidateQueries: ["searchCaseFiles"],
@@ -85,7 +87,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
             to={`/case/${data.createCaseFile.caseIdentifier}`}
             className="toast-link"
           >
-            #{data.createCaseFile.caseIdentifier}
+            {data.createCaseFile.name}
           </Link>{" "}
           auto-created from complaint #{complaint_identifier}
         </div>,
@@ -113,7 +115,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
             to={`/case/${selectedCase?.value}`}
             className="toast-link"
           >
-            #{selectedCase?.value}
+            {selectedCase?.label}
           </Link>
         </div>,
         {
@@ -130,7 +132,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   });
 
   const handleCreateAddCase = async () => {
-    if (createOrAddOption === "create" && caseDescription === "") {
+    if (createOrAddOption === "create" && (caseDescription === "" || name === "")) {
       setErrorMessage("Required");
       return;
     }
@@ -158,6 +160,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           activityType: "COMP",
           activityIdentifier: complaint_identifier,
           description: caseDescription,
+          name: name,
         };
         createCaseMutation.mutate({ input: createInput });
         break;
@@ -168,11 +171,20 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   };
 
   const handleCaseDescriptionChange = (value: string) => {
-    if (value === "") {
+    if (value === "" || name === "") {
       setErrorMessage("Required");
     } else {
       setErrorMessage("");
       setCaseDescription(value.trim());
+    }
+  };
+
+  const handleDisplayNameChange = (value: string) => {
+    if (value === "" || caseDescription === "") {
+      setErrorMessage("Required");
+    } else {
+      setErrorMessage("");
+      setDisplayName(value.trim());
     }
   };
 
@@ -218,26 +230,51 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           </div>
 
           {createOrAddOption === "create" && (
-            <div
-              className="comp-details-form-row"
-              id="create-case-div"
-            >
-              <label htmlFor="createAddCase">Case description</label>
+            <>
               <div
-                className="comp-details-input full-width"
-                style={{ width: "100%" }}
+                className="comp-details-form-row"
+                id="create-case-display-name-div"
               >
-                <ValidationTextArea
-                  id="case-description"
-                  className="comp-form-control comp-details-input"
-                  rows={2}
-                  onChange={handleCaseDescriptionChange}
-                  placeholderText="Enter case description..."
-                  maxLength={4000}
-                  errMsg={errorMessage}
-                />
+                <label htmlFor="name">Name *</label>
+                <div
+                  className="comp-details-input full-width"
+                  style={{ width: "100%" }}
+                >
+                  <input
+                    type="text"
+                    id="display-name"
+                    className="form-control comp-details-input"
+                    value={name}
+                    onChange={(e) => handleDisplayNameChange(e.target.value)}
+                    placeholder="Enter name..."
+                    maxLength={100}
+                  />
+                  {errorMessage && name === "" && (
+                    <div className="error-message" style={{ color: '#dc3545' }}>{errorMessage}</div>
+                  )}
+                </div>
               </div>
-            </div>
+              <div
+                className="comp-details-form-row"
+                id="create-case-div"
+              >
+                <label htmlFor="createAddCase">Case description</label>
+                <div
+                  className="comp-details-input full-width"
+                  style={{ width: "100%" }}
+                >
+                  <ValidationTextArea
+                    id="case-description"
+                    className="comp-form-control comp-details-input"
+                    rows={2}
+                    onChange={handleCaseDescriptionChange}
+                    placeholderText="Enter case description..."
+                    maxLength={4000}
+                    errMsg={errorMessage}
+                  />
+                </div>
+              </div>
+            </>
           )}
           {createOrAddOption === "add" && (
             <div

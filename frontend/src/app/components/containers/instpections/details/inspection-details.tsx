@@ -10,6 +10,7 @@ const GET_INspection = gql`
     getInspection(inspectionGuid: $inspectionGuid) {
       __typename
       inspectionGuid
+      name
       description
       openedTimestamp
       inspectionStatus {
@@ -21,6 +22,7 @@ const GET_INspection = gql`
     }
     caseFileByActivityId(activityType: "INSPECTION", activityIdentifier: $inspectionGuid) {
       caseIdentifier
+      name
     }
   }
 `;
@@ -40,6 +42,10 @@ export const InspectionDetails: FC = () => {
     enabled: !!inspectionGuid, // Only refresh query if id is provided
   });
 
+  const inspectionData = data?.getInspection;
+  const caseIdentifier = data?.caseFileByActivityId?.caseIdentifier;
+  const caseName = data?.caseFileByActivityId?.name;
+
   if (isLoading) {
     return (
       <div className="comp-complaint-details">
@@ -52,9 +58,6 @@ export const InspectionDetails: FC = () => {
       </div>
     );
   }
-
-  const inspectionData = data?.getInspection;
-  const caseIdentifier = data?.caseFileByActivityId?.caseIdentifier;
   return (
     <div className="comp-complaint-details">
       <InspectionHeader inspection={inspectionData} />
@@ -84,8 +87,8 @@ export const InspectionDetails: FC = () => {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-group">
-                      <strong>Case Identifier:</strong>
-                      {caseIdentifier ? <Link to={`/case/${caseIdentifier}`}>{caseIdentifier}</Link> : <p>N/A</p>}
+                      <strong>Case:</strong>
+                      <p>{caseIdentifier ? <Link to={`/case/${caseIdentifier}`}>{caseName || caseIdentifier}</Link> : <p>N/A</p>}</p>
                     </div>
                   </div>
                 </div>

@@ -9,6 +9,7 @@ const SEARCH_CASE_FILES = gql`
       items {
         __typename
         caseIdentifier
+        name
         openedTimestamp
         caseStatus {
           caseStatusCode

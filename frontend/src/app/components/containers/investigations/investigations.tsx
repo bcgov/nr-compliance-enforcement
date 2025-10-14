@@ -1,14 +1,15 @@
-import { FC, useState, useCallback } from "react";
+import { FC, useState, useCallback, useMemo } from "react";
 import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
-import { InvestigationResult } from "@/generated/graphql";
+import { InvestigationResult, CaseFile } from "@/generated/graphql";
 import { InvestigationFilter } from "./list/investigation-filter";
 import { InvestigationList } from "./list";
 import { InvestigationFilterBar } from "./list/investigation-filter-bar";
 import { InvestigationMap } from "./map/investigation-map";
 import { useInvestigationSearch } from "./hooks/use-investigation-search";
+import { uniq, compact } from "lodash";
 
 const SEARCH_INVESTIGATIONS = gql`
   query SearchInvestigations($page: Int, $pageSize: Int, $filters: InvestigationFilters) {
@@ -16,9 +17,9 @@ const SEARCH_INVESTIGATIONS = gql`
       items {
         __typename
         investigationGuid
+        name
         openedTimestamp
         leadAgency
-        caseIdentifier
         investigationStatus {
           investigationStatusCode
           shortDescription
@@ -30,6 +31,18 @@ const SEARCH_INVESTIGATIONS = gql`
         pageSize
         totalPages
         totalCount
+      }
+    }
+  }
+`;
+
+const GET_CASE_FILES_BY_ACTIVITIES = gql`
+  query GetCaseFilesByActivityIds($activityType: String!, $activityIdentifiers: [String!]!) {
+    caseFilesByActivityIds(activityType: $activityType, activityIdentifiers: $activityIdentifiers) {
+      caseIdentifier
+      name
+      activities {
+        activityIdentifier
       }
     }
   }
@@ -65,6 +78,31 @@ const Investigations: FC = () => {
       placeholderData: (previousData) => previousData,
     },
   );
+
+  const investigationGuids = useMemo(() => data?.searchInvestigations?.items ? uniq(compact(data.searchInvestigations.items.map(item => item.investigationGuid))) :  [], [data?.searchInvestigations?.items]);
+
+  const { data: caseData } = useGraphQLQuery<{ caseFilesByActivityIds: CaseFile[] }>(
+    GET_CASE_FILES_BY_ACTIVITIES,
+    {
+      queryKey: ["caseFilesByActivityIds", "INVSTGTN", ...investigationGuids],
+      variables: { activityType: "INVSTGTN", activityIdentifiers: investigationGuids },
+      enabled: investigationGuids.length > 0,
+    }
+  );
+
+  // Map of activityIdentifier -> related cases
+  const cases = useMemo(() => {
+    const map = new Map<string, CaseFile[]>();
+    for (const casefile of caseData?.caseFilesByActivityIds || []) {
+      for (const activity of casefile.activities || []) {
+        if (activity?.activityIdentifier) {
+          const existing = map.get(activity.activityIdentifier) || [];
+          map.set(activity.activityIdentifier, [...existing, casefile]);
+        }
+      }
+    }
+    return map;
+  }, [caseData]);
 
   const toggleShowMobileFilters = useCallback(() => setShowMobileFilters((prevShow) => !prevShow), []);
   const toggleShowDesktopFilters = useCallback(() => setShowDesktopFilters((prevShow) => !prevShow), []);
@@ -116,12 +154,13 @@ const Investigations: FC = () => {
     const totalInvestigations = data?.searchInvestigations?.pageInfo?.totalCount || 0;
 
     return searchValues.viewType === "list" ? (
-      <InvestigationList
-        investigations={investigations}
-        totalItems={totalInvestigations}
-        isLoading={isLoading}
-        error={error}
-      />
+        <InvestigationList
+          investigations={investigations}
+          totalItems={totalInvestigations}
+          isLoading={isLoading}
+          error={error}
+          cases={cases}
+        />
     ) : (
       <InvestigationMap
         investigations={investigations}

@@ -22,6 +22,7 @@ const CREATE_INVESTIGATION_MUTATION = gql`
     createInvestigation(input: $input) {
       investigationGuid
       description
+      name
       investigationStatus {
         investigationStatusCode
         shortDescription
@@ -37,6 +38,7 @@ const UPDATE_INVESTIGATION_MUTATION = gql`
     updateInvestigation(investigationGuid: $investigationGuid, input: $input) {
       investigationGuid
       description
+      name
       investigationStatus {
         investigationStatusCode
         shortDescription
@@ -53,6 +55,7 @@ const GET_INVESTIGATION = gql`
       __typename
       investigationGuid
       description
+      name
       openedTimestamp
       investigationStatus {
         investigationStatusCode
@@ -114,12 +117,14 @@ const InvestigationEdit: FC = () => {
         investigationStatus: investigationData.getInvestigation.investigationStatus?.investigationStatusCode || "",
         leadAgency: investigationData.getInvestigation.leadAgency || "",
         description: investigationData.getInvestigation.description || "",
+        name: investigationData.getInvestigation.name || "",
       };
     }
     return {
       investigationStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
       leadAgency: getUserAgency(),
       description: "",
+      name: "",
     };
   }, [isEditMode, investigationData]);
 
@@ -131,6 +136,7 @@ const InvestigationEdit: FC = () => {
           leadAgency: value.leadAgency,
           investigationStatus: value.investigationStatus,
           description: value.description,
+          name: value.name,
         };
 
         updateInvestigationMutation.mutate({
@@ -142,6 +148,7 @@ const InvestigationEdit: FC = () => {
           caseIdentifier: caseIdentifier as string,
           leadAgency: value.leadAgency,
           description: value.description,
+          name: value.name,
           investigationStatus: value.investigationStatus,
         };
 
@@ -242,6 +249,27 @@ const InvestigationEdit: FC = () => {
                   enableValidation={true}
                   errorMessage={field.state.meta.errors?.[0]?.message || ""}
                   isDisabled={true}
+                />
+              )}
+            />
+
+            <FormField
+              form={form}
+              name="name"
+              label="Name"
+              required
+              validators={{ onChange: z.string().min(1, "Name is required").max(100, "Name must be 100 characters or less") }}
+              render={(field) => (
+                <input
+                  type="text"
+                  id="display-name"
+                  className="form-control comp-details-input"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  placeholder="Enter name..."
+                  maxLength={100}
+                  disabled={isDisabled}
+                  style={{ borderColor: field.state.meta.errors?.[0] ? '#dc3545' : '' }}
                 />
               )}
             />
