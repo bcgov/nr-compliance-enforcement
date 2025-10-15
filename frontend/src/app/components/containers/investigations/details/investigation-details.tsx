@@ -94,7 +94,7 @@ export const InvestigationDetails: FC = () => {
         <InvestigationHeader />
         <section className="comp-details-body comp-container">
           <div className="comp-details-content">
-            <p>Loading investigation details...</p>
+            <p>Loading investigation details... </p>
           </div>
         </section>
       </div>
