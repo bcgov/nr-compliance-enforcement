@@ -1,3 +1,4 @@
+//@ts-ignore
 import { Prisma } from '@prisma/client';
 import { Point } from '../../../common/custom_scalars';
 import { investigation } from '../../../../prisma/investigation/investigation.unsupported_types';
@@ -7,7 +8,6 @@ import { Dictionary } from '@automapper/core';
 /**
  * PostGIS extension for Prisma Client
  * Adds custom CLIENT methods to handle PostGIS geometry types with GeoJSON Point conversion
- *
  */
 export const postgisExtension = Prisma.defineExtension({
   name: 'postgis',

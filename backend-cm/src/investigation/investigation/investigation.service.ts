@@ -32,7 +32,7 @@ export class InvestigationService {
   private readonly logger = new Logger(InvestigationService.name);
 
   async findOne(investigationGuid: string) {
-    const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
+    const PostGISPrismaClient = this.prisma as any;
     const prismaInvestigation = await PostGISPrismaClient.findUnique({
       where: {
         investigation_guid: investigationGuid,
@@ -79,7 +79,7 @@ export class InvestigationService {
     if (!ids || ids.length === 0) {
       return [];
     }
-    const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
+    const PostGISPrismaClient = this.prisma as any;
     const prismaInvestigations = await PostGISPrismaClient.findMany(
       ids,
       { investigation_status_code: true }
@@ -112,7 +112,7 @@ export class InvestigationService {
     // Create the investigation
     let investigation;
     try {
-      const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
+      const PostGISPrismaClient = this.prisma as any;
       investigation = await PostGISPrismaClient.create({
         investigation_status: input.investigationStatus,
         investigation_description: input.description,
@@ -185,7 +185,7 @@ export class InvestigationService {
 
   async update(investigationGuid: string, input: UpdateInvestigationInput): Promise<Investigation> {
     // Check if the investigation exists
-    const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
+    const PostGISPrismaClient = this.prisma as any;
     const existingInvestigation = await PostGISPrismaClient.investigation.findUnique({
       where: { investigation_guid: investigationGuid },
     });
@@ -263,7 +263,7 @@ export class InvestigationService {
     const skip = (validatedPage - 1) * validatedPageSize;
 
     const where: Prisma.investigationWhereInput = {};
-    const PostGISPrismaClient = this.prisma as unknown as ExtendedPrismaClient;
+    const PostGISPrismaClient = this.prisma as any;
 
     if (filters?.search) {
       // UUID column only supports exact matching
