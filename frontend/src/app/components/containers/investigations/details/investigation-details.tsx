@@ -74,7 +74,7 @@ export const InvestigationDetails: FC = () => {
             investigationData={investigationData}
             investigationGuid={investigationGuid}
             caseGuid={caseIdentifier ?? ""}
-            caseName={caseName}
+            caseName={caseName ?? ""}
           />
         );
       case "records":
