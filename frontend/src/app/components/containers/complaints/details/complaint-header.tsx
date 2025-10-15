@@ -212,6 +212,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         data: {
           title: "Create/add case",
           complaint_identifier: id,
+          agency_code: complaintAgency,
         },
       }),
     );
