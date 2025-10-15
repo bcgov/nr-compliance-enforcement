@@ -278,4 +278,26 @@ export class InspectionService {
       throw error;
     }
   }
+
+  async checkNameExists(name: string, leadAgency: string, excludeInspectionGuid?: string): Promise<boolean> {
+    const where: any = {
+      name: {
+        equals: name,
+        mode: "insensitive",
+      },
+      owned_by_agency_ref: leadAgency,
+    };
+
+    if (excludeInspectionGuid) {
+      where.inspection_guid = {
+        not: excludeInspectionGuid,
+      };
+    }
+
+    const existingInspection = await this.prisma.inspection.findFirst({
+      where,
+    });
+
+    return !!existingInspection;
+  }
 }

@@ -307,4 +307,26 @@ export class InvestigationService {
       pageInfo: result.pageInfo as PageInfo,
     };
   }
+
+  async checkNameExists(name: string, leadAgency: string, excludeInvestigationGuid?: string): Promise<boolean> {
+    const where: any = {
+      name: {
+        equals: name,
+        mode: "insensitive",
+      },
+      owned_by_agency_ref: leadAgency,
+    };
+
+    if (excludeInvestigationGuid) {
+      where.investigation_guid = {
+        not: excludeInvestigationGuid,
+      };
+    }
+
+    const existingInvestigation = await this.prisma.investigation.findFirst({
+      where,
+    });
+
+    return !!existingInvestigation;
+  }
 }

@@ -5,17 +5,25 @@ import { z } from "zod";
 import { gql } from "graphql-request";
 import { InspectionEditHeader } from "./inspection-edit-header";
 import { CompSelect } from "@components/common/comp-select";
+import { CompInput } from "@components/common/comp-input";
 import { FormField } from "@components/common/form-field";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
+import { useRequest as GraphQLRequest } from "@/app/graphql/client";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CreateInspectionInput, UpdateInspectionInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
+
+const CHECK_INSPECTION_NAME_EXISTS = gql`
+  query CheckInspectionNameExists($name: String!, $leadAgency: String!, $excludeInspectionGuid: String) {
+    checkInspectionNameExists(name: $name, leadAgency: $leadAgency, excludeInspectionGuid: $excludeInspectionGuid)
+  }
+`;
 
 const CREATE_INSPECTION_MUTATION = gql`
   mutation CreateInspection($input: CreateInspectionInput!) {
@@ -203,6 +211,50 @@ const InspectionEdit: FC = () => {
 
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>
+
+            <FormField
+              form={form}
+              name="name"
+              label="Inspection ID"
+              required
+              validators={{
+                onChange: z.string().min(1, "Inspection ID is required").max(100, "Inspection ID must be 100 characters or less"),
+                onChangeAsyncDebounceMs: 500,
+                onChangeAsync: async ({ value }: { value: string }) => {
+                  if (!value || value.length < 1) return "Inspection ID is required";
+                  const leadAgency = form.getFieldValue("leadAgency");
+                  if (!leadAgency) return undefined;
+                  const result: { checkInspectionNameExists: boolean } = await GraphQLRequest(
+                    CHECK_INSPECTION_NAME_EXISTS,
+                    {
+                      name: value,
+                      leadAgency: leadAgency,
+                      excludeInspectionGuid: isEditMode ? id : undefined,
+                    }
+                  );
+                  if (result.checkInspectionNameExists) {
+                    return "This Inspection ID is already in use for this agency. Please choose a different Inspection ID.";
+                  }
+                  return undefined;
+                }
+              }}
+              render={(field) => (
+                <div>
+                  <CompInput
+                    id="display-name"
+                    divid="display-name-value"
+                    type="input"
+                    inputClass="comp-form-control"
+                    error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                    maxLength={120}
+                    onChange={(evt: any) => field.handleChange(evt.target.value)}
+                    value={field.state.value}
+                    placeholder="Enter Inspection ID"
+                  />
+                </div>
+              )}
+            />
+            
             <FormField
               form={form}
               name="inspectionStatus"
@@ -247,27 +299,6 @@ const InspectionEdit: FC = () => {
                   enableValidation={true}
                   errorMessage={field.state.meta.errors?.[0]?.message || ""}
                   isDisabled={true}
-                />
-              )}
-            />
-
-            <FormField
-              form={form}
-              name="name"
-              label="Inspection ID"
-              required
-              validators={{ onChange: z.string().min(1, "Inspection ID is required").max(100, "Inspection ID must be 100 characters or less") }}
-              render={(field) => (
-                <input
-                  type="text"
-                  id="display-name"
-                  className="form-control comp-details-input"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="Enter Inspection ID"
-                  maxLength={100}
-                  disabled={isDisabled}
-                  style={{ borderColor: field.state.meta.errors?.[0] ? '#dc3545' : '' }}
                 />
               )}
             />
