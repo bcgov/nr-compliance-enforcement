@@ -8,12 +8,13 @@ import { useInvestigationSearch } from "../hooks/use-investigation-search";
 
 type Props = {
   investigations: any[];
+  cases?: Map<string, any[]>;
   totalItems?: number;
   isLoading?: boolean;
   error?: Error | null;
 };
 
-export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, isLoading = false, error = null }) => {
+export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, isLoading = false, error = null, cases = new Map() }) => {
   const { searchValues, setValues, setSort } = useInvestigationSearch();
 
   const handleSort = (sortInput: string) => {
@@ -48,11 +49,13 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
     <thead className="sticky-table-header">
       <tr>
         {renderSortableHeader(
-          "Investigation #",
-          "investigationGuid",
+          "Investigation ID",
+          "name",
           "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
         )}
-        {renderSortableHeader("Case #", "caseIdentifier", "comp-cell-width-160 comp-cell-min-width-160")}
+        <th className="unsortable comp-cell-width-160 comp-cell-min-width-160">
+          <div className="header-label">Case ID</div>
+        </th>
         {renderSortableHeader("Date Opened", "openedTimestamp", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Status", "investigationStatus", "comp-cell-width-110")}
         {renderSortableHeader("Agency", "leadAgency")}
@@ -111,6 +114,7 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
       <InvestigationListItem
         key={investigation.investigationGuid}
         data={investigation}
+        cases={cases.get(investigation.investigationGuid) || []}
       />
     ));
   };

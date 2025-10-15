@@ -85,4 +85,21 @@ export class InspectionResolver {
       });
     }
   }
+
+  @Query("checkInspectionNameExists")
+  @Roles(coreRoles)
+  async checkInspectionNameExists(
+    @Args("name") name: string,
+    @Args("leadAgency") leadAgency: string,
+    @Args("excludeInspectionGuid") excludeInspectionGuid?: string,
+  ) {
+    try {
+      return await this.inspectionService.checkNameExists(name, leadAgency, excludeInspectionGuid);
+    } catch (error) {
+      this.logger.error("Check inspection name exists error:", error);
+      throw new GraphQLError("Error checking inspection name", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
 }

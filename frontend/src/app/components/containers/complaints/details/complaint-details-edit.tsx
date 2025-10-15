@@ -85,10 +85,11 @@ import { CaseFile } from "@/generated/graphql";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 const GET_ASSOCIATED_CASE_FILES = gql`
-  query allCaseFilesByActivityId($activityIdentifier: String!) {
-    allCaseFilesByActivityId(activityType: "COMP", activityIdentifier: $activityIdentifier) {
+  query caseFilesByActivityIds($activityIdentifiers: [String!]!) {
+    caseFilesByActivityIds(activityIdentifiers: $activityIdentifiers) {
       __typename
       caseIdentifier
+      name
       description
       leadAgency {
         agencyCode
@@ -114,12 +115,12 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const casesActive = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
-  const { data: caseFilesData } = useGraphQLQuery<{ allCaseFilesByActivityId: CaseFile[] }>(GET_ASSOCIATED_CASE_FILES, {
-    queryKey: ["allCaseFilesByActivityId", id],
-    variables: { activityIdentifier: id },
+  const { data: caseFilesData } = useGraphQLQuery<{ caseFilesByActivityIds: CaseFile[] }>(GET_ASSOCIATED_CASE_FILES, {
+    queryKey: ["caseFilesByActivityIds", id],
+    variables: { activityIdentifiers: [id] },
     enabled: !!id,
   });
-  const associatedCaseFiles: CaseFile[] = casesActive ? (caseFilesData?.allCaseFilesByActivityId ?? []) : [];
+  const associatedCaseFiles: CaseFile[] = casesActive ? (caseFilesData?.caseFilesByActivityIds ?? []) : [];
 
   const allOfficers = useSelector((state: RootState) => selectOfficers(state));
 

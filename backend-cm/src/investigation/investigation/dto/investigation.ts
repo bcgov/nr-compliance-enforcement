@@ -14,7 +14,7 @@ export class Investigation {
   leadAgency: string;
   investigationStatus: InvestigationStatusCode;
   openedTimestamp: Date;
-  caseIdentifier: string;
+  name: string;
   parties: [InvestigationParty];
 }
 
@@ -62,6 +62,9 @@ export class CreateInvestigationInput {
 
   @Field(() => String)
   investigationStatus: string;
+
+  @Field(() => String)
+  name: string;
 }
 
 @InputType()
@@ -74,6 +77,10 @@ export class UpdateInvestigationInput {
 
   @Field(() => String)
   investigationStatus: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  name?: string;
 }
 
 export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
@@ -102,6 +109,10 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.openedTimestamp,
       mapFrom((src) => src.investigation_opened_utc_timestamp),
+    ),
+    forMember(
+      (dest) => dest.name,
+      mapFrom((src) => src.name),
     ),
     forMember(
       (dest) => dest.parties,
