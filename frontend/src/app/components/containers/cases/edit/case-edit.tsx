@@ -12,7 +12,7 @@ import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
-import { useRequest } from "@/app/graphql/client";
+import { useRequest as GraphQLRequest } from "@/app/graphql/client";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
@@ -286,7 +286,7 @@ const CaseEdit: FC = () => {
                   if (!value || value.length < 1) return "ID is required";
                   const leadAgency = form.getFieldValue("leadAgency");
                   if (!leadAgency) return undefined;
-                  const result: { checkCaseNameExists: boolean } = await useRequest(
+                  const result: { checkCaseNameExists: boolean } = await GraphQLRequest(
                     CHECK_CASE_NAME_EXISTS,
                     {
                       name: value,
