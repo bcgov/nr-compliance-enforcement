@@ -112,6 +112,12 @@ BEGIN
             INSERT INTO complaint.staging_metadata_mapping (entity_code, staged_data_value, live_data_value, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
             VALUES (code_table_type, webeoc_value, new_code, webeoc_user_id, current_utc_timestamp, webeoc_user_id, current_utc_timestamp);
 
+            -- If this is a violation type, we also need insert an agency mapping.  For now we are assuming COS as per CE-1960
+            IF target_code_table = 'violation_code' THEN
+                INSERT INTO complaint.violation_agency_xref (violation_code, agency_code_ref, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+                VALUES (new_code, 'COS', webeoc_user_id, current_utc_timestamp, webeoc_user_id, current_utc_timestamp);
+            END IF;
+
             RETURN new_code; -- Return the new unique code
         ELSE
             -- If the code exists, increment the suffix and try again
