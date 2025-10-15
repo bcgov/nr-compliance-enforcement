@@ -1,51 +1,47 @@
-# Stage 1: Builder
-# This stage installs all dependencies (including dev), generates prisma clients,
-# builds the application, and then removes dev dependencies.
-FROM node:20.19.0-bullseye-slim AS builder
+# Build static files
+# Node Bullseye has npm
+FROM node:20.19.0-bullseye-slim AS buildwithdevdeps
 
+# Install packages, build and keep only prod packages
 WORKDIR /app
-
-# Copy package files and install ALL dependencies (including dev)
-COPY package.json package-lock.json ./
+COPY *.json ./
+COPY ./src ./src
+COPY ./prisma ./prisma
 RUN npm ci --ignore-scripts --no-update-notifier
+RUN npm run prisma-generate-complaint-outcome 
+RUN npm run prisma-generate-shared
+RUN npm run prisma-generate-investigation
+RUN npm run prisma-generate-inspection
+FROM node:20.19.0-bullseye-slim AS build
 
-COPY . .
+# Install packages, build and keep only prod packages
+WORKDIR /app
+COPY *.json ./
+COPY ./src ./src
+COPY ./prisma ./prisma
+RUN ls -la /app/src/**
+RUN npm ci --ignore-scripts --no-update-notifier --omit=dev
 
-# Run all Prisma generate commands. This ensures the client is fully built
-# before the application build starts.
-RUN npm run prisma-generate-complaint-outcome && \
-    npm run prisma-generate-shared && \
-    npm run prisma-generate-investigation && \
-    npm run prisma-generate-inspection
+# COPY over few dependencies from buildwithdevdeps
+COPY --from=buildwithdevdeps /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=buildwithdevdeps /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=buildwithdevdeps /app/node_modules/prisma ./node_modules/prisma
 
-# Build the application
 RUN npm run build
 
-# Remove development dependencies to keep the final node_modules folder smaller
-RUN npm prune --omit=dev
-
-# Stage 2: Production
+# Deploy container
 FROM node:20.19.0-bullseye-slim
-
-# Set the environment to production
 ENV NODE_ENV=production
 
+# Copy over app
 WORKDIR /app
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
 
-# Copy the pruned node_modules and the built application from the builder stage
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-# Copy prisma schema files
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/@prisma ./@prisma
-COPY --from=builder /app/.prisma ./.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-
-# Ports, health check, and non-root user
+# Ports, health check and non-root user
 EXPOSE 3000
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3000/api || exit 1
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:3000/api || exit 1
 USER node
 
-CMD ["node", "--max-old-space-size=500", "/app/dist/src/main.js"]
+# Start up command with 50MB of heap size, each application needs to determine what is the best value. DONT use default as it is 4GB.
+CMD ["--max-old-space-size=500", "/app/dist/src/main"]
