@@ -1,5 +1,4 @@
-//@ts-ignore
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client'
 import { Point } from '../../../common/custom_scalars';
 import { investigation } from '../../../../prisma/investigation/investigation.unsupported_types';
 import { Logger } from 'winston';
