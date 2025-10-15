@@ -49,7 +49,7 @@ export const InspectionList: FC<Props> = ({ inspections, totalItems = 0, isLoadi
     <thead className="sticky-table-header">
       <tr>
         {renderSortableHeader(
-          "Name",
+          "ID",
           "name",
           "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
         )}

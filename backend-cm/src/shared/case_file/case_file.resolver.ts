@@ -135,4 +135,21 @@ export class CaseFileResolver {
       });
     }
   }
+
+  @Query("checkCaseNameExists")
+  @Roles(coreRoles)
+  async checkCaseNameExists(
+    @Args("name") name: string,
+    @Args("leadAgency") leadAgency: string,
+    @Args("excludeCaseIdentifier") excludeCaseIdentifier?: string,
+  ) {
+    try {
+      return await this.caseFileService.checkNameExists(name, leadAgency, excludeCaseIdentifier);
+    } catch (error) {
+      this.logger.error("Check case name exists error:", error);
+      throw new GraphQLError("Error checking case name", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
 }

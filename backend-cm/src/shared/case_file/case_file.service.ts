@@ -214,6 +214,28 @@ export class CaseFileService {
     }
   }
 
+  async checkNameExists(name: string, leadAgency: string, excludeCaseIdentifier?: string): Promise<boolean> {
+    const where: any = {
+      name: {
+        equals: name,
+        mode: "insensitive",
+      },
+      lead_agency: leadAgency,
+    };
+
+    if (excludeCaseIdentifier) {
+      where.case_file_guid = {
+        not: excludeCaseIdentifier,
+      };
+    }
+
+    const existingCase = await this.prisma.case_file.findFirst({
+      where,
+    });
+
+    return !!existingCase;
+  }
+
   async search(page: number = 1, pageSize: number = 25, filters?: CaseFileFilters): Promise<CaseFileResult> {
     const where: any = {};
 

@@ -254,9 +254,9 @@ const InvestigationEdit: FC = () => {
             <FormField
               form={form}
               name="name"
-              label="Name"
+              label="ID"
               required
-              validators={{ onChange: z.string().min(1, "Name is required").max(100, "Name must be 100 characters or less") }}
+              validators={{ onChange: z.string().min(1, "ID is required").max(100, "ID must be 100 characters or less") }}
               render={(field) => (
                 <input
                   type="text"
@@ -264,7 +264,7 @@ const InvestigationEdit: FC = () => {
                   className="form-control comp-details-input"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="Enter name..."
+                  placeholder="Enter ID"
                   maxLength={100}
                   disabled={isDisabled}
                   style={{ borderColor: field.state.meta.errors?.[0] ? '#dc3545' : '' }}

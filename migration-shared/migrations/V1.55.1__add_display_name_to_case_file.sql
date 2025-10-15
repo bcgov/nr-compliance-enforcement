@@ -24,7 +24,7 @@ FROM
 WHERE
   case_file.case_file_guid = numbered_cases.case_file_guid;
 
--- Add unique constraint
-CREATE UNIQUE INDEX uq_case_file_name ON case_file (name);
+-- Add unique constraint scoped by lead agency
+CREATE UNIQUE INDEX uq_case_file_name_agency ON case_file (name, lead_agency);
 
 COMMENT ON COLUMN case_file.name IS 'Business-friendly identifier for the case file.';

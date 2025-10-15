@@ -26,10 +26,12 @@ model investigation {
   create_utc_timestamp               DateTime                     @db.Timestamp(6)
   update_user_id                     String?                      @db.VarChar(32)
   update_utc_timestamp               DateTime?                    @db.Timestamp(6)
-  name                               String                       @unique(map: "uq_investigation_name") @default("") @db.VarChar(100)
+  name                               String                       @default("") @db.VarChar(100)
   investigation_status_code          investigation_status_code    @relation(fields: [investigation_status], references: [investigation_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_investigation__investigation_status")
   investigation_party                investigation_party[]
   officer_investigation_xref         officer_investigation_xref[]
+
+  @@unique([name, owned_by_agency_ref], map: "uq_investigation_name_agency")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments

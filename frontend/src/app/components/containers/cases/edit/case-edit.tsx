@@ -5,12 +5,14 @@ import { z } from "zod";
 import { gql } from "graphql-request";
 import { CaseEditHeader } from "./case-edit-header";
 import { CompSelect } from "@components/common/comp-select";
+import { CompInput } from "@components/common/comp-input";
 import { FormField } from "@components/common/form-field";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
+import { useRequest } from "@/app/graphql/client";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
@@ -56,6 +58,12 @@ const UPDATE_CASE_MUTATION = gql`
         longDescription
       }
     }
+  }
+`;
+
+const CHECK_CASE_NAME_EXISTS = gql`
+  query CheckCaseNameExists($name: String!, $leadAgency: String!, $excludeCaseIdentifier: String) {
+    checkCaseNameExists(name: $name, leadAgency: $leadAgency, excludeCaseIdentifier: $excludeCaseIdentifier)
   }
 `;
 
@@ -269,21 +277,43 @@ const CaseEdit: FC = () => {
             <FormField
               form={form}
               name="name"
-              label="Name"
+              label="ID"
               required
-              validators={{ onChange: z.string().min(1, "Name is required").max(100, "Name must be 100 characters or less") }}
+              validators={{ 
+                onChange: z.string().min(1, "ID is required").max(100, "ID must be 100 characters or less"),
+                onChangeAsyncDebounceMs: 500,
+                onChangeAsync: async ({ value }: { value: string }) => {
+                  if (!value || value.length < 1) return "ID is required";
+                  const leadAgency = form.getFieldValue("leadAgency");
+                  if (!leadAgency) return undefined;
+                  const result: { checkCaseNameExists: boolean } = await useRequest(
+                    CHECK_CASE_NAME_EXISTS,
+                    {
+                      name: value,
+                      leadAgency: leadAgency,
+                      excludeCaseIdentifier: isEditMode ? id : undefined,
+                    }
+                  );
+                  if (result.checkCaseNameExists) {
+                    return "This ID is already in use for this agency. Please choose a different ID.";
+                  }
+                  return undefined;
+                }
+              }}
               render={(field) => (
-                <input
-                  type="text"
-                  id="display-name"
-                  className="form-control comp-details-input"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="Enter name..."
-                  maxLength={100}
-                  disabled={isDisabled}
-                  style={{ borderColor: field.state.meta.errors?.[0] ? '#dc3545' : '' }}
-                />
+                <div>
+                  <CompInput
+                    id="display-name"
+                    divid="display-name-value"
+                    type="input"
+                    inputClass="comp-form-control"
+                    error={field.state.meta.errors.join(", ")}
+                    maxLength={120}
+                    onChange={(evt: any) => field.handleChange(evt.target.value)}
+                    value={field.state.value}
+                    placeholder="Enter ID"
+                  />
+                </div>
               )}
             />
 

@@ -24,7 +24,7 @@ FROM
 WHERE
   inspection.inspection_guid = numbered_inspections.inspection_guid;
 
--- Add unique constraint
-CREATE UNIQUE INDEX uq_inspection_name ON inspection (name);
+-- Add unique constraint scoped by owned agency
+CREATE UNIQUE INDEX uq_inspection_name_agency ON inspection (name, owned_by_agency_ref);
 
 COMMENT ON COLUMN inspection.name IS 'Business-friendly identifier for the inspection.';

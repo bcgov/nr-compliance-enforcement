@@ -24,7 +24,7 @@ FROM
 WHERE
   investigation.investigation_guid = numbered_investigations.investigation_guid;
 
--- Add unique constraint
-CREATE UNIQUE INDEX uq_investigation_name ON investigation (name);
+-- Add unique constraint scoped by owned agency
+CREATE UNIQUE INDEX uq_investigation_name_agency ON investigation (name, owned_by_agency_ref);
 
 COMMENT ON COLUMN investigation.name IS 'Business-friendly identifier for the investigation.';
