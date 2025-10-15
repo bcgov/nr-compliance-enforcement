@@ -72,7 +72,7 @@ const GET_INVESTIGATION = gql`
       }
       leadAgency
     }
-    caseFileByActivityId(activityIdentifier: $investigationGuid) {
+    caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier
     }
   }

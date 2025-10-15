@@ -37,8 +37,8 @@ const SEARCH_INSPECTIONS = gql`
 `;
 
 const GET_CASE_FILES_BY_ACTIVITIES = gql`
-  query GetCaseFilesByActivityIds($activityType: String!, $activityIdentifiers: [String!]!) {
-    caseFilesByActivityIds(activityType: $activityType, activityIdentifiers: $activityIdentifiers) {
+  query GetCaseFilesByActivityIds($activityIdentifiers: [String!]!) {
+    caseFilesByActivityIds(activityIdentifiers: $activityIdentifiers) {
       caseIdentifier
       name
       activities {
@@ -81,8 +81,8 @@ const Inspections: FC = () => {
   const { data: caseData } = useGraphQLQuery<{ caseFilesByActivityIds: CaseFile[] }>(
     GET_CASE_FILES_BY_ACTIVITIES,
     {
-      queryKey: ["caseFilesByActivityIds", "INSPECTION", ...inspectionGuids],
-      variables: { activityType: "INSPECTION", activityIdentifiers: inspectionGuids },
+      queryKey: ["caseFilesByActivityIds", ...inspectionGuids],
+      variables: { activityIdentifiers: inspectionGuids },
       enabled: inspectionGuids.length > 0,
     }
   );

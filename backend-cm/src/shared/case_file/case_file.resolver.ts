@@ -43,47 +43,16 @@ export class CaseFileResolver {
     }
   }
 
-  @Query("caseFileByActivityId")
-  @Roles(coreRoles)
-  async findCaseFileByActivityId(@Args("activityIdentifier") activityIdentifier: string) {
-    try {
-      return await this.caseFileService.findCaseFileByActivityId(activityIdentifier);
-    } catch (error) {
-      this.logger.error(error);
-      throw new GraphQLError("Error fetching case file by activity ID from Shared schema", {
-        extensions: {
-          code: "INTERNAL_SERVER_ERROR",
-        },
-      });
-    }
-  }
-
   @Query("caseFilesByActivityIds")
   @Roles(coreRoles)
   async findCaseFilesByActivityIds(
-    @Args("activityType") activityType: string,
     @Args("activityIdentifiers", { type: () => [String] }) activityIdentifiers: string[],
   ) {
     try {
-      return await this.caseFileService.findCaseFilesByActivityIds(activityType, activityIdentifiers);
+      return await this.caseFileService.findCaseFilesByActivityIds(activityIdentifiers);
     } catch (error) {
       this.logger.error(error);
       throw new GraphQLError("Error fetching case files by activity IDs from Shared schema", {
-        extensions: {
-          code: "INTERNAL_SERVER_ERROR",
-        },
-      });
-    }
-  }
-
-  @Query("allCaseFilesByActivityId")
-  @Roles(coreRoles)
-  async findAllCaseFilesByActivityId(@Args("activityIdentifier") activityIdentifier: string) {
-    try {
-      return await this.caseFileService.findAllCaseFilesByActivityId(activityIdentifier);
-    } catch (error) {
-      this.logger.error(error);
-      throw new GraphQLError(`Error fetching case files for activity ${activityIdentifier} from the Shared schema`, {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
         },

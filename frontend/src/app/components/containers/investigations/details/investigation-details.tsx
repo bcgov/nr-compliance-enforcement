@@ -38,7 +38,7 @@ const GET_INVESTIGATION = gql`
       }
       leadAgency
     }
-    caseFileByActivityId(activityIdentifier: $investigationGuid) {
+    caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier
       name
     }
@@ -55,7 +55,7 @@ export const InvestigationDetails: FC = () => {
   const currentTab = tabKey || "summary";
   const { data, isLoading } = useGraphQLQuery<{
     getInvestigation: Investigation;
-    caseFileByActivityId: CaseFile;
+    caseFilesByActivityIds: CaseFile[];
   }>(GET_INVESTIGATION, {
     queryKey: ["getInvestigation", investigationGuid],
     variables: { investigationGuid: investigationGuid },
@@ -63,8 +63,8 @@ export const InvestigationDetails: FC = () => {
   });
 
   const investigationData = data?.getInvestigation;
-  const caseIdentifier = data?.caseFileByActivityId?.caseIdentifier;
-  const caseName = data?.caseFileByActivityId?.name;
+  const caseIdentifier = data?.caseFilesByActivityIds?.[0]?.caseIdentifier;
+  const caseName = data?.caseFilesByActivityIds?.[0]?.name;
 
   const renderTabContent = () => {
     switch (currentTab) {

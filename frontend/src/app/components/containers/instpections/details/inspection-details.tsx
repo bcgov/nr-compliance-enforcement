@@ -20,7 +20,7 @@ const GET_INSPECTION = gql`
       }
       leadAgency
     }
-    caseFileByActivityId(activityIdentifier: $inspectionGuid) {
+    caseFilesByActivityIds(activityIdentifiers: [$inspectionGuid]) {
       caseIdentifier
       name
     }
@@ -35,7 +35,7 @@ export const InspectionDetails: FC = () => {
   const { inspectionGuid = "" } = useParams<InspectionParams>();
   const { data, isLoading } = useGraphQLQuery<{
     getInspection: Inspection;
-    caseFileByActivityId: CaseFile;
+    caseFilesByActivityIds: CaseFile[];
   }>(GET_INSPECTION, {
     queryKey: ["getInspection", inspectionGuid],
     variables: { inspectionGuid: inspectionGuid },
@@ -43,8 +43,8 @@ export const InspectionDetails: FC = () => {
   });
 
   const inspectionData = data?.getInspection;
-  const caseIdentifier = data?.caseFileByActivityId?.caseIdentifier;
-  const caseName = data?.caseFileByActivityId?.name;
+  const caseIdentifier = data?.caseFilesByActivityIds?.[0]?.caseIdentifier;
+  const caseName = data?.caseFilesByActivityIds?.[0]?.name;
 
   if (isLoading) {
     return (
