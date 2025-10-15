@@ -14,7 +14,7 @@ import {
 import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
 import { EventCreateInput } from "../../shared/event/dto/event";
-import { ActivityTypeToEventEntity, EVENT_STREAM_NAME, STREAM_TOPICS, StreamTopic } from "../../common/nats_constants";
+import { ActivityTypeToEventEntity, EVENT_STREAM_NAME, STREAM_TOPICS } from "../../common/nats_constants";
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 
 @Injectable()

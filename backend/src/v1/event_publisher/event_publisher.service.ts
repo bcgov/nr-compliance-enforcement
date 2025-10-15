@@ -34,7 +34,7 @@ export class EventPublisherService {
     this.jsClient = nc.jetstream();
   }
 
-  private _getAllCaseFilesByComplaint = async (id: string, token: string) => {
+  private readonly _getAllCaseFilesByComplaint = async (id: string, token: string) => {
     //-- Get the Outcome Data, this is done via a GQL call to prevent
     //-- a circular dependency between the complaint and case_file modules
     const { data, errors } = await get(token, {

@@ -4,7 +4,14 @@ import dotenv from "dotenv";
 
 async function bootstrap() {
   dotenv.config();
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3006);
+
+  try {
+    const app = await NestFactory.create(AppModule);
+    await app.listen(process.env.PORT ?? 3006);
+    console.log(`Server started on port ${process.env.PORT ?? 3006}`);
+  } catch (error) {
+    console.error("Startup failed:", error);
+    process.exit(1); // Exit with failure
+  }
 }
 bootstrap();
