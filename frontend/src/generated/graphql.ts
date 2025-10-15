@@ -103,6 +103,7 @@ export type CaseActivityCreateInput = {
   activityIdentifier: Scalars['String']['input'];
   activityType: Scalars['String']['input'];
   caseFileGuid: Scalars['String']['input'];
+  eventContent?: InputMaybe<Scalars['JSONObject']['input']>;
 };
 
 export type CaseActivityTypeCode = {

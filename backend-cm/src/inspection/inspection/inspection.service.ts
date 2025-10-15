@@ -15,9 +15,8 @@ import { PageInfo } from "../../shared/case_file/dto/case_file";
 import { CaseFileService } from "../../shared/case_file/case_file.service";
 import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { UserService } from "../../common/user.service";
-import { EventCreateInput } from "../../shared/event/dto/event";
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
-import { STREAM_TOPICS } from "src/common/nats_constants";
+import { CaseActivityService } from "src/shared/case_activity/case_activity.service";
 
 @Injectable()
 export class InspectionService {
@@ -29,6 +28,7 @@ export class InspectionService {
     private readonly shared: SharedPrismaService,
     private readonly user: UserService,
     private readonly eventPublisher: EventPublisherService,
+    private readonly caseActivityService: CaseActivityService,
   ) {}
 
   private readonly logger = new Logger(InspectionService.name);
@@ -204,14 +204,10 @@ export class InspectionService {
 
     // Try to create case activity record, and if it fails, delete the inspection
     try {
-      await this.shared.case_activity.create({
-        data: {
-          case_file_guid: input.caseIdentifier,
-          activity_type: "INSPECTION",
-          activity_identifier_ref: inspection.inspection_guid,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-        },
+      await this.caseActivityService.create({
+        caseFileGuid: input.caseIdentifier,
+        activityType: "INSPECTION",
+        activityIdentifier: inspection.inspection_guid,
       });
     } catch (activityError) {
       // Attempt to delete the inspection that was just created since the case activity creation failed
@@ -235,21 +231,6 @@ export class InspectionService {
       throw new Error(
         `Failed to create case activity for inspection. The inspection was rolled back. Error: ${activityError}`,
       );
-    }
-
-    try {
-      const event: EventCreateInput = {
-        eventVerbTypeCode: "ADDED",
-        sourceId: inspection.inspection_guid,
-        sourceEntityTypeCode: "INSPECTION",
-        actorId: this.user.getUserGuid(),
-        actorEntityTypeCode: "USER",
-        targetId: input.caseIdentifier,
-        targetEntityTypeCode: "CASE",
-      };
-      this.eventPublisher.publishEvent(event, STREAM_TOPICS.INSPECTION_OPENED);
-    } catch (error) {
-      this.logger.error(`Error publishing event ${STREAM_TOPICS.INVESTIGATION_OPENED}`);
     }
 
     try {

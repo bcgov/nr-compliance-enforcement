@@ -16,8 +16,7 @@ import { PaginationUtility } from "src/common/pagination.utility";
 import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { CaseFileService } from "src/shared/case_file/case_file.service";
 import { EventPublisherService } from "src/event_publisher/event_publisher.service";
-import { EventCreateInput } from "src/shared/event/dto/event";
-import { STREAM_TOPICS } from "src/common/nats_constants";
+import { CaseActivityService } from "src/shared/case_activity/case_activity.service";
 
 @Injectable()
 export class InvestigationService {
@@ -29,6 +28,7 @@ export class InvestigationService {
     private readonly paginationUtility: PaginationUtility,
     private readonly caseFileService: CaseFileService,
     private readonly eventPublisher: EventPublisherService,
+    private readonly caseActivityService: CaseActivityService,
   ) {}
 
   private readonly logger = new Logger(InvestigationService.name);
@@ -138,14 +138,10 @@ export class InvestigationService {
 
     // Try to create case activity record, and if it fails, delete the investigation
     try {
-      await this.shared.case_activity.create({
-        data: {
-          case_file_guid: input.caseIdentifier,
-          activity_type: "INVSTGTN",
-          activity_identifier_ref: investigation.investigation_guid,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-        },
+      await this.caseActivityService.create({
+        caseFileGuid: input.caseIdentifier,
+        activityType: "INVSTGTN",
+        activityIdentifier: investigation.investigation_guid,
       });
     } catch (activityError) {
       // Attempt to delete the investigation that was just created since the case activity creation failed
@@ -169,21 +165,6 @@ export class InvestigationService {
       throw new Error(
         `Failed to create case activity for investigation. The investigation was rolled back. Error: ${activityError}`,
       );
-    }
-
-    try {
-      const event: EventCreateInput = {
-        eventVerbTypeCode: "ADDED",
-        sourceId: investigation.investigation_guid,
-        sourceEntityTypeCode: "INVESTIGATION",
-        actorId: this.user.getUserGuid(),
-        actorEntityTypeCode: "USER",
-        targetId: input.caseIdentifier,
-        targetEntityTypeCode: "CASE",
-      };
-      this.eventPublisher.publishEvent(event, STREAM_TOPICS.INVESTIGATION_ADDED_TO_CASE);
-    } catch (error) {
-      this.logger.error(`Error publishing event ${STREAM_TOPICS.INVESTIGATION_ADDED_TO_CASE}`);
     }
 
     try {

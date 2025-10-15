@@ -20,12 +20,18 @@ interface EventCreateInput {
 export class EventPublisherService {
   private jsClient: JetStreamClient;
   private readonly logger = new Logger(EventPublisherService.name);
+  /**
+   * The initializeNATS function is async but has to get called in the constructor.
+   * This variable is used to give the publishing functions a way to ensure the NATS connection
+   * is initialized before publishing.
+   */
+  private initializationPromise: Promise<void>;
 
   constructor(
     @Inject(REQUEST)
     private readonly request: Request,
   ) {
-    this.initializeNATS();
+    this.initializationPromise = this.initializeNATS();
   }
 
   private async initializeNATS() {
@@ -56,7 +62,10 @@ export class EventPublisherService {
    * Publish an event to NATS, if it has not already been published.
    * The logic of handling the event is handled in the subscribers to the NATS topic.
    */
-  publishEvent = async (event: EventCreateInput, eventType: StreamTopic): Promise<void> => {
+  _publishEvent = async (event: EventCreateInput, eventType: StreamTopic): Promise<void> => {
+    // Ensure NATS connection is initialized before publishing
+    await this.initializationPromise;
+
     const codec = JSONCodec<EventCreateInput>();
 
     try {
@@ -115,7 +124,7 @@ export class EventPublisherService {
             targetEntityTypeCode: "CASE",
             content: { complaintType },
           };
-          this.publishEvent(event, eventTopic);
+          this._publishEvent(event, eventTopic);
         }
       } catch (error) {
         this.logger.error(`An error occurred while publishing the status change for complaint ${sourceId}`, error);
