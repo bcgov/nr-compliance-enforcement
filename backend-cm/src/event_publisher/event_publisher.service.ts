@@ -59,10 +59,10 @@ export class EventPublisherService {
       natsHeaders.set("Nats-Msg-Id", header);
 
       const ack = await this.jsClient.publish(eventType, payload, { headers: natsHeaders });
-      if (!ack.duplicate) {
-        this.logger.debug(`Publishing new event: ${header}}`);
-      } else {
+      if (ack.duplicate) {
         this.logger.debug(`Event already published: ${header}`);
+      } else {
+        this.logger.debug(`Publishing new event: ${header}}`);
       }
     } catch (error) {
       this.logger.error(`Unable to process request: ${error.message}`, error.stack);
@@ -83,8 +83,7 @@ export class EventPublisherService {
 
     if (eventVerbs.includes(eventStatus.toUpperCase() as EventVerbType)) {
       try {
-        const eventTopic =
-          `${EVENT_STREAM_NAME}.${sourceEntityType.toLowerCase()}.${eventStatus.toLowerCase()}` as StreamTopic;
+        const eventTopic = `${EVENT_STREAM_NAME}.${sourceEntityType.toLowerCase()}.${eventStatus.toLowerCase()}`;
 
         /**
          * Some activities can be a part of multiple cases, so when opening or closing an activity,

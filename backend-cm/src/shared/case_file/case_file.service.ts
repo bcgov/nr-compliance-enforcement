@@ -164,7 +164,7 @@ export class CaseFileService {
         targetId: caseFile.case_file_guid,
         targetEntityTypeCode: "CASE",
       };
-      const eventTopic = `${EVENT_STREAM_NAME}.${sourceEntityType}.ADDED_TO_CASE` as StreamTopic;
+      const eventTopic = `${EVENT_STREAM_NAME}.${sourceEntityType}.ADDED_TO_CASE`;
       this.eventPublisher.publishEvent(event, eventTopic);
     }
 
@@ -213,7 +213,7 @@ export class CaseFileService {
 
     if (input.caseStatus !== undefined) {
       let eventStatus = input.caseStatus === "OPEN" ? "OPENED" : input.caseStatus;
-      const eventTopic = `${EVENT_STREAM_NAME}.case.${eventStatus.toLowerCase()}` as StreamTopic;
+      const eventTopic = `${EVENT_STREAM_NAME}.case.${eventStatus.toLowerCase()}`;
       const event: EventCreateInput = {
         eventVerbTypeCode: eventStatus,
         sourceId: caseFile.case_file_guid,

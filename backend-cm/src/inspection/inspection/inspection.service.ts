@@ -279,12 +279,7 @@ export class InspectionService {
       throw error;
     }
     if (input.inspectionStatus !== undefined) {
-      try {
-        this.eventPublisher.publishActivityStatusChangeEvents("INSPECTION", inspectionGuid, input.inspectionStatus);
-      } catch (error) {
-        this.logger.error(`Error publishing status change for ${inspectionGuid}`, error);
-        throw error;
-      }
+      this.eventPublisher.publishActivityStatusChangeEvents("INSPECTION", inspectionGuid, input.inspectionStatus);
     }
     try {
       return this.mapper.map<inspection, Inspection>(updatedInspection as inspection, "inspection", "Inspection");

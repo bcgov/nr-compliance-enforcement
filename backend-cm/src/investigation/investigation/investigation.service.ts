@@ -218,16 +218,11 @@ export class InvestigationService {
     }
 
     if (input.investigationStatus !== undefined) {
-      try {
-        this.eventPublisher.publishActivityStatusChangeEvents(
-          "INVESTIGATION",
-          investigationGuid,
-          input.investigationStatus,
-        );
-      } catch (error) {
-        this.logger.error(`Error publishing status change for ${investigationGuid}`, error);
-        throw error;
-      }
+      this.eventPublisher.publishActivityStatusChangeEvents(
+        "INVESTIGATION",
+        investigationGuid,
+        input.investigationStatus,
+      );
     }
     try {
       return this.mapper.map<investigation, Investigation>(

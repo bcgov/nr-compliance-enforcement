@@ -32,7 +32,7 @@ export class CaseActivityService {
     });
     // Publish the event
     const sourceEntityType = ActivityTypeToEventEntity[input.activityType];
-    const eventTopic = `${EVENT_STREAM_NAME}.${sourceEntityType.toLowerCase()}.added_to_case` as StreamTopic;
+    const eventTopic = `${EVENT_STREAM_NAME}.${sourceEntityType.toLowerCase()}.added_to_case`;
     try {
       const event: EventCreateInput = {
         eventVerbTypeCode: "ADDED",
