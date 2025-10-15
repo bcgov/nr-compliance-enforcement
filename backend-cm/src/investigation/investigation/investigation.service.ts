@@ -418,7 +418,7 @@ export class InvestigationService {
       `;
       console.log('Update Query:', queryString); // Debug log
       const result = await this.prisma.$queryRawUnsafe(queryString) as investigation[];
-      const updatedInvestigation = result.length > 0 ? result[0] : null;
+      updatedInvestigation = result.length > 0 ? result[0] : null;
       console.log('Raw Updated Investigation:', updatedInvestigation); // Debug log
       const statusCode = await this.prisma.investigation_status_code.findUnique({
         where: { investigation_status_code: updatedInvestigation.investigation_status }
@@ -449,6 +449,7 @@ export class InvestigationService {
       throw error;
     }
     try {
+      console.log('Mapped Updated Investigation:', updatedInvestigation); // Debug log
       const mappedInvestigation = this.mapper.map<investigation, Investigation>(updatedInvestigation as investigation, "investigation", "Investigation");
       console.log('Mapped Updated Investigation:', mappedInvestigation); // Debug log
       return mappedInvestigation;
