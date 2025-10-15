@@ -229,7 +229,7 @@ export class InvestigationService {
       }
       // Perform the update
 
-      updatedInvestigation = await PostGISPrismaClient.updateInvestigation(
+      updatedInvestigation = await PostGISPrismaClient.update(
         investigationGuid,
         updateData
       );

@@ -1,6 +1,8 @@
 import { Investigation } from "@/generated/graphql";
 import { FC } from "react";
 import { Link } from "react-router-dom";
+import { InvestigationLocation } from "./investigation-location";
+import { CompLocationInfo } from "@/app/components/common/comp-location-info";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -52,6 +54,37 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                 </div>
               </div>
             )}
+            {investigationData.locationAddress && (<div>
+              <dt>Location/address</dt>
+                <dd id="comp-details-location">{investigationData.locationAddress}</dd>
+              </div>
+            )}
+            {investigationData.locationDescription && (<div>
+              <dt>Location description</dt>
+                <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
+              </div>
+            )}
+            {investigationData.locationGeometry && (
+              <div className="row">
+                <div className="col-12">
+                  <div className="form-group">
+                    <CompLocationInfo
+                      xCoordinate={investigationData.locationGeometry.coordinates?.[0] === 0 ? "" : investigationData.locationGeometry.coordinates?.[0].toString() ?? ""}
+                      yCoordinate={investigationData.locationGeometry.coordinates?.[1] === 0 ? "" : investigationData.locationGeometry.coordinates?.[1].toString() ?? ""}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          {investigationData?.locationGeometry?.coordinates && (
+              <InvestigationLocation
+                locationCoordinates={{
+                  lat: investigationData.locationGeometry.coordinates[1],
+                  lng: investigationData.locationGeometry.coordinates[0],
+                }}
+                draggable={false}
+              />
+          )}
           </div>
         )}
       </div>

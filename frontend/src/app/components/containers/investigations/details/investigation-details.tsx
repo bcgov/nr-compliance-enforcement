@@ -55,7 +55,6 @@ export type InvestigationParams = {
 };
 
 export const InvestigationDetails: FC = () => {
-  const navigate = useNavigate();
   const { investigationGuid = "", tabKey } = useParams<InvestigationParams>();
   const currentTab = tabKey || "summary";
   const { data, isLoading } = useGraphQLQuery<{
@@ -66,9 +65,6 @@ export const InvestigationDetails: FC = () => {
     variables: { investigationGuid: investigationGuid },
     enabled: !!investigationGuid, // Only refresh query if id is provided
   });
-  const editButtonClick = () => {
-    navigate(`/investigation/${investigationData?.investigationGuid}/edit`);
-  };
 
   const renderTabContent = () => {
     switch (currentTab) {
@@ -120,94 +116,6 @@ export const InvestigationDetails: FC = () => {
 
       <section className="comp-details-body comp-container">
         <hr className="comp-details-body-spacer"></hr>
-        {/* Investigation Details Header */}
-        {
-        // <div className="comp-details-section-header">
-        //   <h2>Investigation details</h2>
-        //   <div className="comp-details-section-header-actions mb-0 pb-0">
-        //     <Button
-        //       variant="outline-primary"
-        //       size="sm"
-        //       id="details-screen-edit-button"
-        //       onClick={editButtonClick}
-        //     >
-        //       <i className="bi bi-pencil"></i>
-        //       <span>Edit investigation</span>
-        //     </Button>
-        //   </div>
-        // </div>
-
-
-        // {/* Investigation Details (View) */}
-        // <div className="comp-details-view">
-        //   <div className="comp-details-content">
-        //     <h3>Investigation information</h3>
-        //     {!investigationData && <p>No data found for ID: {investigationGuid}</p>}
-        //     {investigationData && (
-        //       <div>
-        //         <div className="row">
-        //           <div className="col-md-6">
-        //             <div className="form-group">
-        //               <strong>Investigation identifier:</strong>
-        //               <p>{investigationData.investigationGuid || "N/A"}</p>
-        //             </div>
-        //           </div>
-        //         </div>
-        //         <div className="row">
-        //           <div className="col-md-6">
-        //             <div className="form-group">
-        //               <strong>Case identifier:</strong>
-        //               {caseIdentifier ? <Link to={`/case/${caseIdentifier}`}>{caseIdentifier}</Link> : <p>N/A</p>}
-        //             </div>
-        //           </div>
-        //         </div>
-        //         {investigationData.description && (
-        //           <div className="row">
-        //             <div className="col-12">
-        //               <div className="form-group">
-        //                 <strong>Description:</strong>
-        //                 <p>{investigationData.description}</p>
-        //               </div>
-        //             </div>
-        //           </div>
-        //         )}
-        //         {investigationData.locationAddress && (<div>
-        //           <dt>Location/address</dt>
-        //             <dd id="comp-details-location">{investigationData.locationAddress}</dd>
-        //           </div>
-        //         )}
-        //         {investigationData.locationDescription && (<div>
-        //           <dt>Location description</dt>
-        //             <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
-        //           </div>
-        //         )}
-        //         {investigationData.locationGeometry && (
-        //           <div className="row">
-        //             <div className="col-12">
-        //               <div className="form-group">
-        //                 <CompLocationInfo
-        //                   xCoordinate={investigationData.locationGeometry.coordinates?.[0] === 0 ? "" : investigationData.locationGeometry.coordinates?.[0].toString() ?? ""}
-        //                   yCoordinate={investigationData.locationGeometry.coordinates?.[1] === 0 ? "" : investigationData.locationGeometry.coordinates?.[1].toString() ?? ""}
-        //                 />
-        //               </div>
-        //             </div>
-        //           </div>
-        //         )}
-        //       </div>
-        //     )}
-        //   </div>
-        //   {investigationData?.locationGeometry?.coordinates && (
-        //     <InvestigationLocation
-        //       locationCoordinates={{
-        //         lat: investigationData.locationGeometry.coordinates[1],
-        //         lng: investigationData.locationGeometry.coordinates[0],
-        //       }}
-        //       draggable={false}
-        //     />
-        //   )}
-        // </div>
-        }
-        {/* Investigation Tabs */}
         <InvestigationTabs />
         {renderTabContent()}
       </section>

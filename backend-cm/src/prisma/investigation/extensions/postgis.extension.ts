@@ -123,7 +123,6 @@ export const postgisExtension = Prisma.defineExtension({
         WHERE investigation_guid = '${requested.where.investigation_guid}'::uuid
         LIMIT 1
       `;
-
       const result = (await this.$queryRawUnsafe(queryString)) as investigation[];
 
       if (result.length === 0) return null;
@@ -268,6 +267,8 @@ export const postgisExtension = Prisma.defineExtension({
           create_utc_timestamp,
           update_user_id,
           update_utc_timestamp,
+          location_address,
+          location_description,
           public.ST_AsGeoJSON(location_geometry_point)::json AS location_geometry_point
         FROM investigation.investigation
         ORDER BY investigation_opened_utc_timestamp DESC
@@ -278,7 +279,7 @@ export const postgisExtension = Prisma.defineExtension({
       return results;
     },
 
-    async updateInvestigation(
+    async update(
       this: any,
       investigationGuid: string,
       data: {
