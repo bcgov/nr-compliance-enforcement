@@ -16,20 +16,12 @@ import { UserService } from "../common/user.service";
 export class EventPublisherService {
   private jsClient: JetStreamClient;
   private readonly logger = new Logger(EventPublisherService.name);
-  /**
-   * The initializeNATS function is async but has to get called in the constructor.
-   * This variable is used to give the publishing functions a way to ensure the NATS connection
-   * is initialized before publishing.
-   */
-  private initializationPromise: Promise<void>;
 
   constructor(
     @Inject(forwardRef(() => CaseFileService))
     private readonly caseFileService: CaseFileService,
     private readonly userService: UserService,
-  ) {
-    this.initializationPromise = this.initializeNATS();
-  }
+  ) {}
 
   private async initializeNATS() {
     const nc = await connect({
@@ -44,8 +36,9 @@ export class EventPublisherService {
    * The logic of handling the event is handled in the subscribers to the NATS topic.
    */
   publishEvent = async (event: EventCreateInput, eventType: StreamTopic): Promise<void> => {
-    // Ensure NATS connection is initialized before publishing
-    await this.initializationPromise;
+    if (!this.jsClient) {
+      await this.initializeNATS();
+    }
 
     const codec = JSONCodec<EventCreateInput>();
 
@@ -82,7 +75,9 @@ export class EventPublisherService {
     status: string,
   ): Promise<void> => {
     // Ensure NATS connection is initialized before publishing
-    await this.initializationPromise;
+    if (!this.jsClient) {
+      await this.initializeNATS();
+    }
 
     let eventStatus = status === "OPEN" ? "OPENED" : status;
 
