@@ -48,8 +48,8 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
     <thead className="sticky-table-header">
       <tr>
         {renderSortableHeader(
-          "Case #",
-          "caseIdentifier",
+          "Case ID",
+          "name",
           "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
         )}
         {renderSortableHeader("Date Opened", "openedTimestamp", "comp-cell-width-160 comp-cell-min-width-160")}

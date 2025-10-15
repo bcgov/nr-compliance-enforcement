@@ -68,9 +68,7 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
   };
 
   const addComplaintToCaseMutation = useGraphQLMutation(ADD_COMPLAINT_TO_CASE_MUTATION, {
-    invalidateQueries: ["allCaseFilesByActivityId"],
     onSuccess: (data: any) => {
-      queryClient.invalidateQueries({ queryKey: ["caseFile", caseId] });
       ToggleSuccess("Complaint successfully added");
     },
     onError: (error: any) => {

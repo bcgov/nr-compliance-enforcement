@@ -6,6 +6,7 @@ type CaseFile {
   caseStatus: CaseStatusCode
   openedTimestamp: Date
   description: String
+  name: String
   activities: [CaseActivity]
 }
 
@@ -27,6 +28,7 @@ input CaseFileCreateInput {
   leadAgency: String!
   caseStatus: String!
   description: String
+  name: String!
   activityIdentifier: String
   activityType: String
 }
@@ -35,6 +37,7 @@ input CaseFileUpdateInput {
   leadAgency: String
   caseStatus: String
   description: String
+  name: String
 }
 
 input CaseFileFilters {

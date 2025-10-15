@@ -17,6 +17,7 @@ const GET_INVESTIGATION = gql`
     getInvestigation(investigationGuid: $investigationGuid) {
       __typename
       investigationGuid
+      name
       description
       openedTimestamp
       investigationStatus {
@@ -37,8 +38,9 @@ const GET_INVESTIGATION = gql`
       }
       leadAgency
     }
-    caseFileByActivityId(activityType: "INVSTGTN", activityIdentifier: $investigationGuid) {
+    caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier
+      name
     }
   }
 `;
@@ -53,12 +55,16 @@ export const InvestigationDetails: FC = () => {
   const currentTab = tabKey || "summary";
   const { data, isLoading } = useGraphQLQuery<{
     getInvestigation: Investigation;
-    caseFileByActivityId: CaseFile;
+    caseFilesByActivityIds: CaseFile[];
   }>(GET_INVESTIGATION, {
     queryKey: ["getInvestigation", investigationGuid],
     variables: { investigationGuid: investigationGuid },
     enabled: !!investigationGuid, // Only refresh query if id is provided
   });
+
+  const investigationData = data?.getInvestigation;
+  const caseIdentifier = data?.caseFilesByActivityIds?.[0]?.caseIdentifier;
+  const caseName = data?.caseFilesByActivityIds?.[0]?.name;
 
   const renderTabContent = () => {
     switch (currentTab) {
@@ -68,6 +74,7 @@ export const InvestigationDetails: FC = () => {
             investigationData={investigationData}
             investigationGuid={investigationGuid}
             caseGuid={caseIdentifier ?? ""}
+            caseName={caseName ?? ""}
           />
         );
       case "records":
@@ -100,9 +107,6 @@ export const InvestigationDetails: FC = () => {
       </div>
     );
   }
-
-  const investigationData = data?.getInvestigation;
-  const caseIdentifier = data?.caseFileByActivityId?.caseIdentifier;
 
   return (
     <div className="comp-complaint-details">

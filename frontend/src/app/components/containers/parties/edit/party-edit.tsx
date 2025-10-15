@@ -103,7 +103,6 @@ const PartyEdit: FC = () => {
     });
 
   const createPartyMutation = useGraphQLMutation(CREATE_PARTY_MUTATION, {
-    invalidateQueries: ["searchParties"],
     onError: (error: any) => {
       console.error("Error creating party:", error);
       ToggleError("Failed to create party");
@@ -115,7 +114,6 @@ const PartyEdit: FC = () => {
   });
 
   const updatePartyMutation = useGraphQLMutation(UPDATE_PARTY_MUTATION, {
-    invalidateQueries: [["party", id], "searchParties"],
     onSuccess: (data: any) => {
       ToggleSuccess("Party updated successfully");
       navigate(`/party/${id}`);

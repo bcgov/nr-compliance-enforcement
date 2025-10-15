@@ -6,7 +6,8 @@ insert into
     investigation_status,
     investigation_opened_utc_timestamp,
     create_user_id,
-    create_utc_timestamp
+    create_utc_timestamp,
+    name
   )
 values
   (
@@ -15,7 +16,8 @@ values
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'INVESTIGATION1'
   ),
   (
     '66dd3a1f-4bc5-4758-a986-a664b8d8f201',
@@ -23,7 +25,8 @@ values
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'INVESTIGATION2'
   ),
   (
     '66dd3a1f-4bc5-4758-a986-a664b8d8f202',
@@ -31,7 +34,8 @@ values
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'INVESTIGATION3'
   ),
   (
     '66dd3a1f-4bc5-4758-a986-a664b8d8f203',
@@ -39,6 +43,6 @@ values
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'INVESTIGATION4'
   ) on conflict do nothing;
-
