@@ -75,7 +75,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   const [createOrAddOption, setCreateOrAddOption] = useState<string>("create");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [caseDescription, setCaseDescription] = useState<string>("");
-  const [name, setDisplayName] = useState<string>("");
+  const [name, setName] = useState<string>("");
 
   const createCaseMutation = useGraphQLMutation(CREATE_CASE_MUTATION, {
     onSuccess: (data: any) => {
@@ -182,7 +182,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
       setErrorMessage("Required");
     } else {
       setErrorMessage("");
-      setDisplayName(value.trim());
+      setName(value.trim());
     }
   };
 
