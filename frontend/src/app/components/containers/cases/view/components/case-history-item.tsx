@@ -53,6 +53,16 @@ const eventDescriptionMap: Record<string, Record<string, Record<string, eventDes
           removed inspection <Link to={`/inspection/${sourceId}`}>{sourceId}</Link>
         </>
       ),
+      OPENED: (sourceId) => (
+        <>
+          opened inspection <Link to={`/inspection/${sourceId}`}>{sourceId}</Link>
+        </>
+      ),
+      CLOSED: (sourceId) => (
+        <>
+          closed inspection <Link to={`/inspection/${sourceId}`}>{sourceId}</Link>
+        </>
+      ),
     },
     INVESTIGATION: {
       ADDED: (sourceId) => (
@@ -63,6 +73,16 @@ const eventDescriptionMap: Record<string, Record<string, Record<string, eventDes
       REMOVED: (sourceId) => (
         <>
           removed investigation <Link to={`/investigation/${sourceId}`}>{sourceId}</Link>
+        </>
+      ),
+      OPENED: (sourceId) => (
+        <>
+          opened investigation <Link to={`/investigation/${sourceId}`}>{sourceId}</Link>
+        </>
+      ),
+      CLOSED: (sourceId) => (
+        <>
+          closed investigation <Link to={`/investigation/${sourceId}`}>{sourceId}</Link>
         </>
       ),
     },
