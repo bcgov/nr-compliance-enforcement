@@ -118,14 +118,6 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
       mapFrom((src) => src.investigation_description),
     ),
     forMember(
-      (dest) => dest.locationDescription,
-      mapFrom((src) => src.location_description),
-    ),
-    forMember(
-      (dest) => dest.locationAddress,
-      mapFrom((src) => src.location_address),
-    ),
-    forMember(
       (dest) => dest.leadAgency,
       mapFrom((src) => src.owned_by_agency_ref),
     ),
@@ -134,6 +126,14 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
       mapFrom((src) =>
         mapper.map(src.investigation_status_code, "investigation_status_code", "InvestigationStatusCode"),
       ),
+    ),
+    forMember(
+      (dest) => dest.locationDescription,
+      mapFrom((src) => src.location_description),
+    ),
+    forMember(
+      (dest) => dest.locationAddress,
+      mapFrom((src) => src.location_address),
     ),
     forMember(
       (dest) => dest.openedTimestamp,

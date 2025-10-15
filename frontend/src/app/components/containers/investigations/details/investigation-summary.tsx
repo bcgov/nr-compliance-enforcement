@@ -18,14 +18,14 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   return (
     <div className="comp-details-view">
       <div className="comp-details-content">
-        <h3>Investigation Details</h3>
+        <h3>Investigation details</h3>
         {!investigationData && <p>No data found for ID: {investigationGuid}</p>}
         {investigationData && (
           <div>
             <div className="row">
               <div className="col-md-6">
                 <div className="form-group">
-                  <strong>Investigation Identifier:</strong>
+                  <strong>Investigation identifier:</strong>
                   <p>{investigationData.investigationGuid || "N/A"}</p>
                 </div>
               </div>
@@ -33,7 +33,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
             <div className="row">
               <div className="col-md-6">
                 <div className="form-group">
-                  <strong>Case Identifier:</strong>
+                  <strong>Case identifier:</strong>
                   {caseGuid ? (
                     <p>
                       <Link to={`/case/${caseGuid}`}>{caseGuid}</Link>
