@@ -67,7 +67,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   const modalData = useAppSelector(selectModalData);
 
   // Vars
-  const { title, complaint_identifier } = modalData;
+  const { title, complaint_identifier, agency_code } = modalData;
 
   // State
   const [selectedCase, setSelectedCase] = useState<Option | null>();
@@ -154,7 +154,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
         if (errorMessage) return;
         const createInput: CaseFileCreateInput = {
           caseStatus: "OPEN",
-          leadAgency: "COS",
+          leadAgency: agency_code,
           activityType: "COMP",
           activityIdentifier: complaint_identifier,
           description: caseDescription,
