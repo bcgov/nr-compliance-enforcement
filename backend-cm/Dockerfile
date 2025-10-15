@@ -35,6 +35,13 @@ WORKDIR /app
 # Copy the pruned node_modules and the built application from the builder stage
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+# Copy prisma schema files
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/@prisma ./@prisma
+COPY --from=builder /app/.prisma ./.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 
 # Ports, health check, and non-root user
 EXPOSE 3000
