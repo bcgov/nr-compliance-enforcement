@@ -366,6 +366,13 @@
   }
 }
 
+.comp-tooltip-hint {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 9%;
+  text-decoration-color: $bc-gov-primary;
+}
+
 .comp-tooltip,
 .comp-tooltip-dark {
   position: fixed;
@@ -402,15 +409,15 @@
 }
 
 .comp-tooltip-dark.comp-tooltip-left .tooltip-arrow::before {
-  border-right-color: black !important;
+  border-left-color: black !important;
 }
 
 .comp-tooltip-dark.comp-tooltip-top .tooltip-arrow::before {
-  border-right-color: black !important;
+  border-top-color: black !important;
 }
 
 .comp-tooltip-dark.comp-tooltip-bottom .tooltip-arrow::before {
-  border-right-color: black !important;
+  border-bottom-color: black !important;
 }
 
 .comp-tooltip .tooltip-inner {
@@ -422,15 +429,15 @@
 }
 
 .comp-tooltip-left .tooltip-arrow::before {
-  border-right-color: $bc-gov-primary !important;
+  border-left-color: $bc-gov-primary !important;
 }
 
 .comp-tooltip-top .tooltip-arrow::before {
-  border-right-color: $bc-gov-primary !important;
+  border-top-color: $bc-gov-primary !important;
 }
 
 .comp-tooltip-bottom .tooltip-arrow::before {
-  border-right-color: $bc-gov-primary !important;
+  border-bottom-color: $bc-gov-primary !important;
 }
 
 .collaborators-tooltip {
