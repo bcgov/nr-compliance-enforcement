@@ -217,6 +217,7 @@ const CaseEdit: FC = () => {
         saveButtonClick={saveButtonClick}
         isEditMode={isEditMode}
         caseIdentifier={id}
+        caseName={caseData?.caseFile?.name}
       />
 
       <section className="comp-details-body comp-details-form comp-container">
@@ -226,6 +227,48 @@ const CaseEdit: FC = () => {
 
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>
+          <FormField
+              form={form}
+              name="name"
+              label="Case ID"
+              required
+              validators={{ 
+                onChange: z.string().min(1, "Case ID is required").max(100, "Case ID must be 100 characters or less"),
+                onChangeAsyncDebounceMs: 500,
+                onChangeAsync: async ({ value }: { value: string }) => {
+                  if (!value || value.length < 1) return "Case ID is required";
+                  const leadAgency = form.getFieldValue("leadAgency");
+                  if (!leadAgency) return undefined;
+                  const result: { checkCaseNameExists: boolean } = await GraphQLRequest(
+                    CHECK_CASE_NAME_EXISTS,
+                    {
+                      name: value,
+                      leadAgency: leadAgency,
+                      excludeCaseIdentifier: isEditMode ? id : undefined,
+                    }
+                  );
+                  if (result.checkCaseNameExists) {
+                    return "This Case ID is already in use for this agency. Please choose a different Case ID.";
+                  }
+                  return undefined;
+                }
+              }}
+              render={(field) => (
+                <div>
+                  <CompInput
+                    id="display-name"
+                    divid="display-name-value"
+                    type="input"
+                    inputClass="comp-form-control"
+                    error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                    maxLength={120}
+                    onChange={(evt: any) => field.handleChange(evt.target.value)}
+                    value={field.state.value}
+                    placeholder="Enter Case ID"
+                  />
+                </div>
+              )}
+            />
             <FormField
               form={form}
               name="caseStatus"
@@ -271,49 +314,6 @@ const CaseEdit: FC = () => {
                   errorMessage={field.state.meta.errors?.[0]?.message || ""}
                   isDisabled={true}
                 />
-              )}
-            />
-
-            <FormField
-              form={form}
-              name="name"
-              label="ID"
-              required
-              validators={{ 
-                onChange: z.string().min(1, "ID is required").max(100, "ID must be 100 characters or less"),
-                onChangeAsyncDebounceMs: 500,
-                onChangeAsync: async ({ value }: { value: string }) => {
-                  if (!value || value.length < 1) return "ID is required";
-                  const leadAgency = form.getFieldValue("leadAgency");
-                  if (!leadAgency) return undefined;
-                  const result: { checkCaseNameExists: boolean } = await GraphQLRequest(
-                    CHECK_CASE_NAME_EXISTS,
-                    {
-                      name: value,
-                      leadAgency: leadAgency,
-                      excludeCaseIdentifier: isEditMode ? id : undefined,
-                    }
-                  );
-                  if (result.checkCaseNameExists) {
-                    return "This ID is already in use for this agency. Please choose a different ID.";
-                  }
-                  return undefined;
-                }
-              }}
-              render={(field) => (
-                <div>
-                  <CompInput
-                    id="display-name"
-                    divid="display-name-value"
-                    type="input"
-                    inputClass="comp-form-control"
-                    error={field.state.meta.errors.join(", ")}
-                    maxLength={120}
-                    onChange={(evt: any) => field.handleChange(evt.target.value)}
-                    value={field.state.value}
-                    placeholder="Enter ID"
-                  />
-                </div>
               )}
             />
 

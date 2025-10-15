@@ -3,6 +3,7 @@ import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
 import { FC, useEffect, useState } from "react";
 import { Badge } from "react-bootstrap";
+import { throttle } from "lodash";
 import Option from "@apptypes/app/option";
 import { useAppSelector } from "@hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
@@ -27,7 +28,7 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
   const [searchString, setSearchString] = useState<string>("");
   const [caseFileData, setCaseFileData] = useState<any[]>([]);
 
-  const { data, isLoading: isSearchCaseLoading } = useCaseSearchQuery("");
+  const { data, isLoading: isSearchCaseLoading } = useCaseSearchQuery(searchString);
 
   //Effects
   useEffect(() => {
@@ -69,9 +70,10 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
     }
   };
 
-  const handleSearch = async (query: string) => {
-    setSearchString(query);
-  };
+  const handleSearch =
+      throttle((query: string) => {
+        setSearchString(query);
+      }, 250)
 
   return (
     <div className="complaint-search-container">

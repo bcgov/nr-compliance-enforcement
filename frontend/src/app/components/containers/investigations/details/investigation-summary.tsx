@@ -33,7 +33,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
             <div className="row">
               <div className="col-md-6">
                 <div className="form-group">
-                  <strong>Case:</strong>
+                  <strong>Case ID:</strong>
                   {caseGuid ? (
                     <p>
                       <Link to={`/case/${caseGuid}`}>{caseName || caseGuid}</Link>

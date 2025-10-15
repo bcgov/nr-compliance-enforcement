@@ -240,10 +240,7 @@ export class CaseFileService {
     const where: any = {};
 
     if (filters?.search) {
-      where.OR = [
-        { display_name: { contains: filters.search, mode: "insensitive" } },
-        { case_file_guid: { equals: filters.search } },
-      ];
+      where.OR = [{ name: { contains: filters.search, mode: "insensitive" } }];
     }
 
     if (filters?.leadAgency) {

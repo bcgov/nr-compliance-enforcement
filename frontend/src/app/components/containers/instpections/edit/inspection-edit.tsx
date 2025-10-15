@@ -254,9 +254,9 @@ const InspectionEdit: FC = () => {
             <FormField
               form={form}
               name="name"
-              label="ID"
+              label="Inspection ID"
               required
-              validators={{ onChange: z.string().min(1, "ID is required").max(100, "ID must be 100 characters or less") }}
+              validators={{ onChange: z.string().min(1, "Inspection ID is required").max(100, "Inspection ID must be 100 characters or less") }}
               render={(field) => (
                 <input
                   type="text"
@@ -264,7 +264,7 @@ const InspectionEdit: FC = () => {
                   className="form-control comp-details-input"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="Enter ID"
+                  placeholder="Enter Inspection ID"
                   maxLength={100}
                   disabled={isDisabled}
                   style={{ borderColor: field.state.meta.errors?.[0] ? '#dc3545' : '' }}

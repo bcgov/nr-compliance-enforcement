@@ -89,6 +89,7 @@ const GET_ASSOCIATED_CASE_FILES = gql`
     allCaseFilesByActivityId(activityIdentifier: $activityIdentifier) {
       __typename
       caseIdentifier
+      name
       description
       leadAgency {
         agencyCode

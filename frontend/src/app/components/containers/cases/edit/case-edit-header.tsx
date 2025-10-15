@@ -7,6 +7,7 @@ interface CaseEditHeaderProps {
   saveButtonClick: () => void;
   isEditMode?: boolean;
   caseIdentifier?: string;
+  caseName?: string;
 }
 
 export const CaseEditHeader: FC<CaseEditHeaderProps> = ({
@@ -14,6 +15,7 @@ export const CaseEditHeader: FC<CaseEditHeaderProps> = ({
   saveButtonClick,
   isEditMode = false,
   caseIdentifier,
+  caseName,
 }) => {
   return (
     <div className="comp-details-header">
@@ -39,7 +41,9 @@ export const CaseEditHeader: FC<CaseEditHeaderProps> = ({
         <div className="comp-details-title-container">
           <div className="comp-details-title-info">
             <h1 className="comp-box-complaint-id">
-              {isEditMode && caseIdentifier ? (
+              {isEditMode && caseName ? (
+                <span>Case {caseName}</span>
+              ) : isEditMode && caseIdentifier ? (
                 <span>Case {caseIdentifier}</span>
               ) : (
                 <span>{isEditMode ? "Edit case" : "Create case"} </span>

@@ -87,7 +87,7 @@ export const InspectionDetails: FC = () => {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-group">
-                      <strong>Case:</strong>
+                      <strong>Case ID:</strong>
                       <p>{caseIdentifier ? <Link to={`/case/${caseIdentifier}`}>{caseName || caseIdentifier}</Link> : <p>N/A</p>}</p>
                     </div>
                   </div>

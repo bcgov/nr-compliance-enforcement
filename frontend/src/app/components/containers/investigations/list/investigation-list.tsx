@@ -49,11 +49,13 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
     <thead className="sticky-table-header">
       <tr>
         {renderSortableHeader(
-          "ID",
+          "Investigation ID",
           "name",
           "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
         )}
-        {renderSortableHeader("Case", "caseIdentifier", "comp-cell-width-160 comp-cell-min-width-160")}
+        <th className="unsortable comp-cell-width-160 comp-cell-min-width-160">
+          <div className="header-label">Case ID</div>
+        </th>
         {renderSortableHeader("Date Opened", "openedTimestamp", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Status", "investigationStatus", "comp-cell-width-110")}
         {renderSortableHeader("Agency", "leadAgency")}
