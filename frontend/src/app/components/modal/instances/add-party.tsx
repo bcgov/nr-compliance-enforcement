@@ -62,7 +62,6 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const addPartyMutation = useGraphQLMutation(ADD_PARTY_MUTATION, {
-    invalidateQueries: ["getInvestigation"],
     onSuccess: () => {
       ToggleSuccess("Party added successfully");
     },

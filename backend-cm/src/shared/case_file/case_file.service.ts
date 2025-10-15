@@ -14,7 +14,7 @@ import {
 import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
 import { EventCreateInput } from "../../shared/event/dto/event";
-import { ActivityTypeToEventEntity, EVENT_STREAM_NAME, STREAM_TOPICS, StreamTopic } from "../../common/nats_constants";
+import { ActivityTypeToEventEntity, EVENT_STREAM_NAME, STREAM_TOPICS } from "../../common/nats_constants";
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 
 @Injectable()
@@ -83,35 +83,23 @@ export class CaseFileService {
     }
   }
 
-  async findCaseFileByActivityId(activityType: string, activityIdentifier: string) {
-    const caseActivityXrefRecord = await this.prisma.case_activity.findFirst({
-      where: {
-        activity_type: activityType,
-        activity_identifier_ref: activityIdentifier,
-      },
-    });
-
-    if (!caseActivityXrefRecord) {
-      throw new Error(`No case activity found for activity type ${activityType} with identifier ${activityIdentifier}`);
+  async findCaseFilesByActivityIds(activityIdentifiers: string[]): Promise<CaseFile[]> {
+    if (!activityIdentifiers || activityIdentifiers.length === 0) {
+      return [];
     }
-    return await this.findOne(caseActivityXrefRecord.case_file_guid);
-  }
 
-  async findAllCaseFilesByActivityId(activityType: string, activityIdentifier: string) {
     const caseActivityXrefRecords = await this.prisma.case_activity.findMany({
       where: {
-        activity_type: activityType,
-        activity_identifier_ref: activityIdentifier,
+        activity_identifier_ref: {
+          in: activityIdentifiers,
+        },
       },
     });
 
-    if (!caseActivityXrefRecords) {
-      throw new Error(
-        `No case activities found for activity type ${activityType} with identifier ${activityIdentifier}`,
-      );
-    }
     const caseFileGuids = caseActivityXrefRecords.map((record) => record.case_file_guid);
-    return await this.findMany(caseFileGuids);
+    const uniqueCaseFileGuids = [...new Set(caseFileGuids)];
+
+    return await this.findMany(uniqueCaseFileGuids);
   }
 
   async create(input: CaseFileCreateInput): Promise<CaseFile> {
@@ -120,6 +108,7 @@ export class CaseFileService {
         lead_agency: input.leadAgency,
         case_status: input.caseStatus,
         description: input.description,
+        name: input.name,
         opened_utc_timestamp: new Date(),
         create_user_id: this.user.getIdirUsername(),
       },
@@ -196,6 +185,9 @@ export class CaseFileService {
     if (input.description !== undefined) {
       updateData.description = input.description;
     }
+    if (input.name !== undefined) {
+      updateData.name = input.name;
+    }
 
     const caseFile = await this.prisma.case_file.update({
       where: { case_file_guid: caseIdentifier },
@@ -234,12 +226,33 @@ export class CaseFileService {
     }
   }
 
+  async checkNameExists(name: string, leadAgency: string, excludeCaseIdentifier?: string): Promise<boolean> {
+    const where: any = {
+      name: {
+        equals: name,
+        mode: "insensitive",
+      },
+      lead_agency: leadAgency,
+    };
+
+    if (excludeCaseIdentifier) {
+      where.case_file_guid = {
+        not: excludeCaseIdentifier,
+      };
+    }
+
+    const existingCase = await this.prisma.case_file.findFirst({
+      where,
+    });
+
+    return !!existingCase;
+  }
+
   async search(page: number = 1, pageSize: number = 25, filters?: CaseFileFilters): Promise<CaseFileResult> {
     const where: any = {};
 
     if (filters?.search) {
-      // UUID column only supports exact matching
-      where.OR = [{ case_file_guid: { equals: filters.search } }];
+      where.OR = [{ name: { contains: filters.search, mode: "insensitive" } }];
     }
 
     if (filters?.leadAgency) {
@@ -270,6 +283,7 @@ export class CaseFileService {
       openedTimestamp: "opened_utc_timestamp",
       leadAgency: "lead_agency",
       caseStatus: "case_status",
+      name: "name",
     };
 
     let orderBy: any = { opened_utc_timestamp: "desc" }; // Default sort

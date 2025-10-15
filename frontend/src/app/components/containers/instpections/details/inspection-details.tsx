@@ -5,11 +5,12 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Inspection } from "@/generated/graphql";
 import { InspectionHeader } from "@/app/components/containers/instpections/details/inspection-header";
 
-const GET_INspection = gql`
+const GET_INSPECTION = gql`
   query GetInspection($inspectionGuid: String!) {
     getInspection(inspectionGuid: $inspectionGuid) {
       __typename
       inspectionGuid
+      name
       description
       openedTimestamp
       inspectionStatus {
@@ -19,8 +20,9 @@ const GET_INspection = gql`
       }
       leadAgency
     }
-    caseFileByActivityId(activityType: "INSPECTION", activityIdentifier: $inspectionGuid) {
+    caseFilesByActivityIds(activityIdentifiers: [$inspectionGuid]) {
       caseIdentifier
+      name
     }
   }
 `;
@@ -33,12 +35,16 @@ export const InspectionDetails: FC = () => {
   const { inspectionGuid = "" } = useParams<InspectionParams>();
   const { data, isLoading } = useGraphQLQuery<{
     getInspection: Inspection;
-    caseFileByActivityId: CaseFile;
-  }>(GET_INspection, {
+    caseFilesByActivityIds: CaseFile[];
+  }>(GET_INSPECTION, {
     queryKey: ["getInspection", inspectionGuid],
     variables: { inspectionGuid: inspectionGuid },
     enabled: !!inspectionGuid, // Only refresh query if id is provided
   });
+
+  const inspectionData = data?.getInspection;
+  const caseIdentifier = data?.caseFilesByActivityIds?.[0]?.caseIdentifier;
+  const caseName = data?.caseFilesByActivityIds?.[0]?.name;
 
   if (isLoading) {
     return (
@@ -52,9 +58,6 @@ export const InspectionDetails: FC = () => {
       </div>
     );
   }
-
-  const inspectionData = data?.getInspection;
-  const caseIdentifier = data?.caseFileByActivityId?.caseIdentifier;
   return (
     <div className="comp-complaint-details">
       <InspectionHeader inspection={inspectionData} />
@@ -84,8 +87,8 @@ export const InspectionDetails: FC = () => {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-group">
-                      <strong>Case Identifier:</strong>
-                      {caseIdentifier ? <Link to={`/case/${caseIdentifier}`}>{caseIdentifier}</Link> : <p>N/A</p>}
+                      <strong>Case ID:</strong>
+                      <p>{caseIdentifier ? <Link to={`/case/${caseIdentifier}`}>{caseName || caseIdentifier}</Link> : <p>N/A</p>}</p>
                     </div>
                   </div>
                 </div>

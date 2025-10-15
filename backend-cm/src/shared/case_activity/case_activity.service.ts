@@ -5,7 +5,7 @@ import { Mapper } from "@automapper/core";
 import { CaseActivity, CaseActivityCreateInput } from "src/shared/case_activity/dto/case_activity";
 import { UserService } from "src/common/user.service";
 import { case_activity } from "prisma/shared/generated/case_activity";
-import { ActivityTypeToEventEntity, EVENT_STREAM_NAME, StreamTopic } from "src/common/nats_constants";
+import { ActivityTypeToEventEntity, EVENT_STREAM_NAME } from "src/common/nats_constants";
 import { EventCreateInput } from "src/shared/event/dto/event";
 import { EventPublisherService } from "src/event_publisher/event_publisher.service";
 
@@ -46,7 +46,7 @@ export class CaseActivityService {
       };
       this.eventPublisher.publishEvent(event, eventTopic);
     } catch (error) {
-      this.logger.error(`Error publishing event ${eventTopic}`);
+      this.logger.error(`Error publishing event ${eventTopic}`, error);
     }
     try {
       return this.mapper.map<case_activity, CaseActivity>(result as case_activity, "case_activity", "CaseActivity");

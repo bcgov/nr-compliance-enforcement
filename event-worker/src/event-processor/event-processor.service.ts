@@ -25,10 +25,10 @@ interface EventCreateInput {
 @Injectable()
 export class EventProcessorService implements OnModuleInit {
   private readonly logger = new Logger(EventProcessorService.name);
+  private readonly graphqlClient: GraphQLClient;
+  private readonly eventStreamName = `${process.env.EVENT_STREAM_NAME}`;
   private natsConnection: NatsConnection | null = null;
   private jsm: JetStreamManager | null = null;
-  private graphqlClient: GraphQLClient;
-  private eventStreamName = `${process.env.EVENT_STREAM_NAME}`;
 
   constructor() {
     const graphqlUrl = `${process.env.CASE_MANAGEMENT_API_URL}`;

@@ -3,6 +3,7 @@ import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
 import { FC, useEffect, useState } from "react";
 import { Badge } from "react-bootstrap";
+import { throttle } from "lodash";
 import Option from "@apptypes/app/option";
 import { useAppSelector } from "@hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
@@ -27,13 +28,14 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
   const [searchString, setSearchString] = useState<string>("");
   const [caseFileData, setCaseFileData] = useState<any[]>([]);
 
-  const { data, isLoading: isSearchCaseLoading } = useCaseSearchQuery("");
+  const { data, isLoading: isSearchCaseLoading } = useCaseSearchQuery(searchString);
 
   //Effects
   useEffect(() => {
     if (data) {
       const caseFiles = data.searchCaseFiles.items.map((item) => ({
         id: item.caseIdentifier,
+        name: item.name || item.caseIdentifier,
         agency: item.leadAgency?.longDescription || "Unknown",
         status: item.caseStatus?.caseStatusCode || "Unknown",
       }));
@@ -57,9 +59,9 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
     const selectedCase = selected[0];
     setSelectedCase(selectedCase);
     onChange(
-      selected.length > 0 ? ({ label: selected[0].id as string, value: selected[0].id as string } as Option) : null,
+      selected.length > 0 ? ({ label: selected[0].name as string, value: selected[0].id as string } as Option) : null,
     );
-    setHintText(isFocused ? `${selectedCase.id}, ${getStatusDescription(selectedCase.status) || ""}` : "");
+    setHintText(isFocused ? `${selectedCase.name}, ${getStatusDescription(selectedCase.status) || ""}` : "");
   };
 
   const handleInputChange = (text: string) => {
@@ -68,16 +70,17 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
     }
   };
 
-  const handleSearch = async (query: string) => {
-    setSearchString(query);
-  };
+  const handleSearch =
+      throttle((query: string) => {
+        setSearchString(query);
+      }, 250)
 
   return (
     <div className="complaint-search-container">
       <AsyncTypeahead
         clearButton
         id={id}
-        labelKey="id"
+        labelKey="name"
         minLength={2}
         onInputChange={handleInputChange}
         onSearch={handleSearch}
@@ -102,7 +105,7 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
         renderMenuItemChildren={(option: any, props: any) => (
           <>
             <div>
-              <Highlighter search={props.text}>{`Case #${option.id}`}</Highlighter>{" "}
+              <Highlighter search={props.text}>{`${option.name}`}</Highlighter>{" "}
               <div className={`badge ${applyStatusClass(option.status)}`}>{getStatusDescription(option.status)}</div>
             </div>
             <dt>

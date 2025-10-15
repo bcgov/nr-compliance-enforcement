@@ -1,5 +1,11 @@
 name: PR
 
+permissions:
+  contents: write
+  packages: write
+  pull-requests: write
+  repository-projects: write
+
 on:
   pull_request:
     branches:
@@ -89,6 +95,31 @@ jobs:
           tags: |
             ${{ github.sha }}
 
+  # build prepackaged playwright images
+  # https://github.com/bcgov/action-builder-ghcr
+  build-playwright:
+    name: Build Playwright
+    runs-on: ubuntu-22.04
+    outputs:
+      digest: ${{ steps.build-playwright.outputs.digest }}
+      sha: ${{ github.sha }}
+    timeout-minutes: 15
+    steps:
+      - uses: bcgov/action-builder-ghcr@v2.2.0
+        with:
+          package: frontend-playwright
+          build_file: frontend/Dockerfile.playwright
+          build_context: frontend/
+          tag: ${{ github.event.number }}
+          tag_fallback: latest
+      - uses: shrink/actions-docker-registry-tag@v4
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/frontend-playwright
+          target: ${{ github.event.number }}
+          tags: |
+            ${{ github.sha }}
+
   tests:
     name: Tests
     if: (! github.event.pull_request.draft)
@@ -109,7 +140,7 @@ jobs:
   ### Emerald Jobs ###
   deploy-emerald:
     name: Deploy Workloads To Emerald
-    needs: [builds, validate-flyway-migrations]
+    needs: [builds, build-playwright, validate-flyway-migrations]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout CD repo
