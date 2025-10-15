@@ -68,7 +68,7 @@ WHERE feature_code = 'COLEMAIL';
 ---------------------
 
 UPDATE feature_agency_xref
-SET active_ind = 'N'
+SET active_ind = 'Y'
 WHERE feature_code = 'SECTORVIEW';
 
 UPDATE feature_agency_xref

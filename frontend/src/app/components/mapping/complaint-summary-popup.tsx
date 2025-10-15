@@ -22,6 +22,8 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
   );
 
   const agencyCodes = useAppSelector((state) => state.codeTables.agency);
+  const agencyCode =
+    agencyCodes?.find(({ agency }) => agency === complaintAgency)?.shortDescription ?? "Unknown Agency";
   const agencyName = agencyCodes?.find(({ agency }) => agency === complaintAgency)?.longDescription ?? "Unknown Agency";
 
   const inProgressInd = violationInProgress ? "In Progress" : "";
@@ -73,7 +75,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
                 <i className="bi bi-person-fill" /> Officer
               </dt>
               <dd id="comp-details-assigned-officer-name-text-id">
-                <i className="bi bi-exclamation-triangle-fill text-warning"></i>{" "}
+                {officerAssigned === "Not Assigned" && <i className="bi bi-exclamation-triangle-fill text-warning"></i>}{" "}
                 <strong>
                   {officerAssigned}{" "}
                   <OverlayTrigger
@@ -87,7 +89,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
                       </Tooltip>
                     }
                   >
-                    <span className="comp-tooltip-hint">({complaintAgency})</span>
+                    <span className="comp-tooltip-hint">({agencyCode})</span>
                   </OverlayTrigger>
                 </strong>
               </dd>
@@ -97,7 +99,11 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
                 <i className="bi bi-geo-alt-fill" /> Location
               </dt>
               <dd className="comp-summary-popup-location">
-                {location} <br></br>
+                {location && (
+                  <>
+                    {location} <br></br>
+                  </>
+                )}
                 {area && <em>{area}</em>}
               </dd>
             </div>
