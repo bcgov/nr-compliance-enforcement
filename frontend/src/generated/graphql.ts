@@ -1170,12 +1170,13 @@ export type Query = {
   HWCRPreventionActions: Array<Maybe<CaseFileAction>>;
   ageCodes: Array<Maybe<AgeCode>>;
   agencyCodes: Array<Maybe<AgencyCode>>;
-  allCaseFilesByActivityId: Array<Maybe<CaseFile>>;
   caseFile?: Maybe<CaseFile>;
-  caseFileByActivityId: CaseFile;
   caseFiles: Array<CaseFile>;
   caseFilesByActivityIds: Array<CaseFile>;
   caseLocationCodes: Array<Maybe<CaseLocationCode>>;
+  checkCaseNameExists: Scalars['Boolean']['output'];
+  checkInspectionNameExists: Scalars['Boolean']['output'];
+  checkInvestigationNameExists: Scalars['Boolean']['output'];
   configurationCodes: Array<Maybe<Configuration>>;
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
   dischargeCodes: Array<Maybe<DischargeCode>>;
@@ -1225,18 +1226,8 @@ export type Query = {
 };
 
 
-export type QueryallCaseFilesByActivityIdArgs = {
-  activityIdentifier: Scalars['String']['input'];
-};
-
-
 export type QuerycaseFileArgs = {
   caseIdentifier: Scalars['String']['input'];
-};
-
-
-export type QuerycaseFileByActivityIdArgs = {
-  activityIdentifier: Scalars['String']['input'];
 };
 
 
@@ -1247,7 +1238,27 @@ export type QuerycaseFilesArgs = {
 
 export type QuerycaseFilesByActivityIdsArgs = {
   activityIdentifiers: Array<Scalars['String']['input']>;
-  activityType: Scalars['String']['input'];
+};
+
+
+export type QuerycheckCaseNameExistsArgs = {
+  excludeCaseIdentifier?: InputMaybe<Scalars['String']['input']>;
+  leadAgency: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
+
+export type QuerycheckInspectionNameExistsArgs = {
+  excludeInspectionGuid?: InputMaybe<Scalars['String']['input']>;
+  leadAgency: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
+
+export type QuerycheckInvestigationNameExistsArgs = {
+  excludeInvestigationGuid?: InputMaybe<Scalars['String']['input']>;
+  leadAgency: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 

@@ -37,19 +37,26 @@ export class EventPublisherService {
   }
 
   private readonly _getAllCaseFilesByComplaint = async (id: string, token: string) => {
-    //-- Get the Outcome Data, this is done via a GQL call to prevent
-    //-- a circular dependency between the complaint and case_file modules
-    const { data, errors } = await get(token, {
-      query: `{allCaseFilesByActivityId (activityType: "COMP", activityIdentifier: "${id}") {
+    try {
+      //-- Get the Outcome Data, this is done via a GQL call to prevent
+      //-- a circular dependency between the complaint and case_file modules
+      const { data, errors } = await get(token, {
+        query: `{caseFilesByActivityIds (activityIdentifiers: ["${id}"]) {
         caseIdentifier
       }}`,
-    });
-    if (errors) {
-      this.logger.error(`GraphQL errors for complaint ${id}:`, JSON.stringify(errors, null, 2));
-      throw new Error("GraphQL errors occurred");
+      });
+      if (errors) {
+        this.logger.error(`GraphQL errors for complaint ${id}:`, JSON.stringify(errors, null, 2));
+        throw new Error("GraphQL errors occurred while fetching case files for the complaint.");
+      }
+      const { caseFilesByActivityIds } = data;
+      return caseFilesByActivityIds || [];
+    } catch (error) {
+      this.logger.error(
+        `An error occurred while getting case files for complaint ${id}`,
+        JSON.stringify(error, null, 2),
+      );
     }
-    const { allCaseFilesByActivityId } = data;
-    return allCaseFilesByActivityId || [];
   };
 
   /**

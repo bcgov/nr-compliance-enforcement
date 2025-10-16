@@ -1,7 +1,6 @@
 import { Injectable, Logger, Inject, forwardRef } from "@nestjs/common";
 import { connect, headers, JetStreamClient, JSONCodec } from "nats";
 import {
-  EventEntityToActivityType,
   EventEntityTypeCodes,
   StreamTopic,
   EventVerbType,
@@ -89,10 +88,7 @@ export class EventPublisherService {
          * Some activities can be a part of multiple cases, so when opening or closing an activity,
          * fetch all cases it is a part of and create the events for each of them.
          */
-        const caseFiles = await this.caseFileService.findAllCaseFilesByActivityId(
-          EventEntityToActivityType[sourceEntityType],
-          sourceId,
-        );
+        const caseFiles = await this.caseFileService.findCaseFilesByActivityIds([sourceId]);
 
         for (const caseFile of caseFiles) {
           const event: EventCreateInput = {
