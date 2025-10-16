@@ -174,7 +174,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
               <div className="item-header">
                 <div className="item-link">
                   <Link
-                    to={`/complaint/${data.complaintType || "HWCR"}/${data.id}`}
+                    to={`/complaint/${data.type || "HWCR"}/${data.id}`}
                     id={data.id}
                   >
                     {data.id}
@@ -186,9 +186,9 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
                     <div> • </div>
                   </>
                 )}
-                {data.complaintType && (
+                {data.type && (
                   <>
-                    <div>{complaintTypeToName(data.complaintType)}</div>
+                    <div>{complaintTypeToName(data.type)}</div>
                     <div> • </div>
                   </>
                 )}
