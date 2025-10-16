@@ -1,14 +1,18 @@
-import { FC, memo, useState } from "react";
+import { FC, memo, useState, useMemo } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
 import Option from "@apptypes/app/option";
 import { gql } from "graphql-request";
+import { useForm } from "@tanstack/react-form";
+import { z } from "zod";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
+import { useRequest as GraphQLRequest } from "@/app/graphql/client";
 import { CaseActivityCreateInput, CaseFileCreateInput } from "@/generated/graphql";
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
-import { ValidationTextArea } from "@/app/common/validation-textarea";
+import { CompInput } from "@/app/components/common/comp-input";
+import { FormField } from "@/app/components/common/form-field";
 import { CaseListSearch } from "@/app/components/common/case-list-search";
 import { Link } from "react-router-dom";
 
@@ -17,12 +21,19 @@ const createOrAddOptions: Option[] = [
   { label: "Add to an existing case", value: "add" },
 ];
 
+const CHECK_CASE_NAME_EXISTS = gql`
+  query CheckCaseNameExists($name: String!, $leadAgency: String!, $excludeCaseIdentifier: String) {
+    checkCaseNameExists(name: $name, leadAgency: $leadAgency, excludeCaseIdentifier: $excludeCaseIdentifier)
+  }
+`;
+
 const CREATE_CASE_MUTATION = gql`
   mutation CreateCaseFile($input: CaseFileCreateInput!) {
     createCaseFile(input: $input) {
       caseIdentifier
       openedTimestamp
       description
+      name
       caseStatus {
         caseStatusCode
         shortDescription
@@ -67,16 +78,40 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   const modalData = useAppSelector(selectModalData);
 
   // Vars
-  const { title, complaint_identifier } = modalData;
+  const { title, complaint_identifier, agency_code } = modalData;
 
   // State
   const [selectedCase, setSelectedCase] = useState<Option | null>();
   const [createOrAddOption, setCreateOrAddOption] = useState<string>("create");
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [caseDescription, setCaseDescription] = useState<string>("");
+
+  const defaultValues = useMemo(
+    () => ({
+      name: "",
+      description: "",
+    }),
+    []
+  );
+
+  const form = useForm({
+    defaultValues,
+    onSubmit: async ({ value }) => {
+      if (createOrAddOption === "create") {
+        const createInput: CaseFileCreateInput = {
+          caseStatus: "OPEN",
+          leadAgency: agency_code,
+          activityType: "COMP",
+          activityIdentifier: complaint_identifier,
+          description: value.description,
+          name: value.name,
+        };
+        createCaseMutation.mutate({ input: createInput });
+      }
+      submit();
+      close();
+    },
+  });
 
   const createCaseMutation = useGraphQLMutation(CREATE_CASE_MUTATION, {
-    invalidateQueries: ["searchCaseFiles"],
     onSuccess: (data: any) => {
       ToggleSuccess(
         <div>
@@ -85,7 +120,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
             to={`/case/${data.createCaseFile.caseIdentifier}`}
             className="toast-link"
           >
-            #{data.createCaseFile.caseIdentifier}
+            {data.createCaseFile.name}
           </Link>{" "}
           auto-created from complaint #{complaint_identifier}
         </div>,
@@ -103,7 +138,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   });
 
   const addComplaintToCaseMutation = useGraphQLMutation(ADD_COMPLAINT_TO_CASE_MUTATION, {
-    invalidateQueries: ["caseFile", selectedCase?.value ?? ""],
     onSuccess: (data: any) => {
       console.log(data);
       ToggleSuccess(
@@ -113,7 +147,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
             to={`/case/${selectedCase?.value}`}
             className="toast-link"
           >
-            #{selectedCase?.value}
+            {selectedCase?.label}
           </Link>
         </div>,
         {
@@ -130,49 +164,21 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   });
 
   const handleCreateAddCase = async () => {
-    if (createOrAddOption === "create" && caseDescription === "") {
-      setErrorMessage("Required");
-      return;
-    }
-
-    switch (createOrAddOption) {
-      case "add": {
-        if (selectedCase?.value) {
-          const createCaseAcivityInput: CaseActivityCreateInput = {
-            caseFileGuid: selectedCase?.value,
-            activityType: "COMP",
-            activityIdentifier: complaint_identifier,
-          };
-          addComplaintToCaseMutation.mutate({
-            input: createCaseAcivityInput,
-          });
-        }
-        break;
-      }
-      case "create":
-      default: {
-        if (errorMessage) return;
-        const createInput: CaseFileCreateInput = {
-          caseStatus: "OPEN",
-          leadAgency: "COS",
+    if (createOrAddOption === "add") {
+      if (selectedCase?.value) {
+        const createCaseAcivityInput: CaseActivityCreateInput = {
+          caseFileGuid: selectedCase?.value,
           activityType: "COMP",
           activityIdentifier: complaint_identifier,
-          description: caseDescription,
         };
-        createCaseMutation.mutate({ input: createInput });
-        break;
+        addComplaintToCaseMutation.mutate({
+          input: createCaseAcivityInput,
+        });
+        submit();
+        close();
       }
-    }
-    submit();
-    close();
-  };
-
-  const handleCaseDescriptionChange = (value: string) => {
-    if (value === "") {
-      setErrorMessage("Required");
     } else {
-      setErrorMessage("");
-      setCaseDescription(value.trim());
+      form.handleSubmit();
     }
   };
 
@@ -218,26 +224,81 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           </div>
 
           {createOrAddOption === "create" && (
-            <div
-              className="comp-details-form-row"
-              id="create-case-div"
-            >
-              <label htmlFor="createAddCase">Case description</label>
-              <div
-                className="comp-details-input full-width"
-                style={{ width: "100%" }}
-              >
-                <ValidationTextArea
-                  id="case-description"
-                  className="comp-form-control comp-details-input"
-                  rows={2}
-                  onChange={handleCaseDescriptionChange}
-                  placeholderText="Enter case description..."
-                  maxLength={4000}
-                  errMsg={errorMessage}
+            <form onSubmit={(e) => { e.preventDefault(); form.handleSubmit(); }}>
+                <FormField
+                  form={form}
+                  name="name"
+                  label="Case ID *"
+                  validators={{
+                    onChange: z.string().min(1, "Case ID is required").max(100, "Case ID must be 100 characters or less"),
+                    onChangeAsyncDebounceMs: 500,
+                    onChangeAsync: async ({ value }: { value: string }) => {
+                      if (!value || value.length < 1) return "Case ID is required";
+                      if (!agency_code) return undefined;
+                      const result: { checkCaseNameExists: boolean } = await GraphQLRequest(
+                        CHECK_CASE_NAME_EXISTS,
+                        {
+                          name: value,
+                          leadAgency: agency_code,
+                          excludeCaseIdentifier: undefined,
+                        }
+                      );
+                      if (result.checkCaseNameExists) {
+                        return "This Case ID is already in use for this agency. Please choose a different Case ID.";
+                      }
+                      return undefined;
+                    }
+                  }}
+                  render={(field) => (
+                    <div
+                      className="comp-details-input"
+                      style={{ width: "100%" }}
+                    >
+                      <CompInput
+                        id="display-name"
+                        divid="display-name-value"
+                        type="input"
+                        inputClass="comp-form-control"
+                        error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                        maxLength={120}
+                        onChange={(evt: any) => field.handleChange(evt.target.value)}
+                        value={field.state.value}
+                        placeholder="Enter Case ID"
+                      />
+                    </div>
+                  )}
                 />
-              </div>
-            </div>
+                <FormField
+                  form={form}
+                  name="description"
+                  label="Case description"
+                  validators={{
+                    onChange: z.string().max(4000, "Description must be 4000 characters or less"),
+                  }}
+                  render={(field) => (
+                    <div
+                      className="comp-details-input"
+                      style={{ width: "100%" }}
+                    >
+                      <textarea
+                        id="case-description"
+                        className="comp-form-control comp-details-input"
+                        rows={2}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        value={field.state.value}
+                        placeholder="Enter case description..."
+                        maxLength={4000}
+                        style={{ borderColor: field.state.meta.errors?.[0] ? '#dc3545' : '' }}
+                      />
+                      {field.state.meta.errors.length > 0 && (
+                        <div className="error-message" style={{ color: '#dc3545' }}>
+                          {field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                />
+            </form>
           )}
           {createOrAddOption === "add" && (
             <div
@@ -252,7 +313,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
                 <CaseListSearch
                   id="createAddCase"
                   onChange={(e: Option | null) => handleSearchCaseChange(e)}
-                  errorMessage={errorMessage}
                 />
               </div>
             </div>

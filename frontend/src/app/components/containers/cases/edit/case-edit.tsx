@@ -5,12 +5,14 @@ import { z } from "zod";
 import { gql } from "graphql-request";
 import { CaseEditHeader } from "./case-edit-header";
 import { CompSelect } from "@components/common/comp-select";
+import { CompInput } from "@components/common/comp-input";
 import { FormField } from "@components/common/form-field";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
+import { useRequest as GraphQLRequest } from "@/app/graphql/client";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
@@ -23,6 +25,7 @@ const CREATE_CASE_MUTATION = gql`
       caseIdentifier
       openedTimestamp
       description
+      name
       caseStatus {
         caseStatusCode
         shortDescription
@@ -43,6 +46,7 @@ const UPDATE_CASE_MUTATION = gql`
       caseIdentifier
       openedTimestamp
       description
+      name
       caseStatus {
         caseStatusCode
         shortDescription
@@ -57,6 +61,12 @@ const UPDATE_CASE_MUTATION = gql`
   }
 `;
 
+const CHECK_CASE_NAME_EXISTS = gql`
+  query CheckCaseNameExists($name: String!, $leadAgency: String!, $excludeCaseIdentifier: String) {
+    checkCaseNameExists(name: $name, leadAgency: $leadAgency, excludeCaseIdentifier: $excludeCaseIdentifier)
+  }
+`;
+
 const GET_CASE_FILE = gql`
   query GetCaseFile($caseIdentifier: String!) {
     caseFile(caseIdentifier: $caseIdentifier) {
@@ -64,6 +74,7 @@ const GET_CASE_FILE = gql`
       caseIdentifier
       openedTimestamp
       description
+      name
       caseStatus {
         caseStatusCode
         shortDescription
@@ -101,7 +112,6 @@ const CaseEdit: FC = () => {
   });
 
   const createCaseMutation = useGraphQLMutation(CREATE_CASE_MUTATION, {
-    invalidateQueries: ["searchCaseFiles"],
     onSuccess: (data: any) => {
       ToggleSuccess("Case created successfully");
       navigate(`/case/${data.createCaseFile.caseIdentifier}`);
@@ -113,7 +123,6 @@ const CaseEdit: FC = () => {
   });
 
   const updateCaseMutation = useGraphQLMutation(UPDATE_CASE_MUTATION, {
-    invalidateQueries: [["caseFile", id], "searchCaseFiles"],
     onSuccess: (data: any) => {
       ToggleSuccess("Case updated successfully");
       navigate(`/case/${id}`);
@@ -131,12 +140,14 @@ const CaseEdit: FC = () => {
         caseStatus: caseData.caseFile.caseStatus?.caseStatusCode || "",
         leadAgency: caseData.caseFile.leadAgency?.agencyCode || "",
         description: caseData.caseFile.description || "",
+        name: caseData.caseFile.name || "",
       };
     }
     return {
       caseStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
       leadAgency: getUserAgency(),
       description: "",
+      name: "",
     };
   }, [isEditMode, caseData]);
 
@@ -148,6 +159,7 @@ const CaseEdit: FC = () => {
           caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
           description: value.description,
+          name: value.name,
         };
 
         updateCaseMutation.mutate({
@@ -159,6 +171,7 @@ const CaseEdit: FC = () => {
           caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
           description: value.description,
+          name: value.name,
         };
 
         createCaseMutation.mutate({ input: createInput });
@@ -204,6 +217,7 @@ const CaseEdit: FC = () => {
         saveButtonClick={saveButtonClick}
         isEditMode={isEditMode}
         caseIdentifier={id}
+        caseName={caseData?.caseFile?.name}
       />
 
       <section className="comp-details-body comp-details-form comp-container">
@@ -213,6 +227,48 @@ const CaseEdit: FC = () => {
 
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>
+          <FormField
+              form={form}
+              name="name"
+              label="Case ID"
+              required
+              validators={{ 
+                onChange: z.string().min(1, "Case ID is required").max(100, "Case ID must be 100 characters or less"),
+                onChangeAsyncDebounceMs: 500,
+                onChangeAsync: async ({ value }: { value: string }) => {
+                  if (!value || value.length < 1) return "Case ID is required";
+                  const leadAgency = form.getFieldValue("leadAgency");
+                  if (!leadAgency) return undefined;
+                  const result: { checkCaseNameExists: boolean } = await GraphQLRequest(
+                    CHECK_CASE_NAME_EXISTS,
+                    {
+                      name: value,
+                      leadAgency: leadAgency,
+                      excludeCaseIdentifier: isEditMode ? id : undefined,
+                    }
+                  );
+                  if (result.checkCaseNameExists) {
+                    return "This Case ID is already in use for this agency. Please choose a different Case ID.";
+                  }
+                  return undefined;
+                }
+              }}
+              render={(field) => (
+                <div>
+                  <CompInput
+                    id="display-name"
+                    divid="display-name-value"
+                    type="input"
+                    inputClass="comp-form-control"
+                    error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                    maxLength={120}
+                    onChange={(evt: any) => field.handleChange(evt.target.value)}
+                    value={field.state.value}
+                    placeholder="Enter Case ID"
+                  />
+                </div>
+              )}
+            />
             <FormField
               form={form}
               name="caseStatus"

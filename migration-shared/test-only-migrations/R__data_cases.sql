@@ -6,7 +6,8 @@ insert into
     case_status,
     opened_utc_timestamp,
     create_user_id,
-    create_utc_timestamp
+    create_utc_timestamp,
+    name
   )
 values
   (
@@ -15,7 +16,8 @@ values
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'CASE1'
   ),
   (
     '77dd3a1f-4bc5-4758-a986-a664b8d8f2ef',
@@ -23,7 +25,8 @@ values
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'CASE2'
   ),
   (
     '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
@@ -31,10 +34,11 @@ values
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'CASE3'
   ) on conflict do nothing;
 
-  -- Add the investigations to the cases
+-- Add the investigations to the cases
 INSERT INTO
   shared.case_activity (
     case_file_guid,
@@ -78,7 +82,7 @@ values
     now ()
   ) on conflict do nothing;
 
-  -- Create case files for the inspections to be added to
+-- Create case files for the inspections to be added to
 insert into
   shared.case_file (
     case_file_guid,
@@ -86,17 +90,19 @@ insert into
     case_status,
     opened_utc_timestamp,
     create_user_id,
-    create_utc_timestamp
+    create_utc_timestamp,
+    name
   )
 values
--- New values
+  -- New values
   (
     'd61b99d1-20dd-44e7-a864-6e28c9b3585a',
     'COS',
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'CASE4'
   ),
   (
     'd61b99d1-20dd-44e7-a864-6e28c9b3585b',
@@ -104,20 +110,21 @@ values
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'CASE5'
   ),
--- Existing case, redundant insert to avoid ordering issue
+  -- Existing case, redundant insert to avoid ordering issue
   (
     '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
     'COS',
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'CASE6'
   ) on conflict do nothing;
 
-
-  -- Add the inspections to the cases
+-- Add the inspections to the cases
 INSERT INTO
   shared.case_activity (
     case_file_guid,

@@ -89,4 +89,21 @@ export class InvestigationResolver {
       });
     }
   }
+
+  @Query("checkInvestigationNameExists")
+  @Roles(coreRoles)
+  async checkInvestigationNameExists(
+    @Args("name") name: string,
+    @Args("leadAgency") leadAgency: string,
+    @Args("excludeInvestigationGuid") excludeInvestigationGuid?: string,
+  ) {
+    try {
+      return await this.investigationService.checkNameExists(name, leadAgency, excludeInvestigationGuid);
+    } catch (error) {
+      this.logger.error("Check investigation name exists error:", error);
+      throw new GraphQLError("Error checking investigation name", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
 }

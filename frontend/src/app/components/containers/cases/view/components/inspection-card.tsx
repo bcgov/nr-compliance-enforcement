@@ -12,7 +12,7 @@ export const InspectionCard: FC<InspectionCardProps> = ({ item: inspection }) =>
 
   return (
     <ActivityCard
-      id={inspection?.inspectionGuid || ""}
+      id={inspection?.name || inspection?.inspectionGuid || ""}
       linkTo={`/inspection/${inspection?.inspectionGuid}`}
       statusBadge={{
         text: statusText,

@@ -30,6 +30,9 @@ export class inspection {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiProperty({ type: String })
+  name: string;
+
   @ApiProperty({ type: () => inspection_status_code })
   inspection_status_code: inspection_status_code;
 

@@ -31,6 +31,9 @@ export class case_file {
   @ApiPropertyOptional({ type: String })
   description?: string;
 
+  @ApiProperty({ type: String })
+  name: string;
+
   @ApiProperty({ isArray: true, type: () => case_activity })
   case_activity: case_activity[];
 

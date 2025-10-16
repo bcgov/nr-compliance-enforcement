@@ -284,7 +284,7 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
               >
                 <div className="item-header">
                   <div className="item-link">
-                    <Link to={`/case/${data.caseIdentifier}`}>{data.caseIdentifier}</Link>
+                    <Link to={`/case/${data.caseIdentifier}`}>{data.name || data.caseIdentifier}</Link>
                   </div>
                   {data.leadAgency && <div>{data.leadAgency.longDescription}</div>}
                   {

@@ -43,42 +43,20 @@ export class CaseFileResolver {
     }
   }
 
-  @Query("caseFileByActivityId")
+  @Query("caseFilesByActivityIds")
   @Roles(coreRoles)
-  async findCaseFileByActivityId(
-    @Args("activityType") activityType: string,
-    @Args("activityIdentifier") activityIdentifier: string,
+  async findCaseFilesByActivityIds(
+    @Args("activityIdentifiers", { type: () => [String] }) activityIdentifiers: string[],
   ) {
     try {
-      return await this.caseFileService.findCaseFileByActivityId(activityType, activityIdentifier);
+      return await this.caseFileService.findCaseFilesByActivityIds(activityIdentifiers);
     } catch (error) {
       this.logger.error(error);
-      throw new GraphQLError("Error fetching case file by activity ID from Shared schema", {
+      throw new GraphQLError("Error fetching case files by activity IDs from Shared schema", {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
         },
       });
-    }
-  }
-
-  @Query("allCaseFilesByActivityId")
-  @Roles(coreRoles)
-  async findAllCaseFilesByActivityId(
-    @Args("activityType") activityType: string,
-    @Args("activityIdentifier") activityIdentifier: string,
-  ) {
-    try {
-      return await this.caseFileService.findAllCaseFilesByActivityId(activityType, activityIdentifier);
-    } catch (error) {
-      this.logger.error(error);
-      throw new GraphQLError(
-        `Error fetching case files for ${activityType} ${activityIdentifier} from the Shared schema`,
-        {
-          extensions: {
-            code: "INTERNAL_SERVER_ERROR",
-          },
-        },
-      );
     }
   }
 
@@ -122,6 +100,23 @@ export class CaseFileResolver {
     } catch (error) {
       this.logger.error("Update case file error:", error);
       throw new GraphQLError("Error updating case file", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
+
+  @Query("checkCaseNameExists")
+  @Roles(coreRoles)
+  async checkCaseNameExists(
+    @Args("name") name: string,
+    @Args("leadAgency") leadAgency: string,
+    @Args("excludeCaseIdentifier") excludeCaseIdentifier?: string,
+  ) {
+    try {
+      return await this.caseFileService.checkNameExists(name, leadAgency, excludeCaseIdentifier);
+    } catch (error) {
+      this.logger.error("Check case name exists error:", error);
+      throw new GraphQLError("Error checking case name", {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
       });
     }

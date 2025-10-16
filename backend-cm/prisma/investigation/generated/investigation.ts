@@ -31,6 +31,9 @@ export class investigation {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiProperty({ type: String })
+  name: string;
+
   @ApiProperty({ type: () => investigation_status_code })
   investigation_status_code: investigation_status_code;
 
