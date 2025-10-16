@@ -54,16 +54,17 @@ export const InvestigationListItem: FC<Props> = ({ data, cases }) => {
           {data.name || data.investigationGuid}
         </Link>
       </td>
-      {cases.map((caseFile) => (
-        <td className="comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center" key={caseFile.caseIdentifier}>
+        <td className="comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center" >
+        {cases.map((caseFile) => (
           <Link
             to={`/case/${caseFile.caseIdentifier}`}
             className="comp-cell-link"
+            key={caseFile.caseIdentifier}
           >
             {caseFile.name || caseFile.caseIdentifier}
           </Link>
+          ))}
         </td>
-      ))}
       <td className="comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell">
         {formatDateTime(data.openedTimestamp)}
       </td>
