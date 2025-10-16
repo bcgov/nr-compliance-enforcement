@@ -92,7 +92,7 @@ export class FeatureFlagService {
       .andWhere("featureAgencyXref.active_ind = :active_ind", { active_ind: true })
       .getMany();
 
-    const response = data && data.length > 0 ? true : false;
+    const response = data && data.length > 0;
     return response;
   }
 
