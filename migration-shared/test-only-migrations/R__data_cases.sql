@@ -48,39 +48,100 @@ INSERT INTO
     create_user_id,
     create_utc_timestamp
   )
-values
-  (
-    '77dd3a1f-4bc5-4758-a986-a664b8d8f2ee',
-    'INVSTGTN',
-    '66dd3a1f-4bc5-4758-a986-a664b8d8f200',
-    now (),
-    'system',
-    now ()
-  ),
-  (
-    '77dd3a1f-4bc5-4758-a986-a664b8d8f2ef',
-    'INVSTGTN',
-    '66dd3a1f-4bc5-4758-a986-a664b8d8f201',
-    now (),
-    'system',
-    now ()
-  ),
-  (
-    '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
-    'INVSTGTN',
-    '66dd3a1f-4bc5-4758-a986-a664b8d8f202',
-    now (),
-    'system',
-    now ()
-  ),
-  (
-    '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
-    'INVSTGTN',
-    '66dd3a1f-4bc5-4758-a986-a664b8d8f203',
-    now (),
-    'system',
-    now ()
-  ) on conflict do nothing;
+SELECT
+  '77dd3a1f-4bc5-4758-a986-a664b8d8f2ee',
+  'INVSTGTN',
+  '66dd3a1f-4bc5-4758-a986-a664b8d8f200',
+  now (),
+  'system',
+  now ()
+WHERE
+  NOT EXISTS (
+    SELECT
+      1
+    FROM
+      shared.case_activity
+    WHERE
+      activity_identifier_ref = '66dd3a1f-4bc5-4758-a986-a664b8d8f200'
+  );
+
+INSERT INTO
+  shared.case_activity (
+    case_file_guid,
+    activity_type,
+    activity_identifier_ref,
+    effective_utc_timestamp,
+    create_user_id,
+    create_utc_timestamp
+  )
+SELECT
+  '77dd3a1f-4bc5-4758-a986-a664b8d8f2ef',
+  'INVSTGTN',
+  '66dd3a1f-4bc5-4758-a986-a664b8d8f201',
+  now (),
+  'system',
+  now ()
+WHERE
+  NOT EXISTS (
+    SELECT
+      1
+    FROM
+      shared.case_activity
+    WHERE
+      activity_identifier_ref = '66dd3a1f-4bc5-4758-a986-a664b8d8f201'
+  );
+
+INSERT INTO
+  shared.case_activity (
+    case_file_guid,
+    activity_type,
+    activity_identifier_ref,
+    effective_utc_timestamp,
+    create_user_id,
+    create_utc_timestamp
+  )
+SELECT
+  '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
+  'INVSTGTN',
+  '66dd3a1f-4bc5-4758-a986-a664b8d8f202',
+  now (),
+  'system',
+  now ()
+WHERE
+  NOT EXISTS (
+    SELECT
+      1
+    FROM
+      shared.case_activity
+    WHERE
+      activity_identifier_ref = '66dd3a1f-4bc5-4758-a986-a664b8d8f202'
+  );
+
+INSERT INTO
+  shared.case_activity (
+    case_file_guid,
+    activity_type,
+    activity_identifier_ref,
+    effective_utc_timestamp,
+    create_user_id,
+    create_utc_timestamp
+  )
+SELECT
+  '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
+  'INVSTGTN',
+  '66dd3a1f-4bc5-4758-a986-a664b8d8f203',
+  now (),
+  'system',
+  now ()
+WHERE
+  NOT EXISTS (
+    SELECT
+      1
+    FROM
+      shared.case_activity
+    WHERE
+      activity_identifier_ref = '66dd3a1f-4bc5-4758-a986-a664b8d8f203'
+  );
 
 -- Create case files for the inspections to be added to
 insert into
@@ -134,36 +195,97 @@ INSERT INTO
     create_user_id,
     create_utc_timestamp
   )
-values
-  (
-    'd61b99d1-20dd-44e7-a864-6e28c9b3585a',
-    'INSPECTION',
-    '8116f74c-19d2-4903-9dfc-d5607c1fb900',
-    now (),
-    'system',
-    now ()
-  ),
-  (
-    'd61b99d1-20dd-44e7-a864-6e28c9b3585b',
-    'INSPECTION',
-    '8116f74c-19d2-4903-9dfc-d5607c1fb901',
-    now (),
-    'system',
-    now ()
-  ),
-  (
-    '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
-    'INSPECTION',
-    '8116f74c-19d2-4903-9dfc-d5607c1fb902',
-    now (),
-    'system',
-    now ()
-  ),
-  (
-    '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
-    'INSPECTION',
-    '8116f74c-19d2-4903-9dfc-d5607c1fb903',
-    now (),
-    'system',
-    now ()
-  ) on conflict do nothing;
+SELECT
+  'd61b99d1-20dd-44e7-a864-6e28c9b3585a',
+  'INSPECTION',
+  '8116f74c-19d2-4903-9dfc-d5607c1fb900',
+  now (),
+  'system',
+  now ()
+WHERE
+  NOT EXISTS (
+    SELECT
+      1
+    FROM
+      shared.case_activity
+    WHERE
+      activity_identifier_ref = '8116f74c-19d2-4903-9dfc-d5607c1fb900'
+  );
+
+INSERT INTO
+  shared.case_activity (
+    case_file_guid,
+    activity_type,
+    activity_identifier_ref,
+    effective_utc_timestamp,
+    create_user_id,
+    create_utc_timestamp
+  )
+SELECT
+  'd61b99d1-20dd-44e7-a864-6e28c9b3585b',
+  'INSPECTION',
+  '8116f74c-19d2-4903-9dfc-d5607c1fb901',
+  now (),
+  'system',
+  now ()
+WHERE
+  NOT EXISTS (
+    SELECT
+      1
+    FROM
+      shared.case_activity
+    WHERE
+      activity_identifier_ref = '8116f74c-19d2-4903-9dfc-d5607c1fb901'
+  );
+
+INSERT INTO
+  shared.case_activity (
+    case_file_guid,
+    activity_type,
+    activity_identifier_ref,
+    effective_utc_timestamp,
+    create_user_id,
+    create_utc_timestamp
+  )
+SELECT
+  '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
+  'INSPECTION',
+  '8116f74c-19d2-4903-9dfc-d5607c1fb902',
+  now (),
+  'system',
+  now ()
+WHERE
+  NOT EXISTS (
+    SELECT
+      1
+    FROM
+      shared.case_activity
+    WHERE
+      activity_identifier_ref = '8116f74c-19d2-4903-9dfc-d5607c1fb902'
+  );
+
+INSERT INTO
+  shared.case_activity (
+    case_file_guid,
+    activity_type,
+    activity_identifier_ref,
+    effective_utc_timestamp,
+    create_user_id,
+    create_utc_timestamp
+  )
+SELECT
+  '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
+  'INSPECTION',
+  '8116f74c-19d2-4903-9dfc-d5607c1fb903',
+  now (),
+  'system',
+  now ()
+WHERE
+  NOT EXISTS (
+    SELECT
+      1
+    FROM
+      shared.case_activity
+    WHERE
+      activity_identifier_ref = '8116f74c-19d2-4903-9dfc-d5607c1fb903'
+  );
