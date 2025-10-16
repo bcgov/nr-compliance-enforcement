@@ -14,8 +14,17 @@ interface Props {
 
 export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complaintType }) => {
   const navigate = useNavigate();
-  const { officerAssigned, natureOfComplaint, species, violationType, loggedDate, status, girType, complaintAgency } =
-    useAppSelector(selectComplaintHeader(complaintType));
+  const {
+    officerAssigned,
+    natureOfComplaint,
+    species,
+    violationType,
+    loggedDate,
+    status,
+    girType,
+    complaintAgency,
+    type,
+  } = useAppSelector(selectComplaintHeader(complaintType));
 
   const { violationInProgress, location, area, ownedBy, issueType } = useAppSelector((state) =>
     selectComplaintDetails(state, complaintType),
@@ -115,7 +124,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
             size="sm"
             className="comp-map-popup-details-btn w-100"
             id="view-complaint-details-button-id"
-            onClick={() => navigate(`/complaint/${complaintType}/${complaint_identifier}`)}
+            onClick={() => navigate(`/complaint/${type}/${complaint_identifier}`)}
           >
             View complaint details
           </Button>

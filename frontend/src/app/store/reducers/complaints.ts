@@ -1144,6 +1144,7 @@ export const selectComplaintHeader =
         personGuid: "",
         complaintAgency: "",
         parkAreaGuids: [],
+        type: "",
       };
 
       let officerAssigned = "Not Assigned";
@@ -1159,6 +1160,7 @@ export const selectComplaintHeader =
           ownedBy: complaintAgency,
           organization: { zone },
           parkGuid,
+          type,
         } = complaint as Complaint;
 
         const status = getStatusByStatusCode(statusCode, statusCodes);
@@ -1176,6 +1178,7 @@ export const selectComplaintHeader =
           personGuid,
           complaintAgency,
           parkAreaGuids,
+          type,
         };
 
         if (delegates && from(delegates).any(({ isActive, type }) => type === "ASSIGNEE" && isActive)) {
