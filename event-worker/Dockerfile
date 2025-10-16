@@ -6,16 +6,16 @@ WORKDIR /app
 COPY *.json ./
 COPY ./src /app/src
 
-RUN npm ci --omit=dev && \
-    npm run build
+RUN npm ci --omit=dev --ignore-scripts && \
+  npm run build
 
 # Deployment container
 FROM node:22-bookworm-slim
 # Set node to production
 ENV NODE_ENV=production
 RUN apt-get --no-install-recommends update && apt-get --no-install-recommends install -y \
-    curl vim \
-    && rm -rf /var/lib/apt/lists/*
+  curl vim \
+  && rm -rf /var/lib/apt/lists/*
 # Copy over app
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
