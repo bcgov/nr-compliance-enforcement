@@ -7,7 +7,8 @@ insert into
     investigation_opened_utc_timestamp,
     create_user_id,
     create_utc_timestamp,
-    location_geometry_point
+    location_geometry_point,
+    name
   )
 values
   (
@@ -18,6 +19,7 @@ values
     'system',
     now (),
     ST_GeomFromText('POINT(-123.1207 49.2827)')
+    'INVESTIGATION1'
   ),
   (
     '66dd3a1f-4bc5-4758-a986-a664b8d8f201',
@@ -26,7 +28,8 @@ values
     now (),
     'system',
     now (),
-    ST_GeomFromText('POINT(0 0)')
+    ST_GeomFromText('POINT(-123.3656 48.4284)')
+    'INVESTIGATION2'
   ),
   (
     '66dd3a1f-4bc5-4758-a986-a664b8d8f202',
@@ -36,6 +39,7 @@ values
     'system',
     now (),
     ST_GeomFromText('POINT(-123.3656 48.4284)')
+    'INVESTIGATION3'
   ),
   (
     '66dd3a1f-4bc5-4758-a986-a664b8d8f203',
@@ -44,6 +48,6 @@ values
     now (),
     'system',
     now (),
-    ST_GeomFromText('POINT(0 0)')
+    ST_GeomFromText('POINT(-123.3656 48.4284)')
+    'INVESTIGATION4'
   ) on conflict do nothing;
-

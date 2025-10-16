@@ -19,6 +19,7 @@ export class Investigation {
   locationGeometry?: Point;
   locationAddress?: string;
   locationDescription?: string;
+  name: string;
   parties: [InvestigationParty];
 }
 
@@ -78,6 +79,8 @@ export class CreateInvestigationInput {
   @Field(() => String)
   @IsOptional()
   locationAddress: string;
+  @Field(() => String)
+  name: string;
 }
 
 @InputType()
@@ -102,6 +105,10 @@ export class UpdateInvestigationInput {
   @Field(() => String)
   @IsOptional()
   locationAddress: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  name?: string;
 }
 
 export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
@@ -142,6 +149,10 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.locationGeometry,
       mapFrom((src) => src.location_geometry_point),
+    ),
+    forMember(
+      (dest) => dest.name,
+      mapFrom((src) => src.name),
     ),
     forMember(
       (dest) => dest.parties,

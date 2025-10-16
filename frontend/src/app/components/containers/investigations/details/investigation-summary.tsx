@@ -8,12 +8,14 @@ interface InvestigationSummaryProps {
   investigationData?: Investigation;
   investigationGuid: string;
   caseGuid: string;
+  caseName?: string;
 }
 
 export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   investigationData,
   investigationGuid,
   caseGuid,
+  caseName,
 }) => {
   return (
     <div className="comp-details-view">
@@ -25,18 +27,18 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
             <div className="row">
               <div className="col-md-6">
                 <div className="form-group">
-                  <strong>Investigation identifier:</strong>
-                  <p>{investigationData.investigationGuid || "N/A"}</p>
+                  <strong>Investigation ID:</strong>
+                  <p>{investigationData.name}</p>
                 </div>
               </div>
             </div>
             <div className="row">
               <div className="col-md-6">
                 <div className="form-group">
-                  <strong>Case identifier:</strong>
+                  <strong>Case ID:</strong>
                   {caseGuid ? (
                     <p>
-                      <Link to={`/case/${caseGuid}`}>{caseGuid}</Link>
+                      <Link to={`/case/${caseGuid}`}>{caseName || caseGuid}</Link>
                     </p>
                   ) : (
                     <p>N/A</p>

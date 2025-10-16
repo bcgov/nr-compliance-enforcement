@@ -36,6 +36,9 @@ export class investigation {
 
   @ApiPropertyOptional({ type: String })
   location_description?: string;
+  
+  @ApiProperty({ type: String })
+  name: string;
 
   @ApiProperty({ type: () => investigation_status_code })
   investigation_status_code: investigation_status_code;

@@ -6,7 +6,8 @@ insert into
     inspection_status,
     inspection_opened_utc_timestamp,
     create_user_id,
-    create_utc_timestamp
+    create_utc_timestamp,
+    name
   )
 values
   (
@@ -15,7 +16,8 @@ values
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'INSPECTION1'
   ),
   (
     '8116f74c-19d2-4903-9dfc-d5607c1fb901',
@@ -23,7 +25,8 @@ values
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'INSPECTION2'
   ),
   (
     '8116f74c-19d2-4903-9dfc-d5607c1fb902',
@@ -31,7 +34,8 @@ values
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'INSPECTION3'
   ),
   (
     '8116f74c-19d2-4903-9dfc-d5607c1fb903',
@@ -39,6 +43,6 @@ values
     'OPEN',
     now (),
     'system',
-    now ()
+    now (),
+    'INSPECTION4'
   ) on conflict do nothing;
-

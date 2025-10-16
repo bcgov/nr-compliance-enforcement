@@ -118,6 +118,7 @@ export const ComplaintActionItems: FC<Props> = ({
         data: {
           title: "Create/add case",
           complaint_identifier: complaint_identifier,
+          agency_code: agency_code,
         },
       }),
     );

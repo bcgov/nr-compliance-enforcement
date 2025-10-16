@@ -12,7 +12,7 @@ export const InvestigationCard: FC<InvestigationCardProps> = ({ item: investigat
 
   return (
     <ActivityCard
-      id={investigation?.investigationGuid || ""}
+      id={investigation?.name || investigation?.investigationGuid || ""}
       linkTo={`/investigation/${investigation?.investigationGuid}`}
       statusBadge={{
         text: statusText,

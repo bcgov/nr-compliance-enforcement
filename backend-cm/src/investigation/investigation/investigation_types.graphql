@@ -10,6 +10,7 @@ type Investigation {
   locationGeometry: Point
   locationAddress: String
   locationDescription: String
+  name: String
   parties: [InvestigationParty]
 }
 
@@ -21,6 +22,7 @@ input CreateInvestigationInput {
   locationGeometry: Point
   locationAddress: String
   locationDescription: String
+  name: String!
 }
 
 input UpdateInvestigationInput {
@@ -30,6 +32,7 @@ input UpdateInvestigationInput {
   locationGeometry: Point
   locationAddress: String
   locationDescription: String
+  name: String
 }
 
 input InvestigationFilters {

@@ -1,9 +1,9 @@
 type Query {
   caseFile(caseIdentifier: String!): CaseFile
   caseFiles(caseIdentifiers: [String!]!): [CaseFile!]!
-  caseFileByActivityId(activityType: String!, activityIdentifier: String!): CaseFile!
-  allCaseFilesByActivityId(activityType: String!, activityIdentifier: String!): [CaseFile]!
+  caseFilesByActivityIds(activityIdentifiers: [String!]!): [CaseFile!]!
   searchCaseFiles(page: Int = 1, pageSize: Int = 25, filters: CaseFileFilters): CaseFileResult!
+  checkCaseNameExists(name: String!, leadAgency: String!, excludeCaseIdentifier: String): Boolean!
 }
 
 type Mutation {

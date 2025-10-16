@@ -5,6 +5,7 @@ import { z } from "zod";
 import { gql } from "graphql-request";
 import { InvestigationEditHeader } from "./investigation-edit-header";
 import { CompSelect } from "@components/common/comp-select";
+import { CompInput } from "@components/common/comp-input";
 import { FormField } from "@components/common/form-field";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
@@ -12,6 +13,7 @@ import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
+import { useRequest as GraphQLRequest } from "@/app/graphql/client";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
@@ -20,11 +22,18 @@ import { getUserAgency } from "@/app/service/user-service";
 import { bcUtmZoneNumbers } from "@common/methods";
 import Option from "@apptypes/app/option";
 
+const CHECK_INVESTIGATION_NAME_EXISTS = gql`
+  query CheckInvestigationNameExists($name: String!, $leadAgency: String!, $excludeInvestigationGuid: String) {
+    checkInvestigationNameExists(name: $name, leadAgency: $leadAgency, excludeInvestigationGuid: $excludeInvestigationGuid)
+  }
+`;
+
 const CREATE_INVESTIGATION_MUTATION = gql`
   mutation CreateInvestigation($input: CreateInvestigationInput!) {
     createInvestigation(input: $input) {
       investigationGuid
       description
+      name
       investigationStatus {
         investigationStatusCode
         shortDescription
@@ -43,6 +52,7 @@ const UPDATE_INVESTIGATION_MUTATION = gql`
     updateInvestigation(investigationGuid: $investigationGuid, input: $input) {
       investigationGuid
       description
+      name
       investigationStatus {
         investigationStatusCode
         shortDescription
@@ -62,6 +72,7 @@ const GET_INVESTIGATION = gql`
       __typename
       investigationGuid
       description
+      name
       openedTimestamp
       investigationStatus {
         investigationStatusCode
@@ -73,7 +84,7 @@ const GET_INVESTIGATION = gql`
       locationDescription
       locationGeometry
     }
-    caseFileByActivityId(activityType: "INVSTGTN", activityIdentifier: $investigationGuid) {
+    caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier
     }
   }
@@ -97,7 +108,6 @@ const InvestigationEdit: FC = () => {
   });
 
   const createInvestigationMutation = useGraphQLMutation(CREATE_INVESTIGATION_MUTATION, {
-    invalidateQueries: ["searchInvestigations", ["caseFile", caseIdentifier]],
     onSuccess: (data: any) => {
       ToggleSuccess("Investigation created successfully");
       navigate(`/investigation/${data.createInvestigation.investigationGuid}`);
@@ -109,7 +119,6 @@ const InvestigationEdit: FC = () => {
   });
 
   const updateInvestigationMutation = useGraphQLMutation(UPDATE_INVESTIGATION_MUTATION, {
-    invalidateQueries: [["getInvestigation", id], ["getInvestigations", id], "searchInvestiagations"],
     onSuccess: (data: any) => {
       ToggleSuccess("Investigation updated successfully");
       navigate(`/investigation/${id}`);
@@ -134,6 +143,7 @@ const InvestigationEdit: FC = () => {
         locationAddress: investigationData.getInvestigation.locationAddress || "",
         locationDescription: investigationData.getInvestigation.locationDescription || "",
         locationGeometry: investigationData.getInvestigation.locationGeometry || null,
+        name: investigationData.getInvestigation.name || "",
       };
     }
     return {
@@ -143,6 +153,7 @@ const InvestigationEdit: FC = () => {
       locationAddress: "",
       locationDescription: "",
       locationGeometry: null,
+      name: "",
     };
   }, [isEditMode, investigationData]);
 
@@ -157,6 +168,7 @@ const InvestigationEdit: FC = () => {
           locationAddress: value.locationAddress,
           locationDescription: value.locationDescription,
           locationGeometry: value.locationGeometry,
+          name: value.name,
         };
 
         updateInvestigationMutation.mutate({
@@ -168,6 +180,7 @@ const InvestigationEdit: FC = () => {
           caseIdentifier: caseIdentifier as string,
           leadAgency: value.leadAgency,
           description: value.description,
+          name: value.name,
           investigationStatus: value.investigationStatus,
           locationAddress: value.locationAddress,
           locationDescription: value.locationDescription,
@@ -227,6 +240,49 @@ const InvestigationEdit: FC = () => {
 
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>
+
+          <FormField
+            form={form}
+            name="name"
+            label="Investigation ID"
+            required
+            validators={{
+              onChange: z.string().min(1, "Investigation ID is required").max(100, "Investigation ID must be 100 characters or less"),
+              onChangeAsyncDebounceMs: 500,
+              onChangeAsync: async ({ value }: { value: string }) => {
+                if (!value || value.length < 1) return "Investigation ID is required";
+                const leadAgency = form.getFieldValue("leadAgency");
+                if (!leadAgency) return undefined;
+                const result: { checkInvestigationNameExists: boolean } = await GraphQLRequest(
+                  CHECK_INVESTIGATION_NAME_EXISTS,
+                  {
+                    name: value,
+                    leadAgency: leadAgency,
+                    excludeInvestigationGuid: isEditMode ? id : undefined,
+                  }
+                );
+                if (result.checkInvestigationNameExists) {
+                  return "This Investigation ID is already in use for this agency. Please choose a different Investigation ID.";
+                }
+                return undefined;
+              }
+            }}
+            render={(field) => (
+              <div>
+                <CompInput
+                  id="display-name"
+                  divid="display-name-value"
+                  type="input"
+                  inputClass="comp-form-control"
+                  error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                  maxLength={120}
+                  onChange={(evt: any) => field.handleChange(evt.target.value)}
+                  value={field.state.value}
+                  placeholder="Enter Investigation ID"
+                />
+              </div>
+            )}
+          />
             <FormField
               form={form}
               name="investigationStatus"

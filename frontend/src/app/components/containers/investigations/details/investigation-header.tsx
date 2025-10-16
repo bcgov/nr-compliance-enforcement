@@ -15,6 +15,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
   const navigate = useNavigate();
 
   const investigationGuid = investigation?.investigationGuid;
+  const investigationId = investigation?.name || investigation?.investigationGuid || "Unknown";
 
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const agencyText = leadAgencyOptions.find((option: Option) => option.value === investigation?.leadAgency);
@@ -43,7 +44,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                   className="breadcrumb-item"
                   aria-current="page"
                 >
-                  {investigationGuid}
+                  {investigationId}
                 </li>
               </ol>
             </nav>
@@ -55,7 +56,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
             <div className="comp-details-title-info">
               <h1 className="comp-box-complaint-id">
                 <span>Investigation </span>
-                {investigationGuid}
+                {investigationId}
               </h1>
             </div>
 
