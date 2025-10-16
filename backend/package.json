@@ -161,7 +161,10 @@
     "testResultsProcessor": "jest-sonar-reporter",
     "setupFiles": [
       "../test/setupJest.ts"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    }
   },
   "lint-staged": {
     "*.{js,ts}": "./node_modules/.bin/eslint --cache --fix"
