@@ -4,6 +4,7 @@
 import { investigation as GeneratedInvestigation } from './generated/investigation';
 import { Point } from '../../src/common/custom_scalars';
 
-export interface investigation extends GeneratedInvestigation {
+// We name this to match the generated class casing and disable sonar for this
+export interface investigation extends GeneratedInvestigation { // NOSONAR
   location_geometry_point?: Point;
 }

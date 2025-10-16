@@ -15,7 +15,7 @@ export const InvestigationLocation: FC<Props> = ({
 }) => {
   const mapElements: MapElement[] = [];
 
-  if (locationCoordinates && locationCoordinates.lat && locationCoordinates.lng) {
+  if (locationCoordinates?.lat && locationCoordinates?.lng) {
     mapElements.push({
       objectType: MapObjectType.Investigation,
       name: "Investigation",

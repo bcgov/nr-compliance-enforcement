@@ -17,8 +17,6 @@ import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { CaseFileService } from "src/shared/case_file/case_file.service";
 import { Point } from "src/common/custom_scalars";
 import { Prisma } from ".prisma/investigation";
-import { length } from "class-validator";
-import { investigation_party } from "prisma/investigation/generated/investigation_party";
 
 @Injectable()
 export class InvestigationService {
@@ -89,7 +87,6 @@ export class InvestigationService {
       where: { investigation_status_code: prismaInvestigation.investigation_status }
     });
     Object.assign(prismaInvestigation, { investigation_status_code: statusCode });
-    // prismaInvestigation.investigation_status_code = statusCode;
 
     const parties = await this.prisma.investigation_party.findMany({
       where: { investigation_guid: prismaInvestigation.investigation_guid, active_ind: true },
@@ -107,7 +104,6 @@ export class InvestigationService {
       },
     });
     Object.assign(prismaInvestigation, { investigation_party: parties });
-    // prismaInvestigation.officer_investigation_xref = xrefs;
     
     if (!prismaInvestigation) {
       throw new Error(`Investigation with guid ${investigationGuid} not found`);

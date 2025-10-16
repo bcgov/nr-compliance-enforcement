@@ -1,4 +1,4 @@
-import { createMap, forMember, mapFrom, Mapper, mapWithArguments } from "@automapper/core";
+import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 
 import { investigation } from "../../../../prisma/investigation/investigation.unsupported_types";
 import { InvestigationStatusCode } from "../../../investigation/investigation_status_code/dto/investigation_status_code";

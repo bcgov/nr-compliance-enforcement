@@ -43,7 +43,8 @@ export class PointScalar implements CustomScalar<Point, Point> {
         if (parsed.type === "Point" && Array.isArray(parsed.coordinates)) {
           return parsed;
         }
-      } catch (e) {
+      } catch (error) {
+        console.error("Error parsing Point:", error);
         return null;
       }
     }
@@ -71,7 +72,8 @@ export class PointScalar implements CustomScalar<Point, Point> {
         if (parsed.type === "Point" && Array.isArray(parsed.coordinates)) {
           return parsed;
         }
-      } catch (e) {
+      } catch (error) {
+        console.error("Error parsing Point:", error);
         return null;
       }
     }
