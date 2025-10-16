@@ -25,8 +25,8 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
             <div className="row">
               <div className="col-md-6">
                 <div className="form-group">
-                  <strong>Investigation Identifier:</strong>
-                  <p>{investigationData.investigationGuid || "N/A"}</p>
+                  <strong>Investigation ID:</strong>
+                  <p>{investigationData.name}</p>
                 </div>
               </div>
             </div>

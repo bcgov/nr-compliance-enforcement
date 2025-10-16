@@ -79,8 +79,8 @@ export const InspectionDetails: FC = () => {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-group">
-                      <strong>Inspection Identifier:</strong>
-                      <p>{inspectionData.inspectionGuid || "N/A"}</p>
+                      <strong>Inspection ID:</strong>
+                      <p>{inspectionData.name}</p>
                     </div>
                   </div>
                 </div>
