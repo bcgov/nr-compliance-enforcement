@@ -411,7 +411,10 @@ export const getIssueDescription = (
   girCodes: Array<GirType>,
   violationCodes: Array<Violation>,
 ): string => {
-  const { type, issueType } = complaint;
+  //Unfortunately the complaintType is named something different on different types :(
+  const { complaintType, type: rawType, issueType } = complaint;
+  const type = rawType ?? complaintType;
+
   const codeMap = {
     HWCR: () => natureCodes.find((item) => item.natureOfComplaint === issueType)?.longDescription,
     GIR: () => girCodes.find((item) => item.girType === issueType)?.longDescription,

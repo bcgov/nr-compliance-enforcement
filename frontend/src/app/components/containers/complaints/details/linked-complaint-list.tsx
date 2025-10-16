@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from "react";
-import { applyStatusClass } from "@common/methods";
+import { applyStatusClass, getIssueDescription } from "@common/methods";
 import { Alert, Badge, Button, Nav, Tab } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
@@ -47,23 +47,6 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
   const getAgencyDescription = (agencyCode: string): string => {
     const agency = agencies?.find((item: any) => item.agency === agencyCode);
     return agency?.longDescription || agencyCode || "";
-  };
-
-  const getIssueDescription = (data: LinkedComplaint): string => {
-    if (!data.issueType) return "";
-
-    if (data.complaintType === "HWCR") {
-      const code = natureOfComplaints?.find((item: any) => item.natureOfComplaint === data.issueType);
-      return code?.longDescription || data.issueType;
-    } else if (data.complaintType === "GIR") {
-      const code = girTypeCodes?.find((item: any) => item.girType === data.issueType);
-      return code?.longDescription || data.issueType;
-    } else if (data.complaintType === "ERS") {
-      const code = violationCodes?.find((item: any) => item.violation === data.issueType);
-      return code?.longDescription || data.issueType;
-    }
-
-    return data.issueType;
   };
 
   const toggleExpand = (id: string) => {
@@ -209,7 +192,9 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
                     <div> • </div>
                   </>
                 )}
-                {getIssueDescription(data) && <div>{getIssueDescription(data)}</div>}
+                {getIssueDescription(data, natureOfComplaints, girTypeCodes, violationCodes) && (
+                  <div>{getIssueDescription(data, natureOfComplaints, girTypeCodes, violationCodes)}</div>
+                )}
                 <div className="comp-details-badge-container ms-auto">
                   <Badge className={`badge ${applyStatusClass(data.status)}`}>{data.status}</Badge>
                   {type === "LINK" && id && canUnlink && (
