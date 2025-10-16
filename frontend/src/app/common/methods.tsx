@@ -404,6 +404,22 @@ export const getGirTypeByGirTypeCode = (code: string, codes: Array<GirType>): st
 
   return "";
 };
+
+export const getIssueDescription = (
+  complaint: any,
+  natureCodes: Array<NatureOfComplaint>,
+  girCodes: Array<GirType>,
+  violationCodes: Array<Violation>,
+): string => {
+  const { type, issueType } = complaint;
+  const codeMap = {
+    HWCR: () => natureCodes.find((item) => item.natureOfComplaint === issueType)?.longDescription,
+    GIR: () => girCodes.find((item) => item.girType === issueType)?.longDescription,
+    ERS: () => violationCodes.find((item) => item.violation === issueType)?.longDescription,
+  };
+  return codeMap[type as keyof typeof codeMap]?.() || "";
+};
+
 export const pad = (num: string, size: number): string => {
   num = num.toString();
   while (num.length < size) num = "0" + num;
