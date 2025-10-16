@@ -78,6 +78,7 @@ jobs:
             migration-investigation,
             migration-inspection,
             migration-shared,
+            event-worker,
           ]
     timeout-minutes: 10
     steps:
