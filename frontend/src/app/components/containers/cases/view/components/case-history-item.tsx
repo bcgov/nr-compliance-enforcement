@@ -22,7 +22,7 @@ const getIconByVerb = (verbCode: string): string => {
 };
 
 // [targetType][sourceType][verb]
-type eventDescriptionTemplate = (sourceId?: string, targetId?: string) => ReactNode;
+type eventDescriptionTemplate = (sourceId?: string, targetId?: string, complaintType?: string) => ReactNode;
 const eventDescriptionMap: Record<string, Record<string, Record<string, eventDescriptionTemplate>>> = {
   CASE: {
     CASE: {
@@ -31,14 +31,24 @@ const eventDescriptionMap: Record<string, Record<string, Record<string, eventDes
       OPENED: () => `opened the case`,
     },
     COMPLAINT: {
-      ADDED: (sourceId) => (
+      ADDED: (sourceId, _, complaintType) => (
         <>
-          added complaint <Link to={`/complaint/${sourceId}`}>{sourceId}</Link> to the case
+          added complaint <Link to={`/complaint/${complaintType}/${sourceId}`}>{sourceId}</Link> to the case
         </>
       ),
-      REMOVED: (sourceId) => (
+      REMOVED: (sourceId, _, complaintType) => (
         <>
-          removed complaint <Link to={`/complaint/${sourceId}`}>{sourceId}</Link>
+          removed complaint <Link to={`/complaint/${complaintType}/${sourceId}`}>{sourceId}</Link>
+        </>
+      ),
+      OPENED: (sourceId, _, complaintType) => (
+        <>
+          opened complaint <Link to={`/complaint/${complaintType}/${sourceId}`}>{sourceId}</Link>
+        </>
+      ),
+      CLOSED: (sourceId, _, complaintType) => (
+        <>
+          closed complaint <Link to={`/complaint/${complaintType}/${sourceId}`}>{sourceId}</Link>
         </>
       ),
     },
@@ -99,9 +109,10 @@ const getEventDescription = (event: Event): ReactNode => {
   const sourceId = event.sourceId ?? "";
   const targetType = event.targetEntityTypeCode.eventEntityTypeCode;
   const targetId = event.targetId;
+  const complaintType = event.content?.complaintType ?? null;
 
   const template = eventDescriptionMap[targetType?.toUpperCase()]?.[sourceType?.toUpperCase()]?.[verb];
-  return template ? template(sourceId, targetId) : `performed ${verb.toLowerCase()} action`;
+  return template ? template(sourceId, targetId, complaintType) : `performed ${verb.toLowerCase()} action`;
 };
 
 export const CaseHistoryItem: FC<CaseHistoryItemProps> = ({ event, officers }) => {

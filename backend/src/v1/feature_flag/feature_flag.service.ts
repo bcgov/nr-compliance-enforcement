@@ -80,6 +80,22 @@ export class FeatureFlagService {
     return response;
   }
 
+  async checkActiveForAnyAgency(featureCode: string): Promise<any> {
+    const data = await this.featureAgencyXrefRepository
+      .createQueryBuilder("featureAgencyXref")
+      .leftJoinAndSelect(
+        "featureAgencyXref.feature_code",
+        "featureCode",
+        "featureAgencyXref.feature_code = featureCode.feature_code",
+      )
+      .andWhere("featureAgencyXref.feature_code = :feature_code", { feature_code: featureCode })
+      .andWhere("featureAgencyXref.active_ind = :active_ind", { active_ind: true })
+      .getMany();
+
+    const response = data && data.length > 0 ? true : false;
+    return response;
+  }
+
   async update(id: UUID, updateFeatureAgencyXrefDto: UpdateFeatureAgencyXrefDto) {
     await this.featureAgencyXrefRepository.update({ feature_agency_xref_guid: id }, updateFeatureAgencyXrefDto);
     return this.findOne(id);

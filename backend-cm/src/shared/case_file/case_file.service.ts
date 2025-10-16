@@ -105,10 +105,8 @@ export class CaseFileService {
       },
     });
 
-    if (!caseActivityXrefRecords) {
-      throw new Error(
-        `No case activities found for activity type ${activityType} with identifier ${activityIdentifier}`,
-      );
+    if (!caseActivityXrefRecords || caseActivityXrefRecords.length === 0) {
+      return [];
     }
     const caseFileGuids = caseActivityXrefRecords.map((record) => record.case_file_guid);
     return await this.findMany(caseFileGuids);

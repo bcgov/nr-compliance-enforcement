@@ -4,6 +4,7 @@ import { StreamTopic, EventVerbType, eventVerbs, EVENT_STREAM_NAME } from "../..
 import { REQUEST } from "@nestjs/core";
 import { getUserAuthGuidFromRequest } from "../../common/get-idir-from-request";
 import { get } from "src/external_api/shared_data";
+import { FeatureFlagService } from "../feature_flag/feature_flag.service";
 
 interface EventCreateInput {
   eventVerbTypeCode: string;
@@ -24,6 +25,7 @@ export class EventPublisherService {
   constructor(
     @Inject(REQUEST)
     private readonly request: Request,
+    private readonly featureFlagService: FeatureFlagService,
   ) {}
 
   private async initializeNATS() {
@@ -38,23 +40,23 @@ export class EventPublisherService {
     //-- Get the Outcome Data, this is done via a GQL call to prevent
     //-- a circular dependency between the complaint and case_file modules
     const { data, errors } = await get(token, {
-      query: `{findAllCaseFilesByActivityId (activityType: "${id}", activityIdentifier: "COMP")
+      query: `{allCaseFilesByActivityId (activityType: "COMP", activityIdentifier: "${id}") {
         caseIdentifier
-      }`,
+      }}`,
     });
     if (errors) {
-      this.logger.error("GraphQL errors:", errors);
+      this.logger.error(`GraphQL errors for complaint ${id}:`, JSON.stringify(errors, null, 2));
       throw new Error("GraphQL errors occurred");
     }
-    const { findAllCaseFilesByActivityId } = data;
-    return findAllCaseFilesByActivityId;
+    const { allCaseFilesByActivityId } = data;
+    return allCaseFilesByActivityId || [];
   };
 
   /**
    * Publish an event to NATS, if it has not already been published.
    * The logic of handling the event is handled in the subscribers to the NATS topic.
    */
-  _publishEvent = async (event: EventCreateInput, eventType: StreamTopic): Promise<void> => {
+  _publishEvent = async (event: EventCreateInput, eventTopic: StreamTopic): Promise<void> => {
     // Ensure NATS connection is initialized before publishing
     if (!this.jsClient) {
       await this.initializeNATS();
@@ -72,13 +74,12 @@ export class EventPublisherService {
         targetId,
         targetEntityTypeCode,
       } = event;
-      const header = `[${eventType}]: ${sourceEntityTypeCode} ${sourceId} ${eventVerbTypeCode} ${targetEntityTypeCode} ${targetId} by ${actorEntityTypeCode} ${actorId}`;
+      const header = `[${eventTopic}]: ${sourceEntityTypeCode} ${sourceId} ${eventVerbTypeCode} ${targetEntityTypeCode} ${targetId} by ${actorEntityTypeCode} ${actorId}`;
 
       const payload = codec.encode(event);
       const natsHeaders = headers();
       natsHeaders.set("Nats-Msg-Id", header);
-
-      const ack = await this.jsClient.publish(eventType, payload, { headers: natsHeaders });
+      const ack = await this.jsClient.publish(eventTopic, payload, { headers: natsHeaders });
       if (ack.duplicate) {
         this.logger.debug(`Event already published: ${header}`);
       } else {
@@ -95,6 +96,12 @@ export class EventPublisherService {
     complaintType: string,
     token: string,
   ): Promise<void> => {
+    // Only publish if cases are active
+    const casesActive = await this.featureFlagService.checkActiveForAnyAgency("CASES");
+    if (!casesActive) {
+      // Don't publish if cases are not active
+      return;
+    }
     if (!this.jsClient) {
       await this.initializeNATS();
     }
