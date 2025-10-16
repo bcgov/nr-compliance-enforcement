@@ -34,11 +34,8 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
-<<<<<<< HEAD
-=======
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
->>>>>>> 60db632810f36a6b35acc505b020b3b4f5f345d2
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
     "@types/express": "^5.0.0",
