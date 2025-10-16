@@ -13,6 +13,7 @@ interface InspectionHeaderProps {
 
 export const InspectionHeader: FC<InspectionHeaderProps> = ({ inspection }) => {
   const inspectionGuid = inspection?.inspectionGuid;
+  const inspectionId = inspection?.name || inspection?.inspectionGuid || "Unknown";
 
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const agencyText = leadAgencyOptions.find((option: Option) => option.value === inspection?.leadAgency);
@@ -38,7 +39,7 @@ export const InspectionHeader: FC<InspectionHeaderProps> = ({ inspection }) => {
                   className="breadcrumb-item"
                   aria-current="page"
                 >
-                  {inspectionGuid}
+                  {inspectionId}
                 </li>
               </ol>
             </nav>
@@ -50,7 +51,7 @@ export const InspectionHeader: FC<InspectionHeaderProps> = ({ inspection }) => {
             <div className="comp-details-title-info">
               <h1 className="comp-box-complaint-id">
                 <span>Inspection </span>
-                {inspectionGuid}
+                {inspectionId}
               </h1>
             </div>
 

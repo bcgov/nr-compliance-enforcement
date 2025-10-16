@@ -587,7 +587,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
                     className="comp-complaint-details-alert"
                   >
                     <i className="bi bi-info-circle-fill" /> Note that assessing a complaint as duplicate will close the
-                    complaint and link it to the selected complaint.
+                    complaint.
                   </Alert>
                 </div>
               </div>
@@ -598,7 +598,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
                 id="linked-complaint-div"
               >
                 <label htmlFor="linkedComplaint">
-                  Link current complaint to:<span className="required-ind">*</span>
+                  Mark as a duplicate of:<span className="required-ind">*</span>
                 </label>
                 <div className="comp-details-input full-width">
                   <HWCRAssessmentLinkComplaintSearch

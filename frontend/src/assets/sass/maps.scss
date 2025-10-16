@@ -155,33 +155,39 @@
   height: 90vh;
 }
 
-.comp-map-popup-header {
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid $gray-300;
+.comp-map-popup-header-title {
+  h2 {
+    font-size: 16px;
+    font-weight: 700;
+  }
 }
 
-.comp-map-popup-header-title {
+.comp-map-popup-header-meta {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: baseline;
   gap: 8px;
-  margin-bottom: 4px;
 
-  h2 {
-    margin: 0;
-    font-size: 1.5rem;
+  h3 {
+    font-size: 14px;
     font-weight: 700;
+    color: $gray-700;
   }
 
   .badge {
-    margin-top: 2px;
     line-height: normal;
   }
 }
 
+.comp-summary-popup-location {
+  min-width: 0;
+  max-width: 200px;
+  white-space: normal;
+  word-break: break-word;
+}
+
 .comp-map-popup-details {
-  font-size: 0.875rem;
+  font-size: 12px;
 
   dl div {
     display: flex;
@@ -194,7 +200,7 @@
 
     dt {
       flex: 0 0 auto;
-      width: 8rem;
+      width: 5rem;
       font-weight: 400;
     }
 
@@ -204,7 +210,11 @@
   }
 
   .btn {
-    color: #fff;
+    color: $bc-gov-primary;
+
+    &:hover {
+      color: white;
+    }
   }
 }
 

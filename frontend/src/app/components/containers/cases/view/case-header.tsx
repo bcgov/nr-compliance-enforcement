@@ -11,7 +11,7 @@ interface CaseHeaderProps {
 }
 
 export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
-  const caseId = caseData?.caseIdentifier || "Unknown";
+  const caseId = caseData?.name || caseData?.caseIdentifier || "Unknown";
   const status = caseData?.caseStatus?.shortDescription || "Active";
   const leadAgency = caseData?.leadAgency?.longDescription || "Unknown Agency";
   const dateLogged = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
@@ -58,7 +58,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
                   style={{ fontSize: "xx-large" }}
                 ></i>{" "}
                 &nbsp;
-                <span>Case </span>#{caseId}
+                <span>Case </span>{caseId}
               </h1>
             </div>
 

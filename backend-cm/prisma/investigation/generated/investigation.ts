@@ -1,4 +1,5 @@
 import { investigation_status_code } from "./investigation_status_code";
+import { investigation_party } from "./investigation_party";
 import { officer_investigation_xref } from "./officer_investigation_xref";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -30,8 +31,14 @@ export class investigation {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiProperty({ type: String })
+  name: string;
+
   @ApiProperty({ type: () => investigation_status_code })
   investigation_status_code: investigation_status_code;
+
+  @ApiProperty({ isArray: true, type: () => investigation_party })
+  investigation_party: investigation_party[];
 
   @ApiProperty({ isArray: true, type: () => officer_investigation_xref })
   officer_investigation_xref: officer_investigation_xref[];

@@ -9,6 +9,7 @@ const SEARCH_CASE_FILES = gql`
       items {
         __typename
         caseIdentifier
+        name
         openedTimestamp
         caseStatus {
           caseStatusCode
@@ -37,7 +38,7 @@ export const useCaseSearchQuery = (searchString: string) => {
   const { data, isLoading, error } = useGraphQLQuery<{ searchCaseFiles: CaseFileResult }>(SEARCH_CASE_FILES, {
     queryKey: [
       "searchCaseFiles",
-      searchValues.search,
+      searchValues.search || searchString,
       searchValues.caseStatus,
       searchValues.leadAgency,
       searchValues.startDate,

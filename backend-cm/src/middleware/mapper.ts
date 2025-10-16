@@ -13,9 +13,12 @@ import { mapPrismaInvestigationToInvestigation } from "../investigation/investig
 import { mapPrismaInvestigationStatusCodeToInvestigationStatusCode } from "../investigation/investigation_status_code/dto/investigation_status_code";
 import { mapPrismaInspectionToInspection } from "../inspection/inspection/dto/inspection";
 import { mapPrismaInspectionStatusCodeToInspectionStatusCode } from "../inspection/inspection_status_code/dto/inspection_status_code";
-import { mapPrismaPartyToParty } from "src/shared/party/dto/party";
-import { mapPrismaBusinessToBusiness } from "src/shared/business/dto/business";
+import { mapPrismaPartyToParty } from "../shared/party/dto/party";
+import { mapPrismaBusinessToBusiness } from "../shared/business/dto/business";
 import { mapPrismaPartyTypeCodeToPartyTypeCode } from "../shared/party_type_code/dto/party_type_code";
+import { mapPrismaBusinessToInvestigationBusiness } from "../investigation/investigation_business/dto/investigation_business";
+import { mapPrismaPersonToInvestigationPerson } from "../investigation/investigation_person/dto/investigation_person";
+import { mapPrismaPartyToInvestigationParty } from "../investigation/investigation_party/dto/investigation_party";
 
 export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToContactMethod(mapper);
@@ -35,4 +38,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaBusinessToBusiness(mapper);
   mapPrismaPartyToParty(mapper);
   mapPrismaPartyTypeCodeToPartyTypeCode(mapper);
+  mapPrismaBusinessToInvestigationBusiness(mapper);
+  mapPrismaPersonToInvestigationPerson(mapper);
+  mapPrismaPartyToInvestigationParty(mapper);
 };

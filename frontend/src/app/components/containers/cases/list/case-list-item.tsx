@@ -36,7 +36,7 @@ export const CaseListItem: FC<Props> = ({ caseFile }) => {
           to={`/case/${caseFile.caseIdentifier}`}
           className="comp-cell-link"
         >
-          {caseFile.caseIdentifier}
+          {caseFile.name || caseFile.caseIdentifier}
         </Link>
       </td>
       <td className="comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell">

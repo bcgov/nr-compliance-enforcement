@@ -36,9 +36,25 @@ export class InvestigationService {
       },
       include: {
         investigation_status_code: true,
+        investigation_party: {
+          include: {
+            investigation_person: {
+              where: {
+                active_ind: true,
+              },
+            },
+            investigation_business: {
+              where: {
+                active_ind: true,
+              },
+            },
+          },
+          where: {
+            active_ind: true,
+          },
+        },
       },
     });
-
     if (!prismaInvestigation) {
       throw new Error(`Investigation with guid ${investigationGuid} not found`);
     }
@@ -103,6 +119,7 @@ export class InvestigationService {
           investigation_status: input.investigationStatus,
           investigation_description: input.description,
           owned_by_agency_ref: input.leadAgency,
+          name: input.name,
           investigation_opened_utc_timestamp: new Date(),
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
@@ -188,6 +205,9 @@ export class InvestigationService {
       if (input.description !== undefined) {
         updateData.investigation_description = input.description;
       }
+      if (input.name !== undefined) {
+        updateData.name = input.name;
+      }
       // Perform the update
       updatedInvestigation = await this.prisma.investigation.update({
         where: { investigation_guid: investigationGuid },
@@ -216,8 +236,11 @@ export class InvestigationService {
     const where: any = {};
 
     if (filters?.search) {
-      // UUID column only supports exact matching
-      where.OR = [{ investigation_guid: { equals: filters.search } }];
+      // Search by name (partial match) or investigation_guid (exact match)
+      where.OR = [
+        { name: { contains: filters.search, mode: "insensitive" } },
+        { investigation_guid: { equals: filters.search } },
+      ];
     }
 
     if (filters?.leadAgency) {
@@ -248,6 +271,7 @@ export class InvestigationService {
       openedTimestamp: "investigation_opened_utc_timestamp",
       leadAgency: "owned_by_agency_ref",
       investigationStatus: "investigation_status",
+      name: "name",
     };
 
     let orderBy: any = { investigation_opened_utc_timestamp: "desc" }; // Default sort
@@ -278,23 +302,31 @@ export class InvestigationService {
         orderByClause: orderBy,
       },
     );
-    const res = await Promise.all(
-      result.items.map(async (inv) => {
-        const caseFile = await this.caseFileService.findCaseFileByActivityId("INVSTGTN", inv.investigationGuid);
-
-        return { ...inv, caseIdentifier: caseFile.caseIdentifier };
-      }),
-    );
-
-    if (filters?.sortBy === "caseIdentifier") {
-      if (filters?.sortOrder?.toLowerCase() === "desc") {
-        res.sort((a, b) => b.caseIdentifier.localeCompare(a.caseIdentifier));
-      } else res.sort((a, b) => a.caseIdentifier.localeCompare(b.caseIdentifier));
-    }
-
     return {
-      items: res,
+      items: result.items,
       pageInfo: result.pageInfo as PageInfo,
     };
+  }
+
+  async checkNameExists(name: string, leadAgency: string, excludeInvestigationGuid?: string): Promise<boolean> {
+    const where: any = {
+      name: {
+        equals: name,
+        mode: "insensitive",
+      },
+      owned_by_agency_ref: leadAgency,
+    };
+
+    if (excludeInvestigationGuid) {
+      where.investigation_guid = {
+        not: excludeInvestigationGuid,
+      };
+    }
+
+    const existingInvestigation = await this.prisma.investigation.findFirst({
+      where,
+    });
+
+    return !!existingInvestigation;
   }
 }

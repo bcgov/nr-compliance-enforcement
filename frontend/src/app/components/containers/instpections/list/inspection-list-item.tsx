@@ -9,9 +9,10 @@ import Option from "@apptypes/app/option";
 
 type Props = {
   data: Inspection;
+  cases: any[];
 };
 
-export const InspectionListItem: FC<Props> = ({ data }) => {
+export const InspectionListItem: FC<Props> = ({ data, cases }) => {
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const leadAgency = leadAgencyOptions.find((option: Option) => option.value === data?.leadAgency);
   const leadAgencyText = leadAgency ? leadAgency.label : "-";
@@ -44,17 +45,20 @@ export const InspectionListItem: FC<Props> = ({ data }) => {
           to={`/inspection/${data.inspectionGuid}`}
           className="comp-cell-link"
         >
-          {data.inspectionGuid}
+          {data.name || data.inspectionGuid}
         </Link>
       </td>
-      <td className="comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center">
-        <Link
-          to={`/case/${data.caseIdentifier}`}
-          className="comp-cell-link"
-        >
-          {data.caseIdentifier}
-        </Link>
-      </td>
+        <td className="comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center" >
+        {cases.map((caseFile) => (
+          <Link
+            to={`/case/${caseFile.caseIdentifier}`}
+            className="comp-cell-link"
+            key={caseFile.caseIdentifier}
+          >
+            {caseFile.name || caseFile.caseIdentifier}
+          </Link>
+      ))}
+        </td>
       <td className="comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell">
         {formatDateTime(data.openedTimestamp)}
       </td>

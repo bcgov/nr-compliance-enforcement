@@ -6,6 +6,7 @@ import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { PaginatedResult } from "src/common/pagination.utility";
 import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { IsOptional } from "class-validator";
+import { InvestigationParty } from "src/investigation/investigation_party/dto/investigation_party";
 
 export class Investigation {
   investigationGuid: string;
@@ -13,7 +14,8 @@ export class Investigation {
   leadAgency: string;
   investigationStatus: InvestigationStatusCode;
   openedTimestamp: Date;
-  caseIdentifier: string;
+  name: string;
+  parties: [InvestigationParty];
 }
 
 @InputType()
@@ -60,6 +62,9 @@ export class CreateInvestigationInput {
 
   @Field(() => String)
   investigationStatus: string;
+
+  @Field(() => String)
+  name: string;
 }
 
 @InputType()
@@ -72,6 +77,10 @@ export class UpdateInvestigationInput {
 
   @Field(() => String)
   investigationStatus: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  name?: string;
 }
 
 export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
@@ -100,6 +109,14 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.openedTimestamp,
       mapFrom((src) => src.investigation_opened_utc_timestamp),
+    ),
+    forMember(
+      (dest) => dest.name,
+      mapFrom((src) => src.name),
+    ),
+    forMember(
+      (dest) => dest.parties,
+      mapFrom((src) => mapper.mapArray(src.investigation_party ?? [], "investigation_party", "InvestigationParty")),
     ),
   );
 };

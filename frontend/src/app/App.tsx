@@ -163,6 +163,12 @@ const App: FC = () => {
                     element={<InvestigationEdit />}
                   />
                 )}
+                {investigationsActive && (
+                  <Route
+                    path="/investigation/:investigationGuid/:tabKey"
+                    element={<InvestigationDetails />}
+                  />
+                )}
                 {inspectionsActive && (
                   <Route
                     path="/inspections"

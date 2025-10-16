@@ -4,7 +4,8 @@ type Investigation {
   leadAgency: String
   investigationStatus: InvestigationStatusCode
   openedTimestamp: Date
-  caseIdentifier: String
+  name: String
+  parties: [InvestigationParty]
 }
 
 input CreateInvestigationInput {
@@ -12,12 +13,14 @@ input CreateInvestigationInput {
   leadAgency: String!
   description: String
   investigationStatus: String
+  name: String!
 }
 
 input UpdateInvestigationInput {
   leadAgency: String
   description: String
   investigationStatus: String
+  name: String
 }
 
 input InvestigationFilters {

@@ -1,15 +1,23 @@
 import { InvestigationHeader } from "@/app/components/containers/investigations/details/investigation-header";
 import { FC } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Investigation } from "@/generated/graphql";
+import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
+import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
+import InvestigationRecords from "@/app/components/containers/investigations/details/investigation-records";
+import { InvestigationContraventions } from "@/app/components/containers/investigations/details/investigation-contraventions";
+import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
+import { InvestigationAdministration } from "@/app/components/containers/investigations/details/investigation-administration";
+import { InvestigationDocumentation } from "@/app/components/containers/investigations/details/investigation-documentation";
 
 const GET_INVESTIGATION = gql`
   query GetInvestigation($investigationGuid: String!) {
     getInvestigation(investigationGuid: $investigationGuid) {
       __typename
       investigationGuid
+      name
       description
       openedTimestamp
       investigationStatus {
@@ -17,28 +25,75 @@ const GET_INVESTIGATION = gql`
         shortDescription
         longDescription
       }
+      parties {
+        person {
+          firstName
+          lastName
+          personGuid
+        }
+        business {
+          name
+          businessGuid
+        }
+      }
       leadAgency
     }
-    caseFileByActivityId(activityType: "INVSTGTN", activityIdentifier: $investigationGuid) {
+    caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier
+      name
     }
   }
 `;
 
 export type InvestigationParams = {
   investigationGuid: string;
+  tabKey: string;
 };
 
 export const InvestigationDetails: FC = () => {
-  const { investigationGuid = "" } = useParams<InvestigationParams>();
+  const { investigationGuid = "", tabKey } = useParams<InvestigationParams>();
+  const currentTab = tabKey || "summary";
   const { data, isLoading } = useGraphQLQuery<{
     getInvestigation: Investigation;
-    caseFileByActivityId: CaseFile;
+    caseFilesByActivityIds: CaseFile[];
   }>(GET_INVESTIGATION, {
     queryKey: ["getInvestigation", investigationGuid],
     variables: { investigationGuid: investigationGuid },
     enabled: !!investigationGuid, // Only refresh query if id is provided
   });
+
+  const investigationData = data?.getInvestigation;
+  const caseIdentifier = data?.caseFilesByActivityIds?.[0]?.caseIdentifier;
+  const caseName = data?.caseFilesByActivityIds?.[0]?.name;
+
+  const renderTabContent = () => {
+    switch (currentTab) {
+      case "summary":
+        return (
+          <InvestigationSummary
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+            caseGuid={caseIdentifier ?? ""}
+            caseName={caseName ?? ""}
+          />
+        );
+      case "records":
+        return (
+          <InvestigationRecords
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+          />
+        );
+      case "contraventions":
+        return <InvestigationContraventions />;
+      case "documents":
+        return <InvestigationDocumentation />;
+      case "continuation":
+        return <InvestigationContinuation />;
+      case "admin":
+        return <InvestigationAdministration />;
+    }
+  };
 
   if (isLoading) {
     return (
@@ -53,56 +108,14 @@ export const InvestigationDetails: FC = () => {
     );
   }
 
-  const investigationData = data?.getInvestigation;
-  const caseIdentifier = data?.caseFileByActivityId?.caseIdentifier;
   return (
     <div className="comp-complaint-details">
       <InvestigationHeader investigation={investigationData} />
 
       <section className="comp-details-body comp-container">
         <hr className="comp-details-body-spacer"></hr>
-
-        <div className="comp-details-section-header">
-          <h2>Investigation details</h2>
-        </div>
-
-        {/* Investigation Details (View) */}
-        <div className="comp-details-view">
-          <div className="comp-details-content">
-            <h3>Investigation Information</h3>
-            {!investigationData && <p>No data found for ID: {investigationGuid}</p>}
-            {investigationData && (
-              <div>
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <strong>Investigation Identifier:</strong>
-                      <p>{investigationData.investigationGuid || "N/A"}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <strong>Case Identifier:</strong>
-                      {caseIdentifier ? <Link to={`/case/${caseIdentifier}`}>{caseIdentifier}</Link> : <p>N/A</p>}
-                    </div>
-                  </div>
-                </div>
-                {investigationData.description && (
-                  <div className="row">
-                    <div className="col-12">
-                      <div className="form-group">
-                        <strong>Description:</strong>
-                        <p>{investigationData.description}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+        <InvestigationTabs />
+        {renderTabContent()}
       </section>
     </div>
   );
