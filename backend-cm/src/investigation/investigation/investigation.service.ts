@@ -1,4 +1,4 @@
-import { Dictionary, Mapper } from "@automapper/core";
+import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
 import { Injectable, Logger } from "@nestjs/common";
 import { investigation } from "../../../prisma/investigation/investigation.unsupported_types";
@@ -16,7 +16,6 @@ import { PaginationUtility } from "src/common/pagination.utility";
 import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { CaseFileService } from "src/shared/case_file/case_file.service";
 import { Point } from "src/common/custom_scalars";
-import { Prisma } from ".prisma/investigation";
 
 @Injectable()
 export class InvestigationService {
@@ -31,83 +30,36 @@ export class InvestigationService {
 
   private readonly logger = new Logger(InvestigationService.name);
 
-  private templateData(
-        this: any,
-        data: Dictionary<any>
-      ): string[] {
-        const timestamp_pattern = /timestamp$/;
-        const geometry_pattern = /geometry_point$/;
-        const queryData: string[] = [];
-        Object.keys(data).forEach((key) => {
-          let value = (data as any)[key];
-          if (key.match(geometry_pattern)) {
-            if (value !== null && value !== undefined) {
-              value = `public.ST_GeomFromGeoJSON('${JSON.stringify(data.location_geometry_point)}')`;
-            } else {
-              value = 'NULL';
-            }
-          } else if (key.match(timestamp_pattern)) {
-            if (value !== null && value !== undefined) {
-              value = `'${(value as Date).toISOString()}'`;
-            } else {
-              value = 'NULL';
-            }
-          } else {
-            value = `'${value}'`;
-          }
-          queryData.push(`${key} = ${value}`);
-        });
-        return queryData;
-      }
-
-  async findOne(investigationGuid: string): Promise<Investigation | null> {
-    const queryString = `
-      SELECT
-        investigation_guid,
-        investigation_description,
-        owned_by_agency_ref,
-        investigation_status,
-        investigation_opened_utc_timestamp,
-        create_user_id,
-        create_utc_timestamp,
-        update_user_id,
-        update_utc_timestamp,
-        location_address,
-        location_description,
-        public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-      FROM investigation.investigation
-      WHERE investigation_guid = '${investigationGuid}'::uuid
-      LIMIT 1
-    `;
-    const result = (await this.prisma.$queryRawUnsafe(queryString)) as investigation[];
-    if (result.length === 0) return null;
-    const prismaInvestigation = result[0];
-    // Handle includes manually
-    const statusCode = await this.prisma.investigation_status_code.findUnique({
-      where: { investigation_status_code: prismaInvestigation.investigation_status }
-    });
-    Object.assign(prismaInvestigation, { investigation_status_code: statusCode });
-
-    const parties = await this.prisma.investigation_party.findMany({
-      where: { investigation_guid: prismaInvestigation.investigation_guid, active_ind: true },
+  async findOne(investigationGuid: string) {
+    const prismaInvestigation = await this.prisma.investigation.findUnique({
+      where: {
+        investigation_guid: investigationGuid,
+      },
       include: {
-        investigation_person: {
-          where: {
-            active_ind: true,
+        investigation_status_code: true,
+        investigation_party: {
+          include: {
+            investigation_person: {
+              where: {
+                active_ind: true,
+              },
+            },
+            investigation_business: {
+              where: {
+                active_ind: true,
+              },
+            },
           },
-        },
-        investigation_business: {
           where: {
             active_ind: true,
           },
         },
       },
     });
-    Object.assign(prismaInvestigation, { investigation_party: parties });
-    
     if (!prismaInvestigation) {
       throw new Error(`Investigation with guid ${investigationGuid} not found`);
     }
+    await this.getLocationGeometryPoint(prismaInvestigation as investigation);
 
     try {
       return this.mapper.map<investigation, Investigation>(
@@ -121,58 +73,40 @@ export class InvestigationService {
     }
   }
 
-  async findMany(ids: string[],
-    include?: {
-      investigation_status_code?: boolean;
-    }
-  ): Promise<Investigation[]> {
+  async findMany(ids: string[]): Promise<Investigation[]> {
     if (!ids || ids.length === 0) {
       return [];
     }
-    const guidList = ids.map(id => `'${id}'::uuid`).join(', ');
-    const queryString = `
-      SELECT
-        investigation_guid,
-        investigation_description,
-        owned_by_agency_ref,
-        investigation_status,
-        investigation_opened_utc_timestamp,
-        create_user_id,
-        create_utc_timestamp,
-        update_user_id,
-        update_utc_timestamp,
-        location_address,
-        location_description,
-        public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-      FROM investigation.investigation
-      WHERE investigation_guid IN (${guidList})
-    `;
-    const prismaInvestigations = (await this.prisma.$queryRawUnsafe(queryString)) as investigation[];
-    for (const inv of prismaInvestigations) {
-      const statusCode = await this.prisma.investigation_status_code.findUnique({
-        where: { investigation_status_code: inv.investigation_status },
-      });
-      Object.assign(inv, { investigation_status_code: statusCode });
-      const xrefs = await this.prisma.officer_investigation_xref.findMany({
-        where: { investigation_guid: inv.investigation_guid }
-      });
-      Object.assign(inv, { officer_investigation_xref: xrefs });
-      const parties = await this.prisma.investigation_party.findMany({
-        where: { investigation_guid: inv.investigation_guid, active_ind: true },
-        include: {
-          investigation_person: {
-            where: {
-              active_ind: true,
+
+    const prismaInvestigations = await this.prisma.investigation.findMany({
+      where: {
+        investigation_guid: {
+          in: ids,
+        },
+      },
+      include: {
+        investigation_status_code: true,
+        investigation_party: {
+          include: {
+            investigation_person: {
+              where: {
+                active_ind: true,
+              },
+            },
+            investigation_business: {
+              where: {
+                active_ind: true,
+              },
             },
           },
-          investigation_business: {
-            where: {
-              active_ind: true,
-            },
+          where: {
+            active_ind: true,
           },
         },
-      });
-      Object.assign(inv, { investigation_party: parties });
+      },
+    });
+    for (const inv of prismaInvestigations) {
+      await this.getLocationGeometryPoint(inv as investigation);
     }
 
     try {
@@ -198,61 +132,32 @@ export class InvestigationService {
     if (!caseFile) {
       throw new Error(`Case file with guid ${input.caseIdentifier} not found`);
     }
-    const data = {...input}
-    Object.assign(data, {
-      investigation_opened_utc_timestamp: new Date(),
-      create_user_id: this.user.getIdirUsername(),
-      create_utc_timestamp: new Date(),
-    });
-    let investigation: investigation;
-    try {
-      const result = (await this.prisma.$queryRaw`
-        INSERT INTO investigation.investigation (
-          investigation_status,
-          investigation_description,
-          owned_by_agency_ref,
-          investigation_opened_utc_timestamp,
-          create_user_id,
-          create_utc_timestamp,
-          update_user_id,
-          update_utc_timestamp,
-          location_address,
-          location_description,
-          location_geometry_point
-        )
-        VALUES (
-          ${this.templateData({...data}).join(', ')}
-        )
-        RETURNING
-          investigation_guid,
-          investigation_description,
-          owned_by_agency_ref,
-          investigation_status,
-          investigation_opened_utc_timestamp,
-          create_user_id,
-          create_utc_timestamp,
-          update_user_id,
-          update_utc_timestamp,
-          location_address,
-          location_description,
-          public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-      `) as investigation[];
-      if (result.length === 0) {
-        throw new Error('Failed to create investigation');
+
+    // Create the investigation
+    let investigation;
+    await this.prisma.$transaction(async (tx) => {
+      try {
+        investigation = await this.prisma.investigation.create({
+          data: {
+          investigation_status: input.investigationStatus,
+          investigation_description: input.description,
+          owned_by_agency_ref: input.leadAgency,
+          //   name: input.name,
+          investigation_opened_utc_timestamp: new Date(),
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+          },
+          include: {
+          investigation_status_code: true,
+          },
+        });
+      } catch (error) {
+        this.logger.error("Error creating investigation:", error);
+        throw error;
       }
-      investigation = result[0];
-
-      // Fetch the investigation_status_code relation
-      const statusCode = await this.prisma.investigation_status_code.findUnique({
-        where: { investigation_status_code: investigation.investigation_status },
-      });
-      // Add the relation to the investigation object
-      Object.assign(investigation, { investigation_status_code: statusCode });
-    } catch (error) {
-      this.logger.error("Error creating investigation:", error);
-      throw error;
-    }
-
+      await this.updateLocationGeometryPoint(tx, investigation.investigation_guid, input.locationGeometry as Point);
+    });
+    await this.getLocationGeometryPoint(investigation as investigation);
     // Try to create case activity record, and if it fails, delete the investigation
     try {
       await this.shared.case_activity.create({
@@ -300,173 +205,88 @@ export class InvestigationService {
     }
   }
 
-
-  async findUnique(
-      where: { investigation_guid: string },
-      include: {
-        investigation_status_code?: any;
-        investigation_party?: any;
-      }
-    ): Promise<Investigation | null> {
-      const queryString = `
-        SELECT
-          investigation_guid,
-          investigation_description,
-          owned_by_agency_ref,
-          investigation_status,
-          investigation_opened_utc_timestamp,
-          create_user_id,
-          create_utc_timestamp,
-          update_user_id,
-          update_utc_timestamp,
-          location_address,
-          location_description,
-          public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-        FROM investigation.investigation
-        WHERE investigation_guid = '${where.investigation_guid}'::uuid
-        LIMIT 1
-      `;
-      const result = (await this.prisma.$queryRawUnsafe(queryString)) as investigation[];
-      if (result.length === 0) return null;
-      const inv = result[0];
-
-      // Handle includes manually
-      if (include?.investigation_status_code) {
-        const statusCode = await this.prisma.investigation_status_code.findUnique({
-          where: { investigation_status_code: inv.investigation_status }
-        });
-        Object.assign(inv, { investigation_status_code: statusCode });
-      }
-      if (include?.investigation_party) {
-        const parties = await this.prisma.investigation_party.findMany({
-          where: { investigation_guid: inv.investigation_guid },
-          include: {
-            investigation_person: include?.investigation_party?.investigation_person,
-            investigation_business: include?.investigation_party?.investigation_business,
-          },
-        });
-        Object.assign(inv, { investigation_party: parties });
-      }
-      const investigation = this.mapper.map<investigation, Investigation>(inv as investigation, "investigation", "Investigation");
-      return investigation;
-    }
-
   async update(investigationGuid: string, input: UpdateInvestigationInput): Promise<Investigation> {
     // Check if the investigation exists
     const existingInvestigation = await this.prisma.investigation.findUnique({
       where: { investigation_guid: investigationGuid },
     });
+
     if (!existingInvestigation) {
       throw new Error(`Investigation with guid ${investigationGuid} not found.`);
     }
-    let updatedInvestigation: investigation;
-    try {
-      const updateData: {
-        update_user_id: string;
-        update_utc_timestamp: Date;
-        owned_by_agency_ref?: string;
-        investigation_status?: string;
-        investigation_description?: string;
-        location_geometry_point?: Point | null;
-        location_address?: string;
-        location_description?: string;
-      } = {
-        update_user_id: this.user.getIdirUsername(),
-        update_utc_timestamp: new Date(),
-      };
+    let updatedInvestigation;
+    await this.prisma.$transaction(async (tx) => {
+      try {
+        const updateData: any = {
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        };
 
-      if (input.leadAgency !== undefined) {
-        updateData.owned_by_agency_ref = input.leadAgency;
-      }
-      if (input.investigationStatus !== undefined) {
-        updateData.investigation_status = input.investigationStatus;
-      }
-      if (input.description !== undefined) {
-        updateData.investigation_description = input.description;
-      }
-      if (input.locationGeometry !== undefined) {
-        updateData.location_geometry_point = input.locationGeometry;
-      }
-      if (input.locationAddress !== undefined) {
-        updateData.location_address = input.locationAddress;
-      }
-      if (input.locationDescription !== undefined) {
-        updateData.location_description = input.locationDescription;
-      }
-      // Perform the update
-      const queryString = `
-        UPDATE investigation.investigation
-        SET ${this.templateData({...updateData}).join(', ')}
-        WHERE investigation_guid = '${investigationGuid}'::uuid
-        RETURNING
-        investigation_guid,
-        investigation_description,
-        owned_by_agency_ref,
-        investigation_status,
-        investigation_opened_utc_timestamp,
-        create_user_id,
-        create_utc_timestamp,
-        update_user_id,
-        update_utc_timestamp,
-        location_address,
-        location_description,
-        public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-      `;
-      console.log('Update Query:', queryString); // Debug log
-      const result = await this.prisma.$queryRawUnsafe(queryString) as investigation[];
-      updatedInvestigation = result.length > 0 ? result[0] : null;
-      console.log('Raw Updated Investigation:', updatedInvestigation); // Debug log
-      const statusCode = await this.prisma.investigation_status_code.findUnique({
-        where: { investigation_status_code: updatedInvestigation.investigation_status }
-      });
-      Object.assign(updatedInvestigation, { investigation_status_code: statusCode });
-      const parties = await this.prisma.investigation_party.findMany({
-        where: { investigation_guid: updatedInvestigation.investigation_guid, active_ind: true },
-        include: {
-          investigation_person: {
-            where: {
-              active_ind: true,
+        if (input.leadAgency !== undefined) {
+          updateData.owned_by_agency_ref = input.leadAgency;
+        }
+        if (input.investigationStatus !== undefined) {
+          updateData.investigation_status = input.investigationStatus;
+        }
+        if (input.description !== undefined) {
+          updateData.investigation_description = input.description;
+        }
+        //   if (input.name !== undefined) {
+        //     updateData.name = input.name;
+        //   }
+        // Perform the update
+        updatedInvestigation = await tx.investigation.update({
+          where: { investigation_guid: investigationGuid },
+          data: updateData,
+          include: {
+            investigation_status_code: true,
+            investigation_party: {
+              include: {
+                investigation_person: {
+                  where: {
+                    active_ind: true,
+                  },
+                },
+                investigation_business: {
+                  where: {
+                    active_ind: true,
+                  },
+                },
+              },
+              where: {
+                active_ind: true,
+              },
             },
           },
-          investigation_business: {
-            where: {
-              active_ind: true,
-            },
-          },
-        },
-      });
-      Object.assign(updatedInvestigation, { investigation_party: parties });
-      
-      console.log('Updated Investigation with Relations:', updatedInvestigation); // Debug log
-  
-    } catch (error) {
-      console.log("update error:", error); // Debug log
-      this.logger.error(`Error updating investigation with guid ${investigationGuid}:`, error);
-      throw error;
-    }
+        });
+        await this.updateLocationGeometryPoint(tx, investigationGuid, input.locationGeometry as Point);
+      } catch (error) {
+        this.logger.error(`Error updating investigation with guid ${investigationGuid}:`, error);
+        throw error;
+      }
+    });
+    await this.getLocationGeometryPoint(updatedInvestigation as investigation);
     try {
-      console.log('Mapped Updated Investigation:', updatedInvestigation); // Debug log
-      const mappedInvestigation = this.mapper.map<investigation, Investigation>(updatedInvestigation as investigation, "investigation", "Investigation");
-      console.log('Mapped Updated Investigation:', mappedInvestigation); // Debug log
-      return mappedInvestigation;
+      return this.mapper.map<investigation, Investigation>(
+        updatedInvestigation as investigation,
+        "investigation",
+        "Investigation",
+      );
     } catch (error) {
-      console.log("mapping error:", error); // Debug log
       this.logger.error(`Error mapping investigation with guid ${investigationGuid}:`, error);
       throw error;
     }
   }
 
   async search(page: number = 1, pageSize: number = 25, filters?: InvestigationFilters): Promise<InvestigationResult> {
-    // Validate pagination params
-    const validatedPage = Math.max(1, page);
-    const validatedPageSize = Math.min(Math.max(1, pageSize), 100);
-    const skip = (validatedPage - 1) * validatedPageSize;
-
-    const where: Prisma.investigationWhereInput = {};
+    const where: any = {};
 
     if (filters?.search) {
-      // UUID column only supports exact matching
-      where.investigation_guid = { in: [filters.search] };
+      // Search by name (partial match) or investigation_guid (exact match)
+      where.OR = [
+        { name: { contains: filters.search, mode: "insensitive" } },
+        { investigation_guid: { equals: filters.search } },
+      ];
     }
 
     if (filters?.leadAgency) {
@@ -477,94 +297,120 @@ export class InvestigationService {
       where.investigation_status = filters.investigationStatus;
     }
 
-    // Get total count for pagination
-    const totalCount = await this.prisma.investigation.count({ where });
+    if (filters?.startDate || filters?.endDate) {
+      where.investigation_opened_utc_timestamp = {};
 
-    // Query with raw SQL to get geometry as GeoJSON
-    let investigationsList: investigation[];
-    const queryString = `
-      SELECT
-        investigation_guid,
-        investigation_description,
-        owned_by_agency_ref,
-        investigation_status,
-        investigation_opened_utc_timestamp,
-        create_user_id,
-        create_utc_timestamp,
-        update_user_id,
-        update_utc_timestamp,
-        location_address,
-        location_description,
-        public.ST_AsGeoJSON(location_geometry_point)::json AS location_geometry_point
-      FROM investigation.investigation
-      ORDER BY investigation_opened_utc_timestamp DESC
-      LIMIT ${validatedPageSize}
-      OFFSET ${skip}
-    `;
-    investigationsList = (await this.prisma.$queryRawUnsafe(queryString)) as investigation[];
-    // Manually fetch related investigation_status_code, officers, parties for each investigation
-    for (const inv of investigationsList) {
-      const statusCode = await this.prisma.investigation_status_code.findUnique({
-        where: { investigation_status_code: inv.investigation_status },
-      });
-      Object.assign(inv, { investigation_status_code: statusCode });
-      const xrefs = await this.prisma.officer_investigation_xref.findMany({
-        where: { investigation_guid: inv.investigation_guid }
-      });
-      Object.assign(inv, { officer_investigation_xref: xrefs });
-      const parties = await this.prisma.investigation_party.findMany({
-        where: { investigation_guid: inv.investigation_guid, active_ind: true },
-        include: {
-          investigation_person: {
-            where: {
-              active_ind: true,
-            },
-          },
-          investigation_business: {
-            where: {
-              active_ind: true,
-            },
-          },
+      if (filters?.startDate) {
+        where.investigation_opened_utc_timestamp.gte = filters.startDate;
+      }
+
+      if (filters?.endDate) {
+        const endOfDay = new Date(filters.endDate);
+        endOfDay.setHours(23, 59, 59, 999);
+        where.investigation_opened_utc_timestamp.lte = endOfDay;
+      }
+    }
+
+    // map filters to db columns
+    const sortFieldMap: Record<string, string> = {
+      investigationGuid: "investigation_guid",
+      openedTimestamp: "investigation_opened_utc_timestamp",
+      leadAgency: "owned_by_agency_ref",
+      investigationStatus: "investigation_status",
+      name: "name",
+    };
+
+    let orderBy: any = { investigation_opened_utc_timestamp: "desc" }; // Default sort
+
+    if (filters?.sortBy && filters?.sortOrder) {
+      const dbField = sortFieldMap[filters.sortBy];
+      const validSortOrder = filters.sortOrder.toLowerCase() === "asc" ? "asc" : "desc";
+
+      if (dbField) {
+        orderBy = { [dbField]: validSortOrder };
+      }
+    }
+
+    // Use the pagination utility to handle pagination logic and return pageInfo meta
+    const result = await this.paginationUtility.paginate<investigation, Investigation>(
+      { page, pageSize },
+      {
+        prismaService: this.prisma,
+        modelName: "investigation",
+        sourceTypeName: "investigation",
+        destinationTypeName: "Investigation",
+        mapper: this.mapper,
+        whereClause: where,
+        includeClause: {
+          officer_investigation_xref: true,
+          investigation_status_code: true,
         },
-      });
-      Object.assign(inv, { investigation_party: parties });
-    }
-
-    // Map to Investigation DTOs
-    const investigations = this.mapper.mapArray<investigation, Investigation>(
-      investigationsList,
-      "investigation",
-      "Investigation",
+        orderByClause: orderBy,
+      },
     );
-
-    // Add case identifiers
-    const res = await Promise.all(
-      investigations.map(async (inv) => {
-        const caseFile = await this.caseFileService.findCaseFileByActivityId("INVSTGTN", inv.investigationGuid);
-        return { ...inv, caseIdentifier: caseFile.caseIdentifier };
-      }),
-    );
-
-    if (filters?.sortBy === "caseIdentifier") {
-      if (filters?.sortOrder?.toLowerCase() === "desc") {
-        res.sort((a, b) => b.caseIdentifier.localeCompare(a.caseIdentifier));
-      } else res.sort((a, b) => a.caseIdentifier.localeCompare(b.caseIdentifier));
-    }
-
-    // Calculate page info
-    const totalPages = Math.ceil(totalCount / validatedPageSize);
-    const pageInfo: PageInfo = {
-      hasNextPage: validatedPage < totalPages,
-      hasPreviousPage: validatedPage > 1,
-      totalCount,
-      totalPages,
-      currentPage: validatedPage,
-      pageSize: validatedPageSize,
-    };
-
     return {
-      items: res,
-      pageInfo,
+      items: result.items,
+      pageInfo: result.pageInfo as PageInfo,
     };
+  }
+
+  async checkNameExists(name: string, leadAgency: string, excludeInvestigationGuid?: string): Promise<boolean> {
+    const where: any = {
+      name: {
+        equals: name,
+        mode: "insensitive",
+      },
+      owned_by_agency_ref: leadAgency,
+    };
+
+    if (excludeInvestigationGuid) {
+      where.investigation_guid = {
+        not: excludeInvestigationGuid,
+      };
+    }
+
+    const existingInvestigation = await this.prisma.investigation.findFirst({
+      where,
+    });
+
+    return !!existingInvestigation;
+  }
+
+  async getLocationGeometryPoint(investigation: investigation): Promise<void> {
+    try {
+      let result: investigation[];
+      const query = `
+        SELECT
+            public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
+        FROM investigation
+        WHERE investigation_guid = '${investigation.investigation_guid}'::uuid
+      `;
+      result = (await this.prisma.$queryRawUnsafe(query)) as investigation[];
+      if (result.length === 0) {
+        throw new Error(`Investigation with guid ${investigation.investigation_guid} not found.`);
+      }
+      investigation.location_geometry_point = result[0].location_geometry_point;
+    } catch (error) {
+      this.logger.error(`Error fetching location geometry point for investigation with guid ${investigation.investigation_guid}:`, error);
+      throw error;
+    }
+  }
+
+  async updateLocationGeometryPoint(tx: any, investigationGuid: string, point: Point): Promise<void> {
+    try {
+      const query = `
+        UPDATE investigation
+        SET location_geometry_point = public.ST_GeomFromGeoJSON('${JSON.stringify(point)}')
+        WHERE investigation_guid = '${investigationGuid}'::uuid
+      `;
+      if (tx) {
+        await tx.$executeRawUnsafe(query);
+      } else {
+        await this.prisma.$executeRawUnsafe(query);
+      }
+    } catch (error) {
+      this.logger.error(`Error updating location geometry point for investigation with guid ${investigationGuid}:`, error);
+      throw error;
+    }
   }
 }
