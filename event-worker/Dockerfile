@@ -6,8 +6,8 @@ WORKDIR /app
 COPY *.json ./
 COPY ./src /app/src
 
-RUN npm ci --omit=dev --ignore-scripts
-RUN npm run build
+RUN npm ci --omit=dev && \
+    npm run build
 
 # Deployment container
 FROM node:22-bookworm-slim
