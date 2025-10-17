@@ -420,6 +420,7 @@ const InvestigationEdit: FC = () => {
                     validationRequired={false}
                     sourceXCoordinate={longitude}
                     sourceYCoordinate={latitude}
+                    allowEmpty={true}
                   />
                 );
               }}

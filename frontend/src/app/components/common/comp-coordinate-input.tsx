@@ -22,6 +22,7 @@ type Props = {
   sourceXCoordinate?: string;
   sourceYCoordinate?: string;
   equipmentType?: string;
+  allowEmpty?: boolean;
 };
 
 const COORDINATE_TYPES = {
@@ -42,6 +43,7 @@ export const CompCoordinateInput: FC<Props> = ({
   enableCopyCoordinates,
   validationRequired,
   equipmentType,
+  allowEmpty,
 }) => {
   const dispatch = useAppDispatch();
   const [coordinateType, setCoordinateType] = useState(COORDINATE_TYPES.LatLong);
@@ -76,11 +78,12 @@ export const CompCoordinateInput: FC<Props> = ({
       }
       const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
       let hasErrors = false;
-      if (!regex.exec(latitude)) {
+
+      if (!regex.exec(latitude) && !allowEmpty) {
         setYCoordinateErrorMsg("Latitude value must be a number");
         hasErrors = true;
       }
-      if (!regex.exec(longitude)) {
+      if (!regex.exec(longitude) && !allowEmpty) {
         setXCoordinateErrorMsg("Longitude value must be a number");
         hasErrors = true;
       }

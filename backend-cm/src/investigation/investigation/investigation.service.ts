@@ -403,10 +403,14 @@ export class InvestigationService {
   }
 
   async updateLocationGeometryPoint(tx: any, investigationGuid: string, point: Point): Promise<void> {
+    let point_data = null;
+    if (point) {
+      point_data = `public.ST_GeomFromGeoJSON('${JSON.stringify(point)}')`
+    }
     try {
       const query = `
         UPDATE investigation
-        SET location_geometry_point = public.ST_GeomFromGeoJSON('${JSON.stringify(point)}')
+        SET location_geometry_point = ${point_data}
         WHERE investigation_guid = '${investigationGuid}'::uuid
       `;
       if (tx) {
