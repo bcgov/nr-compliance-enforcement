@@ -23,4 +23,5 @@ export interface ComplaintDetails {
   complaintMethodReceivedCode?: ComplaintMethodReceivedType;
   ownedBy?: string;
   parkGuid?: string;
+  issueType?: string;
 }

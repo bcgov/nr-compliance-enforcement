@@ -19,4 +19,5 @@ export interface ComplaintHeader {
   girType?: string;
   girTypeCode?: string;
   parkAreaGuids?: string[];
+  type: string;
 }
