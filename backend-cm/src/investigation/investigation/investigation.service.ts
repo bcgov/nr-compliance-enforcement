@@ -155,7 +155,7 @@ export class InvestigationService {
         this.logger.error("Error creating investigation:", error);
         throw error;
       }
-      await this.updateLocationGeometryPoint(tx, investigation.investigation_guid, input.locationGeometry as Point);
+      await this.updateLocationGeometryPoint(tx, investigation.investigation_guid, input.locationGeometry);
     });
     await this.getLocationGeometryPoint(investigation as investigation);
     // Try to create case activity record, and if it fails, delete the investigation
@@ -265,7 +265,7 @@ export class InvestigationService {
             },
           },
         });
-        await this.updateLocationGeometryPoint(tx, investigationGuid, input.locationGeometry as Point);
+        await this.updateLocationGeometryPoint(tx, investigationGuid, input.locationGeometry);
       } catch (error) {
         this.logger.error(`Error updating investigation with guid ${investigationGuid}:`, error);
         throw error;
@@ -391,7 +391,7 @@ export class InvestigationService {
         FROM investigation
         WHERE investigation_guid = '${investigation.investigation_guid}'::uuid
       `;
-      result = (await this.prisma.$queryRawUnsafe(query)) as investigation[];
+      result = (await this.prisma.$queryRawUnsafe(query));
       if (result.length === 0) {
         throw new Error(`Investigation with guid ${investigation.investigation_guid} not found.`);
       }

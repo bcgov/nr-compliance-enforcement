@@ -1,12 +1,9 @@
 import { InvestigationHeader } from "@/app/components/containers/investigations/details/investigation-header";
 import { FC } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Investigation } from "@/generated/graphql";
-import { CompLocationInfo } from "@/app/components/common/comp-location-info";
-import Button from "react-bootstrap/esm/Button";
-import { InvestigationLocation } from "./investigation-location";
 import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
 import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
 import InvestigationRecords from "@/app/components/containers/investigations/details/investigation-records";
