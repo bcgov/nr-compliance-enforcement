@@ -297,13 +297,18 @@ export async function isHeaderinViewPort(page: Page) {
   const viewportHeight = await page.evaluate(() => window.innerHeight);
 
   // Assertions:
-  if (rect.top >= viewportHeight) {
+  if (rect?.top >= viewportHeight) {
     throw new Error(`Expected element not to be below the visible scrolled area`);
   }
 
-  if (rect.top < 0) {
+  if (rect?.top < 0) {
     throw new Error(`Expected element not to be above the visible scrolled area`);
   }
 
   return elementHandle;
+}
+
+export async function validateComplaint(page: Page, expectedComplaintId: string, expectedSpecies: string) {
+  await expect(await page.locator(".comp-box-complaint-id")).toContainText(expectedComplaintId);
+  await expect(await page.locator(".comp-box-species-type")).toContainText(expectedSpecies);
 }
