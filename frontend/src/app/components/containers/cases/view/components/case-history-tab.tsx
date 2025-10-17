@@ -2,7 +2,7 @@ import { FC, useEffect, useState, useMemo } from "react";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { CaseHistoryItem } from "./case-history-item";
-import { EventResult, Event } from "@/generated/graphql";
+import { EventResult, Event, CaseFile, Inspection, Investigation } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { Officer } from "@/app/types/person/person";
@@ -45,6 +45,23 @@ const SEARCH_EVENTS = gql`
   }
 `;
 
+const GET_ENTITY_NAMES = gql`
+  query GetEntityNames($caseIds: [String!]!, $inspectionIds: [String], $investigationIds: [String]) {
+    caseFiles(caseIdentifiers: $caseIds) {
+      caseIdentifier
+      name
+    }
+    getInspections(ids: $inspectionIds) {
+      inspectionGuid
+      name
+    }
+    getInvestigations(ids: $investigationIds) {
+      investigationGuid
+      name
+    }
+  }
+`;
+
 interface CaseHistoryTabProps {
   caseIdentifier: string;
 }
@@ -65,6 +82,40 @@ const getUserGuidsFromEvents = (events: Event[]): Set<string> => {
   }
 
   return userAuthGuids;
+};
+
+const getEntityIdsFromEvents = (events: Event[]) => {
+  const caseIds = new Set<string>();
+  const inspectionIds = new Set<string>();
+  const investigationIds = new Set<string>();
+
+  const addEntityId = (id: string | null | undefined, type: string | null | undefined) => {
+    if (!id || !type) return;
+
+    switch (type) {
+      case "CASE":
+        caseIds.add(id);
+        break;
+      case "INSPECTION":
+        inspectionIds.add(id);
+        break;
+      case "INVESTIGATION":
+        investigationIds.add(id);
+        break;
+    }
+  };
+
+  for (const event of events) {
+    addEntityId(event.sourceId, event.sourceEntityTypeCode?.eventEntityTypeCode);
+    addEntityId(event.actorId, event.actorEntityTypeCode?.eventEntityTypeCode);
+    addEntityId(event.targetId, event.targetEntityTypeCode?.eventEntityTypeCode);
+  }
+
+  return {
+    caseIds: Array.from(caseIds),
+    inspectionIds: Array.from(inspectionIds),
+    investigationIds: Array.from(investigationIds),
+  };
 };
 
 export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
@@ -91,6 +142,46 @@ export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
 
   const allOfficers = useAppSelector(selectOfficers);
   const [eventOfficers, setEventOfficers] = useState<Officer[]>([]);
+  const [entityNames, setEntityNames] = useState<Map<string, string>>(new Map());
+
+  const entityIds = useMemo(() => getEntityIdsFromEvents(events), [events]);
+
+  const hasEntityIds =
+    entityIds.caseIds.length > 0 || entityIds.inspectionIds.length > 0 || entityIds.investigationIds.length > 0;
+
+  const { data: entitiesData } = useGraphQLQuery<{
+    caseFiles: CaseFile[];
+    getInspections: Inspection[];
+    getInvestigations: Investigation[];
+  }>(GET_ENTITY_NAMES, {
+    queryKey: ["entityNames", entityIds.caseIds, entityIds.inspectionIds, entityIds.investigationIds],
+    variables: {
+      caseIds: entityIds.caseIds.length > 0 ? entityIds.caseIds : [],
+      inspectionIds: entityIds.inspectionIds.length > 0 ? entityIds.inspectionIds : undefined,
+      investigationIds: entityIds.investigationIds.length > 0 ? entityIds.investigationIds : undefined,
+    },
+    enabled: hasEntityIds,
+  });
+
+  useEffect(() => {
+    const nameMap = new Map<string, string>();
+    for (const caseFile of entitiesData?.caseFiles || []) {
+      if (caseFile.caseIdentifier && caseFile.name) {
+        nameMap.set(caseFile.caseIdentifier, caseFile.name);
+      }
+    }
+    for (const inspection of entitiesData?.getInspections || []) {
+      if (inspection.inspectionGuid && inspection.name) {
+        nameMap.set(inspection.inspectionGuid, inspection.name);
+      }
+    }
+    for (const investigation of entitiesData?.getInvestigations || []) {
+      if (investigation.investigationGuid && investigation.name) {
+        nameMap.set(investigation.investigationGuid, investigation.name);
+      }
+    }
+    setEntityNames(nameMap);
+  }, [entitiesData]);
 
   // Get officers by auth_user_guid when events are loaded
   useEffect(() => {
@@ -191,6 +282,7 @@ export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
                     key={event.eventGuid}
                     event={event}
                     officers={eventOfficers}
+                    entityNames={entityNames}
                   />
                 ))}
               </ul>
