@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
@@ -24,7 +24,11 @@ import Option from "@apptypes/app/option";
 
 const CHECK_INVESTIGATION_NAME_EXISTS = gql`
   query CheckInvestigationNameExists($name: String!, $leadAgency: String!, $excludeInvestigationGuid: String) {
-    checkInvestigationNameExists(name: $name, leadAgency: $leadAgency, excludeInvestigationGuid: $excludeInvestigationGuid)
+    checkInvestigationNameExists(
+      name: $name
+      leadAgency: $leadAgency
+      excludeInvestigationGuid: $excludeInvestigationGuid
+    )
   }
 `;
 
@@ -235,49 +239,51 @@ const InvestigationEdit: FC = () => {
 
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>
-
-          <FormField
-            form={form}
-            name="name"
-            label="Investigation ID"
-            required
-            validators={{
-              onChange: z.string().min(1, "Investigation ID is required").max(100, "Investigation ID must be 100 characters or less"),
-              onChangeAsyncDebounceMs: 500,
-              onChangeAsync: async ({ value }: { value: string }) => {
-                if (!value || value.length < 1) return "Investigation ID is required";
-                const leadAgency = form.getFieldValue("leadAgency");
-                if (!leadAgency) return undefined;
-                const result: { checkInvestigationNameExists: boolean } = await GraphQLRequest(
-                  CHECK_INVESTIGATION_NAME_EXISTS,
-                  {
-                    name: value,
-                    leadAgency: leadAgency,
-                    excludeInvestigationGuid: isEditMode ? id : undefined,
+            <FormField
+              form={form}
+              name="name"
+              label="Investigation ID"
+              required
+              validators={{
+                onChange: z
+                  .string()
+                  .min(1, "Investigation ID is required")
+                  .max(100, "Investigation ID must be 100 characters or less"),
+                onChangeAsyncDebounceMs: 500,
+                onChangeAsync: async ({ value }: { value: string }) => {
+                  if (!value || value.length < 1) return "Investigation ID is required";
+                  const leadAgency = form.getFieldValue("leadAgency");
+                  if (!leadAgency) return undefined;
+                  const result: { checkInvestigationNameExists: boolean } = await GraphQLRequest(
+                    CHECK_INVESTIGATION_NAME_EXISTS,
+                    {
+                      name: value,
+                      leadAgency: leadAgency,
+                      excludeInvestigationGuid: isEditMode ? id : undefined,
+                    },
+                  );
+                  if (result.checkInvestigationNameExists) {
+                    return "This Investigation ID is already in use for this agency. Please choose a different Investigation ID.";
                   }
-                );
-                if (result.checkInvestigationNameExists) {
-                  return "This Investigation ID is already in use for this agency. Please choose a different Investigation ID.";
-                }
-                return undefined;
-              }
-            }}
-            render={(field) => (
-              <div>
-                <CompInput
-                  id="display-name"
-                  divid="display-name-value"
-                  type="input"
-                  inputClass="comp-form-control"
-                  error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
-                  maxLength={120}
-                  onChange={(evt: any) => field.handleChange(evt.target.value)}
-                  value={field.state.value}
-                  placeholder="Enter Investigation ID"
-                />
-              </div>
-            )}
-          />
+                  return undefined;
+                },
+              }}
+              render={(field) => (
+                <div>
+                  <CompInput
+                    id="display-name"
+                    divid="display-name-value"
+                    type="input"
+                    inputClass="comp-form-control"
+                    error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                    maxLength={120}
+                    onChange={(evt: any) => field.handleChange(evt.target.value)}
+                    value={field.state.value}
+                    placeholder="Enter Investigation ID"
+                  />
+                </div>
+              )}
+            />
             <FormField
               form={form}
               name="investigationStatus"
@@ -397,7 +403,7 @@ const InvestigationEdit: FC = () => {
                   <CompCoordinateInput
                     id="investigation-coordinates"
                     mode="investigation"
-                    utmZones={bcUtmZoneNumbers.map((zone: string) => ({ value: zone, label: zone } as Option))}
+                    utmZones={bcUtmZoneNumbers.map((zone: string) => ({ value: zone, label: zone }) as Option)}
                     initXCoordinate={longitude}
                     initYCoordinate={latitude}
                     syncCoordinates={(yCoordinate, xCoordinate) => {
@@ -410,7 +416,11 @@ const InvestigationEdit: FC = () => {
                         field.handleChange(null);
                       }
                     }}
-                    throwError={(hasError: boolean) => hasError ? field.setMeta({ errorMap: { onChange: "Location Coordinates are invalid" }}) : field.setMeta({errorMap: {}})}
+                    throwError={(hasError: boolean) =>
+                      hasError
+                        ? field.setMeta({ errorMap: { onChange: "Location Coordinates are invalid" } })
+                        : field.setMeta({ errorMap: {} })
+                    }
                     enableCopyCoordinates={false}
                     validationRequired={false}
                     sourceXCoordinate={longitude}
