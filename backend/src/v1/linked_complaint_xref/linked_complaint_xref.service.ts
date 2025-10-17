@@ -106,7 +106,7 @@ export class LinkedComplaintXrefService {
         parent: isParent,
         link_type: item.link_type,
         agency: item.complaint.owned_by_agency_code_ref || null,
-        complaintType: complaintType || null,
+        type: complaintType || null,
         complaintTypeDescription: item.complaint.complaint_type_code.long_description,
         species: item.hwcr_complaint?.species_code?.short_description,
         natureOfComplaint: item.hwcr_complaint?.hwcr_complaint_nature_code?.long_description,

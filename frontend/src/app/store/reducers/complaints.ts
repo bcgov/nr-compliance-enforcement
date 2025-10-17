@@ -31,6 +31,7 @@ import {
   getStatusByStatusCode,
   getViolationByViolationCode,
   getGirTypeByGirTypeCode,
+  getIssueDescription,
 } from "@common/methods";
 import { Agency } from "@apptypes/app/code-tables/agency";
 import { ReportedBy } from "@apptypes/app/code-tables/reported-by";
@@ -1020,7 +1021,9 @@ export const selectComplaintDetails = createSelector(
     (state: RootState) => state.complaints.complaint,
     (state: RootState) => state.codeTables["area-codes"],
     (state: RootState) => state.codeTables.attractant,
+    (state: RootState) => state.codeTables["nature-of-complaint"],
     (state: RootState) => state.codeTables["gir-type"],
+    (state: RootState) => state.codeTables["violation"],
     (state: RootState) => state.codeTables["complaint-method-received-codes"],
     (_, complaintType: string) => complaintType,
   ],
@@ -1028,7 +1031,9 @@ export const selectComplaintDetails = createSelector(
     complaint,
     areaCodes,
     attractantCodeTable,
+    natureOfComplaintCodes,
     girTypeCodes,
+    violationCodes,
     complaintMethodReceivedCodes,
     complaintType,
   ): ComplaintDetails => {
@@ -1080,6 +1085,9 @@ export const selectComplaintDetails = createSelector(
         const { girType: girTypeCode } = complaint as GeneralIncidentComplaint;
         const girType = getGirTypeByGirTypeCode(girTypeCode, girTypeCodes);
         result = { ...result, girType, girTypeCode };
+      } else if (complaintType === "SECTOR") {
+        const issueType = getIssueDescription(complaint, natureOfComplaintCodes, girTypeCodes, violationCodes);
+        result = { ...result, issueType };
       }
 
       const org = areaCodes.find(({ area }) => area === areaCode);
@@ -1136,6 +1144,7 @@ export const selectComplaintHeader =
         personGuid: "",
         complaintAgency: "",
         parkAreaGuids: [],
+        type: "",
       };
 
       let officerAssigned = "Not Assigned";
@@ -1151,6 +1160,7 @@ export const selectComplaintHeader =
           ownedBy: complaintAgency,
           organization: { zone },
           parkGuid,
+          type,
         } = complaint as Complaint;
 
         const status = getStatusByStatusCode(statusCode, statusCodes);
@@ -1168,6 +1178,7 @@ export const selectComplaintHeader =
           personGuid,
           complaintAgency,
           parkAreaGuids,
+          type,
         };
 
         if (delegates && from(delegates).any(({ isActive, type }) => type === "ASSIGNEE" && isActive)) {
