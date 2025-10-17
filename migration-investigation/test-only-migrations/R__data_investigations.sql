@@ -18,7 +18,7 @@ values
     now (),
     'system',
     now (),
-    ST_GeomFromText('POINT(-123.1207 49.2827)')
+    ST_GeomFromText('POINT(-123.1207 49.2827)'),
     'INVESTIGATION1'
   ),
   (
@@ -28,7 +28,7 @@ values
     now (),
     'system',
     now (),
-    ST_GeomFromText('POINT(-123.3656 48.4284)')
+    ST_GeomFromText('POINT(-123.3656 48.4284)'),
     'INVESTIGATION2'
   ),
   (
@@ -38,7 +38,7 @@ values
     now (),
     'system',
     now (),
-    ST_GeomFromText('POINT(-123.3656 48.4284)')
+    ST_GeomFromText('POINT(-123.3656 48.4284)'),
     'INVESTIGATION3'
   ),
   (
@@ -48,6 +48,6 @@ values
     now (),
     'system',
     now (),
-    ST_GeomFromText('POINT(-123.3656 48.4284)')
+    ST_GeomFromText('POINT(-123.3656 48.4284)'),
     'INVESTIGATION4'
   ) on conflict do nothing;
