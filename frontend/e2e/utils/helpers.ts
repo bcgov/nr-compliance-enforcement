@@ -288,3 +288,22 @@ export async function selectTypeAheadItemByText(selectId: string, optionText: st
   await expect(await page.locator(".dropdown-item").getByText(optionText).first()).toBeVisible();
   await page.locator(".dropdown-item").getByText(optionText).first().click();
 }
+
+export async function isHeaderinViewPort(page: Page) {
+  // Assuming 'subject' is a Playwright element handle
+  const elementHandle = page.locator(".comp-details-header");
+
+  const rect = await elementHandle.boundingBox();
+  const viewportHeight = await page.evaluate(() => window.innerHeight);
+
+  // Assertions:
+  if (rect.top >= viewportHeight) {
+    throw new Error(`Expected element not to be below the visible scrolled area`);
+  }
+
+  if (rect.top < 0) {
+    throw new Error(`Expected element not to be above the visible scrolled area`);
+  }
+
+  return elementHandle;
+}
