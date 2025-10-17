@@ -79,7 +79,9 @@ export class CreateInvestigationInput {
   @Field(() => String)
   @IsOptional()
   locationAddress: string;
+
   @Field(() => String)
+  @IsOptional()
   name: string;
 }
 

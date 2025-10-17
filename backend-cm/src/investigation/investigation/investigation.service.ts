@@ -142,7 +142,7 @@ export class InvestigationService {
           investigation_status: input.investigationStatus,
           investigation_description: input.description,
           owned_by_agency_ref: input.leadAgency,
-            name: input.name,
+          name: input.name,
           investigation_opened_utc_timestamp: new Date(),
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
