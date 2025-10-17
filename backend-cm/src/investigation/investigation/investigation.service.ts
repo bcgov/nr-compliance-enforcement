@@ -234,6 +234,12 @@ export class InvestigationService {
         if (input.name !== undefined) {
           updateData.name = input.name;
         }
+        if (input.locationAddress !== undefined) {
+          updateData.location_address = input.locationAddress;
+        }
+        if (input.locationDescription !== undefined) {
+          updateData.location_description = input.locationDescription;
+        }
         // Perform the update
         updatedInvestigation = await tx.investigation.update({
           where: { investigation_guid: investigationGuid },

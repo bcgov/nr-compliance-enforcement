@@ -102,11 +102,11 @@ export class UpdateInvestigationInput {
 
   @Field(() => String)
   @IsOptional()
-  locationDescription: string;
+  locationDescription?: string;
 
   @Field(() => String)
   @IsOptional()
-  locationAddress: string;
+  locationAddress?: string;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
