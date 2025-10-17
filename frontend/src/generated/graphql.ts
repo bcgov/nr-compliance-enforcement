@@ -1262,6 +1262,12 @@ export type QuerycheckInvestigationNameExistsArgs = {
 };
 
 
+export type QuerycaseFilesByActivityIdsArgs = {
+  activityIdentifiers: Array<Scalars['String']['input']>;
+  activityType: Scalars['String']['input'];
+};
+
+
 export type QueryconfigurationCodesArgs = {
   configurationCode?: InputMaybe<Scalars['String']['input']>;
 };

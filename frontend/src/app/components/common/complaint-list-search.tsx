@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { generateApiParameters, get } from "@common/api";
-import { applyStatusClass } from "@common/methods";
+import { applyStatusClass, getIssueDescription } from "@common/methods";
 import config from "@/config";
 import { HintInputWrapper } from "@components/common/custom-hint";
 import { AddComplaintToCaseOption } from "@/app/components/modal/instances/add-complaint-to-case";
@@ -45,16 +45,6 @@ export const ComplaintListSearch: FC<Props> = ({
     return code.longDescription;
   };
 
-  const getIssueDescription = (complaint: any): string => {
-    const { type, issueType } = complaint;
-    const codeMap = {
-      HWCR: () => natureOfComplaints.find((item) => item.natureOfComplaint === issueType)?.longDescription,
-      GIR: () => girTypeCodes.find((item) => item.girType === issueType)?.longDescription,
-      ERS: () => violationCodes.find((item) => item.violation === issueType)?.longDescription,
-    };
-    return codeMap[type as keyof typeof codeMap]?.() || "";
-  };
-
   const handleComplaintSelect = async (selected: any[]) => {
     if (selected.length === 0) {
       setSelectedComplaint(null);
@@ -81,7 +71,7 @@ export const ComplaintListSearch: FC<Props> = ({
       );
     }
 
-    const issue = getIssueDescription(complaint);
+    const issue = getIssueDescription(complaint, natureOfComplaints, girTypeCodes, violationCodes);
     setHintText(isFocused ? `${complaint.id}, ${complaint.type || ""}, ${issue}` : "");
   };
 
@@ -139,7 +129,7 @@ export const ComplaintListSearch: FC<Props> = ({
               <div className={`badge ${applyStatusClass(option.status)}`}>{getStatusDescription(option.status)}</div>
             </div>
             <dt>
-              <small>{getIssueDescription(option)}</small>
+              <small>{getIssueDescription(option, natureOfComplaints, girTypeCodes, violationCodes)}</small>
             </dt>
           </>
         )}
