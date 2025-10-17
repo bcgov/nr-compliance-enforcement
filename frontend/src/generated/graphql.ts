@@ -276,23 +276,15 @@ export type CreateInvestigationBusinessInput = {
   name: Scalars['String']['input'];
 };
 
-export type CreateInvestigationBusinessInput = {
-  businessReference?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-};
-
 export type CreateInvestigationInput = {
   caseIdentifier: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
-<<<<<<< HEAD
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
-=======
   name: Scalars['String']['input'];
->>>>>>> release/2.10
 };
 
 export type CreateInvestigationPartyInput = {
@@ -1435,13 +1427,10 @@ export type UpdateInvestigationInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
-<<<<<<< HEAD
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
-=======
   name?: InputMaybe<Scalars['String']['input']>;
->>>>>>> release/2.10
 };
 
 export type UpdateNoteInput = {
