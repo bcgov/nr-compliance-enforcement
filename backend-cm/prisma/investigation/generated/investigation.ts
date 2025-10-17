@@ -36,7 +36,7 @@ export class investigation {
 
   @ApiPropertyOptional({ type: String })
   location_description?: string;
-  
+
   @ApiProperty({ type: String })
   name: string;
 

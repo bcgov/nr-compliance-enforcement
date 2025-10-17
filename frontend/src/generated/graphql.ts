@@ -575,6 +575,7 @@ export type InactionJustificationType = {
 
 export type Inspection = {
   __typename?: 'Inspection';
+  caseIdentifier?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   inspectionGuid?: Maybe<Scalars['String']['output']>;
   inspectionStatus?: Maybe<InspectionStatusCode>;
@@ -610,6 +611,7 @@ export type InspectionStatusCode = {
 
 export type Investigation = {
   __typename?: 'Investigation';
+  caseIdentifier?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
   investigationStatus?: Maybe<InvestigationStatusCode>;
@@ -1115,6 +1117,9 @@ export type Query = {
   caseFiles: Array<CaseFile>;
   caseFilesByActivityIds: Array<CaseFile>;
   caseLocationCodes: Array<Maybe<CaseLocationCode>>;
+  checkCaseNameExists: Scalars['Boolean']['output'];
+  checkInspectionNameExists: Scalars['Boolean']['output'];
+  checkInvestigationNameExists: Scalars['Boolean']['output'];
   configurationCodes: Array<Maybe<Configuration>>;
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
   dischargeCodes: Array<Maybe<DischargeCode>>;
@@ -1165,6 +1170,7 @@ export type Query = {
 
 export type QueryallCaseFilesByActivityIdArgs = {
   activityIdentifier: Scalars['String']['input'];
+  activityType: Scalars['String']['input'];
 };
 
 
@@ -1175,6 +1181,7 @@ export type QuerycaseFileArgs = {
 
 export type QuerycaseFileByActivityIdArgs = {
   activityIdentifier: Scalars['String']['input'];
+  activityType: Scalars['String']['input'];
 };
 
 
@@ -1185,7 +1192,27 @@ export type QuerycaseFilesArgs = {
 
 export type QuerycaseFilesByActivityIdsArgs = {
   activityIdentifiers: Array<Scalars['String']['input']>;
-  activityType: Scalars['String']['input'];
+};
+
+
+export type QuerycheckCaseNameExistsArgs = {
+  excludeCaseIdentifier?: InputMaybe<Scalars['String']['input']>;
+  leadAgency: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
+
+export type QuerycheckInspectionNameExistsArgs = {
+  excludeInspectionGuid?: InputMaybe<Scalars['String']['input']>;
+  leadAgency: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
+
+export type QuerycheckInvestigationNameExistsArgs = {
+  excludeInvestigationGuid?: InputMaybe<Scalars['String']['input']>;
+  leadAgency: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 

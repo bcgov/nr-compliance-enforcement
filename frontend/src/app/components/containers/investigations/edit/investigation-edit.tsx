@@ -409,7 +409,7 @@ const InvestigationEdit: FC = () => {
                       if (yCoordinate && xCoordinate && yCoordinate !== "" && xCoordinate !== "") {
                         field.handleChange({
                           type: "Point",
-                          coordinates: [parseFloat(xCoordinate), parseFloat(yCoordinate)],
+                          coordinates: [Number.parseFloat(xCoordinate), Number.parseFloat(yCoordinate)],
                         });
                       } else {
                         field.handleChange(null);
