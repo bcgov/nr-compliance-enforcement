@@ -249,7 +249,7 @@ bitnami-pg:
   image:
     registry: ghcr.io
     repository: bcgov/nr-containers/bitnami/postgresql
-    tag: 15.7.0
+    tag: 15.10.0
   auth:
     existingSecret: "{{ .Release.Name }}-database"
     username: "nr-compliance-enforcement"
@@ -406,7 +406,7 @@ metabase-pg:
   image:
     registry: ghcr.io
     repository: bcgov/nr-containers/bitnami/postgresql
-    tag: 15.8.0
+    tag: 15.10.0
   auth:
     existingSecret: "{{ .Release.Name }}-metabase"
     username: "postgres"
