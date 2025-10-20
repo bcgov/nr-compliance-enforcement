@@ -37,6 +37,9 @@ const GET_INVESTIGATION = gql`
         }
       }
       leadAgency
+      locationAddress
+      locationDescription
+      locationGeometry
     }
     caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier

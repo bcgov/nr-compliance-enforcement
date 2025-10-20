@@ -31,6 +31,12 @@ export class investigation {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiPropertyOptional({ type: String })
+  location_address?: string;
+
+  @ApiPropertyOptional({ type: String })
+  location_description?: string;
+
   @ApiProperty({ type: String })
   name: string;
 

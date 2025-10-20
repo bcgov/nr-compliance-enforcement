@@ -25,11 +25,11 @@ export const InvestigationEditHeader: FC<InvestigationEditHeaderProps> = ({
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item comp-nav-item-name-inverted">
-                <Link to="/cases">Cases</Link>
+                <Link to="/investigations">Investigations</Link>
               </li>
               {caseIdentifier && (
                 <li className="breadcrumb-item comp-nav-item-name-inverted">
-                  <Link to={`/case/${caseIdentifier}`}>{caseIdentifier}</Link>
+                  <Link to={`/investigations/${investigationGuid}`}>{investigationGuid}</Link>
                 </li>
               )}
               <li
@@ -47,7 +47,7 @@ export const InvestigationEditHeader: FC<InvestigationEditHeaderProps> = ({
           <div className="comp-details-title-info">
             <h1 className="comp-box-complaint-id">
               {isEditMode && investigationGuid ? (
-                <span>Investigatoin #{investigationGuid}</span>
+                <span>Investigation #{investigationGuid}</span>
               ) : (
                 <span>{isEditMode ? "Edit investigation" : "Create investigation"} </span>
               )}
@@ -56,7 +56,7 @@ export const InvestigationEditHeader: FC<InvestigationEditHeaderProps> = ({
           <div className="comp-header-actions">
             <Button
               id="details-screen-cancel-edit-button-top"
-              title={isEditMode ? "Cancel Edit Investigation" : "Cancel Create Investigation"}
+              title={isEditMode ? "Cancel edit Investigation" : "Cancel create investigation"}
               variant="outline-light"
               onClick={cancelButtonClick}
             >
