@@ -1,4 +1,4 @@
-import RecordsList from "@/app/components/common/records-list";
+import PartiesList from "@/app/components/common/parties-list";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_PARTY } from "@/app/types/modal/modal-types";
@@ -6,12 +6,12 @@ import { Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC } from "react";
 import { Button } from "react-bootstrap";
 
-interface InvestigationRecordsProps {
+interface InvestigationPartiesProps {
   investigationGuid: string;
   investigationData?: Investigation;
 }
 
-export const InvestigationSummary: FC<InvestigationRecordsProps> = ({ investigationGuid, investigationData }) => {
+export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigationGuid, investigationData }) => {
   const dispatch = useAppDispatch();
 
   const handleAddParty = () => {
@@ -57,7 +57,7 @@ export const InvestigationSummary: FC<InvestigationRecordsProps> = ({ investigat
 
       <div className="row">
         <div className="col-4">
-          <RecordsList
+          <PartiesList
             companies={businessParties as InvestigationParty[]}
             people={peopleParties as InvestigationParty[]}
           />
