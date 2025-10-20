@@ -23,7 +23,7 @@ import { HwcrOutcomeActionedByCodeModule } from "./complaint_outcome/hwcr_outcom
 import { ConfigurationModule } from "./complaint_outcome/configuration/configuration.module";
 import { ComplaintOutcomeModule } from "./complaint_outcome/complaint_outcome/complaint_outcome.module";
 import { InactionJustificationTypeModule } from "./complaint_outcome/inaction_justification_type/inaction_justification_type.module";
-import { DateScalar, PointScalar } from "./common/custom_scalars";
+import { DateScalar, JSONObjectScalar, PointScalar } from "./common/custom_scalars";
 import { HWCRPreventionActionModule } from "./complaint_outcome/hwcr_prevention_action/hwcr_prevention_action.module";
 import { HWCRAssessmentActionModule } from "./complaint_outcome/hwcr_assessment_action/hwcr_assessment_action.module";
 import { ScheduleCodeModule } from "./complaint_outcome/code-tables/schedule_code/schedule_code.module";
@@ -53,6 +53,8 @@ import { InspectionModule } from "./inspection/inspection/inspection.module";
 import { PrismaModuleInspection } from "./prisma/inspection/prisma.inspection.module";
 import { PartyTypeCodeModule } from "./shared/party_type_code/party_type_code.module";
 import { CaseActivityModule } from "src/shared/case_activity/case_activity.module";
+import { EventModule } from "./shared/event/event.module";
+import { EventPublisherModule } from "./event_publisher/event_publisher.module";
 import { InvestigationPartyModule } from "./investigation/investigation_party/investigation_party.module";
 
 @Module({
@@ -107,10 +109,12 @@ import { InvestigationPartyModule } from "./investigation/investigation_party/in
     InspectionModule,
     PartyTypeCodeModule,
     CaseActivityModule,
+    EventModule,
+    EventPublisherModule,
     InvestigationPartyModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ImportCommand, DateScalar, PointScalar],
+  providers: [AppService, ImportCommand, DateScalar, JSONObjectScalar, PointScalar],
 })
 export class AppModule {
   constructor(@InjectMapper() private readonly mapper: Mapper) {}

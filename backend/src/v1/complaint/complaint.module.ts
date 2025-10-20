@@ -35,6 +35,7 @@ import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xr
 import { CompMthdRecvCdAgcyCdXrefModule } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.module";
 import { LinkedComplaintXrefModule } from "../linked_complaint_xref/linked_complaint_xref.module";
 import { OfficerModule } from "../officer/officer.module";
+import { EventPublisherModule } from "src/v1/event_publisher/event_publisher.module";
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { OfficerModule } from "../officer/officer.module";
     CompMthdRecvCdAgcyCdXrefModule,
     LinkedComplaintXrefModule,
     OfficerModule,
+    EventPublisherModule,
   ],
   controllers: [ComplaintController],
   providers: [ComplaintService, CompMthdRecvCdAgcyCdXrefService],

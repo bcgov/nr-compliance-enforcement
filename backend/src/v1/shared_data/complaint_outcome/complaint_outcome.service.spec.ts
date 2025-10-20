@@ -18,6 +18,7 @@ import { MockWildlifeConflictComplaintRepository } from "../../../../test/mocks/
 import { ComplaintService } from "../../complaint/complaint.service";
 import { CodeTableService } from "../../code-table/code-table.service";
 import { PersonComplaintXrefService } from "../../person_complaint_xref/person_complaint_xref.service";
+import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 import { AttractantHwcrXrefService } from "../../attractant_hwcr_xref/attractant_hwcr_xref.service";
 import { AttractantCode } from "../../attractant_code/entities/attractant_code.entity";
 import {
@@ -227,6 +228,10 @@ describe("Testing: Complaint Outcome Service", () => {
         ComplaintUpdatesService,
         ComplaintOutcomeService,
         ComplaintService,
+        {
+          provide: EventPublisherService,
+          useValue: {},
+        },
         CodeTableService,
         OfficerService,
         LinkedComplaintXrefService,

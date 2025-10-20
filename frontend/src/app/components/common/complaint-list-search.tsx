@@ -11,12 +11,14 @@ import { generateApiParameters, get } from "@common/api";
 import { applyStatusClass, getIssueDescription } from "@common/methods";
 import config from "@/config";
 import { HintInputWrapper } from "@components/common/custom-hint";
+import { AddComplaintToCaseOption } from "@/app/components/modal/instances/add-complaint-to-case";
 
 type Props = {
   id?: string;
-  onChange?: (selected: Option | null) => void;
+  onChange?: (selected: Option | AddComplaintToCaseOption | null) => void;
   errorMessage?: string;
   value?: Option | null;
+  includeComplaintType?: boolean;
 };
 
 export const ComplaintListSearch: FC<Props> = ({
@@ -24,6 +26,7 @@ export const ComplaintListSearch: FC<Props> = ({
   onChange = () => {},
   errorMessage = "",
   value = null,
+  includeComplaintType = false,
 }) => {
   const dispatch = useAppDispatch();
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
@@ -52,9 +55,21 @@ export const ComplaintListSearch: FC<Props> = ({
 
     const complaint = selected[0];
     setSelectedComplaint(complaint);
-    onChange(
-      selected.length > 0 ? ({ label: selected[0].id as string, value: selected[0].id as string } as Option) : null,
-    );
+    if (includeComplaintType) {
+      onChange(
+        selected.length > 0
+          ? ({
+              label: selected[0].id as string,
+              value: selected[0].id as string,
+              complaintType: selected[0].type,
+            } as AddComplaintToCaseOption)
+          : null,
+      );
+    } else {
+      onChange(
+        selected.length > 0 ? ({ label: selected[0].id as string, value: selected[0].id as string } as Option) : null,
+      );
+    }
 
     const issue = getIssueDescription(complaint, natureOfComplaints, girTypeCodes, violationCodes);
     setHintText(isFocused ? `${complaint.id}, ${complaint.type || ""}, ${issue}` : "");

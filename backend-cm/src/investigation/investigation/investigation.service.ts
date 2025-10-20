@@ -16,6 +16,8 @@ import { PaginationUtility } from "src/common/pagination.utility";
 import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { CaseFileService } from "src/shared/case_file/case_file.service";
 import { Point } from "src/common/custom_scalars";
+import { EventPublisherService } from "src/event_publisher/event_publisher.service";
+import { CaseActivityService } from "src/shared/case_activity/case_activity.service";
 
 @Injectable()
 export class InvestigationService {
@@ -26,6 +28,8 @@ export class InvestigationService {
     private readonly shared: SharedPrismaService,
     private readonly paginationUtility: PaginationUtility,
     private readonly caseFileService: CaseFileService,
+    private readonly eventPublisher: EventPublisherService,
+    private readonly caseActivityService: CaseActivityService,
   ) {}
 
   private readonly logger = new Logger(InvestigationService.name);
@@ -139,16 +143,16 @@ export class InvestigationService {
       try {
         investigation = await this.prisma.investigation.create({
           data: {
-          investigation_status: input.investigationStatus,
-          investigation_description: input.description,
-          owned_by_agency_ref: input.leadAgency,
-          name: input.name,
-          investigation_opened_utc_timestamp: new Date(),
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
+            investigation_status: input.investigationStatus,
+            investigation_description: input.description,
+            owned_by_agency_ref: input.leadAgency,
+            name: input.name,
+            investigation_opened_utc_timestamp: new Date(),
+            create_user_id: this.user.getIdirUsername(),
+            create_utc_timestamp: new Date(),
           },
           include: {
-          investigation_status_code: true,
+            investigation_status_code: true,
           },
         });
       } catch (error) {
@@ -160,14 +164,10 @@ export class InvestigationService {
     await this.getLocationGeometryPoint(investigation as investigation);
     // Try to create case activity record, and if it fails, delete the investigation
     try {
-      await this.shared.case_activity.create({
-        data: {
-          case_file_guid: input.caseIdentifier,
-          activity_type: "INVSTGTN",
-          activity_identifier_ref: investigation.investigation_guid,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-        },
+      await this.caseActivityService.create({
+        caseFileGuid: input.caseIdentifier,
+        activityType: "INVSTGTN",
+        activityIdentifier: investigation.investigation_guid,
       });
     } catch (activityError) {
       // Attempt to delete the investigation that was just created since the case activity creation failed
@@ -271,6 +271,13 @@ export class InvestigationService {
         throw error;
       }
     });
+    if (input.investigationStatus !== undefined) {
+      this.eventPublisher.publishActivityStatusChangeEvents(
+        "INVESTIGATION",
+        investigationGuid,
+        input.investigationStatus,
+      );
+    }
     await this.getLocationGeometryPoint(updatedInvestigation as investigation);
     try {
       return this.mapper.map<investigation, Investigation>(
@@ -391,13 +398,16 @@ export class InvestigationService {
         FROM investigation
         WHERE investigation_guid = '${investigation.investigation_guid}'::uuid
       `;
-      result = (await this.prisma.$queryRawUnsafe(query));
+      result = await this.prisma.$queryRawUnsafe(query);
       if (result.length === 0) {
         throw new Error(`Investigation with guid ${investigation.investigation_guid} not found.`);
       }
       investigation.location_geometry_point = result[0].location_geometry_point;
     } catch (error) {
-      this.logger.error(`Error fetching location geometry point for investigation with guid ${investigation.investigation_guid}:`, error);
+      this.logger.error(
+        `Error fetching location geometry point for investigation with guid ${investigation.investigation_guid}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -405,7 +415,7 @@ export class InvestigationService {
   async updateLocationGeometryPoint(tx: any, investigationGuid: string, point: Point): Promise<void> {
     let point_data = null;
     if (point) {
-      point_data = `public.ST_GeomFromGeoJSON('${JSON.stringify(point)}')`
+      point_data = `public.ST_GeomFromGeoJSON('${JSON.stringify(point)}')`;
     }
     try {
       const query = `
@@ -419,7 +429,10 @@ export class InvestigationService {
         await this.prisma.$executeRawUnsafe(query);
       }
     } catch (error) {
-      this.logger.error(`Error updating location geometry point for investigation with guid ${investigationGuid}:`, error);
+      this.logger.error(
+        `Error updating location geometry point for investigation with guid ${investigationGuid}:`,
+        error,
+      );
       throw error;
     }
   }
