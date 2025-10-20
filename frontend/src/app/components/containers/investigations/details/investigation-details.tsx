@@ -6,7 +6,7 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Investigation } from "@/generated/graphql";
 import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
 import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
-import InvestigationRecords from "@/app/components/containers/investigations/details/investigation-records";
+import InvestigationParties from "@/app/components/containers/investigations/details/investigation-parties";
 import { InvestigationContraventions } from "@/app/components/containers/investigations/details/investigation-contraventions";
 import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
 import { InvestigationAdministration } from "@/app/components/containers/investigations/details/investigation-administration";
@@ -80,9 +80,9 @@ export const InvestigationDetails: FC = () => {
             caseName={caseName ?? ""}
           />
         );
-      case "records":
+      case "parties":
         return (
-          <InvestigationRecords
+          <InvestigationParties
             investigationData={investigationData}
             investigationGuid={investigationGuid}
           />
