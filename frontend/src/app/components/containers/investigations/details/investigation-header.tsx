@@ -1,6 +1,6 @@
 import { FC } from "react";
-import { Link } from "react-router-dom";
-import { Dropdown } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import { Button, Dropdown } from "react-bootstrap";
 import { Investigation } from "@/generated/graphql";
 import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
@@ -12,6 +12,8 @@ interface InvestigationHeaderProps {
 }
 
 export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigation }) => {
+  const navigate = useNavigate();
+
   const investigationGuid = investigation?.investigationGuid;
   const investigationId = investigation?.name || investigation?.investigationGuid || "Unknown";
 
@@ -23,6 +25,9 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
   const lastUpdated = investigation?.openedTimestamp ? new Date(investigation.openedTimestamp).toString() : undefined;
   const officerAssigned = "Not Assigned";
   const createdBy = "Unknown";
+  const editButtonClick = () => {
+    navigate(`/investigation/${investigationGuid}/edit`);
+  };
 
   return (
     <>
@@ -104,7 +109,24 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
           </div>
         </div>
       </div>
+
+
       <section className="comp-details-body comp-container">
+        <div className="comp-details-section-header">
+          <div>
+          </div>
+          <div className="comp-details-section-header-actions mb-0 pb-3">
+          <Button
+            variant="outline-primary"
+            size="sm"
+            id="details-screen-edit-button"
+            onClick={editButtonClick}
+          >
+            <i className="bi bi-pencil"></i>
+            <span>Edit investigation</span>
+          </Button>
+          </div>
+        </div>
         <div className="comp-header-status-container">
           <div className="comp-details-status">
             <dl>

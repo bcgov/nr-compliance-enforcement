@@ -11,7 +11,7 @@ import utmObj from "utm-latlng";
 
 type Props = {
   id?: string;
-  mode: "complaint" | "equipment";
+  mode: "complaint" | "equipment" | "investigation";
   utmZones?: Array<Option>;
   initXCoordinate?: string;
   initYCoordinate?: string;
@@ -76,6 +76,7 @@ export const CompCoordinateInput: FC<Props> = ({
       }
       const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
       let hasErrors = false;
+
       if (!regex.exec(latitude)) {
         setYCoordinateErrorMsg("Latitude value must be a number");
         hasErrors = true;
@@ -85,7 +86,7 @@ export const CompCoordinateInput: FC<Props> = ({
         hasErrors = true;
       }
       if (latitude && !Number.isNaN(latitude)) {
-        const item = parseFloat(latitude);
+        const item = Number.parseFloat(latitude);
         if (item > bcBoundaries.maxLatitude || item < bcBoundaries.minLatitude) {
           setYCoordinateErrorMsg(
             `Latitude value must be between ${bcBoundaries.maxLatitude} and ${bcBoundaries.minLatitude} degrees`,
@@ -94,7 +95,7 @@ export const CompCoordinateInput: FC<Props> = ({
         }
       }
       if (longitude && !Number.isNaN(longitude) && longitude.trim() !== "-") {
-        const item = parseFloat(longitude);
+        const item = Number.parseFloat(longitude);
         if (item > bcBoundaries.maxLongitude || item < bcBoundaries.minLongitude) {
           setXCoordinateErrorMsg(
             `Longitude value must be between ${bcBoundaries.minLongitude} and ${bcBoundaries.maxLongitude} degrees`,
@@ -153,7 +154,7 @@ export const CompCoordinateInput: FC<Props> = ({
           setErrorMsg("Value must be a number");
           return true;
         }
-        const numValue = parseInt(value);
+        const numValue = Number.parseInt(value);
         if (numValue > max || numValue < min) {
           setErrorMsg(errorMsg);
           return true;
@@ -194,25 +195,25 @@ export const CompCoordinateInput: FC<Props> = ({
 
       if (!hasErrors && easting && !Number.isNaN(easting) && northing && !Number.isNaN(northing)) {
         const latLongCoordinates = utm.convertUtmToLatLng(
-          parseFloat(easting),
-          parseFloat(northing),
-          parseInt(zone),
+          Number.parseFloat(easting),
+          Number.parseFloat(northing),
+          Number.parseInt(zone),
           "N",
         );
 
         if (typeof latLongCoordinates === "string") {
-          throw new Error(`UTM conversion failed: ${latLongCoordinates}`);
+          throw new TypeError(`UTM conversion failed: ${latLongCoordinates}`);
         }
 
         lat = latLongCoordinates.lat.toFixed(7);
         lng = latLongCoordinates.lng.toFixed(7);
 
-        if (parseFloat(lat) < bcBoundaries.minLatitude || parseFloat(lat) > bcBoundaries.maxLatitude) {
+        if (Number.parseFloat(lat) < bcBoundaries.minLatitude || Number.parseFloat(lat) > bcBoundaries.maxLatitude) {
           setNorthingCoordinateErrorMsg(northingErrorText);
           hasErrors = true;
         }
 
-        if (parseFloat(lng) < bcBoundaries.minLongitude || parseFloat(lng) > bcBoundaries.maxLongitude) {
+        if (Number.parseFloat(lng) < bcBoundaries.minLongitude || Number.parseFloat(lng) > bcBoundaries.maxLongitude) {
           setEastingCoordinateErrorMsg(eastingErrorText);
           hasErrors = true;
         } else {
@@ -255,14 +256,14 @@ export const CompCoordinateInput: FC<Props> = ({
     if (eastingCoordinate && northingCoordinate && zoneCoordinate?.value) {
       let utm = new utmObj();
       const latLongCoordinates = utm.convertUtmToLatLng(
-        parseFloat(eastingCoordinate),
-        parseFloat(northingCoordinate),
-        parseInt(zoneCoordinate?.value),
+        Number.parseFloat(eastingCoordinate),
+        Number.parseFloat(northingCoordinate),
+        Number.parseInt(zoneCoordinate?.value),
         "N",
       );
 
       if (typeof latLongCoordinates === "string") {
-        throw new Error(`UTM conversion failed: ${latLongCoordinates}`);
+        throw new TypeError(`UTM conversion failed: ${latLongCoordinates}`);
       }
 
       const lat = formatLatLongCoordinate(latLongCoordinates.lat.toString());
@@ -277,10 +278,10 @@ export const CompCoordinateInput: FC<Props> = ({
 
   const updateUtmFields = (lat: string, lng: string): { easting: string; northing: string; zone: string } => {
     let utm = new utmObj();
-    const utmCoordinates = (utm as any).convertLatLngToUtm(parseFloat(lat), parseFloat(lng), 3);
+    const utmCoordinates = (utm as any).convertLatLngToUtm(Number.parseFloat(lat), Number.parseFloat(lng), 3);
 
     if (typeof utmCoordinates === "string") {
-      throw new Error(`UTM conversion failed: ${utmCoordinates}`);
+      throw new TypeError(`UTM conversion failed: ${utmCoordinates}`);
     }
 
     setEastingCoordinate(utmCoordinates.Easting.toFixed(0));
@@ -368,13 +369,27 @@ export const CompCoordinateInput: FC<Props> = ({
 
   const openMapModal = () => {
     document.body.click();
+
+    const getModalTitle = () => {
+      switch (mode) {
+        case "complaint":
+          return "Select location from map";
+        case "equipment":
+          return "Select equipment from map";
+        case "investigation":
+          return "Select investigation location from map";
+        default:
+          return "Select location from map";
+      }
+    };
+
     dispatch(
       openModal({
         modalSize: "lg",
         modalType: MAP_MODAL,
         data: {
           mode: mode,
-          title: mode === "complaint" ? "Select location from map" : "Select equipment from map",
+          title: getModalTitle(),
           complaintCoords:
             sourceXCoordinate !== "0" && sourceYCoordinate !== "0"
               ? [Number(sourceXCoordinate), Number(sourceYCoordinate)]
