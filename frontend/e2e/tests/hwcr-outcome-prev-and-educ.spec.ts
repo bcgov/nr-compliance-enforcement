@@ -17,7 +17,7 @@ test.describe("HWCR Outcome Prevention and Education", () => {
   test("it requires valid user input", async ({ page }) => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-030330", true, page);
 
-    // Delete a prevention and education if it exists
+    // Delete any prevention and education records if they exists
     const $preventionAndEducation = page.locator("#outcome-preventions");
     while ((await $preventionAndEducation.locator("#prevention-delete-button").count()) > 0) {
       const initialCount = await $preventionAndEducation.locator("#prevention-delete-button").count();
