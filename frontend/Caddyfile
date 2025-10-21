@@ -81,7 +81,7 @@
   }
 
   handle /ready {
-    try_files /.ready /not-ready.html
+    try_files ~/app/dist/.ready /not-ready.html
     file_server
   }
 
