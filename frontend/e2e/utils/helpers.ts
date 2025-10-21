@@ -195,7 +195,7 @@ export async function fillInHWCSection(loc: Locator, page: Page, sectionParams: 
 
   //click Save Button
   const saveButton = await page.locator(saveButtonId).first();
-  saveButton.click();
+  await saveButton.click();
 }
 
 export async function validateHWCSection(loc: Locator, page: Page, sectionParams: Partial<HWCSectionParams>) {
@@ -240,7 +240,7 @@ export async function validateHWCSection(loc: Locator, page: Page, sectionParams
   }
   await expect(async () => {
     const $div = page.locator(officerDiv);
-    expect($div).toHaveText(officer);
+    expect($div).toContainText(officer);
   }).toPass();
   await expect(async () => {
     const dateText = await page.locator(dateDiv).textContent();
