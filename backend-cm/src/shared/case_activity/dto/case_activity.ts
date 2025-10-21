@@ -2,6 +2,7 @@ import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import { case_activity } from "../../../../prisma/shared/generated/case_activity";
 import { CaseActivityTypeCode } from "../../case_activity_type_code/dto/case_activity_type_code";
 import { Field, InputType } from "@nestjs/graphql";
+import { JSONObjectScalar } from "src/common/custom_scalars";
 
 export class CaseActivity {
   caseActivityGuid: string;
@@ -22,6 +23,11 @@ export class CaseActivityCreateInput {
 
   @Field(() => String)
   activityIdentifier: string;
+
+  @Field(() => JSONObjectScalar)
+  eventContent?: {
+    [key: string]: any;
+  };
 }
 
 export const mapPrismaCaseActivityToCaseActivity = (mapper: Mapper) => {

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { DocumentService } from "./document.service";
 import { ComplaintService } from "../complaint/complaint.service";
+import { EventPublisherService } from "../event_publisher/event_publisher.service";
 import { AutomapperModule, getMapperToken } from "@automapper/nestjs";
 import { createMapper } from "@automapper/core";
 import { pojos } from "@automapper/pojos";
@@ -224,6 +225,10 @@ describe("DocumentService", () => {
         },
         ComplaintUpdatesService,
         ComplaintService,
+        {
+          provide: EventPublisherService,
+          useValue: {},
+        },
         CodeTableService,
         {
           provide: PersonComplaintXrefService,
