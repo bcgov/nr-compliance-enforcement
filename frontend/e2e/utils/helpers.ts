@@ -89,9 +89,10 @@ export async function assignSelfToComplaint(page: Page) {
 
 export async function hasErrorMessage(page: Page, inputs: Array<string>, toastText?: string) {
   //validate all the inputs
-  inputs.forEach(async (input) => {
-    await expect(page.locator(input).locator(".error-message")).toBeVisible();
-  });
+  for (const input of inputs) {
+    const errorLocator = page.locator(input).locator(".error-message");
+    await expect(errorLocator).toContainText(/.+/); // look for any error - we don't care what it is
+  }
 
   //validate the toast
   if (toastText) {

@@ -17,7 +17,6 @@ async function enterNote(page: Page, note: string) {
 // 4. Edits a note
 // 5. Deletes a note
 test.describe("HWCR Outcome Notes", () => {
-  //A function to try and reduce code duplication warnings
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
   test.describe.configure({ mode: "serial" }); //Ensure tests run in order
 
