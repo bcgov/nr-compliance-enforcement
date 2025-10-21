@@ -79,4 +79,13 @@
   handle /health {
     respond "OK"
   }
+
+  handle /ready {
+    try_files /.ready /not-ready.html
+    file_server
+  }
+
+  handle /not-ready.html {
+    respond "NOT READY" 503
+  }
 }
