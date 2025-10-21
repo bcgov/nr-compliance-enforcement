@@ -89,6 +89,19 @@ export class PersonComplaintXrefService {
     });
   }
 
+  async findAllByComplaint(complaint_identifier: any): Promise<PersonComplaintXref[]> {
+    return this.personComplaintXrefRepository.find({
+      where: {
+        complaint_identifier: complaint_identifier,
+        person_complaint_xref_code: "ASSIGNEE" as any,
+      },
+      relations: {
+        person_guid: true,
+        complaint_identifier: true,
+      },
+    });
+  }
+
   async update(person_complaint_xref_guid: any, updatePersonComplaintXrefDto): Promise<PersonComplaintXref> {
     await this.personComplaintXrefRepository.update(person_complaint_xref_guid, updatePersonComplaintXrefDto);
     return this.findOne(person_complaint_xref_guid);
@@ -131,9 +144,16 @@ export class PersonComplaintXrefService {
     this.logger.debug(`Assigning Complaint ${complaintIdentifier}`);
     let newPersonComplaintXref: PersonComplaintXref;
     let unassignedPersonComplaintXref: PersonComplaintXref;
+    let allAssignments: PersonComplaintXref[];
+    let hasHadAssignmentBefore = false;
     let previouslyUnassigned = true;
 
     try {
+      // check if this complaint has ever had an officer assigned before
+      allAssignments = await this.findAllByComplaint(complaintIdentifier);
+      if (allAssignments && allAssignments.length > 0) {
+        hasHadAssignmentBefore = true;
+      }
       // unassign complaint if it's already assigned to an officer
       unassignedPersonComplaintXref = await this.findAssignedByComplaint(complaintIdentifier);
       if (unassignedPersonComplaintXref) {
@@ -154,7 +174,7 @@ export class PersonComplaintXrefService {
       await queryRunner.commitTransaction();
       this.logger.debug(`Successfully assigned person to complaint ${complaintIdentifier}`);
 
-      if (previouslyUnassigned) {
+      if (previouslyUnassigned && !hasHadAssignmentBefore) {
         await this.updateWebEOC(complaintIdentifier);
       }
     } catch (err) {
@@ -184,9 +204,16 @@ export class PersonComplaintXrefService {
     this.logger.debug(`Assigning Complaint ${complaintIdentifier}`);
     let newPersonComplaintXref: PersonComplaintXref;
     let unassignedPersonComplaintXref: PersonComplaintXref;
+    let allAssignments: PersonComplaintXref[];
+    let hasHadAssignmentBefore = false;
     let previouslyUnassigned = true;
 
     try {
+      // check if this complaint has ever had an officer assigned before
+      allAssignments = await this.findAllByComplaint(complaintIdentifier);
+      if (allAssignments && allAssignments.length > 0) {
+        hasHadAssignmentBefore = true;
+      }
       // unassign complaint if it's already assigned to an officer
       unassignedPersonComplaintXref = await this.findAssignedByComplaint(complaintIdentifier);
       if (unassignedPersonComplaintXref) {
@@ -205,7 +232,7 @@ export class PersonComplaintXrefService {
       await this.updateComplaintLastUpdatedDate(complaintIdentifier, newPersonComplaintXref, queryRunner);
 
       //Update webEOC - Note session handling might be refactored in the future.
-      if (previouslyUnassigned) {
+      if (previouslyUnassigned && !hasHadAssignmentBefore) {
         await this.updateWebEOC(complaintIdentifier);
       }
     } catch (err) {
