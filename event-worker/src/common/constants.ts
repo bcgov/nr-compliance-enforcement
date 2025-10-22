@@ -10,10 +10,8 @@ export const STREAM_TOPICS = {
   COMPLAINT_REMOVED_FROM_CASE: `${eventsStreamName}.complaint.removed_from_case`,
   COMPLAINT_OPENED: `${eventsStreamName}.complaint.opened`,
   COMPLAINT_CLOSED: `${eventsStreamName}.complaint.closed`,
-  INVESTIGATION_OPENED: `${eventsStreamName}.investigation.opened`,
   INVESTIGATION_CLOSED: `${eventsStreamName}.investigation.closed`,
   INVESTIGATION_ADDED_TO_CASE: `${eventsStreamName}.investigation.added_to_case`,
-  INSPECTION_OPENED: `${eventsStreamName}.inspection.opened`,
   INSPECTION_CLOSED: `${eventsStreamName}.inspection.closed`,
   INSPECTION_ADDED_TO_CASE: `${eventsStreamName}.inspection.added_to_case`,
 };

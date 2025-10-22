@@ -26,10 +26,10 @@ model investigation {
   create_utc_timestamp               DateTime                     @db.Timestamp(6)
   update_user_id                     String?                      @db.VarChar(32)
   update_utc_timestamp               DateTime?                    @db.Timestamp(6)
+  name                               String                       @default("") @db.VarChar(100)
   location_geometry_point            Unsupported("geometry")?
   location_address                   String?                      @db.VarChar(120)
   location_description               String?                      @db.VarChar(4000)
-  name                               String                       @default("") @db.VarChar(100)
   investigation_status_code          investigation_status_code    @relation(fields: [investigation_status], references: [investigation_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_investigation__investigation_status")
   investigation_party                investigation_party[]
   officer_investigation_xref         officer_investigation_xref[]
