@@ -101,7 +101,7 @@ export async function hasErrorMessage(page: Page, inputs: Array<string>, toastTe
   }
 }
 
-export async function typeAndTriggerChange(locatorValue, value, page: Page) {
+export async function typeAndTriggerChange(locatorValue: string, value: string, page: Page) {
   const foundItems = await page.locator(locatorValue).count();
   if (foundItems) {
     await page.locator(locatorValue).fill(value);
