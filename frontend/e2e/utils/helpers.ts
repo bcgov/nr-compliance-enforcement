@@ -3,17 +3,17 @@ import { expect, Locator, Page } from "@playwright/test";
 export const slowExpect = expect.configure({ timeout: 30000 });
 
 export async function waitForSpinner(page: Page, timeBeforeContinuing: number = 6000) {
-  const foundSpinner = await Promise.race([
-    page
-      .locator(".comp-loader-overlay")
-      .waitFor()
-      .then(() => true),
-    page.waitForTimeout(timeBeforeContinuing).then(() => false),
-  ]).catch((error) => {
-    throw new Error(`An error occurred while executing timedWaitForSpinner`, error);
-  });
-  if (foundSpinner) {
-    await slowExpect(page.locator(".comp-loader-overlay")).not.toBeVisible();
+  // make sure the page is totally loaded first
+  await page.locator(".comp-app-container").waitFor();
+
+  const spinner = page.locator(".comp-loader-overlay");
+
+  // Check if spinner becomes visible within timeout
+  const appeared = await spinner.isVisible({ timeout: timeBeforeContinuing }).catch(() => false);
+
+  if (appeared) {
+    // Now wait for it to disappear — this will automatically retry
+    await slowExpect(spinner).not.toBeVisible();
   }
 }
 
@@ -200,6 +200,9 @@ export async function fillInHWCSection(loc: Locator, page: Page, sectionParams: 
 }
 
 export async function validateHWCSection(loc: Locator, page: Page, sectionParams: Partial<HWCSectionParams>) {
+  //use the locator if provided
+  const testSection = loc ?? page;
+
   const { section, actionRequired, checkboxes, justification, equipmentType, officer, date, toastText } = sectionParams;
   let checkboxDiv = "#prev-educ-checkbox-div";
   let officerDiv = "#prev-educ-outcome-officer-div";
@@ -215,36 +218,36 @@ export async function validateHWCSection(loc: Locator, page: Page, sectionParams
   }
 
   if (section === "ASSESSMENT" && actionRequired) {
-    await expect(await page.locator("#action-required-div", { hasText: actionRequired }).first()).toBeVisible();
+    await expect(await testSection.locator("#action-required-div", { hasText: actionRequired }).first()).toBeVisible();
 
     if (actionRequired === "Yes") {
       //Verify Fields exist
       for (let checkbox of checkboxes) {
-        await expect(await page.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible();
+        await expect(await testSection.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible();
       }
     }
   } else if (checkboxes) {
     for (let checkbox of checkboxes) {
-      await expect(await page.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible;
+      await expect(await testSection.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible;
     }
   }
 
   if (justification) {
-    await expect(await page.locator("#justification-div", { hasText: justification }).first()).toBeVisible;
+    await expect(await testSection.locator("#justification-div", { hasText: justification }).first()).toBeVisible;
   }
 
   if (equipmentType) {
     await expect(async () => {
-      const $div = page.locator("#equipment-type-title");
+      const $div = testSection.locator("#equipment-type-title");
       expect($div).toHaveText(equipmentType);
     }).toPass();
   }
   await expect(async () => {
-    const $div = page.locator(officerDiv);
+    const $div = testSection.locator(officerDiv);
     expect($div).toContainText(officer);
   }).toPass();
   await expect(async () => {
-    const dateText = await page.locator(dateDiv).textContent();
+    const dateText = await testSection.locator(dateDiv).textContent();
     expect(dateText).toContain(date); //Don't know the month... could maybe make this a bit smarter but this is probably good enough.
   }).toPass();
 

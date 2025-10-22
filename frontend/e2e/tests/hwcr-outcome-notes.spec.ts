@@ -30,12 +30,20 @@ test.describe("HWCR Outcome Notes", () => {
       // Always select the *first* delete button
       await $notes.locator("#notes-delete-button").first().click();
 
-      // Confirm deletion in modal
       await page.locator(".modal-footer .btn-primary").click();
 
-      page.locator(".Toastify__toast-body", {
-        hasText: "Note deleted",
-      });
+      // Confirm deletion in modal
+      await expect(
+        page.locator(".Toastify__toast-body", {
+          hasText: "Note deleted",
+        }),
+      ).toBeVisible();
+
+      await expect(
+        page.locator(".Toastify__toast-body", {
+          hasText: "Note deleted",
+        }),
+      ).toBeHidden({ timeout: 10000 });
     }
 
     // click Add Button

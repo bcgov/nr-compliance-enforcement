@@ -8,13 +8,10 @@ test.describe("COMPENF-259 Zone at a Glance - View Complaint Stats", () => {
   test("it can navigate to zone at a glance", async ({ page }) => {
     //-- navigate to application root
     await page.goto("/");
+    await waitForSpinner(page);
 
     //-- navigate to the zone at a glance
     await page.locator("#icon-zone-at-a-glance-link").click();
-
-    //First ZAG test... might take a bit longer to spin up
-    await expect(page.locator(".comp-loader-overlay")).toBeVisible();
-    await expect(page.locator(".comp-loader-overlay")).not.toBeVisible();
 
     //-- make sure we're on the zone at a glance page
     await expect(

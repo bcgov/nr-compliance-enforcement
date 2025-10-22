@@ -20,19 +20,20 @@ async function fillInAssessmentSection(page: Page) {
   };
 
   // If assessment edit button exists, click it
-  const $assessments = await page.locator("#outcome-assessments");
+  const $assessments = page.locator("#outcome-assessments");
   if (await $assessments.locator("#assessment-edit-button").count()) {
     sectionParams.toastText = "Assessment has been updated";
     await $assessments.locator("#assessment-edit-button").first().click();
   } else if (await $assessments.locator("#outcome-report-add-assessment").count()) {
     await $assessments.locator("#outcome-report-add-assessment").click();
   }
-  const $assessment = await page.locator(".comp-outcome-report-complaint-assessment");
+  const $assessment = page.locator(".comp-outcome-report-complaint-assessment");
   if (await $assessment.locator("#outcome-save-button").count()) {
     await fillInHWCSection($assessment, page, sectionParams);
     sectionParams.checkboxes = ["Sighting"];
-    await validateHWCSection($assessment, page, sectionParams);
   }
+  const $completedAssessment = page.locator("#outcome-assessment").first();
+  await validateHWCSection($completedAssessment, page, sectionParams);
 }
 
 async function enterReferenceNumber(page, number: string, shouldSave: boolean) {
