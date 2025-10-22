@@ -137,8 +137,8 @@ export async function enterDateTimeInDatePicker(
 export async function verifyMapMarkerExists(existIndicator: boolean, page: Page) {
   await expect(page.locator(".leaflet-container")).toBeVisible();
   if (existIndicator) {
-    const icon = await page.locator(".leaflet-marker-icon");
-    expect(icon).toBeVisible();
+    const icon = page.locator(".leaflet-marker-icon svg");
+    await expect(icon).toBeVisible();
   } else {
     expect(page.locator(".leaflet-marker-icon")).not.toBeVisible();
   }
