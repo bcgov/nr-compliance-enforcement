@@ -77,7 +77,7 @@
 
 :3001 {
   # Set the root directory for this block to where .ready is created after the build completes
-  root * /srv/app/dist
+  root * /app/dist
 
   handle /health {
     respond "OK"
