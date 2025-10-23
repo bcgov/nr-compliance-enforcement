@@ -109,8 +109,11 @@ export async function typeAndTriggerChange(locatorValue: string, value: string, 
 }
 
 export async function selectItemById(selectId: string, optionText: string, page: Page) {
-  await expect(page.locator(`#${selectId}`).first()).toBeVisible();
-  await page.locator(`#${selectId}`).first().click({ force: true });
+  const input = page.locator(`#${selectId}`).first();
+  await expect(input).toBeVisible();
+  await input.evaluate((el) => el.scrollIntoView({ block: "center" }));
+  await input.click({ force: true });
+  await page.waitForSelector('[class*="__option"]', { state: "visible", timeout: 5000 });
   await page.keyboard.type(optionText);
   await page.keyboard.press("Enter");
 }
