@@ -7,17 +7,15 @@ export const STREAM_TOPICS = {
   COMPLAINT_REMOVED_FROM_CASE: `${EVENT_STREAM_NAME}.complaint.removed_from_case`,
   COMPLAINT_OPENED: `${EVENT_STREAM_NAME}.complaint.opened`,
   COMPLAINT_CLOSED: `${EVENT_STREAM_NAME}.complaint.closed`,
-  INVESTIGATION_OPENED: `${EVENT_STREAM_NAME}.investigation.opened`,
   INVESTIGATION_CLOSED: `${EVENT_STREAM_NAME}.investigation.closed`,
   INVESTIGATION_ADDED_TO_CASE: `${EVENT_STREAM_NAME}.investigation.added_to_case`,
-  INSPECTION_OPENED: `${EVENT_STREAM_NAME}.inspection.opened`,
   INSPECTION_CLOSED: `${EVENT_STREAM_NAME}.inspection.closed`,
   INSPECTION_ADDED_TO_CASE: `${EVENT_STREAM_NAME}.inspection.added_to_case`,
 };
 
 export type StreamTopic = (typeof STREAM_TOPICS)[keyof typeof STREAM_TOPICS];
 
-export const eventVerbs = ["OPENED", "CLOSED", "ADDED", "REMOVED"] as const;
+export const eventVerbs = ["CLOSED", "ADDED", "REMOVED"] as const;
 export type EventVerbType = (typeof eventVerbs)[number];
 
 export type EventEntityTypeCodes = "COMPLAINT" | "INVESTIGATION" | "INSPECTION" | "CASE";
