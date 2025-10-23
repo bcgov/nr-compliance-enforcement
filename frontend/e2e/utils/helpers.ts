@@ -110,9 +110,9 @@ export async function typeAndTriggerChange(locatorValue: string, value: string, 
 
 export async function selectItemById(selectId: string, optionText: string, page: Page) {
   await expect(page.locator(`#${selectId}`).first()).toBeVisible();
-  await page.locator(`#${selectId}`).first().click();
-  await expect(page.locator(".comp-select__menu-list")).toBeVisible(); //Wait for the options to show
-  await page.locator(`.comp-select__option`, { hasText: optionText }).first().click({ force: true });
+  await page.locator(`#${selectId}`).first().click({ force: true });
+  await page.keyboard.type(optionText);
+  await page.keyboard.press("Enter");
 }
 
 export async function enterDateTimeInDatePicker(
