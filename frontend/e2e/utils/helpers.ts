@@ -275,7 +275,7 @@ export async function verifyAttachmentsCarousel(page: Page, uploadable: boolean,
     // scope.locator(".comp-attachment-slide-actions").first().("attr", "style", "display: block");
 
     // cypress can't verify things that happen in other tabs, so don't open attachments in another tab
-    await expect(scope.locator(".comp-slide-download-btn")).toBeVisible();
+    await expect(scope.locator(".comp-slide-download-btn").first()).toBeVisible();
   }
 }
 
