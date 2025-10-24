@@ -146,7 +146,7 @@ export const CaseHistoryItem: FC<CaseHistoryItemProps> = ({ event, officers, ent
     if (actorId && event.actorEntityTypeCode?.eventEntityTypeCode === "USER" && officers) {
       const officer = officers.find((o) => o.auth_user_guid.toUpperCase().split("-").join("") === actorId);
       if (officer) {
-        return `${officer.person_guid.first_name} ${officer.person_guid.last_name} (${officer.agency_code?.shortDescription})`;
+        return `${officer.person_guid.last_name}, ${officer.person_guid.first_name} (${officer.agency_code?.shortDescription})`;
       }
     }
     return actorId;
