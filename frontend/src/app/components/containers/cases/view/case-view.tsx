@@ -163,12 +163,12 @@ export const CaseView: FC = () => {
       case "records":
         return <CaseRecordsTab />;
       case "history":
-        return <CaseHistoryTab />;
+        return <CaseHistoryTab caseIdentifier={id} />;
       case "map":
         return <CaseMapTab />;
       default:
         return (
-          <div className="container-fluid px-4 py-3">
+          <div className="container-fluid px-5 py-3">
             <div className="row g-3">
               <ComplaintColumn complaints={linkedComplaints} />
               <InspectionColumn

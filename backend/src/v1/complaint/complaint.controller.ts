@@ -99,10 +99,14 @@ export class ComplaintController {
 
   @Patch("/update-status-by-id/:id")
   @Roles(coreRoles)
-  async updateComplaintStatusById(@Param("id") id: string, @Body() model: any): Promise<ComplaintDto> {
+  async updateComplaintStatusById(
+    @Param("id") id: string,
+    @Body() model: any,
+    @Token() token: string,
+  ): Promise<ComplaintDto> {
     const { status } = model;
     try {
-      return await this.service.updateComplaintStatusById(id, status);
+      return await this.service.updateComplaintStatusById(id, status, token);
     } catch (error) {
       this.logger.error(error);
     }

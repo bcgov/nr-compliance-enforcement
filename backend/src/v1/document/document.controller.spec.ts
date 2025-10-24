@@ -3,6 +3,7 @@ import { DocumentController } from "./document.controller";
 import { DocumentService } from "./document.service";
 import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ComplaintService } from "../complaint/complaint.service";
+import { EventPublisherService } from "../event_publisher/event_publisher.service";
 import { createMapper } from "@automapper/core";
 import { AutomapperModule, getMapperToken } from "@automapper/nestjs";
 import { pojos } from "@automapper/pojos";
@@ -226,6 +227,10 @@ describe("DocumentController", () => {
         },
         ComplaintUpdatesService,
         ComplaintService,
+        {
+          provide: EventPublisherService,
+          useValue: {},
+        },
         CodeTableService,
         {
           provide: PersonComplaintXrefService,
