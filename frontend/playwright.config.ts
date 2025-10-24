@@ -11,7 +11,7 @@ const baseURL = process.env.E2E_BASE_URL || "http://localhost:3000";
 export default defineConfig({
   timeout: 300000, // 5 minutes for a test (longest ones run 2.5 minutes normally)
   expect: {
-    timeout: 30000, // 30 seconds for an expect statement to resolve
+    timeout: 30000, // 30 seconds for an expect statement to resolve.
   },
   testDir: "./e2e",
   /* Run tests in files in parallel */
