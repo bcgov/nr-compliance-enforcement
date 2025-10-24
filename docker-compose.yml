@@ -63,6 +63,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      migration-shared:
+        condition: service_completed_successfully
   migration-investigation:
     image: flyway/flyway:10-alpine
     container_name: migration-investigation
