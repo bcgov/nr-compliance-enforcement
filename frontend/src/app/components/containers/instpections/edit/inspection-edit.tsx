@@ -74,6 +74,7 @@ const GET_INspecTION = gql`
     }
     caseFilesByActivityIds(activityIdentifiers: [$inspectionGuid]) {
       caseIdentifier
+      name
     }
   }
 `;
