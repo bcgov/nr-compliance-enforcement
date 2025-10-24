@@ -478,7 +478,7 @@ test.describe("Complaint Edit Page spec - Edit Allegation View", () => {
   });
 
   test("it has a map on screen with no marker", async function ({ page }) {
-    await navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-032528", true, page);
+    await navigateToEditScreen(COMPLAINT_TYPES.ERS, "23-030303", true, page);
     await verifyMapMarkerExists(false, page);
     await expect(page.locator(".comp-complaint-details-alert")).toBeVisible();
   });

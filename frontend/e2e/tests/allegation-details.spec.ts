@@ -83,7 +83,7 @@ test.describe("COMPENF-37 Display ECR Details", () => {
   });
 
   test("it has a map on screen with no marker", async function ({ page }) {
-    await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-032528", true, page);
+    await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-030303", true, page);
     await waitForSpinner(page);
     await verifyMapMarkerExists(false, page);
     await waitForSpinner(page);

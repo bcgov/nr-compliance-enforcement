@@ -75,13 +75,13 @@ test.describe("Complaint Change Status spec - Details View", () => {
       page,
     }) => {
       if ("#hwcr-tab".includes(complaintType)) {
-        await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-000076", true, page);
+        await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-031664", true, page);
         await assignSelfToComplaint(page);
 
         await fillInAssessmentSection(page);
         await waitForSpinner(page);
       } else {
-        await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-006888", true, page);
+        await navigateToDetailsScreen(COMPLAINT_TYPES.ERS, "23-028706", true, page);
         await assignSelfToComplaint(page);
         await waitForSpinner(page);
 

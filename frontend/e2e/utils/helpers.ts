@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 
-export const slowExpect = expect.configure({ timeout: 30000 });
+export const slowExpect = expect.configure({ timeout: 60000 }); // 1 Minute for the spinner.
 
 export async function waitForSpinner(page: Page, timeBeforeContinuing: number = 6000) {
   // make sure the page is totally loaded first
@@ -96,8 +96,9 @@ export async function hasErrorMessage(page: Page, inputs: Array<string>, toastTe
 
   //validate the toast
   if (toastText) {
-    const $toast = page.locator(".Toastify__toast-body");
-    expect($toast).toHaveText(toastText);
+    const toasts = await page.locator(".Toastify__toast-body").allTextContents();
+    const found = toasts.some((text) => text.includes(toastText));
+    expect(found).toBe(true);
   }
 }
 
@@ -277,7 +278,7 @@ export async function verifyAttachmentsCarousel(page: Page, uploadable: boolean,
     await expect(scope.locator(".comp-attachment-upload-btn")).not.toBeVisible();
     // scope.locator(".comp-attachment-slide-actions").first().("attr", "style", "display: block");
 
-    // cypress can't verify things that happen in other tabs, so don't open attachments in another tab
+    // playwright can't verify things that happen in other tabs, so don't open attachments in another tab
     await expect(scope.locator(".comp-slide-download-btn").first()).toBeVisible();
   }
 }

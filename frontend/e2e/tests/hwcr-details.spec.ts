@@ -101,7 +101,7 @@ test.describe("COMPENF-35 Display HWCR Details", () => {
   });
 
   test("it has a map on screen with a marker at the correct location", async function ({ page }) {
-    await navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-032525", true, page);
+    await navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-031180", true, page);
     await verifyMapMarkerExists(true, page);
     await expect(page.locator(".comp-complaint-details-alert")).not.toBeVisible();
   });

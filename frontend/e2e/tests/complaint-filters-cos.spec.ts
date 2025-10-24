@@ -38,7 +38,7 @@ test.describe("COS Filter Logic", () => {
       await expect(page.locator("#comp-filter-status-id")).toBeVisible();
       await expect(page.locator("#comp-zone-filter")).toBeVisible();
       await expect(page.locator("#comp-status-filter")).toBeVisible();
-      await expect(page.locator("#comp-zone-filter").getByText("Cariboo Thompson").first()).toBeVisible(); //assumes cypress user's office roles up to Cariboo Thompson zone
+      await expect(page.locator("#comp-zone-filter").getByText("Cariboo Thompson").first()).toBeVisible(); //assumes e2e user's office roles up to Cariboo Thompson zone
       await expect(page.locator("#comp-status-filter").getByText("Open").first()).toBeVisible();
       await page.locator("#comp-filter-btn").click();
     });

@@ -40,7 +40,7 @@ help_str() {
 
 # Configure globals
 if [ -z "$ALLOW_EXPR" ]; then
-    ALLOW_EXPR="default|pipeline|artifact|vault|deployer|logging|builder|keycloak|openshift|bundle|kube|cypress|object-store"
+    ALLOW_EXPR="default|pipeline|artifact|vault|deployer|logging|builder|keycloak|openshift|bundle|kube|object-store"
 fi
 echo "ALLOW_EXPR: $ALLOW_EXPR"
 
