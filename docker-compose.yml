@@ -20,7 +20,6 @@ x-postgres-vars: &postgres-vars
   INV_PASSWORD: *INV_PASSWORD
   SHARED_PASSWORD: *SHARED_PASSWORD
   METABASE_READONLY_PASSWORD: *METABASE_READONLY_PASSWORD
-  
 services:
   database:
     build:
@@ -247,6 +246,7 @@ services:
       KEYCLOCK_CLIENT_ID: compliance-and-enforcement-digital-services-web-4794
       JWKS_URI: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs
       JWT_ISSUER: https://dev.loginproxy.gov.bc.ca/auth/realms/standard
+      NATS_HOST: nats://nats:4222
     image: node:20-bullseye
     ports: ["3003:3000"]
     volumes: ["./backend-cm:/app", "/app/node_modules"]
@@ -262,3 +262,27 @@ services:
         condition: service_completed_successfully
       migration-shared:
         condition: service_completed_successfully
+      nats:
+        condition: service_started
+  event-worker:
+    container_name: event-worker
+    entrypoint:
+      - "sh"
+      - "-c"
+      - "npm i && npm run start"
+    hostname: event-worker
+    image: node:22-bookworm-slim
+    links:
+      - nats
+    ports:
+      - "3006:3000"
+    volumes:
+      - ./event-worker:/app:z
+      - /app/node_modules
+    user: root
+    working_dir: "/app"
+    environment:
+      EVENT_STREAM_NAME: nats_durable_events
+      NATS_HOST: nats://nats:4222
+      CASE_MANAGEMENT_API_URL: http://host.docker.internal:3003/graphql
+      CASE_API_KEY: "somekey"

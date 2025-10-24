@@ -303,3 +303,56 @@ model flyway_schema_history {
 
   @@index([success], map: "flyway_schema_history_s_idx")
 }
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model event {
+  event_guid                                                                   String                  @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  event_verb_type_code                                                         String                  @db.VarChar(16)
+  published_utc_timestamp                                                      DateTime                @default(now()) @db.Timestamp(6)
+  source_id                                                                    String?                 @db.VarChar(64)
+  source_entity_type_code                                                      String?                 @db.VarChar(16)
+  actor_id                                                                     String                  @db.VarChar(64)
+  actor_entity_type_code                                                       String                  @db.VarChar(16)
+  target_id                                                                    String                  @db.VarChar(64)
+  target_entity_type_code                                                      String                  @db.VarChar(16)
+  content                                                                      Json?
+  create_user_id                                                               String                  @db.VarChar(32)
+  create_utc_timestamp                                                         DateTime                @default(now()) @db.Timestamp(6)
+  update_user_id                                                               String?                 @db.VarChar(32)
+  update_utc_timestamp                                                         DateTime?               @db.Timestamp(6)
+  event_entity_type_code_event_actor_entity_type_codeToevent_entity_type_code  event_entity_type_code  @relation("event_actor_entity_type_codeToevent_entity_type_code", fields: [actor_entity_type_code], references: [event_entity_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_event_actor_entity_type_code")
+  event_verb_type_code_event_event_verb_type_codeToevent_verb_type_code        event_verb_type_code    @relation("event_event_verb_type_codeToevent_verb_type_code", fields: [event_verb_type_code], references: [event_verb_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_event_verb_type_code")
+  event_entity_type_code_event_source_entity_type_codeToevent_entity_type_code event_entity_type_code? @relation("event_source_entity_type_codeToevent_entity_type_code", fields: [source_entity_type_code], references: [event_entity_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_event_source_entity_type_code")
+  event_entity_type_code_event_target_entity_type_codeToevent_entity_type_code event_entity_type_code  @relation("event_target_entity_type_codeToevent_entity_type_code", fields: [target_entity_type_code], references: [event_entity_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_event_target_entity_type_code")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model event_entity_type_code {
+  event_entity_type_code                                      String    @unique @db.VarChar(16)
+  short_description                                           String    @db.VarChar(64)
+  long_description                                            String?   @db.VarChar(256)
+  display_order                                               Int?
+  active_ind                                                  Boolean   @default(true)
+  create_user_id                                              String    @db.VarChar(32)
+  create_utc_timestamp                                        DateTime  @default(now()) @db.Timestamp(6)
+  update_user_id                                              String?   @db.VarChar(32)
+  update_utc_timestamp                                        DateTime? @db.Timestamp(6)
+  event_event_actor_entity_type_codeToevent_entity_type_code  event[]   @relation("event_actor_entity_type_codeToevent_entity_type_code")
+  event_event_source_entity_type_codeToevent_entity_type_code event[]   @relation("event_source_entity_type_codeToevent_entity_type_code")
+  event_event_target_entity_type_codeToevent_entity_type_code event[]   @relation("event_target_entity_type_codeToevent_entity_type_code")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model event_verb_type_code {
+  event_verb_type_code                                   String    @unique @db.VarChar(16)
+  short_description                                      String    @db.VarChar(64)
+  long_description                                       String?   @db.VarChar(256)
+  display_order                                          Int?
+  active_ind                                             Boolean   @default(true)
+  create_user_id                                         String    @db.VarChar(32)
+  create_utc_timestamp                                   DateTime  @default(now()) @db.Timestamp(6)
+  update_user_id                                         String?   @db.VarChar(32)
+  update_utc_timestamp                                   DateTime? @db.Timestamp(6)
+  event_event_event_verb_type_codeToevent_verb_type_code event[]   @relation("event_event_verb_type_codeToevent_verb_type_code")
+}

@@ -8,13 +8,13 @@ interface Props {
   people: InvestigationParty[];
 }
 
-const RecordsList: React.FC<Props> = ({ companies, people }) => {
+const PartiesList: React.FC<Props> = ({ companies, people }) => {
   return (
     <>
-      {people.length === 0 && companies.length === 0 && <div className="mt-3">No records to display</div>}
+      {people.length === 0 && companies.length === 0 && <div className="mt-3">No parties to display</div>}
 
       <Accordion
-        className="record-accordion"
+        className="party-accordion"
         defaultActiveKey={["0", "1"]}
         alwaysOpen
       >
@@ -69,4 +69,4 @@ const RecordsList: React.FC<Props> = ({ companies, people }) => {
   );
 };
 
-export default RecordsList;
+export default PartiesList;
