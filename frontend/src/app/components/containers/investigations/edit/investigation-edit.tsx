@@ -90,6 +90,7 @@ const GET_INVESTIGATION = gql`
     }
     caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier
+      name
     }
   }
 `;

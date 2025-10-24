@@ -40,6 +40,24 @@ export default defineConfig({
         fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
       },
     },
+    {
+      // Custom plugin to create a readiness file that can be used to check if the
+      // application is ready to serve traffic
+      name: "create-readiness-file",
+      apply: "build",
+      closeBundle() {
+        const readinessPath = path.resolve(__dirname, "dist/.ready");
+        const timestamp = new Date().toISOString();
+        fs.writeFileSync(
+          readinessPath,
+          JSON.stringify({
+            status: "ready",
+            timestamp: timestamp,
+            build: packageJson.version,
+          }),
+        );
+      },
+    },
   ],
   server: {
     host: "0.0.0.0", // This fixes the "use --host to expose" issue
