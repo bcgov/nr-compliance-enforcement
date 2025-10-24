@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { selectItemById, waitForSpinner } from "../utils/helpers";
 import { STORAGE_STATE_BY_ROLE } from "../utils/authConfig";
 
@@ -9,7 +9,7 @@ HWLC and Enforcement list screens
 test.describe("Complaints on map tests", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
   //const complaintTypes = ["#hwcr-tab", "#ers-tab"];
-  // TODO: Fix bug CE-TBD and add ers-tab back in
+  // When bug CE-2006 is addressed, the ERS tab should be added
   const complaintTypes = ["#hwcr-tab"];
 
   // perform the same test on each of the tabs (HWCR and ERS)
