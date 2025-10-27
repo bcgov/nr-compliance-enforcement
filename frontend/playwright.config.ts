@@ -9,6 +9,7 @@ const baseURL = process.env.E2E_BASE_URL || "http://localhost:3000";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  workers: 6,
   timeout: 300000, // 5 minutes for a test (longest ones run 2.5 minutes normally)
   expect: {
     timeout: 30000, // 30 seconds for an expect statement to resolve.
