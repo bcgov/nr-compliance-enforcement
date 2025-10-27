@@ -1,7 +1,7 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
 import { Injectable, Logger } from "@nestjs/common";
-import { inspection } from "../../../prisma/inspection/generated/inspection";
+import { inspection } from "../../../prisma/inspection/inspection.unsupported_types";
 import {
   CreateInspectionInput,
   Inspection,
@@ -17,6 +17,7 @@ import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { UserService } from "../../common/user.service";
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 import { CaseActivityService } from "src/shared/case_activity/case_activity.service";
+import { Point } from "src/common/custom_scalars";
 
 @Injectable()
 export class InspectionService {
@@ -46,6 +47,7 @@ export class InspectionService {
     if (!prismaInspection) {
       throw new Error(`Inspection with guid ${inspectionGuid} not found`);
     }
+    await this.getLocationGeometryPoint(prismaInspection as inspection);
 
     try {
       return this.mapper.map<inspection, Inspection>(prismaInspection as inspection, "inspection", "Inspection");
@@ -70,6 +72,9 @@ export class InspectionService {
         inspection_status_code: true,
       },
     });
+    for (const inv of prismaInspections) {
+      await this.getLocationGeometryPoint(inv as inspection);
+    }
 
     try {
       return this.mapper.mapArray<inspection, Inspection>(
@@ -172,26 +177,29 @@ export class InspectionService {
 
     // Create the inspection
     let inspection;
-    try {
-      inspection = await this.prisma.inspection.create({
-        data: {
-          inspection_status: input.inspectionStatus,
-          inspection_description: input.description,
-          owned_by_agency_ref: input.leadAgency,
-          name: input.name,
-          inspection_opened_utc_timestamp: new Date(),
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-        },
-        include: {
-          inspection_status_code: true,
-        },
-      });
-    } catch (error) {
-      this.logger.error("Error creating inspection:", error);
-      throw error;
-    }
-
+    await this.prisma.$transaction(async (tx) => {
+      try {
+        inspection = await this.prisma.inspection.create({
+          data: {
+            inspection_status: input.inspectionStatus,
+            inspection_description: input.description,
+            owned_by_agency_ref: input.leadAgency,
+            name: input.name,
+            inspection_opened_utc_timestamp: new Date(),
+            create_user_id: this.user.getIdirUsername(),
+            create_utc_timestamp: new Date(),
+          },
+          include: {
+            inspection_status_code: true,
+          },
+        });
+      } catch (error) {
+        this.logger.error("Error creating inspection:", error);
+        throw error;
+      }
+      await this.updateLocationGeometryPoint(tx, inspection.inspection_guid, input.locationGeometry);
+    });
+    await this.getLocationGeometryPoint(inspection as inspection);
     // Try to create case activity record, and if it fails, delete the inspection
     try {
       await this.caseActivityService.create({
@@ -241,39 +249,43 @@ export class InspectionService {
       throw new Error(`Inspection with guid ${inspectionGuid} not found.`);
     }
     let updatedInspection;
-    try {
-      const updateData: any = {
-        update_user_id: this.user.getIdirUsername(),
-        update_utc_timestamp: new Date(),
-      };
+    await this.prisma.$transaction(async (tx) => {
+      try {
+        const updateData: any = {
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        };
 
-      if (input.leadAgency !== undefined) {
-        updateData.owned_by_agency_ref = input.leadAgency;
+        if (input.leadAgency !== undefined) {
+          updateData.owned_by_agency_ref = input.leadAgency;
+        }
+        if (input.inspectionStatus !== undefined) {
+          updateData.inspection_status = input.inspectionStatus;
+        }
+        if (input.description !== undefined) {
+          updateData.inspection_description = input.description;
+        }
+        if (input.name !== undefined) {
+          updateData.name = input.name;
+        }
+        // Perform the update
+        updatedInspection = await this.prisma.inspection.update({
+          where: { inspection_guid: inspectionGuid },
+          data: updateData,
+          include: {
+            inspection_status_code: true,
+          },
+        });
+        await this.updateLocationGeometryPoint(tx, inspectionGuid, input.locationGeometry);
+      } catch (error) {
+        this.logger.error(`Error updating inspection with guid ${inspectionGuid}:`, error);
+        throw error;
       }
-      if (input.inspectionStatus !== undefined) {
-        updateData.inspection_status = input.inspectionStatus;
-      }
-      if (input.description !== undefined) {
-        updateData.inspection_description = input.description;
-      }
-      if (input.name !== undefined) {
-        updateData.name = input.name;
-      }
-      // Perform the update
-      updatedInspection = await this.prisma.inspection.update({
-        where: { inspection_guid: inspectionGuid },
-        data: updateData,
-        include: {
-          inspection_status_code: true,
-        },
-      });
-    } catch (error) {
-      this.logger.error(`Error updating inspection with guid ${inspectionGuid}:`, error);
-      throw error;
-    }
+    });
     if (input.inspectionStatus !== undefined) {
       this.eventPublisher.publishActivityStatusChangeEvents("INSPECTION", inspectionGuid, input.inspectionStatus);
     }
+    await this.getLocationGeometryPoint(updatedInspection as inspection);
     try {
       return this.mapper.map<inspection, Inspection>(updatedInspection as inspection, "inspection", "Inspection");
     } catch (error) {
@@ -302,5 +314,53 @@ export class InspectionService {
     });
 
     return !!existingInspection;
+  }
+
+  async getLocationGeometryPoint(inspection: inspection): Promise<void> {
+    try {
+      let result: inspection[];
+      const query = `
+        SELECT
+            public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
+        FROM inspection
+        WHERE inspection_guid = '${inspection.inspection_guid}'::uuid
+      `;
+      result = await this.prisma.$queryRawUnsafe(query);
+      if (result.length === 0) {
+        throw new Error(`Inspection with guid ${inspection.inspection_guid} not found.`);
+      }
+      inspection.location_geometry_point = result[0].location_geometry_point;
+    } catch (error) {
+      this.logger.error(
+        `Error fetching location geometry point for inspection with guid ${inspection.inspection_guid}:`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  async updateLocationGeometryPoint(tx: any, inspectionGuid: string, point: Point): Promise<void> {
+    let point_data = null;
+    if (point) {
+      point_data = `public.ST_GeomFromGeoJSON('${JSON.stringify(point)}')`;
+    }
+    try {
+      const query = `
+        UPDATE inspection
+        SET location_geometry_point = ${point_data}
+        WHERE inspection_guid = '${inspectionGuid}'::uuid
+      `;
+      if (tx) {
+        await tx.$executeRawUnsafe(query);
+      } else {
+        await this.prisma.$executeRawUnsafe(query);
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error updating location geometry point for inspection with guid ${inspectionGuid}:`,
+        error,
+      );
+      throw error;
+    }
   }
 }

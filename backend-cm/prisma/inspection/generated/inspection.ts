@@ -33,6 +33,12 @@ export class inspection {
   @ApiProperty({ type: String })
   name: string;
 
+  @ApiPropertyOptional({ type: String })
+  location_address?: string;
+
+  @ApiPropertyOptional({ type: String })
+  location_description?: string;
+
   @ApiProperty({ type: () => inspection_status_code })
   inspection_status_code: inspection_status_code;
 
