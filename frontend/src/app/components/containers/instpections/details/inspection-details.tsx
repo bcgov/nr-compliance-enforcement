@@ -1,9 +1,12 @@
 import { FC } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate} from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Inspection } from "@/generated/graphql";
 import { InspectionHeader } from "@/app/components/containers/instpections/details/inspection-header";
+import Button from "react-bootstrap/esm/Button";
+import { CompLocationInfo } from "@/app/components/common/comp-location-info";
+import { InspectionLocation } from "./inspection-location";
 
 const GET_INSPECTION = gql`
   query GetInspection($inspectionGuid: String!) {
@@ -19,6 +22,9 @@ const GET_INSPECTION = gql`
         longDescription
       }
       leadAgency
+      locationAddress
+      locationDescription
+      locationGeometry
     }
     caseFilesByActivityIds(activityIdentifiers: [$inspectionGuid]) {
       caseIdentifier
@@ -32,6 +38,7 @@ export type InspectionParams = {
 };
 
 export const InspectionDetails: FC = () => {
+  const navigate = useNavigate();
   const { inspectionGuid = "" } = useParams<InspectionParams>();
   const { data, isLoading } = useGraphQLQuery<{
     getInspection: Inspection;
@@ -45,6 +52,10 @@ export const InspectionDetails: FC = () => {
   const inspectionData = data?.getInspection;
   const caseIdentifier = data?.caseFilesByActivityIds?.[0]?.caseIdentifier;
   const caseName = data?.caseFilesByActivityIds?.[0]?.name;
+
+  const editButtonClick = () => {
+    navigate(`/inspection/${inspectionGuid}/edit`);
+  };
 
   if (isLoading) {
     return (
@@ -65,9 +76,18 @@ export const InspectionDetails: FC = () => {
       <section className="comp-details-body comp-container">
         <hr className="comp-details-body-spacer"></hr>
 
-        <div className="comp-details-section-header">
-          <h2>Inspection details</h2>
-        </div>
+          <div className="d-flex align-items-center gap-4 mb-3">
+            <h3 className="mb-0">Inspection details</h3>
+            <Button
+              variant="outline-primary"
+              size="sm"
+              id="details-screen-edit-button"
+              onClick={editButtonClick}
+            >
+              <i className="bi bi-pencil"></i>
+              <span>Edit</span>
+            </Button>
+          </div>
 
         {/* Inspection Details (View) */}
         <div className="comp-details-view">
@@ -79,7 +99,7 @@ export const InspectionDetails: FC = () => {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-group">
-                      <strong>Inspection ID:</strong>
+                      <strong>Inspection ID</strong>
                       <p>{inspectionData.name}</p>
                     </div>
                   </div>
@@ -87,7 +107,7 @@ export const InspectionDetails: FC = () => {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-group">
-                      <strong>Case ID:</strong>
+                      <strong>Case ID</strong>
                       <p>{caseIdentifier ? <Link to={`/case/${caseIdentifier}`}>{caseName || caseIdentifier}</Link> : <p>N/A</p>}</p>
                     </div>
                   </div>
@@ -96,12 +116,43 @@ export const InspectionDetails: FC = () => {
                   <div className="row">
                     <div className="col-12">
                       <div className="form-group">
-                        <strong>Description:</strong>
+                        <strong>Description</strong>
                         <p>{inspectionData.description}</p>
                       </div>
                     </div>
                   </div>
                 )}
+                {inspectionData.locationAddress && (<div>
+                  <dt>Location/address</dt>
+                    <dd id="comp-details-location">{inspectionData.locationAddress}</dd>
+                  </div>
+                )}
+                {inspectionData.locationDescription && (<div>
+                  <dt>Location description</dt>
+                    <dd id="comp-details-location-description">{inspectionData.locationDescription}</dd>
+                  </div>
+                )}
+                {inspectionData.locationGeometry && (
+                  <div className="row">
+                    <div className="col-12">
+                      <div className="form-group">
+                        <CompLocationInfo
+                          xCoordinate={inspectionData.locationGeometry.coordinates?.[0] === 0 ? "" : inspectionData.locationGeometry.coordinates?.[0].toString() ?? ""}
+                          yCoordinate={inspectionData.locationGeometry.coordinates?.[1] === 0 ? "" : inspectionData.locationGeometry.coordinates?.[1].toString() ?? ""}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              {inspectionData?.locationGeometry?.coordinates && (
+                  <InspectionLocation
+                    locationCoordinates={{
+                      lat: inspectionData.locationGeometry.coordinates[1],
+                      lng: inspectionData.locationGeometry.coordinates[0],
+                    }}
+                    draggable={false}
+                  />
+              )}
               </div>
             )}
           </div>

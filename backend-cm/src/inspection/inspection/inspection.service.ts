@@ -184,6 +184,8 @@ export class InspectionService {
             inspection_status: input.inspectionStatus,
             inspection_description: input.description,
             owned_by_agency_ref: input.leadAgency,
+            location_address: input.locationAddress,
+            location_description: input.locationDescription,
             name: input.name,
             inspection_opened_utc_timestamp: new Date(),
             create_user_id: this.user.getIdirUsername(),
@@ -267,6 +269,12 @@ export class InspectionService {
         }
         if (input.name !== undefined) {
           updateData.name = input.name;
+        }
+        if (input.locationAddress !== undefined) {
+          updateData.location_address = input.locationAddress;
+        }
+        if (input.locationDescription !== undefined) {
+          updateData.location_description = input.locationDescription;
         }
         // Perform the update
         updatedInspection = await this.prisma.inspection.update({
