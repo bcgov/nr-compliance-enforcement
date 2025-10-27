@@ -1,3 +1,11 @@
+-- Only execute if shared schema exists
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'shared') THEN
+    RETURN;
+  END IF;
+END $$;
+
 ALTER TABLE shared.app_user DISABLE TRIGGER app_user_history_trigger;
 
 ALTER TABLE shared.office DISABLE TRIGGER office_history_trigger;
