@@ -1,0 +1,12 @@
+type AppUser {
+  appUserGuid: String
+  authUserGuid: String
+  userId: String
+  firstName: String
+  lastName: String
+  comsEnrolledIndicator: Boolean
+  deactivateIndicator: Boolean
+  agencyCode: String
+  officeGuid: String
+  parkAreaGuid: String
+}

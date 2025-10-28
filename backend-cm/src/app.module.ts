@@ -56,6 +56,13 @@ import { CaseActivityModule } from "src/shared/case_activity/case_activity.modul
 import { EventModule } from "./shared/event/event.module";
 import { EventPublisherModule } from "./event_publisher/event_publisher.module";
 import { InvestigationPartyModule } from "./investigation/investigation_party/investigation_party.module";
+import { OfficeModule } from "./shared/office/office.module";
+import { TeamCodeModule } from "./shared/team_code/team_code.module";
+import { TeamModule } from "./shared/team/team.module";
+import { GeoOrgUnitTypeCodeModule } from "./shared/geo_org_unit_type_code/geo_org_unit_type_code.module";
+import { GeoOrganizationUnitCodeModule } from "./shared/geo_organization_unit_code/geo_organization_unit_code.module";
+import { CosGeoOrgUnitModule } from "./shared/cos_geo_org_unit/cos_geo_org_unit.module";
+import { AppUserModule } from "./shared/app_user/app_user.module";
 
 @Module({
   imports: [
@@ -112,6 +119,13 @@ import { InvestigationPartyModule } from "./investigation/investigation_party/in
     EventModule,
     EventPublisherModule,
     InvestigationPartyModule,
+    OfficeModule,
+    TeamCodeModule,
+    TeamModule,
+    GeoOrgUnitTypeCodeModule,
+    GeoOrganizationUnitCodeModule,
+    CosGeoOrgUnitModule,
+    AppUserModule,
   ],
   controllers: [AppController],
   providers: [AppService, ImportCommand, DateScalar, JSONObjectScalar, PointScalar],

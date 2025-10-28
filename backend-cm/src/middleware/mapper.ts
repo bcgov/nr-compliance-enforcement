@@ -22,6 +22,13 @@ import { mapPrismaEventEntityTypeCodeToEventEntityTypeCode } from "../shared/eve
 import { mapPrismaBusinessToInvestigationBusiness } from "../investigation/investigation_business/dto/investigation_business";
 import { mapPrismaPersonToInvestigationPerson } from "../investigation/investigation_person/dto/investigation_person";
 import { mapPrismaPartyToInvestigationParty } from "../investigation/investigation_party/dto/investigation_party";
+import { mapPrismaOfficeToOffice } from "../shared/office/dto/office";
+import { mapPrismaTeamCodeToTeamCode } from "../shared/team_code/dto/team_code";
+import { mapPrismaTeamToTeam } from "../shared/team/dto/team";
+import { mapPrismaGeoOrgUnitTypeCodeToGeoOrgUnitTypeCode } from "../shared/geo_org_unit_type_code/dto/geo_org_unit_type_code";
+import { mapPrismaGeoOrganizationUnitCodeToGeoOrganizationUnitCode } from "../shared/geo_organization_unit_code/dto/geo_organization_unit_code";
+import { mapPrismaCosGeoOrgUnitFlatMvwToCosGeoOrgUnit } from "../shared/cos_geo_org_unit/dto/cos_geo_org_unit";
+import { mapPrismaAppUserToAppUser } from "../shared/app_user/dto/app_user";
 
 export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToContactMethod(mapper);
@@ -47,4 +54,11 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaBusinessToInvestigationBusiness(mapper);
   mapPrismaPersonToInvestigationPerson(mapper);
   mapPrismaPartyToInvestigationParty(mapper);
+  mapPrismaOfficeToOffice(mapper);
+  mapPrismaTeamCodeToTeamCode(mapper);
+  mapPrismaTeamToTeam(mapper);
+  mapPrismaGeoOrgUnitTypeCodeToGeoOrgUnitTypeCode(mapper);
+  mapPrismaGeoOrganizationUnitCodeToGeoOrganizationUnitCode(mapper);
+  mapPrismaCosGeoOrgUnitFlatMvwToCosGeoOrgUnit(mapper);
+  mapPrismaAppUserToAppUser(mapper);
 };

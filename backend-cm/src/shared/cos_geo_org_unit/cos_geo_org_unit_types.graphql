@@ -1,0 +1,11 @@
+type CosGeoOrgUnit {
+  regionCode: String
+  regionName: String
+  zoneCode: String
+  zoneName: String
+  officeLocationCode: String
+  officeLocationName: String
+  areaCode: String
+  areaName: String
+  administrativeOfficeIndicator: Boolean
+}

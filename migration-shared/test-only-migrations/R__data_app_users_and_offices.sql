@@ -34640,107 +34640,107 @@ INSERT INTO office VALUES ('4b358820-7ff1-43e1-b5e4-797a8c9f1d9c', 'postgres', '
 -------------------------
 
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('3eac2028-9e13-4a7f-af07-f0b8264f32c4'::uuid, 'VYATES', 'Vita', NULL, NULL, 'Yates', '2044f08d-b53c-489a-8584-dd867b63514a'::uuid, NULL, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('3eac2028-9e13-4a7f-af07-f0b8264f32c4'::uuid, 'VYATES', 'Vita', 'Yates', '2044f08d-b53c-489a-8584-dd867b63514a'::uuid, NULL, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('e2fa0f29-7ddd-4496-96d2-6e045297a2b5'::uuid, 'AGUPTA', 'Anurupa', NULL, NULL, 'Gupta', '21855957-521f-4190-b0f9-a7ab7d139978'::uuid, NULL, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('e2fa0f29-7ddd-4496-96d2-6e045297a2b5'::uuid, 'AGUPTA', 'Anurupa', 'Gupta', '21855957-521f-4190-b0f9-a7ab7d139978'::uuid, NULL, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('6d3b09a9-867b-40d5-93d2-ea9e4951544f'::uuid, 'CNESMITH', 'Chris', NULL, NULL, 'Nesmith', 'cdd9964e-7878-44c1-b4a2-0290c6345dec'::uuid, NULL, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('6d3b09a9-867b-40d5-93d2-ea9e4951544f'::uuid, 'CNESMITH', 'Chris', 'Nesmith', 'cdd9964e-7878-44c1-b4a2-0290c6345dec'::uuid, NULL, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('84ac75b9-c584-4f55-a70c-6fa35c8efde4'::uuid, 'TSPRADO', 'Tobe', NULL, NULL, 'Sprado', 'b494082e-35a3-468f-8955-4aa002066b36'::uuid, NULL, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('84ac75b9-c584-4f55-a70c-6fa35c8efde4'::uuid, 'TSPRADO', 'Tobe', 'Sprado', 'b494082e-35a3-468f-8955-4aa002066b36'::uuid, NULL, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('54892583-7013-48f5-87c8-90c19f95b395'::uuid, 'BFALK', 'Barrett', NULL, NULL, 'Falk', '313f4ec3-e88a-41c2-9956-78c7b18cb71d'::uuid, '6def8986-1b18-4205-8283-d6fd633b3eee'::uuid, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('54892583-7013-48f5-87c8-90c19f95b395'::uuid, 'BFALK', 'Barrett', 'Falk', '313f4ec3-e88a-41c2-9956-78c7b18cb71d'::uuid, '6def8986-1b18-4205-8283-d6fd633b3eee'::uuid, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('b762fbc2-344f-4c53-a8c2-6b0b9f605d4b'::uuid, 'SKOT', 'Steve', NULL, NULL, 'Kot', 'b494082e-35a3-468f-8955-4aa002066b36'::uuid, '98b121c7-873a-45bf-b465-749870896eb9'::uuid, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('b762fbc2-344f-4c53-a8c2-6b0b9f605d4b'::uuid, 'SKOT', 'Steve', 'Kot', 'b494082e-35a3-468f-8955-4aa002066b36'::uuid, '98b121c7-873a-45bf-b465-749870896eb9'::uuid, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('7fe1cc4e-fc73-412e-9c0e-3f3fec364aac'::uuid, 'HOLSON', 'Harry', NULL, NULL, 'Olson', 'aebabfed-cf45-4253-9fbf-f49452190332'::uuid, '92a81ac4-d767-414f-a759-b0be2373a072'::uuid, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('7fe1cc4e-fc73-412e-9c0e-3f3fec364aac'::uuid, 'HOLSON', 'Harry', 'Olson', 'aebabfed-cf45-4253-9fbf-f49452190332'::uuid, '92a81ac4-d767-414f-a759-b0be2373a072'::uuid, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('efcbaae4-505b-4db3-b036-7ec8b8dd8c6d'::uuid, 'NBASKERV', 'Neil', NULL, NULL, 'Baskerville-Bridges', 'c8aeb3d9-3718-49d9-b8b5-6c84671546eb'::uuid, 'ef0bc810-58a7-4080-ad7a-b5bbdd0d2efe'::uuid, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('efcbaae4-505b-4db3-b036-7ec8b8dd8c6d'::uuid, 'NBASKERV', 'Neil', 'Baskerville-Bridges', 'c8aeb3d9-3718-49d9-b8b5-6c84671546eb'::uuid, 'ef0bc810-58a7-4080-ad7a-b5bbdd0d2efe'::uuid, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('9d171865-aab6-43d1-bbf2-93b4d4c5ba02'::uuid, 'AWILCOX', 'Alec', NULL, NULL, 'Wilcox', '9fc7327b-b206-4a5c-88f1-2875a456eb49'::uuid, '287d4e72-8409-4dd1-991a-8b1117b8eb2a'::uuid, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('9d171865-aab6-43d1-bbf2-93b4d4c5ba02'::uuid, 'AWILCOX', 'Alec', 'Wilcox', '9fc7327b-b206-4a5c-88f1-2875a456eb49'::uuid, '287d4e72-8409-4dd1-991a-8b1117b8eb2a'::uuid, 'FLYWAY', '2023-06-29 22:16:16.754', 'FLYWAY', '2023-06-29 22:16:16.754')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, agency_code_ref, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('fc91b041-7f1b-46e9-8c07-0813bb656a7f'::uuid, 'ENCETST1', 'ENV', NULL, NULL, 'TestAcct', '79fe321b-7716-413f-b878-c5fd6100317d'::uuid, '0cf857a2-28a3-4867-af0f-d59449243057'::uuid, 'COS', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, agency_code_ref, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('fc91b041-7f1b-46e9-8c07-0813bb656a7f'::uuid, 'ENCETST1', 'ENV', 'TestAcct', '79fe321b-7716-413f-b878-c5fd6100317d'::uuid, '0cf857a2-28a3-4867-af0f-d59449243057'::uuid, 'COS', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, auth_user_guid, agency_code_ref, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('ac64c6e6-8233-4cee-807b-5bb2b4ddb15b'::uuid, 'ENCETST2', 'ENV', NULL, NULL, 'TestAcct 2', '6d1bb908-0f03-4873-af49-916713583c7e'::uuid, 'EPO', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, auth_user_guid, agency_code_ref, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('ac64c6e6-8233-4cee-807b-5bb2b4ddb15b'::uuid, 'ENCETST2', 'ENV', 'TestAcct 2', '6d1bb908-0f03-4873-af49-916713583c7e'::uuid, 'EPO', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, auth_user_guid, agency_code_ref, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('1c28a7a0-fd7e-4d39-9e8f-50f34e1b3e59'::uuid, 'ENCETST3', 'ENV', NULL, NULL, 'TestAcct 3', '45b33bda-6d2c-4947-9ba2-1f611655047a'::uuid, 'PARKS', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, auth_user_guid, agency_code_ref, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('1c28a7a0-fd7e-4d39-9e8f-50f34e1b3e59'::uuid, 'ENCETST3', 'ENV', 'TestAcct 3', '45b33bda-6d2c-4947-9ba2-1f611655047a'::uuid, 'PARKS', 'nr-compliance-enforcement', '2023-06-29 22:16:16.754', 'nr-compliance-enforcement', '2023-06-29 22:20:48.186')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('a534a1e0-bebc-499d-ba4b-eb5ed0726f26'::uuid, 'STRUONG', 'Scarlett', NULL, NULL, 'Truong', '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid, 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('a534a1e0-bebc-499d-ba4b-eb5ed0726f26'::uuid, 'STRUONG', 'Scarlett', 'Truong', '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid, 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('3fc8a9db-e085-4461-bce2-b05462b79794'::uuid, 'DVUIA', 'Dragos', NULL, NULL, 'Vuia', '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid, 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('3fc8a9db-e085-4461-bce2-b05462b79794'::uuid, 'DVUIA', 'Dragos', 'Vuia', '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid, 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('60e7403e-9933-4eff-89ae-508c0c827130'::uuid, 'SFATIMA', 'Suha', NULL, NULL, 'Fatima', 'cafc87f3-738c-49bd-9bfb-33d7f01d50b9'::uuid, 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('60e7403e-9933-4eff-89ae-508c0c827130'::uuid, 'SFATIMA', 'Suha', 'Fatima', 'cafc87f3-738c-49bd-9bfb-33d7f01d50b9'::uuid, 'FLYWAY', '2024-01-10 22:16:16.754', 'FLYWAY', '2024-01-10 22:20:48.186')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('56582c3c-6819-43c8-8d89-8e43823500c3'::uuid, 'DKORIN', 'Dmitri', NULL, NULL, 'Korin', '79fe321b-7716-413f-b878-c5fd6100317d'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('56582c3c-6819-43c8-8d89-8e43823500c3'::uuid, 'DKORIN', 'Dmitri', 'Korin', '79fe321b-7716-413f-b878-c5fd6100317d'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('a0b7c3ea-a021-4bf5-904f-54bd6b4d4c76'::uuid, 'SROSINSK', 'Stephanie', NULL, NULL, 'Rosinski', '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('a0b7c3ea-a021-4bf5-904f-54bd6b4d4c76'::uuid, 'SROSINSK', 'Stephanie', 'Rosinski', '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('d148bfc7-b41a-474c-a04e-7218a840daea'::uuid, 'ADLAI', 'Adrienne', NULL, NULL, 'Lai', '79fe321b-7716-413f-b878-c5fd6100317d'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('d148bfc7-b41a-474c-a04e-7218a840daea'::uuid, 'ADLAI', 'Adrienne', 'Lai', '79fe321b-7716-413f-b878-c5fd6100317d'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('880e237a-a422-4443-a58d-22e5380be86a'::uuid, 'GRLAVERY', 'Greg', NULL, NULL, 'Lavery', 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('880e237a-a422-4443-a58d-22e5380be86a'::uuid, 'GRLAVERY', 'Greg', 'Lavery', 'c3d8519c-73cb-48a1-8058-358883d5ef4f'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('623fbd02-dff5-4d45-9ab3-f0acbe8d83ed'::uuid, 'JXDUNSDO', 'Jeremy', NULL, NULL, 'Dunsdon', '5128179c-f622-499b-b8e5-b39199081f22'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, office_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('623fbd02-dff5-4d45-9ab3-f0acbe8d83ed'::uuid, 'JXDUNSDO', 'Jeremy', 'Dunsdon', '5128179c-f622-499b-b8e5-b39199081f22'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('b17ee2c1-a26b-4911-ac6f-810b8fdfaab3'::uuid, 'JFUNK', 'Jonathan', NULL, NULL, 'Funk', '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, 'f896cbb2d5254e54a4ad581dc80681d1'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('b17ee2c1-a26b-4911-ac6f-810b8fdfaab3'::uuid, 'JFUNK', 'Jonathan', 'Funk', '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, 'f896cbb2d5254e54a4ad581dc80681d1'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
 ON CONFLICT DO NOTHING;
 -- Fix keycloak name
 UPDATE app_user SET user_id = 'JONFUNK' WHERE (app_user_guid = 'b17ee2c1-a26b-4911-ac6f-810b8fdfaab3' AND user_id = 'JFUNK');
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('06ff894b-3895-4d32-8a4a-1fcc0be23e47'::uuid, 'RRONDEAU', 'Ryan', NULL, NULL, 'Rondeau', '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '77c6040d69b74757903f1cba37404db4'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('06ff894b-3895-4d32-8a4a-1fcc0be23e47'::uuid, 'RRONDEAU', 'Ryan', 'Rondeau', '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '77c6040d69b74757903f1cba37404db4'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('44123934-a2cf-4eae-88af-f682f7548f89'::uuid, 'MVESPRIN', 'Mike', NULL, NULL, 'Vesprini', '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '01a5ad69-0675-4359-a0a7-909f55e2c67a'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('44123934-a2cf-4eae-88af-f682f7548f89'::uuid, 'MVESPRIN', 'Mike', 'Vesprini', '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '01a5ad69-0675-4359-a0a7-909f55e2c67a'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
 ON CONFLICT DO NOTHING;
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('236fb546-fae1-47fd-b4c7-d108c0030ee2'::uuid, 'JGAMACHE', 'Joshua', NULL, NULL, 'Gamache', '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '13D3F179-F4CE-4464-A981-141061FD4E58'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('236fb546-fae1-47fd-b4c7-d108c0030ee2'::uuid, 'JGAMACHE', 'Joshua', 'Gamache', '4a5a94b1-bd47-4611-a577-861d97089903'::uuid, '13D3F179-F4CE-4464-A981-141061FD4E58'::uuid, 'FLYWAY', '2024-01-22 22:16:16.754', 'FLYWAY', '2024-01-22 22:20:48.186')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO app_user
-(app_user_guid, user_id, first_name, middle_name_1, middle_name_2, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
-VALUES('49af7913-bfee-48f3-b1b7-51e2b6134b64'::uuid, 'JOCHARTR', 'Jo-Anne', NULL, NULL, 'Chartrand', '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid, 'b4bb40f5-ee23-4c99-b63c-e741ce61b589'::uuid, 'FLYWAY', '2023-10-06 11:22:45.560', 'FLYWAY', '2023-10-06 11:25:55.828')
+(app_user_guid, user_id, first_name, last_name, office_guid, auth_user_guid, create_user_id, create_utc_timestamp, update_user_id, update_utc_timestamp)
+VALUES('49af7913-bfee-48f3-b1b7-51e2b6134b64'::uuid, 'JOCHARTR', 'Jo-Anne', 'Chartrand', '3f474308-68da-450a-b1ab-fb8a5b7a27ce'::uuid, 'b4bb40f5-ee23-4c99-b63c-e741ce61b589'::uuid, 'FLYWAY', '2023-10-06 11:22:45.560', 'FLYWAY', '2023-10-06 11:25:55.828')
 ON CONFLICT DO NOTHING;
 
 --------------------------------

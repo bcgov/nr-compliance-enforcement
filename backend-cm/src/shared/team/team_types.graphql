@@ -1,0 +1,6 @@
+type Team {
+  teamGuid: String
+  teamCode: String
+  agencyCode: String
+  activeIndicator: Boolean
+}

@@ -7,8 +7,6 @@ CREATE TABLE
     auth_user_guid uuid,
     user_id character varying(32),
     first_name character varying(32),
-    middle_name_1 character varying(32),
-    middle_name_2 character varying(32),
     last_name character varying(32),
     coms_enrolled_ind boolean DEFAULT false,
     deactivate_ind boolean DEFAULT false,
@@ -30,10 +28,6 @@ COMMENT ON COLUMN app_user.auth_user_guid IS 'The SiteMinder guid returned to th
 COMMENT ON COLUMN app_user.user_id IS 'The IDIR ID issued to the user by the Government of British Columbia as part of their employment. Null for non-officers.';
 
 COMMENT ON COLUMN app_user.first_name IS 'The first name of the user.';
-
-COMMENT ON COLUMN app_user.middle_name_1 IS 'The first middle name of the user.';
-
-COMMENT ON COLUMN app_user.middle_name_2 IS 'Any remaining middle names beyond the first of the user.';
 
 COMMENT ON COLUMN app_user.last_name IS 'The last name of the user.';
 

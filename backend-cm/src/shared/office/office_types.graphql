@@ -1,0 +1,5 @@
+type Office {
+  officeGuid: String
+  geoOrganizationUnitCode: String
+  agencyCode: String
+}

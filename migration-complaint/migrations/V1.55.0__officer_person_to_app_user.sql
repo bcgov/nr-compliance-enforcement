@@ -4,8 +4,6 @@ CREATE TABLE
     auth_user_guid uuid,
     user_id character varying(32),
     first_name character varying(32),
-    middle_name_1 character varying(32),
-    middle_name_2 character varying(32),
     last_name character varying(32),
     coms_enrolled_ind boolean DEFAULT false,
     deactivate_ind boolean DEFAULT false,
@@ -25,10 +23,6 @@ COMMENT ON TABLE app_user IS 'A unified user table combining officers (identifie
 COMMENT ON COLUMN app_user.app_user_guid IS 'System generated unique key for a user. This key should never be exposed to users via any system utilizing the tables.';
 
 COMMENT ON COLUMN app_user.first_name IS 'The first name of the user.';
-
-COMMENT ON COLUMN app_user.middle_name_1 IS 'The first middle name of the user.';
-
-COMMENT ON COLUMN app_user.middle_name_2 IS 'Any remaining middle names beyond the first of the user.';
 
 COMMENT ON COLUMN app_user.last_name IS 'The last name of the user.';
 
@@ -99,8 +93,6 @@ INSERT INTO
   app_user (
     app_user_guid,
     first_name,
-    middle_name_1,
-    middle_name_2,
     last_name,
     user_id,
     office_guid,
@@ -119,8 +111,6 @@ INSERT INTO
 SELECT
   uuid_generate_v4 () AS app_user_guid,
   p.first_name,
-  p.middle_name_1,
-  p.middle_name_2,
   p.last_name,
   o.user_id,
   o.office_guid,

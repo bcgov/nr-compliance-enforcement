@@ -1,0 +1,7 @@
+type GeoOrgUnitTypeCode {
+  geoOrgUnitTypeCode: String
+  shortDescription: String
+  longDescription: String
+  displayOrder: Int
+  activeIndicator: Boolean
+}

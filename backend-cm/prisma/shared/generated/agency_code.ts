@@ -1,4 +1,8 @@
+import { app_user } from "./app_user";
 import { case_file } from "./case_file";
+import { geo_org_unit_structure } from "./geo_org_unit_structure";
+import { office } from "./office";
+import { team } from "./team";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class agency_code {
@@ -32,6 +36,18 @@ export class agency_code {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiProperty({ isArray: true, type: () => app_user })
+  app_user: app_user[];
+
   @ApiProperty({ isArray: true, type: () => case_file })
   case_file: case_file[];
+
+  @ApiProperty({ isArray: true, type: () => geo_org_unit_structure })
+  geo_org_unit_structure: geo_org_unit_structure[];
+
+  @ApiProperty({ isArray: true, type: () => office })
+  office: office[];
+
+  @ApiProperty({ isArray: true, type: () => team })
+  team: team[];
 }
