@@ -15,7 +15,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'postgres',
     '2025-09-08 23:27:10.251621'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_type_code
@@ -30,7 +30,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'postgres',
     '2025-09-08 23:27:10.251621'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_type_code
@@ -45,7 +45,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'postgres',
     '2025-09-08 23:27:10.251621'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_type_code
@@ -80,7 +80,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'REGION',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -97,7 +97,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'REGION',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -114,7 +114,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'REGION',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -131,7 +131,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'REGION',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -148,7 +148,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'REGION',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -165,7 +165,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'REGION',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -182,7 +182,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'REGION',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -199,7 +199,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -216,7 +216,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -233,7 +233,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -250,7 +250,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -267,7 +267,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -284,7 +284,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -301,7 +301,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -318,7 +318,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -335,7 +335,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -352,7 +352,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -369,7 +369,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -386,7 +386,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -403,7 +403,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -420,7 +420,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -437,7 +437,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -454,7 +454,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -471,7 +471,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -488,7 +488,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -505,7 +505,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -522,7 +522,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -539,7 +539,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -556,7 +556,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -573,7 +573,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -590,7 +590,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -607,7 +607,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -624,7 +624,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -641,7 +641,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -658,7 +658,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -675,7 +675,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -692,7 +692,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -709,7 +709,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -726,7 +726,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -743,7 +743,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -760,7 +760,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -777,7 +777,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -794,7 +794,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -811,7 +811,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -828,7 +828,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -845,7 +845,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -862,7 +862,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -879,7 +879,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -896,7 +896,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -913,7 +913,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -930,7 +930,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -947,7 +947,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -964,7 +964,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -981,7 +981,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -998,7 +998,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1015,7 +1015,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1032,7 +1032,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1049,7 +1049,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1066,7 +1066,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1083,7 +1083,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1100,7 +1100,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1117,7 +1117,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1134,7 +1134,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1151,7 +1151,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1168,7 +1168,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1185,7 +1185,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1202,7 +1202,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1219,7 +1219,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1236,7 +1236,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1253,7 +1253,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1270,7 +1270,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'OFFLOC',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1287,7 +1287,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1304,7 +1304,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1321,7 +1321,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1338,7 +1338,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1355,7 +1355,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1372,7 +1372,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1389,7 +1389,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1406,7 +1406,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1423,7 +1423,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1440,7 +1440,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1457,7 +1457,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1474,7 +1474,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1491,7 +1491,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1508,7 +1508,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1525,7 +1525,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1542,7 +1542,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1559,7 +1559,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1576,7 +1576,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1593,7 +1593,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1610,7 +1610,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1627,7 +1627,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1644,7 +1644,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1661,7 +1661,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1678,7 +1678,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1695,7 +1695,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1712,7 +1712,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1729,7 +1729,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1746,7 +1746,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1763,7 +1763,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1780,7 +1780,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1797,7 +1797,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1814,7 +1814,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1831,7 +1831,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1848,7 +1848,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1865,7 +1865,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1882,7 +1882,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1899,7 +1899,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1916,7 +1916,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1933,7 +1933,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1950,7 +1950,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1967,7 +1967,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -1984,7 +1984,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2001,7 +2001,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2018,7 +2018,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2035,7 +2035,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2052,7 +2052,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2069,7 +2069,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2086,7 +2086,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2103,7 +2103,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2120,7 +2120,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2137,7 +2137,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2154,7 +2154,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2171,7 +2171,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2188,7 +2188,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2205,7 +2205,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2222,7 +2222,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2239,7 +2239,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2256,7 +2256,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2273,7 +2273,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2290,7 +2290,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2307,7 +2307,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2324,7 +2324,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2341,7 +2341,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2358,7 +2358,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2375,7 +2375,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2392,7 +2392,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2409,7 +2409,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2426,7 +2426,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2443,7 +2443,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2460,7 +2460,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2477,7 +2477,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2494,7 +2494,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2511,7 +2511,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2528,7 +2528,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2545,7 +2545,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2562,7 +2562,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2579,7 +2579,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2596,7 +2596,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2613,7 +2613,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2630,7 +2630,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2647,7 +2647,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2664,7 +2664,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2681,7 +2681,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2698,7 +2698,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2715,7 +2715,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2732,7 +2732,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2749,7 +2749,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2766,7 +2766,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2783,7 +2783,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2800,7 +2800,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2817,7 +2817,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2834,7 +2834,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2851,7 +2851,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2868,7 +2868,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2885,7 +2885,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2902,7 +2902,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2919,7 +2919,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2936,7 +2936,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2953,7 +2953,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2970,7 +2970,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -2987,7 +2987,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3004,7 +3004,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3021,7 +3021,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3038,7 +3038,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3055,7 +3055,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3072,7 +3072,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3089,7 +3089,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3106,7 +3106,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3123,7 +3123,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3140,7 +3140,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3157,7 +3157,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3174,7 +3174,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3191,7 +3191,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3208,7 +3208,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3225,7 +3225,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3242,7 +3242,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3259,7 +3259,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3276,7 +3276,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3293,7 +3293,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3310,7 +3310,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3327,7 +3327,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3344,7 +3344,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3361,7 +3361,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3378,7 +3378,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3395,7 +3395,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3412,7 +3412,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3429,7 +3429,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3446,7 +3446,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3463,7 +3463,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3480,7 +3480,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3497,7 +3497,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3514,7 +3514,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3531,7 +3531,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3548,7 +3548,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3565,7 +3565,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3582,7 +3582,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3599,7 +3599,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3616,7 +3616,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3633,7 +3633,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3650,7 +3650,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3667,7 +3667,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3684,7 +3684,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3701,7 +3701,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3718,7 +3718,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3735,7 +3735,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3752,7 +3752,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3769,7 +3769,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3786,7 +3786,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3803,7 +3803,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3820,7 +3820,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3837,7 +3837,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3854,7 +3854,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3871,7 +3871,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3888,7 +3888,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3905,7 +3905,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3922,7 +3922,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3939,7 +3939,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3956,7 +3956,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3973,7 +3973,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -3990,7 +3990,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4007,7 +4007,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4024,7 +4024,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4041,7 +4041,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4058,7 +4058,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4075,7 +4075,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4092,7 +4092,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4109,7 +4109,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4126,7 +4126,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4143,7 +4143,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4160,7 +4160,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4177,7 +4177,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4194,7 +4194,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4211,7 +4211,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4228,7 +4228,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4245,7 +4245,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4262,7 +4262,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4279,7 +4279,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4296,7 +4296,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4313,7 +4313,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4330,7 +4330,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4347,7 +4347,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4364,7 +4364,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4381,7 +4381,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4398,7 +4398,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4415,7 +4415,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4432,7 +4432,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4449,7 +4449,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4466,7 +4466,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4483,7 +4483,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4500,7 +4500,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4517,7 +4517,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4534,7 +4534,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4551,7 +4551,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4568,7 +4568,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4585,7 +4585,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4602,7 +4602,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4619,7 +4619,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4636,7 +4636,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4653,7 +4653,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4670,7 +4670,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4687,7 +4687,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4704,7 +4704,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4721,7 +4721,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4738,7 +4738,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4755,7 +4755,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4772,7 +4772,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4789,7 +4789,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4806,7 +4806,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4823,7 +4823,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4840,7 +4840,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4857,7 +4857,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4874,7 +4874,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4891,7 +4891,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4908,7 +4908,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4925,7 +4925,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4942,7 +4942,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4959,7 +4959,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4976,7 +4976,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -4993,7 +4993,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5010,7 +5010,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5027,7 +5027,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5044,7 +5044,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5061,7 +5061,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5078,7 +5078,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5095,7 +5095,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5112,7 +5112,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5129,7 +5129,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5146,7 +5146,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5163,7 +5163,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5180,7 +5180,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5197,7 +5197,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5214,7 +5214,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5231,7 +5231,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5248,7 +5248,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5265,7 +5265,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5282,7 +5282,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5299,7 +5299,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5316,7 +5316,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5333,7 +5333,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5350,7 +5350,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5367,7 +5367,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5384,7 +5384,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5401,7 +5401,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5418,7 +5418,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5435,7 +5435,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5452,7 +5452,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5469,7 +5469,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5486,7 +5486,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5503,7 +5503,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5520,7 +5520,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5537,7 +5537,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5554,7 +5554,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5571,7 +5571,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5588,7 +5588,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5605,7 +5605,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5622,7 +5622,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5639,7 +5639,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5656,7 +5656,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5673,7 +5673,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5690,7 +5690,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5707,7 +5707,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5724,7 +5724,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5741,7 +5741,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5758,7 +5758,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5775,7 +5775,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5792,7 +5792,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5809,7 +5809,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5826,7 +5826,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5843,7 +5843,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5860,7 +5860,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5877,7 +5877,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5894,7 +5894,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5911,7 +5911,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5928,7 +5928,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5945,7 +5945,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5962,7 +5962,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5979,7 +5979,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -5996,7 +5996,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6013,7 +6013,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6030,7 +6030,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6047,7 +6047,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6064,7 +6064,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6081,7 +6081,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6098,7 +6098,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6115,7 +6115,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6132,7 +6132,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6149,7 +6149,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6166,7 +6166,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6183,7 +6183,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6200,7 +6200,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6217,7 +6217,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6234,7 +6234,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6251,7 +6251,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6268,7 +6268,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6285,7 +6285,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6302,7 +6302,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6319,7 +6319,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6336,7 +6336,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6353,7 +6353,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6370,7 +6370,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6387,7 +6387,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6404,7 +6404,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6421,7 +6421,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6438,7 +6438,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6455,7 +6455,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6472,7 +6472,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6489,7 +6489,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6506,7 +6506,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6523,7 +6523,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6540,7 +6540,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6557,7 +6557,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6574,7 +6574,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6591,7 +6591,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6608,7 +6608,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6625,7 +6625,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6642,7 +6642,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6659,7 +6659,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6676,7 +6676,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6693,7 +6693,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6710,7 +6710,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6727,7 +6727,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6744,7 +6744,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6761,7 +6761,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6778,7 +6778,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6795,7 +6795,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6812,7 +6812,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6829,7 +6829,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6846,7 +6846,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6863,7 +6863,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6880,7 +6880,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6897,7 +6897,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6914,7 +6914,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6931,7 +6931,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6948,7 +6948,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6965,7 +6965,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6982,7 +6982,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -6999,7 +6999,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7016,7 +7016,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7033,7 +7033,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7050,7 +7050,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7067,7 +7067,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7084,7 +7084,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7101,7 +7101,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7118,7 +7118,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7135,7 +7135,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7152,7 +7152,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7169,7 +7169,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7186,7 +7186,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7203,7 +7203,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7220,7 +7220,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7237,7 +7237,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7254,7 +7254,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7271,7 +7271,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7288,7 +7288,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7305,7 +7305,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7322,7 +7322,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7339,7 +7339,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7356,7 +7356,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7373,7 +7373,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7390,7 +7390,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7407,7 +7407,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7424,7 +7424,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7441,7 +7441,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7458,7 +7458,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7475,7 +7475,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7492,7 +7492,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7509,7 +7509,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7526,7 +7526,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7543,7 +7543,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7560,7 +7560,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7577,7 +7577,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7594,7 +7594,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7611,7 +7611,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7628,7 +7628,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7645,7 +7645,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7662,7 +7662,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7679,7 +7679,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7696,7 +7696,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7713,7 +7713,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7730,7 +7730,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7747,7 +7747,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7764,7 +7764,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7781,7 +7781,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7798,7 +7798,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7815,7 +7815,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7832,7 +7832,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7849,7 +7849,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7866,7 +7866,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7883,7 +7883,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7900,7 +7900,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7917,7 +7917,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7934,7 +7934,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7951,7 +7951,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7968,7 +7968,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -7985,7 +7985,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8002,7 +8002,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8019,7 +8019,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8036,7 +8036,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8053,7 +8053,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8070,7 +8070,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8087,7 +8087,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8104,7 +8104,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8121,7 +8121,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8138,7 +8138,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8155,7 +8155,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8172,7 +8172,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8189,7 +8189,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8206,7 +8206,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8223,7 +8223,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8240,7 +8240,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8257,7 +8257,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8274,7 +8274,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8291,7 +8291,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8308,7 +8308,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8325,7 +8325,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8342,7 +8342,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8359,7 +8359,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8376,7 +8376,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8393,7 +8393,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8410,7 +8410,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8427,7 +8427,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8444,7 +8444,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8461,7 +8461,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8478,7 +8478,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8495,7 +8495,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8512,7 +8512,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8529,7 +8529,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8546,7 +8546,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8563,7 +8563,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8580,7 +8580,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8597,7 +8597,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8614,7 +8614,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8631,7 +8631,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8648,7 +8648,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8665,7 +8665,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8682,7 +8682,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8699,7 +8699,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8716,7 +8716,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8733,7 +8733,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8750,7 +8750,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8767,7 +8767,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8784,7 +8784,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8801,7 +8801,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8818,7 +8818,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8835,7 +8835,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8852,7 +8852,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8869,7 +8869,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8886,7 +8886,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8903,7 +8903,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8920,7 +8920,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8937,7 +8937,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8954,7 +8954,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8971,7 +8971,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -8988,7 +8988,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9005,7 +9005,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9022,7 +9022,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9039,7 +9039,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9056,7 +9056,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9073,7 +9073,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9090,7 +9090,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9107,7 +9107,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9124,7 +9124,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9141,7 +9141,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9158,7 +9158,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9175,7 +9175,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9192,7 +9192,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9209,7 +9209,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9226,7 +9226,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9243,7 +9243,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9260,7 +9260,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9277,7 +9277,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9294,7 +9294,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9311,7 +9311,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9328,7 +9328,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9345,7 +9345,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9362,7 +9362,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9379,7 +9379,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9396,7 +9396,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9413,7 +9413,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9430,7 +9430,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9447,7 +9447,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9464,7 +9464,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9481,7 +9481,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9498,7 +9498,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9515,7 +9515,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9532,7 +9532,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9549,7 +9549,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9566,7 +9566,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9583,7 +9583,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9600,7 +9600,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9617,7 +9617,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9634,7 +9634,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9651,7 +9651,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9668,7 +9668,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9685,7 +9685,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9702,7 +9702,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9719,7 +9719,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9736,7 +9736,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9753,7 +9753,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9770,7 +9770,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9787,7 +9787,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9804,7 +9804,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9821,7 +9821,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9838,7 +9838,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9855,7 +9855,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9872,7 +9872,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9889,7 +9889,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9906,7 +9906,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9923,7 +9923,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9940,7 +9940,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9957,7 +9957,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9974,7 +9974,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -9991,7 +9991,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10008,7 +10008,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10025,7 +10025,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10042,7 +10042,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10059,7 +10059,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10076,7 +10076,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10093,7 +10093,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10110,7 +10110,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10127,7 +10127,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10144,7 +10144,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10161,7 +10161,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10178,7 +10178,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10195,7 +10195,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10212,7 +10212,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10229,7 +10229,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10246,7 +10246,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10263,7 +10263,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10280,7 +10280,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10297,7 +10297,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10314,7 +10314,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10331,7 +10331,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10348,7 +10348,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10365,7 +10365,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10382,7 +10382,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10399,7 +10399,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10416,7 +10416,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10433,7 +10433,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10450,7 +10450,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10467,7 +10467,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10484,7 +10484,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10501,7 +10501,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10518,7 +10518,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10535,7 +10535,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10552,7 +10552,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10569,7 +10569,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10586,7 +10586,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10603,7 +10603,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10620,7 +10620,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10637,7 +10637,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10654,7 +10654,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10671,7 +10671,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10688,7 +10688,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10705,7 +10705,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10722,7 +10722,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10739,7 +10739,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10756,7 +10756,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10773,7 +10773,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10790,7 +10790,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10807,7 +10807,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10824,7 +10824,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10841,7 +10841,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10858,7 +10858,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10875,7 +10875,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10892,7 +10892,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10909,7 +10909,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10926,7 +10926,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10943,7 +10943,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10960,7 +10960,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10977,7 +10977,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -10994,7 +10994,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11011,7 +11011,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11028,7 +11028,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11045,7 +11045,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11062,7 +11062,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11079,7 +11079,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11096,7 +11096,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11113,7 +11113,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11130,7 +11130,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11147,7 +11147,7 @@ VALUES
     '2025-09-08 23:27:36.949948',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11164,7 +11164,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11181,7 +11181,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11198,7 +11198,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11215,7 +11215,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11232,7 +11232,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11249,7 +11249,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11266,7 +11266,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11283,7 +11283,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11300,7 +11300,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11317,7 +11317,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11334,7 +11334,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11351,7 +11351,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11368,7 +11368,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11385,7 +11385,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11402,7 +11402,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11419,7 +11419,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11436,7 +11436,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11453,7 +11453,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11470,7 +11470,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11487,7 +11487,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11504,7 +11504,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11521,7 +11521,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11538,7 +11538,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11555,7 +11555,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11572,7 +11572,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11589,7 +11589,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11606,7 +11606,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11623,7 +11623,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11640,7 +11640,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11657,7 +11657,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11674,7 +11674,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11691,7 +11691,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11708,7 +11708,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11725,7 +11725,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11742,7 +11742,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11759,7 +11759,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11776,7 +11776,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11793,7 +11793,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11810,7 +11810,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11827,7 +11827,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11844,7 +11844,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11861,7 +11861,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11878,7 +11878,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11895,7 +11895,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11912,7 +11912,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11929,7 +11929,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11946,7 +11946,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11963,7 +11963,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11980,7 +11980,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -11997,7 +11997,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12014,7 +12014,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12031,7 +12031,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12048,7 +12048,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12065,7 +12065,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12082,7 +12082,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12099,7 +12099,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12116,7 +12116,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12133,7 +12133,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12150,7 +12150,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12167,7 +12167,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12184,7 +12184,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12201,7 +12201,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12218,7 +12218,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12235,7 +12235,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12252,7 +12252,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12269,7 +12269,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12286,7 +12286,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12303,7 +12303,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12320,7 +12320,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12337,7 +12337,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12354,7 +12354,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12371,7 +12371,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12388,7 +12388,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12405,7 +12405,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12422,7 +12422,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12439,7 +12439,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12456,7 +12456,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12473,7 +12473,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12490,7 +12490,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12507,7 +12507,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12524,7 +12524,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12541,7 +12541,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12558,7 +12558,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12575,7 +12575,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12592,7 +12592,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12609,7 +12609,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12626,7 +12626,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12643,7 +12643,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12660,7 +12660,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12677,7 +12677,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12694,7 +12694,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12711,7 +12711,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12728,7 +12728,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12745,7 +12745,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12762,7 +12762,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12779,7 +12779,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12796,7 +12796,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12813,7 +12813,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12830,7 +12830,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12847,7 +12847,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12864,7 +12864,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12881,7 +12881,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12898,7 +12898,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12915,7 +12915,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12932,7 +12932,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12949,7 +12949,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12966,7 +12966,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -12983,7 +12983,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13000,7 +13000,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13017,7 +13017,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13034,7 +13034,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13051,7 +13051,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13068,7 +13068,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13085,7 +13085,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13102,7 +13102,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13119,7 +13119,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13136,7 +13136,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13153,7 +13153,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13170,7 +13170,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13187,7 +13187,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13204,7 +13204,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13221,7 +13221,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13238,7 +13238,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13255,7 +13255,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13272,7 +13272,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13289,7 +13289,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13306,7 +13306,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13323,7 +13323,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13340,7 +13340,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13357,7 +13357,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13374,7 +13374,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13391,7 +13391,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13408,7 +13408,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13425,7 +13425,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13442,7 +13442,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13459,7 +13459,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13476,7 +13476,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13493,7 +13493,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13510,7 +13510,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13527,7 +13527,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13544,7 +13544,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13561,7 +13561,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13578,7 +13578,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13595,7 +13595,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13612,7 +13612,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13629,7 +13629,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13646,7 +13646,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13663,7 +13663,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13680,7 +13680,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13697,7 +13697,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13714,7 +13714,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13731,7 +13731,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13748,7 +13748,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13765,7 +13765,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13782,7 +13782,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13799,7 +13799,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13816,7 +13816,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13833,7 +13833,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13850,7 +13850,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13867,7 +13867,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13884,7 +13884,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13901,7 +13901,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13918,7 +13918,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13935,7 +13935,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13952,7 +13952,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13969,7 +13969,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -13986,7 +13986,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14003,7 +14003,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14020,7 +14020,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14037,7 +14037,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14054,7 +14054,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14071,7 +14071,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14088,7 +14088,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14105,7 +14105,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14122,7 +14122,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14139,7 +14139,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14156,7 +14156,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14173,7 +14173,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14190,7 +14190,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14207,7 +14207,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14224,7 +14224,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14241,7 +14241,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14258,7 +14258,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14275,7 +14275,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14292,7 +14292,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14309,7 +14309,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14326,7 +14326,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14343,7 +14343,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14360,7 +14360,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14377,7 +14377,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14394,7 +14394,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14411,7 +14411,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14428,7 +14428,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14445,7 +14445,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14462,7 +14462,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14479,7 +14479,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14496,7 +14496,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14513,7 +14513,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14530,7 +14530,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14547,7 +14547,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14564,7 +14564,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14581,7 +14581,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14598,7 +14598,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14615,7 +14615,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14632,7 +14632,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14649,7 +14649,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14666,7 +14666,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14683,7 +14683,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14700,7 +14700,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14717,7 +14717,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14734,7 +14734,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14751,7 +14751,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14768,7 +14768,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14785,7 +14785,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14802,7 +14802,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14819,7 +14819,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14836,7 +14836,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14853,7 +14853,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14870,7 +14870,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14887,7 +14887,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14904,7 +14904,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14921,7 +14921,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14938,7 +14938,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14955,7 +14955,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14972,7 +14972,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -14989,7 +14989,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15006,7 +15006,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15023,7 +15023,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15040,7 +15040,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15057,7 +15057,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15074,7 +15074,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15091,7 +15091,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15108,7 +15108,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15125,7 +15125,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15142,7 +15142,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15159,7 +15159,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15176,7 +15176,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15193,7 +15193,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15210,7 +15210,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15227,7 +15227,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15244,7 +15244,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15261,7 +15261,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15278,7 +15278,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15295,7 +15295,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15312,7 +15312,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15329,7 +15329,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15346,7 +15346,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15363,7 +15363,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15380,7 +15380,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15397,7 +15397,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15414,7 +15414,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15431,7 +15431,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15448,7 +15448,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15465,7 +15465,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15482,7 +15482,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15499,7 +15499,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15516,7 +15516,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15533,7 +15533,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15550,7 +15550,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15567,7 +15567,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15584,7 +15584,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15601,7 +15601,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15618,7 +15618,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15635,7 +15635,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15652,7 +15652,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15669,7 +15669,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15686,7 +15686,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15703,7 +15703,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15720,7 +15720,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15737,7 +15737,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15754,7 +15754,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15771,7 +15771,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15788,7 +15788,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15805,7 +15805,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15822,7 +15822,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15839,7 +15839,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15856,7 +15856,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15873,7 +15873,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15890,7 +15890,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15907,7 +15907,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15924,7 +15924,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15941,7 +15941,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15958,7 +15958,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15975,7 +15975,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -15992,7 +15992,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16009,7 +16009,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16026,7 +16026,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16043,7 +16043,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16060,7 +16060,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16077,7 +16077,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16094,7 +16094,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16111,7 +16111,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16128,7 +16128,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16145,7 +16145,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16162,7 +16162,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16179,7 +16179,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16196,7 +16196,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16213,7 +16213,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16230,7 +16230,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16247,7 +16247,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16264,7 +16264,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16281,7 +16281,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16298,7 +16298,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16315,7 +16315,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16332,7 +16332,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16349,7 +16349,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16366,7 +16366,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16383,7 +16383,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16400,7 +16400,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16417,7 +16417,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16434,7 +16434,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16451,7 +16451,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16468,7 +16468,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16485,7 +16485,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16502,7 +16502,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16519,7 +16519,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16536,7 +16536,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16553,7 +16553,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16570,7 +16570,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16587,7 +16587,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16604,7 +16604,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16621,7 +16621,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16638,7 +16638,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16655,7 +16655,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16672,7 +16672,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16689,7 +16689,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16706,7 +16706,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16723,7 +16723,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16740,7 +16740,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16757,7 +16757,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16774,7 +16774,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16791,7 +16791,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16808,7 +16808,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16825,7 +16825,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16842,7 +16842,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16859,7 +16859,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16876,7 +16876,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16893,7 +16893,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16910,7 +16910,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16927,7 +16927,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16944,7 +16944,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16961,7 +16961,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16978,7 +16978,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -16995,7 +16995,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17012,7 +17012,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17029,7 +17029,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17046,7 +17046,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17063,7 +17063,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17080,7 +17080,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17097,7 +17097,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17114,7 +17114,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17131,7 +17131,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17148,7 +17148,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17165,7 +17165,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17182,7 +17182,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17199,7 +17199,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17216,7 +17216,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17233,7 +17233,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17250,7 +17250,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17267,7 +17267,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17284,7 +17284,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17301,7 +17301,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17318,7 +17318,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17335,7 +17335,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17352,7 +17352,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17369,7 +17369,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17386,7 +17386,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17403,7 +17403,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17420,7 +17420,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17437,7 +17437,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17454,7 +17454,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17471,7 +17471,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17488,7 +17488,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17505,7 +17505,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17522,7 +17522,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17539,7 +17539,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17556,7 +17556,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17573,7 +17573,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17590,7 +17590,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17607,7 +17607,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17624,7 +17624,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17641,7 +17641,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17658,7 +17658,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'REGION',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17675,7 +17675,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17692,7 +17692,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17709,7 +17709,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'ZONE',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17726,7 +17726,7 @@ VALUES
     '2025-09-08 23:27:33.265905',
     'OFFLOC',
     true
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17743,7 +17743,7 @@ VALUES
     '2025-09-08 23:27:33.265905',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17760,7 +17760,7 @@ VALUES
     '2025-09-08 23:27:33.265905',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17777,7 +17777,7 @@ VALUES
     '2025-09-08 23:27:33.265905',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17794,7 +17794,7 @@ VALUES
     '2025-09-08 23:27:33.265905',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17811,7 +17811,7 @@ VALUES
     '2025-09-08 23:27:33.265905',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17828,7 +17828,7 @@ VALUES
     '2025-09-08 23:27:33.265905',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17845,7 +17845,7 @@ VALUES
     '2025-09-08 23:27:33.265905',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17862,7 +17862,7 @@ VALUES
     '2025-09-08 23:27:33.265905',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17879,7 +17879,7 @@ VALUES
     '2025-09-08 23:27:33.265905',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_organization_unit_code
@@ -17916,7 +17916,7 @@ VALUES
     'COS',
     'KTNY',
     'CLMBAKTNY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -17932,7 +17932,7 @@ VALUES
     'COS',
     'KTNY',
     'EKTNY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -17948,7 +17948,7 @@ VALUES
     'COS',
     'KTNY',
     'WKTNY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -17964,7 +17964,7 @@ VALUES
     'COS',
     'OKNGN',
     'CENOKNGN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -17980,7 +17980,7 @@ VALUES
     'COS',
     'OKNGN',
     'NOKNGN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -17996,7 +17996,7 @@ VALUES
     'COS',
     'OKNGN',
     'SOKNGN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18012,7 +18012,7 @@ VALUES
     'COS',
     'OMINECA',
     'NCHKOLKS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18028,7 +18028,7 @@ VALUES
     'COS',
     'OMINECA',
     'OMNCA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18044,7 +18044,7 @@ VALUES
     'COS',
     'PCLRD',
     'NPCE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18060,7 +18060,7 @@ VALUES
     'COS',
     'PCLRD',
     'SPCE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18076,7 +18076,7 @@ VALUES
     'COS',
     'SKNA',
     'BLKYCSR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18092,7 +18092,7 @@ VALUES
     'COS',
     'SKNA',
     'NCST'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18108,7 +18108,7 @@ VALUES
     'COS',
     'STHCST',
     'FRSRN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18124,7 +18124,7 @@ VALUES
     'COS',
     'STHCST',
     'FRSRS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18140,7 +18140,7 @@ VALUES
     'COS',
     'STHCST',
     'SEA2SKY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18156,7 +18156,7 @@ VALUES
     'COS',
     'STHCST',
     'SNSHNCST'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18172,7 +18172,7 @@ VALUES
     'COS',
     'TMPSNCRBO',
     'CRBOCHLCTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18188,7 +18188,7 @@ VALUES
     'COS',
     'TMPSNCRBO',
     'CRBOTMPSN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18204,7 +18204,7 @@ VALUES
     'COS',
     'TMPSNCRBO',
     'TMPSNNCLA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18220,7 +18220,7 @@ VALUES
     'COS',
     'WSTCST',
     'CENISL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18236,7 +18236,7 @@ VALUES
     'COS',
     'WSTCST',
     'NISL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18252,7 +18252,7 @@ VALUES
     'COS',
     'WSTCST',
     'SISL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18268,7 +18268,7 @@ VALUES
     'COS',
     'CLMBAKTNY',
     'GLDN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18284,7 +18284,7 @@ VALUES
     'COS',
     'CLMBAKTNY',
     'INVRM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18300,7 +18300,7 @@ VALUES
     'COS',
     'EKTNY',
     'CRNBK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18316,7 +18316,7 @@ VALUES
     'COS',
     'EKTNY',
     'FRNIE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18332,7 +18332,7 @@ VALUES
     'COS',
     'WKTNY',
     'CSTLGAR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18348,7 +18348,7 @@ VALUES
     'COS',
     'WKTNY',
     'CRSTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18364,7 +18364,7 @@ VALUES
     'COS',
     'WKTNY',
     'NLSON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18380,7 +18380,7 @@ VALUES
     'COS',
     'CENOKNGN',
     'KLWNA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18396,7 +18396,7 @@ VALUES
     'COS',
     'NOKNGN',
     'SLMONRM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18412,7 +18412,7 @@ VALUES
     'COS',
     'NOKNGN',
     'VRNON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18428,7 +18428,7 @@ VALUES
     'COS',
     'SOKNGN',
     'GDFKS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18444,7 +18444,7 @@ VALUES
     'COS',
     'SOKNGN',
     'PNTCTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18460,7 +18460,7 @@ VALUES
     'COS',
     'NCHKOLKS',
     'BURNSLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18476,7 +18476,7 @@ VALUES
     'COS',
     'NCHKOLKS',
     'VNDHF'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18492,7 +18492,7 @@ VALUES
     'COS',
     'OMNCA',
     'MKNZI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18508,7 +18508,7 @@ VALUES
     'COS',
     'OMNCA',
     'PRCG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18524,7 +18524,7 @@ VALUES
     'COS',
     'NPCE',
     'FRTNLN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18540,7 +18540,7 @@ VALUES
     'COS',
     'NPCE',
     'FRTSTJN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18556,7 +18556,7 @@ VALUES
     'COS',
     'SPCE',
     'CHTWD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18572,7 +18572,7 @@ VALUES
     'COS',
     'SPCE',
     'DWSNCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18588,7 +18588,7 @@ VALUES
     'COS',
     'BLKYCSR',
     'ATLIN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18604,7 +18604,7 @@ VALUES
     'COS',
     'BLKYCSR',
     'DSELK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18620,7 +18620,7 @@ VALUES
     'COS',
     'BLKYCSR',
     'SMITHRS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18636,7 +18636,7 @@ VALUES
     'COS',
     'NCST',
     'DJNG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18652,7 +18652,7 @@ VALUES
     'COS',
     'NCST',
     'TERRC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18668,7 +18668,7 @@ VALUES
     'COS',
     'FRSRN',
     'MSNMPLRD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18684,7 +18684,7 @@ VALUES
     'COS',
     'FRSRS',
     'MSNCHWK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18700,7 +18700,7 @@ VALUES
     'COS',
     'FRSRS',
     'MSNSR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18716,7 +18716,7 @@ VALUES
     'COS',
     'SEA2SKY',
     'SQMSHWHS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18732,7 +18732,7 @@ VALUES
     'COS',
     'SNSHNCST',
     'PWLRV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18748,7 +18748,7 @@ VALUES
     'COS',
     'SNSHNCST',
     'SCHLT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18764,7 +18764,7 @@ VALUES
     'COS',
     'CRBOCHLCTN',
     'BLLACLA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18780,7 +18780,7 @@ VALUES
     'COS',
     'CRBOCHLCTN',
     'QSNL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18796,7 +18796,7 @@ VALUES
     'COS',
     'CRBOCHLCTN',
     'WLMSLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18812,7 +18812,7 @@ VALUES
     'COS',
     'CRBOTMPSN',
     '100MLHSE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18828,7 +18828,7 @@ VALUES
     'COS',
     'CRBOTMPSN',
     'CLRWTER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18844,7 +18844,7 @@ VALUES
     'COS',
     'CRBOTMPSN',
     'LLT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18860,7 +18860,7 @@ VALUES
     'COS',
     'TMPSNNCLA',
     'KMLPS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18876,7 +18876,7 @@ VALUES
     'COS',
     'TMPSNNCLA',
     'MRRTT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18892,7 +18892,7 @@ VALUES
     'COS',
     'CENISL',
     'NNIMO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18908,7 +18908,7 @@ VALUES
     'COS',
     'CENISL',
     'PRTALB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18924,7 +18924,7 @@ VALUES
     'COS',
     'NISL',
     'BLKCRKCR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18940,7 +18940,7 @@ VALUES
     'COS',
     'NISL',
     'PRTMCNL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18956,7 +18956,7 @@ VALUES
     'COS',
     'SISL',
     'DNCN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18972,7 +18972,7 @@ VALUES
     'COS',
     'SISL',
     'VICTRA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -18988,7 +18988,7 @@ VALUES
     'COS',
     '100MLHSE',
     '100MHHS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19004,7 +19004,7 @@ VALUES
     'COS',
     '100MLHSE',
     '108MLRNH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19020,7 +19020,7 @@ VALUES
     'COS',
     'WLMSLK',
     '140MHHS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19036,7 +19036,7 @@ VALUES
     'COS',
     'WLMSLK',
     '150MHHS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19052,7 +19052,7 @@ VALUES
     'COS',
     'LLT',
     '16MIL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19068,7 +19068,7 @@ VALUES
     'COS',
     'WLMSLK',
     '40MLFLTZ'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19084,7 +19084,7 @@ VALUES
     'COS',
     '100MLHSE',
     '70MLHS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19100,7 +19100,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'ABTFRD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19116,7 +19116,7 @@ VALUES
     'COS',
     'KMLPS',
     'ADMSLKHS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19132,7 +19132,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'AGSSZHS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19148,7 +19148,7 @@ VALUES
     'COS',
     'PRTALB',
     'AHST'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19164,7 +19164,7 @@ VALUES
     'COS',
     'NLSON',
     'ANSWRTH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19180,7 +19180,7 @@ VALUES
     'COS',
     'TERRC',
     'AYNSH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19196,7 +19196,7 @@ VALUES
     'COS',
     'SLMONRM',
     'ALBRTCNY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19212,7 +19212,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'ALBION'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19228,7 +19228,7 @@ VALUES
     'COS',
     'MSNSR',
     'ALDRGRV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19244,7 +19244,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'ALRTBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19260,7 +19260,7 @@ VALUES
     'COS',
     'QSNL',
     'ALXNDRIA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19276,7 +19276,7 @@ VALUES
     'COS',
     'WLMSLK',
     'ALXSCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19292,7 +19292,7 @@ VALUES
     'COS',
     'PRCG',
     'ALZLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19308,7 +19308,7 @@ VALUES
     'COS',
     'TERRC',
     'ALCRM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19324,7 +19324,7 @@ VALUES
     'COS',
     'WLMSLK',
     'ALKLLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19340,7 +19340,7 @@ VALUES
     'COS',
     'WLMSLK',
     'ALKLLKIR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19356,7 +19356,7 @@ VALUES
     'COS',
     '100MLHSE',
     'ALKLLKRV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19372,7 +19372,7 @@ VALUES
     'COS',
     'DJNG',
     'ALLFRDBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19388,7 +19388,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'ALTONA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19404,7 +19404,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'ALVIN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19420,7 +19420,7 @@ VALUES
     'COS',
     'WLMSLK',
     'ANAHAMIR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19436,7 +19436,7 @@ VALUES
     'COS',
     'WLMSLK',
     'ANAHIMIR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19452,7 +19452,7 @@ VALUES
     'COS',
     'BLLACLA',
     'ANHMLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19468,7 +19468,7 @@ VALUES
     'COS',
     'DJNG',
     'ANCRGIN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19484,7 +19484,7 @@ VALUES
     'COS',
     'KMLPS',
     'ANGLMNT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19500,7 +19500,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'ANMR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19516,7 +19516,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'APPDLE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19532,7 +19532,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'APPGRV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19548,7 +19548,7 @@ VALUES
     'COS',
     'NLSON',
     'ARGENT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19564,7 +19564,7 @@ VALUES
     'COS',
     'VRNON',
     'ARMSTRNG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19580,7 +19580,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'ARRAS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19596,7 +19596,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'ARRWPK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19612,7 +19612,7 @@ VALUES
     'COS',
     'SLMONRM',
     'ARRWHD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19628,7 +19628,7 @@ VALUES
     'COS',
     'MRRTT',
     'ASHCROF'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19644,7 +19644,7 @@ VALUES
     'COS',
     'VRNON',
     'ASHTNCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19660,7 +19660,7 @@ VALUES
     'COS',
     'MRRTT',
     'ASPNGRV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19676,7 +19676,7 @@ VALUES
     'COS',
     'INVRM',
     'ATHALMR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19692,7 +19692,7 @@ VALUES
     'COS',
     'ATLIN',
     'ATLN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19708,7 +19708,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'ATTACHI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19724,7 +19724,7 @@ VALUES
     'COS',
     'CLRWTER',
     'AVOLA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19740,7 +19740,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'BALDNLL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19756,7 +19756,7 @@ VALUES
     'COS',
     'NLSON',
     'BALFOUR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19772,7 +19772,7 @@ VALUES
     'COS',
     'PRTALB',
     'BAMFELD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19788,7 +19788,7 @@ VALUES
     'COS',
     'MRRTT',
     'BNKIER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19804,7 +19804,7 @@ VALUES
     'COS',
     'QSNL',
     'BARKRVLL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19820,7 +19820,7 @@ VALUES
     'COS',
     'CLRWTER',
     'BARRIR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19836,7 +19836,7 @@ VALUES
     'COS',
     'FRNIE',
     'BAYNSLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19852,7 +19852,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'BRFLTS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19868,7 +19868,7 @@ VALUES
     'COS',
     'PRCG',
     'BRLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19884,7 +19884,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'BRMTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19900,7 +19900,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'BEATON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19916,7 +19916,7 @@ VALUES
     'COS',
     'DJNG',
     'BEATIE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19932,7 +19932,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'BVRCV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19948,7 +19948,7 @@ VALUES
     'COS',
     'PRTALB',
     'BVRCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19964,7 +19964,7 @@ VALUES
     'COS',
     'WLMSLK',
     'BVRVLY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19980,7 +19980,7 @@ VALUES
     'COS',
     'PRTALB',
     'BVDMLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -19996,7 +19996,7 @@ VALUES
     'COS',
     'KLWNA',
     'BVRRDL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20012,7 +20012,7 @@ VALUES
     'COS',
     'PRCG',
     'BVRLLY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20028,7 +20028,7 @@ VALUES
     'COS',
     'PRCG',
     'BDNSTLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20044,7 +20044,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'BELCARR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20060,7 +20060,7 @@ VALUES
     'COS',
     'DSELK',
     'BLLIINR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20076,7 +20076,7 @@ VALUES
     'COS',
     'SMITHRS',
     'BLLIISH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20092,7 +20092,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'BLLABELA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20108,7 +20108,7 @@ VALUES
     'COS',
     'BLLACLA',
     'BLLACOOL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20124,7 +20124,7 @@ VALUES
     'COS',
     'LLT',
     'BERKIN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20140,7 +20140,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'BSSBRRGH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20156,7 +20156,7 @@ VALUES
     'COS',
     'LLT',
     'BIGBAR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20172,7 +20172,7 @@ VALUES
     'COS',
     '100MLHSE',
     'BIGBRLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20188,7 +20188,7 @@ VALUES
     'COS',
     'WLMSLK',
     'BIGCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20204,7 +20204,7 @@ VALUES
     'COS',
     'WLMSLK',
     'BIGLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20220,7 +20220,7 @@ VALUES
     'COS',
     'KLWNA',
     'BIGWHIT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20236,7 +20236,7 @@ VALUES
     'COS',
     'CLRWTER',
     'BRISLD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20252,7 +20252,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'BRKN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20268,7 +20268,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'BRKHES'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20284,7 +20284,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'BLKCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20300,7 +20300,7 @@ VALUES
     'COS',
     'KLWNA',
     'BLKMTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20316,7 +20316,7 @@ VALUES
     'COS',
     'KMLPS',
     'BLKPNS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20332,7 +20332,7 @@ VALUES
     'COS',
     'PWLRV',
     'BLKPT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20348,7 +20348,7 @@ VALUES
     'COS',
     'CLRWTER',
     'BLKPL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20364,7 +20364,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'BLKTSK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20380,7 +20380,7 @@ VALUES
     'COS',
     'QSNL',
     'BLKWT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20396,7 +20396,7 @@ VALUES
     'COS',
     'GLDN',
     'BLBRY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20412,7 +20412,7 @@ VALUES
     'COS',
     'NLSON',
     'BLEWT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20428,7 +20428,7 @@ VALUES
     'COS',
     'SLMONRM',
     'BLDBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20444,7 +20444,7 @@ VALUES
     'COS',
     'PWLRV',
     'BLSLDG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20460,7 +20460,7 @@ VALUES
     'COS',
     'PWLRV',
     'BLBBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20476,7 +20476,7 @@ VALUES
     'COS',
     'CLRWTER',
     'BLURVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20492,7 +20492,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'BLUBRY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20508,7 +20508,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'BLUBYCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20524,7 +20524,7 @@ VALUES
     'COS',
     'DSELK',
     'BBQNN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20540,7 +20540,7 @@ VALUES
     'COS',
     'KMLPS',
     'BNPRTLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20556,7 +20556,7 @@ VALUES
     'COS',
     'NLSON',
     'BNNNGTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20572,7 +20572,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'BSTNBR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20588,7 +20588,7 @@ VALUES
     'COS',
     'CRSTN',
     'BSWLL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20604,7 +20604,7 @@ VALUES
     'COS',
     'QSNL',
     'BCHLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20620,7 +20620,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'BWNISL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20636,7 +20636,7 @@ VALUES
     'COS',
     'QSNL',
     'BWROLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20652,7 +20652,7 @@ VALUES
     'COS',
     'NNIMO',
     'BWSR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20668,7 +20668,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'BRCKNDL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20684,7 +20684,7 @@ VALUES
     'COS',
     'LLT',
     'BRLRN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20700,7 +20700,7 @@ VALUES
     'COS',
     'KMLPS',
     'BRNANCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20716,7 +20716,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'BRIRRDG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20732,7 +20732,7 @@ VALUES
     'COS',
     'PNTCTN',
     'BRDSL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20748,7 +20748,7 @@ VALUES
     'COS',
     '100MLHSE',
     'BRDGLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20764,7 +20764,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'BRLNT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20780,7 +20780,7 @@ VALUES
     'COS',
     'GLDN',
     'BRS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20796,7 +20796,7 @@ VALUES
     'COS',
     'INVRM',
     'BRSS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20812,7 +20812,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'BRT BCH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20828,7 +20828,7 @@ VALUES
     'COS',
     'MRRTT',
     'BRKMRE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20844,7 +20844,7 @@ VALUES
     'COS',
     'PRCG',
     'BCKHRN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20860,7 +20860,7 @@ VALUES
     'COS',
     'FRTNLN',
     'BCKNGHRS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20876,7 +20876,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'BCKLYBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20892,7 +20892,7 @@ VALUES
     'COS',
     '100MLHSE',
     'BFFLCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20908,7 +20908,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'BKCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20924,7 +20924,7 @@ VALUES
     'COS',
     'CRNBK',
     'BLLRVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20940,7 +20940,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'BURNBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20956,7 +20956,7 @@ VALUES
     'COS',
     'BURNSLK',
     'BURNLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20972,7 +20972,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'BRTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -20988,7 +20988,7 @@ VALUES
     'COS',
     'PWLRV',
     'BTEINLT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21004,7 +21004,7 @@ VALUES
     'COS',
     'TERRC',
     'BTDLPRIN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21020,7 +21020,7 @@ VALUES
     'COS',
     'LLT',
     'CCHCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21036,7 +21036,7 @@ VALUES
     'COS',
     'KLWNA',
     'CSSRSLDG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21052,7 +21052,7 @@ VALUES
     'COS',
     'GLDN',
     'CMB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21068,7 +21068,7 @@ VALUES
     'COS',
     'GLDN',
     'CMRNE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21084,7 +21084,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'CMBLRV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21100,7 +21100,7 @@ VALUES
     'COS',
     'INVRM',
     'CNLFLTS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21116,7 +21116,7 @@ VALUES
     'COS',
     '100MLHSE',
     'CNMLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21132,7 +21132,7 @@ VALUES
     'COS',
     '100MLHSE',
     'CNCR100M'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21148,7 +21148,7 @@ VALUES
     'COS',
     'SLMONRM',
     'CNCRKSA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21164,7 +21164,7 @@ VALUES
     'COS',
     'CRSTN',
     'CYN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21180,7 +21180,7 @@ VALUES
     'COS',
     '100MLHSE',
     'GTWKSLK100'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21196,7 +21196,7 @@ VALUES
     'COS',
     'TERRC',
     'GTWKSLKTRC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21212,7 +21212,7 @@ VALUES
     'COS',
     'ATLIN',
     'CRCRSSYK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21228,7 +21228,7 @@ VALUES
     'COS',
     'KLWNA',
     'CRMI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21244,7 +21244,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'CNO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21260,7 +21260,7 @@ VALUES
     'COS',
     'DSELK',
     'CSSR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21276,7 +21276,7 @@ VALUES
     'COS',
     'NNIMO',
     'CSSDY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21292,7 +21292,7 @@ VALUES
     'COS',
     'CLRWTER',
     'CTSRVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21308,7 +21308,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'CSTLGR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21324,7 +21324,7 @@ VALUES
     'COS',
     'PNTCTN',
     'CWSTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21340,7 +21340,7 @@ VALUES
     'COS',
     'DNCN',
     'CYCS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21356,7 +21356,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'CSLLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21372,7 +21372,7 @@ VALUES
     'COS',
     'NNIMO',
     'CDR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21388,7 +21388,7 @@ VALUES
     'COS',
     'TERRC',
     'CDRVL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21404,7 +21404,7 @@ VALUES
     'COS',
     'KMLPS',
     'CLSTA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21420,7 +21420,7 @@ VALUES
     'COS',
     'VICTRA',
     'CNTLSNSH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21436,7 +21436,7 @@ VALUES
     'COS',
     'DSELK',
     'CNTRVL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21452,7 +21452,7 @@ VALUES
     'COS',
     'MRRTT',
     'CHNLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21468,7 +21468,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'CHRLLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21484,7 +21484,7 @@ VALUES
     'COS',
     'DJNG',
     'CHRLTCTY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21500,7 +21500,7 @@ VALUES
     'COS',
     'KMLPS',
     'CHSE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21516,7 +21516,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'CHHLFSTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21532,7 +21532,7 @@ VALUES
     'COS',
     'DNCN',
     'CHMNUS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21548,7 +21548,7 @@ VALUES
     'COS',
     'KMLPS',
     'CHRYCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21564,7 +21564,7 @@ VALUES
     'COS',
     'VRNON',
     'CHRYVLLE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21580,7 +21580,7 @@ VALUES
     'COS',
     'CHTWD',
     'CHETWND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21596,7 +21596,7 @@ VALUES
     'COS',
     'PRCG',
     'CHFLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21612,7 +21612,7 @@ VALUES
     'COS',
     'PRCG',
     'CHLKOMUD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21628,7 +21628,7 @@ VALUES
     'COS',
     'WLMSLK',
     'CHLNKFRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21644,7 +21644,7 @@ VALUES
     'COS',
     'WLMSLK',
     'CHLKLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21660,7 +21660,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'CHILLIWK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21676,7 +21676,7 @@ VALUES
     'COS',
     'GDFKS',
     'CHRSTVAL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21692,7 +21692,7 @@ VALUES
     'COS',
     'GDFKS',
     'CHRSTNAL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21708,7 +21708,7 @@ VALUES
     'COS',
     'CLRWTER',
     'CHCHUA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21724,7 +21724,7 @@ VALUES
     'COS',
     'QSNL',
     'CINEMA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21740,7 +21740,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'CLAIRMNT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21756,7 +21756,7 @@ VALUES
     'COS',
     'SLMONRM',
     'CLNWLM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21772,7 +21772,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'CLAYHRST'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21788,7 +21788,7 @@ VALUES
     'COS',
     'MSNSR',
     'CLRBRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21804,7 +21804,7 @@ VALUES
     'COS',
     'CLRWTER',
     'CLRWTR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21820,7 +21820,7 @@ VALUES
     'COS',
     'BURNSLK',
     'CLEMRTA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21836,7 +21836,7 @@ VALUES
     'COS',
     'LLT',
     'CLINTON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21852,7 +21852,7 @@ VALUES
     'COS',
     'MSNSR',
     'CLOVRDLE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21868,7 +21868,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'COALHARB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21884,7 +21884,7 @@ VALUES
     'COS',
     'FRTNLN',
     'COALRIVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21900,7 +21900,7 @@ VALUES
     'COS',
     'MRRTT',
     'COALMONT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21916,7 +21916,7 @@ VALUES
     'COS',
     'DNCN',
     'COBBLHIL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21932,7 +21932,7 @@ VALUES
     'COS',
     'VRNON',
     'CLDSTRM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21948,7 +21948,7 @@ VALUES
     'COS',
     'BURNSLK',
     'CLLYMNT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21964,7 +21964,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'CLMBVLLY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21980,7 +21980,7 @@ VALUES
     'COS',
     'INVRM',
     'CLUMERE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -21996,7 +21996,7 @@ VALUES
     'COS',
     'VICTRA',
     'CLWOOD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22012,7 +22012,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'COMOX'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22028,7 +22028,7 @@ VALUES
     'COS',
     'FRTNLN',
     'CONTCTCK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22044,7 +22044,7 @@ VALUES
     'COS',
     'PWLRV',
     'COOKBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22060,7 +22060,7 @@ VALUES
     'COS',
     'NNIMO',
     'COOMBS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22076,7 +22076,7 @@ VALUES
     'COS',
     'NLSON',
     'COOPRCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22092,7 +22092,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'COQUITLM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22108,7 +22108,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'CRTSISLD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22124,7 +22124,7 @@ VALUES
     'COS',
     'QSNL',
     'COTNWOD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22140,7 +22140,7 @@ VALUES
     'COS',
     'GLDN',
     'CRSRLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22156,7 +22156,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'COURTNY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22172,7 +22172,7 @@ VALUES
     'COS',
     'DNCN',
     'CWCHNBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22188,7 +22188,7 @@ VALUES
     'COS',
     'DNCN',
     'CWCHNVLY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22204,7 +22204,7 @@ VALUES
     'COS',
     'CRNBK',
     'COYOTECR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22220,7 +22220,7 @@ VALUES
     'COS',
     'PWLRV',
     'CRAIGPRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22236,7 +22236,7 @@ VALUES
     'COS',
     'VRNON',
     'CRGLLACH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22252,7 +22252,7 @@ VALUES
     'COS',
     'PWLRV',
     'CRANBRRY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22268,7 +22268,7 @@ VALUES
     'COS',
     'CRNBK',
     'CRANBRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22284,7 +22284,7 @@ VALUES
     'COS',
     'CRSTN',
     'CRWFRDBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22300,7 +22300,7 @@ VALUES
     'COS',
     'PRCG',
     'CRSNTSPR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22316,7 +22316,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'CRSNTVLY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22332,7 +22332,7 @@ VALUES
     'COS',
     'CRSTN',
     'CRESTON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22348,7 +22348,7 @@ VALUES
     'COS',
     'DNCN',
     'CROFTON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22364,7 +22364,7 @@ VALUES
     'COS',
     'CLRWTER',
     'CROYDEN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22380,7 +22380,7 @@ VALUES
     'COS',
     'CLRWTER',
     'CRYSTLLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22396,7 +22396,7 @@ VALUES
     'COS',
     'KLWNA',
     'CRYSTLMN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22412,7 +22412,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'CULTSLKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22428,7 +22428,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'CMBRLAND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22444,7 +22444,7 @@ VALUES
     'COS',
     'BURNSLK',
     'DANSKIN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22460,7 +22460,7 @@ VALUES
     'COS',
     'LLT',
     'DARCY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22476,7 +22476,7 @@ VALUES
     'COS',
     'CLRWTER',
     'DARFIELD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22492,7 +22492,7 @@ VALUES
     'COS',
     'SCHLT',
     'DAVISBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22508,7 +22508,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'DAWSONCR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22524,7 +22524,7 @@ VALUES
     'COS',
     'WLMSLK',
     'DAWSONSL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22540,7 +22540,7 @@ VALUES
     'COS',
     'DSELK',
     'DEASELAK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22556,7 +22556,7 @@ VALUES
     'COS',
     'BURNSLK',
     'DECKERLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22572,7 +22572,7 @@ VALUES
     'COS',
     'NNIMO',
     'DEEPBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22588,7 +22588,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'DEERPRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22604,7 +22604,7 @@ VALUES
     'COS',
     '100MLHSE',
     'DEKALAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22620,7 +22620,7 @@ VALUES
     'COS',
     'CHTWD',
     'DELIO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22636,7 +22636,7 @@ VALUES
     'COS',
     'MSNSR',
     'DELTA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22652,7 +22652,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'DENMANIS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22668,7 +22668,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'DEROCHE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22684,7 +22684,7 @@ VALUES
     'COS',
     'PWLRV',
     'DESOLATN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22700,7 +22700,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'DEVINE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22716,7 +22716,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'DEWDNEY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22732,7 +22732,7 @@ VALUES
     'COS',
     'DJNG',
     'DINANBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22748,7 +22748,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'DOERIVER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22764,7 +22764,7 @@ VALUES
     'COS',
     'WLMSLK',
     'DOGCRIR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22780,7 +22780,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'DOIG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22796,7 +22796,7 @@ VALUES
     'COS',
     'PRCG',
     'DOMECRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22812,7 +22812,7 @@ VALUES
     'COS',
     'GLDN',
     'DONALD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22828,7 +22828,7 @@ VALUES
     'COS',
     'MRRTT',
     'DGLSLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22844,7 +22844,7 @@ VALUES
     'COS',
     'SLMONRM',
     'DOWNIECR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22860,7 +22860,7 @@ VALUES
     'COS',
     'DNCN',
     'DUNCAN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22876,7 +22876,7 @@ VALUES
     'COS',
     'QSNL',
     'DUNKLEY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22892,7 +22892,7 @@ VALUES
     'COS',
     'CLRWTER',
     'DUNSTER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22908,7 +22908,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'DURIEU'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22924,7 +22924,7 @@ VALUES
     'COS',
     'SLMONRM',
     'EAGLEBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22940,7 +22940,7 @@ VALUES
     'COS',
     '100MLHSE',
     'EAGLECRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22956,7 +22956,7 @@ VALUES
     'COS',
     'SCHLT',
     'EARLSCOV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22972,7 +22972,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'ECRACRFT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -22988,7 +22988,7 @@ VALUES
     'COS',
     'BURNSLK',
     'EFRANCLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23004,7 +23004,7 @@ VALUES
     'COS',
     'MRRTT',
     'EASTGATE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23020,7 +23020,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'EASTPINE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23036,7 +23036,7 @@ VALUES
     'COS',
     'CHTWD',
     'ESPINEPW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23052,7 +23052,7 @@ VALUES
     'COS',
     'CHTWD',
     'ESLOPPPP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23068,7 +23068,7 @@ VALUES
     'COS',
     'VICTRA',
     'EASTSKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23084,7 +23084,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'ETHURLOW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23100,7 +23100,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'EASTGTE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23116,7 +23116,7 @@ VALUES
     'COS',
     'INVRM',
     'EDGEWATER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23132,7 +23132,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'EDGEWOOD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23148,7 +23148,7 @@ VALUES
     'COS',
     'SCHLT',
     'EGMONT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23164,7 +23164,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'ELKBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23180,7 +23180,7 @@ VALUES
     'COS',
     'FRNIE',
     'ELKFORD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23196,7 +23196,7 @@ VALUES
     'COS',
     'FRNIE',
     'ELKO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23212,7 +23212,7 @@ VALUES
     'COS',
     'SMITHRS',
     'ELSWTHCP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23228,7 +23228,7 @@ VALUES
     'COS',
     'PWLRV',
     'EMMDSISL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23244,7 +23244,7 @@ VALUES
     'COS',
     'WLMSLK',
     'EMPRVALY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23260,7 +23260,7 @@ VALUES
     'COS',
     'BURNSLK',
     'ENDAKO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23276,7 +23276,7 @@ VALUES
     'COS',
     'VRNON',
     'ENDERBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23292,7 +23292,7 @@ VALUES
     'COS',
     'CRSTN',
     'ERICKSON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23308,7 +23308,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'ERIE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23324,7 +23324,7 @@ VALUES
     'COS',
     'NNIMO',
     'ERRINGTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23340,7 +23340,7 @@ VALUES
     'COS',
     'VICTRA',
     'ESQUIMAL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23356,7 +23356,7 @@ VALUES
     'COS',
     'INVRM',
     'FAIRMONT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23372,7 +23372,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'FAIRVIEW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23388,7 +23388,7 @@ VALUES
     'COS',
     'VRNON',
     'FALKLAND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23404,7 +23404,7 @@ VALUES
     'COS',
     'NNIMO',
     'FANNYBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23420,7 +23420,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'FARMINGT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23436,7 +23436,7 @@ VALUES
     'COS',
     'PNTCTN',
     'FAULDER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23452,7 +23452,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'FAUQUIER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23468,7 +23468,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'FELLERHT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23484,7 +23484,7 @@ VALUES
     'COS',
     'NLSON',
     'FERGUSON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23500,7 +23500,7 @@ VALUES
     'COS',
     'PRCG',
     'FERNDALE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23516,7 +23516,7 @@ VALUES
     'COS',
     'FRNIE',
     'FERNIE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23532,7 +23532,7 @@ VALUES
     'COS',
     'PRCG',
     'FINMORE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23548,7 +23548,7 @@ VALUES
     'COS',
     'KLWNA',
     'FINTRY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23564,7 +23564,7 @@ VALUES
     'COS',
     'FRTNLN',
     'FIRESIDE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23580,7 +23580,7 @@ VALUES
     'COS',
     'BLLACLA',
     'FIRVALE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23596,7 +23596,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'FLATROCK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23612,7 +23612,7 @@ VALUES
     'COS',
     '100MLHSE',
     'FORSTGRV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23628,7 +23628,7 @@ VALUES
     'COS',
     'BURNSLK',
     'FORESTDL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23644,7 +23644,7 @@ VALUES
     'COS',
     'SMITHRS',
     'FTBABINE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23660,7 +23660,7 @@ VALUES
     'COS',
     'VNDHF',
     'FORTFRSR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23676,7 +23676,7 @@ VALUES
     'COS',
     'MSNSR',
     'FTLANGLE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23692,7 +23692,7 @@ VALUES
     'COS',
     'FRTNLN',
     'FTNELSON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23708,7 +23708,7 @@ VALUES
     'COS',
     'VNDHF',
     'FTSTJAME'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23724,7 +23724,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'FTSTJOHN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23740,7 +23740,7 @@ VALUES
     'COS',
     'CRNBK',
     'FTSTEELE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23756,7 +23756,7 @@ VALUES
     'COS',
     'MKNZI',
     'FTWARE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23772,7 +23772,7 @@ VALUES
     'COS',
     'GLDN',
     'FTRESSLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23788,7 +23788,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'FOSTHS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23804,7 +23804,7 @@ VALUES
     'COS',
     'SCHLT',
     'FRANPENI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23820,7 +23820,7 @@ VALUES
     'COS',
     'BURNSLK',
     'FRNCSLK1'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23836,7 +23836,7 @@ VALUES
     'COS',
     'ATLIN',
     'FRASER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23852,7 +23852,7 @@ VALUES
     'COS',
     'VNDHF',
     'FRASERLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23868,7 +23868,7 @@ VALUES
     'COS',
     'PWLRV',
     'FREDRMCA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23884,7 +23884,7 @@ VALUES
     'COS',
     'CLRWTER',
     'FRIENDLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23900,7 +23900,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'FRUITVAL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23916,7 +23916,7 @@ VALUES
     'COS',
     'NNIMO',
     'GABRIOLAI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23932,7 +23932,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'GALENABAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23948,7 +23948,7 @@ VALUES
     'COS',
     'DNCN',
     'GALIANOI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23964,7 +23964,7 @@ VALUES
     'COS',
     'FRNIE',
     'GALLOWAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23980,7 +23980,7 @@ VALUES
     'COS',
     'SCHLT',
     'GAMBIERI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -23996,7 +23996,7 @@ VALUES
     'COS',
     'WLMSLK',
     'GANGRANCH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24012,7 +24012,7 @@ VALUES
     'COS',
     'DNCN',
     'GANGES'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24028,7 +24028,7 @@ VALUES
     'COS',
     'SCHLT',
     'GARDENBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24044,7 +24044,7 @@ VALUES
     'COS',
     'PNTCTN',
     'GARNETVL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24060,7 +24060,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'GENELLE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24076,7 +24076,7 @@ VALUES
     'COS',
     'TERRC',
     'GEORGEMI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24092,7 +24092,7 @@ VALUES
     'COS',
     'MKNZI',
     'GERMANSO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24108,7 +24108,7 @@ VALUES
     'COS',
     'NLSON',
     'GERRARD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24124,7 +24124,7 @@ VALUES
     'COS',
     'SCHLT',
     'GIBSONS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24140,7 +24140,7 @@ VALUES
     'COS',
     'PWLRV',
     'GILLIESB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24156,7 +24156,7 @@ VALUES
     'COS',
     'PRCG',
     'GISCOME'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24172,7 +24172,7 @@ VALUES
     'COS',
     'PRCG',
     'GISCOMEW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24188,7 +24188,7 @@ VALUES
     'COS',
     'TERRC',
     'GITANYOW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24204,7 +24204,7 @@ VALUES
     'COS',
     'SMITHRS',
     'GITWANGA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24220,7 +24220,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'GLADE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24236,7 +24236,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'GLADWIN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24252,7 +24252,7 @@ VALUES
     'COS',
     'BURNSLK',
     'GLENANNA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24268,7 +24268,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'GLENDACO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24284,7 +24284,7 @@ VALUES
     'COS',
     'DSELK',
     'GLENORA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24300,7 +24300,7 @@ VALUES
     'COS',
     'KLWNA',
     'GLENROSA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24316,7 +24316,7 @@ VALUES
     'COS',
     'SMITHRS',
     'GLENVOWL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24332,7 +24332,7 @@ VALUES
     'COS',
     'CRNBK',
     'GOLDCREK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24348,7 +24348,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'GOLDRIVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24364,7 +24364,7 @@ VALUES
     'COS',
     'LLT',
     'GOLDBRID'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24380,7 +24380,7 @@ VALUES
     'COS',
     'GLDN',
     'GOLDEN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24396,7 +24396,7 @@ VALUES
     'COS',
     'DSELK',
     'GOODHOPE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24412,7 +24412,7 @@ VALUES
     'COS',
     'DSELK',
     'GOODHOPL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24428,7 +24428,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'GOODLOW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24444,7 +24444,7 @@ VALUES
     'COS',
     'GDFKS',
     'GRANDFOR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24460,7 +24460,7 @@ VALUES
     'COS',
     'BURNSLK',
     'GRANISLE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24476,7 +24476,7 @@ VALUES
     'COS',
     'SCHLT',
     'GRANTHMS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24492,7 +24492,7 @@ VALUES
     'COS',
     'FRNIE',
     'GRASMERE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24508,7 +24508,7 @@ VALUES
     'COS',
     'BURNSLK',
     'GRASPLNS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24524,7 +24524,7 @@ VALUES
     'COS',
     'CRSTN',
     'GRAYCREE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24540,7 +24540,7 @@ VALUES
     'COS',
     'TERRC',
     'GRSEHRBR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24556,7 +24556,7 @@ VALUES
     'COS',
     'SLMONRM',
     'GREELY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24572,7 +24572,7 @@ VALUES
     'COS',
     'LLT',
     'GREENLLO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24588,7 +24588,7 @@ VALUES
     'COS',
     '100MLHSE',
     'GREENL70'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24604,7 +24604,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'GREENDAL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24620,7 +24620,7 @@ VALUES
     'COS',
     'TERRC',
     'GREENVLE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24636,7 +24636,7 @@ VALUES
     'COS',
     'GDFKS',
     'GREENWOD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24652,7 +24652,7 @@ VALUES
     'COS',
     'GLDN',
     'GRIFFNLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24668,7 +24668,7 @@ VALUES
     'COS',
     'SLMONRM',
     'GRINDROD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24684,7 +24684,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'GROUNDBR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24700,7 +24700,7 @@ VALUES
     'COS',
     'LLT',
     'GUNLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24716,7 +24716,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'GUNDY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24732,7 +24732,7 @@ VALUES
     'COS',
     'BLLACLA',
     'HAGENSBG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24748,7 +24748,7 @@ VALUES
     'COS',
     'DJNG',
     'HAIDAGWA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24764,7 +24764,7 @@ VALUES
     'COS',
     'ATLIN',
     'HAINESJU'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24780,7 +24780,7 @@ VALUES
     'COS',
     'SCHLT',
     'HALFMNB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24796,7 +24796,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'HALFWYRF'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24812,7 +24812,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'HALLS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24828,7 +24828,7 @@ VALUES
     'COS',
     'CLRWTER',
     'HAMMERLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24844,7 +24844,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'HAMMOND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24860,7 +24860,7 @@ VALUES
     'COS',
     'WLMSLK',
     'HANCEVLE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24876,7 +24876,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'HANEY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24892,7 +24892,7 @@ VALUES
     'COS',
     'PRCG',
     'HANSARDU'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24908,7 +24908,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'HARDWCKI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24924,7 +24924,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'HARHOTSP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24940,7 +24940,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'HARSLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24956,7 +24956,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'HARSMILS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24972,7 +24972,7 @@ VALUES
     'COS',
     'GLDN',
     'HARROGAT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -24988,7 +24988,7 @@ VALUES
     'COS',
     'NLSON',
     'HARROP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25004,7 +25004,7 @@ VALUES
     'COS',
     'TERRC',
     'HARTLYBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25020,7 +25020,7 @@ VALUES
     'COS',
     'CHTWD',
     'HASLERFL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25036,7 +25036,7 @@ VALUES
     'COS',
     'LLT',
     'HATCREEK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25052,7 +25052,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'HATZIC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25068,7 +25068,7 @@ VALUES
     'COS',
     'SMITHRS',
     'HAZELTON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25084,7 +25084,7 @@ VALUES
     'COS',
     'PNTCTN',
     'HEDLEY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25100,7 +25100,7 @@ VALUES
     'COS',
     'KMLPS',
     'HEFFLCKR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25116,7 +25116,7 @@ VALUES
     'COS',
     'KMLPS',
     'HEFFLLAK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25132,7 +25132,7 @@ VALUES
     'COS',
     'FRTNLN',
     'HELMTGAS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25148,7 +25148,7 @@ VALUES
     'COS',
     'VICTRA',
     'HIGHLAND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25164,7 +25164,7 @@ VALUES
     'COS',
     'MRRTT',
     'HIGHLAVL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25180,7 +25180,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'HILLS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25196,7 +25196,7 @@ VALUES
     'COS',
     'PRCG',
     'HIXON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25212,7 +25212,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'HOLBERG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25228,7 +25228,7 @@ VALUES
     'COS',
     'CLRWTER',
     'HOMESRVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25244,7 +25244,7 @@ VALUES
     'COS',
     'DNCN',
     'HNMNBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25260,7 +25260,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'HOPE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25276,7 +25276,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'HORNBYIS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25292,7 +25292,7 @@ VALUES
     'COS',
     'NNIMO',
     'HORNELAK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25308,7 +25308,7 @@ VALUES
     'COS',
     'WLMSLK',
     'HORSEFLY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25324,7 +25324,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'HORSHOEB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25340,7 +25340,7 @@ VALUES
     'COS',
     'FRNIE',
     'HOSMER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25356,7 +25356,7 @@ VALUES
     'COS',
     'PRTALB',
     'HOTSPRCV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25372,7 +25372,7 @@ VALUES
     'COS',
     'PWLRV',
     'HOTHAMS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25388,7 +25388,7 @@ VALUES
     'COS',
     'NLSON',
     'HOWSER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25404,7 +25404,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'HYDECREE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25420,7 +25420,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'INDIANAR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25436,7 +25436,7 @@ VALUES
     'COS',
     'INVRM',
     'INVERMER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25452,7 +25452,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'IOCO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25468,7 +25468,7 @@ VALUES
     'COS',
     'SCHLT',
     'IRVSLAND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25484,7 +25484,7 @@ VALUES
     'COS',
     'DSELK',
     'ISKUT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25500,7 +25500,7 @@ VALUES
     'COS',
     'PRCG',
     'ISLPIERR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25516,7 +25516,7 @@ VALUES
     'COS',
     'CHTWD',
     'JACKFSLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25532,7 +25532,7 @@ VALUES
     'COS',
     'DSELK',
     'JADECITY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25548,7 +25548,7 @@ VALUES
     'COS',
     'FRNIE',
     'JAFFRAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25564,7 +25564,7 @@ VALUES
     'COS',
     'LLT',
     'JESMOND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25580,7 +25580,7 @@ VALUES
     'COS',
     'KLWNA',
     'JOERICH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25596,7 +25596,7 @@ VALUES
     'COS',
     'NLSON',
     'JOHNSNLG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25612,7 +25612,7 @@ VALUES
     'COS',
     'VICTRA',
     'JORDNRVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25628,7 +25628,7 @@ VALUES
     'COS',
     'DJNG',
     'JUSKATLA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25644,7 +25644,7 @@ VALUES
     'COS',
     'PNTCTN',
     'KALEDEN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25660,7 +25660,7 @@ VALUES
     'COS',
     'KMLPS',
     'KAMLOOPS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25676,7 +25676,7 @@ VALUES
     'COS',
     'LLT',
     'KANAKABR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25692,7 +25692,7 @@ VALUES
     'COS',
     'NLSON',
     'KASLOBC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25708,7 +25708,7 @@ VALUES
     'COS',
     'SCHLT',
     'KEATSISL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25724,7 +25724,7 @@ VALUES
     'COS',
     'PWLRV',
     'KELLYCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25740,7 +25740,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'KELLYLAK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25756,7 +25756,7 @@ VALUES
     'COS',
     'KLWNA',
     'KELOWNA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25772,7 +25772,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'KELSEYBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25788,7 +25788,7 @@ VALUES
     'COS',
     'TERRC',
     'KEMANO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25804,7 +25804,7 @@ VALUES
     'COS',
     'MKNZI',
     'KEMESSMN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25820,7 +25820,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'KENT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25836,7 +25836,7 @@ VALUES
     'COS',
     'PNTCTN',
     'KEREMEOS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25852,7 +25852,7 @@ VALUES
     'COS',
     'QSNL',
     'KERSLEY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25868,7 +25868,7 @@ VALUES
     'COS',
     'PRTALB',
     'KILDONAN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25884,7 +25884,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'KILKERRN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25900,7 +25900,7 @@ VALUES
     'COS',
     'VRNON',
     'KILLNYBC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25916,7 +25916,7 @@ VALUES
     'COS',
     'CRNBK',
     'KIMBERLY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25932,7 +25932,7 @@ VALUES
     'COS',
     'GLDN',
     'KINABSKT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25948,7 +25948,7 @@ VALUES
     'COS',
     'TERRC',
     'KINCOLTH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25964,7 +25964,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'KNGCOMEI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25980,7 +25980,7 @@ VALUES
     'COS',
     'VRNON',
     'KINGFSHR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -25996,7 +25996,7 @@ VALUES
     'COS',
     'CRSTN',
     'KINGSGTE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26012,7 +26012,7 @@ VALUES
     'COS',
     'MRRTT',
     'KINGSVAL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26028,7 +26028,7 @@ VALUES
     'COS',
     'SMITHRS',
     'KISPIOX'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26044,7 +26044,7 @@ VALUES
     'COS',
     'CRSTN',
     'KITCHNRR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26060,7 +26060,7 @@ VALUES
     'COS',
     'TERRC',
     'KITIMAAT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26076,7 +26076,7 @@ VALUES
     'COS',
     'TERRC',
     'KITIMAT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26092,7 +26092,7 @@ VALUES
     'COS',
     'TERRC',
     'KITKATLA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26108,7 +26108,7 @@ VALUES
     'COS',
     'TERRC',
     'KITSAULT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26124,7 +26124,7 @@ VALUES
     'COS',
     'SMITHRS',
     'KITSGCLA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26140,7 +26140,7 @@ VALUES
     'COS',
     'SMITHRS',
     'KITWANCL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26156,7 +26156,7 @@ VALUES
     'COS',
     'SMITHRS',
     'KITWANGA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26172,7 +26172,7 @@ VALUES
     'COS',
     'TERRC',
     'KLEANZA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26188,7 +26188,7 @@ VALUES
     'COS',
     'WLMSLK',
     'KLEENAKL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26204,7 +26204,7 @@ VALUES
     'COS',
     'TERRC',
     'KLEMTU'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26220,7 +26220,7 @@ VALUES
     'COS',
     'QSNL',
     'KLUSKUS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26236,7 +26236,7 @@ VALUES
     'COS',
     'KMLPS',
     'KNOUFFLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26252,7 +26252,7 @@ VALUES
     'COS',
     'KMLPS',
     'KNUTSFOR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26268,7 +26268,7 @@ VALUES
     'COS',
     'CRSTN',
     'KOOTNAYB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26284,7 +26284,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'KRESTOVA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26300,7 +26300,7 @@ VALUES
     'COS',
     'DNCN',
     'KUPERISL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26316,7 +26316,7 @@ VALUES
     'COS',
     'CRSTN',
     'KUSKANOK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26332,7 +26332,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'KYUQUOT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26348,7 +26348,7 @@ VALUES
     'COS',
     '100MLHSE',
     'LACDSRCH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26364,7 +26364,7 @@ VALUES
     'COS',
     'CLRWTER',
     'LACDSRHS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26380,7 +26380,7 @@ VALUES
     'COS',
     '100MLHSE',
     'LACLACHE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26396,7 +26396,7 @@ VALUES
     'COS',
     'KMLPS',
     'LACLEJUN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26412,7 +26412,7 @@ VALUES
     'COS',
     'MSNSR',
     'LADNERBC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26428,7 +26428,7 @@ VALUES
     'COS',
     'NNIMO',
     'LADYSMTH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26444,7 +26444,7 @@ VALUES
     'COS',
     'KLWNA',
     'LAKECNRY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26460,7 +26460,7 @@ VALUES
     'COS',
     'DNCN',
     'LKECOWCH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26476,7 +26476,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'LKEEROCK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26492,7 +26492,7 @@ VALUES
     'COS',
     'SLMONRM',
     'LKEREVS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26508,7 +26508,7 @@ VALUES
     'COS',
     'TERRC',
     'LAKELSEK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26524,7 +26524,7 @@ VALUES
     'COS',
     'PWLRV',
     'LANGBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26540,7 +26540,7 @@ VALUES
     'COS',
     'SCHLT',
     'LANGDALE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26556,7 +26556,7 @@ VALUES
     'COS',
     'VICTRA',
     'LANGFORD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26572,7 +26572,7 @@ VALUES
     'COS',
     'MSNSR',
     'LANGLEY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26588,7 +26588,7 @@ VALUES
     'COS',
     'NNIMO',
     'LANTZVIL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26604,7 +26604,7 @@ VALUES
     'COS',
     'NLSON',
     'LARDEAU'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26620,7 +26620,7 @@ VALUES
     'COS',
     'NNIMO',
     'LASQUETI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26636,7 +26636,7 @@ VALUES
     'COS',
     'SLMONRM',
     'LAURETTA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26652,7 +26652,7 @@ VALUES
     'COS',
     'VRNON',
     'LAVINGTON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26668,7 +26668,7 @@ VALUES
     'COS',
     'DJNG',
     'LAWNHILL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26684,7 +26684,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'LEBAHDO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26700,7 +26700,7 @@ VALUES
     'COS',
     'CHTWD',
     'LEMORAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26716,7 +26716,7 @@ VALUES
     'COS',
     'FRTNLN',
     'LIARDHSP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26732,7 +26732,7 @@ VALUES
     'COS',
     'FRTNLN',
     'LIARDRVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26748,7 +26748,7 @@ VALUES
     'COS',
     'WLMSLK',
     'LIKELY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26764,7 +26764,7 @@ VALUES
     'COS',
     'LLT',
     'LILLOOET'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26780,7 +26780,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'LILLOLTK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26796,7 +26796,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'LINDELLB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26812,7 +26812,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'LIONSBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26828,7 +26828,7 @@ VALUES
     'COS',
     'CRSTN',
     'LISTER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26844,7 +26844,7 @@ VALUES
     'COS',
     'CLRWTER',
     'LITTLEFT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26860,7 +26860,7 @@ VALUES
     'COS',
     'MRRTT',
     'LOGNLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26876,7 +26876,7 @@ VALUES
     'COS',
     '100MLHSE',
     'LONEBTTE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26892,7 +26892,7 @@ VALUES
     'COS',
     'CHTWD',
     'LONEPRAR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26908,7 +26908,7 @@ VALUES
     'COS',
     'PRCG',
     'LONGWORT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26924,7 +26924,7 @@ VALUES
     'COS',
     'LLT',
     'LOONLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26940,7 +26940,7 @@ VALUES
     'COS',
     'PRCG',
     'LOOS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26956,7 +26956,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'LOUGHBOR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26972,7 +26972,7 @@ VALUES
     'COS',
     'KMLPS',
     'LOUISECR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -26988,7 +26988,7 @@ VALUES
     'COS',
     'VNDHF',
     'LOVELLCO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27004,7 +27004,7 @@ VALUES
     'COS',
     'MRRTT',
     'LOWERNIC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27020,7 +27020,7 @@ VALUES
     'COS',
     'DSELK',
     'LOWERPOS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27036,7 +27036,7 @@ VALUES
     'COS',
     'VRNON',
     'LUMBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27052,7 +27052,7 @@ VALUES
     'COS',
     'PWLRV',
     'LUND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27068,7 +27068,7 @@ VALUES
     'COS',
     'LLT',
     'LYTTONBC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27084,7 +27084,7 @@ VALUES
     'COS',
     'VRNON',
     'MABELLAK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27100,7 +27100,7 @@ VALUES
     'COS',
     'CLRWTER',
     'MACHETEL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27116,7 +27116,7 @@ VALUES
     'COS',
     'MKNZI',
     'MACKENZI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27132,7 +27132,7 @@ VALUES
     'COS',
     'SCHLT',
     'MADEIRA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27148,7 +27148,7 @@ VALUES
     'COS',
     'SCHLT',
     'MADEIRAP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27164,7 +27164,7 @@ VALUES
     'COS',
     '100MLHSE',
     'MAHOODFA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27180,7 +27180,7 @@ VALUES
     'COS',
     'SLMONRM',
     'MALAKWA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27196,7 +27196,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'MANNINGP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27212,7 +27212,7 @@ VALUES
     'COS',
     'MKNZI',
     'MANSONCR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27228,7 +27228,7 @@ VALUES
     'COS',
     'DNCN',
     'MAPLEBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27244,7 +27244,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'MAPLERID'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27260,7 +27260,7 @@ VALUES
     'COS',
     'SLMONRM',
     'MARA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27276,7 +27276,7 @@ VALUES
     'COS',
     'SLMONRM',
     'MARALAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27292,7 +27292,7 @@ VALUES
     'COS',
     'WLMSLK',
     'MARGUERI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27308,7 +27308,7 @@ VALUES
     'COS',
     'WLMSLK',
     'MARGNTIR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27324,7 +27324,7 @@ VALUES
     'COS',
     'WLMSLK',
     'MARGIR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27340,7 +27340,7 @@ VALUES
     'COS',
     'WLMSLK',
     'MARTINVA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27356,7 +27356,7 @@ VALUES
     'COS',
     'CRNBK',
     'MARYSVIL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27372,7 +27372,7 @@ VALUES
     'COS',
     'DJNG',
     'MASSET'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27388,7 +27388,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'MATSQUI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27404,7 +27404,7 @@ VALUES
     'COS',
     'VICTRA',
     'MAYNEISL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27420,7 +27420,7 @@ VALUES
     'COS',
     'CRNBK',
     'MAYOOK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27436,7 +27436,7 @@ VALUES
     'COS',
     'PRCG',
     'MCBRIDE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27452,7 +27452,7 @@ VALUES
     'COS',
     'KLWNA',
     'MCCULLOC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27468,7 +27468,7 @@ VALUES
     'COS',
     'PRCG',
     'MCGREGOR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27484,7 +27484,7 @@ VALUES
     'COS',
     'KLWNA',
     'MCKINLEY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27500,7 +27500,7 @@ VALUES
     'COS',
     'WLMSLK',
     'MCLEESEL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27516,7 +27516,7 @@ VALUES
     'COS',
     'MKNZI',
     'MCLEODLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27532,7 +27532,7 @@ VALUES
     'COS',
     'KMLPS',
     'MCLURE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27548,7 +27548,7 @@ VALUES
     'COS',
     'GLDN',
     'MCMURDO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27564,7 +27564,7 @@ VALUES
     'COS',
     'NLSON',
     'MEADOWCR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27580,7 +27580,7 @@ VALUES
     'COS',
     '100MLHSE',
     'MEADWLAK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27596,7 +27596,7 @@ VALUES
     'COS',
     'CRNBK',
     'MEADOWBK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27612,7 +27612,7 @@ VALUES
     'COS',
     'WLMSLK',
     'MELDRUMC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27628,7 +27628,7 @@ VALUES
     'COS',
     'MRRTT',
     'MERRITT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27644,7 +27644,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'MERVILLE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27660,7 +27660,7 @@ VALUES
     'COS',
     'DNCN',
     'MESACHLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27676,7 +27676,7 @@ VALUES
     'COS',
     'MRRTT',
     'MESSEZLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27692,7 +27692,7 @@ VALUES
     'COS',
     'TERRC',
     'METAKATL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27708,7 +27708,7 @@ VALUES
     'COS',
     'VICTRA',
     'METCHOSI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27724,7 +27724,7 @@ VALUES
     'COS',
     'SMITHRS',
     'MEZIADIN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27740,7 +27740,7 @@ VALUES
     'COS',
     'SLMONRM',
     'MICACREK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27756,7 +27756,7 @@ VALUES
     'COS',
     'MSNSR',
     'MIDDLEPT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27772,7 +27772,7 @@ VALUES
     'COS',
     'GDFKS',
     'MIDWAYBC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27788,7 +27788,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'MILE625'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27804,7 +27804,7 @@ VALUES
     'COS',
     'DNCN',
     'MILLBAYB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27820,7 +27820,7 @@ VALUES
     'COS',
     'DJNG',
     'MILLERCK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27836,7 +27836,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'MINSTREL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27852,7 +27852,7 @@ VALUES
     'COS',
     'WLMSLK',
     'MIOCENE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27868,7 +27868,7 @@ VALUES
     'COS',
     'NLSON',
     'MIRRLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27884,7 +27884,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'MISSION'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27900,7 +27900,7 @@ VALUES
     'COS',
     'PRCG',
     'MIWORTH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27916,7 +27916,7 @@ VALUES
     'COS',
     'CHTWD',
     'MOBERLYL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27932,7 +27932,7 @@ VALUES
     'COS',
     'KMLPS',
     'MONTECRE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27948,7 +27948,7 @@ VALUES
     'COS',
     'KMLPS',
     'MONTELAK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27964,7 +27964,7 @@ VALUES
     'COS',
     'CLRWTER',
     'MONTICLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27980,7 +27980,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'MONTNEYB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -27996,7 +27996,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'MONTROSE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28012,7 +28012,7 @@ VALUES
     'COS',
     'FRNIE',
     'MORRISEY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28028,7 +28028,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'MOUNTCUR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28044,7 +28044,7 @@ VALUES
     'COS',
     'CLRWTER',
     'MOUNTROB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28060,7 +28060,7 @@ VALUES
     'COS',
     'CRNBK',
     'MOYIE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28076,7 +28076,7 @@ VALUES
     'COS',
     'FRTNLN',
     'MUNCHOLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28092,7 +28092,7 @@ VALUES
     'COS',
     'FRTNLN',
     'MUSKWHTS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28108,7 +28108,7 @@ VALUES
     'COS',
     'PWLRV',
     'MYRTLCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28124,7 +28124,7 @@ VALUES
     'COS',
     'PWLRV',
     'MYRTLPT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28140,7 +28140,7 @@ VALUES
     'COS',
     'DJNG',
     'NDNHA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28156,7 +28156,7 @@ VALUES
     'COS',
     'KLWNA',
     'NAHUN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28172,7 +28172,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'NAKUSP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28188,7 +28188,7 @@ VALUES
     'COS',
     'BLLACLA',
     'NAMU'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28204,7 +28204,7 @@ VALUES
     'COS',
     'NNIMO',
     'NANAIMO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28220,7 +28220,7 @@ VALUES
     'COS',
     'NNIMO',
     'NANOBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28236,7 +28236,7 @@ VALUES
     'COS',
     'PNTCTN',
     'NARAMA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28252,7 +28252,7 @@ VALUES
     'COS',
     'TERRC',
     'NASCA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28268,7 +28268,7 @@ VALUES
     'COS',
     'QSNL',
     'NAZKO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28284,7 +28284,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'NEEDL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28300,7 +28300,7 @@ VALUES
     'COS',
     'NLSON',
     'NELSON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28316,7 +28316,7 @@ VALUES
     'COS',
     'SCHLT',
     'NELISL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28332,7 +28332,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'NELWA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28348,7 +28348,7 @@ VALUES
     'COS',
     'WLMSLK',
     'NEMAIIR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28364,7 +28364,7 @@ VALUES
     'COS',
     'WLMSLK',
     'NEMIAVLY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28380,7 +28380,7 @@ VALUES
     'COS',
     'PRCG',
     'NESSLAK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28396,7 +28396,7 @@ VALUES
     'COS',
     'TERRC',
     'NEWAIYA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28412,7 +28412,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'NEWDEN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28428,7 +28428,7 @@ VALUES
     'COS',
     'SMITHRS',
     'NEWHAZ'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28444,7 +28444,7 @@ VALUES
     'COS',
     'TERRC',
     'NEWREMO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28460,7 +28460,7 @@ VALUES
     'COS',
     'FRNIE',
     'NEWGAT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28476,7 +28476,7 @@ VALUES
     'COS',
     'PRCG',
     'NEWLAN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28492,7 +28492,7 @@ VALUES
     'COS',
     'GLDN',
     'NICHOLN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28508,7 +28508,7 @@ VALUES
     'COS',
     'MRRTT',
     'NICORES'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28524,7 +28524,7 @@ VALUES
     'COS',
     'MRRTT',
     'NICORES2'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28540,7 +28540,7 @@ VALUES
     'COS',
     'WLMSLK',
     'NIMPOLAK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28556,7 +28556,7 @@ VALUES
     'COS',
     'DNCN',
     'NITINA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28572,7 +28572,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'NOOTISL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28588,7 +28588,7 @@ VALUES
     'COS',
     'BURNSLK',
     'NORALEE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28604,7 +28604,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'NORBEN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28620,7 +28620,7 @@ VALUES
     'COS',
     'LLT',
     'NORBON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28636,7 +28636,7 @@ VALUES
     'COS',
     'DNCN',
     'NORCOWI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28652,7 +28652,7 @@ VALUES
     'COS',
     'VICTRA',
     'NPENDER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28668,7 +28668,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'NORPINE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28684,7 +28684,7 @@ VALUES
     'COS',
     'VICTRA',
     'NORSAAN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28700,7 +28700,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'NORVAN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28716,7 +28716,7 @@ VALUES
     'COS',
     'PRCG',
     'NUKKOLA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28732,7 +28732,7 @@ VALUES
     'COS',
     'VICTRA',
     'OAKBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28748,7 +28748,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'OASIS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28764,7 +28764,7 @@ VALUES
     'COS',
     'BLLACLA',
     'OCEAFAL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28780,7 +28780,7 @@ VALUES
     'COS',
     'KLWNA',
     'OKACEN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28796,7 +28796,7 @@ VALUES
     'COS',
     'PNTCTN',
     'OKAFALLS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28812,7 +28812,7 @@ VALUES
     'COS',
     'VRNON',
     'OKALAND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28828,7 +28828,7 @@ VALUES
     'COS',
     'PWLRV',
     'OKEOVER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28844,7 +28844,7 @@ VALUES
     'COS',
     'PNTCTN',
     'OLALLA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28860,7 +28860,7 @@ VALUES
     'COS',
     'SMITHRS',
     'OLDHZLTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28876,7 +28876,7 @@ VALUES
     'COS',
     'DJNG',
     'OLDMASST'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28892,7 +28892,7 @@ VALUES
     'COS',
     'TERRC',
     'OLDREMO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28908,7 +28908,7 @@ VALUES
     'COS',
     'PWLRV',
     'OLDTWNST'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28924,7 +28924,7 @@ VALUES
     'COS',
     'PNTCTN',
     'OLIVER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28940,7 +28940,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'ONEISLLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28956,7 +28956,7 @@ VALUES
     'COS',
     'TERRC',
     'OONARVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28972,7 +28972,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'OOTISCH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -28988,7 +28988,7 @@ VALUES
     'COS',
     'BURNSLK',
     'OOTSALAK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29004,7 +29004,7 @@ VALUES
     'COS',
     'PRTALB',
     'OPISTAT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29020,7 +29020,7 @@ VALUES
     'COS',
     'PNTCTN',
     'OSOYOOS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29036,7 +29036,7 @@ VALUES
     'COS',
     'MRRTT',
     'OSPREYLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29052,7 +29052,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'OWEEKENO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29068,7 +29068,7 @@ VALUES
     'COS',
     'VRNON',
     'OYAMA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29084,7 +29084,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'OYSTERBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29100,7 +29100,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'OYSTERRV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29116,7 +29116,7 @@ VALUES
     'COS',
     'BURNSLK',
     'PALLING'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29132,7 +29132,7 @@ VALUES
     'COS',
     'INVRM',
     'PANORAMA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29148,7 +29148,7 @@ VALUES
     'COS',
     'VRNON',
     'PARKCOVE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29164,7 +29164,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'PARKLAND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29180,7 +29180,7 @@ VALUES
     'COS',
     'NNIMO',
     'PARKSVLE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29196,7 +29196,7 @@ VALUES
     'COS',
     'GLDN',
     'PARSON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29212,7 +29212,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'PASSCREE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29228,7 +29228,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'PASSMORE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29244,7 +29244,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'PATTERSN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29260,7 +29260,7 @@ VALUES
     'COS',
     'LLT',
     'PAVILLON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29276,7 +29276,7 @@ VALUES
     'COS',
     'PNTCTN',
     'PEACHLND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29292,7 +29292,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'PEEJAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29308,7 +29308,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'PEMBERTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29324,7 +29324,7 @@ VALUES
     'COS',
     'BURNSLK',
     'PENDLTNB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29340,7 +29340,7 @@ VALUES
     'COS',
     'SCHLT',
     'PENDHARB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29356,7 +29356,7 @@ VALUES
     'COS',
     'VICTRA',
     'PENDERIS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29372,7 +29372,7 @@ VALUES
     'COS',
     'PRCG',
     'PENNY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29388,7 +29388,7 @@ VALUES
     'COS',
     'PNTCTN',
     'PENTICTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29404,7 +29404,7 @@ VALUES
     'COS',
     'PWLRV',
     'PHILLIPS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29420,7 +29420,7 @@ VALUES
     'COS',
     'CRSTN',
     'PILOTBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29436,7 +29436,7 @@ VALUES
     'COS',
     'PRCG',
     'PILOTMTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29452,7 +29452,7 @@ VALUES
     'COS',
     'KMLPS',
     'PINATNLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29468,7 +29468,7 @@ VALUES
     'COS',
     'VNDHF',
     'PINCHE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29484,7 +29484,7 @@ VALUES
     'COS',
     'VNDHF',
     'PINCHIRS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29500,7 +29500,7 @@ VALUES
     'COS',
     'CHTWD',
     'PINEVLLY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29516,7 +29516,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'PINECRST'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29532,7 +29532,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'PINEVIEW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29548,7 +29548,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'PNKMOUNT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29564,7 +29564,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'PITPOLDER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29580,7 +29580,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'PITTMDWS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29596,7 +29596,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'PLAYMJCT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29612,7 +29612,7 @@ VALUES
     'COS',
     'ATLIN',
     'PLSNTCMP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29628,7 +29628,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'POPKUM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29644,7 +29644,7 @@ VALUES
     'COS',
     'TERRC',
     'PORCHERI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29660,7 +29660,7 @@ VALUES
     'COS',
     'PRTALB',
     'PORTALBR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29676,7 +29676,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'PORTALIC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29692,7 +29692,7 @@ VALUES
     'COS',
     'DJNG',
     'PORTCLEM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29708,7 +29708,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'PORTCOQ'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29724,7 +29724,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'PORTDOUG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29740,7 +29740,7 @@ VALUES
     'COS',
     'TERRC',
     'PORTEDWRD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29756,7 +29756,7 @@ VALUES
     'COS',
     'TERRC',
     'PORTESG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29772,7 +29772,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'PORTHRDY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29788,7 +29788,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'PORTMCNL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29804,7 +29804,7 @@ VALUES
     'COS',
     'SCHLT',
     'PORTMELN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29820,7 +29820,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'PORTMDY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29836,7 +29836,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'PORTNEVL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29852,7 +29852,7 @@ VALUES
     'COS',
     'VICTRA',
     'PORTRENF'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29868,7 +29868,7 @@ VALUES
     'COS',
     'TERRC',
     'PORTSIMP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29884,7 +29884,7 @@ VALUES
     'COS',
     'VNDHF',
     'PORTAGER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29900,7 +29900,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'PORTRICO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29916,7 +29916,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'POUCOUP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29932,7 +29932,7 @@ VALUES
     'COS',
     'MKNZI',
     'POWDERKG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29948,7 +29948,7 @@ VALUES
     'COS',
     'PWLRV',
     'POWELLRV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29964,7 +29964,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'PRESPATU'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29980,7 +29980,7 @@ VALUES
     'COS',
     'LLT',
     'PRESSYLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -29996,7 +29996,7 @@ VALUES
     'COS',
     'DNCN',
     'PREVOSTI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30012,7 +30012,7 @@ VALUES
     'COS',
     'PRCG',
     'PRINGEOR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30028,7 +30028,7 @@ VALUES
     'COS',
     'TERRC',
     'PRINCRUP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30044,7 +30044,7 @@ VALUES
     'COS',
     'MRRTT',
     'PRINCETN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30060,7 +30060,7 @@ VALUES
     'COS',
     'KMLPS',
     'PRITCHRD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30076,7 +30076,7 @@ VALUES
     'COS',
     'NLSON',
     'PROCTOR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30092,7 +30092,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'PROGRESS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30108,7 +30108,7 @@ VALUES
     'COS',
     'FRTNLN',
     'PROPHETR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30124,7 +30124,7 @@ VALUES
     'COS',
     'WLMSLK',
     'PUNTZI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30140,7 +30140,7 @@ VALUES
     'COS',
     'PRCG',
     'PURDENLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30156,7 +30156,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'QUADRAIS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30172,7 +30172,7 @@ VALUES
     'COS',
     'NNIMO',
     'QLICMBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30188,7 +30188,7 @@ VALUES
     'COS',
     'NNIMO',
     'QLICMBCH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30204,7 +30204,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'QUATSINO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30220,7 +30220,7 @@ VALUES
     'COS',
     'QSNL',
     'QUESNEL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30236,7 +30236,7 @@ VALUES
     'COS',
     'WLMSLK',
     'QUESFORK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30252,7 +30252,7 @@ VALUES
     'COS',
     'MRRTT',
     'QUILCHNA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30268,7 +30268,7 @@ VALUES
     'COS',
     'INVRM',
     'RADHOTSP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30284,7 +30284,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'RASPBRRY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30300,7 +30300,7 @@ VALUES
     'COS',
     'KMLPS',
     'RAYLEIGH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30316,7 +30316,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'READISLD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30332,7 +30332,7 @@ VALUES
     'COS',
     'KMLPS',
     'REDLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30348,7 +30348,7 @@ VALUES
     'COS',
     'PRCG',
     'REDPASS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30364,7 +30364,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'REDFERNL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30380,7 +30380,7 @@ VALUES
     'COS',
     'PRCG',
     'RRSTONER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30396,7 +30396,7 @@ VALUES
     'COS',
     'WLMSLK',
     'REDSTON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30412,7 +30412,7 @@ VALUES
     'COS',
     'PRCG',
     'REIDLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30428,7 +30428,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'RENATA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30444,7 +30444,7 @@ VALUES
     'COS',
     'SLMONRM',
     'REVELSTO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30460,7 +30460,7 @@ VALUES
     'COS',
     'MSNSR',
     'RICHMOND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30476,7 +30476,7 @@ VALUES
     'COS',
     'CRSTN',
     'RIONDEL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30492,7 +30492,7 @@ VALUES
     'COS',
     'WLMSLK',
     'RISKECRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30508,7 +30508,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'RIVERDAL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30524,7 +30524,7 @@ VALUES
     'COS',
     'SCHLT',
     'ROBERTSC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30540,7 +30540,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'ROBERTSL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30556,7 +30556,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'ROBSON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30572,7 +30572,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'ROCKBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30588,7 +30588,7 @@ VALUES
     'COS',
     'GDFKS',
     'ROCKCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30604,7 +30604,7 @@ VALUES
     'COS',
     '100MLHSE',
     'ROELAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30620,7 +30620,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'ROLLA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30636,7 +30636,7 @@ VALUES
     'COS',
     'FRNIE',
     'ROOSVLL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30652,7 +30652,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'ROSEPRR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30668,7 +30668,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'ROSEBRY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30684,7 +30684,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'ROSEDALE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30700,7 +30700,7 @@ VALUES
     'COS',
     'FRNIE',
     'ROSENLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30716,7 +30716,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'ROSSLND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30732,7 +30732,7 @@ VALUES
     'COS',
     'TERRC',
     'ROSSWOD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30748,7 +30748,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'ROYSTON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30764,7 +30764,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'RUSKINN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30780,7 +30780,7 @@ VALUES
     'COS',
     'KLWNA',
     'RUTLAND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30796,7 +30796,7 @@ VALUES
     'COS',
     'CRSTN',
     'RYKERTS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30812,7 +30812,7 @@ VALUES
     'COS',
     'VICTRA',
     'SAANICH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30828,7 +30828,7 @@ VALUES
     'COS',
     'DNCN',
     'SAHTLAM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30844,7 +30844,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'SALMO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30860,7 +30860,7 @@ VALUES
     'COS',
     'SLMONRM',
     'SALMARM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30876,7 +30876,7 @@ VALUES
     'COS',
     'PRCG',
     'SALMNVY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30892,7 +30892,7 @@ VALUES
     'COS',
     'DNCN',
     'SALTSPR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30908,7 +30908,7 @@ VALUES
     'COS',
     'PWLRV',
     'SALTERYB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30924,7 +30924,7 @@ VALUES
     'COS',
     'CRSTN',
     'SANCA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30940,7 +30940,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'SANDON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30956,7 +30956,7 @@ VALUES
     'COS',
     'DJNG',
     'SANDSPIT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30972,7 +30972,7 @@ VALUES
     'COS',
     'SCHLT',
     'SNDYHK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -30988,7 +30988,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'SARDIS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31004,7 +31004,7 @@ VALUES
     'COS',
     'VICTRA',
     'SATRNAI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31020,7 +31020,7 @@ VALUES
     'COS',
     'PWLRV',
     'SAVARYIS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31036,7 +31036,7 @@ VALUES
     'COS',
     'KMLPS',
     'SAVONA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31052,7 +31052,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'SAYWARD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31068,7 +31068,7 @@ VALUES
     'COS',
     'KMLPS',
     'SCTCHCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31084,7 +31084,7 @@ VALUES
     'COS',
     'SCHLT',
     'SECHELT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31100,7 +31100,7 @@ VALUES
     'COS',
     'SCHLT',
     'SCRTOCV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31116,7 +31116,7 @@ VALUES
     'COS',
     'SCHLT',
     'SELMAPRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31132,7 +31132,7 @@ VALUES
     'COS',
     'LLT',
     'SETONPOR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31148,7 +31148,7 @@ VALUES
     'COS',
     'DJNG',
     'SEWELLIN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31164,7 +31164,7 @@ VALUES
     'COS',
     'KMLPS',
     'SEYMOURA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31180,7 +31180,7 @@ VALUES
     'COS',
     'GLDN',
     'SEYMOURL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31196,7 +31196,7 @@ VALUES
     'COS',
     'LLT',
     'SHALALTH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31212,7 +31212,7 @@ VALUES
     'COS',
     'LLT',
     'SHARPELK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31228,7 +31228,7 @@ VALUES
     'COS',
     'VICTRA',
     'SHWNIGN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31244,7 +31244,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'SHRERDAL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31260,7 +31260,7 @@ VALUES
     'COS',
     'PRCG',
     'SHELLGLN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31276,7 +31276,7 @@ VALUES
     'COS',
     'SLMONRM',
     'SHELTRBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31292,7 +31292,7 @@ VALUES
     'COS',
     '100MLHSE',
     'SHERIDN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31308,7 +31308,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'SHOREACR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31324,7 +31324,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'SHOREHLM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31340,7 +31340,7 @@ VALUES
     'COS',
     'NLSON',
     'SHUTTYBN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31356,7 +31356,7 @@ VALUES
     'COS',
     'SLMONRM',
     'SICAMOUS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31372,7 +31372,7 @@ VALUES
     'COS',
     'VICTRA',
     'SIDNEY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31388,7 +31388,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'SIKANNI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31404,7 +31404,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'SLVRDALE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31420,7 +31420,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'SLVRTN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31436,7 +31436,7 @@ VALUES
     'COS',
     'PRCG',
     'SINCLRM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31452,7 +31452,7 @@ VALUES
     'COS',
     'CRSTN',
     'SIRDAR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31468,7 +31468,7 @@ VALUES
     'COS',
     'GLDN',
     'SIXMILPT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31484,7 +31484,7 @@ VALUES
     'COS',
     'KMLPS',
     'SKEETCHE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31500,7 +31500,7 @@ VALUES
     'COS',
     'DJNG',
     'SKIDGATL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31516,7 +31516,7 @@ VALUES
     'COS',
     'DJNG',
     'SKIDEGTR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31532,7 +31532,7 @@ VALUES
     'COS',
     'CRNBK',
     'SKOOKUMC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31548,7 +31548,7 @@ VALUES
     'COS',
     'PWLRV',
     'SLIAMMON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31564,7 +31564,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'SLOCAN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31580,7 +31580,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'SLOCNPRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31596,7 +31596,7 @@ VALUES
     'COS',
     'FRTNLN',
     'SMITHRVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31612,7 +31612,7 @@ VALUES
     'COS',
     'SMITHRS',
     'SMITHERS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31628,7 +31628,7 @@ VALUES
     'COS',
     'WLMSLK',
     'SODACRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31644,7 +31644,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'SOINTULA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31660,7 +31660,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'SONORAI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31676,7 +31676,7 @@ VALUES
     'COS',
     'VICTRA',
     'SOOKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31692,7 +31692,7 @@ VALUES
     'COS',
     'SLMONRM',
     'SORRENTO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31708,7 +31708,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'SDWNSN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31724,7 +31724,7 @@ VALUES
     'COS',
     'SMITHRS',
     'SHZLTON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31740,7 +31740,7 @@ VALUES
     'COS',
     'VICTRA',
     'SPNDRILN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31756,7 +31756,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'STHSLCN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31772,7 +31772,7 @@ VALUES
     'COS',
     'NLSON',
     'STHSLCNN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31788,7 +31788,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'STHTYLR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31804,7 +31804,7 @@ VALUES
     'COS',
     'BURNSLK',
     'STHBNK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31820,7 +31820,7 @@ VALUES
     'COS',
     'PWLRV',
     'STHVW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31836,7 +31836,7 @@ VALUES
     'COS',
     'VRNON',
     'SPALLMCHN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31852,7 +31852,7 @@ VALUES
     'COS',
     'FRNIE',
     'SPRWOOD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31868,7 +31868,7 @@ VALUES
     'COS',
     'LLT',
     'SPNCESBR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31884,7 +31884,7 @@ VALUES
     'COS',
     'GLDN',
     'SPLLMCHN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31900,7 +31900,7 @@ VALUES
     'COS',
     'WLMSLK',
     'SPRNHOUS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31916,7 +31916,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'SPUZZUM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31932,7 +31932,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'SQUMISH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31948,7 +31948,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'STAVFLS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31964,7 +31964,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'STALHEAD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31980,7 +31980,7 @@ VALUES
     'COS',
     'FRTNLN',
     'STMBOAT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -31996,7 +31996,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'STELHEAD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32012,7 +32012,7 @@ VALUES
     'COS',
     'SMITHRS',
     'STWART'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32028,7 +32028,7 @@ VALUES
     'COS',
     'PWLRV',
     'STLLWTR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32044,7 +32044,7 @@ VALUES
     'COS',
     'WLMSLK',
     'STONEIR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32060,7 +32060,7 @@ VALUES
     'COS',
     'PRCG',
     'STRTHNVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32076,7 +32076,7 @@ VALUES
     'COS',
     'BURNSLK',
     'STRTHAM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32092,7 +32092,7 @@ VALUES
     'COS',
     'PWLRV',
     'STUARTIL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32108,7 +32108,7 @@ VALUES
     'COS',
     'WLMSLK',
     'STUIE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32124,7 +32124,7 @@ VALUES
     'COS',
     'KMLPS',
     'STUMPLAK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32140,7 +32140,7 @@ VALUES
     'COS',
     'WLMSLK',
     'SUGARCIR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32156,7 +32156,7 @@ VALUES
     'COS',
     'PNTCTN',
     'SMRLAND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32172,7 +32172,7 @@ VALUES
     'COS',
     'PRCG',
     'SMITLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32188,7 +32188,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'SMITLKPP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32204,7 +32204,7 @@ VALUES
     'COS',
     'KMLPS',
     'SNPEAKS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32220,7 +32220,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'SNSTPRAR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32236,7 +32236,7 @@ VALUES
     'COS',
     'MSNSR',
     'SURRY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32252,7 +32252,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'SWNLKPP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32268,7 +32268,7 @@ VALUES
     'COS',
     'ATLIN',
     'SWNLKKRP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32284,7 +32284,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'SWTWATR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32300,7 +32300,7 @@ VALUES
     'COS',
     'PRCG',
     'TABOR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32316,7 +32316,7 @@ VALUES
     'COS',
     'VNDHF',
     'TACHIRSV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32332,7 +32332,7 @@ VALUES
     'COS',
     'GLDN',
     'TAFT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32348,7 +32348,7 @@ VALUES
     'COS',
     'NLSON',
     'TAGHUM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32364,7 +32364,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'TAHSIS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32380,7 +32380,7 @@ VALUES
     'COS',
     'VNDHF',
     'TKLALNDG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32396,7 +32396,7 @@ VALUES
     'COS',
     'BURNSLK',
     'TKYSLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32412,7 +32412,7 @@ VALUES
     'COS',
     'SLMONRM',
     'TAPPEN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32428,7 +32428,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'TARRYS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32444,7 +32444,7 @@ VALUES
     'COS',
     'CRNBK',
     'TATACRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32460,7 +32460,7 @@ VALUES
     'COS',
     'WLMSLK',
     'TATLALAK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32476,7 +32476,7 @@ VALUES
     'COS',
     'WLMSLK',
     'TATLYOKO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32492,7 +32492,7 @@ VALUES
     'COS',
     'CLRWTER',
     'TAWELK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32508,7 +32508,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'TAYLOR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32524,7 +32524,7 @@ VALUES
     'COS',
     'BURNSLK',
     'TCHSNKUT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32540,7 +32540,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'TGRPHCOV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32556,7 +32556,7 @@ VALUES
     'COS',
     'DSELK',
     'TGRPHCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32572,7 +32572,7 @@ VALUES
     'COS',
     'SMITHRS',
     'TELKWA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32588,7 +32588,7 @@ VALUES
     'COS',
     'TERRC',
     'TERRACE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32604,7 +32604,7 @@ VALUES
     'COS',
     'CLRWTER',
     'TTJUNE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32620,7 +32620,7 @@ VALUES
     'COS',
     'PWLRV',
     'TEXADAIS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32636,7 +32636,7 @@ VALUES
     'COS',
     'PWLRV',
     'THDSAINL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32652,7 +32652,7 @@ VALUES
     'COS',
     'DNCN',
     'THETISIS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32668,7 +32668,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'THMPSNSD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32684,7 +32684,7 @@ VALUES
     'COS',
     'SLMONRM',
     'THRVALGP'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32700,7 +32700,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'THRUMS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32716,7 +32716,7 @@ VALUES
     'COS',
     'FRNIE',
     'TIELAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32732,7 +32732,7 @@ VALUES
     'COS',
     'BURNSLK',
     'TINTAGEL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32748,7 +32748,7 @@ VALUES
     'COS',
     'DJNG',
     'TLELL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32764,7 +32764,7 @@ VALUES
     'COS',
     'FRTNLN',
     'TOADRVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32780,7 +32780,7 @@ VALUES
     'COS',
     'PWLRV',
     'TOBAINLT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32796,7 +32796,7 @@ VALUES
     'COS',
     'PRTALB',
     'TOFINO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32812,7 +32812,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'TOMSLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32828,7 +32828,7 @@ VALUES
     'COS',
     'BURNSLK',
     'TOPLEY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32844,7 +32844,7 @@ VALUES
     'COS',
     'BURNSLK',
     'TOPLND'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32860,7 +32860,7 @@ VALUES
     'COS',
     'KMLPS',
     'TRTSLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32876,7 +32876,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'TWRLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32892,7 +32892,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'TRAIL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32908,7 +32908,7 @@ VALUES
     'COS',
     'KMLPS',
     'TRNQL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32924,7 +32924,7 @@ VALUES
     'COS',
     'NLSON',
     'TROUTLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32940,7 +32940,7 @@ VALUES
     'COS',
     'FRTNLN',
     'TRUTCH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32956,7 +32956,7 @@ VALUES
     'COS',
     'MSNSR',
     'TSAWWASN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32972,7 +32972,7 @@ VALUES
     'COS',
     'MKNZI',
     'INGENKA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -32988,7 +32988,7 @@ VALUES
     'COS',
     'MRRTT',
     'TULAMEEN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33004,7 +33004,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'TUMBLER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33020,7 +33020,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'TUPPER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33036,7 +33036,7 @@ VALUES
     'COS',
     'SCHLT',
     'TUWANEK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33052,7 +33052,7 @@ VALUES
     'COS',
     'SLMONRM',
     'TWINBUTE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33068,7 +33068,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'TWORIVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33084,7 +33084,7 @@ VALUES
     'COS',
     'LLT',
     'TYAXLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33100,7 +33100,7 @@ VALUES
     'COS',
     'CRSTN',
     'TYE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33116,7 +33116,7 @@ VALUES
     'COS',
     'PRTALB',
     'UCLUELET'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33132,7 +33132,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'UNIONBAY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33148,7 +33148,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'UNIVENDW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33164,7 +33164,7 @@ VALUES
     'COS',
     'SLMONRM',
     'UPRARRWL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33180,7 +33180,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'UPRCUTBK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33196,7 +33196,7 @@ VALUES
     'COS',
     'PRCG',
     'UPRFRASR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33212,7 +33212,7 @@ VALUES
     'COS',
     'TERRC',
     'USK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33228,7 +33228,7 @@ VALUES
     'COS',
     'DNCN',
     'VALDESIS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33244,7 +33244,7 @@ VALUES
     'COS',
     'CLRWTER',
     'VALEMONT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33260,7 +33260,7 @@ VALUES
     'COS',
     'KMLPS',
     'VLYVIEW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33276,7 +33276,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'VALLICAN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33292,7 +33292,7 @@ VALUES
     'COS',
     'PWLRV',
     'VANANDA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33308,7 +33308,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'VANCOUVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33324,7 +33324,7 @@ VALUES
     'COS',
     'VNDHF',
     'VANDERHF'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33340,7 +33340,7 @@ VALUES
     'COS',
     'CLRWTER',
     'VAVENBY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33356,7 +33356,7 @@ VALUES
     'COS',
     'LLT',
     'VENABLES'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33372,7 +33372,7 @@ VALUES
     'COS',
     'VRNON',
     'VERNON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33388,7 +33388,7 @@ VALUES
     'COS',
     'GLDN',
     'VICTORLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33404,7 +33404,7 @@ VALUES
     'COS',
     'VICTRA',
     'VICTORIA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33420,7 +33420,7 @@ VALUES
     'COS',
     'VICTRA',
     'VIEWROYL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33436,7 +33436,7 @@ VALUES
     'COS',
     'KMLPS',
     'WALHACHN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33452,7 +33452,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'WANETA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33468,7 +33468,7 @@ VALUES
     'COS',
     'CRNBK',
     'WARDNER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33484,7 +33484,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'WARFIELD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33500,7 +33500,7 @@ VALUES
     'COS',
     'CRNBK',
     'WASA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33516,7 +33516,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'WEBSTRCR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33532,7 +33532,7 @@ VALUES
     'COS',
     'QSNL',
     'WELLS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33548,7 +33548,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'WCRACRFT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33564,7 +33564,7 @@ VALUES
     'COS',
     'CRSTN',
     'WESTCRST'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33580,7 +33580,7 @@ VALUES
     'COS',
     'KLWNA',
     'WSTKELOW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33596,7 +33596,7 @@ VALUES
     'COS',
     'PRCG',
     'WESTLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33612,7 +33612,7 @@ VALUES
     'COS',
     'BLKCRKCR',
     'WSTTHRLW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33628,7 +33628,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'WSTVANCO'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33644,7 +33644,7 @@ VALUES
     'COS',
     'KLWNA',
     'WESTBANK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33660,7 +33660,7 @@ VALUES
     'COS',
     'KLWNA',
     'WSTBRDGE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33676,7 +33676,7 @@ VALUES
     'COS',
     'GDFKS',
     'WSTBR33'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33692,7 +33692,7 @@ VALUES
     'COS',
     'KLWNA',
     'WESTSIDE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33708,7 +33708,7 @@ VALUES
     'COS',
     'PWLRV',
     'WESTVIEW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33724,7 +33724,7 @@ VALUES
     'COS',
     'KMLPS',
     'WESTWOLD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33740,7 +33740,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'WHTSHANL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33756,7 +33756,7 @@ VALUES
     'COS',
     'NNIMO',
     'WHISKYC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33772,7 +33772,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'WHISTLER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33788,7 +33788,7 @@ VALUES
     'COS',
     'SLMONRM',
     'WHITELK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33804,7 +33804,7 @@ VALUES
     'COS',
     'CRNBK',
     'WHITERIV'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33820,7 +33820,7 @@ VALUES
     'COS',
     'MSNSR',
     'WHITERCK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33836,7 +33836,7 @@ VALUES
     'COS',
     'KMLPS',
     'WHITCROF'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33852,7 +33852,7 @@ VALUES
     'COS',
     'CRNBK',
     'WHITESWN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33868,7 +33868,7 @@ VALUES
     'COS',
     'MSNMPLRD',
     'WHONNOCK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33884,7 +33884,7 @@ VALUES
     'COS',
     'PWLRV',
     'WILDWOOD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33900,7 +33900,7 @@ VALUES
     'COS',
     'WLMSLK',
     'WILLMSLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33916,7 +33916,7 @@ VALUES
     'COS',
     'CHTWD',
     'WILWFLAT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33932,7 +33932,7 @@ VALUES
     'COS',
     'NLSON',
     'WILWRPOI'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33948,7 +33948,7 @@ VALUES
     'COS',
     'PRCG',
     'WILWRIVR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33964,7 +33964,7 @@ VALUES
     'COS',
     'DWSNCRK',
     'WILWVALY'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33980,7 +33980,7 @@ VALUES
     'COS',
     'INVRM',
     'WILMER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -33996,7 +33996,7 @@ VALUES
     'COS',
     'SCHLT',
     'WILSNCRK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34012,7 +34012,7 @@ VALUES
     'COS',
     '100MLHSE',
     'WILSLAKE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34028,7 +34028,7 @@ VALUES
     'COS',
     'KLWNA',
     'WLSNLNDG'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34044,7 +34044,7 @@ VALUES
     'COS',
     'INVRM',
     'WINDRMER'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34060,7 +34060,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'WINLAW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34076,7 +34076,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'WINTRHRB'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34092,7 +34092,7 @@ VALUES
     'COS',
     'BURNSLK',
     'WISTARIA'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34108,7 +34108,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'WONOWON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34124,7 +34124,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'WOSS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34140,7 +34140,7 @@ VALUES
     'COS',
     'CRNBK',
     'WYCLIFFE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34156,7 +34156,7 @@ VALUES
     'COS',
     'CRSTN',
     'WYNDEL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34172,7 +34172,7 @@ VALUES
     'COS',
     'CRSTN',
     'YAHK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34188,7 +34188,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'YALE'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34204,7 +34204,7 @@ VALUES
     'COS',
     'MSNCHWK',
     'YARROW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34220,7 +34220,7 @@ VALUES
     'COS',
     'NNIMO',
     'YLWPOINT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34236,7 +34236,7 @@ VALUES
     'COS',
     'CSTLGAR',
     'YMIR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34252,7 +34252,7 @@ VALUES
     'COS',
     'DNCN',
     'YOUBOU'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34268,7 +34268,7 @@ VALUES
     'COS',
     '100MLHSE',
     'YOUNGLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34284,7 +34284,7 @@ VALUES
     'COS',
     'PRTMCNL',
     'ZEBALLOS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34300,7 +34300,7 @@ VALUES
     'COS',
     'SISL',
     'COSHQ'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34316,7 +34316,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'HUDSONSH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34332,7 +34332,7 @@ VALUES
     'COS',
     'SMITHRS',
     'HOUSTON'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34348,7 +34348,7 @@ VALUES
     'COS',
     'GLDN',
     'FIELD'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34364,7 +34364,7 @@ VALUES
     'COS',
     'GLDN',
     'CNYNHTSPRN'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34380,7 +34380,7 @@ VALUES
     'COS',
     'SLMONRM',
     'DPCRKNRSLM'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34396,7 +34396,7 @@ VALUES
     'COS',
     'SMITHRS',
     'HGWLGT'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34412,7 +34412,7 @@ VALUES
     'COS',
     'BURNSLK',
     'RSLKBNSLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34428,7 +34428,7 @@ VALUES
     'COS',
     'GLDN',
     'ILLECILL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34444,7 +34444,7 @@ VALUES
     'COS',
     'SMITHRS',
     'WTSMTMRCTW'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34460,7 +34460,7 @@ VALUES
     'COS',
     'WLMSLK',
     'DPCRKNRWLL'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34476,7 +34476,7 @@ VALUES
     'COS',
     'WLMSLK',
     'RSLK150MLH'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34492,7 +34492,7 @@ VALUES
     'COS',
     'DJNG',
     'DJNGGDS'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34508,7 +34508,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'BRYLPRR'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34524,7 +34524,7 @@ VALUES
     'COS',
     'FRTSTJN',
     'FARRELLC'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34540,7 +34540,7 @@ VALUES
     'COS',
     'VNDHF',
     'CLUCLZLK'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 INSERT INTO
   geo_org_unit_structure
@@ -34556,7 +34556,7 @@ VALUES
     'COS',
     'SQMSHWHS',
     'NEWWEST'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 
 
@@ -34564,74 +34564,74 @@ VALUES
 -- Insert OFFICE records into shared schema
 -------------------------
 
-INSERT INTO office VALUES ('db343458-8eca-42c2-91ec-070b3e6de663', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', '100MLHSE', 'COS');
-INSERT INTO office VALUES ('5c7023b9-710e-4333-bbcb-8a95350b747c', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'ATLIN', 'COS');
-INSERT INTO office VALUES ('cdd9964e-7878-44c1-b4a2-0290c6345dec', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'BLLACLA', 'COS');
-INSERT INTO office VALUES ('3338cb74-5be4-4ed3-8b11-41f83d72de00', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'BLKCRKCR', 'COS');
-INSERT INTO office VALUES ('ee09bf4d-e5a1-4fb8-9012-c192692dd1bd', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'BURNSLK', 'COS');
-INSERT INTO office VALUES ('aebabfed-cf45-4253-9fbf-f49452190332', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'CSTLGAR', 'COS');
-INSERT INTO office VALUES ('92bad201-cccc-4021-9c79-bbdcf13947f2', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'CHTWD', 'COS');
-INSERT INTO office VALUES ('79fe321b-7716-413f-b878-c5fd6100317d', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'CLRWTER', 'COS');
-INSERT INTO office VALUES ('19addcac-91b2-4ab3-83b9-9a26baa1e635', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'CRNBK', 'COS');
-INSERT INTO office VALUES ('2044f08d-b53c-489a-8584-dd867b63514a', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'CRSTN', 'COS');
-INSERT INTO office VALUES ('55d7b990-8123-492f-8b5b-7cbbd14ac423', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'DJNG', 'COS');
-INSERT INTO office VALUES ('4a5a94b1-bd47-4611-a577-861d97089903', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'DWSNCRK', 'COS');
-INSERT INTO office VALUES ('f30857bf-bab9-491a-b38f-83600238c36d', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'DSELK', 'COS');
-INSERT INTO office VALUES ('f7065a6e-2481-4526-b874-6ab98009481d', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'DNCN', 'COS');
-INSERT INTO office VALUES ('784080e4-9674-4c84-ac3e-bf161b09c2de', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'FRNIE', 'COS');
-INSERT INTO office VALUES ('edd4b298-ced7-4b10-9232-87512ec640b3', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'FRTNLN', 'COS');
-INSERT INTO office VALUES ('e0ad7fe3-59da-4e1a-a611-46ccf7ea7396', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'FRTSTJN', 'COS');
-INSERT INTO office VALUES ('643a4ff7-9135-4e6d-86ad-f2f8aac195ef', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'GLDN', 'COS');
-INSERT INTO office VALUES ('c8aeb3d9-3718-49d9-b8b5-6c84671546eb', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'GDFKS', 'COS');
-INSERT INTO office VALUES ('a5e2e92e-4928-4dbc-8165-e06234b051c1', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'INVRM', 'COS');
-INSERT INTO office VALUES ('3a070028-2c6f-4ea9-a548-271cf076280a', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'KMLPS', 'COS');
-INSERT INTO office VALUES ('21855957-521f-4190-b0f9-a7ab7d139978', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'KLWNA', 'COS');
-INSERT INTO office VALUES ('33dc58c7-2ebf-4924-93f9-168073058273', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'LLT', 'COS');
-INSERT INTO office VALUES ('3a4e8fc8-db72-4f02-b5ee-1f257c74a635', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'MKNZI', 'COS');
-INSERT INTO office VALUES ('e6807e73-f591-459a-b0f7-413f6fb2984e', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'MRRTT', 'COS');
-INSERT INTO office VALUES ('8f9e10a8-53b5-4125-8d8f-b7fbfdd6ae47', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'MSNCHWK', 'COS');
-INSERT INTO office VALUES ('491941e6-89a7-473f-b246-a2d8cd21b078', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'MSNMPLRD', 'COS');
-INSERT INTO office VALUES ('00048dd4-17b0-4fdc-a3fb-54f820970422', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'MSNSR', 'COS');
-INSERT INTO office VALUES ('6496f00f-5397-470d-90db-490e6859256a', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'NNIMO', 'COS');
-INSERT INTO office VALUES ('4ff0d641-4c60-4a0a-964e-6e0ac5bfa8de', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'NLSON', 'COS');
-INSERT INTO office VALUES ('b494082e-35a3-468f-8955-4aa002066b36', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'PNTCTN', 'COS');
-INSERT INTO office VALUES ('305f0ee6-b525-40fd-b2d8-c7a882e8b7fd', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'PRTALB', 'COS');
-INSERT INTO office VALUES ('3058b00c-cafd-4eba-a1a4-a989ccff00bf', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'PRTMCNL', 'COS');
-INSERT INTO office VALUES ('cd101564-6114-49e0-9e87-fa6e4925dbb7', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'PWLRV', 'COS');
-INSERT INTO office VALUES ('3f474308-68da-450a-b1ab-fb8a5b7a27ce', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'PRCG', 'COS');
-INSERT INTO office VALUES ('313f4ec3-e88a-41c2-9956-78c7b18cb71d', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'QSNL', 'COS');
-INSERT INTO office VALUES ('19d0f476-0fc4-4fe1-b7aa-b76d3c2c5b9b', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'SLMONRM', 'COS');
-INSERT INTO office VALUES ('b74014cf-1d80-4074-97c0-024a422d24f9', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'SCHLT', 'COS');
-INSERT INTO office VALUES ('cbd8d434-f525-410b-9c3c-119b82a31813', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'SMITHRS', 'COS');
-INSERT INTO office VALUES ('38105a68-c83d-44e5-af6e-9cfa40792118', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'SQMSHWHS', 'COS');
-INSERT INTO office VALUES ('0f2cdcb7-c4ba-457d-adac-adde1d8c077a', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'TERRC', 'COS');
-INSERT INTO office VALUES ('5128179c-f622-499b-b8e5-b39199081f22', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'VNDHF', 'COS');
-INSERT INTO office VALUES ('1f4d9042-d6a5-46b6-a860-e1de7edb6add', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'VRNON', 'COS');
-INSERT INTO office VALUES ('45abdc96-1b07-4b9c-8b05-e2b0c46c1d1d', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'VICTRA', 'COS');
-INSERT INTO office VALUES ('9fc7327b-b206-4a5c-88f1-2875a456eb49', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'WLMSLK', 'COS');
-INSERT INTO office VALUES ('c3d8519c-73cb-48a1-8058-358883d5ef4f', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'COSHQ', 'COS');
-INSERT INTO office VALUES ('7a02e89a-74e6-44fa-b030-db1ab0be9eb6', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'NNIMO', 'EPO');
-INSERT INTO office VALUES ('fc5eea4b-996b-47a5-91db-ebae8384a65f', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'VICTRA', 'EPO');
-INSERT INTO office VALUES ('28e5eb22-cdd4-423c-81c7-96911703a255', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'MSNSR', 'EPO');
-INSERT INTO office VALUES ('aaf2f236-cd5f-436f-94f6-3fb6c69693bb', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'PNTCTN', 'EPO');
-INSERT INTO office VALUES ('0d1b9151-51b6-4857-993d-1af34f2ab79a', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'NLSON', 'EPO');
-INSERT INTO office VALUES ('73f2f0b1-e5ee-4c65-a7a6-7c18847cfb45', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'CRNBK', 'EPO');
-INSERT INTO office VALUES ('fb6b6d64-18b4-4b16-82fc-5305eeeb46ba', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'KMLPS', 'EPO');
-INSERT INTO office VALUES ('2d642d0b-bcbd-4b15-8054-9846828b7ccd', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'WLMSLK', 'EPO');
-INSERT INTO office VALUES ('a0981fec-5f23-48e6-8b58-23728f6ddd26', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'SMITHRS', 'EPO');
-INSERT INTO office VALUES ('1d5a7f50-c0d3-4bd9-bb68-db5477658a03', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'PRCG', 'EPO');
-INSERT INTO office VALUES ('19b88b43-7df1-49a5-ab44-dbf116e89d27', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'PRTMCNL', 'PARKS');
-INSERT INTO office VALUES ('bbff780d-01a8-4713-ac29-dffdfa71a95a', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'KMLPS', 'PARKS');
-INSERT INTO office VALUES ('2ab1f5ad-f307-4dfd-8050-6596b60388ae', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'WLMSLK', 'PARKS');
-INSERT INTO office VALUES ('72752882-0c31-4862-a272-d1df70acc72f', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'PNTCTN', 'PARKS');
-INSERT INTO office VALUES ('57db2985-f817-4faa-9dc8-91a0cb444c85', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'VRNON', 'PARKS');
-INSERT INTO office VALUES ('53d3bb21-ea81-4fb8-8f03-cded6e7404f5', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'NLSON', 'PARKS');
-INSERT INTO office VALUES ('0315efb6-e161-4bde-a74a-496c7db83b2d', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'CRNBK', 'PARKS');
-INSERT INTO office VALUES ('0303b0a8-0c36-4a37-8ff1-b04d6fad730f', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'SMITHRS', 'PARKS');
-INSERT INTO office VALUES ('474dbc09-98c0-4a3a-a35d-591397b48cb9', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'ATLIN', 'PARKS');
-INSERT INTO office VALUES ('0d484904-dc1a-480e-84b9-62ae2c49d56f', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'DSELK', 'PARKS');
-INSERT INTO office VALUES ('021ff877-d06e-4568-8bbb-f8f0ee487d47', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'PRCG', 'PARKS');
-INSERT INTO office VALUES ('4b358820-7ff1-43e1-b5e4-797a8c9f1d9c', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'FRTSTJN', 'PARKS');
+INSERT INTO office VALUES ('db343458-8eca-42c2-91ec-070b3e6de663', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', '100MLHSE', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('5c7023b9-710e-4333-bbcb-8a95350b747c', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'ATLIN', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('cdd9964e-7878-44c1-b4a2-0290c6345dec', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'BLLACLA', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('3338cb74-5be4-4ed3-8b11-41f83d72de00', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'BLKCRKCR', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('ee09bf4d-e5a1-4fb8-9012-c192692dd1bd', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'BURNSLK', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('aebabfed-cf45-4253-9fbf-f49452190332', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'CSTLGAR', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('92bad201-cccc-4021-9c79-bbdcf13947f2', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'CHTWD', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('79fe321b-7716-413f-b878-c5fd6100317d', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'CLRWTER', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('19addcac-91b2-4ab3-83b9-9a26baa1e635', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'CRNBK', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('2044f08d-b53c-489a-8584-dd867b63514a', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'CRSTN', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('55d7b990-8123-492f-8b5b-7cbbd14ac423', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'DJNG', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('4a5a94b1-bd47-4611-a577-861d97089903', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'DWSNCRK', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('f30857bf-bab9-491a-b38f-83600238c36d', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'DSELK', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('f7065a6e-2481-4526-b874-6ab98009481d', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'DNCN', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('784080e4-9674-4c84-ac3e-bf161b09c2de', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'FRNIE', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('edd4b298-ced7-4b10-9232-87512ec640b3', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'FRTNLN', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('e0ad7fe3-59da-4e1a-a611-46ccf7ea7396', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'FRTSTJN', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('643a4ff7-9135-4e6d-86ad-f2f8aac195ef', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'GLDN', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('c8aeb3d9-3718-49d9-b8b5-6c84671546eb', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'GDFKS', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('a5e2e92e-4928-4dbc-8165-e06234b051c1', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'INVRM', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('3a070028-2c6f-4ea9-a548-271cf076280a', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'KMLPS', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('21855957-521f-4190-b0f9-a7ab7d139978', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'KLWNA', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('33dc58c7-2ebf-4924-93f9-168073058273', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'LLT', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('3a4e8fc8-db72-4f02-b5ee-1f257c74a635', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'MKNZI', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('e6807e73-f591-459a-b0f7-413f6fb2984e', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'MRRTT', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('8f9e10a8-53b5-4125-8d8f-b7fbfdd6ae47', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'MSNCHWK', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('491941e6-89a7-473f-b246-a2d8cd21b078', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'MSNMPLRD', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('00048dd4-17b0-4fdc-a3fb-54f820970422', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'MSNSR', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('6496f00f-5397-470d-90db-490e6859256a', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'NNIMO', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('4ff0d641-4c60-4a0a-964e-6e0ac5bfa8de', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'NLSON', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('b494082e-35a3-468f-8955-4aa002066b36', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'PNTCTN', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('305f0ee6-b525-40fd-b2d8-c7a882e8b7fd', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'PRTALB', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('3058b00c-cafd-4eba-a1a4-a989ccff00bf', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'PRTMCNL', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('cd101564-6114-49e0-9e87-fa6e4925dbb7', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'PWLRV', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('3f474308-68da-450a-b1ab-fb8a5b7a27ce', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'PRCG', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('313f4ec3-e88a-41c2-9956-78c7b18cb71d', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'QSNL', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('19d0f476-0fc4-4fe1-b7aa-b76d3c2c5b9b', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'SLMONRM', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('b74014cf-1d80-4074-97c0-024a422d24f9', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'SCHLT', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('cbd8d434-f525-410b-9c3c-119b82a31813', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'SMITHRS', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('38105a68-c83d-44e5-af6e-9cfa40792118', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'SQMSHWHS', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('0f2cdcb7-c4ba-457d-adac-adde1d8c077a', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'TERRC', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('5128179c-f622-499b-b8e5-b39199081f22', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'VNDHF', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('1f4d9042-d6a5-46b6-a860-e1de7edb6add', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'VRNON', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('45abdc96-1b07-4b9c-8b05-e2b0c46c1d1d', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'VICTRA', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('9fc7327b-b206-4a5c-88f1-2875a456eb49', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'WLMSLK', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('c3d8519c-73cb-48a1-8058-358883d5ef4f', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'nr-compliance-enforcement', '2025-09-08 23:27:33.265905', 'COSHQ', 'COS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('7a02e89a-74e6-44fa-b030-db1ab0be9eb6', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'NNIMO', 'EPO') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('fc5eea4b-996b-47a5-91db-ebae8384a65f', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'VICTRA', 'EPO') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('28e5eb22-cdd4-423c-81c7-96911703a255', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'MSNSR', 'EPO') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('aaf2f236-cd5f-436f-94f6-3fb6c69693bb', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'PNTCTN', 'EPO') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('0d1b9151-51b6-4857-993d-1af34f2ab79a', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'NLSON', 'EPO') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('73f2f0b1-e5ee-4c65-a7a6-7c18847cfb45', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'CRNBK', 'EPO') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('fb6b6d64-18b4-4b16-82fc-5305eeeb46ba', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'KMLPS', 'EPO') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('2d642d0b-bcbd-4b15-8054-9846828b7ccd', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'WLMSLK', 'EPO') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('a0981fec-5f23-48e6-8b58-23728f6ddd26', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'SMITHRS', 'EPO') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('1d5a7f50-c0d3-4bd9-bb68-db5477658a03', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'PRCG', 'EPO') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('19b88b43-7df1-49a5-ab44-dbf116e89d27', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'PRTMCNL', 'PARKS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('bbff780d-01a8-4713-ac29-dffdfa71a95a', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'KMLPS', 'PARKS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('2ab1f5ad-f307-4dfd-8050-6596b60388ae', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'WLMSLK', 'PARKS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('72752882-0c31-4862-a272-d1df70acc72f', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'PNTCTN', 'PARKS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('57db2985-f817-4faa-9dc8-91a0cb444c85', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'VRNON', 'PARKS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('53d3bb21-ea81-4fb8-8f03-cded6e7404f5', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'NLSON', 'PARKS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('0315efb6-e161-4bde-a74a-496c7db83b2d', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'CRNBK', 'PARKS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('0303b0a8-0c36-4a37-8ff1-b04d6fad730f', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'SMITHRS', 'PARKS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('474dbc09-98c0-4a3a-a35d-591397b48cb9', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'ATLIN', 'PARKS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('0d484904-dc1a-480e-84b9-62ae2c49d56f', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'DSELK', 'PARKS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('021ff877-d06e-4568-8bbb-f8f0ee487d47', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'PRCG', 'PARKS') ON CONFLICT DO NOTHING;
+INSERT INTO office VALUES ('4b358820-7ff1-43e1-b5e4-797a8c9f1d9c', 'postgres', '2025-09-08 23:27:33.265905', 'postgres', '2025-09-08 23:27:33.265905', 'FRTSTJN', 'PARKS') ON CONFLICT DO NOTHING;;
 
 
 -------------------------
