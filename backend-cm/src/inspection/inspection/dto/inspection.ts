@@ -1,11 +1,12 @@
 import { createMap, forMember, mapFrom, Mapper, mapWithArguments } from "@automapper/core";
 
-import { inspection } from "../../../../prisma/inspection/generated/inspection";
+import { inspection } from "../../../../prisma/inspection/inspection.unsupported_types";
 import { InspectionStatusCode } from "../../../inspection/inspection_status_code/dto/inspection_status_code";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { PaginatedResult } from "src/common/pagination.utility";
 import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { IsOptional } from "class-validator";
+import { Point, PointScalar } from "src/common/custom_scalars";
 
 export class Inspection {
   inspectionGuid: string;
@@ -14,6 +15,9 @@ export class Inspection {
   inspectionStatus: InspectionStatusCode;
   openedTimestamp: Date;
   name: string;
+  locationGeometry?: Point;
+  locationAddress?: string;
+  locationDescription?: string;
 }
 
 @InputType()
@@ -63,6 +67,18 @@ export class CreateInspectionInput {
 
   @Field(() => String)
   name: string;
+  
+  @Field(() => PointScalar, { nullable: true })
+  @IsOptional()
+  locationGeometry?: Point;
+
+  @Field(() => String)
+  @IsOptional()
+  locationDescription: string;
+  
+  @Field(() => String)
+  @IsOptional()
+  locationAddress: string;
 }
 
 @InputType()
@@ -79,6 +95,18 @@ export class UpdateInspectionInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   name?: string;
+
+  @Field(() => PointScalar, { nullable: true })
+  @IsOptional()
+  locationGeometry?: Point;
+
+  @Field(() => String)
+  @IsOptional()
+  locationDescription: string;
+  
+  @Field(() => String)
+  @IsOptional()
+  locationAddress: string;
 }
 
 export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
@@ -109,6 +137,18 @@ export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
     forMember(
       (dest) => dest.name,
       mapFrom((src) => src.name),
+    ),
+    forMember(
+      (dest) => dest.locationDescription,
+      mapFrom((src) => src.location_description),
+    ),
+    forMember(
+      (dest) => dest.locationAddress,
+      mapFrom((src) => src.location_address),
+    ),
+    forMember(
+      (dest) => dest.locationGeometry,
+      mapFrom((src) => src.location_geometry_point),
     ),
   );
 };

@@ -11,7 +11,7 @@ import utmObj from "utm-latlng";
 
 type Props = {
   id?: string;
-  mode: "complaint" | "equipment" | "investigation";
+  mode: "complaint" | "equipment" | "investigation" | "inspection";
   utmZones?: Array<Option>;
   initXCoordinate?: string;
   initYCoordinate?: string;
@@ -378,6 +378,8 @@ export const CompCoordinateInput: FC<Props> = ({
           return "Select equipment from map";
         case "investigation":
           return "Select investigation location from map";
+        case "inspection":
+          return "Select inspection location from map";
         default:
           return "Select location from map";
       }
