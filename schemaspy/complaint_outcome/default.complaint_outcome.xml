@@ -1,0 +1,989 @@
+<?xml version="1.0" encoding="UTF-8"?><database name="default" schema="complaint_outcome" type="PostgreSQL - 16.4 (Debian 16.4-1.pgdg110+2)">
+   <sequences>
+      <sequence increment="1" name="USER_SEQ" startValue="1"/>
+   </sequences>
+   <tables>
+      <table name="action" remarks="Represents a concrete action recorded by the case management system.   All actions have an actor and the date/time they occurred." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="action_guid" nullable="false" remarks="System generated unique key for the action.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="complaint_outcome_guid" nullable="false" remarks="System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="complaint_outcome_guid" foreignKey="FK_action__case_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="complaint_outcome"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="action_type_action_xref_guid" nullable="false" remarks="System generated unique key for a relationship between case management actions and logical types.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="action_type_action_xref_guid" foreignKey="FK_action_action_type_action_xref" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action_type_action_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="actor_guid" nullable="false" remarks="Represents the IDIR guid of the user who performed the action." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="action_date" nullable="false" remarks="The date the action was recorded.   This value is user entered." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the action is active and should be displayed in the application." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_id" nullable="false" remarks="The id of the user that created the case." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="true" remarks="The id of the user that updated the case." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the case was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="equipment_guid" nullable="true" remarks="System generated unique key for a piece of equipment.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="equipment_guid" foreignKey="fk_action__equipment_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="equipment"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="wildlife_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="wildlife_guid" foreignKey="fk_action__wildlife_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="wildlife"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="decision_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="decision_guid" foreignKey="fk_action__decision_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="decision"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="case_note_guid" nullable="true" remarks="Relates to case_note for note related actions such as UPDATENOTE." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="case_note_guid" foreignKey="FK_action__case_note_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="case_note"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="assessment_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="assessment_guid" foreignKey="action_assessment_guid_fkey" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="assessment"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="prevention_education_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="prevention_education_guid" foreignKey="action_prevention_education_guid_fkey" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="prevention_education"/>
+         </column>
+         <primaryKey column="action_guid" sequenceNumberInPK="1"/>
+         <index name="PK_action_guid" unique="true">
+            <column ascending="true" name="action_guid"/>
+         </index>
+      </table>
+      <table name="action_code" numRows="40" remarks="Contains a list of all possible actions that can be performed on a case." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="action_code" nullable="false" remarks="A human readable code used to identify a case management action." size="10" type="varchar" typeCode="12">
+            <child column="action_code" foreignKey="FK_action_type_action_xref__action_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action_type_action_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="true" remarks="The short description of a case management action." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a case management action." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the case management action is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the case management action." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case management action was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the case management action." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the case management action was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="action_code" sequenceNumberInPK="1"/>
+         <index name="PK_action_code" unique="true">
+            <column ascending="true" name="action_code"/>
+         </index>
+      </table>
+      <table name="action_h" remarks="History table for action table" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_action_guid" nullable="false" remarks="System generated unique key for action history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the action that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the action table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the action table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_action_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_action" unique="true">
+            <column ascending="true" name="h_action_guid"/>
+         </index>
+      </table>
+      <table name="action_type_action_xref" numRows="46" remarks="Contains the relationship between case management actions and logical types." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="action_type_action_xref_guid" nullable="false" remarks="System generated unique key for a relationship between case management actions and logical types.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="action_type_action_xref_guid" foreignKey="FK_action_action_type_action_xref" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="action_type_code" nullable="false" remarks="A human readable code used to identify a logical grouping of case management actions." size="10" type="varchar" typeCode="12">
+            <parent column="action_type_code" foreignKey="FK_action_type_action_xref__action_type_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="action_code" nullable="false" remarks="A human readable code used to identify a case management action." size="10" type="varchar" typeCode="12">
+            <parent column="action_code" foreignKey="FK_action_type_action_xref__action_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the case management actions should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the relationship between case management actions and logical types is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="action_type_action_xref_guid" sequenceNumberInPK="1"/>
+         <index name="PK_action_type_action_xref_guid" unique="true">
+            <column ascending="true" name="action_type_action_xref_guid"/>
+         </index>
+         <index name="UK_action_type_action_xref__action_type_code__action_code" unique="true">
+            <column ascending="true" name="action_type_code"/>
+            <column ascending="true" name="action_code"/>
+         </index>
+      </table>
+      <table name="action_type_code" numRows="8" remarks="Case management actions are grouped into logical types. For example COMPASSESS = 'Complaint Assessment'." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="action_type_code" nullable="false" remarks="A human readable code used to identify a logical grouping of case management actions." size="10" type="varchar" typeCode="12">
+            <child column="action_type_code" foreignKey="FK_action_type_action_xref__action_type_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action_type_action_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="true" remarks="The short description of a logical grouping of case management actions." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a logical grouping of case management actions." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the logical grouping of case management actions is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the action type entry." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the action type entry was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the action type entry." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the action type entry was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="action_type_code" sequenceNumberInPK="1"/>
+         <index name="PK_action_type_code" unique="true">
+            <column ascending="true" name="action_type_code"/>
+         </index>
+      </table>
+      <table name="age_code" numRows="4" remarks="Used to categorize wildlife into age brackets.  For example ADLT = &quot;Adult&quot;" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="age_code" nullable="false" remarks="A human readable code used to identify an age type." size="10" type="varchar" typeCode="12">
+            <child column="age_code" foreignKey="fk_wildlife__age_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="wildlife"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of an age type." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of an age type." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the age type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if an age type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the age type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the age type was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the age type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the age type was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="age_code" sequenceNumberInPK="1"/>
+         <index name="PK_agecode" unique="true">
+            <column ascending="true" name="age_code"/>
+         </index>
+      </table>
+      <table name="assessment" remarks="" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="assessment_guid" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="assessment_guid" foreignKey="action_assessment_guid_fkey" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="complaint_outcome_guid" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="complaint_outcome_guid" foreignKey="assessment_case_file_guid_fkey" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="complaint_outcome"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="outcome_agency_code" nullable="false" remarks="" size="10" type="varchar" typeCode="12">
+            <parent column="outcome_agency_code" foreignKey="FK_assessment__assessed_by_agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="outcome_agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="inaction_reason_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12">
+            <parent column="inaction_reason_code" foreignKey="FK_assessment__inaction_reason_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="inaction_reason_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="action_not_required_ind" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="complainant_contacted_ind" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="attended_ind" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="case_location_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12">
+            <parent column="case_location_code" foreignKey="fk_assessment__case_location_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="case_location_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="case_conflict_history_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12">
+            <parent column="conflict_history_code" foreignKey="fk_assessment__case_conflict_history_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="conflict_history_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="case_threat_level_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12">
+            <parent column="threat_level_code" foreignKey="fk_assessment__case_threat_level_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="threat_level_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="create_utc_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="update_user_id" nullable="true" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="update_utc_timestamp" nullable="true" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="assessment_guid" sequenceNumberInPK="1"/>
+         <index name="PK_assessment_guid" unique="true">
+            <column ascending="true" name="assessment_guid"/>
+         </index>
+      </table>
+      <table name="assessment_h" remarks="" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_assessment_guid" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_assessment_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_assessment" unique="true">
+            <column ascending="true" name="h_assessment_guid"/>
+         </index>
+      </table>
+      <table name="authorization_permit" remarks="Contains the authroized site id for the Authroization Outcome" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="authorization_permit_guid" nullable="false" remarks="System generated unique key for an authorized_permit record" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="complaint_outcome_guid" nullable="false" remarks="System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="complaint_outcome_guid" foreignKey="fk_authorization_permit__case_file_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="complaint_outcome"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="authorization_permit_id" nullable="false" remarks="The value used for an authorized site id" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the has been soft deleted." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the authroized site id." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the authroized site id was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the authroized site id" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the authroized site id was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="authorization_permit_guid" sequenceNumberInPK="1"/>
+         <index name="PK_authorization_permit_guid" unique="true">
+            <column ascending="true" name="authorization_permit_guid"/>
+         </index>
+      </table>
+      <table name="authorization_permit_h" remarks="History table for authorization_permit table" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_authorization_permit_guid" nullable="false" remarks="System generated unique key for authorization permit history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the authorization permit that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the authorization permit table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the authorization permit table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_authorization_permit_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_authorization_permit" unique="true">
+            <column ascending="true" name="h_authorization_permit_guid"/>
+         </index>
+      </table>
+      <table name="case_location_code" numRows="3" remarks="Contains the list of location types a user can select to indicate that where they take an action on a case. Values are Organization specific." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="case_location_code" nullable="false" remarks="A human readable code used to identify a location type." size="10" type="varchar" typeCode="12">
+            <child column="case_location_code" foreignKey="fk_assessment__case_location_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="assessment"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="true" remarks="The short description of the location type where the case was taken." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the location type where the case was taken." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="true" remarks="The order in which the values of the location type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the location type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the location type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the location type was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the location type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the location type was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="case_location_code" sequenceNumberInPK="1"/>
+         <index name="PK_case_location_code" unique="true">
+            <column ascending="true" name="case_location_code"/>
+         </index>
+      </table>
+      <table name="case_note" remarks="" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="case_note_guid" nullable="false" remarks="System generated unique key for a case note." size="2147483647" type="uuid" typeCode="1111">
+            <child column="case_note_guid" foreignKey="FK_action__case_note_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="complaint_outcome_guid" nullable="false" remarks="System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="complaint_outcome_guid" foreignKey="FK_case_note__case_file_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="complaint_outcome"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="case_note" nullable="false" remarks="The textual content or description of the note." size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="false" remarks="Indicates whether the note is active (true) or inactive (false)." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The identifier (e.g., username) of the user who created the entry." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The date and time (UTC) when the entry was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The identifier (e.g., username) of the user who last updated the entry." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The date and time (UTC) when the entry was last updated." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="outcome_agency_code" nullable="false" remarks="The agency that recorded these actions." size="10" type="varchar" typeCode="12">
+            <parent column="outcome_agency_code" foreignKey="FK_case_note__agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="outcome_agency_code"/>
+         </column>
+         <primaryKey column="case_note_guid" sequenceNumberInPK="1"/>
+         <index name="PK_case_note_guid" unique="true">
+            <column ascending="true" name="case_note_guid"/>
+         </index>
+      </table>
+      <table name="complaint_outcome" remarks="The central entity of the case management system." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="complaint_outcome_guid" nullable="false" remarks="System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="complaint_outcome_guid" foreignKey="FK_action__case_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action"/>
+            <child column="complaint_outcome_guid" foreignKey="assessment_case_file_guid_fkey" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="assessment"/>
+            <child column="complaint_outcome_guid" foreignKey="fk_authorization_permit__case_file_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="authorization_permit"/>
+            <child column="complaint_outcome_guid" foreignKey="FK_case_note__case_file_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="case_note"/>
+            <child column="complaint_outcome_guid" foreignKey="fk_decision__case_file_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="decision"/>
+            <child column="complaint_outcome_guid" foreignKey="FK_prevention_education__case_file_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="prevention_education"/>
+            <child column="complaint_outcome_guid" foreignKey="fk_site__case_file_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="site"/>
+            <child column="complaint_outcome_guid" foreignKey="fk_wildlife__case_file_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="wildlife"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="owned_by_agency_code" nullable="false" remarks="A human readable code used to identify the agency that owns this case." size="10" type="varchar" typeCode="12">
+            <parent column="outcome_agency_code" foreignKey="FK_case_file__owned_by_agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="outcome_agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="review_required_ind" nullable="true" remarks="A flag to indicate that a further review of the file by a supervisor is required." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_id" nullable="false" remarks="The id of the user that created the case." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="true" remarks="The id of the user that updated the case." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the case was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="complaint_identifier" nullable="true" remarks="" size="20" type="varchar" typeCode="12"/>
+         <primaryKey column="complaint_outcome_guid" sequenceNumberInPK="1"/>
+         <index name="PK_case_file_guid" unique="true">
+            <column ascending="true" name="complaint_outcome_guid"/>
+         </index>
+      </table>
+      <table name="complaint_outcome_h" remarks="History table for case_file table" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_complaint_outcome_guid" nullable="false" remarks="System generated unique key for case history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the case that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the case table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the case table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_complaint_outcome_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_case_file" unique="true">
+            <column ascending="true" name="h_complaint_outcome_guid"/>
+         </index>
+      </table>
+      <table name="configuration" numRows="1" remarks="The configuration table is used to store constants which are expected to change over the lifecycle of the application, or have different values in different environments.   By making changes to in the database the behaviour of the application can be altered without requiring a full deployment." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="configuration_code" nullable="false" remarks="A human readable code used to identify an configuration entry." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="configuration_value" nullable="false" remarks="The value of the configuration entry." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="false" remarks="The long description of the configuration entry." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the configuration_entry is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the configuration entry." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the configuration entry was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="The id of the user that updated the configuration entry." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the configuration entry was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="configuration_code" sequenceNumberInPK="1"/>
+         <index name="configuration_pk" unique="true">
+            <column ascending="true" name="configuration_code"/>
+         </index>
+      </table>
+      <table name="configuration_h" numRows="3" remarks="History table for configuration table" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_configuration_guid" nullable="false" remarks="System generated unique key for configuration history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the configuration that has been created or modified." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the configuration table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the configuration table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_configuration_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_configuration" unique="true">
+            <column ascending="true" name="h_configuration_guid"/>
+         </index>
+      </table>
+      <table name="conflict_history_code" numRows="4" remarks="A classification on the frequence that the target wildlife has previously had a history of human conflict.  For example L = &quot;Low&quot;" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="conflict_history_code" nullable="false" remarks="A human readable code used to identify a conflict history type." size="10" type="varchar" typeCode="12">
+            <child column="case_conflict_history_code" foreignKey="fk_assessment__case_conflict_history_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="assessment"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of a conflict history type." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a conflict history type." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the conflict history type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a conflict history type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the conflict history type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the conflict history type was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the conflict history type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the conflict history type was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="conflict_history_code" sequenceNumberInPK="1"/>
+         <index name="PK_cnfthistcd" unique="true">
+            <column ascending="true" name="conflict_history_code"/>
+         </index>
+      </table>
+      <table name="decision" remarks="As a CEEB Compliance Coordinator or Officer, I need to be able to capture decision information to ensure that all information necessary in the decision making process can be captured in the complaint." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="decision_guid" nullable="false" remarks="Unique identifier for the decision" size="2147483647" type="uuid" typeCode="1111">
+            <child column="decision_guid" foreignKey="fk_action__decision_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="complaint_outcome_guid" nullable="false" remarks="Assoiciates the decision record to an existing case file" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="complaint_outcome_guid" foreignKey="fk_decision__case_file_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="complaint_outcome"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="schedule_sector_xref_guid" nullable="false" remarks="Defines the combination of a WDR_SCHEDULE_CODE and a SECTOR_CATEGORY_CODE" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="schedule_sector_xref_guid" foreignKey="fk_decision__schedule_sector_xref_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="schedule_sector_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="discharge_code" nullable="false" remarks="The discharge code related to a decision" size="10" type="varchar" typeCode="12">
+            <parent column="discharge_code" foreignKey="fk_decision__discharge_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="discharge_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="rationale_text" nullable="true" remarks="The rationale code related to a CEEB decision" size="4000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="inspection_number" nullable="true" remarks="The NRIS inspection number for a CEEB decision" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="outcome_agency_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12">
+            <parent column="outcome_agency_code" foreignKey="fk_decision__lead_agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="outcome_agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="non_compliance_decision_matrix_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12">
+            <parent column="non_compliance_decision_matrix_code" foreignKey="fk_decision__ncdm_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="non_compliance_decision_matrix_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the case management action is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="create_user_id" nullable="false" remarks="The id of the user that created the case management action." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case management action was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="update_user_id" nullable="false" remarks="The id of the user that updated the case management action." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="12" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the case management action was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="ipm_auth_category_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12">
+            <parent column="ipm_auth_category_code" foreignKey="fk_decision__ipm_auth_category_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="ipm_auth_category_code"/>
+         </column>
+         <primaryKey column="decision_guid" sequenceNumberInPK="1"/>
+         <index name="PK_decision_guid" unique="true">
+            <column ascending="true" name="decision_guid"/>
+         </index>
+      </table>
+      <table name="decision_h" remarks="" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_decision_guid" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_decision_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_decision" unique="true">
+            <column ascending="true" name="h_decision_guid"/>
+         </index>
+      </table>
+      <table name="discharge_code" numRows="9" remarks="Contains a list of all possible discharge codes for a CEEB decision" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="discharge_code" nullable="false" remarks="A human readable code used to identify a discharge code." size="10" type="varchar" typeCode="12">
+            <child column="discharge_code" foreignKey="fk_decision__discharge_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="decision"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of a case management discharge_code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a case management discharge_code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the case management discharge_code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the case management discharge_code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case management discharge_code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the case management discharge_code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the case management discharge_code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="discharge_code" sequenceNumberInPK="1"/>
+         <index name="PK_discharge_code" unique="true">
+            <column ascending="true" name="discharge_code"/>
+         </index>
+      </table>
+      <table name="drug_administered" remarks="While an officer is responding to a LEAD they may need to record that a WILDLIFE had a DRUG_ADMINISTERED.  This table keeps track of the type and amount of drugs administered, along with what happened to any remaining drug that was not used." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="drug_administered_guid" nullable="false" remarks="System generated unique key for an drug that was administered to an animal.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="wildlife_guid" nullable="false" remarks="System generated unique key for an animal.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="wildlife_guid" foreignKey="fk_drug_administered__wildlife_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="wildlife"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="drug_code" nullable="false" remarks="A human readable code used to identify a drug type." size="10" type="varchar" typeCode="12">
+            <parent column="drug_code" foreignKey="fk_drug_administered__drug_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="drug_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="drug_method_code" nullable="false" remarks="A human readable code used to identify a drug injection method type." size="10" type="varchar" typeCode="12">
+            <parent column="drug_method_code" foreignKey="fk_drug_administered__drug_method_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="drug_method_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="drug_remaining_outcome_code" nullable="true" remarks="A human readable code used to identify a remaining drug outcome type." size="10" type="varchar" typeCode="12">
+            <parent column="drug_remaining_outcome_code" foreignKey="fk_drug_administered__drug_remaining_outcome_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="drug_remaining_outcome_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="vial_number" nullable="false" remarks="A vial number that relates to a seperate drug inventory system." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="drug_used_amount" nullable="false" remarks="The amount of drug used" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="create_user_id" nullable="false" remarks="The id of the user that created the drug_administered record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the drug_administered record was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_id" nullable="false" remarks="The id of the user that updated the drug_administered record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the drug_administered record was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the drug_administered record is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="additional_comments_text" nullable="true" remarks="Includes comments on immobilization outcomes, any adverse reactions, and drug storage or discarding." size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="drug_administered_guid" sequenceNumberInPK="1"/>
+         <index name="PK_drug_administered_guid" unique="true">
+            <column ascending="true" name="drug_administered_guid"/>
+         </index>
+      </table>
+      <table name="drug_administered_h" remarks="History table for case_file table" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_drug_administered_guid" nullable="false" remarks="System generated unique key for case history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the case that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the case table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the case table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_drug_administered_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_drug_administered" unique="true">
+            <column ascending="true" name="h_drug_administered_guid"/>
+         </index>
+      </table>
+      <table name="drug_code" numRows="5" remarks="Contains the list of drugs that could be administered to wildlife.  For example ATPMZ = &quot;Atipamezole&quot;" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="drug_code" nullable="false" remarks="A human readable code used to identify a drug type." size="10" type="varchar" typeCode="12">
+            <child column="drug_code" foreignKey="fk_drug_administered__drug_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="drug_administered"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of a drug type." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a drug type." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the drug type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a drug type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the drug type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the drug type was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the drug type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the drug type was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="drug_code" sequenceNumberInPK="1"/>
+         <index name="PK_drugcode" unique="true">
+            <column ascending="true" name="drug_code"/>
+         </index>
+      </table>
+      <table name="drug_method_code" numRows="4" remarks="Contains the list of drug induction methods types supported by the system.  For example DART = &quot;Dart&quot;" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="drug_method_code" nullable="false" remarks="A human readable code used to identify a drug injection method type." size="10" type="varchar" typeCode="12">
+            <child column="drug_method_code" foreignKey="fk_drug_administered__drug_method_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="drug_administered"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of a drug injection method type." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a drug injection method type." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the drug injection method type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a drug injection method type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the drug injection method type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the drug injection method type was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the drug injection method type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the drug injection method type was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="drug_method_code" sequenceNumberInPK="1"/>
+         <index name="PK_drgmethdcd" unique="true">
+            <column ascending="true" name="drug_method_code"/>
+         </index>
+      </table>
+      <table name="drug_remaining_outcome_code" numRows="3" remarks="After a drug has been induced to an animal, the fate of the remaining drug in the vial is recorded.   This table contains a list of types supported by the system.  For example DISC = &quot;Discard&quot;" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="drug_remaining_outcome_code" nullable="false" remarks="A human readable code used to identify a remaining drug outcome type." size="10" type="varchar" typeCode="12">
+            <child column="drug_remaining_outcome_code" foreignKey="fk_drug_administered__drug_remaining_outcome_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="drug_administered"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of a remaining drug outcome type." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a remaining drug outcome type." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the remaining drug outcome type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a remaining drug outcome type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the remaining drug outcome type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the remaining drug outcome type was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the remaining drug outcome type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the remaining drug outcome type was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="drug_remaining_outcome_code" sequenceNumberInPK="1"/>
+         <index name="PK_drgrmotccd" unique="true">
+            <column ascending="true" name="drug_remaining_outcome_code"/>
+         </index>
+      </table>
+      <table name="ear_code" numRows="2" remarks="Indicates which ear an identification tag is present on.  For example L = &quot;Left&quot;" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="ear_code" nullable="false" remarks="A human readable code used to identify an ear type." size="10" type="varchar" typeCode="12">
+            <child column="ear_code" foreignKey="fk_ear_tag__ear_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="ear_tag"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of an ear type." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of an ear type." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the ear type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if an ear type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the ear type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the ear type was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the ear type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the ear type was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="ear_code" sequenceNumberInPK="1"/>
+         <index name="PK_earcode" unique="true">
+            <column ascending="true" name="ear_code"/>
+         </index>
+      </table>
+      <table name="ear_tag" remarks="an EAR_TAG is used to identify a specific WILDLIFE allowing the animal to be tracked over time." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="ear_tag_guid" nullable="false" remarks="System generated unique key for an ear tag.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="wildlife_guid" nullable="false" remarks="System generated unique key for an animal.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="wildlife_guid" foreignKey="fk_ear_tag__wildlife_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="wildlife"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="ear_code" nullable="false" remarks="A human readable code used to identify an ear type." size="10" type="varchar" typeCode="12">
+            <parent column="ear_code" foreignKey="fk_ear_tag__ear_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="ear_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="ear_tag_identifier" nullable="false" remarks="An identifier used to label an animal, not used as a natural key as they are not guaranteed to be unique" size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the ear_tag record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the ear_tag record was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="The id of the user that updated the ear_tag record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the ear_tag record was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the ear_tag record is active." size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="ear_tag_guid" sequenceNumberInPK="1"/>
+         <index name="PK_ear_tag_guid" unique="true">
+            <column ascending="true" name="ear_tag_guid"/>
+         </index>
+      </table>
+      <table name="ear_tag_h" remarks="History table for case_file table" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_ear_tag_guid" nullable="false" remarks="System generated unique key for case history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the case that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the case table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the case table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_ear_tag_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_ear_tag" unique="true">
+            <column ascending="true" name="h_ear_tag_guid"/>
+         </index>
+      </table>
+      <table name="equipment" remarks="Represents a piece of physical equipment that has been deployed in support of the case.   Contains information about where and when the equipment was deployed." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="equipment_guid" nullable="false" remarks="System generated unique key for a piece of equipment.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="equipment_guid" foreignKey="fk_action__equipment_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="equipment_code" nullable="true" remarks="A human readable code used to identify a piece of equipment" size="10" type="varchar" typeCode="12">
+            <parent column="equipment_code" foreignKey="fk_equipment__equipment_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="equipment_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="equipment_location_desc" nullable="true" remarks="Free form text describing the location of the equipment.   Usually (but not always) an address." size="120" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="equipment_geometry_point" nullable="true" remarks="The closest approximation to where the equipment is deployed.   Stored as a geometric point using the EPSG:3005 Projected Coordinate System (BC Albers)" size="2147483647" type="geometry" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the equipment record is active and should be displayed in the application." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the equipment record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the equipment record was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the equipment record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the equipment record was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="'U'::bpchar" digits="0" id="9" name="was_animal_captured" nullable="false" remarks="Indicates if an animal was captured by the EQUIPMENT. Values are limited to 'Y' (Yes) 'N' (No) and 'U' (Unknown - Not Specified Yet). The default is 'U'" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="quantity" nullable="true" remarks="Indicates the number of EQUIPMENT used. Values should be a positive integer or null if not applicable." size="5" type="int2" typeCode="5"/>
+         <primaryKey column="equipment_guid" sequenceNumberInPK="1"/>
+         <index name="PK_equipment_guid" unique="true">
+            <column ascending="true" name="equipment_guid"/>
+         </index>
+      </table>
+      <table name="equipment_code" numRows="11" remarks="Used to track pieces of equipment that could be deployed out in the field.  For example BRSNR = &quot;Bear Snare&quot;" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="equipment_code" nullable="false" remarks="A human readable code used to identify an equipment type." size="10" type="varchar" typeCode="12">
+            <child column="equipment_code" foreignKey="fk_equipment__equipment_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="equipment"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of an equipment type." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of an equipment type." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the equipment type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if an equipment type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the equipment type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the equipment type was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the equipment type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the equipment type was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="9" name="is_trap_ind" nullable="false" remarks="Indicates if the EQUIPMENT_CODE value represents a trap.   Default to 'true'.   For EQUIPMENT_CODE values such as Signage or Trail cameras the value is 'false'" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="10" name="has_quantity_ind" nullable="false" remarks="Indicates if the type of equipment allows a quantity to be speciofied.   Default to 'false'." size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="equipment_code" sequenceNumberInPK="1"/>
+         <index name="PK_equipmntcd" unique="true">
+            <column ascending="true" name="equipment_code"/>
+         </index>
+      </table>
+      <table name="equipment_h" remarks="History table for equipment table" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_equipment_guid" nullable="false" remarks="System generated unique key for equipment history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the equipment that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the equipment table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the equipment table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_equipment_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_equipment" unique="true">
+            <column ascending="true" name="h_equipment_guid"/>
+         </index>
+      </table>
+      <table name="equipment_status_code" numRows="3" remarks="Contains the list of equipment status a user can select for filtering." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="equipment_status_code" nullable="false" remarks="A human readable code used to identify an equipment status." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="true" remarks="The short description of an equipment status." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of an equipment status." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="true" remarks="The order in which the values of the equipment status should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the equipment status option is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the equipment status." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the equipment status was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the equipment status." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the equipment status was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="equipment_status_code" sequenceNumberInPK="1"/>
+         <index name="PK_equipment_status_code" unique="true">
+            <column ascending="true" name="equipment_status_code"/>
+         </index>
+      </table>
+      <table name="flyway_schema_history" remarks="" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="" size="200" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="type" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="script" nullable="false" remarks="" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="checksum" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="installed_by" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="installed_on" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="execution_time" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="success" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="installed_rank" sequenceNumberInPK="1"/>
+         <index name="flyway_schema_history_pk" unique="true">
+            <column ascending="true" name="installed_rank"/>
+         </index>
+         <index name="flyway_schema_history_s_idx" unique="false">
+            <column ascending="true" name="success"/>
+         </index>
+      </table>
+      <table name="hwcr_outcome_actioned_by_code" numRows="6" remarks="Indicates the party responsible for carrying out the action in a HWC outcome." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hwcr_outcome_actioned_by_code" nullable="false" remarks="A human readable code used to identify who carried out an HWCR outcome." size="10" type="varchar" typeCode="12">
+            <child column="hwcr_outcome_actioned_by_code" foreignKey="fk_wildlife__hwcr_outcome_actioned_by_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="wildlife"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="outcome_agency_code" nullable="true" remarks="A reference to the agency in this system if the party is a NatCom user such as &quot;COS&quot;." size="10" type="varchar" typeCode="12">
+            <parent column="outcome_agency_code" foreignKey="FK_hwc_outcome_actioned_by__agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="outcome_agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="short_description" nullable="false" remarks="The short description of an HWCR outcome actioned by code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="long_description" nullable="true" remarks="The long description of an HWCR outcome actioned by code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="display_order" nullable="false" remarks="The order in which the values of the HWCR outcome actioned by code should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="active_ind" nullable="false" remarks="A boolean indicator to determine if an HWCR outcome actioned by code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_id" nullable="false" remarks="The id of the user that created the HWCR outcome actioned by code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the HWCR outcome actioned by code was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="false" remarks="The id of the user that updated the HWCR outcome actioned by code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the HWCR outcome actioned by code was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="hwcr_outcome_actioned_by_code" sequenceNumberInPK="1"/>
+         <index name="PK_hwc_outcome_actioned_by_code" unique="true">
+            <column ascending="true" name="hwcr_outcome_actioned_by_code"/>
+         </index>
+      </table>
+      <table name="hwcr_outcome_code" numRows="11" remarks="Indicates the final outcome for an animal as a result of an HWC.  For example DESTRYCOS = &quot;Destroyed by COS&quot;" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="hwcr_outcome_code" nullable="false" remarks="A human readable code used to identify an HWCR outcome type." size="10" type="varchar" typeCode="12">
+            <child column="hwcr_outcome_code" foreignKey="fk_wildlife__hwcr_outcome_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="wildlife"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of an HWCR outcome type." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of an HWCR outcome type." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the HWCR outcome  type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if an HWCR outcome type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the HWCR outcome type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the HWCR outcome type was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the HWCR outcome type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the HWCR outcome type was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="hwcr_outcome_code" sequenceNumberInPK="1"/>
+         <index name="PK_hwcrotcmcd" unique="true">
+            <column ascending="true" name="hwcr_outcome_code"/>
+         </index>
+      </table>
+      <table name="inaction_reason_code" numRows="4" remarks="Contains the list of available reasons a user can select to indicate that the reason why they did not take any action on a case. Values are Organization specific." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="inaction_reason_code" nullable="false" remarks="A human readable code used to identify a reason why no action on the case was taken." size="10" type="varchar" typeCode="12">
+            <child column="inaction_reason_code" foreignKey="FK_assessment__inaction_reason_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="assessment"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="outcome_agency_code" nullable="false" remarks="A human readable code used to identify an agency." size="10" type="varchar" typeCode="12">
+            <parent column="outcome_agency_code" foreignKey="FK_inaction_reason_code__agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="outcome_agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="short_description" nullable="true" remarks="The short description of the reason why no action on the case was taken." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="long_description" nullable="true" remarks="The long description of the reason why no action on the case was taken." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="display_order" nullable="true" remarks="The order in which the values of the reasons why no action on the case was taken should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the reason why no action on the case was taken is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_id" nullable="false" remarks="The id of the user that created the reason why no action on the case was taken." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the reason why no action on the case was taken was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="true" remarks="The id of the user that updated the reason why no action on the case was taken." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the reason why no action on the case was taken was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="inaction_reason_code" sequenceNumberInPK="1"/>
+         <index name="PK_inaction_reason_code" unique="true">
+            <column ascending="true" name="inaction_reason_code"/>
+         </index>
+      </table>
+      <table name="ipm_auth_category_code" numRows="6" remarks="Contains the list of IPM authorization categories a user can select to indicate the context in which a party is authorized to use pesticides." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="ipm_auth_category_code" nullable="false" remarks="A human readable code used to identify a IPM authorization category." size="10" type="varchar" typeCode="12">
+            <child column="ipm_auth_category_code" foreignKey="fk_decision__ipm_auth_category_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="decision"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="true" remarks="The short description of the IPM authorization category where the case was taken." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the IPM authorization category where the case was taken." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="true" remarks="The order in which the values of the IPM authorization category should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the IPM authorization category is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the IPM authorization category." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the IPM authorization category was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the IPM authorization category." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the IPM authorization category was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="ipm_auth_category_code" sequenceNumberInPK="1"/>
+         <index name="PK_ipm_auth_category_code" unique="true">
+            <column ascending="true" name="ipm_auth_category_code"/>
+         </index>
+      </table>
+      <table name="non_compliance_decision_matrix_code" numRows="7" remarks="Contains a list of all possible non_compliance_decision_matrix_code codes for a CEEB decision" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="non_compliance_decision_matrix_code" nullable="false" remarks="A human readable code used to identify a non_compliance_decision_matrix_code code." size="10" type="varchar" typeCode="12">
+            <child column="non_compliance_decision_matrix_code" foreignKey="fk_decision__ncdm_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="decision"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of a case management non_compliance_decision_matrix_code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a case management non_compliance_decision_matrix_code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the case management non_compliance_decision_matrix_code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the case management non_compliance_decision_matrix_code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case management non_compliance_decision_matrix_code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the case management non_compliance_decision_matrix_code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the case management non_compliance_decision_matrix_code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="non_compliance_decision_matrix_code" sequenceNumberInPK="1"/>
+         <index name="PK_non_compliance_decision_matrix_code" unique="true">
+            <column ascending="true" name="non_compliance_decision_matrix_code"/>
+         </index>
+      </table>
+      <table name="outcome_agency_code" numRows="15" remarks="Contains a list of all the organizations that have been onboarded onto the Case Management System. This can be used to restrict some content to organization specific values." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="outcome_agency_code" nullable="false" remarks="A human readable code used to identify an agency." size="10" type="varchar" typeCode="12">
+            <child column="outcome_agency_code" foreignKey="FK_assessment__assessed_by_agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="assessment"/>
+            <child column="outcome_agency_code" foreignKey="FK_case_note__agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="case_note"/>
+            <child column="owned_by_agency_code" foreignKey="FK_case_file__owned_by_agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="complaint_outcome"/>
+            <child column="outcome_agency_code" foreignKey="fk_decision__lead_agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="decision"/>
+            <child column="outcome_agency_code" foreignKey="FK_hwc_outcome_actioned_by__agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="hwcr_outcome_actioned_by_code"/>
+            <child column="outcome_agency_code" foreignKey="FK_inaction_reason_code__agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="inaction_reason_code"/>
+            <child column="outcome_agency_code" foreignKey="FK_prevention_education__agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="prevention_education"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="true" remarks="The short description of the agency code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the agency code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the agency code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the agency code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the agency was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the agency code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the agency was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="display_order" nullable="true" remarks="The order in which the values of the agency should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <primaryKey column="outcome_agency_code" sequenceNumberInPK="1"/>
+         <index name="PK_agency_code" unique="true">
+            <column ascending="true" name="outcome_agency_code"/>
+         </index>
+      </table>
+      <table name="prevention_education" remarks="" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="prevention_education_guid" nullable="false" remarks="System generated unique key prevention education record." size="2147483647" type="uuid" typeCode="1111">
+            <child column="prevention_education_guid" foreignKey="action_prevention_education_guid_fkey" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="complaint_outcome_guid" nullable="false" remarks="Foreign key to the case that these actions are for." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="complaint_outcome_guid" foreignKey="FK_prevention_education__case_file_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="complaint_outcome"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="outcome_agency_code" nullable="false" remarks="The agency that recorded these actions." size="10" type="varchar" typeCode="12">
+            <parent column="outcome_agency_code" foreignKey="FK_prevention_education__agency_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="outcome_agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="false" remarks="Indicates whether the note is active (true) or inactive (false)." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The identifier (e.g., username) of the user who created the entry." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The date and time (UTC) when the entry was created." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The identifier (e.g., username) of the user who last updated the entry." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The date and time (UTC) when the entry was last updated." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="prevention_education_guid" sequenceNumberInPK="1"/>
+         <index name="PK_prevention_education_guid" unique="true">
+            <column ascending="true" name="prevention_education_guid"/>
+         </index>
+      </table>
+      <table name="schedule_code" numRows="5" remarks="Contains the list of values for indicating the waste schedule or pesticide sector an incident falls under." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="schedule_code" nullable="false" remarks="A human readable code used to identify a wdr schedule code" size="10" type="varchar" typeCode="12">
+            <child column="schedule_code" foreignKey="fk_schedule_sector_xref__schedule_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="schedule_sector_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of a case management schedule_code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a case management schedule_code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the case management schedule_code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the case management schedule_code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case management schedule_code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the case management schedule_code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the case management schedule_code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="schedule_code" sequenceNumberInPK="1"/>
+         <index name="PK_schedule_code" unique="true">
+            <column ascending="true" name="schedule_code"/>
+         </index>
+      </table>
+      <table name="schedule_sector_xref" numRows="88" remarks="" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="schedule_sector_xref_guid" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="schedule_sector_xref_guid" foreignKey="fk_decision__schedule_sector_xref_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="decision"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="schedule_code" nullable="false" remarks="" size="10" type="varchar" typeCode="12">
+            <parent column="schedule_code" foreignKey="fk_schedule_sector_xref__schedule_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="schedule_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="sector_code" nullable="false" remarks="" size="10" type="varchar" typeCode="12">
+            <parent column="sector_code" foreignKey="fk_schedule_sector_xref__sector_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="sector_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active_ind" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="schedule_sector_xref_guid" sequenceNumberInPK="1"/>
+         <index name="PK_schedule_sector_xref_guid" unique="true">
+            <column ascending="true" name="schedule_sector_xref_guid"/>
+         </index>
+         <index name="uk_schedule_sector_xref__schedule_sector" unique="true">
+            <column ascending="true" name="schedule_code"/>
+            <column ascending="true" name="sector_code"/>
+         </index>
+      </table>
+      <table name="sector_code" numRows="87" remarks="Contains the list of values to further categorizes an incident by providing context (industry, methods of handling, etc.) for the kind of waste involved." schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="sector_code" nullable="false" remarks="A human readable code used to identify a ipm_secord_code" size="10" type="varchar" typeCode="12">
+            <child column="sector_code" foreignKey="fk_schedule_sector_xref__sector_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="schedule_sector_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of a case management sector_code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a case management sector_code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the case management sector_code is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the case management sector_code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case management sector_code was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the case management sector_code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the case management sector_code was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="sector_code" sequenceNumberInPK="1"/>
+         <index name="PK_sector_code" unique="true">
+            <column ascending="true" name="sector_code"/>
+         </index>
+      </table>
+      <table name="sex_code" numRows="3" remarks="Contains the list of biological sexes supported by the system.  For example M = &quot;Male&quot;" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="sex_code" nullable="false" remarks="A human readable code used to identify a sex type." size="10" type="varchar" typeCode="12">
+            <child column="sex_code" foreignKey="fk_wildlife__sex_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="wildlife"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of a sex type." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a sex type." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the sex type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a sex type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the sex type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the sex type was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the sex type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the sex type was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="sex_code" sequenceNumberInPK="1"/>
+         <index name="PK_sexcode" unique="true">
+            <column ascending="true" name="sex_code"/>
+         </index>
+      </table>
+      <table name="site" remarks="Contains the unauthorized site id for the Authroization Outcome" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="site_guid" nullable="false" remarks="System generated unique key for a site record" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="complaint_outcome_guid" nullable="false" remarks="System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="complaint_outcome_guid" foreignKey="fk_site__case_file_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="complaint_outcome"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="site_id" nullable="false" remarks="The value used for an unauthorized site id" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the record has been soft deleted." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the unauthroized site id." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the unauthroized site id was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the unauthroized site id" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the unauthroized site id was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="site_guid" sequenceNumberInPK="1"/>
+         <index name="PK_site_guid" unique="true">
+            <column ascending="true" name="site_guid"/>
+         </index>
+      </table>
+      <table name="site_h" remarks="History table for site table" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_site_guid" nullable="false" remarks="System generated unique key for site history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the site that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the site table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the site table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_site_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_site" unique="true">
+            <column ascending="true" name="h_site_guid"/>
+         </index>
+      </table>
+      <table name="threat_level_code" numRows="4" remarks="A COS determination that indicates the threat level of the animal to humans.  For example 1 = &quot;Category 1&quot;" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="threat_level_code" nullable="false" remarks="A human readable code used to identify a threat level type." size="10" type="varchar" typeCode="12">
+            <child column="case_threat_level_code" foreignKey="fk_assessment__case_threat_level_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="assessment"/>
+            <child column="threat_level_code" foreignKey="fk_wildlife__threat_level_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="wildlife"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of a threat level type." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of a threat level type." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which the values of the threat level type should be displayed when presented to a user in a list." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if a threat level type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the threat level type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the threat level type was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the threat level type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the threat level type was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="threat_level_code" sequenceNumberInPK="1"/>
+         <index name="PK_thrtlvlcd" unique="true">
+            <column ascending="true" name="threat_level_code"/>
+         </index>
+      </table>
+      <table name="wildlife" remarks="WILDLIFE can be a participant on a CASE_FILE, specifically for CASE_FILE with a CASE_CODE of &quot;HWCR&quot; (Human / Wildlife Conflict)" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="wildlife_guid" nullable="false" remarks="System generated unique key for an animal.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="wildlife_guid" foreignKey="fk_action__wildlife_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="action"/>
+            <child column="wildlife_guid" foreignKey="fk_drug_administered__wildlife_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="drug_administered"/>
+            <child column="wildlife_guid" foreignKey="fk_ear_tag__wildlife_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="ear_tag"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="complaint_outcome_guid" nullable="false" remarks="System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="complaint_outcome_guid" foreignKey="fk_wildlife__case_file_guid" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="complaint_outcome"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="threat_level_code" nullable="true" remarks="A human readable code used to identify a threat level type." size="10" type="varchar" typeCode="12">
+            <parent column="threat_level_code" foreignKey="fk_wildlife__threat_level_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="threat_level_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="sex_code" nullable="true" remarks="A human readable code used to identify a sex type." size="10" type="varchar" typeCode="12">
+            <parent column="sex_code" foreignKey="fk_wildlife__sex_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="sex_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="age_code" nullable="true" remarks="A human readable code used to identify an age type." size="10" type="varchar" typeCode="12">
+            <parent column="age_code" foreignKey="fk_wildlife__age_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="age_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="hwcr_outcome_code" nullable="true" remarks="A human readable code used to identify an HWCR outcome type." size="10" type="varchar" typeCode="12">
+            <parent column="hwcr_outcome_code" foreignKey="fk_wildlife__hwcr_outcome_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="hwcr_outcome_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="species_code" nullable="false" remarks="A human readable code used to identify a species.   The COS Complaint Management is the authorative source for the screen labels and descriptions of the codes." size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="create_user_id" nullable="false" remarks="The id of the user that created the wildlife record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the wildlife record was created.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="update_user_id" nullable="false" remarks="The id of the user that updated the wildlife record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the wildlife record was updated.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="active_ind" nullable="true" remarks="A boolean indicator to determine if the wildlife record is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="identifying_features" nullable="true" remarks="" size="4000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="hwcr_outcome_actioned_by_code" nullable="true" remarks="A human readable code used to reference an HWCR outcome actioned by code." size="10" type="varchar" typeCode="12">
+            <parent column="hwcr_outcome_actioned_by_code" foreignKey="fk_wildlife__hwcr_outcome_actioned_by_code" implied="false" onDeleteCascade="false" schema="complaint_outcome" table="hwcr_outcome_actioned_by_code"/>
+         </column>
+         <primaryKey column="wildlife_guid" sequenceNumberInPK="1"/>
+         <index name="PK_wildlife_guid" unique="true">
+            <column ascending="true" name="wildlife_guid"/>
+         </index>
+      </table>
+      <table name="wildlife_h" remarks="History table for case_file table" schema="complaint_outcome" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_wildlife_guid" nullable="false" remarks="System generated unique key for case history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the case that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the case table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the case table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_wildlife_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_wildlife" unique="true">
+            <column ascending="true" name="h_wildlife_guid"/>
+         </index>
+      </table>
+   </tables>
+   <routines>
+      <routine dataAccess="MODIFIES" deterministic="false" name="audit_history()" returnType="trigger" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="plpgsql"><![CDATA[DECLARE
+
+	target_history_table TEXT;
+	target_pk TEXT;
+
+  BEGIN
+    target_history_table := TG_ARGV[0];
+    target_pk := TG_ARGV[1];
+
+    IF TG_OP ='INSERT' THEN 
+        
+      -- Don't trust the caller not to manipulate any of these fields
+      NEW.create_utc_timestamp := current_timestamp; -- create timestamp must be the current time
+      NEW.update_utc_timestamp := current_timestamp; -- update timestamp must be the current time
+      NEW.update_user_id := NEW.create_user_id;  -- the update user must be the same as the create user
+
+      EXECUTE
+        format( 
+            'INSERT INTO complaint_outcome.%I (target_row_id, operation_type, operation_user_id, data_after_executed_operation) VALUES ($1.%I,  ''I'', $1.create_user_id, to_jsonb($1))',  target_history_table, target_pk
+        )
+        USING NEW;
+      RETURN NEW;
+
+    ELSIF TG_OP = 'UPDATE' THEN 
+
+      -- Don't trust the caller not to manipulate any of these fields
+      NEW.update_utc_timestamp := current_timestamp;  -- update timestamp must be the current time
+      NEW.create_user_id := OLD.create_user_id; -- create userId can't be altered
+      NEW.create_utc_timestamp := OLD.create_utc_timestamp; -- update timestamp can't be altered
+
+      EXECUTE
+        format(
+            'INSERT INTO complaint_outcome.%I (target_row_id, operation_type, operation_user_id, data_after_executed_operation) VALUES ($1.%I, ''U'', $1.update_user_id, to_jsonb($1))', target_history_table, target_pk
+          )
+        USING NEW;
+      RETURN NEW;
+
+    ELSIF TG_OP = 'DELETE' THEN
+
+      EXECUTE
+        format(
+                'INSERT INTO complaint_outcome.%I (target_row_id, operation_type) VALUES ($1.%I, ''D'')', target_history_table, target_pk
+        )
+        USING OLD;
+      RETURN OLD;
+
+    END IF;
+  END;]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="update_audit_columns()" returnType="trigger" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="plpgsql"><![CDATA[DECLARE
+calling_query TEXT;
+update_user_id_found BOOL;
+BEGIN
+        IF NEW.update_utc_timestamp IS NOT DISTINCT FROM OLD.update_utc_timestamp THEN
+            NEW.update_utc_timestamp := CURRENT_TIMESTAMP;
+        END IF;
+        SELECT current_query() INTO calling_query;
+        SELECT POSITION('update_user_id' IN calling_query) > 0 INTO update_user_id_found;
+        IF update_user_id_found = 'f' THEN
+            NEW.update_user_id := CURRENT_USER;
+        END IF;
+        RETURN NEW;
+    END;]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+   </routines>
+</database>
