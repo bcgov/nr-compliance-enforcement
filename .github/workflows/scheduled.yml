@@ -74,7 +74,7 @@ jobs:
       - name: Flyway - complaint
         uses: docker://flyway/flyway:10
         env:
-          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default?currentSchema=complaint,public
           FLYWAY_USER: postgres
           FLYWAY_PASSWORD: default
           FLYWAY_LOCATIONS: filesystem:./migration-complaint/migrations,filesystem:./migration-complaint/baseline
@@ -84,7 +84,7 @@ jobs:
       - name: Flyway - complaint outcome
         uses: docker://flyway/flyway:10
         env:
-          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default?currentSchema=complaint_outcome,public
           FLYWAY_USER: postgres
           FLYWAY_PASSWORD: default
           FLYWAY_LOCATIONS: filesystem:./migration-complaint-outcome/migrations,filesystem:./migration-complaint-outcome/baseline
@@ -94,7 +94,7 @@ jobs:
       - name: Flyway - shared
         uses: docker://flyway/flyway:10
         env:
-          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default?currentSchema=shared,public
           FLYWAY_USER: postgres
           FLYWAY_PASSWORD: default
           FLYWAY_LOCATIONS: filesystem:./migration-shared/migrations,filesystem:./migration-shared/baseline
@@ -104,7 +104,7 @@ jobs:
       - name: Flyway - inspection
         uses: docker://flyway/flyway:10
         env:
-          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default?currentSchema=inspection,public
           FLYWAY_USER: postgres
           FLYWAY_PASSWORD: default
           FLYWAY_LOCATIONS: filesystem:./migration-inspection/migrations,filesystem:./migration-inspection/baseline
@@ -114,7 +114,7 @@ jobs:
       - name: Flyway - investigation
         uses: docker://flyway/flyway:10
         env:
-          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default?currentSchema=investigation,public
           FLYWAY_USER: postgres
           FLYWAY_PASSWORD: default
           FLYWAY_LOCATIONS: filesystem:./migration-investigation/migrations,filesystem:./migration-investigation/baseline
