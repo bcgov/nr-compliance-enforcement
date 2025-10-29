@@ -25,6 +25,12 @@ env:
   GITOPS_REPO: bcgov-c/tenant-gitops-f208ae
   GITOPS_REPO_VALUES_PATH: ./charts/apps/natsuite/values
   GITOPS_REPO_OUTPUTS_PATH: ./charts/apps/natsuite/values/.outputs
+  FLYWAY_PLACEHOLDERS_COMPLAINT_PASSWORD: default
+  FLYWAY_PLACEHOLDERS_INVESTIGATION_PASSWORD: default
+  FLYWAY_PLACEHOLDERS_INSPECTION_PASSWORD: default
+  FLYWAY_PLACEHOLDERS_SHARED_PASSWORD: default
+  FLYWAY_PLACEHOLDERS_COMPLAINT_OUTCOME_PASSWORD: default
+  FLYWAY_PLACEHOLDERS_METABASE_READONLY_PASSWORD: default
 
 jobs:
   vars:
@@ -91,10 +97,14 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - name: Enable Extensions
+        run: |
+          docker exec $(docker ps -q --filter "ancestor=postgis/postgis:16-3.4") \
+            psql -U postgres -d default -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
       - name: Flyway - complaint
         uses: docker://flyway/flyway:10
         env:
-          FLYWAY_URL: jdbc:postgresql://postgres:5432/default?currentSchema=complaint,public
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
           FLYWAY_USER: postgres
           FLYWAY_PASSWORD: default
           FLYWAY_LOCATIONS: filesystem:./migration-complaint/migrations,filesystem:./migration-complaint/baseline
@@ -104,27 +114,17 @@ jobs:
       - name: Flyway - complaint outcome
         uses: docker://flyway/flyway:10
         env:
-          FLYWAY_URL: jdbc:postgresql://postgres:5432/default?currentSchema=complaint_outcome,public
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
           FLYWAY_USER: postgres
           FLYWAY_PASSWORD: default
           FLYWAY_LOCATIONS: filesystem:./migration-complaint-outcome/migrations,filesystem:./migration-complaint-outcome/baseline
           FLYWAY_DEFAULT_SCHEMA: complaint_outcome
         with:
           args: info migrate info
-      - name: Flyway - shared
-        uses: docker://flyway/flyway:10
-        env:
-          FLYWAY_URL: jdbc:postgresql://postgres:5432/default?currentSchema=shared,public
-          FLYWAY_USER: postgres
-          FLYWAY_PASSWORD: default
-          FLYWAY_LOCATIONS: filesystem:./migration-shared/migrations,filesystem:./migration-shared/baseline
-          FLYWAY_DEFAULT_SCHEMA: shared
-        with:
-          args: info migrate info
       - name: Flyway - inspection
         uses: docker://flyway/flyway:10
         env:
-          FLYWAY_URL: jdbc:postgresql://postgres:5432/default?currentSchema=inspection,public
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
           FLYWAY_USER: postgres
           FLYWAY_PASSWORD: default
           FLYWAY_LOCATIONS: filesystem:./migration-inspection/migrations,filesystem:./migration-inspection/baseline
@@ -134,11 +134,21 @@ jobs:
       - name: Flyway - investigation
         uses: docker://flyway/flyway:10
         env:
-          FLYWAY_URL: jdbc:postgresql://postgres:5432/default?currentSchema=investigation,public
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
           FLYWAY_USER: postgres
           FLYWAY_PASSWORD: default
           FLYWAY_LOCATIONS: filesystem:./migration-investigation/migrations,filesystem:./migration-investigation/baseline
           FLYWAY_DEFAULT_SCHEMA: investigation
+        with:
+          args: info migrate info
+      - name: Flyway - shared
+        uses: docker://flyway/flyway:10
+        env:
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
+          FLYWAY_USER: postgres
+          FLYWAY_PASSWORD: default
+          FLYWAY_LOCATIONS: filesystem:./migration-shared/migrations,filesystem:./migration-shared/baseline
+          FLYWAY_DEFAULT_SCHEMA: shared
         with:
           args: info migrate info
       - name: Create Output Folder
