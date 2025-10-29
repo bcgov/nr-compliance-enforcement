@@ -40,7 +40,7 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
   // update the marker poisition when the coordinates are updated (occurs when geocoded).
   // but don't update them if the marker position has already been set manually
   useEffect(() => {
-    let mapElement = mapElements.find((item) => item.objectType === MapObjectType.Complaint || item.objectType === MapObjectType.Investigation);
+    let mapElement = mapElements.find((item) => item.objectType === MapObjectType.Complaint || item.objectType === MapObjectType.Investigation || item.objectType === MapObjectType.Inspection);
     const mapElementLocation = mapElement?.location;
     if (mapElementLocation && areCoordinatesValid(mapElementLocation)) {
       setMapCenterPosition(mapElementLocation);
@@ -130,6 +130,7 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
     if (
       locationItem.objectType === MapObjectType.Complaint ||
       locationItem.objectType === MapObjectType.Investigation ||
+      locationItem.objectType === MapObjectType.Inspection ||
       (locationItem.objectType === MapObjectType.Equipment && ["Less lethal", "K9 unit"].includes(locationItem.name))
     ) {
       return "";
@@ -148,6 +149,13 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
   const unmappedInvestigation = useMemo(() => {
     const countUnmapped = mapElements.filter((item) => {
       return item.objectType === MapObjectType.Investigation && item.location.lat === 0 && item.location.lng === 0;
+    }).length;
+    return countUnmapped;
+  }, [mapElements]);
+
+  const unmappedInspection = useMemo(() => {
+    const countUnmapped = mapElements.filter((item) => {
+      return item.objectType === MapObjectType.Inspection && item.location.lat === 0 && item.location.lng === 0;
     }).length;
     return countUnmapped;
   }, [mapElements]);
@@ -173,6 +181,16 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
         >
           <i className="bi bi-info-circle-fill"></i>
           <span>{unmappedInvestigation} related investigation could not be mapped.</span>
+        </Alert>
+      )}
+      {unmappedInspection > 0 && (
+        <Alert
+          variant="warning"
+          className="comp-complaint-details-alert"
+          id={`inspection-map-notification`}
+        >
+          <i className="bi bi-info-circle-fill"></i>
+          <span>{unmappedInspection} related inspection could not be mapped.</span>
         </Alert>
       )}
 

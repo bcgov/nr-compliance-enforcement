@@ -270,6 +270,9 @@ export type CreateInspectionInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   inspectionStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
+  locationAddress?: InputMaybe<Scalars['String']['input']>;
+  locationDescription?: InputMaybe<Scalars['String']['input']>;
+  locationGeometry?: InputMaybe<Scalars['Point']['input']>;
   name: Scalars['String']['input'];
 };
 
@@ -641,6 +644,9 @@ export type Inspection = {
   inspectionGuid?: Maybe<Scalars['String']['output']>;
   inspectionStatus?: Maybe<InspectionStatusCode>;
   leadAgency?: Maybe<Scalars['String']['output']>;
+  locationAddress?: Maybe<Scalars['String']['output']>;
+  locationDescription?: Maybe<Scalars['String']['output']>;
+  locationGeometry?: Maybe<Scalars['Point']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['Date']['output']>;
 };
@@ -1508,6 +1514,9 @@ export type UpdateInspectionInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   inspectionStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
+  locationAddress?: InputMaybe<Scalars['String']['input']>;
+  locationDescription?: InputMaybe<Scalars['String']['input']>;
+  locationGeometry?: InputMaybe<Scalars['Point']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
