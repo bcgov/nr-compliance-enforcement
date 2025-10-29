@@ -13,4 +13,5 @@ export enum MapObjectType {
   Complaint = "Complaint",
   Equipment = "Equipment",
   Investigation = "Investigation",
+  Inspection = "Inspection",
 }
