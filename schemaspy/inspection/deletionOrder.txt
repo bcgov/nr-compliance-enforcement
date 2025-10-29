@@ -1,9 +1,0 @@
-officer_inspection_xref_h
-officer_inspection_xref_code_h
-inspection_status_code_h
-inspection_h
-flyway_schema_history
-officer_inspection_xref
-inspection
-officer_inspection_xref_code
-inspection_status_code
