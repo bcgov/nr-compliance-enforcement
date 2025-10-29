@@ -10,7 +10,7 @@ type Props = {
   onMarkerMove?: (lat: number, lng: number) => void;
 };
 
-export const MapObjectLocations: FC<Props> = ({
+export const MapObjectLocation: FC<Props> = ({
   map_object_type,
   locationCoordinates,
   draggable,
