@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="UTF-8"?><database name="default" schema="shared" type="PostgreSQL - 16.4 (Debian 16.4-1.pgdg110+2)">
+   <sequences>
+      <sequence increment="1" name="TEMP_POC_SEQ" startValue="1"/>
+   </sequences>
+   <tables>
+      <table name="agency_code" numRows="9" remarks="An agency is an organized and named grouping of people that interacts in some way with the NatSuite application." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_code" nullable="false" remarks="Primary key: Human readable code representing an agency." size="10" type="varchar" typeCode="12">
+            <child column="lead_agency" foreignKey="fk_case_file__agency_code" implied="false" onDeleteCascade="false" schema="shared" table="case_file"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the agency.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the agency.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="true" remarks="The order in which the values of the agency should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the agency is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="5" name="external_agency_ind" nullable="false" remarks="A boolean indicator to determine if the agency is a direct NatSuite user or a partner agency.  A partner agency is an agency that might have a case activity referred to it, but would not complete the activity within the NatSuite." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_id" nullable="false" remarks="The id of the user that created the agency." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the agency was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="true" remarks="The id of the user that updated the agency." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the agency was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="agency_code" sequenceNumberInPK="1"/>
+         <index name="agency_code_pkey" unique="true">
+            <column ascending="true" name="agency_code"/>
+         </index>
+      </table>
+      <table name="business" remarks="" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="business_guid" nullable="false" remarks="Primary key: System generated unique identifier for a business." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Name of the business." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user_id" nullable="false" remarks="The id of the user that created the business." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="3" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the business was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user_id" nullable="true" remarks="The id of the user that updated the business." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the business was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="party_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="party_guid" foreignKey="FK_business_party" implied="false" onDeleteCascade="false" schema="shared" table="party"/>
+         </column>
+         <primaryKey column="business_guid" sequenceNumberInPK="1"/>
+         <index name="business_pkey" unique="true">
+            <column ascending="true" name="business_guid"/>
+         </index>
+         <index name="UQ_business_party_guid" unique="true">
+            <column ascending="true" name="party_guid"/>
+         </index>
+      </table>
+      <table name="business_h" remarks="" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_business_guid" nullable="false" remarks="Primary key: System generated unique identifier for a business history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the business that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the business table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the business table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_business_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_business" unique="true">
+            <column ascending="true" name="h_business_guid"/>
+         </index>
+      </table>
+      <table name="case_activity" remarks="A case activity is a distinct business process within the compliance and enforcement domain such as a complaint, inspection or an investigation." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="case_activity_guid" nullable="false" remarks="Primary Key: System generated unique key for a case activity.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="case_file_guid" nullable="false" remarks="Foreign Key: System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="case_file_guid" foreignKey="fk_case_activity__case_file" implied="false" onDeleteCascade="false" schema="shared" table="case_file"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="activity_type" nullable="false" remarks="Foreign Key: Human readable code representing a case activity." size="10" type="varchar" typeCode="12">
+            <parent column="case_activity_type_code" foreignKey="fk_case_activity__case_activity_type_code" implied="false" onDeleteCascade="false" schema="shared" table="case_activity_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="activity_identifier_ref" nullable="false" remarks="Business key representing a case activity stored in a another system or schema.   A case activity identifier can be a complaint: complaint.complaint.complaint_identifier, an inspection, or an investigation (physical implementation TBD)" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="effective_utc_timestamp" nullable="false" remarks="The date and time the case activity was added to the case file. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="expiry_utc_timestamp" nullable="true" remarks="The date and time the case activity was removed from the case file. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_id" nullable="false" remarks="The id of the user that created the case activity record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case activity record was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="true" remarks="The id of the user that updated the case activity record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the case activity record was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="case_activity_guid" sequenceNumberInPK="1"/>
+         <index name="case_activity_pkey" unique="true">
+            <column ascending="true" name="case_activity_guid"/>
+         </index>
+      </table>
+      <table name="case_activity_h" remarks="History table for case activity table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_case_activity_guid" nullable="false" remarks="System generated unique key for case activity history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the case activity that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the case activity table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the case activity table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_case_activity_guid" sequenceNumberInPK="1"/>
+         <index name="case_activity_h_pkey" unique="true">
+            <column ascending="true" name="h_case_activity_guid"/>
+         </index>
+      </table>
+      <table name="case_activity_type_code" numRows="3" remarks="A case file is made up of many case activities.  Examples of case activities include: COMP = &quot;Complaint&quot;, INV = &quot;Investigation" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="case_activity_type_code" nullable="false" remarks="Primary key: Human readable code representing a case activity." size="10" type="varchar" typeCode="12">
+            <child column="activity_type" foreignKey="fk_case_activity__case_activity_type_code" implied="false" onDeleteCascade="false" schema="shared" table="case_activity"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the case activity.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the case activity.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="true" remarks="The order in which the values of the case activity should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the case activity is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the case activity." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case activity was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the case activity." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the case activity was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="case_activity_type_code" sequenceNumberInPK="1"/>
+         <index name="case_activity_type_code_pkey" unique="true">
+            <column ascending="true" name="case_activity_type_code"/>
+         </index>
+      </table>
+      <table name="case_file" remarks="A case file is the top level entity of the case management system and encapsulates all activities and records within it" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="case_file_guid" nullable="false" remarks="Primary Key: System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="case_file_guid" foreignKey="fk_case_activity__case_file" implied="false" onDeleteCascade="false" schema="shared" table="case_activity"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="lead_agency" nullable="false" remarks="Foreign key: Human readable code representing an agency." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="fk_case_file__agency_code" implied="false" onDeleteCascade="false" schema="shared" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="case_status" nullable="false" remarks="Foreign key: Human readable code representing a case status." size="10" type="varchar" typeCode="12">
+            <parent column="case_status_code" foreignKey="fk_case_file__case_status_code" implied="false" onDeleteCascade="false" schema="shared" table="case_status_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="3" name="opened_utc_timestamp" nullable="false" remarks="The time the case file was created.  The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the case file." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case file was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the case file." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the case file was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="description" nullable="true" remarks="Optional text description for the case file providing additional context or notes" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="''::character varying" digits="0" id="9" name="name" nullable="false" remarks="Business-friendly identifier for the case file." size="100" type="varchar" typeCode="12"/>
+         <primaryKey column="case_file_guid" sequenceNumberInPK="1"/>
+         <index name="case_file_pkey" unique="true">
+            <column ascending="true" name="case_file_guid"/>
+         </index>
+         <index name="uq_case_file_name_agency" unique="true">
+            <column ascending="true" name="name"/>
+            <column ascending="true" name="lead_agency"/>
+         </index>
+      </table>
+      <table name="case_file_h" remarks="History table for case file table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_case_file_guid" nullable="false" remarks="System generated unique key for case file history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the case file that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the case file table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the case file table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_case_file_guid" sequenceNumberInPK="1"/>
+         <index name="case_file_h_pkey" unique="true">
+            <column ascending="true" name="h_case_file_guid"/>
+         </index>
+      </table>
+      <table name="case_status_code" numRows="2" remarks="Represents the status of case (e.g. OPEN=Open; CLOSED=Closed)." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="case_status_code" nullable="false" remarks="Primary key: Human readable code representing a case status." size="10" type="varchar" typeCode="12">
+            <child column="case_status" foreignKey="fk_case_file__case_status_code" implied="false" onDeleteCascade="false" schema="shared" table="case_file"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the case status code.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the case status code.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="true" remarks="The order in which the values of the case status code should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the case status code is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the case status code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the case status code was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the case status code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the case status code was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="case_status_code" sequenceNumberInPK="1"/>
+         <index name="case_status_code_pkey" unique="true">
+            <column ascending="true" name="case_status_code"/>
+         </index>
+      </table>
+      <table name="contact_method" remarks="Stores contact details for individuals, linking each contact method to a person and a type (e.g., email, phone)." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="contact_method_guid" nullable="false" remarks="Primary key: System generated unique identifier for a contact method." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="person_guid" nullable="false" remarks="Foreign key: References person.person_guid." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="person_guid" foreignKey="fk_contact_method_person" implied="false" onDeleteCascade="true" schema="shared" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="contact_method_type" nullable="false" remarks="Foreign key: References contact_method_type_code.contact_method_type_code." size="10" type="varchar" typeCode="12">
+            <parent column="contact_method_type_code" foreignKey="fk_contact_method_type" implied="false" onDeleteCascade="false" schema="shared" table="contact_method_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="contact_value" nullable="true" remarks="A contact method (e.g., phone number, email address) for a person." size="512" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the contact method." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the contact method was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the contact method." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the contact method was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="contact_method_guid" sequenceNumberInPK="1"/>
+         <index name="contact_method_pkey" unique="true">
+            <column ascending="true" name="contact_method_guid"/>
+         </index>
+      </table>
+      <table name="contact_method_h" remarks="History table for contact method table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_contact_method_guid" nullable="false" remarks="Primary key: System generated unique identifier for a contact method history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the contact method that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the contact method table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the contact method table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_contact_method_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_contact_method" unique="true">
+            <column ascending="true" name="h_contact_method_guid"/>
+         </index>
+      </table>
+      <table name="contact_method_type_code" numRows="4" remarks="Defines types of contact methods (e.g., email, primary phone, alternate phone) with descriptions and display ordering." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="contact_method_type_code" nullable="false" remarks="Primary key: Human readable code representing a contact method type." size="16" type="varchar" typeCode="12">
+            <child column="contact_method_type" foreignKey="fk_contact_method_type" implied="false" onDeleteCascade="false" schema="shared" table="contact_method"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the contact method type code.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the contact method type code.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="true" remarks="The order in which the values of the contact method type code should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the contact method type code is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the contact method type code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the contact method type code was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the contact method type code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the contact method type code was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="contact_method_type_code" sequenceNumberInPK="1"/>
+         <index name="contact_method_type_code_pkey" unique="true">
+            <column ascending="true" name="contact_method_type_code"/>
+         </index>
+      </table>
+      <table name="event" remarks="Stores activity events in the system, recording what action was performed, who performed it, and what entity was affected, with support for optional source and additional content data." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="event_guid" nullable="false" remarks="Primary key: System generated unique identifier for an event." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="event_verb_type_code" nullable="false" remarks="Foreign key: References the verb type that describes the action that occurred in this event." size="16" type="varchar" typeCode="12">
+            <parent column="event_verb_type_code" foreignKey="event_event_verb_type_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="event_verb_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="2" name="published_utc_timestamp" nullable="false" remarks="The timestamp when the event was published. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="source_id" nullable="true" remarks="Optional identifier of the source entity that triggered or initiated the event." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="source_entity_type_code" nullable="true" remarks="Foreign key: References the entity type of the source. Required if source_id is provided." size="16" type="varchar" typeCode="12">
+            <parent column="event_entity_type_code" foreignKey="event_source_entity_type_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="event_entity_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="actor_id" nullable="false" remarks="Identifier of the actor that originated the action in this event, eg a Complaint ID when added to a Case file." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="actor_entity_type_code" nullable="false" remarks="Foreign key: References the entity type of the actor that performed the action." size="16" type="varchar" typeCode="12">
+            <parent column="event_entity_type_code" foreignKey="event_actor_entity_type_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="event_entity_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="target_id" nullable="false" remarks="Identifier of the target entity that was affected by the action in this event, eg a Case file ID when a complaint is added to it." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="target_entity_type_code" nullable="false" remarks="Foreign key: References the entity type of the target that was affected by the action." size="16" type="varchar" typeCode="12">
+            <parent column="event_entity_type_code" foreignKey="event_target_entity_type_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="event_entity_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="content" nullable="true" remarks="Optional JSONB field containing additional contextual data or metadata about the event." size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="create_user_id" nullable="false" remarks="The id of the user that created the event." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="11" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the event was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="update_user_id" nullable="true" remarks="The id of the user that updated the event." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the event was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="event_guid" sequenceNumberInPK="1"/>
+         <index name="event_pkey" unique="true">
+            <column ascending="true" name="event_guid"/>
+         </index>
+      </table>
+      <table name="event_entity_type_code" remarks="Defines entity types that can participate in events, including actors, targets, and sources (e.g., person, case file, complaint)." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="event_entity_type_code" nullable="false" remarks="Primary key: Human readable code representing an event entity type." size="16" type="varchar" typeCode="12">
+            <child column="actor_entity_type_code" foreignKey="event_actor_entity_type_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="event"/>
+            <child column="source_entity_type_code" foreignKey="event_source_entity_type_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="event"/>
+            <child column="target_entity_type_code" foreignKey="event_target_entity_type_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="event"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the event entity type.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the event entity type.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="true" remarks="The order in which the values of the event entity type should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the event entity type is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the event entity type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the event entity type was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the event entity type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the event entity type was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <index name="event_entity_type_code_event_entity_type_code_key" unique="true">
+            <column ascending="true" name="event_entity_type_code"/>
+         </index>
+      </table>
+      <table name="event_verb_type_code" remarks="Defines action verbs that describe what happened in an event (e.g., created, updated, deleted, submitted, approved)." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="event_verb_type_code" nullable="false" remarks="Primary key: Human readable code representing an event verb type." size="16" type="varchar" typeCode="12">
+            <child column="event_verb_type_code" foreignKey="event_event_verb_type_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="event"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the event verb type.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the event verb type.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="true" remarks="The order in which the values of the event verb type should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the event verb type is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the event verb type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the event verb type was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the event verb type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the event verb type was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <index name="event_verb_type_code_event_verb_type_code_key" unique="true">
+            <column ascending="true" name="event_verb_type_code"/>
+         </index>
+      </table>
+      <table name="flyway_schema_history" remarks="" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="false" remarks="" size="200" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="type" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="script" nullable="false" remarks="" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="checksum" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="installed_by" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="installed_on" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="execution_time" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="success" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="installed_rank" sequenceNumberInPK="1"/>
+         <index name="flyway_schema_history_pk" unique="true">
+            <column ascending="true" name="installed_rank"/>
+         </index>
+         <index name="flyway_schema_history_s_idx" unique="false">
+            <column ascending="true" name="success"/>
+         </index>
+      </table>
+      <table name="park" numRows="4" remarks="Stores a set of BC Parks, Conservatories, and Protected Areas. Data is imported from the data.bcparks.ca API." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="park_guid" nullable="false" remarks="Primary key: System generated unique identifier for a park." size="2147483647" type="uuid" typeCode="1111">
+            <child column="park_guid" foreignKey="fk_park_area_xref__park_area" implied="false" onDeleteCascade="false" schema="shared" table="park_area_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="external_id" nullable="false" remarks="External identifier for the park, this references the data.bcparks.ca API." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="name" nullable="false" remarks="Name of the park." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="legal_name" nullable="true" remarks="Legal name of the park." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the park." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the park was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the park." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the park was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="park_guid" sequenceNumberInPK="1"/>
+         <index name="park_pkey" unique="true">
+            <column ascending="true" name="park_guid"/>
+         </index>
+         <index name="UK_park__external_id" unique="true">
+            <column ascending="true" name="external_id"/>
+         </index>
+      </table>
+      <table name="park_area" numRows="50" remarks="Stores areas that may contain parks, including their names and associated region." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="park_area_guid" nullable="false" remarks="Primary key: System generated unique identifier for a park area." size="2147483647" type="uuid" typeCode="1111">
+            <child column="park_area_guid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="shared" table="park_area_mapping"/>
+            <child column="park_area_guid" foreignKey="fk_park_area_xref__park" implied="false" onDeleteCascade="false" schema="shared" table="park_area_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="Name of the park area." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="region_name" nullable="true" remarks="Region name associated with the park area." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_id" nullable="false" remarks="The id of the user that created the park area." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the park area was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="true" remarks="The id of the user that updated the park area." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the park area was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="park_area_guid" sequenceNumberInPK="1"/>
+         <index name="park_area_pkey" unique="true">
+            <column ascending="true" name="park_area_guid"/>
+         </index>
+         <index name="uk_park_area__name" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+      </table>
+      <table name="park_area_mapping" numRows="1107" remarks="Stores mapping between park areas and their identifiers based on a mapping spreadsheet. This data exists before parks are imported, so it is only loosly related to the park table through external_id." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="park_area_mapping_guid" nullable="false" remarks="Primary key: System generated unique identifier for a park area mapping." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="park_area_guid" nullable="false" remarks="Foreign key: References the park area that the mapping belongs to." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="park_area_guid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="shared" table="park_area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="external_id" nullable="false" remarks="External identifier for the park area mapping." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="create_utc_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="true" remarks="" size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="update_utc_timestamp" nullable="true" remarks="" size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="park_area_mapping_guid" sequenceNumberInPK="1"/>
+         <index name="park_area_mapping_pkey" unique="true">
+            <column ascending="true" name="park_area_mapping_guid"/>
+         </index>
+         <index name="uk_park_area_mapping__park_area_guid__external_id" unique="true">
+            <column ascending="true" name="park_area_guid"/>
+            <column ascending="true" name="external_id"/>
+         </index>
+      </table>
+      <table name="park_area_xref" remarks="Stores mapping between park areas and parks." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="park_area_guid_xref" nullable="false" remarks="Primary key: System generated unique identifier for a park area xref." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="park_area_guid" nullable="false" remarks="Foreign key: References the park area that the xref belongs to." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="park_area_guid" foreignKey="fk_park_area_xref__park" implied="false" onDeleteCascade="false" schema="shared" table="park_area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="park_guid" nullable="false" remarks="Foreign key: References the park that the xref belongs to." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="park_guid" foreignKey="fk_park_area_xref__park_area" implied="false" onDeleteCascade="false" schema="shared" table="park"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_id" nullable="false" remarks="The id of the user that created the park area xref." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the park area xref was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="true" remarks="The id of the user that updated the park area xref." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the park area xref was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="park_area_guid_xref" sequenceNumberInPK="1"/>
+         <index name="park_area_xref_pkey" unique="true">
+            <column ascending="true" name="park_area_guid_xref"/>
+         </index>
+         <index name="uk_park_area_xref__park_guid__park_area_guid" unique="true">
+            <column ascending="true" name="park_area_guid"/>
+            <column ascending="true" name="park_guid"/>
+         </index>
+      </table>
+      <table name="party" remarks="A table that holds parties of interest" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="party_guid" nullable="false" remarks="Primary key: System generated unique identifier for a party." size="2147483647" type="uuid" typeCode="1111">
+            <child column="party_guid" foreignKey="FK_business_party" implied="false" onDeleteCascade="false" schema="shared" table="business"/>
+            <child column="party_guid" foreignKey="FK_person_party" implied="false" onDeleteCascade="false" schema="shared" table="person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="party_type" nullable="true" remarks="Human readable code representing a party type." size="16" type="varchar" typeCode="12">
+            <parent column="party_type_code" foreignKey="fk_party__party_type" implied="false" onDeleteCascade="false" schema="shared" table="party_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="create_user_id" nullable="false" remarks="The id of the user that created the party." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="3" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the party was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="update_user_id" nullable="true" remarks="The id of the user that updated the party." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the party was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="party_guid" sequenceNumberInPK="1"/>
+         <index name="party_pkey" unique="true">
+            <column ascending="true" name="party_guid"/>
+         </index>
+      </table>
+      <table name="party_h" remarks="" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_party_guid" nullable="false" remarks="Primary key: System generated unique identifier for a party history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the party that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the party table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the party table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_party_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_party" unique="true">
+            <column ascending="true" name="h_party_guid"/>
+         </index>
+      </table>
+      <table name="party_type_code" numRows="2" remarks="A table that holds party types.  Examples of party types include: CMP = &quot;Company&quot;, PRS = &quot;Person" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="party_type_code" nullable="false" remarks="Primary key: Human readable code representing a party type." size="16" type="varchar" typeCode="12">
+            <child column="party_type" foreignKey="fk_party__party_type" implied="false" onDeleteCascade="false" schema="shared" table="party"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the party type.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the party type.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="true" remarks="The order in which the values of the party type should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the party type is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the party type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the party type was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the party type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the party type was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="party_type_code" sequenceNumberInPK="1"/>
+         <index name="party_type_code_pkey" unique="true">
+            <column ascending="true" name="party_type_code"/>
+         </index>
+      </table>
+      <table name="person" remarks="Stores personal information for individuals, including names and in the future other attributes." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="person_guid" nullable="false" remarks="Primary key: System generated unique identifier for a person." size="2147483647" type="uuid" typeCode="1111">
+            <child column="person_guid" foreignKey="fk_contact_method_person" implied="false" onDeleteCascade="true" schema="shared" table="contact_method"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="first_name" nullable="false" remarks="First or given name of the person." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="middle_name" nullable="true" remarks="Second or middle name of the person." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="middle_name_2" nullable="true" remarks="Additional Second or middle name of the person." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="last_name" nullable="false" remarks="Last name or surname of the person." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the person." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the person was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the person." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the person was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="party_guid" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="party_guid" foreignKey="FK_person_party" implied="false" onDeleteCascade="false" schema="shared" table="party"/>
+         </column>
+         <primaryKey column="person_guid" sequenceNumberInPK="1"/>
+         <index name="person_pkey" unique="true">
+            <column ascending="true" name="person_guid"/>
+         </index>
+         <index name="UQ_person_party_guid" unique="true">
+            <column ascending="true" name="party_guid"/>
+         </index>
+      </table>
+      <table name="person_h" remarks="History table for person table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_person_guid" nullable="false" remarks="Primary key: System generated unique identifier for a person history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the person that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the person table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the person table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_person_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_person" unique="true">
+            <column ascending="true" name="h_person_guid"/>
+         </index>
+      </table>
+   </tables>
+   <routines>
+      <routine dataAccess="MODIFIES" deterministic="false" name="audit_history()" returnType="trigger" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="plpgsql"><![CDATA[DECLARE
+
+	target_history_table TEXT;
+	target_pk TEXT;
+
+  BEGIN
+    target_history_table := TG_ARGV[0];
+    target_pk := TG_ARGV[1];
+
+    IF TG_OP ='INSERT' THEN 
+        
+      -- Don't trust the caller not to manipulate any of these fields
+      NEW.create_utc_timestamp := current_timestamp; -- create timestamp must be the current time
+      NEW.update_utc_timestamp := current_timestamp; -- update timestamp must be the current time
+      NEW.update_user_id := NEW.create_user_id;  -- the update user must be the same as the create user
+
+      EXECUTE
+        format( 
+            'INSERT INTO shared.%I (target_row_id, operation_type, operation_user_id, data_after_executed_operation) VALUES ($1.%I,  ''I'', $1.create_user_id, to_jsonb($1))',  target_history_table, target_pk
+        )
+        USING NEW;
+      RETURN NEW;
+
+    ELSIF TG_OP = 'UPDATE' THEN 
+
+      -- Don't trust the caller not to manipulate any of these fields
+      NEW.update_utc_timestamp := current_timestamp;  -- update timestamp must be the current time
+      NEW.create_user_id := OLD.create_user_id; -- create userId can't be altered
+      NEW.create_utc_timestamp := OLD.create_utc_timestamp; -- update timestamp can't be altered
+
+      EXECUTE
+        format(
+            'INSERT INTO shared.%I (target_row_id, operation_type, operation_user_id, data_after_executed_operation) VALUES ($1.%I, ''U'', $1.update_user_id, to_jsonb($1))', target_history_table, target_pk
+          )
+        USING NEW;
+      RETURN NEW;
+
+    ELSIF TG_OP = 'DELETE' THEN
+
+      EXECUTE
+        format(
+                'INSERT INTO shared.%I (target_row_id, operation_type) VALUES ($1.%I, ''D'')', target_history_table, target_pk
+        )
+        USING OLD;
+      RETURN OLD;
+
+    END IF;
+  END;]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="update_audit_columns()" returnType="trigger" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="plpgsql"><![CDATA[DECLARE
+calling_query TEXT;
+update_user_id_found BOOL;
+BEGIN
+        IF NEW.update_utc_timestamp IS NOT DISTINCT FROM OLD.update_utc_timestamp THEN
+            NEW.update_utc_timestamp := CURRENT_TIMESTAMP;
+        END IF;
+        SELECT current_query() INTO calling_query;
+        SELECT POSITION('update_user_id' IN calling_query) > 0 INTO update_user_id_found;
+        IF update_user_id_found = 'f' THEN
+            NEW.update_user_id := CURRENT_USER;
+        END IF;
+        RETURN NEW;
+    END;]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+   </routines>
+</database>

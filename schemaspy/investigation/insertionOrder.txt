@@ -1,0 +1,15 @@
+investigation_status_code
+officer_investigation_xref_code
+investigation
+investigation_party
+investigation_business
+investigation_person
+officer_investigation_xref
+flyway_schema_history
+investigation_business_h
+investigation_h
+investigation_party_h
+investigation_person_h
+investigation_status_code_h
+officer_investigation_xref_code_h
+officer_investigation_xref_h

@@ -77,10 +77,41 @@
                 </section>
                 <!-- Main content -->
                 <section class="content">
-                    <div class="alert alert-danger alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                        <h4><i class="icon fa fa-ban"></i> Missed Relationships!</h4>
-                        <p>No relationships were detected in the schema.</p>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 class="box-title">Diagrams</h3>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom">
+                                <!-- Tabs within a box -->
+                                <h5>By default only columns that are primary keys, foreign keys or indexes are shown.</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#compactDegreeImg-chart" data-toggle="tab" aria-expanded="true">Compact</a></li>
+                                    <li class=""><a href="#largeDegreeImg-chart" data-toggle="tab" aria-expanded="true">Large</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="compactDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="compactRelationshipsDiagram" name="compactRelationshipsDiagram">
+<area shape="rect" id="node1" href="tables/inspection.html" target="_top" title="inspection" alt="" coords="313,5,637,240">
+<area shape="rect" id="node2" href="tables/inspection_status_code.html" target="_top" title="inspection_status_code" alt="" coords="5,64,269,181">
+<area shape="rect" id="node3" href="tables/officer_inspection_xref.html" target="_top" title="officer_inspection_xref" alt="" coords="681,88,955,264">
+<area shape="rect" id="node4" href="tables/officer_inspection_xref_code.html" target="_top" title="officer_inspection_xref_code" alt="" coords="323,257,627,375">
+</map>
+                                        <a name='diagram'><img id="compactDegreeImg" src="diagrams/summary/relationships.real.compact.png" usemap="#compactRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="largeDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="largeRelationshipsDiagram" name="largeRelationshipsDiagram">
+<area shape="rect" id="node1" href="tables/inspection.html" target="_top" title="inspection" alt="" coords="313,5,637,451">
+<area shape="rect" id="node2" href="tables/inspection_status_code.html" target="_top" title="inspection_status_code" alt="" coords="5,93,269,421">
+<area shape="rect" id="node3" href="tables/officer_inspection_xref.html" target="_top" title="officer_inspection_xref" alt="" coords="681,164,955,492">
+<area shape="rect" id="node4" href="tables/officer_inspection_xref_code.html" target="_top" title="officer_inspection_xref_code" alt="" coords="323,468,627,796">
+</map>
+                                        <a name='diagram'><img id="largeDegreeImg" src="diagrams/summary/relationships.real.large.png" usemap="#largeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
                     </div>
                 </section>
             </div>
