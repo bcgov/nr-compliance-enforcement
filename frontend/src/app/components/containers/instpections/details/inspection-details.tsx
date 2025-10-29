@@ -6,7 +6,8 @@ import { CaseFile, Inspection } from "@/generated/graphql";
 import { InspectionHeader } from "@/app/components/containers/instpections/details/inspection-header";
 import Button from "react-bootstrap/esm/Button";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
-import { InspectionLocation } from "./inspection-location";
+import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
+import { MapObjectType } from "@/app/types/maps/map-element";
 
 const GET_INSPECTION = gql`
   query GetInspection($inspectionGuid: String!) {
@@ -145,7 +146,8 @@ export const InspectionDetails: FC = () => {
                   </div>
                 )}
               {inspectionData?.locationGeometry?.coordinates && (
-                  <InspectionLocation
+                  <MapObjectLocation
+                    map_object_type={MapObjectType.Inspection}
                     locationCoordinates={{
                       lat: inspectionData.locationGeometry.coordinates[1],
                       lng: inspectionData.locationGeometry.coordinates[0],

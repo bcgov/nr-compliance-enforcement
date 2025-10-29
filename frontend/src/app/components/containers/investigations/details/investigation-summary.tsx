@@ -1,13 +1,14 @@
 import { Investigation } from "@/generated/graphql";
 import { FC } from "react";
 import { Link, useNavigate} from "react-router-dom";
-import { InvestigationLocation } from "./investigation-location";
+import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
 import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
 import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
+import { MapObjectType } from "@/app/types/maps/map-element";
 
 
 
@@ -195,7 +196,8 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                 </div>
               )}
             {investigationData?.locationGeometry?.coordinates && (
-                <InvestigationLocation
+                <MapObjectLocation
+                  map_object_type={MapObjectType.Investigation}
                   locationCoordinates={{
                     lat: investigationData.locationGeometry.coordinates[1],
                     lng: investigationData.locationGeometry.coordinates[0],
