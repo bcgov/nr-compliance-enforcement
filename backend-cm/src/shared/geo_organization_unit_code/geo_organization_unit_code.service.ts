@@ -25,6 +25,9 @@ export class GeoOrganizationUnitCodeService {
         geo_org_unit_type_code: true,
         administrative_office_ind: true,
       },
+      orderBy: {
+        long_description: "asc",
+      },
     });
 
     return this.mapper.mapArray<geo_organization_unit_code, GeoOrganizationUnitCode>(

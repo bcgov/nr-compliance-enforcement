@@ -1,4 +1,4 @@
-import { Resolver, Query } from "@nestjs/graphql";
+import { Resolver, Query, Args } from "@nestjs/graphql";
 import { CosGeoOrgUnitService } from "./cos_geo_org_unit.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { UseGuards } from "@nestjs/common";
@@ -12,7 +12,11 @@ export class CosGeoOrgUnitResolver {
 
   @Query("cosGeoOrgUnits")
   @Roles(coreRoles)
-  findAll() {
-    return this.cosGeoOrgUnitService.findAll();
+  findAll(
+    @Args("zoneCode") zoneCode?: string,
+    @Args("regionCode") regionCode?: string,
+    @Args("distinctOfficeLocations") distinctOfficeLocations?: boolean,
+  ) {
+    return this.cosGeoOrgUnitService.findAll(zoneCode, regionCode, distinctOfficeLocations);
   }
 }

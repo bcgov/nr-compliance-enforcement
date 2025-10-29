@@ -7,17 +7,14 @@ import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity"
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { Complaint } from "../complaint/entities/complaint.entity";
-import { Officer } from "../officer/entities/officer.entity";
 import { REQUEST } from "@nestjs/core";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
+import { getAppUserByAuthUserGuid } from "../../external_api/shared_data";
 
 @Injectable({ scope: Scope.REQUEST })
 export class LinkedComplaintXrefService {
   @InjectRepository(LinkedComplaintXref)
   private readonly linkedComplaintXrefRepository: Repository<LinkedComplaintXref>;
-
-  @InjectRepository(Officer)
-  private readonly officerRepository: Repository<Officer>;
 
   private readonly logger = new Logger(LinkedComplaintXrefService.name);
 
@@ -196,16 +193,13 @@ export class LinkedComplaintXrefService {
     try {
       const idir = getIdirFromRequest(this.request);
 
-      const officer = await this.officerRepository.findOne({
-        where: { auth_user_guid: user.auth_user_guid },
-        relations: ["person_guid"],
-      });
+      const appUser = await getAppUserByAuthUserGuid(token, user.auth_user_guid);
 
-      if (!officer?.person_guid) {
-        throw new Error("Officer not found");
+      if (!appUser) {
+        throw new Error("App user not found");
       }
 
-      const person_guid = officer.person_guid.person_guid;
+      const person_guid = appUser.appUserGuid;
 
       const existingLink = await this.linkedComplaintXrefRepository.findOne({
         where: {

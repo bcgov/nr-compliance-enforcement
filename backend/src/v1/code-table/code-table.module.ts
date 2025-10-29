@@ -7,7 +7,7 @@ import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
 import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
 import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
-import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
+import { AppUserComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
@@ -25,7 +25,7 @@ import { EmailReference } from "src/v1/email_reference/entities/email_reference.
     TypeOrmModule.forFeature([HwcrComplaintNatureCode]),
     TypeOrmModule.forFeature([GeoOrgUnitTypeCode]),
     TypeOrmModule.forFeature([GeoOrganizationUnitCode]),
-    TypeOrmModule.forFeature([PersonComplaintXrefCode]),
+    TypeOrmModule.forFeature([AppUserComplaintXrefCode]),
     TypeOrmModule.forFeature([SpeciesCode]),
     TypeOrmModule.forFeature([ViolationAgencyXref]),
     TypeOrmModule.forFeature([CosGeoOrgUnit]),

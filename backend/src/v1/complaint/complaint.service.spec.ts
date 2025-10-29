@@ -11,7 +11,7 @@ import { PersonComplaintXrefService } from "../person_complaint_xref/person_comp
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
 import { EventPublisherService } from "../event_publisher/event_publisher.service";
 
-import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
+import { AppUserComplaintXrefCode } from "../app_user_complaint_xref_code/entities/app_user_complaint_xref_code.entity";
 import { Complaint } from "./entities/complaint.entity";
 import { CodeTableService } from "../code-table/code-table.service";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
@@ -209,7 +209,7 @@ describe("Testing: Complaint Service", () => {
           useFactory: MockOrganizationUnitCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(PersonComplaintXrefCode),
+          provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
         },
         {
@@ -529,7 +529,7 @@ describe("Testing: Complaint Service", () => {
           useFactory: MockOrganizationUnitCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(PersonComplaintXrefCode),
+          provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
         },
         {

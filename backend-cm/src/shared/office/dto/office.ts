@@ -1,5 +1,7 @@
 import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
 import { office } from "../../../../prisma/shared/generated/office";
+import { Field, InputType } from "@nestjs/graphql";
+import { IsOptional } from "class-validator";
 
 export class Office {
   officeGuid: string;
@@ -9,6 +11,28 @@ export class Office {
   createTimestamp: Date;
   updateUserId: string;
   updateTimestamp: Date;
+  cosGeoOrgUnit?: any;
+  appUsers?: any[];
+}
+
+@InputType()
+export class CreateOfficeInput {
+  @Field(() => String)
+  geoOrganizationUnitCode: string;
+
+  @Field(() => String)
+  agencyCode: string;
+}
+
+@InputType()
+export class UpdateOfficeInput {
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  geoOrganizationUnitCode?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  agencyCode?: string;
 }
 
 export const mapPrismaOfficeToOffice = (mapper: Mapper) => {

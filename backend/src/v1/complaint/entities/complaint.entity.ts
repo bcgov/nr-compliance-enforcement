@@ -1,10 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Entity, Column, JoinColumn, PrimaryColumn, Index, ManyToOne, OneToOne, OneToMany } from "typeorm";
 import { ComplaintStatusCode } from "../../complaint_status_code/entities/complaint_status_code.entity";
-import { GeoOrganizationUnitCode } from "../../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { Point } from "geojson";
-import { PersonComplaintXref } from "../../person_complaint_xref/entities/person_complaint_xref.entity";
-import { CosGeoOrgUnit } from "../../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
+import { AppUserComplaintXref } from "../../app_user_complaint_xref/entities/app_user_complaint_xref.entity";
 import { ReportedByCode } from "../../reported_by_code/entities/reported_by_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { LinkedComplaintXref } from "../../linked_complaint_xref/entities/linked_complaint_xref.entity";
@@ -53,24 +51,15 @@ export class Complaint {
     example: "DCC",
     description: "The geographical organization code of the organization that currently owns the complaint",
   })
-  @ManyToOne(() => GeoOrganizationUnitCode)
-  @JoinColumn({ name: "geo_organization_unit_code" })
-  geo_organization_unit_code: GeoOrganizationUnitCode;
+  @Column({ name: "geo_organization_unit_code", nullable: true })
+  geo_organization_unit_code: string;
 
   @ApiProperty({
     example: "DCC",
     description: "The geographical organization code of the organization that currently owns the complaint",
   })
-  @OneToOne(() => CosGeoOrgUnit, { cascade: true })
-  @JoinColumn({ name: "geo_organization_unit_code" })
-  cos_geo_org_unit: CosGeoOrgUnit;
-
-  @ApiProperty({
-    example: "DCC",
-    description: "The geographical organization code of the organization that currently owns the complaint",
-  })
-  @OneToMany(() => PersonComplaintXref, (person_complaint_xref) => person_complaint_xref.complaint_identifier)
-  person_complaint_xref: PersonComplaintXref[];
+  @OneToMany(() => AppUserComplaintXref, (app_user_complaint_xref) => app_user_complaint_xref.complaint_identifier)
+  app_user_complaint_xref: AppUserComplaintXref[];
 
   @ApiProperty({
     example: "Bear overturning garbage bins",
@@ -289,10 +278,9 @@ export class Complaint {
     reported_by_code?: ReportedByCode,
     owned_by_agency_code_ref?: string,
     complaint_status_code?: ComplaintStatusCode,
-    geo_organization_unit_code?: GeoOrganizationUnitCode,
-    cos_geo_org_unit?: CosGeoOrgUnit,
+    geo_organization_unit_code?: string,
     linked_complaint_xref?: LinkedComplaintXref[],
-    person_complaint_xref?: PersonComplaintXref[],
+    app_user_complaint_xref?: AppUserComplaintXref[],
     webeoc_identifier?: string,
     reference_number?: string,
     comp_mthd_recv_cd_agcy_cd_xref?: CompMthdRecvCdAgcyCdXref,
@@ -326,9 +314,8 @@ export class Complaint {
     this.owned_by_agency_code_ref = owned_by_agency_code_ref;
     this.complaint_status_code = complaint_status_code;
     this.geo_organization_unit_code = geo_organization_unit_code;
-    this.cos_geo_org_unit = cos_geo_org_unit;
     this.linked_complaint_xref = linked_complaint_xref;
-    this.person_complaint_xref = person_complaint_xref;
+    this.app_user_complaint_xref = app_user_complaint_xref;
     this.webeoc_identifier = webeoc_identifier;
     this.reference_number = reference_number;
     this.comp_mthd_recv_cd_agcy_cd_xref = comp_mthd_recv_cd_agcy_cd_xref;

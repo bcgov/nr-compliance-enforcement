@@ -3,7 +3,7 @@ import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref"
 import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { DelegateDto } from "../../types/models/people/delegate";
 import { AttractantXrefTable } from "../../types/tables/attractant-xref.table";
-import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xref.table";
+import { AppUserComplaintXrefTable } from "../../types/tables/app-user-complaint-xref.table";
 import { UpdateComplaintDto } from "../../types/models/complaints/dtos/update-complaint";
 
 export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
@@ -125,11 +125,11 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
   );
 };
 
-export const mapDelegateDtoToPersonComplaintXrefTable = (mapper: Mapper) => {
-  createMap<DelegateDto, PersonComplaintXrefTable>(
+export const mapDelegateDtoToAppUserComplaintXrefTable = (mapper: Mapper) => {
+  createMap<DelegateDto, AppUserComplaintXrefTable>(
     mapper,
     "DelegateDto",
-    "PersonComplaintXrefTable",
+    "AppUserComplaintXrefTable",
     forMember(
       (dest) => dest.active_ind,
       mapFrom((src) => src.isActive),
@@ -147,7 +147,7 @@ export const mapDelegateDtoToPersonComplaintXrefTable = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (dest) => dest.person_complaint_xref_code,
+      (dest) => dest.app_user_complaint_xref_code,
       mapFrom((src) => src.type),
     ),
   );

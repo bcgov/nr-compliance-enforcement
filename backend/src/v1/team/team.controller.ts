@@ -6,6 +6,7 @@ import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role } from "../../enum/role.enum";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { TeamUpdate } from "src/types/models/general/team-update";
+import { Token } from "../../auth/decorators/token.decorator";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("team")
@@ -24,13 +25,13 @@ export class TeamController {
 
   @Get("current")
   @Roles(Role.TEMPORARY_TEST_ADMIN)
-  async findCurrentTeam(@Query("officerGuid") officerGuid: UUID) {
-    return await this.teamService.findUserCurrentTeam(officerGuid);
+  async findCurrentTeam(@Query("appUserGuid") appUserGuid: UUID, @Token() token: string) {
+    return await this.teamService.findUserCurrentTeam(appUserGuid, token);
   }
 
-  @Patch("update/:officer_guid")
+  @Patch("update/:app_user_guid")
   @Roles(Role.TEMPORARY_TEST_ADMIN)
-  update(@Param("officer_guid") officerGuid: UUID, @Body() updateTeamData: TeamUpdate) {
-    return this.teamService.update(officerGuid, updateTeamData);
+  update(@Param("app_user_guid") appUserGuid: UUID, @Body() updateTeamData: TeamUpdate, @Token() token: string) {
+    return this.teamService.update(appUserGuid, updateTeamData, token);
   }
 }

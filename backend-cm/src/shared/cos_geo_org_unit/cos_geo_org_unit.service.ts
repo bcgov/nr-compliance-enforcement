@@ -25,9 +25,27 @@ export class CosGeoOrgUnitService {
 
   private readonly logger = new Logger(CosGeoOrgUnitService.name);
 
-  async findAll() {
-    const rawResults = await this.prisma.$queryRaw<CosGeoOrgUnitRaw[]>`
-      SELECT 
+  async findAll(zoneCode?: string, regionCode?: string, distinctOfficeLocations?: boolean) {
+
+    let whereConditions = [];
+    const params: any[] = [];
+
+    if (zoneCode) {
+      whereConditions.push(`zone_code = $${params.length + 1}`);
+      params.push(zoneCode);
+    }
+
+    if (regionCode) {
+      whereConditions.push(`region_code = $${params.length + 1}`);
+      params.push(regionCode);
+    }
+
+    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(" AND ")}` : "";
+
+    const distinctClause = distinctOfficeLocations ? "DISTINCT ON (offloc_code)" : "";
+
+    const rawResults = await this.prisma.$queryRawUnsafe<CosGeoOrgUnitRaw[]>(
+      `SELECT ${distinctClause}
         region_code,
         region_name,
         zone_code,
@@ -38,7 +56,10 @@ export class CosGeoOrgUnitService {
         area_name,
         administrative_office_ind
       FROM cos_geo_org_unit_flat_mvw
-    `;
+      ${whereClause}
+      ORDER BY offloc_code ASC`,
+      ...params,
+    );
 
     return this.mapper.mapArray<CosGeoOrgUnitRaw, CosGeoOrgUnit>(rawResults, "CosGeoOrgUnitRaw", "CosGeoOrgUnit");
   }

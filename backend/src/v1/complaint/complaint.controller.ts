@@ -163,8 +163,9 @@ export class ComplaintController {
   statsByZone(
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("zone") zone: string,
+    @Token() token: string,
   ): Promise<ZoneAtAGlanceStats> {
-    return this.service.getZoneAtAGlanceStatistics(complaintType, zone);
+    return this.service.getZoneAtAGlanceStatistics(complaintType, zone, token);
   }
 
   @Get("/linked-complaints/:complaint_id/related")

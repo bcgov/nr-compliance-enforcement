@@ -23,6 +23,9 @@ export class TeamCodeService {
         display_order: true,
         active_ind: true,
       },
+      orderBy: {
+        display_order: "asc",
+      },
     });
 
     return this.mapper.mapArray<team_code, TeamCode>(prismaTeamCodes as Array<team_code>, "team_code", "TeamCode");

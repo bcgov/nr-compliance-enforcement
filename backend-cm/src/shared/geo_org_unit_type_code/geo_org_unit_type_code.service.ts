@@ -23,6 +23,9 @@ export class GeoOrgUnitTypeCodeService {
         display_order: true,
         active_ind: true,
       },
+      orderBy: {
+        display_order: "asc",
+      },
     });
 
     return this.mapper.mapArray<geo_org_unit_type_code, GeoOrgUnitTypeCode>(

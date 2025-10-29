@@ -32,7 +32,7 @@ export interface ComplaintReferralDetail {
   previousAgency: string;
   newAgency: string;
   referredBy: {
-    officerGuid: string;
+    appUserGuid: string;
     lastName: string;
     firstName: string;
   };

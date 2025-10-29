@@ -1,3 +1,3 @@
 type Query {
-  cosGeoOrgUnits: [CosGeoOrgUnit]!
+  cosGeoOrgUnits(zoneCode: String, regionCode: String, distinctOfficeLocations: Boolean): [CosGeoOrgUnit]!
 }

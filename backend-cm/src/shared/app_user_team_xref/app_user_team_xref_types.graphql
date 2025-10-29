@@ -1,0 +1,6 @@
+type AppUserTeamXref {
+  appUserTeamXrefGuid: String
+  appUserGuid: String
+  teamGuid: String
+  activeIndicator: Boolean
+}

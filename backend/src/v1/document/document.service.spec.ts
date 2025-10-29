@@ -53,7 +53,7 @@ import { Office } from "../office/entities/office.entity";
 import { Officer } from "../officer/entities/officer.entity";
 import { PersonComplaintXref } from "../person_complaint_xref/entities/person_complaint_xref.entity";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
-import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
+import { AppUserComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { CdogsService } from "../../external_api/cdogs/cdogs.service";
@@ -140,7 +140,7 @@ describe("DocumentService", () => {
           useFactory: MockOrganizationUnitCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(PersonComplaintXrefCode),
+          provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
         },
         {

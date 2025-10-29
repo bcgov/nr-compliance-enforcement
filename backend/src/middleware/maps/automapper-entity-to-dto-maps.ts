@@ -84,7 +84,7 @@ const personComplaintToDelegateDtoMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.type,
-      mapFrom((source) => source.person_complaint_xref_code.person_complaint_xref_code),
+      mapFrom((source) => source.app_user_complaint_xref_code.app_user_complaint_xref_code),
     ),
     forMember(
       (destination) => destination.person,

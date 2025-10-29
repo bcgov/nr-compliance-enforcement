@@ -63,6 +63,7 @@ import { GeoOrgUnitTypeCodeModule } from "./shared/geo_org_unit_type_code/geo_or
 import { GeoOrganizationUnitCodeModule } from "./shared/geo_organization_unit_code/geo_organization_unit_code.module";
 import { CosGeoOrgUnitModule } from "./shared/cos_geo_org_unit/cos_geo_org_unit.module";
 import { AppUserModule } from "./shared/app_user/app_user.module";
+import { AppUserTeamXrefModule } from "./shared/app_user_team_xref/app_user_team_xref.module";
 
 @Module({
   imports: [
@@ -126,6 +127,7 @@ import { AppUserModule } from "./shared/app_user/app_user.module";
     GeoOrganizationUnitCodeModule,
     CosGeoOrgUnitModule,
     AppUserModule,
+    AppUserTeamXrefModule,
   ],
   controllers: [AppController],
   providers: [AppService, ImportCommand, DateScalar, JSONObjectScalar, PointScalar],

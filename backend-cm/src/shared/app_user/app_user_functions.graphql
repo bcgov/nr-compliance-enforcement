@@ -1,3 +1,9 @@
 type Query {
-  appUsers: [AppUser]!
+  appUsers(officeGuids: [String!], agencyCode: String): [AppUser]!
+  appUser(userId: String, authUserGuid: String): AppUser
+}
+
+type Mutation {
+  createAppUser(input: CreateAppUserInput!): AppUser
+  updateAppUser(appUserGuid: String!, input: UpdateAppUserInput!): AppUser
 }

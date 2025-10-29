@@ -1,13 +1,13 @@
 import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
 import { app_user } from "../../../../prisma/shared/generated/app_user";
+import { Field, InputType } from "@nestjs/graphql";
+import { IsOptional } from "class-validator";
 
 export class AppUser {
   appUserGuid: string;
   authUserGuid: string;
   userId: string;
   firstName: string;
-  middleName1: string;
-  middleName2: string;
   lastName: string;
   comsEnrolledIndicator: boolean;
   deactivateIndicator: boolean;
@@ -18,6 +18,82 @@ export class AppUser {
   createTimestamp: Date;
   updateUserId: string;
   updateTimestamp: Date;
+}
+
+@InputType()
+export class CreateAppUserInput {
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  authUserGuid?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  userId?: string;
+
+  @Field(() => String)
+  firstName: string;
+
+  @Field(() => String)
+  lastName: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  agencyCode?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  officeGuid?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  parkAreaGuid?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  @IsOptional()
+  comsEnrolledIndicator?: boolean;
+
+  @Field(() => Boolean, { nullable: true })
+  @IsOptional()
+  deactivateIndicator?: boolean;
+}
+
+@InputType()
+export class UpdateAppUserInput {
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  authUserGuid?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  userId?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  firstName?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  lastName?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  agencyCode?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  officeGuid?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  parkAreaGuid?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  @IsOptional()
+  comsEnrolledIndicator?: boolean;
+
+  @Field(() => Boolean, { nullable: true })
+  @IsOptional()
+  deactivateIndicator?: boolean;
 }
 
 export const mapPrismaAppUserToAppUser = (mapper: Mapper) => {
@@ -40,14 +116,6 @@ export const mapPrismaAppUserToAppUser = (mapper: Mapper) => {
     forMember(
       (dest) => dest.firstName,
       mapFrom((src) => src.first_name),
-    ),
-    forMember(
-      (dest) => dest.middleName1,
-      mapFrom((src) => src.middle_name_1),
-    ),
-    forMember(
-      (dest) => dest.middleName2,
-      mapFrom((src) => src.middle_name_2),
     ),
     forMember(
       (dest) => dest.lastName,

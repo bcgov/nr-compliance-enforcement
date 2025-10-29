@@ -29,6 +29,7 @@ import { mapPrismaGeoOrgUnitTypeCodeToGeoOrgUnitTypeCode } from "../shared/geo_o
 import { mapPrismaGeoOrganizationUnitCodeToGeoOrganizationUnitCode } from "../shared/geo_organization_unit_code/dto/geo_organization_unit_code";
 import { mapPrismaCosGeoOrgUnitFlatMvwToCosGeoOrgUnit } from "../shared/cos_geo_org_unit/dto/cos_geo_org_unit";
 import { mapPrismaAppUserToAppUser } from "../shared/app_user/dto/app_user";
+import { mapPrismaAppUserTeamXrefToAppUserTeamXref } from "../shared/app_user_team_xref/dto/app_user_team_xref";
 
 export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToContactMethod(mapper);
@@ -61,4 +62,5 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaGeoOrganizationUnitCodeToGeoOrganizationUnitCode(mapper);
   mapPrismaCosGeoOrgUnitFlatMvwToCosGeoOrgUnit(mapper);
   mapPrismaAppUserToAppUser(mapper);
+  mapPrismaAppUserTeamXrefToAppUserTeamXref(mapper);
 };

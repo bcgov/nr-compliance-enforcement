@@ -104,8 +104,8 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
             let record = {
               personComplaintXrefGuid: xrefId,
               active_ind: isActive,
-              person_complaint_xref_code: {
-                person_complaint_xref_code: type,
+              app_user_complaint_xref_code: {
+                app_user_complaint_xref_code: type,
               },
               person_guid: {
                 person_guid: id,
@@ -258,8 +258,8 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
             let record = {
               personComplaintXrefGuid: xrefId,
               active_ind: isActive,
-              person_complaint_xref_code: {
-                person_complaint_xref_code: type,
+              app_user_complaint_xref_code: {
+                app_user_complaint_xref_code: type,
               },
               person_guid: {
                 person_guid: id,
@@ -458,8 +458,8 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (mapper: Mapper) =
             let record = {
               personComplaintXrefGuid: xrefId,
               active_ind: isActive,
-              person_complaint_xref_code: {
-                person_complaint_xref_code: type,
+              app_user_complaint_xref_code: {
+                app_user_complaint_xref_code: type,
               },
               person_guid: {
                 person_guid: id,

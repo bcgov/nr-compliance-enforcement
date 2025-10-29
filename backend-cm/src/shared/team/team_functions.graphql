@@ -1,3 +1,4 @@
 type Query {
-  teams: [Team]!
+  teams(teamCode: String, agencyCode: String): [Team]!
+  team(teamGuid: String!): Team
 }
