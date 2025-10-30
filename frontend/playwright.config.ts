@@ -9,7 +9,11 @@ const baseURL = process.env.E2E_BASE_URL || "http://localhost:3000";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  timeout: 120000,
+  workers: 6,
+  timeout: 300000, // 5 minutes for a test (longest ones run 2.5 minutes normally)
+  expect: {
+    timeout: 30000, // 30 seconds for an expect statement to resolve.
+  },
   testDir: "./e2e",
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -25,7 +29,7 @@ export default defineConfig({
     baseURL: baseURL,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: "on-first-retry",
+    trace: "retain-on-failure",
   },
 
   /* Configure projects for major browsers */

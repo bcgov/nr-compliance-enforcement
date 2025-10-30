@@ -6,7 +6,7 @@ import { AsyncTypeahead, Highlighter } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 import { generateApiParameters, get, post } from "@common/api";
 import config from "@/config";
-import { applyStatusClass } from "@common/methods";
+import { applyStatusClass, getIssueDescription } from "@common/methods";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { ToggleSuccess, ToggleError } from "@common/toast";
@@ -41,16 +41,6 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
   const [hintText, setHintText] = useState<string>("");
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [validation, setValidation] = useState<ValidationResult>({ isValid: true });
-
-  const getIssueDescription = (complaint: any): string => {
-    const { type, issueType } = complaint;
-    const codeMap = {
-      HWCR: () => natureOfComplaints.find((item) => item.natureOfComplaint === issueType)?.longDescription,
-      GIR: () => girTypeCodes.find((item) => item.girType === issueType)?.longDescription,
-      ERS: () => violationCodes.find((item) => item.violation === issueType)?.longDescription,
-    };
-    return codeMap[type as keyof typeof codeMap]?.() || "";
-  };
 
   const getStatusDescription = (status: string): string => {
     return statusCodes?.find((item: any) => item.complaintStatus === status)?.longDescription || status;
@@ -152,7 +142,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
 
     setSelectedComplaint(complaint);
 
-    const issue = getIssueDescription(complaint);
+    const issue = getIssueDescription(complaint, natureOfComplaints, girTypeCodes, violationCodes);
     setHintText(isFocused ? `${complaint.id}, ${complaint.type || ""}, ${issue}` : "");
 
     const validationResult = await validateComplaintLinking(complaint);
@@ -242,7 +232,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
                       </div>
                     </div>
                     <dt>
-                      <small>{getIssueDescription(option)}</small>
+                      <small>{getIssueDescription(option, natureOfComplaints, girTypeCodes, violationCodes)}</small>
                     </dt>
                   </>
                 )}

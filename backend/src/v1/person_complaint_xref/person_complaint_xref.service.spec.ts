@@ -9,6 +9,7 @@ import { EmailService } from "../email/email.service";
 import { WebeocService } from "../../external_api/webeoc/webeoc.service";
 import { OfficerService } from "../officer/officer.service";
 import { FeatureFlagService } from "../feature_flag/feature_flag.service";
+import { EventPublisherService } from "../event_publisher/event_publisher.service";
 
 describe("PersonComplaintXrefService", () => {
   let service: PersonComplaintXrefService;
@@ -44,6 +45,10 @@ describe("PersonComplaintXrefService", () => {
         },
         {
           provide: OfficerService,
+          useValue: {},
+        },
+        {
+          provide: EventPublisherService,
           useValue: {},
         },
       ],

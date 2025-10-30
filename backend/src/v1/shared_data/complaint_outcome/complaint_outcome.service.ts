@@ -305,6 +305,7 @@ export class ComplaintOutcomeService {
         await this.complaintService.updateComplaintStatusById(
           ComplaintOutcomeDto.complaintId,
           ComplaintStatusCodeEnum.PENDING_REVIEW,
+          token,
         );
       }
     } catch (error) {
@@ -334,11 +335,13 @@ export class ComplaintOutcomeService {
         await this.complaintService.updateComplaintStatusById(
           model.reviewInput.complaintId,
           ComplaintStatusCodeEnum.PENDING_REVIEW,
+          token,
         );
       } else if (!model.reviewInput.isReviewRequired) {
         await this.complaintService.updateComplaintStatusById(
           model.reviewInput.complaintId,
           ComplaintStatusCodeEnum.OPEN,
+          token,
         );
       }
     } catch (error) {

@@ -45,7 +45,7 @@ import { CompSelect } from "@components/common/comp-select";
 import { CompInput } from "@components/common/comp-input";
 import { from } from "linq-to-typescript";
 import { openModal, isFeatureActive } from "@store/reducers/app";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { ToggleError } from "@common/toast";
 import { ComplaintHeader } from "./complaint-header";
@@ -114,6 +114,13 @@ export const ComplaintDetailsEdit: FC = () => {
   const dispatch = useAppDispatch();
 
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
+
+  const validComplaintTypes = ["HWCR", "ERS", "GIR"];
+  const navigate = useNavigate();
+  if (!validComplaintTypes.includes(complaintType)) {
+    navigate("/not-found");
+  }
+
   const casesActive = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
   const { data: caseFilesData } = useGraphQLQuery<{ caseFilesByActivityIds: CaseFile[] }>(GET_ASSOCIATED_CASE_FILES, {
     queryKey: ["caseFilesByActivityIds", id],

@@ -18,6 +18,9 @@ import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CreateInspectionInput, UpdateInspectionInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
+import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
+import Option from "@apptypes/app/option";
+import { bcUtmZoneNumbers } from "@common/methods";
 
 const CHECK_INSPECTION_NAME_EXISTS = gql`
   query CheckInspectionNameExists($name: String!, $leadAgency: String!, $excludeInspectionGuid: String) {
@@ -37,11 +40,14 @@ const CREATE_INSPECTION_MUTATION = gql`
         longDescription
       }
       leadAgency
+      locationAddress
+      locationDescription
+      locationGeometry
     }
   }
 `;
 
-const UPDATE_INspecTION_MUTATION = gql`
+const UPDATE_INSPECTION_MUTATION = gql`
   mutation UpdateInspection($inspectionGuid: String!, $input: UpdateInspectionInput!) {
     updateInspection(inspectionGuid: $inspectionGuid, input: $input) {
       inspectionGuid
@@ -53,11 +59,14 @@ const UPDATE_INspecTION_MUTATION = gql`
         longDescription
       }
       leadAgency
+      locationAddress
+      locationDescription
+      locationGeometry
     }
   }
 `;
 
-const GET_INspecTION = gql`
+const GET_INSPECTION = gql`
   query GetInspection($inspectionGuid: String!) {
     getInspection(inspectionGuid: $inspectionGuid) {
       __typename
@@ -71,9 +80,13 @@ const GET_INspecTION = gql`
         longDescription
       }
       leadAgency
+      locationAddress
+      locationDescription
+      locationGeometry
     }
     caseFilesByActivityIds(activityIdentifiers: [$inspectionGuid]) {
       caseIdentifier
+      name
     }
   }
 `;
@@ -88,7 +101,7 @@ const InspectionEdit: FC = () => {
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
 
-  const { data: inspectionData, isLoading } = useGraphQLQuery(GET_INspecTION, {
+  const { data: inspectionData, isLoading } = useGraphQLQuery(GET_INSPECTION, {
     queryKey: ["getInspection", id],
     variables: { inspectionGuid: id },
     enabled: isEditMode,
@@ -105,7 +118,7 @@ const InspectionEdit: FC = () => {
     },
   });
 
-  const updateInspectionMutation = useGraphQLMutation(UPDATE_INspecTION_MUTATION, {
+  const updateInspectionMutation = useGraphQLMutation(UPDATE_INSPECTION_MUTATION, {
     onSuccess: (data: any) => {
       ToggleSuccess("Inspection updated successfully");
       navigate(`/inspection/${id}`);
@@ -124,6 +137,9 @@ const InspectionEdit: FC = () => {
         leadAgency: inspectionData.getInspection.leadAgency || "",
         description: inspectionData.getInspection.description || "",
         name: inspectionData.getInspection.name || "",
+        locationAddress: inspectionData.getInspection.locationAddress || "",
+        locationDescription: inspectionData.getInspection.locationDescription || "",
+        locationGeometry: inspectionData.getInspection.locationGeometry || null,
       };
     }
     return {
@@ -131,6 +147,9 @@ const InspectionEdit: FC = () => {
       leadAgency: getUserAgency(),
       description: "",
       name: "",
+      locationAddress: "",
+      locationDescription: "",
+      locationGeometry: null,
     };
   }, [isEditMode, inspectionData]);
 
@@ -143,6 +162,9 @@ const InspectionEdit: FC = () => {
           inspectionStatus: value.inspectionStatus,
           description: value.description,
           name: value.name,
+          locationAddress: value.locationAddress,
+          locationDescription: value.locationDescription,
+          locationGeometry: value.locationGeometry,
         };
 
         updateInspectionMutation.mutate({
@@ -156,6 +178,9 @@ const InspectionEdit: FC = () => {
           description: value.description,
           name: value.name,
           inspectionStatus: value.inspectionStatus,
+          locationAddress: value.locationAddress,
+          locationDescription: value.locationDescription,
+          locationGeometry: value.locationGeometry,
         };
 
         createInspectionMutation.mutate({ input: createInput });
@@ -169,7 +194,7 @@ const InspectionEdit: FC = () => {
     if (isEditMode && id) {
       navigate(`/inspection/${id}`);
     } else {
-      navigate(`/case/${caseIdentifier}`);
+      navigate(`/inspections/${id}`);
     }
   }, [navigate, isEditMode, caseIdentifier, id, form]);
 
@@ -322,6 +347,87 @@ const InspectionEdit: FC = () => {
                   disabled={isDisabled}
                 />
               )}
+            />
+
+            <FormField
+              form={form}
+              name="locationAddress"
+              label="Location address"
+              // required
+              // validators={{ onChange: z.string().min(1, "Location address is required") }}
+              render={(field) => (
+                <ValidationTextArea
+                  id="locationAddress"
+                  className="comp-form-control comp-details-input"
+                  rows={1}
+                  defaultValue={field.state.value}
+                  onChange={(value: string) => field.handleChange(value)}
+                  placeholderText="Enter the address of the investigation..."
+                  maxLength={120}
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
+                  disabled={isDisabled}
+                />
+              )}
+            />
+            <FormField
+              form={form}
+              name="locationDescription"
+              label="Location description"
+              // required
+              // validators={{ onChange: z.string().min(1, "Location description is required") }}
+              render={(field) => (
+                <ValidationTextArea
+                  id="locationDescription"
+                  className="comp-form-control comp-details-input"
+                  rows={4}
+                  defaultValue={field.state.value}
+                  onChange={(value: string) => field.handleChange(value)}
+                  placeholderText="Enter a description of the location of this investigation..."
+                  maxLength={4000}
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
+                  disabled={isDisabled}
+                />
+              )}
+            />
+            <FormField
+              form={form}
+              name="locationGeometry"
+              label="Location"
+              render={(field) => {
+                const coordinates = field.state.value?.coordinates;
+                const longitude = coordinates?.[0]?.toString() || "";
+                const latitude = coordinates?.[1]?.toString() || "";
+                console.log("Rendering CompCoordinateInput with coordinates:", coordinates);
+
+                return (
+                  <CompCoordinateInput
+                    id="investigation-coordinates"
+                    mode="investigation"
+                    utmZones={bcUtmZoneNumbers.map((zone: string) => ({ value: zone, label: zone }) as Option)}
+                    initXCoordinate={longitude}
+                    initYCoordinate={latitude}
+                    syncCoordinates={(yCoordinate, xCoordinate) => {
+                      if (yCoordinate && xCoordinate && yCoordinate !== "" && xCoordinate !== "") {
+                        field.handleChange({
+                          type: "Point",
+                          coordinates: [Number.parseFloat(xCoordinate), Number.parseFloat(yCoordinate)],
+                        });
+                      } else {
+                        field.handleChange(null);
+                      }
+                    }}
+                    throwError={(hasError: boolean) =>
+                      hasError
+                        ? field.setMeta({ errorMap: { onChange: "Location Coordinates are invalid" } })
+                        : field.setMeta({ errorMap: {} })
+                    }
+                    enableCopyCoordinates={false}
+                    validationRequired={false}
+                    sourceXCoordinate={longitude}
+                    sourceYCoordinate={latitude}
+                  />
+                );
+              }}
             />
           </fieldset>
         </form>

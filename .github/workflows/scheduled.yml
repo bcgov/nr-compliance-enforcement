@@ -9,6 +9,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FLYWAY_PLACEHOLDERS_COMPLAINT_PASSWORD: default
+  FLYWAY_PLACEHOLDERS_INVESTIGATION_PASSWORD: default
+  FLYWAY_PLACEHOLDERS_INSPECTION_PASSWORD: default
+  FLYWAY_PLACEHOLDERS_SHARED_PASSWORD: default
+  FLYWAY_PLACEHOLDERS_COMPLAINT_OUTCOME_PASSWORD: default
+  FLYWAY_PLACEHOLDERS_METABASE_READONLY_PASSWORD: default
+
 jobs:
   ageOutPRs:
     name: PR Env Purge
@@ -71,23 +79,66 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Flyway
+      - name: Enable Extensions
+        run: |
+          docker exec $(docker ps -q --filter "ancestor=postgis/postgis:16-3.4") \
+            psql -U postgres -d default -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+      - name: Flyway - complaint
         uses: docker://flyway/flyway:10
         env:
           FLYWAY_URL: jdbc:postgresql://postgres:5432/default
           FLYWAY_USER: postgres
           FLYWAY_PASSWORD: default
-          FLYWAY_LOCATIONS: filesystem:./migrations/migrations
+          FLYWAY_LOCATIONS: filesystem:./migration-complaint/migrations,filesystem:./migration-complaint/baseline
           FLYWAY_DEFAULT_SCHEMA: complaint
         with:
           args: info migrate info
-
+      - name: Flyway - complaint outcome
+        uses: docker://flyway/flyway:10
+        env:
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
+          FLYWAY_USER: postgres
+          FLYWAY_PASSWORD: default
+          FLYWAY_LOCATIONS: filesystem:./migration-complaint-outcome/migrations,filesystem:./migration-complaint-outcome/baseline
+          FLYWAY_DEFAULT_SCHEMA: complaint_outcome
+        with:
+          args: info migrate info
+      - name: Flyway - inspection
+        uses: docker://flyway/flyway:10
+        env:
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
+          FLYWAY_USER: postgres
+          FLYWAY_PASSWORD: default
+          FLYWAY_LOCATIONS: filesystem:./migration-inspection/migrations,filesystem:./migration-inspection/baseline
+          FLYWAY_DEFAULT_SCHEMA: inspection
+        with:
+          args: info migrate info
+      - name: Flyway - investigation
+        uses: docker://flyway/flyway:10
+        env:
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
+          FLYWAY_USER: postgres
+          FLYWAY_PASSWORD: default
+          FLYWAY_LOCATIONS: filesystem:./migration-investigation/migrations,filesystem:./migration-investigation/baseline
+          FLYWAY_DEFAULT_SCHEMA: investigation
+        with:
+          args: info migrate info
+      - name: Flyway - shared
+        uses: docker://flyway/flyway:10
+        env:
+          FLYWAY_URL: jdbc:postgresql://postgres:5432/default
+          FLYWAY_USER: postgres
+          FLYWAY_PASSWORD: default
+          FLYWAY_LOCATIONS: filesystem:./migration-shared/migrations,filesystem:./migration-shared/baseline
+          FLYWAY_DEFAULT_SCHEMA: shared
+        with:
+          args: info migrate info
       - name: Create Output Folder
         run: |
           mkdir output
           chmod a+rwx -R output
       - name: Run Schemaspy
-        run: docker run --network host -v "$PWD/output:/output" schemaspy/schemaspy:6.2.4 -t pgsql11 -db default -host 127.0.0.1 -port 5432 -u postgres -p default -schemas complaint
+        run: docker run --network host -v "$PWD/output:/output" schemaspy/schemaspy:6.2.4 -t pgsql11 -db default -host 127.0.0.1 -port 5432 -u postgres -p default -schemas complaint,complaint_outcome,investigation,inspection,shared
       - name: Deploy to Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:

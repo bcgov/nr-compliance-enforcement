@@ -9,6 +9,7 @@ import { DataSource } from "typeorm";
 import { ComplaintService } from "./complaint.service";
 import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
+import { EventPublisherService } from "../event_publisher/event_publisher.service";
 
 import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
 import { Complaint } from "./entities/complaint.entity";
@@ -155,6 +156,10 @@ describe("Testing: Complaint Service", () => {
         CompMthdRecvCdAgcyCdXrefService,
         TeamService,
         OfficerTeamXrefService,
+        {
+          provide: EventPublisherService,
+          useValue: {},
+        },
         {
           provide: getRepositoryToken(Complaint),
           useFactory: MockComplaintsRepositoryV2,
@@ -455,6 +460,12 @@ describe("Testing: Complaint Service", () => {
         ComplaintUpdatesService,
         ComplaintService,
         {
+          provide: EventPublisherService,
+          useValue: {
+            publishComplaintStatusChangeEvents: jest.fn().mockResolvedValue(undefined),
+          },
+        },
+        {
           provide: PersonComplaintXrefService,
           useValue: {},
         },
@@ -595,9 +606,10 @@ describe("Testing: Complaint Service", () => {
     //-- arrange
     const _id = "23-031396";
     const _status = "CLOSED";
+    const _token = "test-token";
 
     //-- act
-    const result = await service.updateComplaintStatusById(_id, _status);
+    const result = await service.updateComplaintStatusById(_id, _status, _token);
 
     //-- assert
     expect(result).not.toBe(null);

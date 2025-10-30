@@ -8,15 +8,17 @@ import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { generateApiParameters, get } from "@common/api";
-import { applyStatusClass } from "@common/methods";
+import { applyStatusClass, getIssueDescription } from "@common/methods";
 import config from "@/config";
 import { HintInputWrapper } from "@components/common/custom-hint";
+import { AddComplaintToCaseOption } from "@/app/components/modal/instances/add-complaint-to-case";
 
 type Props = {
   id?: string;
-  onChange?: (selected: Option | null) => void;
+  onChange?: (selected: Option | AddComplaintToCaseOption | null) => void;
   errorMessage?: string;
   value?: Option | null;
+  includeComplaintType?: boolean;
 };
 
 export const ComplaintListSearch: FC<Props> = ({
@@ -24,6 +26,7 @@ export const ComplaintListSearch: FC<Props> = ({
   onChange = () => {},
   errorMessage = "",
   value = null,
+  includeComplaintType = false,
 }) => {
   const dispatch = useAppDispatch();
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
@@ -42,16 +45,6 @@ export const ComplaintListSearch: FC<Props> = ({
     return code.longDescription;
   };
 
-  const getIssueDescription = (complaint: any): string => {
-    const { type, issueType } = complaint;
-    const codeMap = {
-      HWCR: () => natureOfComplaints.find((item) => item.natureOfComplaint === issueType)?.longDescription,
-      GIR: () => girTypeCodes.find((item) => item.girType === issueType)?.longDescription,
-      ERS: () => violationCodes.find((item) => item.violation === issueType)?.longDescription,
-    };
-    return codeMap[type as keyof typeof codeMap]?.() || "";
-  };
-
   const handleComplaintSelect = async (selected: any[]) => {
     if (selected.length === 0) {
       setSelectedComplaint(null);
@@ -62,11 +55,23 @@ export const ComplaintListSearch: FC<Props> = ({
 
     const complaint = selected[0];
     setSelectedComplaint(complaint);
-    onChange(
-      selected.length > 0 ? ({ label: selected[0].id as string, value: selected[0].id as string } as Option) : null,
-    );
+    if (includeComplaintType) {
+      onChange(
+        selected.length > 0
+          ? ({
+              label: selected[0].id as string,
+              value: selected[0].id as string,
+              complaintType: selected[0].type,
+            } as AddComplaintToCaseOption)
+          : null,
+      );
+    } else {
+      onChange(
+        selected.length > 0 ? ({ label: selected[0].id as string, value: selected[0].id as string } as Option) : null,
+      );
+    }
 
-    const issue = getIssueDescription(complaint);
+    const issue = getIssueDescription(complaint, natureOfComplaints, girTypeCodes, violationCodes);
     setHintText(isFocused ? `${complaint.id}, ${complaint.type || ""}, ${issue}` : "");
   };
 
@@ -124,7 +129,7 @@ export const ComplaintListSearch: FC<Props> = ({
               <div className={`badge ${applyStatusClass(option.status)}`}>{getStatusDescription(option.status)}</div>
             </div>
             <dt>
-              <small>{getIssueDescription(option)}</small>
+              <small>{getIssueDescription(option, natureOfComplaints, girTypeCodes, violationCodes)}</small>
             </dt>
           </>
         )}
