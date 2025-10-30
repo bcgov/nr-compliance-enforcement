@@ -237,18 +237,18 @@
         "comments": ""
     },
     {
-        "tableName": "investigation_business",
-        "tableFileName": "investigation_business",
+        "tableName": "investigation_party",
+        "tableFileName": "investigation_party",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "name",
-        "type": "varchar",
-        "length": 128,
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>investigation_guid",
+        "type": "uuid",
+        "length": 2147483647,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Name of the business.<\/p>"
+        "comments": "<p>Foreign key: System generated unique identifier for an inspection<\/p>"
     },
     {
         "tableName": "investigation_status_code_h",
@@ -279,18 +279,18 @@
         "comments": "<p>The timestamp when the data in the investigation table was created or modified.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
-        "tableName": "investigation_party",
-        "tableFileName": "investigation_party",
+        "tableName": "investigation_business",
+        "tableFileName": "investigation_business",
         "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "party_type_code_ref",
-        "type": "varchar",
-        "length": 16,
-        "nullable": "",
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>investigation_party_guid",
+        "type": "uuid",
+        "length": 2147483647,
+        "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Cross schema foreign key (unenforced) to shared.party table to provide a human readable code representing a party type.<\/p>"
+        "comments": "<p>Foreign key: System generated unique identifier for a party.<\/p>"
     },
     {
         "tableName": "officer_investigation_xref_code",
@@ -335,18 +335,18 @@
         "comments": "<p>Second or middle name of the person.<\/p>"
     },
     {
-        "tableName": "investigation_business",
-        "tableFileName": "investigation_business",
+        "tableName": "investigation_party",
+        "tableFileName": "investigation_party",
         "tableType": "Table",
-        "keyClass": "foreignKey",
-        "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>investigation_party_guid",
-        "type": "uuid",
-        "length": 2147483647,
-        "nullable": "√",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "party_type_code_ref",
+        "type": "varchar",
+        "length": 16,
+        "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Foreign key: System generated unique identifier for a party.<\/p>"
+        "comments": "<p>Cross schema foreign key (unenforced) to shared.party table to provide a human readable code representing a party type.<\/p>"
     },
     {
         "tableName": "investigation_business_h",
@@ -377,8 +377,8 @@
         "comments": "<p>The timestamp when the case was updated.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
-        "tableName": "investigation_party",
-        "tableFileName": "investigation_party",
+        "tableName": "investigation_business",
+        "tableFileName": "investigation_business",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
@@ -388,11 +388,11 @@
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The id of the user that created the party.<\/p>"
+        "comments": "<p>The id of the user that created the business.<\/p>"
     },
     {
-        "tableName": "investigation_party",
-        "tableFileName": "investigation_party",
+        "tableName": "investigation_business",
+        "tableFileName": "investigation_business",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
@@ -402,11 +402,11 @@
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The id of the user that updated the party.<\/p>"
+        "comments": "<p>The id of the user that updated the business.<\/p>"
     },
     {
-        "tableName": "investigation_party",
-        "tableFileName": "investigation_party",
+        "tableName": "investigation_business",
+        "tableFileName": "investigation_business",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
@@ -416,7 +416,7 @@
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "true",
-        "comments": "<p>True if the party is currently attached to the investigation, false if it was previously attached and then removed.<\/p>"
+        "comments": "<p>A value of true indicates this is the latest version of the record.   A value of false indicates that a newer version of the record is available.<\/p>"
     },
     {
         "tableName": "flyway_schema_history",
@@ -475,18 +475,18 @@
         "comments": "<p>A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table.<\/p>"
     },
     {
-        "tableName": "investigation_party",
-        "tableFileName": "investigation_party",
+        "tableName": "investigation_business",
+        "tableFileName": "investigation_business",
         "tableType": "Table",
         "keyClass": "indexedColumn",
         "keyTitle": "Indexed",
-        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>party_guid_ref",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>business_guid_ref",
         "type": "uuid",
         "length": 2147483647,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Cross schema foreign key (unenforced) to shared.party table to indicate the shared party record this party was created from or currently linked to.<\/p>"
+        "comments": "<p>Cross schema foreign key (unenforced) to shared.business table to indicate the shared business record this party was created from or currently linked to.<\/p>"
     },
     {
         "tableName": "officer_investigation_xref_code_h",
@@ -657,8 +657,8 @@
         "comments": "<p>System generated unique key for officer_investigation_xref_code history. This key should never be exposed to users via any system utilizing the tables.<\/p>"
     },
     {
-        "tableName": "investigation_business",
-        "tableFileName": "investigation_business",
+        "tableName": "investigation_party",
+        "tableFileName": "investigation_party",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
@@ -667,8 +667,8 @@
         "length": 29,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "now()",
-        "comments": "<p>The timestamp when the business was created. The timestamp is stored in UTC with no offset.<\/p>"
+        "defaultValue": "null",
+        "comments": "<p>The timestamp when the party was created. The timestamp is stored in UTC with no offset.<\/p>"
     },
     {
         "tableName": "flyway_schema_history",
@@ -825,18 +825,18 @@
         "comments": "<p>A JSON representation of the row in the table after the operation was completed successfully.<\/p>"
     },
     {
-        "tableName": "investigation_business",
-        "tableFileName": "investigation_business",
+        "tableName": "investigation_party",
+        "tableFileName": "investigation_party",
         "tableType": "Table",
         "keyClass": "indexedColumn",
         "keyTitle": "Indexed",
-        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>business_guid_ref",
+        "name": "<i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'><\/i>party_guid_ref",
         "type": "uuid",
         "length": 2147483647,
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Cross schema foreign key (unenforced) to shared.business table to indicate the shared business record this party was created from or currently linked to.<\/p>"
+        "comments": "<p>Cross schema foreign key (unenforced) to shared.party table to indicate the shared party record this party was created from or currently linked to.<\/p>"
     },
     {
         "tableName": "investigation_person",
@@ -937,8 +937,8 @@
         "comments": "<p>The timestamp when the data in the investigation_status_code table was created or modified.  The timestamp is stored in UTC with no Offset.<\/p>"
     },
     {
-        "tableName": "investigation_party",
-        "tableFileName": "investigation_party",
+        "tableName": "investigation_business",
+        "tableFileName": "investigation_business",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
@@ -947,8 +947,8 @@
         "length": 29,
         "nullable": "",
         "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>The timestamp when the party was created. The timestamp is stored in UTC with no offset.<\/p>"
+        "defaultValue": "now()",
+        "comments": "<p>The timestamp when the business was created. The timestamp is stored in UTC with no offset.<\/p>"
     },
     {
         "tableName": "investigation_party_h",
@@ -1035,8 +1035,8 @@
         "comments": "<p>The GUID for the investigation.<\/p>"
     },
     {
-        "tableName": "investigation_business",
-        "tableFileName": "investigation_business",
+        "tableName": "investigation_party",
+        "tableFileName": "investigation_party",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
@@ -1046,7 +1046,7 @@
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The id of the user that created the business.<\/p>"
+        "comments": "<p>The id of the user that created the party.<\/p>"
     },
     {
         "tableName": "investigation_party_h",
@@ -1147,18 +1147,18 @@
         "comments": "<p>UTC timestamp of when the investigation was started.<\/p>"
     },
     {
-        "tableName": "investigation_business",
-        "tableFileName": "investigation_business",
+        "tableName": "investigation_party",
+        "tableFileName": "investigation_party",
         "tableType": "Table",
         "keyClass": "primaryKey",
         "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>investigation_business_guid",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>investigation_party_guid",
         "type": "uuid",
         "length": 2147483647,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "uuid_generate_v4()",
-        "comments": "<p>Primary key: System generated unique identifier for a business.<\/p>"
+        "comments": "<p>Primary key: System generated unique identifier for a party.<\/p>"
     },
     {
         "tableName": "officer_investigation_xref",
@@ -1399,8 +1399,8 @@
         "comments": "<p>The timestamp when the person was created. The timestamp is stored in UTC with no offset.<\/p>"
     },
     {
-        "tableName": "investigation_business",
-        "tableFileName": "investigation_business",
+        "tableName": "investigation_party",
+        "tableFileName": "investigation_party",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
@@ -1410,7 +1410,7 @@
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "true",
-        "comments": "<p>A value of true indicates this is the latest version of the record.   A value of false indicates that a newer version of the record is available.<\/p>"
+        "comments": "<p>True if the party is currently attached to the investigation, false if it was previously attached and then removed.<\/p>"
     },
     {
         "tableName": "investigation_business_h",
@@ -1483,8 +1483,8 @@
         "comments": "<p>The id of the user that created or modified the data in the investigation table.  Defaults to the logged in user if not passed in by the application.<\/p>"
     },
     {
-        "tableName": "investigation_business",
-        "tableFileName": "investigation_business",
+        "tableName": "investigation_party",
+        "tableFileName": "investigation_party",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
@@ -1494,7 +1494,7 @@
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The timestamp when the business was updated. The timestamp is stored in UTC with no offset.<\/p>"
+        "comments": "<p>The timestamp when the party was updated. The timestamp is stored in UTC with no offset.<\/p>"
     },
     {
         "tableName": "officer_investigation_xref_code_h",
@@ -1609,8 +1609,8 @@
         "comments": "<p>A human readable code used to identify an investigation status.<\/p>"
     },
     {
-        "tableName": "investigation_business",
-        "tableFileName": "investigation_business",
+        "tableName": "investigation_party",
+        "tableFileName": "investigation_party",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
@@ -1620,21 +1620,21 @@
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The id of the user that updated the business.<\/p>"
+        "comments": "<p>The id of the user that updated the party.<\/p>"
     },
     {
-        "tableName": "investigation_party",
-        "tableFileName": "investigation_party",
+        "tableName": "investigation_business",
+        "tableFileName": "investigation_business",
         "tableType": "Table",
-        "keyClass": "foreignKey",
-        "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>investigation_guid",
-        "type": "uuid",
-        "length": 2147483647,
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "name",
+        "type": "varchar",
+        "length": 128,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Foreign key: System generated unique identifier for an inspection<\/p>"
+        "comments": "<p>Name of the business.<\/p>"
     },
     {
         "tableName": "flyway_schema_history",
@@ -1707,8 +1707,8 @@
         "comments": "<p>The timestamp when the person was updated. The timestamp is stored in UTC with no offset.<\/p>"
     },
     {
-        "tableName": "investigation_party",
-        "tableFileName": "investigation_party",
+        "tableName": "investigation_business",
+        "tableFileName": "investigation_business",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
@@ -1718,7 +1718,7 @@
         "nullable": "√",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>The timestamp when the party was updated. The timestamp is stored in UTC with no offset.<\/p>"
+        "comments": "<p>The timestamp when the business was updated. The timestamp is stored in UTC with no offset.<\/p>"
     },
     {
         "tableName": "officer_investigation_xref_code",
@@ -1735,18 +1735,18 @@
         "comments": "<p>The id of the user that updated the relationship type between an officer and a investigation .<\/p>"
     },
     {
-        "tableName": "investigation_party",
-        "tableFileName": "investigation_party",
+        "tableName": "investigation_business",
+        "tableFileName": "investigation_business",
         "tableType": "Table",
         "keyClass": "primaryKey",
         "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>investigation_party_guid",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>investigation_business_guid",
         "type": "uuid",
         "length": 2147483647,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "uuid_generate_v4()",
-        "comments": "<p>Primary key: System generated unique identifier for a party.<\/p>"
+        "comments": "<p>Primary key: System generated unique identifier for a business.<\/p>"
     },
     {
         "tableName": "investigation_status_code",
