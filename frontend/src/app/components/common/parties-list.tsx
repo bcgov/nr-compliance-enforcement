@@ -1,11 +1,11 @@
-import { InvestigationParty } from "@/generated/graphql";
+import { InspectionParty, InvestigationParty } from "@/generated/graphql";
 import React from "react";
 import { Accordion, Badge, ListGroup } from "react-bootstrap";
 
 // Can we genercize this in the future?
 interface Props {
-  companies: InvestigationParty[];
-  people: InvestigationParty[];
+  companies: InvestigationParty[] | InspectionParty[];
+  people: InvestigationParty[] | InspectionParty[];
 }
 
 const PartiesList: React.FC<Props> = ({ companies, people }) => {

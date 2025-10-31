@@ -43,11 +43,11 @@ import { PartyView } from "./components/containers/parties/view";
 import InvestigationEdit from "@/app/components/containers/investigations/edit/investigation-edit";
 import Redirect from "./components/containers/pages/redirect";
 import config from "@/config";
-import { InspectionDetails } from "@/app/components/containers/instpections/details/inspection-details";
-import Inspections from "@/app/components/containers/instpections/inspections";
+import { InspectionDetails } from "@/app/components/containers/inspections/details/inspection-details";
+import Inspections from "@/app/components/containers/inspections/inspections";
 
 import PartyEdit from "./components/containers/parties/edit/party-edit";
-import InspectionEdit from "@/app/components/containers/instpections/edit/inspection-edit";
+import InspectionEdit from "@/app/components/containers/inspections/edit/inspection-edit";
 import Parties from "@/app/components/containers/parties/parties";
 
 const App: FC = () => {
@@ -191,6 +191,12 @@ const App: FC = () => {
                   <Route
                     path="/inspection/:id/edit"
                     element={<InspectionEdit />}
+                  />
+                )}
+                {inspectionsActive && (
+                  <Route
+                    path="/inspection/:inspectionGuid/:tabKey"
+                    element={<InspectionDetails />}
                   />
                 )}
                 <Route

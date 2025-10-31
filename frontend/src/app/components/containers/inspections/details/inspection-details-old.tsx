@@ -1,9 +1,9 @@
 import { FC } from "react";
-import { Link, useParams, useNavigate} from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Inspection } from "@/generated/graphql";
-import { InspectionHeader } from "@/app/components/containers/instpections/details/inspection-header";
+import { InspectionHeader } from "@/app/components/containers/inspections/details/inspection-header";
 import Button from "react-bootstrap/esm/Button";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
@@ -77,18 +77,18 @@ export const InspectionDetails: FC = () => {
       <section className="comp-details-body comp-container">
         <hr className="comp-details-body-spacer"></hr>
 
-          <div className="d-flex align-items-center gap-4 mb-3">
-            <h3 className="mb-0">Inspection details</h3>
-            <Button
-              variant="outline-primary"
-              size="sm"
-              id="details-screen-edit-button"
-              onClick={editButtonClick}
-            >
-              <i className="bi bi-pencil"></i>
-              <span>Edit</span>
-            </Button>
-          </div>
+        <div className="d-flex align-items-center gap-4 mb-3">
+          <h3 className="mb-0">Inspection details</h3>
+          <Button
+            variant="outline-primary"
+            size="sm"
+            id="details-screen-edit-button"
+            onClick={editButtonClick}
+          >
+            <i className="bi bi-pencil"></i>
+            <span>Edit</span>
+          </Button>
+        </div>
 
         {/* Inspection Details (View) */}
         <div className="comp-details-view">
@@ -109,7 +109,13 @@ export const InspectionDetails: FC = () => {
                   <div className="col-md-6">
                     <div className="form-group">
                       <strong>Case ID</strong>
-                      <p>{caseIdentifier ? <Link to={`/case/${caseIdentifier}`}>{caseName || caseIdentifier}</Link> : <p>N/A</p>}</p>
+                      <p>
+                        {caseIdentifier ? (
+                          <Link to={`/case/${caseIdentifier}`}>{caseName || caseIdentifier}</Link>
+                        ) : (
+                          <p>N/A</p>
+                        )}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -123,13 +129,15 @@ export const InspectionDetails: FC = () => {
                     </div>
                   </div>
                 )}
-                {inspectionData.locationAddress && (<div>
-                  <dt>Location/address</dt>
+                {inspectionData.locationAddress && (
+                  <div>
+                    <dt>Location/address</dt>
                     <dd id="comp-details-location">{inspectionData.locationAddress}</dd>
                   </div>
                 )}
-                {inspectionData.locationDescription && (<div>
-                  <dt>Location description</dt>
+                {inspectionData.locationDescription && (
+                  <div>
+                    <dt>Location description</dt>
                     <dd id="comp-details-location-description">{inspectionData.locationDescription}</dd>
                   </div>
                 )}
@@ -138,14 +146,22 @@ export const InspectionDetails: FC = () => {
                     <div className="col-12">
                       <div className="form-group">
                         <CompLocationInfo
-                          xCoordinate={inspectionData.locationGeometry.coordinates?.[0] === 0 ? "" : inspectionData.locationGeometry.coordinates?.[0].toString() ?? ""}
-                          yCoordinate={inspectionData.locationGeometry.coordinates?.[1] === 0 ? "" : inspectionData.locationGeometry.coordinates?.[1].toString() ?? ""}
+                          xCoordinate={
+                            inspectionData.locationGeometry.coordinates?.[0] === 0
+                              ? ""
+                              : (inspectionData.locationGeometry.coordinates?.[0].toString() ?? "")
+                          }
+                          yCoordinate={
+                            inspectionData.locationGeometry.coordinates?.[1] === 0
+                              ? ""
+                              : (inspectionData.locationGeometry.coordinates?.[1].toString() ?? "")
+                          }
                         />
                       </div>
                     </div>
                   </div>
                 )}
-              {inspectionData?.locationGeometry?.coordinates && (
+                {inspectionData?.locationGeometry?.coordinates && (
                   <MapObjectLocation
                     map_object_type={MapObjectType.Inspection}
                     locationCoordinates={{
@@ -154,7 +170,7 @@ export const InspectionDetails: FC = () => {
                     }}
                     draggable={false}
                   />
-              )}
+                )}
               </div>
             )}
           </div>

@@ -56,6 +56,7 @@ import { CaseActivityModule } from "src/shared/case_activity/case_activity.modul
 import { EventModule } from "./shared/event/event.module";
 import { EventPublisherModule } from "./event_publisher/event_publisher.module";
 import { InvestigationPartyModule } from "./investigation/investigation_party/investigation_party.module";
+import { InspectionPartyModule } from "./inspection/inspection_party/inspection_party.module";
 
 @Module({
   imports: [
@@ -112,6 +113,7 @@ import { InvestigationPartyModule } from "./investigation/investigation_party/in
     EventModule,
     EventPublisherModule,
     InvestigationPartyModule,
+    InspectionPartyModule,
   ],
   controllers: [AppController],
   providers: [AppService, ImportCommand, DateScalar, JSONObjectScalar, PointScalar],
