@@ -5,9 +5,6 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 const INSPECTION_TAB_ITEMS = {
   summary: "Inspection summary",
   parties: "Parties",
-  contraventions: "Contraventions",
-  documents: "Evidence and documents",
-  continuation: "Continuation report",
   admin: "Administration",
 };
 

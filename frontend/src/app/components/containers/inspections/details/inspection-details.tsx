@@ -12,7 +12,7 @@ import { InspectionContinuation } from "@/app/components/containers/inspections/
 import { InspectionAdministration } from "@/app/components/containers/inspections/details/inspection-administration";
 import { InspectionDocumentation } from "@/app/components/containers/inspections/details/inspection-documentation";
 
-const GET_INVESTIGATION = gql`
+const GET_INSPECTION = gql`
   query GetInspection($inspectionGuid: String!) {
     getInspection(inspectionGuid: $inspectionGuid) {
       __typename
@@ -59,7 +59,7 @@ export const InspectionDetails: FC = () => {
   const { data, isLoading } = useGraphQLQuery<{
     getInspection: Inspection;
     caseFilesByActivityIds: CaseFile[];
-  }>(GET_INVESTIGATION, {
+  }>(GET_INSPECTION, {
     queryKey: ["getInspection", inspectionGuid],
     variables: { inspectionGuid: inspectionGuid },
     enabled: !!inspectionGuid, // Only refresh query if id is provided
@@ -87,12 +87,6 @@ export const InspectionDetails: FC = () => {
             inspectionGuid={inspectionGuid}
           />
         );
-      case "contraventions":
-        return <InspectionContraventions />;
-      case "documents":
-        return <InspectionDocumentation />;
-      case "continuation":
-        return <InspectionContinuation />;
       case "admin":
         return <InspectionAdministration />;
     }
