@@ -188,6 +188,11 @@ describe("DocumentController", () => {
         },
         CodeTableService,
         {
+          provide: EventPublisherService,
+          useValue: {},
+        },
+        CodeTableService,
+        {
           provide: AppUserComplaintXrefService,
           useValue: {},
         },

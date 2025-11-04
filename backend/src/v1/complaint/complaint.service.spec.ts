@@ -134,6 +134,10 @@ describe("Testing: Complaint Service", () => {
           useValue: {},
         },
         {
+          provide: EventPublisherService,
+          useValue: {},
+        },
+        {
           provide: getRepositoryToken(Complaint),
           useFactory: MockComplaintsRepositoryV2,
         },

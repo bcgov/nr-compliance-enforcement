@@ -65,28 +65,33 @@ const eventDescriptionMap: Record<string, Record<string, Record<string, eventDes
       ADDED: ({ sourceId, entityNames }) => {
         return (
           <>
-            added inspection <Link to={`/inspection/${sourceId}`}>{sourceId && entityNames?.get(sourceId) || sourceId}</Link> to the case
+            added inspection{" "}
+            <Link to={`/inspection/${sourceId}`}>{(sourceId && entityNames?.get(sourceId)) || sourceId}</Link> to the
+            case
           </>
         );
       },
       REMOVED: ({ sourceId, entityNames }) => {
         return (
           <>
-            removed inspection <Link to={`/inspection/${sourceId}`}>{sourceId && entityNames?.get(sourceId) || sourceId}</Link>
+            removed inspection{" "}
+            <Link to={`/inspection/${sourceId}`}>{(sourceId && entityNames?.get(sourceId)) || sourceId}</Link>
           </>
         );
       },
       OPENED: ({ sourceId, entityNames }) => {
         return (
           <>
-            opened inspection <Link to={`/inspection/${sourceId}`}>{sourceId && entityNames?.get(sourceId) || sourceId}</Link>
+            opened inspection{" "}
+            <Link to={`/inspection/${sourceId}`}>{(sourceId && entityNames?.get(sourceId)) || sourceId}</Link>
           </>
         );
       },
       CLOSED: ({ sourceId, entityNames }) => {
         return (
           <>
-            closed inspection <Link to={`/inspection/${sourceId}`}>{sourceId && entityNames?.get(sourceId) || sourceId}</Link>
+            closed inspection{" "}
+            <Link to={`/inspection/${sourceId}`}>{(sourceId && entityNames?.get(sourceId)) || sourceId}</Link>
           </>
         );
       },
@@ -95,28 +100,33 @@ const eventDescriptionMap: Record<string, Record<string, Record<string, eventDes
       ADDED: ({ sourceId, entityNames }) => {
         return (
           <>
-            added investigation <Link to={`/investigation/${sourceId}`}>{sourceId && entityNames?.get(sourceId) || sourceId}</Link> to the case
+            added investigation{" "}
+            <Link to={`/investigation/${sourceId}`}>{(sourceId && entityNames?.get(sourceId)) || sourceId}</Link> to the
+            case
           </>
         );
       },
       REMOVED: ({ sourceId, entityNames }) => {
         return (
           <>
-            removed investigation <Link to={`/investigation/${sourceId}`}>{sourceId && entityNames?.get(sourceId) || sourceId}</Link>
+            removed investigation{" "}
+            <Link to={`/investigation/${sourceId}`}>{(sourceId && entityNames?.get(sourceId)) || sourceId}</Link>
           </>
         );
       },
       OPENED: ({ sourceId, entityNames }) => {
         return (
           <>
-            opened investigation <Link to={`/investigation/${sourceId}`}>{sourceId && entityNames?.get(sourceId) || sourceId}</Link>
+            opened investigation{" "}
+            <Link to={`/investigation/${sourceId}`}>{(sourceId && entityNames?.get(sourceId)) || sourceId}</Link>
           </>
         );
       },
       CLOSED: ({ sourceId, entityNames }) => {
         return (
           <>
-            closed investigation <Link to={`/investigation/${sourceId}`}>{sourceId && entityNames?.get(sourceId) || sourceId}</Link>
+            closed investigation{" "}
+            <Link to={`/investigation/${sourceId}`}>{(sourceId && entityNames?.get(sourceId)) || sourceId}</Link>
           </>
         );
       },
@@ -137,7 +147,9 @@ const getEventDescription = (event: Event, entityNames?: Map<string, string>): R
   const complaintType = event.content?.complaintType ?? null;
 
   const template = eventDescriptionMap[targetType?.toUpperCase()]?.[sourceType?.toUpperCase()]?.[verb];
-  return template ? template({ sourceId, targetId, complaintType, entityNames }) : `performed ${verb.toLowerCase()} action`;
+  return template
+    ? template({ sourceId, targetId, complaintType, entityNames })
+    : `performed ${verb.toLowerCase()} action`;
 };
 
 export const CaseHistoryItem: FC<CaseHistoryItemProps> = ({ event, appUsers, entityNames }) => {

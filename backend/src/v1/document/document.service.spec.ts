@@ -186,6 +186,11 @@ describe("DocumentService", () => {
         },
         CodeTableService,
         {
+          provide: EventPublisherService,
+          useValue: {},
+        },
+        CodeTableService,
+        {
           provide: AppUserComplaintXrefService,
           useValue: {},
         },

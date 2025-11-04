@@ -116,13 +116,8 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
     const items = getOfficerList();
     if (items && from(items).any()) {
       return items.map((val) => {
-        const {
-          first_name: firstName, last_name: lastName,
-        } = val;
-        const {
-          app_user_guid: appUserGuid,
-          auth_user_guid: authUserGuid,
-        } = val;
+        const { first_name: firstName, last_name: lastName } = val;
+        const { app_user_guid: appUserGuid, auth_user_guid: authUserGuid } = val;
 
         const displayName = `${lastName}, ${firstName} `;
         const officerInitials = lastName?.substring(0, 1) + firstName?.substring(0, 1);
@@ -169,9 +164,9 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
           <Modal.Title as="h3">{title}</Modal.Title>
         </Modal.Header>
       )}
-      <Modal.Body>
+      <Modal.Body className="pt-0 pb-0">
         <Card
-          className="comp-profile-card"
+          className="ps-0 comp-profile-card"
           style={{ marginBottom: "24px" }}
         >
           <div className="comp-profile-card-info">
@@ -198,7 +193,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
           style={{ marginBottom: "24px" }}
           id="assign_officer_modal_search"
         >
-          <h4 style={{ marginBottom: "8px", fontSize: "16px", fontWeight: 700 }}>Everyone</h4>
+          <h4 style={{ marginBottom: "8px", fontSize: "16px", fontWeight: 700 }}>All officers</h4>
           <div className="assign-officer-search-container">
             <div className="comp-search-input">
               <BsPerson className="icon" />
