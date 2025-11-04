@@ -7,10 +7,7 @@ import { CaseFile, Inspection } from "@/generated/graphql";
 import { InspectionTabs } from "@/app/components/containers/inspections/details/inspection-navigation";
 import InspectionSummary from "@/app/components/containers/inspections/details/inspection-summary";
 import InspectionParties from "@/app/components/containers/inspections/details/inspection-parties";
-import { InspectionContraventions } from "@/app/components/containers/inspections/details/inspection-contraventions";
-import { InspectionContinuation } from "@/app/components/containers/inspections/details/inspection-continuation";
 import { InspectionAdministration } from "@/app/components/containers/inspections/details/inspection-administration";
-import { InspectionDocumentation } from "@/app/components/containers/inspections/details/inspection-documentation";
 
 const GET_INSPECTION = gql`
   query GetInspection($inspectionGuid: String!) {
