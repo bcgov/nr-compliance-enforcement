@@ -368,7 +368,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         )}
 
         {showHWCRFilters && activeFilters.showOutcomeAnimalFilter && (
-          <div id="comp-filter-status-id">
+          <div id="comp-filter-outcome-id">
             <label htmlFor="status-select-id">Outcome by animal</label>
             <div className="filter-select-padding">
               <CompSelect
@@ -395,7 +395,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           activeFilters.showOutcomeActionedByFilter &&
           outcomeAnimal &&
           OUTCOMES_REQUIRING_ACTIONED_BY.includes(outcomeAnimal.value) && (
-            <div id="comp-filter-status-id">
+            <div id="comp-filter-outcome-actioned-id">
               <label htmlFor="outcome-actioned-by-id">Outcome actioned by</label>
               <div className="filter-select-padding">
                 <CompSelect
@@ -429,7 +429,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         )}
 
         {showHWCRFilters && (
-          <div id="comp-filter-status-id">
+          <div id="comp-filter-equipment-status-id">
             <label htmlFor="status-select-id">Equipment status</label>
             <div className="filter-select-padding">
               <CompSelect
@@ -457,7 +457,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
         )}
 
         {showHWCRFilters && (
-          <div id="comp-filter-status-id">
+          <div id="comp-filter-equipment-type-id">
             <label htmlFor="status-select-id">Equipment type(s)</label>
             <div className="filter-select-padding">
               <ValidationMultiSelect

@@ -47,7 +47,7 @@ export const InspectionEditHeader: FC<InspectionEditHeaderProps> = ({
           <div className="comp-details-title-info">
             <h1 className="comp-box-complaint-id">
               {isEditMode && inspectionGuid ? (
-                <span>Inspectoin #{inspectionGuid}</span>
+                <span>Inspection #{inspectionGuid}</span>
               ) : (
                 <span>{isEditMode ? "Edit inspection" : "Create inspection"} </span>
               )}

@@ -113,11 +113,6 @@ test-report.xml
 # Mac files
 *.DS_Store
 *.mp4
-frontend/cypress/screenshots/spec.cy.ts/template spec -- passes (failed).png
-frontend/cypress/screenshots/hwcr-details-edit.cy.ts/Complaint Edit Page spec - Edit View -- Navigate to the Complaint Edit page & change data, save, navigate to read-only, return to edit and reset data (failed).png
-frontend/cypress/screenshots/allegation-details-edit.cy.ts/Complaint Edit Page spec - Edit Allegation View -- Navigate to the Complaint Edit page & check inputs (failed).png
-frontend/cypress/screenshots/hwcr-details-edit.cy.ts/Complaint Edit Page spec - Edit View -- Navigate to the Complaint Edit page & check inputs (failed).png
-frontend/cypress/screenshots/hwcr-details-edit.cy.ts/Complaint Edit Page spec - Edit View -- it has a map on screen with a marker at the correct location (failed).png
 nr-compliance-enforcement.code-workspace
 
 # Terraform
