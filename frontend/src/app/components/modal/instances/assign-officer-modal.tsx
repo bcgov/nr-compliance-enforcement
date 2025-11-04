@@ -132,7 +132,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
           return (
             <ListGroupItem
               action
-              className={`${selectedAssignee === personId ? "comp-profile-card comp-profile-card-selected" : "comp-profile-card"}`}
+              className={`${selectedAssignee === personId ? "ps-0 comp-profile-card comp-profile-card-selected" : "ps-0 comp-profile-card"}`}
               key={personId}
               onClick={() => handleAssigneeClick(personId)}
             >
@@ -169,9 +169,9 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
           <Modal.Title as="h3">{title}</Modal.Title>
         </Modal.Header>
       )}
-      <Modal.Body>
+      <Modal.Body className="pt-0 pb-0">
         <Card
-          className="comp-profile-card"
+          className="ps-0 comp-profile-card"
           style={{ marginBottom: "24px" }}
         >
           <div className="comp-profile-card-info">
@@ -198,7 +198,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
           style={{ marginBottom: "24px" }}
           id="assign_officer_modal_search"
         >
-          <h4 style={{ marginBottom: "8px", fontSize: "16px", fontWeight: 700 }}>Everyone</h4>
+          <h4 style={{ marginBottom: "8px", fontSize: "16px", fontWeight: 700 }}>All officers</h4>
           <div className="assign-officer-search-container">
             <div className="comp-search-input">
               <BsPerson className="icon" />
