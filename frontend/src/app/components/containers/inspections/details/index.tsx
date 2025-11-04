@@ -1,4 +1,2 @@
-import { InspectionDetails } from "./inspection-details";
-import { InspectionHeader } from "./inspection-header";
-
-export { InspectionDetails, InspectionHeader };
+export { InspectionDetails } from "./inspection-details";
+export { InspectionHeader } from "./inspection-header";

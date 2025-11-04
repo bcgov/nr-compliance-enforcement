@@ -143,7 +143,7 @@ const InspectionEdit: FC = () => {
       };
     }
     return {
-      inspectionStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
+      inspectionStatus: statusOptions.find((opt) => opt.value === "OPEN")?.value,
       leadAgency: getUserAgency(),
       description: "",
       name: "",
