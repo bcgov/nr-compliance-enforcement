@@ -57,23 +57,12 @@ export class ComplaintUpdatesService {
       where: {
         complaint_identifier: id,
       },
-      relations: {
-        officer_guid: {
-          person_guid: true,
-        },
-      },
       select: {
         complaint_referral_guid: true,
         complaint_identifier: true,
         referred_by_agency_code_ref: true,
         referred_to_agency_code_ref: true,
-        officer_guid: {
-          officer_guid: true,
-          person_guid: {
-            last_name: true,
-            first_name: true,
-          },
-        },
+        app_user_guid_ref: true,
         referral_date: true,
         referral_reason: true,
       },

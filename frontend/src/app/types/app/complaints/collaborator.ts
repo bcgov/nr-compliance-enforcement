@@ -3,7 +3,7 @@ import { UUID } from "crypto";
 export interface Collaborator {
   personComplaintXrefGuid: UUID;
   complaintId: string;
-  personGuid: UUID;
+  appUserGuid: UUID;  // Renamed from personGuid
   authUserGuid: UUID;
   collaboratorAgency: string;
   firstName: string;

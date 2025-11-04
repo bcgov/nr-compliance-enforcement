@@ -6,5 +6,6 @@ import { PrismaModuleShared } from "../../prisma/shared/prisma.shared.module";
 @Module({
   imports: [PrismaModuleShared],
   providers: [CosGeoOrgUnitResolver, CosGeoOrgUnitService],
+  exports: [CosGeoOrgUnitService],
 })
 export class CosGeoOrgUnitModule {}

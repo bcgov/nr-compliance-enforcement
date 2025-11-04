@@ -12,6 +12,7 @@ import { getUserAgency } from "@/app/service/user-service";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { usePark } from "@/app/hooks/usePark";
+import { selectOfficers } from "@store/reducers/officer";
 
 type Props = {
   type: string;
@@ -22,6 +23,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
   const natureOfComplaints = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.NATURE_OF_COMPLAINT));
   const speciesCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.SPECIES));
+  const officers = useAppSelector(selectOfficers);
 
   const [isExpanded, setIsExpanded] = useState(false); // used to indicate if the row is in an expanded state or not (row is expanded/contracted when click)
   const [isRowHovered, setIsRowHovered] = useState(false); // we want to apply the hover highlighting to the parent row when the expanded child row is hovered over
@@ -159,7 +161,7 @@ export const WildlifeComplaintListItem: FC<Props> = ({ type, complaint }) => {
           className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          {getOfficerAssigned(complaint)}
+          {getOfficerAssigned(complaint, officers)}
         </td>
         <td className={`comp-cell-width-160 comp-cell-min-width-160 hwc-table-date-cell ${isExpandedClass}`}>
           {updatedOnDateTime}

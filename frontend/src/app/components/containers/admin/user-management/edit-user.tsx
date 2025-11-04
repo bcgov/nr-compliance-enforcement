@@ -16,7 +16,7 @@ import {
   clearNotification,
   getTokenProfile,
   openModal,
-  personGuid,
+  appUserGuid,
   selectNotification,
   setActiveTab,
   userId,
@@ -33,7 +33,7 @@ import { generateApiParameters, get, patch } from "@common/api";
 import config from "@/config";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
 import { AgencyType } from "@/app/types/app/agency-types";
-import { CssUser } from "@/app/types/person/person";
+import { CssUser } from "@/app/types/app/app_user/app_user";
 import { NewOfficer } from "@/app/types/person/new-officer";
 import { TOGGLE_DEACTIVATE } from "@/app/types/modal/modal-types";
 import "@assets/sass/user-management.scss";
@@ -64,7 +64,7 @@ export const EditUser: FC<EditUserProps> = ({
   const parkAreasList = useAppSelector(selectParkAreasDropdown);
   const availableOffices = useAppSelector(selectOffices);
   const adminIdirUsername = useAppSelector(userId);
-  const userPersonGuid = useAppSelector(personGuid);
+  const userAppUserGuid = useAppSelector(appUserGuid);
 
   const [officerError, setOfficerError] = useState<string>("");
   const [officeError, setOfficeError] = useState<string>("");
@@ -115,8 +115,8 @@ export const EditUser: FC<EditUserProps> = ({
 
   useEffect(() => {
     (async () => {
-      const getUserCurrentTeam = async (officerGuid: string) => {
-        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/current`, { officerGuid });
+      const getUserCurrentTeam = async (appUserGuid: string) => {
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/current`, { appUserGuid });
         const response: any = await get(dispatch, parameters);
         return response;
       };
@@ -136,7 +136,7 @@ export const EditUser: FC<EditUserProps> = ({
       if (hasCEEBRole) {
         currentAgency = mapValueToDropdownList(AgencyType.CEEB, agency);
 
-        const currentTeam = await getUserCurrentTeam(officerData.officer_guid);
+        const currentTeam = await getUserCurrentTeam(officerData.app_user_guid);
         if (currentTeam?.team_guid) {
           const currentTeamMapped = mapValueToDropdownList(currentTeam.team_guid.team_code.team_code, teams);
           setSelectedTeam(currentTeamMapped);
@@ -150,7 +150,10 @@ export const EditUser: FC<EditUserProps> = ({
         currentAgency = mapValueToDropdownList(AgencyType.COS, agency);
 
         if (officerData.office_guid) {
-          const currentOffice = mapValueToDropdownList(officerData.office_guid.office_guid, offices);
+          const officeGuid = typeof officerData.office_guid === 'string' 
+            ? officerData.office_guid 
+            : officerData.office_guid.office_guid;
+          const currentOffice = mapValueToDropdownList(officeGuid, offices);
           setSelectedOffice(currentOffice);
         }
 
@@ -182,8 +185,8 @@ export const EditUser: FC<EditUserProps> = ({
       setIdir(newUser.attributes.idir_username[0]);
       setEmail(newUser.email);
     } else if (officerData && !newUser) {
-      setLastName(officerData.person_guid.last_name);
-      setFirstName(officerData.person_guid.first_name);
+      setLastName(officerData.last_name);
+      setFirstName(officerData.first_name);
       setIdir(officerData.user_id);
     }
   }, [newUser, officerData]);
@@ -286,7 +289,7 @@ export const EditUser: FC<EditUserProps> = ({
           dispatch(getOfficers()); //refresh the officer list to get the latest changes
           ToggleSuccess("Officer updated successfully");
           //If current user edit their own account, refresh current user profile
-          if (officer.value === userPersonGuid) {
+          if (officer.value === userAppUserGuid) {
             dispatch(getTokenProfile());
           }
         } else {
@@ -314,16 +317,8 @@ export const EditUser: FC<EditUserProps> = ({
       office_guid: selectedOffice?.value ?? null,
       team_code: selectedTeam?.value ?? null,
       park_area_guid: selectedParkArea?.value ?? null,
-      person_guid: {
-        first_name: newUser.firstName,
-        middle_name_1: null,
-        middle_name_2: null,
-        last_name: newUser.lastName,
-        create_user_id: adminIdirUsername,
-        create_utc_timestamp: new Date(),
-        update_user_id: adminIdirUsername,
-        updateTimestamp: new Date(),
-      },
+      first_name: newUser.firstName,
+      last_name: newUser.lastName,
       roles: {
         user_roles: mapRoles,
         user_idir: newUser.username,
@@ -345,7 +340,7 @@ export const EditUser: FC<EditUserProps> = ({
         if (selectedRoles) {
           let res = await updateTeamRole(
             selectedUserIdir,
-            officerData?.officer_guid,
+            officerData?.app_user_guid,
             selectedUserAgency.value,
             selectedTeam?.value ?? null,
             mapRoles,
@@ -355,15 +350,15 @@ export const EditUser: FC<EditUserProps> = ({
         break;
       }
       case AgencyType.PARKS: {
-        const officer_guid = officerData?.officer_guid;
+        const app_user_guid = officerData?.app_user_guid;
         //Update park_area_guid
-        if (officer_guid) {
-          await dispatch(updateOfficerReducer(officer_guid, { park_area_guid: selectedParkArea?.value ?? null }));
+        if (app_user_guid) {
+          await dispatch(updateOfficerReducer(app_user_guid, { park_area_guid: selectedParkArea?.value ?? null }));
         }
         //Update roles
         let res = await updateTeamRole(
           selectedUserIdir,
-          officerData?.officer_guid,
+          officerData?.app_user_guid,
           selectedUserAgency?.value,
           null,
           mapRoles,
@@ -377,7 +372,7 @@ export const EditUser: FC<EditUserProps> = ({
         await dispatch(assignOfficerToOffice(officerId, officeId));
         let res = await updateTeamRole(
           selectedUserIdir,
-          officerData?.officer_guid,
+          officerData?.app_user_guid,
           selectedUserAgency?.value,
           null,
           mapRoles,
@@ -399,7 +394,7 @@ export const EditUser: FC<EditUserProps> = ({
             : "This user will lose access to the application until reactivated.",
           ok: officerData?.deactivate_ind ? "Yes, activate user" : "Yes, deactivate user",
           cancel: "Cancel",
-          officer_guid: officerData?.officer_guid,
+          app_user_guid: officerData?.app_user_guid,
           deactivate_ind: !officerData?.deactivate_ind,
           user_roles: officerData?.user_roles,
           auth_user_guid: officerData?.auth_user_guid,

@@ -1,9 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ComplaintStatusCode } from "../../../../v1/complaint_status_code/entities/complaint_status_code.entity";
-import { GeoOrganizationUnitCode } from "../../../../v1/geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { Point } from "geojson";
-import { CosGeoOrgUnit } from "../../../../v1/cos_geo_org_unit/entities/cos_geo_org_unit.entity";
-import { PersonComplaintXref } from "../../../../v1/person_complaint_xref/entities/person_complaint_xref.entity";
+import { AppUserComplaintXref } from "../../../../v1/app_user_complaint_xref/entities/app_user_complaint_xref.entity";
 import { ReportedByCode } from "../../../../v1/reported_by_code/entities/reported_by_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../../../../v1/comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 
@@ -36,19 +34,13 @@ export class UpdateComplaintDto {
     example: "DCC",
     description: "The geographical organization code of the organization that currently owns the complaint",
   })
-  geo_organization_unit_code: GeoOrganizationUnitCode;
+  geo_organization_unit_code: string;
 
   @ApiProperty({
-    example: "DCC",
-    description: "The geographical organization code of the organization that currently owns the complaint",
+    example: "Array of app user complaint cross references",
+    description: "The app users associated with this complaint",
   })
-  cos_geo_org_unit: CosGeoOrgUnit;
-
-  @ApiProperty({
-    example: "DCC",
-    description: "The geographical organization code of the organization that currently owns the complaint",
-  })
-  person_complaint_xref: PersonComplaintXref[];
+  app_user_complaint_xref: AppUserComplaintXref[];
 
   @ApiProperty({
     example: "Bear overturning garbage bins",

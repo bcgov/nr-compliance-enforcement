@@ -51,6 +51,6 @@ export class AppUserComplaintXref {
   ])
   app_user_complaint_xref_code: AppUserComplaintXrefCode;
 
-  @Column("uuid", { name: "app_user_guid" })
+  @Column("uuid", { name: "app_user_guid_ref" })
   app_user_guid: UUID;
 }

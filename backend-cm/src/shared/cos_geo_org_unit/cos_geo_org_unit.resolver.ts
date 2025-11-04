@@ -19,4 +19,22 @@ export class CosGeoOrgUnitResolver {
   ) {
     return this.cosGeoOrgUnitService.findAll(zoneCode, regionCode, distinctOfficeLocations);
   }
+
+  @Query("searchCosGeoOrgUnitsByNames")
+  @Roles(coreRoles)
+  searchByNames(
+    @Args("regionName") regionName?: string,
+    @Args("zoneName") zoneName?: string,
+    @Args("areaName") areaName?: string,
+    @Args("officeLocationName") officeLocationName?: string,
+    @Args("distinctOfficeLocations") distinctOfficeLocations?: boolean,
+  ) {
+    return this.cosGeoOrgUnitService.searchByNames(
+      regionName,
+      zoneName,
+      areaName,
+      officeLocationName,
+      distinctOfficeLocations,
+    );
+  }
 }

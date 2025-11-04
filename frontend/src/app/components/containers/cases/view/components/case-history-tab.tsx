@@ -5,7 +5,7 @@ import { CaseHistoryItem } from "./case-history-item";
 import { EventResult, Event, CaseFile, Inspection, Investigation } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
-import { Officer } from "@/app/types/person/person";
+import { AppUser } from "@/app/types/app/app_user/app_user";
 import Paginator from "@/app/components/common/paginator";
 import { formatDate } from "@/app/common/methods";
 import { Button } from "react-bootstrap";
@@ -141,7 +141,7 @@ export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
   const totalCount = data?.searchEvents?.pageInfo?.totalCount || 0;
 
   const allOfficers = useAppSelector(selectOfficers);
-  const [eventOfficers, setEventOfficers] = useState<Officer[]>([]);
+  const [eventOfficers, setEventOfficers] = useState<AppUser[]>([]);
   const [entityNames, setEntityNames] = useState<Map<string, string>>(new Map());
 
   const entityIds = useMemo(() => getEntityIdsFromEvents(events), [events]);
@@ -281,7 +281,7 @@ export const CaseHistoryTab: FC<CaseHistoryTabProps> = ({ caseIdentifier }) => {
                   <CaseHistoryItem
                     key={event.eventGuid}
                     event={event}
-                    officers={eventOfficers}
+                    appUsers={eventOfficers}
                     entityNames={entityNames}
                   />
                 ))}

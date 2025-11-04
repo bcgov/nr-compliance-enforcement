@@ -10,7 +10,7 @@ import {
   selectActiveComplaintCollaborators,
   selectComplaint,
 } from "@/app/store/reducers/complaints";
-import { personGuid } from "@/app/store/reducers/app";
+import { appUserGuid } from "@/app/store/reducers/app";
 
 export const Notes: FC = () => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
@@ -18,7 +18,7 @@ export const Notes: FC = () => {
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const notes = useAppSelector(selectNotes);
   const activeCollaborators = useAppSelector(selectActiveComplaintCollaborators);
-  const userPersonGuid = useAppSelector(personGuid);
+  const userGuid = useAppSelector(appUserGuid);
   const [userIsCollaborator, setUserIsCollaborator] = useState<boolean>(false);
   const complaint = useAppSelector(selectComplaint);
   const [status, setStatus] = useState("CLOSED");
@@ -38,8 +38,8 @@ export const Notes: FC = () => {
   }, [isInEdit.notes]);
 
   useEffect(() => {
-    setUserIsCollaborator(activeCollaborators.some((c) => c.personGuid === userPersonGuid));
-  }, [activeCollaborators, userPersonGuid]);
+    setUserIsCollaborator(activeCollaborators.some((c) => c.appUserGuid === userGuid));
+  }, [activeCollaborators, userGuid]);
 
   return (
     <section

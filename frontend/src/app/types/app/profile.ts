@@ -12,7 +12,7 @@ export default interface Profile {
   zone: string;
   zoneDescription: string;
   agency: string;
-  personGuid: string;
+  appUserGuid: string;
   comsEnrolledInd: boolean | null;
   parkAreaGuid: string | null;
 }

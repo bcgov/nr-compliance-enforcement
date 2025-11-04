@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import Option from "@apptypes/app/option";
 import { clearNotification, selectNotification } from "@store/reducers/app";
-import { CssUser } from "@apptypes/person/person";
+import { CssUser } from "@apptypes/app/app_user/app_user";
 import { SelectUser } from "@/app/components/containers/admin/user-management/select-user";
 import { EditUser } from "@/app/components/containers/admin/user-management/edit-user";
 import { AddUserSearch } from "@/app/components/containers/admin/user-management/add-user-search";

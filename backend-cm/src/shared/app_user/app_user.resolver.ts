@@ -23,8 +23,18 @@ export class AppUserResolver {
 
   @Query("appUser")
   @Roles(coreRoles)
-  findOne(@Args("userId") userId?: string, @Args("authUserGuid") authUserGuid?: string) {
-    return this.appUserService.findOne(userId, authUserGuid);
+  findOne(
+    @Args("appUserGuid") appUserGuid?: string,
+    @Args("userId") userId?: string,
+    @Args("authUserGuid") authUserGuid?: string,
+  ) {
+    return this.appUserService.findOne(userId, authUserGuid, appUserGuid);
+  }
+
+  @Query("searchAppUsers")
+  @Roles(coreRoles)
+  search(@Args("searchTerm") searchTerm: string) {
+    return this.appUserService.search(searchTerm);
   }
 
   @Mutation("createAppUser")

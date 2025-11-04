@@ -8,7 +8,7 @@ import { AllegationComplaint } from "../allegation_complaint/entities/allegation
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { Complaint } from "../complaint/entities/complaint.entity";
 import { REQUEST } from "@nestjs/core";
-import { getIdirFromRequest } from "../../common/get-idir-from-request";
+import { getIdirFromRequest, getUserAuthGuidFromRequest } from "../../common/get-idir-from-request";
 import { getAppUserByAuthUserGuid } from "../../external_api/shared_data";
 
 @Injectable({ scope: Scope.REQUEST })
@@ -193,13 +193,13 @@ export class LinkedComplaintXrefService {
     try {
       const idir = getIdirFromRequest(this.request);
 
-      const appUser = await getAppUserByAuthUserGuid(token, user.auth_user_guid);
+      const authUserGuid = getUserAuthGuidFromRequest(this.request);
+
+      const appUser = await getAppUserByAuthUserGuid(token, authUserGuid);
 
       if (!appUser) {
         throw new Error("App user not found");
       }
-
-      const person_guid = appUser.appUserGuid;
 
       const existingLink = await this.linkedComplaintXrefRepository.findOne({
         where: {
@@ -214,7 +214,7 @@ export class LinkedComplaintXrefService {
           existingLink.link_type = linkType;
           existingLink.update_user_id = idir;
           existingLink.update_utc_timestamp = new Date();
-          existingLink.person_guid = person_guid;
+          existingLink.app_user_guid = appUser.appUserGuid;
           return await this.linkedComplaintXrefRepository.save(existingLink);
         }
         return existingLink;
@@ -229,7 +229,7 @@ export class LinkedComplaintXrefService {
         create_utc_timestamp: new Date(),
         update_user_id: idir,
         update_utc_timestamp: new Date(),
-        person_guid: person_guid,
+        app_user_guid: appUser.appUserGuid,
       });
 
       return await this.linkedComplaintXrefRepository.save(newLink);

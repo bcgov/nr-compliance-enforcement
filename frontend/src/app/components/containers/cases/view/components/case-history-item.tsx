@@ -2,11 +2,11 @@ import { FC, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { formatTime } from "@/app/common/methods";
 import { Event } from "@/generated/graphql";
-import { Officer } from "@/app/types/person/person";
+import { AppUser } from "@/app/types/app/app_user/app_user";
 
 interface CaseHistoryItemProps {
   event: Event;
-  officers?: Officer[];
+  appUsers?: AppUser[];
   entityNames?: Map<string, string>;
 }
 
@@ -140,13 +140,13 @@ const getEventDescription = (event: Event, entityNames?: Map<string, string>): R
   return template ? template({ sourceId, targetId, complaintType, entityNames }) : `performed ${verb.toLowerCase()} action`;
 };
 
-export const CaseHistoryItem: FC<CaseHistoryItemProps> = ({ event, officers, entityNames }) => {
+export const CaseHistoryItem: FC<CaseHistoryItemProps> = ({ event, appUsers, entityNames }) => {
   const getActorName = () => {
     const actorId = event.actorId;
-    if (actorId && event.actorEntityTypeCode?.eventEntityTypeCode === "USER" && officers) {
-      const officer = officers.find((o) => o.auth_user_guid.toUpperCase().split("-").join("") === actorId);
+    if (actorId && event.actorEntityTypeCode?.eventEntityTypeCode === "USER" && appUsers) {
+      const officer = appUsers.find((o) => o.auth_user_guid.toUpperCase().split("-").join("") === actorId);
       if (officer) {
-        return `${officer.person_guid.last_name}, ${officer.person_guid.first_name} (${officer.agency_code?.shortDescription})`;
+        return `${officer.last_name}, ${officer.first_name} (${officer.agency_code?.shortDescription})`;
       }
     }
     return actorId;

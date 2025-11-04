@@ -296,9 +296,7 @@ export class AppUserComplaintXrefService {
     const currentUserId = getIdirFromRequest(this.request);
     const createAppUserComplaintXrefDto = {
       active_ind: true,
-      app_user_guid: {
-        app_user_guid: appUserGuid,
-      },
+      app_user_guid: appUserGuid,
       complaint_identifier: complaintIdentifier,
       app_user_complaint_xref_code: "COLLABORAT",
       create_user_id: currentUserId,

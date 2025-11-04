@@ -60,7 +60,7 @@ export class ComplaintReferralDto {
 
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-    description: "The app user who made the referral,
+    description: "The app user who made the referral",
   })
   public app_user_guid_ref: UUID;
 

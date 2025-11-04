@@ -6,7 +6,7 @@ import { CaseAction } from "@apptypes/outcomes/case-action";
 import { Badge, Button, Card, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { selectActiveComplaintCollaborators, selectComplaint } from "@/app/store/reducers/complaints";
 import { selectOfficers } from "@/app/store/reducers/officer";
-import { personGuid } from "@/app/store/reducers/app";
+import { appUserGuid } from "@/app/store/reducers/app";
 import UserService from "@/app/service/user-service";
 
 type props = {
@@ -19,7 +19,7 @@ type props = {
 
 const getActorDisplayName = (actor: string, officers: any) => {
   const officer = officers?.find((item: { auth_user_guid: string }) => item.auth_user_guid === actor);
-  return officer ? `${officer.person_guid.last_name}, ${officer.person_guid.first_name}` : "";
+  return officer ? `${officer.last_name}, ${officer.first_name}` : "";
 };
 
 const longNoteLength = 300;
@@ -27,14 +27,14 @@ const longNoteLength = 300;
 export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDelete, agencyCode }) => {
   const officers = useAppSelector(selectOfficers);
   const activeCollaborators = useAppSelector(selectActiveComplaintCollaborators);
-  const userPersonGuid = useAppSelector(personGuid);
+  const userGuid = useAppSelector(appUserGuid);
   const [userIsCollaborator, setUserIsCollaborator] = useState<boolean>(false);
   const complaint = useAppSelector(selectComplaint);
   const [status, setStatus] = useState("CLOSED");
 
   useEffect(() => {
-    setUserIsCollaborator(activeCollaborators.some((c) => c.personGuid === userPersonGuid));
-  }, [activeCollaborators, userPersonGuid]);
+    setUserIsCollaborator(activeCollaborators.some((c) => c.appUserGuid === userGuid));
+  }, [activeCollaborators, userGuid]);
 
   useEffect(() => {
     if (complaint) {

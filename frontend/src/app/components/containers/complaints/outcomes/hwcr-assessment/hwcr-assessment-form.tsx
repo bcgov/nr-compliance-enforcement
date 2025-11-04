@@ -40,7 +40,7 @@ import { OptionLabels } from "@constants/option-labels";
 import { HWCRAssessmentLinkComplaintSearch } from "./hwcr-assessment-link-complaint-search";
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
 import useValidateComplaint from "@hooks/validate-complaint";
-import { Officer } from "@/app/types/person/person";
+import { AppUser } from "@/app/types/app/app_user/app_user";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
 import KeyValuePair from "@/app/types/app/key-value-pair";
@@ -77,7 +77,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const [selectedAssessmentTypes, setSelectedAssessmentTypes] = useState<Option[]>([]);
   const [validateOnChange, setValidateOnChange] = useState<boolean>(false);
   const [selectedContacted, setSelectedContacted] = useState<string | null>("No");
-  const [selectedOfficerData, setSelectedOfficerData] = useState<Officer | null>();
+  const [selectedOfficerData, setSelectedOfficerData] = useState<AppUser | null>();
   const [selectedAttended, setSelectedAttended] = useState<string | null>("No");
   const [selectedLocation, setSelectedLocation] = useState<Option | null>(null);
   const [selectedConflictHistory, setSelectedConflictHistory] = useState<Option | null>(null);
@@ -242,13 +242,13 @@ export const HWCRAssessmentForm: FC<Props> = ({
 
     if (!selectedOfficer && assigned && officersInAgencyList) {
       const officerAssigned = officersInAgencyList
-        .filter((person: any) => {
-          const personGuid = person.person_guid?.person_guid ?? person.personGuid;
-          return personGuid === assigned;
+        .filter((appUser: any) => {
+          const appUserGuid = appUser.app_user_guid ?? appUser.appUserGuid;
+          return appUserGuid === assigned;
         })
         .map((item: any) => {
-          const firstName = item.person_guid?.first_name ?? item.firstName;
-          const lastName = item.person_guid?.last_name ?? item.lastName;
+          const firstName = item.first_name ?? item.firstName;
+          const lastName = item.last_name ?? item.lastName;
           const authUserGuid = item.auth_user_guid ?? item.authUserGuid;
           return { label: `${lastName}, ${firstName}`, value: authUserGuid } as Option;
         });
@@ -322,10 +322,10 @@ export const HWCRAssessmentForm: FC<Props> = ({
       if (
         selectedOfficer?.value &&
         !assigned &&
-        selectedOfficerData?.person_guid?.person_guid &&
+        selectedOfficerData?.app_user_guid &&
         (complaintData?.delegates.length === 0 || complaintData?.delegates?.every((delegate) => !delegate.isActive))
       ) {
-        dispatch(assignComplaintToOfficer(id, selectedOfficerData?.person_guid?.person_guid));
+        dispatch(assignComplaintToOfficer(id, selectedOfficerData?.app_user_guid));
       }
       handleSave();
     } else {

@@ -12,7 +12,7 @@ import { getRelatedData, selectComplaint } from "@store/reducers/complaints";
 import { COMPLAINT_TYPE_AGENCY_MAPPING, COMPLAINT_TYPE_EXTERNAL_AGENCY_MAPPING } from "@apptypes/app/complaint-types";
 import Option from "@apptypes/app/option";
 import { getComplaintById, createComplaintReferral } from "@/app/store/reducers/complaints";
-import { Officer } from "@/app/types/person/person";
+import { AppUser } from "@/app/types/app/app_user/app_user";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { isValidEmail } from "@/app/common/validate-email";
@@ -157,7 +157,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
   const handleReferComplaint = async () => {
     setIsReferDisabled(false);
     let hasError = false;
-    const officer = officers?.find((officer: Officer) => officer.auth_user_guid === selectedOfficer?.value);
+    const officer = officers?.find((officer: AppUser) => officer.auth_user_guid === selectedOfficer?.value);
     const complaintUrl = window.location.href;
     if (!selectedAgency) {
       setSelectedAgencyError("Please select a new lead agency");
@@ -198,7 +198,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
           currentDate,
           complaintData?.ownedBy ?? "",
           selectedAgency?.value ?? "",
-          officer?.officer_guid ?? "",
+          officer?.app_user_guid ?? "",
           referralReason,
           complaint_type,
           complaintData?.reportedOn as Date,
@@ -214,7 +214,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
 
   useEffect(() => {
     const assignableCurrentOfficer = assignableOfficers.find(
-      (officer) => officer.value === currentOfficer?.authorizedUserId,
+      (officer) => officer.value === currentOfficer?.app_user_guid,
     );
     if (assignableCurrentOfficer) {
       setSelectedOfficer(assignableCurrentOfficer);

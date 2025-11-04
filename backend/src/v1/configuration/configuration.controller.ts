@@ -32,10 +32,14 @@ export class ConfigurationController {
 
       //If configuration is code table version, call another case managment api
       if (configurationCode === "CDTABLEVER") {
+        this.logger.error(`Fetching CDTABLEVER from Case Management GraphQL API`);
         const { data } = await get(token, {
           query:
             '{configurationCodes (configurationCode: "CDTABLEVER") {configurationCode configurationValue  activeIndicator}}',
         });
+
+        this.logger.error(`GraphQL response data: ${JSON.stringify(data)}`);
+
         let caseData = {};
         let complaintData = {};
         if (data) {
@@ -52,12 +56,23 @@ export class ConfigurationController {
             activeInd: result[0].activeInd,
           };
         }
+
+        this.logger.error(
+          `Returning combined data: ${JSON.stringify({
+            complaintManagement: complaintData,
+            caseManagement: caseData,
+          })}`,
+        );
         return { complaintManagement: complaintData, caseManagement: caseData };
       }
 
       return result;
     } catch (err) {
-      this.logger.error(`Error calling configurationCode ${configurationCode}`, err);
+      this.logger.error(
+        `Error calling configurationCode ${configurationCode}: ${err?.message || "Unknown error"}`,
+        err?.stack || err,
+      );
+      throw err;
     }
   }
 }

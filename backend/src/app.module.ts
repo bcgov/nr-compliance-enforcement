@@ -51,6 +51,8 @@ import { ChesModule } from "./external_api/ches/ches.module";
 import { EmailReferenceModule } from "./v1/email_reference/email_reference.module";
 import { EmailModule } from "./v1/email/email.module";
 import { ComplaintReferralEmailLogModule } from "./v1/complaint_referral_email_log/complaint_referral_email_log.module";
+import { OfficeModule } from "./v1/office/office.module";
+import { TeamModule } from "./v1/team/team.module";
 
 console.log("Var check - COMPLAINT_POSTGRESQL_HOST", process.env.COMPLAINT_POSTGRESQL_HOST);
 console.log("Var check - COMPLAINT_POSTGRESQL_DATABASE", process.env.COMPLAINT_POSTGRESQL_DATABASE);
@@ -128,6 +130,8 @@ if (process.env.COMPLAINT_POSTGRESQL_PASSWORD != null) {
     EmailReferenceModule,
     EmailModule,
     ComplaintReferralEmailLogModule,
+    OfficeModule,
+    TeamModule,
   ],
   controllers: [AppController],
   providers: [AppService, ComplaintSequenceResetScheduler],
@@ -145,7 +149,7 @@ export class AppModule {
       "v1/configuration",
       "v1/complaint/search", //Note: these all have to be explict paths of the @Public decorator will fail breaking the webEOC integration.
       "v1/complaint/map/search",
-      "v1/complaint/:complaint_id/add-collaborator/:person_guid",
+      "v1/complaint/:complaint_id/add-collaborator/:app_user_guid",
       "v1/document/export-complaint",
     );
   }

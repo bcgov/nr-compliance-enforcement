@@ -16,6 +16,7 @@ import {
   getCosGeoOrgUnits,
   createAppUserTeamXref,
   getTeams,
+  getOffices,
 } from "../../external_api/shared_data";
 
 @Injectable()
@@ -77,7 +78,7 @@ export class AppUserService {
       return null;
     }
 
-    return this.mapAppUserToDto(appUser);
+    return this.mapAppUserToDtoWithOffice(appUser, token);
   }
 
   async findByUserId(userid: string, token: string): Promise<any> {
@@ -87,7 +88,7 @@ export class AppUserService {
       return null;
     }
 
-    return this.mapAppUserToDto(appUser);
+    return this.mapAppUserToDtoWithOffice(appUser, token);
   }
 
   async findByAppUserGuid(app_user_guid: any, token: string): Promise<any> {
@@ -101,7 +102,9 @@ export class AppUserService {
       throw new Error("App user not found");
     }
 
-    return this.mapAppUserToDto(appUser);
+    const result = await this.mapAppUserToDtoWithOffice(appUser, token);
+
+    return result;
   }
 
   async create(appUser: CreateAppUserDto, token: string): Promise<any> {
@@ -215,6 +218,50 @@ export class AppUserService {
       this.logger.error("An error occurred while requesting COMS access.", error);
       throw error;
     }
+  }
+
+  private async mapAppUserToDtoWithOffice(appUser: any, token: string): Promise<any> {
+    const baseDto = this.mapAppUserToDto(appUser);
+
+    if (appUser.officeGuid) {
+      try {
+        const [offices, cosGeoOrgUnits] = await Promise.all([getOffices(token), getCosGeoOrgUnits(token)]);
+
+        const office = offices.find((o) => o.officeGuid === appUser.officeGuid);
+
+        if (office) {
+          const cosGeoOrgUnit = cosGeoOrgUnits.find(
+            (unit) => unit.officeLocationCode === office.geoOrganizationUnitCode,
+          );
+
+          if (cosGeoOrgUnit) {
+            baseDto.office_guid = {
+              office_guid: office.officeGuid,
+              geo_organization_unit_code: office.geoOrganizationUnitCode,
+              agency_code_ref: office.agencyCode,
+              cos_geo_org_unit: {
+                area_code: cosGeoOrgUnit.areaCode,
+                area_name: cosGeoOrgUnit.areaName,
+                office_location_code: cosGeoOrgUnit.officeLocationCode,
+                office_location_name: cosGeoOrgUnit.officeLocationName,
+                region_code: cosGeoOrgUnit.regionCode,
+                region_name: cosGeoOrgUnit.regionName,
+                zone_code: cosGeoOrgUnit.zoneCode,
+                zone_name: cosGeoOrgUnit.zoneName,
+              },
+            };
+          } else {
+            this.logger.warn(`CosGeoOrgUnit not found for office ${office.officeGuid}`);
+          }
+        } else {
+          this.logger.warn(`Office not found for officeGuid ${appUser.officeGuid}`);
+        }
+      } catch (error) {
+        this.logger.error(`Error fetching office data for app user: ${error}`);
+      }
+    }
+
+    return baseDto;
   }
 
   private mapAppUserToDto(appUser: any): any {

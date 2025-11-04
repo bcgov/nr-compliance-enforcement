@@ -34,8 +34,7 @@ export class TeamService {
     return team;
   }
 
-  // Not used?
-/*   async findByTeamCodeAndAgencyCode(teamCode: any, agencyCode: string, token: string) {
+  async findByTeamCodeAndAgencyCode(teamCode: any, agencyCode: string, token: string) {
     const teams = await getTeams(token, teamCode, agencyCode);
 
     if (teams.length === 0) {
@@ -43,7 +42,7 @@ export class TeamService {
     }
 
     return teams[0].teamGuid;
-  } */
+  }
 
   async findUserIdir(firstName: string, lastName: string) {
     const userIdir = await this.cssService.getUserIdirByName(firstName, lastName);

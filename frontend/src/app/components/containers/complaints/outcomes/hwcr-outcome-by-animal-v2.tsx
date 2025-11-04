@@ -144,13 +144,11 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
 
     if (delegates && from(delegates).any()) {
       const assigned = delegates.find((item) => item.type === "ASSIGNEE");
-      if (assigned && assigned?.person !== null) {
-        const {
-          person: { id },
-        } = assigned;
+      if (assigned && assigned?.appUserGuid !== null) {
+        const appUserGuid = assigned.appUserGuid;
 
         if (officersInAgencyList) {
-          const officerAssigned: any = officersInAgencyList.filter((officer) => officer.person_guid.person_guid === id);
+          const officerAssigned: any = officersInAgencyList.filter((officer) => officer.app_user_guid === appUserGuid);
           if (officerAssigned.length === 1) {
             setAssignedOfficer(officerAssigned[0].auth_user_guid);
           }

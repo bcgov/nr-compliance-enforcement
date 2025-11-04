@@ -25,7 +25,7 @@ import { RelatedDataDto } from "../../types/models/complaints/dtos/related-data"
 import { ACTION_TAKEN_ACTION_TYPES } from "../../types/constants";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 import { getAgenciesFromRoles } from "../../common/methods";
-import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
+import { AppUserComplaintXrefService } from "../app_user_complaint_xref/app_user_complaint_xref.service";
 import { UUID } from "crypto";
 import { SendCollaboratorEmalDto } from "../../v1/email/dto/send_collaborator_email.dto";
 import { User } from "../../auth/decorators/user.decorator";
@@ -41,14 +41,17 @@ export class ComplaintController {
     private readonly service: ComplaintService,
     private readonly stagingService: StagingComplaintService,
     private readonly linkedComplaintXrefService: LinkedComplaintXrefService,
-    private readonly personComplaintXrefService: PersonComplaintXrefService,
+    private readonly appUserComplaintXrefService: AppUserComplaintXrefService,
   ) {}
   private readonly logger = new Logger(ComplaintController.name);
 
   @Get("/sector-complaints-by-ids")
   @Roles(coreRoles)
-  async findSectorComplaintsByIds(@Query("ids") complaintIds: string[]): Promise<SectorComplaintDto[]> {
-    return await this.service.getSectorComplaintsByIds(complaintIds);
+  async findSectorComplaintsByIds(
+    @Query("ids") complaintIds: string[],
+    @Token() token: string,
+  ): Promise<SectorComplaintDto[]> {
+    return await this.service.getSectorComplaintsByIds(complaintIds, token);
   }
 
   @Get(":complaintType")
@@ -135,8 +138,9 @@ export class ComplaintController {
     @Param("id") id: string,
     @Request() req,
     @Response() res,
+    @Token() token: string,
   ): Promise<ComplaintDtoAlias> {
-    const result = (await this.service.findById(id, complaintType, req)) as ComplaintDtoAlias;
+    const result = (await this.service.findById(id, complaintType, req, token)) as ComplaintDtoAlias;
     if (!result) {
       return res.status(401).send({ message: "Unauthorized" });
     }
@@ -219,18 +223,18 @@ export class ComplaintController {
   }
 
   // Collaborator routes
-  @Post("/:complaint_id/add-collaborator/:person_guid")
+  @Post("/:complaint_id/add-collaborator/:app_user_guid")
   @Roles(coreRoles)
   async addCollaborator(
     @Param("complaint_id") complaintId: string,
-    @Param("person_guid") personGuid: string,
+    @Param("app_user_guid") appUserGuid: string,
     @Body() sendCollaboratorEmailDto: SendCollaboratorEmalDto,
     @User() user,
     @Token() token,
   ) {
-    return await this.personComplaintXrefService.addCollaboratorToComplaint(
+    return await this.appUserComplaintXrefService.addCollaboratorToComplaint(
       complaintId,
-      personGuid,
+      appUserGuid,
       sendCollaboratorEmailDto,
       user,
       token,
@@ -243,13 +247,13 @@ export class ComplaintController {
     @Param("complaint_id") complaintId: string,
     @Param("person_complaint_xref_guid") personComplaintXrefGuid: UUID,
   ) {
-    return await this.personComplaintXrefService.removeCollaboratorFromComplaint(complaintId, personComplaintXrefGuid);
+    return await this.appUserComplaintXrefService.removeCollaboratorFromComplaint(complaintId, personComplaintXrefGuid);
   }
 
   @Get("/:complaint_id/collaborators")
   @Roles(coreRoles) // Might want to expose this to others in the future instead of just making it coupled to HWCRs
-  async getComplaintCollaborators(@Param("complaint_id") complaintId: string) {
-    return await this.personComplaintXrefService.getCollaborators(complaintId);
+  async getComplaintCollaborators(@Param("complaint_id") complaintId: string, @Token() token: string) {
+    return await this.appUserComplaintXrefService.getCollaborators(complaintId, token);
   }
   // End of Collaborator routes
 

@@ -4,7 +4,13 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, In, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { caseFileQueryFields, get } from "../../external_api/shared_data";
+import {
+  caseFileQueryFields,
+  get,
+  getCosGeoOrgUnits,
+  searchCosGeoOrgUnitsByNames,
+  getGeoOrganizationUnitCodes,
+} from "../../external_api/shared_data";
 import Supercluster, { PointFeature } from "supercluster";
 import { GeoJsonProperties } from "geojson";
 
@@ -79,7 +85,7 @@ import {
   getOffices,
   getOfficeByGuid,
   getOfficeByGeoCode,
-  getCosGeoOrgUnits,
+  searchAppUsers,
 } from "../../external_api/shared_data";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
@@ -176,19 +182,70 @@ export class ComplaintService {
       case "hwcr_complaint_nature_code":
         return "wildlife";
       case "last_name":
-        return "person";
+        // TODO: Sort by name via GraphQL API somehow or remove name sort
+        this.logger.warn("Sorting by last_name is no longer supported. Falling back to update_utc_timestamp.");
+        return "complaint";
       case "gir_type_code":
         return "general";
       case "violation_code":
       case "in_progress_ind":
         return "allegation";
       case "area_name":
-        return "cos_organization";
+        // Since this column exists in the shared schema, sort is handled in the search method.
+        return "complaint";
       case "complaint_identifier":
       default:
         return "complaint";
     }
   };
+
+  // Fetches geo org units from GraphQL and returns a map of areaCode sorted by area_name
+  private async getAreaNameSortMap(token: string): Promise<Map<string, number>> {
+    try {
+      const cosGeoOrgUnits = await getCosGeoOrgUnits(token);
+
+      const sorted = [...cosGeoOrgUnits].sort((a, b) => {
+        const areaA = (a.areaName || "").toLowerCase();
+        const areaB = (b.areaName || "").toLowerCase();
+        return areaA.localeCompare(areaB);
+      });
+
+      const sortMap = new Map<string, number>();
+      sorted.forEach((unit, index) => {
+        if (unit.areaCode) {
+          sortMap.set(unit.areaCode, index);
+        }
+      });
+
+      return sortMap;
+    } catch (error) {
+      this.logger.error(`Error building area name sort map: ${error}`);
+      return new Map();
+    }
+  }
+
+  // Applies area_name sorting to a query builder using a CASE statement
+  private applyAreaNameSort(
+    builder: SelectQueryBuilder<any>,
+    sortMap: Map<string, number>,
+    orderBy: "ASC" | "DESC",
+  ): void {
+    if (sortMap.size === 0) {
+      builder.orderBy("complaint.complaint_identifier", orderBy);
+      return;
+    }
+
+    let caseStatement = "(CASE complaint.geo_organization_unit_code ";
+
+    sortMap.forEach((position, areaCode) => {
+      caseStatement += `WHEN '${areaCode.replace(/'/g, "''")}' THEN ${position} `;
+    });
+    caseStatement += "ELSE 9999 END)";
+
+    builder.addSelect(caseStatement, "area_sort_order");
+    builder.orderBy("area_sort_order", orderBy);
+    builder.addOrderBy("complaint.incident_reported_utc_timestmp", "DESC");
+  }
 
   private readonly _generateMapQueryBuilder = (
     type: COMPLAINT_TYPE,
@@ -268,9 +325,6 @@ export class ComplaintService {
       .leftJoin("delegate.app_user_complaint_xref_code", "delegate_code")
       .leftJoin("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
       .leftJoin("method_xref.complaint_method_received_code", "method_code");
-    if (includeCosOrganization) {
-      builder.leftJoin("complaint.cos_geo_org_unit", "cos_organization");
-    }
     return builder;
   };
 
@@ -376,7 +430,6 @@ export class ComplaintService {
       .leftJoin("complaint.action_taken", "action_taken")
       .addSelect(["action_taken.action_details_txt", "action_taken.complaint_identifier"])
       .leftJoinAndSelect("complaint.linked_complaint_xref", "linked_complaint")
-      .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
       .leftJoinAndSelect("complaint.app_user_complaint_xref", "delegate", "delegate.active_ind = true")
       .leftJoinAndSelect("delegate.app_user_complaint_xref_code", "delegate_code")
       .leftJoinAndSelect("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
@@ -384,7 +437,7 @@ export class ComplaintService {
     return builder;
   };
 
-  private _applyFilters(
+  private async _applyFilters(
     builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     {
       agency,
@@ -404,7 +457,8 @@ export class ComplaintService {
       complaintMethod,
     }: ComplaintFilterParameters,
     complaintType: COMPLAINT_TYPE,
-  ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> {
+    token: string,
+  ): Promise<SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>> {
     if (agency) {
       builder.andWhere("complaint.owned_by_agency_code_ref = :Agency", {
         Agency: agency,
@@ -417,22 +471,35 @@ export class ComplaintService {
       });
     }
 
-    if (community) {
-      builder.andWhere("cos_organization.area_code = :Community", {
-        Community: community,
-      });
-    }
+    if (community || zone || region) {
+      try {
+        // Fetch geo organization unit codes for zone/region/community filtering from GraphQL
+        const cosGeoOrgUnits = await getCosGeoOrgUnits(token, zone, region);
 
-    if (zone) {
-      builder.andWhere("cos_organization.zone_code = :Zone", {
-        Zone: zone,
-      });
-    }
+        if (cosGeoOrgUnits && cosGeoOrgUnits.length > 0) {
+          let filteredUnits = cosGeoOrgUnits;
 
-    if (region) {
-      builder.andWhere("cos_organization.region_code = :Region", {
-        Region: region,
-      });
+          if (community) {
+            filteredUnits = filteredUnits.filter((unit) => unit.areaCode === community);
+          }
+
+          if (zone) {
+            filteredUnits = filteredUnits.filter((unit) => unit.zoneCode === zone);
+          }
+
+          if (region) {
+            filteredUnits = filteredUnits.filter((unit) => unit.regionCode === region);
+          }
+
+          const geoCodes = [...new Set(filteredUnits.map((unit) => unit.areaCode))];
+          builder.andWhere("complaint.geo_organization_unit_code IN (:...geoCodes)", { geoCodes });
+        } else {
+          this.logger.error(`No geo organization units found for filtering ${zone} ${region} ${community}`);
+          builder.andWhere("1 = 0"); // no results
+        }
+      } catch (error) {
+        this.logger.error(`Error fetching geo organization units for filtering: ${error}`);
+      }
     }
 
     if (park) {
@@ -521,23 +588,58 @@ export class ComplaintService {
     token?: string,
   ): Promise<SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>> {
     let caseSearchData = [];
-    if (token && (complaintType === "ERS" || complaintType === "HWCR")) {
-      // Search CM for any case files that may match based on authorization id
-      const { data, errors } = await get(token, {
-        query: `{getComplaintOutcomesBySearchString (complaintType: "${complaintType}" ,searchString: "${query}")
-        {
-          complaintId,
-          complaintOutcomeGuid
-        }
-      }`,
-      });
+    let orgGeoCodes: string[] = [];
+    let appUserGuids: string[] = [];
 
-      if (errors) {
-        this.logger.error("GraphQL errors:", errors);
-        throw new Error("GraphQL errors occurred");
+    // Search for organizations via GraphQL
+    if (token) {
+      try {
+        const orgUnits = await searchCosGeoOrgUnitsByNames(
+          token,
+          query, // zone
+          query, // region
+          query, // area
+          query, // office
+          true,
+        );
+
+        if (orgUnits && orgUnits.length > 0) {
+          orgGeoCodes = [...new Set(orgUnits.map((unit: any) => unit.areaCode))].filter(
+            (code): code is string => typeof code === "string",
+          );
+        }
+      } catch (error) {
+        this.logger.error(`Error searching organization names: ${error}`);
       }
 
-      caseSearchData = data.getComplaintOutcomesBySearchString;
+      // Search GraphQL for app users by name
+      try {
+        const matchingUsers = await searchAppUsers(token, query);
+        if (matchingUsers && matchingUsers.length > 0) {
+          appUserGuids = matchingUsers.map((user: any) => user.appUserGuid);
+        }
+      } catch (error) {
+        this.logger.error(`Error searching app_users by name: ${error}`);
+      }
+
+      // Search CM for any case files that may match based on authorization id
+      if (complaintType === "ERS" || complaintType === "HWCR") {
+        const { data, errors } = await get(token, {
+          query: `{getComplaintOutcomesBySearchString (complaintType: "${complaintType}" ,searchString: "${query}")
+          {
+            complaintId,
+            complaintOutcomeGuid
+          }
+        }`,
+        });
+
+        if (errors) {
+          this.logger.error("GraphQL errors:", errors);
+          throw new Error("GraphQL errors occurred");
+        }
+
+        caseSearchData = data.getComplaintOutcomesBySearchString;
+      }
     }
 
     builder.andWhere(
@@ -590,18 +692,10 @@ export class ComplaintService {
           query: `%${query}%`,
         });
 
-        qb.orWhere("cos_organization.region_name ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("cos_organization.area_name ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("cos_organization.zone_name ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("cos_organization.offloc_name ILIKE :query", {
-          query: `%${query}%`,
-        });
+        // Filter by organization codes from search results
+        if (orgGeoCodes.length > 0) {
+          qb.orWhere("complaint.geo_organization_unit_code IN (:...orgGeoCodes)", { orgGeoCodes });
+        }
 
         switch (complaintType) {
           case "ERS": {
@@ -661,12 +755,11 @@ export class ComplaintService {
           });
         }
 
-        qb.orWhere("person.first_name ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("person.last_name ILIKE :query", {
-          query: `%${query}%`,
-        });
+        // Filter complaints by app_users found in name search
+        if (appUserGuids.length > 0) {
+          qb.orWhere("delegate.app_user_guid_ref IN (:...appUserGuids)", { appUserGuids });
+        }
+
         qb.orWhere("complaint_update.upd_detail_text ILIKE :query", {
           query: `%${query}%`,
         });
@@ -702,13 +795,21 @@ export class ComplaintService {
       }
     }
 
-    builder
-      .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
-      .where("area_code.zone_code = :zone", { zone })
-      .andWhere("complaint.complaint_status_code = :status", {
-        status: "OPEN",
-      })
-      .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    // Get area codes for the zone from GraphQL
+    try {
+      const cosGeoOrgUnits = await getCosGeoOrgUnits(token, zone);
+      const geoCodes = [...new Set(cosGeoOrgUnits.map((unit: any) => unit.areaCode))];
+
+      builder
+        .where("complaint.geo_organization_unit_code IN (:...geoCodes)", { geoCodes })
+        .andWhere("complaint.complaint_status_code = :status", {
+          status: "OPEN",
+        })
+        .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    } catch (error) {
+      this.logger.error(`Error fetching area codes for zone ${zone}: ${error}`);
+      throw error;
+    }
 
     const result = await builder.getCount();
 
@@ -739,13 +840,23 @@ export class ComplaintService {
       }
     }
 
-    builder
-      .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
-      .where("area_code.offloc_code = :office", { office })
-      .andWhere("complaint.complaint_status_code = :status", {
-        status: "OPEN",
-      })
-      .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    // Get area codes for the office location from GraphQL
+    try {
+      const cosGeoOrgUnits = await getCosGeoOrgUnits(token);
+      const matchingUnits = cosGeoOrgUnits.filter((unit: any) => unit.officeLocationCode === office);
+
+      const geoCodes = [...new Set(matchingUnits.map((unit: any) => unit.areaCode))];
+
+      builder
+        .where("complaint.geo_organization_unit_code IN (:...geoCodes)", { geoCodes })
+        .andWhere("complaint.complaint_status_code = :status", {
+          status: "OPEN",
+        })
+        .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    } catch (error) {
+      this.logger.error(`Error fetching area codes for office ${office}: ${error}`);
+      throw error;
+    }
 
     return await builder.getCount();
   };
@@ -774,18 +885,26 @@ export class ComplaintService {
       }
     }
 
-    builder
-      .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
-      .innerJoinAndSelect(
-        "complaint.app_user_complaint_xref",
-        "app_user_complaint_xref",
-        "app_user_complaint_xref.active_ind = true",
-      )
-      .where("area_code.zone_code = :zone", { zone })
-      .andWhere("complaint.complaint_status_code = :status", {
-        status: "OPEN",
-      })
-      .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    // Get area codes for the zone from GraphQL
+    try {
+      const cosGeoOrgUnits = await getCosGeoOrgUnits(token, zone);
+      const geoCodes = [...new Set(cosGeoOrgUnits.map((unit: any) => unit.areaCode))];
+
+      builder
+        .innerJoinAndSelect(
+          "complaint.app_user_complaint_xref",
+          "app_user_complaint_xref",
+          "app_user_complaint_xref.active_ind = true",
+        )
+        .where("complaint.geo_organization_unit_code IN (:...geoCodes)", { geoCodes })
+        .andWhere("complaint.complaint_status_code = :status", {
+          status: "OPEN",
+        })
+        .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    } catch (error) {
+      this.logger.error(`Error fetching area codes for zone ${zone}: ${error}`);
+      throw error;
+    }
 
     const result = await builder.getCount();
 
@@ -816,16 +935,26 @@ export class ComplaintService {
       }
     }
 
-    builder
-      .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
-      .innerJoinAndSelect("complaint.app_user_complaint_xref", "app_user_xref")
-      .where("area_code.offloc_code = :office", { office })
-      .andWhere("complaint.complaint_status_code = :status", {
-        status: "OPEN",
-      })
-      .andWhere("app_user_xref.active_ind = true")
-      .andWhere("app_user_xref.app_user_complaint_xref_code = :assignee", { assignee: "ASSIGNEE" })
-      .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    // Get area codes for the office location from GraphQL
+    try {
+      const cosGeoOrgUnits = await getCosGeoOrgUnits(token);
+      const matchingUnits = cosGeoOrgUnits.filter((unit: any) => unit.officeLocationCode === office);
+
+      const geoCodes = [...new Set(matchingUnits.map((unit: any) => unit.areaCode))];
+
+      builder
+        .innerJoinAndSelect("complaint.app_user_complaint_xref", "app_user_xref")
+        .where("complaint.geo_organization_unit_code IN (:...geoCodes)", { geoCodes })
+        .andWhere("complaint.complaint_status_code = :status", {
+          status: "OPEN",
+        })
+        .andWhere("app_user_xref.active_ind = true")
+        .andWhere("app_user_xref.app_user_complaint_xref_code = :assignee", { assignee: "ASSIGNEE" })
+        .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    } catch (error) {
+      this.logger.error(`Error fetching area codes for office ${office}: ${error}`);
+      throw error;
+    }
 
     const result = await builder.getCount();
 
@@ -896,7 +1025,6 @@ export class ComplaintService {
       }
 
       builder
-        .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
         .leftJoinAndSelect("complaint.app_user_complaint_xref", "app_user_complaint_xref")
         .where("app_user_complaint_xref.active_ind = true")
         .andWhere("app_user_complaint_xref.app_user_complaint_xref_code = :assignee", { assignee: "ASSIGNEE" })
@@ -1096,6 +1224,7 @@ export class ComplaintService {
     id: string,
     complaintType?: COMPLAINT_TYPE,
     req?: any,
+    token?: string,
   ): Promise<
     ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto | SectorComplaintDto
   > => {
@@ -1121,7 +1250,6 @@ export class ComplaintService {
           ])
           .leftJoin("complaint.reported_by_code", "reported_by")
           .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
-          .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
           .leftJoinAndSelect("complaint.app_user_complaint_xref", "delegate", "delegate.active_ind = true")
           .leftJoinAndSelect("delegate.app_user_complaint_xref_code", "delegate_code")
           .addSelect(["delegate.app_user_guid"])
@@ -1140,18 +1268,22 @@ export class ComplaintService {
               throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
             }
           }
-          return this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
+          const complaint = this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
             result as AllegationComplaint,
             "AllegationComplaint",
             "AllegationComplaintDto",
           );
+          await this.setOrganization([complaint], token);
+          return complaint;
         }
         case "GIR": {
-          return this.mapper.map<GirComplaint, GeneralIncidentComplaintDto>(
+          const complaint = this.mapper.map<GirComplaint, GeneralIncidentComplaintDto>(
             result as GirComplaint,
             "GirComplaint",
             "GeneralIncidentComplaintDto",
           );
+          await this.setOrganization([complaint], token);
+          return complaint;
         }
         case "HWCR": {
           const hwcr = this.mapper.map<HwcrComplaint, WildlifeComplaintDto>(
@@ -1159,6 +1291,7 @@ export class ComplaintService {
             "HwcrComplaint",
             "WildlifeComplaintDto",
           );
+          await this.setOrganization([hwcr], token);
           return hwcr;
         }
         case "SECTOR": {
@@ -1168,10 +1301,13 @@ export class ComplaintService {
             "SectorComplaintDto",
           );
           await this.setSectorComplaintIssueType([sector]);
+          await this.setOrganization([sector], token);
           return sector;
         }
         default: {
-          return this.mapper.map<Complaint, ComplaintDto>(result as Complaint, "Complaint", "ComplaintDto");
+          const complaint = this.mapper.map<Complaint, ComplaintDto>(result as Complaint, "Complaint", "ComplaintDto");
+          await this.setOrganization([complaint], token);
+          return complaint;
         }
       }
     } catch (error) {
@@ -1179,7 +1315,7 @@ export class ComplaintService {
     }
   };
 
-  getSectorComplaintsByIds = async (ids: string[]): Promise<SectorComplaintDto[]> => {
+  getSectorComplaintsByIds = async (ids: string[], token: string): Promise<SectorComplaintDto[]> => {
     let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
 
     try {
@@ -1193,6 +1329,7 @@ export class ComplaintService {
         "SectorComplaintDto",
       );
       await this.setSectorComplaintIssueType(sectorComplaints);
+      await this.setOrganization(sectorComplaints, token);
       return sectorComplaints;
     } catch (error) {
       this.logger.error(error);
@@ -1278,7 +1415,7 @@ export class ComplaintService {
 
       //-- apply filters if used
       if (Object.keys(filters).length !== 0) {
-        builder = this._applyFilters(builder, filters as ComplaintFilterParameters, filterComplaintType);
+        builder = await this._applyFilters(builder, filters as ComplaintFilterParameters, filterComplaintType, token);
       }
       builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
@@ -1335,12 +1472,18 @@ export class ComplaintService {
 
       //-- apply sort if provided
       if (sortBy && orderBy) {
-        builder
-          .orderBy(sortString, orderBy, "NULLS LAST")
-          .addOrderBy(
-            "complaint.incident_reported_utc_timestmp",
-            sortBy === "incident_reported_utc_timestmp" ? orderBy : "DESC",
-          );
+        // Special handling for area_name sort since it's source is the GraphQL API
+        if (sortBy === "area_name") {
+          const areaSortMap = await this.getAreaNameSortMap(token);
+          this.applyAreaNameSort(builder, areaSortMap, orderBy);
+        } else {
+          builder
+            .orderBy(sortString, orderBy, "NULLS LAST")
+            .addOrderBy(
+              "complaint.incident_reported_utc_timestmp",
+              sortBy === "incident_reported_utc_timestmp" ? orderBy : "DESC",
+            );
+        }
       }
 
       //-- search and count
@@ -1380,6 +1523,7 @@ export class ComplaintService {
             }
           });
 
+          await this.setOrganization(items, token);
           results.complaints = items;
           break;
         }
@@ -1389,6 +1533,7 @@ export class ComplaintService {
             "GirComplaint",
             "GeneralIncidentComplaintDto",
           );
+          await this.setOrganization(items, token);
           results.complaints = items;
           break;
         }
@@ -1399,6 +1544,7 @@ export class ComplaintService {
             "WildlifeComplaintDto",
           );
 
+          await this.setOrganization(items, token);
           results.complaints = items;
           break;
         }
@@ -1431,6 +1577,7 @@ export class ComplaintService {
             "SectorComplaintDto",
           );
           await this.setSectorComplaintIssueType(items);
+          await this.setOrganization(items, token);
           results.complaints = items;
           break;
         }
@@ -1499,6 +1646,56 @@ export class ComplaintService {
     }
   };
 
+  setOrganization = async <
+    T extends {
+      organization?: { area: string; areaName: string; zone: string; region: string; officeLocation?: string };
+    },
+  >(
+    complaints: T[],
+    token: string,
+  ): Promise<void> => {
+    try {
+      const areaCodes = [
+        ...new Set(complaints.map((c) => c.organization?.area).filter((area) => area && area.trim() !== "")),
+      ];
+
+      // Get org data from GraphQL
+      const orgUnits = await getCosGeoOrgUnits(token);
+
+      // Create a map of area code to org data
+      const orgDataMap = new Map();
+
+      areaCodes.forEach((areaCode) => {
+        const orgUnit = orgUnits.find((unit: any) => unit.areaCode === areaCode);
+        if (orgUnit) {
+          orgDataMap.set(areaCode, {
+            region: orgUnit.regionCode || "",
+            area: orgUnit.areaCode || "",
+            areaName: orgUnit.areaName || "",
+            officeLocation: orgUnit.officeLocationCode || "",
+            zone: orgUnit.zoneCode || "",
+          });
+        }
+      });
+
+      // Add organization data to each complaint based on area code
+      for (const complaint of complaints) {
+        if (complaint.organization?.area) {
+          const orgData = orgDataMap.get(complaint.organization.area);
+          if (orgData) {
+            complaint.organization.area = orgData.area;
+            complaint.organization.areaName = orgData.areaName;
+            complaint.organization.zone = orgData.zone;
+            complaint.organization.region = orgData.region;
+            complaint.organization.officeLocation = orgData.officeLocation;
+          }
+        }
+      }
+    } catch (error) {
+      this.logger.error(`Error adding organization data to complaints: ${error}`);
+    }
+  };
+
   findRelatedDataById = async (id: string): Promise<RelatedDataDto> => {
     try {
       const updates = await this._compliantUpdatesService.findByComplaintId(id);
@@ -1544,7 +1741,7 @@ export class ComplaintService {
 
       //-- apply filters if used
       if (Object.keys(filters).length !== 0) {
-        builder = this._applyFilters(builder, filters as ComplaintFilterParameters, filterComplaintType);
+        builder = await this._applyFilters(builder, filters as ComplaintFilterParameters, filterComplaintType, token);
       }
 
       //-- apply search
@@ -2076,9 +2273,7 @@ export class ComplaintService {
 
           const assignee = {
             active_ind: true,
-            person_guid: {
-              person_guid: id,
-            },
+            app_user_guid: id,
             complaint_identifier: complaintId,
             app_user_complaint_xref_code: "ASSIGNEE",
             create_user_id: idir,
@@ -2781,7 +2976,6 @@ export class ComplaintService {
           .leftJoin("complaint.reported_by_code", "reported_by")
           .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
           .leftJoinAndSelect("complaint.linked_complaint_xref", "linked_complaint")
-          .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
           .leftJoinAndSelect("complaint.app_user_complaint_xref", "delegate", "delegate.active_ind = true")
           .leftJoinAndSelect("delegate.app_user_complaint_xref_code", "delegate_code")
           .addSelect(["delegate.app_user_guid"]);
@@ -2825,6 +3019,40 @@ export class ComplaintService {
 
       //-- get case data
       data.outcome = await _getCaseData(id, token, tz);
+
+      //-- Enrich officer assigned and organization data from GraphQL
+      if (data.officerAssigned && data.officerAssigned !== "Not Assigned") {
+        try {
+          const appUser = await this._appUserService.findOne(data.officerAssigned, token);
+          if (appUser) {
+            data.officerAssigned = `${appUser.last_name}, ${appUser.first_name}`;
+          }
+        } catch (error) {
+          this.logger.error(`Failed to fetch app user ${data.officerAssigned} for report: ${error}`);
+          data.officerAssigned = "Not Assigned";
+        }
+      }
+
+      //-- Enrich community, office, zone, and region from GraphQL
+      if (data.zone) {
+        try {
+          // Get the flattened organization structure (includes region, zone, office, area/community)
+          const cosGeoOrgUnits = await getCosGeoOrgUnits(token);
+
+          // Find the matching unit by area code (stored in data.zone which is actually the community/area code)
+          const orgUnit = cosGeoOrgUnits.find((unit: any) => unit.areaCode === data.zone);
+
+          if (orgUnit) {
+            data.community = orgUnit.areaName || "";
+            data.office = orgUnit.officeLocationName || "";
+            data.zone = orgUnit.zoneName || "";
+            data.region = orgUnit.regionName || "";
+          }
+        } catch (error) {
+          this.logger.error(`Failed to fetch organization data for report: ${error}`);
+          // Keep existing values if GraphQL call fails
+        }
+      }
 
       //-- get park data
       data.park = await _getParkData(data.parkGuid, token, tz);

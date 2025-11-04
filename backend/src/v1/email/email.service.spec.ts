@@ -5,17 +5,25 @@ import { EmailReferenceService } from "../../v1/email_reference/email_reference.
 import { ComplaintService } from "../../v1/complaint/complaint.service";
 import { SpeciesCodeService } from "../../v1/species_code/species_code.service";
 import { HwcrComplaintNatureCodeService } from "../../v1/hwcr_complaint_nature_code/hwcr_complaint_nature_code.service";
-import { GeoOrganizationUnitCodeService } from "../../v1/geo_organization_unit_code/geo_organization_unit_code.service";
 import { ViolationCodeService } from "../../v1/violation_code/violation_code.service";
 import { GirTypeCodeService } from "../../v1/gir_type_code/gir_type_code.service";
 import { CssService } from "../../external_api/css/css.service";
-import { OfficerService } from "../../v1/officer/officer.service";
+import { AppUserService } from "../../v1/app_user/app_user.service";
 import { CodeTableService } from "../code-table/code-table.service";
+
+jest.mock("../../external_api/shared_data", () => {
+  const { createSharedDataMocks } = require("../../../test/mocks/external_api/mock-shared-data");
+  return createSharedDataMocks();
+});
+
+import { resetSharedDataMocks } from "../../../test/mocks/external_api/mock-shared-data";
 
 describe("EmailService", () => {
   let service: EmailService;
 
   beforeEach(async () => {
+    resetSharedDataMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EmailService,
@@ -44,10 +52,6 @@ describe("EmailService", () => {
           useValue: {},
         },
         {
-          provide: GeoOrganizationUnitCodeService,
-          useValue: {},
-        },
-        {
           provide: ViolationCodeService,
           useValue: {},
         },
@@ -60,7 +64,7 @@ describe("EmailService", () => {
           useValue: {},
         },
         {
-          provide: OfficerService,
+          provide: AppUserService,
           useValue: {},
         },
       ],

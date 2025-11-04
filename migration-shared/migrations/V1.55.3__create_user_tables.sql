@@ -4,7 +4,7 @@
 CREATE TABLE
   app_user (
     app_user_guid uuid DEFAULT uuid_generate_v4 () NOT NULL,
-    auth_user_guid uuid,
+    auth_user_guid uuid UNIQUE,
     user_id character varying(32),
     first_name character varying(32),
     last_name character varying(32),

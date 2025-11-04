@@ -86,13 +86,13 @@ export const HWCRPreventionForm: FC<Props> = ({ id, prevention, handleSave = () 
 
       if (!officer && officersInAgencyList && assigned) {
         const officerAssigned = officersInAgencyList
-          .filter((person: any) => {
-            const guid = person.person_guid?.person_guid ?? person.personGuid;
+          .filter((appUser: any) => {
+            const guid = appUser.app_user_guid ?? appUser.appUserGuid;
             return guid === assigned;
           })
           .map((item: any) => {
-            const firstName = item.person_guid?.first_name ?? item.firstName;
-            const lastName = item.person_guid?.last_name ?? item.lastName;
+            const firstName = item.first_name ?? item.firstName;
+            const lastName = item.last_name ?? item.lastName;
             const authUserGuid = item.auth_user_guid ?? item.authUserGuid;
             return { label: `${lastName}, ${firstName}`, value: authUserGuid };
           });

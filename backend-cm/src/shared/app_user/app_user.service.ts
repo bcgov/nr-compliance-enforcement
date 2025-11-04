@@ -52,7 +52,7 @@ export class AppUserService {
     return this.mapper.mapArray<app_user, AppUser>(appUsers as Array<app_user>, "app_user", "AppUser");
   }
 
-  async findOne(userId?: string, authUserGuid?: string) {
+  async findOne(userId?: string, authUserGuid?: string, appUserGuid?: string) {
     const whereClause: any = {};
 
     if (userId) {
@@ -62,11 +62,15 @@ export class AppUserService {
       };
     }
 
-    if (authUserGuid) {
-      whereClause.auth_user_guid = authUserGuid;
+    if (appUserGuid) {
+      whereClause.app_user_guid = appUserGuid;
     }
 
-    if (!userId && !authUserGuid) {
+    if (authUserGuid) {
+      whereClause.auth_user_guid = authUserGuid.replace(/-/g, "").toUpperCase();
+    }
+
+    if (!userId && !authUserGuid && !appUserGuid) {
       return null;
     }
 
@@ -95,6 +99,51 @@ export class AppUserService {
     }
 
     return this.mapper.map<app_user, AppUser>(appUser as app_user, "app_user", "AppUser");
+  }
+
+  async search(searchTerm: string) {
+    const appUsers = await this.prisma.app_user.findMany({
+      where: {
+        OR: [
+          {
+            first_name: {
+              contains: searchTerm,
+              mode: "insensitive",
+            },
+          },
+          {
+            last_name: {
+              contains: searchTerm,
+              mode: "insensitive",
+            },
+          },
+          {
+            user_id: {
+              contains: searchTerm,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+      select: {
+        app_user_guid: true,
+        auth_user_guid: true,
+        user_id: true,
+        first_name: true,
+        last_name: true,
+        coms_enrolled_ind: true,
+        deactivate_ind: true,
+        agency_code_ref: true,
+        office_guid: true,
+        park_area_guid: true,
+        create_user_id: true,
+        create_utc_timestamp: true,
+        update_user_id: true,
+        update_utc_timestamp: true,
+      },
+    });
+
+    return this.mapper.mapArray<app_user, AppUser>(appUsers as Array<app_user>, "app_user", "AppUser");
   }
 
   async create(input: CreateAppUserInput) {

@@ -64,10 +64,10 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
   const removedEquipmentOfficer = useAppSelector(selectOfficerByAuthUserGuid(`${removedEquipmentActor}`));
 
   const setEquipmentFullName = setEquipmentOfficer
-    ? `${setEquipmentOfficer.person_guid.last_name}, ${setEquipmentOfficer.person_guid.first_name}`
+    ? `${setEquipmentOfficer.last_name}, ${setEquipmentOfficer.first_name}`
     : null;
   const removedEquipmentFullName = removedEquipmentOfficer
-    ? `${removedEquipmentOfficer.person_guid.last_name}, ${removedEquipmentOfficer.person_guid.first_name}`
+    ? `${removedEquipmentOfficer.last_name}, ${removedEquipmentOfficer.first_name}`
     : null;
 
   const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);

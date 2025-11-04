@@ -29,9 +29,9 @@ export class AppUserComplaintXrefController {
     return this.appUserComplaintXrefService.assignOfficer(queryRunner, complaintId, createPersonComplaintXrefDto, true);
   }
 
-  @Get("/:person_guid/:complaint_id")
+  @Get("/:app_user_guid/:complaint_id")
   @Roles(coreRoles)
-  findAssigned(@Param("person_guid") personGuid: string, @Param("complaint_id") complaintId: string) {
-    return this.appUserComplaintXrefService.findAssigned(personGuid, complaintId);
+  findAssigned(@Param("app_user_guid") appUserGuid: string, @Param("complaint_id") complaintId: string) {
+    return this.appUserComplaintXrefService.findAssigned(appUserGuid, complaintId);
   }
 }

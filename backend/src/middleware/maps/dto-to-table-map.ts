@@ -88,17 +88,6 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
       }),
     ),
     forMember(
-      (dest) => dest.cos_geo_org_unit,
-      mapFrom((src) => {
-        const { region, zone, area } = src.organization;
-        return {
-          region_code: region,
-          zone_code: zone,
-          area_code: area,
-        };
-      }),
-    ),
-    forMember(
       (dest) => dest.reference_number,
       mapFrom((src) => {
         return src.referenceNumber;
@@ -135,16 +124,8 @@ export const mapDelegateDtoToAppUserComplaintXrefTable = (mapper: Mapper) => {
       mapFrom((src) => src.isActive),
     ),
     forMember(
-      (dest) => dest.person_guid,
-      mapFrom((src) => {
-        const {
-          person: { id },
-        } = src;
-
-        return {
-          person_guid: id,
-        };
-      }),
+      (dest) => dest.app_user_guid,
+      mapFrom((src) => src.appUserGuid),
     ),
     forMember(
       (dest) => dest.app_user_complaint_xref_code,

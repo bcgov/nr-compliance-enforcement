@@ -348,10 +348,24 @@ export const getAppUserByAuthUserGuid = async (token: string, authUserGuid: stri
   });
 
   if (errors) {
-    throw new Error(`GraphQL errors occurred while fetching app user by authUserGuid: ${JSON.stringify(errors)}`);
+    throw new Error(
+      `GraphQL errors occurred while fetching app user by authUserGuid (${authUserGuid}): ${JSON.stringify(errors)}`,
+    );
   }
 
   return data?.appUser || null;
+};
+
+export const searchAppUsers = async (token: string, searchTerm: string) => {
+  const { data, errors } = await get(token, {
+    query: `{searchAppUsers(searchTerm: "${searchTerm}") ${appUserQueryFields}}`,
+  });
+
+  if (errors) {
+    throw new Error(`GraphQL errors occurred while searching app users: ${JSON.stringify(errors)}`);
+  }
+
+  return data?.searchAppUsers || [];
 };
 
 export const getOffices = async (token: string, geoOrganizationUnitCodes?: string[], agencyCode?: string) => {
@@ -535,6 +549,33 @@ export const getCosGeoOrgUnits = async (
 
 export const getCosGeoOrgUnitsByZone = async (token: string, zoneCode: string) => {
   return getCosGeoOrgUnits(token, zoneCode); // Now uses server-side filtering
+};
+
+export const searchCosGeoOrgUnitsByNames = async (
+  token: string,
+  zoneName?: string,
+  regionName?: string,
+  areaName?: string,
+  officeLocationName?: string,
+  distinctOfficeLocations?: boolean,
+) => {
+  let queryParams = "";
+  if (zoneName) queryParams = `zoneName: "${zoneName}"`;
+  if (regionName) queryParams += (queryParams ? ", " : "") + `regionName: "${regionName}"`;
+  if (areaName) queryParams += (queryParams ? ", " : "") + `areaName: "${areaName}"`;
+  if (officeLocationName) queryParams += (queryParams ? ", " : "") + `officeLocationName: "${officeLocationName}"`;
+  if (distinctOfficeLocations)
+    queryParams += (queryParams ? ", " : "") + `distinctOfficeLocations: ${distinctOfficeLocations}`;
+
+  const { data, errors } = await get(token, {
+    query: `{searchCosGeoOrgUnitsByNames${queryParams ? `(${queryParams})` : ""} ${cosGeoOrgUnitQueryFields}}`,
+  });
+
+  if (errors) {
+    throw new Error(`Error fetching cos geo org units by names: ${JSON.stringify(errors)}`);
+  }
+
+  return data?.searchCosGeoOrgUnitsByNames || [];
 };
 
 export const getCosGeoOrgUnitsByRegion = async (token: string, regionCode: string) => {

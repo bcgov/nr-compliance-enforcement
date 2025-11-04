@@ -93,10 +93,8 @@ export const getSelectedOfficer = (
     const selected = officers.find(({ value }) => {
       const first = from(assignees).firstOrDefault();
       if (first) {
-        const {
-          person: { id },
-        } = first;
-        return value === id;
+        const { appUserGuid } = first;
+        return value === appUserGuid;
       }
 
       return false;

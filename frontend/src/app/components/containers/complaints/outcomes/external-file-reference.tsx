@@ -15,6 +15,7 @@ import { getComplaintType } from "@common/methods";
 import getOfficerAssigned from "@common/get-officer-assigned";
 import COMPLAINT_TYPES from "@/app/types/app/complaint-types";
 import { AgencyType } from "@/app/types/app/agency-types";
+import { selectOfficers } from "@store/reducers/officer";
 
 export const ExternalFileReference: FC = () => {
   const dispatch = useAppDispatch();
@@ -22,6 +23,7 @@ export const ExternalFileReference: FC = () => {
   const complaintData = useAppSelector(selectComplaint);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const complaintType = getComplaintType(complaintData);
+  const officers = useAppSelector(selectOfficers);
 
   const [isEditable, setIsEditable] = useState<boolean>(true);
   const [referenceNumber, setReferenceNumber] = useState<string>("");
@@ -78,7 +80,7 @@ export const ExternalFileReference: FC = () => {
       return false;
     }
 
-    if (complaintType !== COMPLAINT_TYPES.HWCR && complaintData && !getOfficerAssigned(complaintData)) {
+    if (complaintType !== COMPLAINT_TYPES.HWCR && complaintData && !getOfficerAssigned(complaintData, officers)) {
       setReferenceNumberError("An officer must be assigned before a COORS file number can be added");
       return false;
     }

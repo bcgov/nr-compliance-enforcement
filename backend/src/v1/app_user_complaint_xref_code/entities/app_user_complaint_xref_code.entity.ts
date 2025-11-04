@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { AppUserComplaintXref } from "../../app_user_complaint_xref/entities/app_user_complaint_xref.entity";
 import { Column, Entity, Index, OneToMany } from "typeorm";
 
-@Index("PK_person_complaint_xref_code", ["person_complaint_xref_code"], {
+@Index("PK_app_user_complaint_xref_code", ["app_user_complaint_xref_code"], {
   unique: true,
 })
 @Entity("app_user_complaint_xref_code", { schema: "complaint" })

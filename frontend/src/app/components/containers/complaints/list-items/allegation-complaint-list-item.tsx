@@ -15,6 +15,7 @@ import { getUserAgency } from "@/app/service/user-service";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { usePark } from "@/app/hooks/usePark";
+import { selectOfficers } from "@store/reducers/officer";
 
 type Props = {
   type: string;
@@ -24,6 +25,7 @@ type Props = {
 export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
   const violationCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.VIOLATIONS));
+  const officers = useAppSelector(selectOfficers);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRowHovered, setIsRowHovered] = useState(false);
@@ -179,7 +181,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
           className={`${isExpandedClass}`}
           onClick={toggleExpand}
         >
-          {getOfficerAssigned(complaint)}
+          {getOfficerAssigned(complaint, officers)}
         </td>
         <td className={`comp-cell-width-160 comp-cell-min-width-160 ac-table-date-cell ${isExpandedClass}`}>
           {updatedOnDateTime}

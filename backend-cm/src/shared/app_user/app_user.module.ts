@@ -7,5 +7,6 @@ import { UserModule } from "../../common/user.module";
 @Module({
   imports: [PrismaModuleShared, UserModule],
   providers: [AppUserResolver, AppUserService],
+  exports: [AppUserService],
 })
 export class AppUserModule {}

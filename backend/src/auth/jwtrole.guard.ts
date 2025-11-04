@@ -13,7 +13,7 @@ import { ROLES_KEY } from "./decorators/roles.decorator";
 import { IS_PUBLIC_KEY } from "./decorators/public.decorator";
 
 // A list of routes that are exceptions to the READ_ONLY role only being allowed to make get requests
-const READ_ONLY_EXCEPTIONS = ["/api/v1/officer/request-coms-access/:officer_guid"];
+const READ_ONLY_EXCEPTIONS = ["/api/v1/app-user/request-coms-access/:app_user_guid"];
 
 @Injectable()
 /**

@@ -12,10 +12,10 @@ type props = {
 export const ToggleDeactivateModal: FC<props> = ({ close, submit }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  const { title, description, ok, cancel, officer_guid, deactivate_ind, user_roles, auth_user_guid } = modalData;
+  const { title, description, ok, cancel, app_user_guid, deactivate_ind, user_roles, auth_user_guid } = modalData;
 
   const handleSubmit = () => {
-    dispatch(updateOfficer(officer_guid, { deactivate_ind, user_roles, auth_user_guid }))
+    dispatch(updateOfficer(app_user_guid, { deactivate_ind, user_roles, auth_user_guid }))
       .then((res) => {
         if (res === "success") {
           dispatch(getOfficers());
