@@ -3,34 +3,64 @@ import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
 import { PartyListSearch } from "@/app/components/common/party-list-search";
-import { CreateInvestigationPartyInput, Party } from "@/generated/graphql";
+import { CreateInspectionPartyInput, CreateInvestigationPartyInput, Party } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 
-const ADD_PARTY_MUTATION = gql`
-  mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
-    addPartyToInvestigation(investigationGuid: $investigationGuid, input: $input) {
-      investigationGuid
-      description
-      investigationStatus {
-        investigationStatusCode
-        shortDescription
-        longDescription
-      }
-      parties {
-        person {
-          firstName
-          lastName
+type ActivityType = "investigation" | "inspection";
+
+const createAddPartyMutation = (activityType: ActivityType) => {
+  if (activityType === "investigation") {
+    return gql`
+      mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
+        addPartyToInvestigation(investigationGuid: $investigationGuid, input: $input) {
+          investigationGuid
+          description
+          investigationStatus {
+            investigationStatusCode
+            shortDescription
+            longDescription
+          }
+          parties {
+            person {
+              firstName
+              lastName
+            }
+            business {
+              name
+            }
+          }
+          leadAgency
         }
-        business {
-          name
+      }
+    `;
+  } else {
+    return gql`
+      mutation AddPartyToInspection($inspectionGuid: String!, $input: [CreateInspectionPartyInput]!) {
+        addPartyToInspection(inspectionGuid: $inspectionGuid, input: $input) {
+          inspectionGuid
+          description
+          inspectionStatus {
+            inspectionStatusCode
+            shortDescription
+            longDescription
+          }
+          parties {
+            person {
+              firstName
+              lastName
+            }
+            business {
+              name
+            }
+          }
+          leadAgency
         }
       }
-      leadAgency
-    }
+    `;
   }
-`;
+};
 
 const ModalLoading: FC = memo(() => (
   <div className="modal-loader">
@@ -45,22 +75,23 @@ const ModalLoading: FC = memo(() => (
 ));
 
 type AddPartyModalProps = {
+  activityType: ActivityType;
   close: () => void;
   submit: () => void;
 };
 
-export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
+export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, submit }) => {
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
 
   // Vars
-  const { title, investigationGuid } = modalData;
+  const { title, activityGuid } = modalData;
 
   // State
   const [selectedParty, setSelectedParty] = useState<Party | null>();
   const [errorMessage, setErrorMessage] = useState<string>("");
-
+  const ADD_PARTY_MUTATION = createAddPartyMutation(activityType);
   const addPartyMutation = useGraphQLMutation(ADD_PARTY_MUTATION, {
     onSuccess: () => {
       ToggleSuccess("Party added successfully");
@@ -84,7 +115,7 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
 
     if (errorMessage) return;
 
-    const addPartyInput: CreateInvestigationPartyInput = {
+    const addPartyInput = {
       partyTypeCode: selectedParty.partyTypeCode || "",
       partyReference: selectedParty.partyIdentifier,
       ...(selectedParty.person?.lastName && {
@@ -103,7 +134,17 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ close, submit }) => {
         },
       }),
     };
-    addPartyMutation.mutate({ investigationGuid: investigationGuid, input: addPartyInput });
+    const typeCastedInput =
+      activityType === "investigation"
+        ? (addPartyInput as CreateInvestigationPartyInput)
+        : (addPartyInput as CreateInspectionPartyInput);
+
+    // Backend expects the named ids
+    if (activityType === "investigation") {
+      addPartyMutation.mutate({ investigationGuid: activityGuid, input: typeCastedInput });
+    } else {
+      addPartyMutation.mutate({ inspectionGuid: activityGuid, input: typeCastedInput });
+    }
 
     submit();
     close();

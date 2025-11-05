@@ -143,7 +143,7 @@ const InspectionEdit: FC = () => {
       };
     }
     return {
-      inspectionStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
+      inspectionStatus: statusOptions.find((opt) => opt.value === "OPEN")?.value,
       leadAgency: getUserAgency(),
       description: "",
       name: "",
@@ -236,14 +236,16 @@ const InspectionEdit: FC = () => {
 
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>
-
             <FormField
               form={form}
               name="name"
               label="Inspection ID"
               required
               validators={{
-                onChange: z.string().min(1, "Inspection ID is required").max(100, "Inspection ID must be 100 characters or less"),
+                onChange: z
+                  .string()
+                  .min(1, "Inspection ID is required")
+                  .max(100, "Inspection ID must be 100 characters or less"),
                 onChangeAsyncDebounceMs: 500,
                 onChangeAsync: async ({ value }: { value: string }) => {
                   if (!value || value.length < 1) return "Inspection ID is required";
@@ -255,13 +257,13 @@ const InspectionEdit: FC = () => {
                       name: value,
                       leadAgency: leadAgency,
                       excludeInspectionGuid: isEditMode ? id : undefined,
-                    }
+                    },
                   );
                   if (result.checkInspectionNameExists) {
                     return "This Inspection ID is already in use for this agency. Please choose a different Inspection ID.";
                   }
                   return undefined;
-                }
+                },
               }}
               render={(field) => (
                 <div>
@@ -279,7 +281,7 @@ const InspectionEdit: FC = () => {
                 </div>
               )}
             />
-            
+
             <FormField
               form={form}
               name="inspectionStatus"
@@ -362,7 +364,7 @@ const InspectionEdit: FC = () => {
                   rows={1}
                   defaultValue={field.state.value}
                   onChange={(value: string) => field.handleChange(value)}
-                  placeholderText="Enter the address of the investigation..."
+                  placeholderText="Enter the address of the inspection..."
                   maxLength={120}
                   errMsg={field.state.meta.errors?.[0]?.message || ""}
                   disabled={isDisabled}
@@ -382,7 +384,7 @@ const InspectionEdit: FC = () => {
                   rows={4}
                   defaultValue={field.state.value}
                   onChange={(value: string) => field.handleChange(value)}
-                  placeholderText="Enter a description of the location of this investigation..."
+                  placeholderText="Enter a description of the location of this inspection..."
                   maxLength={4000}
                   errMsg={field.state.meta.errors?.[0]?.message || ""}
                   disabled={isDisabled}
@@ -401,8 +403,8 @@ const InspectionEdit: FC = () => {
 
                 return (
                   <CompCoordinateInput
-                    id="investigation-coordinates"
-                    mode="investigation"
+                    id="inspection-coordinates"
+                    mode="inspection"
                     utmZones={bcUtmZoneNumbers.map((zone: string) => ({ value: zone, label: zone }) as Option)}
                     initXCoordinate={longitude}
                     initYCoordinate={latitude}

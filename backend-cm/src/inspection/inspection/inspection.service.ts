@@ -41,6 +41,23 @@ export class InspectionService {
       },
       include: {
         inspection_status_code: true,
+        inspection_party: {
+          include: {
+            inspection_person: {
+              where: {
+                active_ind: true,
+              },
+            },
+            inspection_business: {
+              where: {
+                active_ind: true,
+              },
+            },
+          },
+          where: {
+            active_ind: true,
+          },
+        },
       },
     });
 
@@ -364,10 +381,7 @@ export class InspectionService {
         await this.prisma.$executeRawUnsafe(query);
       }
     } catch (error) {
-      this.logger.error(
-        `Error updating location geometry point for inspection with guid ${inspectionGuid}:`,
-        error,
-      );
+      this.logger.error(`Error updating location geometry point for inspection with guid ${inspectionGuid}:`, error);
       throw error;
     }
   }

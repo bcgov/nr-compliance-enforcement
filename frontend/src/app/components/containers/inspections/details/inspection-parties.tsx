@@ -2,16 +2,16 @@ import PartiesList from "@/app/components/common/parties-list";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_PARTY } from "@/app/types/modal/modal-types";
-import { Investigation, InvestigationParty } from "@/generated/graphql";
+import { Inspection, InspectionParty } from "@/generated/graphql";
 import { FC } from "react";
 import { Button } from "react-bootstrap";
 
-interface InvestigationPartiesProps {
-  investigationGuid: string;
-  investigationData?: Investigation;
+interface InspectionPartiesProps {
+  inspectionGuid: string;
+  inspectionData?: Inspection;
 }
 
-export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigationGuid, investigationData }) => {
+export const InspectionSummary: FC<InspectionPartiesProps> = ({ inspectionGuid, inspectionData }) => {
   const dispatch = useAppDispatch();
 
   const handleAddParty = () => {
@@ -21,16 +21,16 @@ export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigat
         modalSize: "lg",
         modalType: ADD_PARTY,
         data: {
-          title: "Add party to investigation",
+          title: "Add party to inspection",
           description: "",
-          activityGuid: investigationGuid,
-          activityType: "investigation",
+          activityGuid: inspectionGuid,
+          activityType: "inspection",
         },
       }),
     );
   };
 
-  const parties = investigationData?.parties ?? [];
+  const parties = inspectionData?.parties ?? [];
 
   const { peopleParties, businessParties } = parties.reduce(
     (acc, party) => {
@@ -59,8 +59,8 @@ export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigat
       <div className="row">
         <div className="col-4">
           <PartiesList
-            companies={businessParties as InvestigationParty[]}
-            people={peopleParties as InvestigationParty[]}
+            companies={businessParties as InspectionParty[]}
+            people={peopleParties as InspectionParty[]}
           />
         </div>
       </div>
@@ -68,4 +68,4 @@ export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigat
   );
 };
 
-export default InvestigationSummary;
+export default InspectionSummary;
