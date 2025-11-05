@@ -28,7 +28,7 @@ import {
   selectViolationCodeDropdown,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgency } from "@store/reducers/officer";
-import { AppUser } from "@apptypes/app/app_user/app_user";
+import { AppUser, Delegate } from "@apptypes/app/app_user/app_user";
 import { CreateComplaintHeader } from "./create-complaint-header";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { createComplaint, selectComplaintDetails, setComplaint } from "@store/reducers/complaints";
@@ -43,7 +43,6 @@ import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
 import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 import { Complaint } from "@apptypes/app/complaints/complaint";
-import { Delegate } from "@apptypes/app/app_user/app_user";
 import { UUID } from "node:crypto";
 import { AttractantXref } from "@apptypes/app/complaints/attractant-xref";
 import { ComplaintAlias } from "@apptypes/app/aliases";
