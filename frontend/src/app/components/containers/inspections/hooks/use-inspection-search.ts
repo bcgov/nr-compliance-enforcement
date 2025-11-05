@@ -70,8 +70,8 @@ export const useInspectionSearch = () => {
       endDate: deserializeDate(searchParams.get("endDate")),
       sortBy: searchParams.get("sortBy") || DEFAULT_SEARCH_VALUES.sortBy,
       sortOrder: searchParams.get("sortOrder") || DEFAULT_SEARCH_VALUES.sortOrder,
-      page: parseInt(searchParams.get("page") || "1", 10),
-      pageSize: parseInt(searchParams.get("pageSize") || "25", 10),
+      page: Number.parseInt(searchParams.get("page") || "1", 10),
+      pageSize: Number.parseInt(searchParams.get("pageSize") || "25", 10),
       viewType: (searchParams.get("viewType") as "list" | "map") || DEFAULT_SEARCH_VALUES.viewType,
     }),
     [searchParams],
@@ -83,15 +83,15 @@ export const useInspectionSearch = () => {
         (currentParams) => {
           const newParams = new URLSearchParams(currentParams);
 
-          Object.entries(values).forEach(([key, value]) => {
+          for (const [key, value] of Object.entries(values)) {
             const serialized = serializeSearchValueToUrl(key as keyof InspectionSearchParams, value);
 
-            if (serialized !== undefined) {
-              newParams.set(key, serialized);
-            } else {
+            if (serialized === undefined) {
               newParams.delete(key);
+            } else {
+              newParams.set(key, serialized);
             }
-          });
+          }
 
           // Reset to page 1 when filters change (except for page/pageSize/sort changes)
           const filterFields = Object.keys(values).filter(
@@ -114,9 +114,9 @@ export const useInspectionSearch = () => {
       const keysArray = Array.isArray(keys) ? keys : [keys];
       const valuesToClear: Partial<InspectionSearchParams> = {};
 
-      keysArray.forEach((key) => {
+      for (const key of keysArray) {
         (valuesToClear as any)[key] = DEFAULT_SEARCH_VALUES[key];
-      });
+      }
 
       setValues(valuesToClear);
     },

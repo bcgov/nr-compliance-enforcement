@@ -1,0 +1,11 @@
+type InspectionBusiness {
+  businessGuid: String!
+  partyGuid: String!
+  businessReference: String
+  name: String!
+}
+
+input CreateInspectionBusinessInput {
+  name: String!
+  businessReference: String
+}

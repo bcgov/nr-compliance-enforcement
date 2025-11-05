@@ -10,6 +10,7 @@ type Inspection {
   locationGeometry: Point
   locationAddress: String
   locationDescription: String
+  parties: [InspectionParty]
 }
 
 type PageInfo {

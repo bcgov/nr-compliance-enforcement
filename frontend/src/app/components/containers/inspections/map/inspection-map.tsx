@@ -56,7 +56,7 @@ export const InspectionMap: FC<Props> = ({ inspections, isLoading = false, error
           <p className="text-muted mb-2">Placeholder map view for inspections</p>
           {inspections && inspections.length > 0 && (
             <p className="text-muted small">
-              {inspections.length} inspection{inspections.length !== 1 ? "s" : ""} for mapping
+              {inspections.length} inspection{inspections.length === 1 ? "" : "s"} for mapping
             </p>
           )}
         </div>

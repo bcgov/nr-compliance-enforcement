@@ -22,6 +22,9 @@ import { mapPrismaEventEntityTypeCodeToEventEntityTypeCode } from "../shared/eve
 import { mapPrismaBusinessToInvestigationBusiness } from "../investigation/investigation_business/dto/investigation_business";
 import { mapPrismaPersonToInvestigationPerson } from "../investigation/investigation_person/dto/investigation_person";
 import { mapPrismaPartyToInvestigationParty } from "../investigation/investigation_party/dto/investigation_party";
+import { mapPrismaBusinessToInspectionBusiness } from "../inspection/inspection_business/dto/inspection_business";
+import { mapPrismaPersonToInspectionPerson } from "../inspection/inspection_person/dto/inspection_person";
+import { mapPrismaPartyToInspectionParty } from "../inspection/inspection_party/dto/inspection_party";
 
 export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToContactMethod(mapper);
@@ -47,4 +50,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaBusinessToInvestigationBusiness(mapper);
   mapPrismaPersonToInvestigationPerson(mapper);
   mapPrismaPartyToInvestigationParty(mapper);
+  mapPrismaBusinessToInspectionBusiness(mapper);
+  mapPrismaPersonToInspectionPerson(mapper);
+  mapPrismaPartyToInspectionParty(mapper);
 };

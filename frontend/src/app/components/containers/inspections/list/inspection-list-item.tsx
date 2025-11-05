@@ -48,7 +48,7 @@ export const InspectionListItem: FC<Props> = ({ data, cases }) => {
           {data.name || data.inspectionGuid}
         </Link>
       </td>
-        <td className="comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center" >
+      <td className="comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center">
         {cases.map((caseFile) => (
           <Link
             to={`/case/${caseFile.caseIdentifier}`}
@@ -57,13 +57,13 @@ export const InspectionListItem: FC<Props> = ({ data, cases }) => {
           >
             {caseFile.name || caseFile.caseIdentifier}
           </Link>
-      ))}
-        </td>
+        ))}
+      </td>
       <td className="comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell">
         {formatDateTime(data.openedTimestamp)}
       </td>
       <td className="comp-cell-width-110">
-        {data.inspectionStatus && data.inspectionStatus.inspectionStatusCode && (
+        {data.inspectionStatus?.inspectionStatusCode && (
           <span className={`badge ${applyStatusClass(data.inspectionStatus.inspectionStatusCode)}`}>
             {data.inspectionStatus.shortDescription}
           </span>
