@@ -34,7 +34,7 @@ import config from "@/config";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
 import { AgencyType } from "@/app/types/app/agency-types";
 import { CssUser } from "@/app/types/app/app_user/app_user";
-import { NewOfficer } from "@/app/types/person/new-officer";
+import { NewAppUser } from "@apptypes/app/app_user/new-app-user";
 import { TOGGLE_DEACTIVATE } from "@/app/types/modal/modal-types";
 import "@assets/sass/user-management.scss";
 import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
@@ -150,9 +150,8 @@ export const EditUser: FC<EditUserProps> = ({
         currentAgency = mapValueToDropdownList(AgencyType.COS, agency);
 
         if (officerData.office_guid) {
-          const officeGuid = typeof officerData.office_guid === 'string' 
-            ? officerData.office_guid 
-            : officerData.office_guid.office_guid;
+          const officeGuid =
+            typeof officerData.office_guid === "string" ? officerData.office_guid : officerData.office_guid.office_guid;
           const currentOffice = mapValueToDropdownList(officeGuid, offices);
           setSelectedOffice(currentOffice);
         }
@@ -307,7 +306,7 @@ export const EditUser: FC<EditUserProps> = ({
     selectedAgency: Option | null,
     mapRoles: Array<{ name: string | undefined }>,
   ) => {
-    const newOfficerData: NewOfficer = {
+    const newOfficerData: NewAppUser = {
       user_id: newUser.attributes.idir_username[0],
       create_user_id: adminIdirUsername,
       create_utc_timestamp: new Date(),

@@ -3,7 +3,7 @@ import { RootState, AppThunk } from "@store/store";
 import config from "@/config";
 import { OfficerState } from "@apptypes/complaints/officers-state";
 import { AppUser } from "@apptypes/app/app_user/app_user";
-import { NewOfficer } from "@/app/types/person/new-officer";
+import { NewAppUser } from "@apptypes/app/app_user/new-app-user";
 import { UUID } from "node:crypto";
 import { AppUserComplaintXref } from "@apptypes/complaints/app-user-complaint-xref";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
@@ -229,7 +229,7 @@ export const assignOfficerToOffice =
   };
 
 export const createOfficer =
-  (newOfficerData: NewOfficer): AppThunk =>
+  (newOfficerData: NewAppUser): AppThunk =>
   async (dispatch, getState) => {
     try {
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/app-user`, newOfficerData);

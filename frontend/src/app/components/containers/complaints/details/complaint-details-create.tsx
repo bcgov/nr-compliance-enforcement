@@ -28,6 +28,7 @@ import {
   selectViolationCodeDropdown,
 } from "@store/reducers/code-table";
 import { selectOfficersByAgency } from "@store/reducers/officer";
+import { AppUser } from "@apptypes/app/app_user/app_user";
 import { CreateComplaintHeader } from "./create-complaint-header";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { createComplaint, selectComplaintDetails, setComplaint } from "@store/reducers/complaints";

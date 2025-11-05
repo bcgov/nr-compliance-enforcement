@@ -1,4 +1,4 @@
-export interface NewOfficer {
+export interface NewAppUser {
   user_id: string;
   first_name: string;
   last_name: string;
