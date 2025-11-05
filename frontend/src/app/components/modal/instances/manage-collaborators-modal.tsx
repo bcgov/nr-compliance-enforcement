@@ -110,8 +110,8 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
     }
   };
 
-  const handleRemoveCollaborator = (personComplaintXrefGuid: string) => {
-    dispatch(removeCollaboratorFromComplaint(complaintId, personComplaintXrefGuid));
+  const handleRemoveCollaborator = (appUserComplaintXrefGuid: string) => {
+    dispatch(removeCollaboratorFromComplaint(complaintId, appUserComplaintXrefGuid));
   };
 
   return (
@@ -209,7 +209,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
                       <Button
                         variant="outline-danger"
                         size="sm"
-                        onClick={() => handleRemoveCollaborator(collaborator.personComplaintXrefGuid)}
+                        onClick={() => handleRemoveCollaborator(collaborator.appUserComplaintXrefGuid)}
                       >
                         Remove user
                       </Button>

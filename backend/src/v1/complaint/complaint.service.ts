@@ -996,7 +996,10 @@ export class ComplaintService {
       }
 
       return results;
-    } catch (error) {}
+    } catch (error) {
+      this.logger.error(`Error fetching app users by office ${officeGuid}: ${error}`);
+      throw error;
+    }
   };
 
   private readonly _getTotalAssignedComplaintsByAppUser = async (
@@ -1028,7 +1031,7 @@ export class ComplaintService {
         .leftJoinAndSelect("complaint.app_user_complaint_xref", "app_user_complaint_xref")
         .where("app_user_complaint_xref.active_ind = true")
         .andWhere("app_user_complaint_xref.app_user_complaint_xref_code = :assignee", { assignee: "ASSIGNEE" })
-        .andWhere("app_user_complaint_xref.app_user_guid = :appUserGuid", { appUserGuid })
+        .andWhere("app_user_complaint_xref.app_user_guid_ref = :appUserGuid", { appUserGuid })
         .andWhere("complaint.complaint_status_code = :status", {
           status: "OPEN",
         })
@@ -1036,7 +1039,8 @@ export class ComplaintService {
 
       return builder.getCount();
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(`Error getting total assigned complaints for app user ${appUserGuid}: ${error}`);
+      throw error;
     }
   };
 
@@ -3020,7 +3024,7 @@ export class ComplaintService {
       //-- get case data
       data.outcome = await _getCaseData(id, token, tz);
 
-      //-- Enrich officer assigned and organization data from GraphQL
+      //-- get officer assigned and organization data from GraphQL
       if (data.officerAssigned && data.officerAssigned !== "Not Assigned") {
         try {
           const appUser = await this._appUserService.findOne(data.officerAssigned, token);
@@ -3033,13 +3037,11 @@ export class ComplaintService {
         }
       }
 
-      //-- Enrich community, office, zone, and region from GraphQL
+      //-- get community, office, zone, and region from GraphQL
       if (data.zone) {
         try {
-          // Get the flattened organization structure (includes region, zone, office, area/community)
           const cosGeoOrgUnits = await getCosGeoOrgUnits(token);
 
-          // Find the matching unit by area code (stored in data.zone which is actually the community/area code)
           const orgUnit = cosGeoOrgUnits.find((unit: any) => unit.areaCode === data.zone);
 
           if (orgUnit) {
@@ -3050,7 +3052,6 @@ export class ComplaintService {
           }
         } catch (error) {
           this.logger.error(`Failed to fetch organization data for report: ${error}`);
-          // Keep existing values if GraphQL call fails
         }
       }
 

@@ -241,13 +241,16 @@ export class ComplaintController {
     );
   }
 
-  @Patch("/:complaint_id/remove-collaborator/:person_complaint_xref_guid")
+  @Patch("/:complaint_id/remove-collaborator/:app_user_complaint_xref_guid")
   @Roles(coreRoles)
   async removeCollaborator(
     @Param("complaint_id") complaintId: string,
-    @Param("person_complaint_xref_guid") personComplaintXrefGuid: UUID,
+    @Param("app_user_complaint_xref_guid") appUserComplaintXrefGuid: UUID,
   ) {
-    return await this.appUserComplaintXrefService.removeCollaboratorFromComplaint(complaintId, personComplaintXrefGuid);
+    return await this.appUserComplaintXrefService.removeCollaboratorFromComplaint(
+      complaintId,
+      appUserComplaintXrefGuid,
+    );
   }
 
   @Get("/:complaint_id/collaborators")

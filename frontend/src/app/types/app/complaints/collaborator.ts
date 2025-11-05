@@ -1,9 +1,9 @@
 import { UUID } from "crypto";
 
 export interface Collaborator {
-  personComplaintXrefGuid: UUID;
+  appUserComplaintXrefGuid: UUID;
   complaintId: string;
-  appUserGuid: UUID;  // Renamed from personGuid
+  appUserGuid: UUID;
   authUserGuid: UUID;
   collaboratorAgency: string;
   firstName: string;

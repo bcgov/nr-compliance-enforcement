@@ -764,11 +764,11 @@ export const addCollaboratorToComplaint =
   };
 
 export const removeCollaboratorFromComplaint =
-  (complaintId: string, personComplaintXrefGuid: string): AppThunk =>
+  (complaintId: string, appUserComplaintXrefGuid: string): AppThunk =>
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/${complaintId}/remove-collaborator/${personComplaintXrefGuid}`,
+        `${config.API_BASE_URL}/v1/complaint/${complaintId}/remove-collaborator/${appUserComplaintXrefGuid}`,
       );
       await patch(dispatch, parameters);
       dispatch(getComplaintCollaboratorsByComplaintId(complaintId));
@@ -1186,7 +1186,7 @@ export const selectComplaintHeader =
           const assigned = from(delegates).first(({ isActive, type }) => type === "ASSIGNEE" && isActive);
 
           const assignedAppUserGuid = assigned.appUserGuid as string;
-          
+
           const officer = officers.find((o) => o.app_user_guid === assignedAppUserGuid);
           if (officer) {
             officerAssigned = `${officer.last_name}, ${officer.first_name}`;

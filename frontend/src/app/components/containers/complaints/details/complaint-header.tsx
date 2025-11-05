@@ -236,7 +236,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
             return (
               <div
                 className="d-flex justify-content-start"
-                key={`${c.personComplaintXrefGuid}`}
+                key={`${c.appUserComplaintXrefGuid}`}
               >
                 {c.lastName}, {c.firstName} |{" "}
                 <span className="fw-bold">

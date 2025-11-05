@@ -111,6 +111,12 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
         return src.parkGuid;
       }),
     ),
+    forMember(
+      (dest) => dest.geo_organization_unit_code,
+      mapFrom((src) => {
+        return src.organization?.area;
+      }),
+    ),
   );
 };
 

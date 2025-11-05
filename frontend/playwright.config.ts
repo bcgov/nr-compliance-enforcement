@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 
 dotenv.config();
-const baseURL = process.env.E2E_BASE_URL || "http://localhost:3000";
+const baseURL = "http://localhost:3000";
 
 /**
  * See https://playwright.dev/docs/test-configuration.

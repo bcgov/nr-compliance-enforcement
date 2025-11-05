@@ -1,5 +1,5 @@
 export interface AppUserComplaintXref {
-  personComplaintXrefGuid?: string;
+  appUserComplaintXrefGuid?: string; // Renamed from personComplaintXrefGuid
   create_user_id: string;
   update_user_id: string;
   active_ind: boolean;
@@ -9,4 +9,3 @@ export interface AppUserComplaintXref {
   first_name: string;
   last_name: string;
 }
-

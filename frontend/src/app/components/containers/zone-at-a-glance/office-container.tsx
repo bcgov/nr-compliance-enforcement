@@ -14,6 +14,10 @@ type Props = {
   allegationOpenComplaintsOfficeStat: OfficeStats;
 };
 export const OfficeContainer: FC<Props> = ({ hwcrOpenComplaintsOfficeStat, allegationOpenComplaintsOfficeStat }) => {
+  console.log("OFFICE CONTAINER!!!!");
+  console.log("hwcrOpenComplaintsOfficeStat", hwcrOpenComplaintsOfficeStat);
+  console.log("allegationOpenComplaintsOfficeStat", allegationOpenComplaintsOfficeStat);
+
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();
@@ -28,8 +32,8 @@ export const OfficeContainer: FC<Props> = ({ hwcrOpenComplaintsOfficeStat, alleg
   let allegationAssignedStyle: { width: string } = { width: "49%" };
 
   if (
-    hwcrOpenComplaintsOfficeStat?.officers !== undefined &&
-    allegationOpenComplaintsOfficeStat?.officers !== undefined
+    hwcrOpenComplaintsOfficeStat?.appUsers !== undefined &&
+    allegationOpenComplaintsOfficeStat?.appUsers !== undefined
   ) {
     if (hwcrOpenComplaintsOfficeStat.assigned === 0 && hwcrOpenComplaintsOfficeStat.unassigned !== 0) {
       hwcrUnassigned = hwcrOpenComplaintsOfficeStat.unassigned;
@@ -170,8 +174,8 @@ export const OfficeContainer: FC<Props> = ({ hwcrOpenComplaintsOfficeStat, alleg
         <div className="collapsible">
           <div {...getCollapseProps({ id: hwcrOpenComplaintsOfficeStat.name })}>
             <OfficeUserContainer
-              hwcrOfficers={hwcrOpenComplaintsOfficeStat.officers}
-              allegationOfficers={allegationOpenComplaintsOfficeStat.officers}
+              hwcrOfficers={hwcrOpenComplaintsOfficeStat.appUsers}
+              allegationOfficers={allegationOpenComplaintsOfficeStat.appUsers}
             />
           </div>
         </div>
