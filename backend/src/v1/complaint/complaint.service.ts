@@ -4,13 +4,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, In, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import {
-  caseFileQueryFields,
-  get,
-  getCosGeoOrgUnits,
-  searchCosGeoOrgUnitsByNames,
-  getGeoOrganizationUnitCodes,
-} from "../../external_api/shared_data";
 import Supercluster, { PointFeature } from "supercluster";
 import { GeoJsonProperties } from "geojson";
 
@@ -79,10 +72,12 @@ import { RelatedDataDto } from "src/types/models/complaints/dtos/related-data";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
 import { AppUserService } from "../app_user/app_user.service";
 import {
+  caseFileQueryFields,
+  get,
+  getCosGeoOrgUnits,
+  searchCosGeoOrgUnitsByNames,
   getAppUsers,
-  getAppUserByAuthUserGuid,
   getAppUserByUserId,
-  getOffices,
   getOfficeByGuid,
   getOfficeByGeoCode,
   searchAppUsers,
@@ -211,11 +206,11 @@ export class ComplaintService {
       });
 
       const sortMap = new Map<string, number>();
-      sorted.forEach((unit, index) => {
+      for (const [index, unit] of sorted.entries()) {
         if (unit.areaCode) {
           sortMap.set(unit.areaCode, index);
         }
-      });
+      }
 
       return sortMap;
     } catch (error) {
@@ -972,7 +967,7 @@ export class ComplaintService {
     } catch (error) {}
   };
 
-  private _getAppUsersByOffice = async (
+  private readonly _getAppUsersByOffice = async (
     complaintType: COMPLAINT_TYPE,
     officeGuid: string,
     token: string,
@@ -1044,7 +1039,7 @@ export class ComplaintService {
     }
   };
 
-  private _getComplaintsByOffice = async (
+  private readonly _getComplaintsByOffice = async (
     complaintType: COMPLAINT_TYPE,
     zone: string,
     token: string,

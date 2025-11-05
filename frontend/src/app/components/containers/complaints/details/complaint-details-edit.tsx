@@ -31,7 +31,7 @@ import {
   selectPrivacyDropdown,
 } from "@store/reducers/code-table";
 import { useSelector } from "react-redux";
-import { AppUser } from "@apptypes/app/app_user/app_user";
+import { AppUser, Delegate } from "@apptypes/app/app_user/app_user";
 import Option from "@apptypes/app/option";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { ComplaintSuspectWitness } from "@apptypes/complaints/details/complaint-suspect-witness-details";
@@ -60,7 +60,6 @@ import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
 import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 import { UUID } from "crypto";
-import { Delegate } from "@apptypes/app/app_user/app_user";
 import { AttractantXref } from "@apptypes/app/complaints/attractant-xref";
 import { Button, Card } from "react-bootstrap";
 import { HWCROutcomeReport } from "@components/containers/complaints/outcomes/hwcr-outcome-report";

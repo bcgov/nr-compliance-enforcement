@@ -57,7 +57,6 @@ describe("AppUserController", () => {
     }).compile();
 
     controller = module.get<AppUserController>(AppUserController);
-    appUserService = module.get<AppUserService>(AppUserService);
   });
 
   it("should be defined", () => {

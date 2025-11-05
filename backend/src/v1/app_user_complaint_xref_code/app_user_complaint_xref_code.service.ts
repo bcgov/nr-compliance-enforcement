@@ -9,7 +9,7 @@ import { Repository } from "typeorm";
 export class AppUserComplaintXrefCodeService {
   constructor(
     @InjectRepository(AppUserComplaintXrefCode)
-    private appUserComplaintXrefCodeRepository: Repository<AppUserComplaintXrefCode>,
+    private readonly appUserComplaintXrefCodeRepository: Repository<AppUserComplaintXrefCode>,
   ) {}
 
   async create(createAppUserComplaintXrefCode: CreateAppUserComplaintXrefCodeDto) {

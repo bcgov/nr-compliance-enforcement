@@ -5,7 +5,6 @@ import { UUID } from "crypto";
 import { CssService } from "../../external_api/css/css.service";
 import { Role } from "../../enum/role.enum";
 import { put } from "../../helpers/axios-api";
-import { CssUser } from "../../types/css/cssUser";
 import {
   getAppUsers,
   getAppUserByGuid,
@@ -145,7 +144,7 @@ export class AppUserService {
       this.logger.error(err);
       //remove all css roles on error
       if (appUser.roles) {
-        for await (const roleItem of appUser.roles.user_roles) {
+        for (const roleItem of appUser.roles.user_roles) {
           await this.cssService.deleteUserRole(appUser.roles.user_idir, roleItem.name);
         }
       }
@@ -177,7 +176,7 @@ export class AppUserService {
       //remove all roles if deactivate_ind is true
       if (updateAppUserDto.deactivate_ind === true && updateAppUserDto.auth_user_guid) {
         const userIdirUsername = `${updateAppUserDto.auth_user_guid.split("-").join("")}@idir`;
-        for await (const roleItem of userRoles) {
+        for (const roleItem of userRoles) {
           await this.cssService.deleteUserRole(userIdirUsername, roleItem);
         }
       }

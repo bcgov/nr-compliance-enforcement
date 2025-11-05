@@ -552,7 +552,6 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.organization,
       mapFrom((source) => {
-        const {} = source;
         return {
           area: source.complaint_identifier.geo_organization_unit_code || "",
           areaName: "",
@@ -828,7 +827,6 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.organization,
       mapFrom((source) => {
-        const {} = source;
         return {
           area: source.complaint_identifier.geo_organization_unit_code || "",
           areaName: "",
@@ -1074,7 +1072,6 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.organization,
       mapFrom((source) => {
-        const {} = source;
         return {
           area: source.complaint_identifier.geo_organization_unit_code || "",
           areaName: "",

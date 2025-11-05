@@ -5,7 +5,6 @@ import { TeamUpdate } from "../../types/models/general/team-update";
 import {
   getTeams,
   getTeamByGuid,
-  getAppUsers,
   updateAppUser,
   getAppUserTeamXref,
   createAppUserTeamXref,

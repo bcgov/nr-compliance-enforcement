@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put } from "@nestjs/common";
+import { Controller, Get, Post, Body, Patch, Param, UseGuards, Put } from "@nestjs/common";
 import { AppUserService } from "./app_user.service";
 import { CreateAppUserDto } from "./dto/create-app-user.dto";
 import { UpdateAppUserDto } from "./dto/update-app-user.dto";

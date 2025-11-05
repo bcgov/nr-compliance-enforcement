@@ -307,9 +307,9 @@ export const getAppUsers = async (token: string, officeGuids?: string[], agencyC
   }
   if (agencyCode) queryParams += (queryParams ? ", " : "") + `agencyCode: "${agencyCode}"`;
 
-  const { data, errors } = await get(token, {
-    query: `{appUsers${queryParams ? `(${queryParams})` : ""} ${appUserQueryFields}}`,
-  });
+  const query = queryParams ? `{appUsers(${queryParams}) ${appUserQueryFields}}` : `{appUsers ${appUserQueryFields}}`;
+
+  const { data, errors } = await get(token, { query });
 
   if (errors) {
     throw new Error(`GraphQL errors occurred while fetching app users: ${JSON.stringify(errors)}`);
@@ -376,9 +376,9 @@ export const getOffices = async (token: string, geoOrganizationUnitCodes?: strin
   }
   if (agencyCode) queryParams += (queryParams ? ", " : "") + `agencyCode: "${agencyCode}"`;
 
-  const { data, errors } = await get(token, {
-    query: `{offices${queryParams ? `(${queryParams})` : ""} ${officeQueryFields}}`,
-  });
+  const query = queryParams ? `{offices(${queryParams}) ${officeQueryFields}}` : `{offices ${officeQueryFields}}`;
+
+  const { data, errors } = await get(token, { query });
 
   if (errors) {
     throw new Error(`GraphQL errors occurred while fetching offices: ${JSON.stringify(errors)}`);
@@ -465,9 +465,9 @@ export const getTeams = async (token: string, teamCode?: string, agencyCode?: st
   if (teamCode) queryParams = `teamCode: "${teamCode}"`;
   if (agencyCode) queryParams += (queryParams ? ", " : "") + `agencyCode: "${agencyCode}"`;
 
-  const { data, errors } = await get(token, {
-    query: `{teams${queryParams ? `(${queryParams})` : ""} ${teamQueryFields}}`,
-  });
+  const query = queryParams ? `{teams(${queryParams}) ${teamQueryFields}}` : `{teams ${teamQueryFields}}`;
+
+  const { data, errors } = await get(token, { query });
 
   if (errors) {
     throw new Error(`GraphQL errors occurred while fetching teams: ${JSON.stringify(errors)}`);
@@ -536,9 +536,11 @@ export const getCosGeoOrgUnits = async (
   if (distinctOfficeLocations)
     queryParams += (queryParams ? ", " : "") + `distinctOfficeLocations: ${distinctOfficeLocations}`;
 
-  const { data, errors } = await get(token, {
-    query: `{cosGeoOrgUnits${queryParams ? `(${queryParams})` : ""} ${cosGeoOrgUnitQueryFields}}`,
-  });
+  const query = queryParams
+    ? `{cosGeoOrgUnits(${queryParams}) ${cosGeoOrgUnitQueryFields}}`
+    : `{cosGeoOrgUnits ${cosGeoOrgUnitQueryFields}}`;
+
+  const { data, errors } = await get(token, { query });
 
   if (errors) {
     throw new Error(`GraphQL errors occurred while fetching COS geo org units: ${JSON.stringify(errors)}`);
@@ -567,9 +569,11 @@ export const searchCosGeoOrgUnitsByNames = async (
   if (distinctOfficeLocations)
     queryParams += (queryParams ? ", " : "") + `distinctOfficeLocations: ${distinctOfficeLocations}`;
 
-  const { data, errors } = await get(token, {
-    query: `{searchCosGeoOrgUnitsByNames${queryParams ? `(${queryParams})` : ""} ${cosGeoOrgUnitQueryFields}}`,
-  });
+  const query = queryParams
+    ? `{searchCosGeoOrgUnitsByNames(${queryParams}) ${cosGeoOrgUnitQueryFields}}`
+    : `{searchCosGeoOrgUnitsByNames ${cosGeoOrgUnitQueryFields}}`;
+
+  const { data, errors } = await get(token, { query });
 
   if (errors) {
     throw new Error(`Error fetching cos geo org units by names: ${JSON.stringify(errors)}`);
@@ -587,14 +591,14 @@ export const getCosGeoOrgUnitRegions = async (token: string) => {
   const units = await getCosGeoOrgUnits(token);
   const regionMap = new Map();
 
-  units.forEach((unit: any) => {
+  for (const unit of units) {
     if (!regionMap.has(unit.regionCode)) {
       regionMap.set(unit.regionCode, {
         code: unit.regionCode,
         name: unit.regionName,
       });
     }
-  });
+  }
 
   return Array.from(regionMap.values()).sort((a, b) => a.name.localeCompare(b.name));
 };
@@ -603,7 +607,7 @@ export const getCosGeoOrgUnitZones = async (token: string) => {
   const units = await getCosGeoOrgUnits(token);
   const zoneMap = new Map();
 
-  units.forEach((unit: any) => {
+  for (const unit of units) {
     if (!zoneMap.has(unit.zoneCode)) {
       zoneMap.set(unit.zoneCode, {
         code: unit.zoneCode,
@@ -611,7 +615,7 @@ export const getCosGeoOrgUnitZones = async (token: string) => {
         region: unit.regionCode,
       });
     }
-  });
+  }
 
   return Array.from(zoneMap.values()).sort((a, b) => a.name.localeCompare(b.name));
 };
@@ -620,7 +624,7 @@ export const getCosGeoOrgUnitCommunities = async (token: string) => {
   const units = await getCosGeoOrgUnits(token);
   const communityMap = new Map();
 
-  units.forEach((unit: any) => {
+  for (const unit of units) {
     if (unit.areaCode && !communityMap.has(unit.areaCode)) {
       communityMap.set(unit.areaCode, {
         code: unit.areaCode,
@@ -629,7 +633,7 @@ export const getCosGeoOrgUnitCommunities = async (token: string) => {
         region: unit.regionCode,
       });
     }
-  });
+  }
 
   return Array.from(communityMap.values()).sort((a, b) => a.name.localeCompare(b.name));
 };

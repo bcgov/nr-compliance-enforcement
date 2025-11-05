@@ -67,7 +67,7 @@ export class AppUserService {
     }
 
     if (authUserGuid) {
-      whereClause.auth_user_guid = authUserGuid.replace(/-/g, "").toUpperCase();
+      whereClause.auth_user_guid = authUserGuid.replaceAll("-", "").toUpperCase();
     }
 
     if (!userId && !authUserGuid && !appUserGuid) {
