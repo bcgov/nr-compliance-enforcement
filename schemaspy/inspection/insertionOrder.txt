@@ -1,9 +1,15 @@
 inspection_status_code
 officer_inspection_xref_code
 inspection
+inspection_party
+inspection_business
+inspection_person
 officer_inspection_xref
 flyway_schema_history
+inspection_business_h
 inspection_h
+inspection_party_h
+inspection_person_h
 inspection_status_code_h
 officer_inspection_xref_code_h
 officer_inspection_xref_h
