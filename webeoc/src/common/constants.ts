@@ -3,8 +3,8 @@ export const STAGING_API_ENDPOINT_UPDATES = "staging-complaint/webeoc-complaint-
 export const NATS_DURABLE_COMPLAINTS = `${process.env.COMPLAINT_STREAM_NAME}`;
 
 export const STREAMS = {
-  COMPLAINTS: `${process.env.COMPLAINT_STREAM_NAME}.complaints`,
-  ACTIONS_TAKEN: `${process.env.COMPLAINT_STREAM_NAME}.actions`,
+  COMPLAINTS: `${process.env.COMPLAINT_STREAM_NAME}-complaints`,
+  ACTIONS_TAKEN: `${process.env.COMPLAINT_STREAM_NAME}-actions`,
 };
 
 export const OPERATIONS = {
