@@ -197,7 +197,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
                           className="collaborator-name comp-avatar comp-avatar-sm comp-avatar-orange"
                           data-initials-sm={getAvatarInitials(`${collaborator.lastName}, ${collaborator.firstName}`)}
                         >
-                          {collaborator.firstName} {collaborator.lastName} |{" "}
+                          {collaborator.lastName}, {collaborator.firstName} |{" "}
                           <span className="fw-bold">
                             {
                               agencies.find((item: any) => item.agency === collaborator.collaboratorAgency)
