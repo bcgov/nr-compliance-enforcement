@@ -225,7 +225,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const collaboratorsTooltipOverlay = () => (
     <OverlayTrigger
       key={`${id}-collab-tooltip`}
-      placement="right"
+      placement="bottom"
       trigger={["hover", "click"]}
       overlay={
         <Tooltip
@@ -238,7 +238,8 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                 className="d-flex justify-content-start"
                 key={`${c.personComplaintXrefGuid}`}
               >
-                {c.lastName}, {c.firstName} |{" "}
+                {c.lastName}, {c.firstName}
+                <span className="mx-1">|</span>
                 <span className="fw-bold">
                   {agencyCodes?.find(({ agency }) => agency === c.collaboratorAgency)?.shortDescription}
                 </span>
