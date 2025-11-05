@@ -77,8 +77,8 @@ export class ComplaintReferralService {
 
       await this.complaintRepository.update({ complaint_identifier: id }, updateData);
     }
-    // Clear the officer assigend to the complaint
-    this._personService.clearAssignedOfficer(createComplaintReferralDto.complaint_identifier);
+    // Clear the officer assigned to the complaint
+    this._personService.clearAssignedAppUser(createComplaintReferralDto.complaint_identifier);
 
     if (sendEmail) {
       const recipientList = await this._emailService.sendReferralEmail(

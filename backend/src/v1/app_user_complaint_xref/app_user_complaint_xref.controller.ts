@@ -21,12 +21,12 @@ export class AppUserComplaintXrefController {
 
   @Post(":complaint_id")
   @Roles(coreRoles)
-  assignOfficer(
+  assignAppUser(
     @Param("complaint_id") complaintId: string,
     @Body() createPersonComplaintXrefDto: CreateAppUserComplaintXrefDto,
   ) {
     const queryRunner = this.dataSource.createQueryRunner();
-    return this.appUserComplaintXrefService.assignOfficer(queryRunner, complaintId, createPersonComplaintXrefDto, true);
+    return this.appUserComplaintXrefService.assignAppUser(queryRunner, complaintId, createPersonComplaintXrefDto, true);
   }
 
   @Get("/:app_user_guid/:complaint_id")

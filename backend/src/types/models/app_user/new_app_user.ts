@@ -1,4 +1,4 @@
-export interface NewOfficer {
+export interface NewAppUser {
   user_id: string;
   first_name: string;
   last_name: string;
@@ -16,4 +16,5 @@ export interface NewOfficer {
   };
   coms_enrolled_ind: boolean;
   deactivate_ind: boolean;
+  agency_code_ref: string | undefined;
 }

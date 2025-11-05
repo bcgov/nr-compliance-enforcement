@@ -128,7 +128,7 @@ export class AppUserComplaintXrefService {
    * If the complaint is already assigned to an app user and the intention is to reassign the complaint to another app user, then first deactivate the first assignment and then
    * create a new cross reference between the complaint and app user.
    */
-  async assignNewOfficer(
+  async assignNewAppUser(
     complaintIdentifier: string,
     createAppUserComplaintXrefDto: CreateAppUserComplaintXrefDto,
   ): Promise<AppUserComplaintXref> {
@@ -188,7 +188,7 @@ export class AppUserComplaintXrefService {
    * If the complaint is already assigned to an app user and the intention is to reassign the complaint to another app user, then first deactivate the first assignment and then
    * create a new cross reference between the complaint and app user.
    */
-  async assignOfficer(
+  async assignAppUser(
     queryRunner: QueryRunner,
     complaintIdentifier: string,
     createAppUserComplaintXrefDto: CreateAppUserComplaintXrefDto,
@@ -236,7 +236,7 @@ export class AppUserComplaintXrefService {
     return newAppUserComplaintXref;
   }
 
-  async clearAssignedOfficer(complaintIdentifier: string): Promise<void> {
+  async clearAssignedAppUser(complaintIdentifier: string): Promise<void> {
     try {
       const unassignedAppUserComplaintXref = await this.findAssignedByComplaint(complaintIdentifier);
       if (unassignedAppUserComplaintXref) {
@@ -259,7 +259,7 @@ export class AppUserComplaintXrefService {
     return `This action removes a #${id} appUserComplaintXref`;
   }
 
-  async unAssignOfficer(complaintIdentifier: string) {
+  async unAssignAppUser(complaintIdentifier: string) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();

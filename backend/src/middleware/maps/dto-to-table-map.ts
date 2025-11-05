@@ -1,7 +1,7 @@
 import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
-import { DelegateDto } from "../../types/models/people/delegate";
+import { DelegateDto } from "../../types/models/app_user/delegate";
 import { AttractantXrefTable } from "../../types/tables/attractant-xref.table";
 import { AppUserComplaintXrefTable } from "../../types/tables/app-user-complaint-xref.table";
 import { UpdateComplaintDto } from "../../types/models/complaints/dtos/update-complaint";

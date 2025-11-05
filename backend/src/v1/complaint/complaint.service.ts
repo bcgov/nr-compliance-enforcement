@@ -53,7 +53,7 @@ import {
   mapComplaintDtoToComplaintTable,
   mapDelegateDtoToAppUserComplaintXrefTable,
 } from "../../middleware/maps/dto-to-table-map";
-import { DelegateDto } from "../../types/models/people/delegate";
+import { DelegateDto } from "../../types/models/app_user/delegate";
 import { AppUserComplaintXrefService } from "../app_user_complaint_xref/app_user_complaint_xref.service";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
 import { AppUserComplaintXrefTable } from "../../types/tables/app-user-complaint-xref.table";
@@ -2154,7 +2154,7 @@ export class ComplaintService {
             converted.create_user_id = idir;
             converted.complaint_identifier = id;
 
-            await this._appUserComplaintXrefService.assignNewOfficer(id, converted as any);
+            await this._appUserComplaintXrefService.assignNewAppUser(id, converted as any);
           } else {
             //-- the complaint has no assigned officer
             const unassigned = delegates.filter(({ isActive }) => !isActive);
@@ -2169,11 +2169,11 @@ export class ComplaintService {
               converted.update_user_id = idir;
               converted.complaint_identifier = id;
 
-              this._appUserComplaintXrefService.assignNewOfficer(id, converted as any);
+              this._appUserComplaintXrefService.assignNewAppUser(id, converted as any);
             }
           }
         } else {
-          await this._appUserComplaintXrefService.unAssignOfficer(id);
+          await this._appUserComplaintXrefService.unAssignAppUser(id);
         }
 
         //-- apply complaint specific updates
@@ -2329,7 +2329,7 @@ export class ComplaintService {
             create_user_id: idir,
           } as any;
 
-          this._appUserComplaintXrefService.assignNewOfficer(complaintId, assignee);
+          this._appUserComplaintXrefService.assignNewAppUser(complaintId, assignee);
         }
       }
 

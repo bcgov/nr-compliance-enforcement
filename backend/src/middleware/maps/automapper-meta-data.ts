@@ -6,7 +6,7 @@ import { Complaint } from "../../v1/complaint/entities/complaint.entity";
 
 //-- models
 import { Attractant, NatureOfComplaint, Species, Violation, ReportedBy } from "../../types/models/code-tables";
-import { DelegateDto } from "../../types/models/people/delegate";
+import { DelegateDto } from "../../types/models/app_user/delegate";
 import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { HwcrComplaint } from "../../v1/hwcr_complaint/entities/hwcr_complaint.entity";
 import { AttractantCode } from "../../v1/attractant_code/entities/attractant_code.entity";

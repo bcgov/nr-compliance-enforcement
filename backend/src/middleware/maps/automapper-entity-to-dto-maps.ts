@@ -23,7 +23,7 @@ import {
   Species,
   Violation,
 } from "../../types/models/code-tables";
-import { DelegateDto } from "../../types/models/people/delegate";
+import { DelegateDto } from "../../types/models/app_user/delegate";
 import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
 import { GeneralIncidentComplaintDto } from "../../types/models/complaints/dtos/gir-complaint";
