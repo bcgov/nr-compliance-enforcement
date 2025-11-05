@@ -177,8 +177,7 @@ export class ComplaintService {
       case "hwcr_complaint_nature_code":
         return "wildlife";
       case "last_name":
-        // TODO: Sort by name via GraphQL API somehow or remove name sort
-        this.logger.warn("Sorting by last_name is no longer supported. Falling back to update_utc_timestamp.");
+        // last_name sorting is handled via GraphQL API in applyLastNameSort method
         return "complaint";
       case "gir_type_code":
         return "general";
@@ -239,6 +238,54 @@ export class ComplaintService {
 
     builder.addSelect(caseStatement, "area_sort_order");
     builder.orderBy("area_sort_order", orderBy);
+    builder.addOrderBy("complaint.incident_reported_utc_timestmp", "DESC");
+  }
+
+  // Fetches app users from GraphQL and returns a map of app_user_guid sorted by last_name
+  private async getLastNameSortMap(token: string): Promise<Map<string, number>> {
+    try {
+      const appUsers = await getAppUsers(token);
+
+      const sorted = [...appUsers].sort((a, b) => {
+        const lastNameA = (a.lastName || "").toLowerCase();
+        const lastNameB = (b.lastName || "").toLowerCase();
+        return lastNameA.localeCompare(lastNameB);
+      });
+
+      const sortMap = new Map<string, number>();
+      for (const [index, user] of sorted.entries()) {
+        if (user.appUserGuid) {
+          sortMap.set(user.appUserGuid, index);
+        }
+      }
+
+      return sortMap;
+    } catch (error) {
+      this.logger.error(`Error building last name sort map: ${error}`);
+      return new Map();
+    }
+  }
+
+  // Applies last_name sorting to a query builder using a CASE statement
+  private applyLastNameSort(
+    builder: SelectQueryBuilder<any>,
+    sortMap: Map<string, number>,
+    orderBy: "ASC" | "DESC",
+  ): void {
+    if (sortMap.size === 0) {
+      builder.orderBy("complaint.complaint_identifier", orderBy);
+      return;
+    }
+
+    let caseStatement = "(CASE delegate.app_user_guid_ref ";
+
+    for (const [appUserGuid, position] of sortMap) {
+      caseStatement += `WHEN '${appUserGuid.replaceAll("'", "''")}' THEN ${position} `;
+    }
+    caseStatement += "ELSE 9999 END)";
+
+    builder.addSelect(caseStatement, "last_name_sort_order");
+    builder.orderBy("last_name_sort_order", orderBy);
     builder.addOrderBy("complaint.incident_reported_utc_timestmp", "DESC");
   }
 
@@ -1475,6 +1522,10 @@ export class ComplaintService {
         if (sortBy === "area_name") {
           const areaSortMap = await this.getAreaNameSortMap(token);
           this.applyAreaNameSort(builder, areaSortMap, orderBy);
+        } else if (sortBy === "last_name") {
+          // Special handling for last_name sort since it's source is the GraphQL API
+          const lastNameSortMap = await this.getLastNameSortMap(token);
+          this.applyLastNameSort(builder, lastNameSortMap, orderBy);
         } else {
           builder
             .orderBy(sortString, orderBy, "NULLS LAST")
