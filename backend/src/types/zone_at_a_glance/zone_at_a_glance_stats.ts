@@ -11,7 +11,7 @@ export interface OfficeStats {
   name: string;
   assigned: number;
   unassigned: number;
-  appUsers?: OfficerStats[]; // Using OfficerStats for backward compatibility, but represents app users
+  appUsers?: OfficerStats[];
   officeGuid: UUID;
 }
 
@@ -19,5 +19,5 @@ export interface OfficerStats {
   name: string;
   hwcrAssigned: number;
   allegationAssigned: number;
-  appUserGuid: UUID; // Renamed from officerGuid to match new app_user structure
+  appUserGuid: UUID;
 }
