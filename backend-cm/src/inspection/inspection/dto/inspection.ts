@@ -7,6 +7,7 @@ import { PaginatedResult } from "src/common/pagination.utility";
 import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { IsOptional } from "class-validator";
 import { Point, PointScalar } from "src/common/custom_scalars";
+import { InspectionParty } from "src/inspection/inspection_party/dto/inspection_party";
 
 export class Inspection {
   inspectionGuid: string;
@@ -18,6 +19,7 @@ export class Inspection {
   locationGeometry?: Point;
   locationAddress?: string;
   locationDescription?: string;
+  parties: [InspectionParty];
 }
 
 @InputType()
@@ -67,7 +69,7 @@ export class CreateInspectionInput {
 
   @Field(() => String)
   name: string;
-  
+
   @Field(() => PointScalar, { nullable: true })
   @IsOptional()
   locationGeometry?: Point;
@@ -75,7 +77,7 @@ export class CreateInspectionInput {
   @Field(() => String)
   @IsOptional()
   locationDescription: string;
-  
+
   @Field(() => String)
   @IsOptional()
   locationAddress: string;
@@ -103,7 +105,7 @@ export class UpdateInspectionInput {
   @Field(() => String)
   @IsOptional()
   locationDescription: string;
-  
+
   @Field(() => String)
   @IsOptional()
   locationAddress: string;
@@ -149,6 +151,10 @@ export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
     forMember(
       (dest) => dest.locationGeometry,
       mapFrom((src) => src.location_geometry_point),
+    ),
+    forMember(
+      (dest) => dest.parties,
+      mapFrom((src) => mapper.mapArray(src.inspection_party ?? [], "inspection_party", "InspectionParty")),
     ),
   );
 };
