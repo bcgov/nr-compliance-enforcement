@@ -15,7 +15,7 @@ import {
   selectOfficersByZoneAgencyAndRole,
   updateComplaintAssignee,
 } from "@store/reducers/officer";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { BsPerson } from "react-icons/bs";
 import { from } from "linq-to-typescript";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";

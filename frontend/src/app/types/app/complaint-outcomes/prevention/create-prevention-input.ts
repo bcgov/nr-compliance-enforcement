@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { PreventionDto } from "./prevention";
 export interface CreatePreventionInput {
   complaintId: string;

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { ParkAreaDto } from "./park_area.dto";
 
 export class ParkDto {

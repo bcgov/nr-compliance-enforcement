@@ -5,7 +5,7 @@ import { WebEOCComplaintUpdateDTO } from "@apptypes/app/complaints/webeoc-compla
 import { formatDate, formatTime } from "@common/methods";
 import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 import { ComplaintReferral } from "@/app/types/app/complaints/complaint-referral";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { formatPhoneNumber } from "react-phone-number-input/input";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { selectOfficers } from "@store/reducers/officer";
@@ -102,14 +102,14 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
 
       const mappedReferrals = referrals.map((item) => {
         let officerName = "Unknown Officer";
-        
+
         if (item.app_user_guid_ref && officers) {
           const officer = officers.find((o) => o.app_user_guid === item.app_user_guid_ref);
           if (officer) {
             officerName = `${officer.first_name} ${officer.last_name}`;
           }
         }
-        
+
         return {
           type: "referral",
           id: item.complaint_referral_guid,

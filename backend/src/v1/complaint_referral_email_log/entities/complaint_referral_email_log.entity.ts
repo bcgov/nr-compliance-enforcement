@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { ComplaintReferral } from "../../complaint_referral/entities/complaint_referral.entity";
 import { Entity, Column, ManyToOne, JoinColumn, Index } from "typeorm";
 

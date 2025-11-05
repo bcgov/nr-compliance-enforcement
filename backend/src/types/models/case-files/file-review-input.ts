@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { CaseAction } from "./case-action";
 
 export interface FileReviewInput {

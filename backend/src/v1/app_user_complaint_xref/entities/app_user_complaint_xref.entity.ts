@@ -1,7 +1,7 @@
 import { Complaint } from "../../complaint/entities/complaint.entity";
 import { AppUserComplaintXrefCode } from "../../app_user_complaint_xref_code/entities/app_user_complaint_xref_code.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 
 /**
  * Links app users to complaints with specific relationship types (assignee, collaborator, suspect, etc.)

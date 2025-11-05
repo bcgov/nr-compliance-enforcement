@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 
 export class GeoOrgUnitTypeCodeDto {
   @ApiProperty({

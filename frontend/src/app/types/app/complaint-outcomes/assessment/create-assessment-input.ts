@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { AssessmentDto } from "./assessment";
 export interface CreateAssessmentInput {
   complaintId: string;

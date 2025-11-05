@@ -1,7 +1,7 @@
 import { Controller, Get, Body, Patch, Param, UseGuards, Query } from "@nestjs/common";
 import { TeamService } from "./team.service";
 import { ApiTags } from "@nestjs/swagger";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role } from "../../enum/role.enum";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";

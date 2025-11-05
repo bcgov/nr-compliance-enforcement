@@ -59,7 +59,7 @@ import { Complaint } from "@apptypes/app/complaints/complaint";
 import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
 import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { AttractantXref } from "@apptypes/app/complaints/attractant-xref";
 import { Button, Card } from "react-bootstrap";
 import { HWCROutcomeReport } from "@components/containers/complaints/outcomes/hwcr-outcome-report";

@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { EntityCode } from "../code-tables/entity-code";
 
 export interface StagingMetadataMappingDto {

@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { CreateAppUserDto } from "./dto/create-app-user.dto";
 import { UpdateAppUserDto } from "./dto/update-app-user.dto";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { CssService } from "../../external_api/css/css.service";
 import { Role } from "../../enum/role.enum";
 import { put } from "../../helpers/axios-api";

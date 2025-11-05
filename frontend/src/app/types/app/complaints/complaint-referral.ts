@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { Agency } from "../code-tables/agency";
 
 export interface ComplaintReferral {

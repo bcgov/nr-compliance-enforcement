@@ -1,6 +1,6 @@
 import { Complaint } from "../../complaint/entities/complaint.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 
 @Index("PK_linked_complaint_xref_guid", ["linkedComplaintXrefGuid"], {
   unique: true,

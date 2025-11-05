@@ -4,7 +4,7 @@ import config from "@/config";
 import { OfficerState } from "@apptypes/complaints/officers-state";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import { NewOfficer } from "@/app/types/person/new-officer";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { AppUserComplaintXref } from "@apptypes/complaints/app-user-complaint-xref";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import {
@@ -84,7 +84,9 @@ export const assignCurrentUserToComplaint =
   (userId: string, userGuid: UUID, complaint_identifier: string, complaint_type: string, isHeader: boolean): AppThunk =>
   async (dispatch) => {
     try {
-      let appUserParams = generateApiParameters(`${config.API_BASE_URL}/v1/app-user/find-by-auth-user-guid/${userGuid}`);
+      let appUserParams = generateApiParameters(
+        `${config.API_BASE_URL}/v1/app-user/find-by-auth-user-guid/${userGuid}`,
+      );
       let appUserResponse = await get<AppUser>(dispatch, appUserParams);
 
       if (appUserResponse.auth_user_guid === undefined) {
@@ -208,7 +210,6 @@ export const assignOfficerToOffice =
         return appUserId === item.app_user_guid;
       });
 
-
       const update = { ...selectedOfficer, office_guid: officeGuid };
       console.log("update", update);
       const { agency_code, ...updateWithoutAgencyCode } = update;
@@ -287,12 +288,7 @@ export const searchOfficers =
     //-- look for any officers that match firstname, lastname, or office
     if (input.length >= 2) {
       results = items.filter((officer) => {
-        const {
-          first_name: firstName,
-          last_name: lastName,
-          office_guid,
-          user_roles,
-        } = officer;
+        const { first_name: firstName, last_name: lastName, office_guid, user_roles } = officer;
         // Safely handle office_guid and cos_geo_org_unit
         const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? undefined; // Will be undefined if cos_geo_org_unit is null or undefined
 

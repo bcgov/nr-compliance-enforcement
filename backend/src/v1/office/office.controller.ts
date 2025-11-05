@@ -7,7 +7,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { OfficeAssignmentDto } from "../../types/models/office/office-assignment-dto";
 
 @ApiTags("office")

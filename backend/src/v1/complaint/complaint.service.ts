@@ -232,9 +232,9 @@ export class ComplaintService {
 
     let caseStatement = "(CASE complaint.geo_organization_unit_code ";
 
-    sortMap.forEach((position, areaCode) => {
-      caseStatement += `WHEN '${areaCode.replace(/'/g, "''")}' THEN ${position} `;
-    });
+    for (const [areaCode, position] of sortMap) {
+      caseStatement += `WHEN '${areaCode.replaceAll("'", "''")}' THEN ${position} `;
+    }
     caseStatement += "ELSE 9999 END)";
 
     builder.addSelect(caseStatement, "area_sort_order");
@@ -1510,7 +1510,7 @@ export class ComplaintService {
           }
 
           // inject the authorization id onto each complaint
-          items.forEach((item) => {
+          for (const item of items) {
             const complaintOutcome = data.getComplaintOutcomesByComplaintId.find(
               (file) => file.complaintId === item.id,
             );
@@ -1520,7 +1520,7 @@ export class ComplaintService {
                   ? "UA" + complaintOutcome.authorization.value
                   : complaintOutcome.authorization.value;
             }
-          });
+          }
 
           await this.setOrganization(items, token);
           results.complaints = items;
@@ -1664,7 +1664,7 @@ export class ComplaintService {
       // Create a map of area code to org data
       const orgDataMap = new Map();
 
-      areaCodes.forEach((areaCode) => {
+      for (const areaCode of areaCodes) {
         const orgUnit = orgUnits.find((unit: any) => unit.areaCode === areaCode);
         if (orgUnit) {
           orgDataMap.set(areaCode, {
@@ -1675,7 +1675,7 @@ export class ComplaintService {
             zone: orgUnit.zoneCode || "",
           });
         }
-      });
+      }
 
       // Add organization data to each complaint based on area code
       for (const complaint of complaints) {
@@ -1919,9 +1919,9 @@ export class ComplaintService {
           }
         }
 
-        clusters.forEach((cluster) => {
+        for (const cluster of clusters) {
           cluster.properties.zoom = index.getClusterExpansionZoom(cluster.properties.cluster_id);
-        });
+        }
 
         // set the results
         results.clusters = clusters;
@@ -2107,7 +2107,7 @@ export class ComplaintService {
           } else {
             //-- the complaint has no assigned officer
             const unassigned = delegates.filter(({ isActive }) => !isActive);
-            unassigned.forEach((officer) => {
+            for (const officer of unassigned) {
               const converted = this.mapper.map<DelegateDto, AppUserComplaintXrefTable>(
                 officer,
                 "DelegateDto",
@@ -2119,7 +2119,7 @@ export class ComplaintService {
               converted.complaint_identifier = id;
 
               this._appUserComplaintXrefService.assignNewOfficer(id, converted as any);
-            });
+            }
           }
         } else {
           await this._appUserComplaintXrefService.unAssignOfficer(id);
@@ -2337,7 +2337,7 @@ export class ComplaintService {
           await this._wildlifeComplaintRepository.save(newWildlife);
 
           if (attractants) {
-            attractants.forEach(({ attractant }) => {
+            for (const { attractant } of attractants) {
               const record = {
                 hwcr_complaint_guid: hwcrId,
                 attractant_code: attractant,
@@ -2346,7 +2346,7 @@ export class ComplaintService {
               } as any;
 
               this._attractantService.create(queryRunner, record);
-            });
+            }
           }
 
           break;
@@ -2756,10 +2756,12 @@ export class ComplaintService {
         }
 
         //add the officer/drug onto each drug row
-        animal.drugs?.forEach((drug) => {
-          drug.officer = drugActor;
-          drug.date = drugDate;
-        });
+        if (animal.drugs) {
+          for (const drug of animal.drugs) {
+            drug.officer = drugActor;
+            drug.date = drugDate;
+          }
+        }
 
         if (animal.tags?.length > 0) {
           animal.tags = animal.tags
@@ -2893,14 +2895,14 @@ export class ComplaintService {
 
       if (outcomeData.getComplaintOutcomeByComplaintId?.assessment?.length > 0) {
         hasOutcome = true;
-        await outcomeData.getComplaintOutcomeByComplaintId.assessment.forEach(async (assessment, index) => {
+        for (const [index, assessment] of outcomeData.getComplaintOutcomeByComplaintId.assessment.entries()) {
           const assessmentActions = [
             ...(Array.isArray(assessment?.actions) ? assessment.actions : []),
             ...(Array.isArray(assessment?.cat1Actions) ? assessment.cat1Actions : []),
           ];
 
           await _applyAssessmentData(assessment, assessmentActions, index);
-        });
+        }
       }
 
       if (prevention) {
@@ -3091,7 +3093,7 @@ export class ComplaintService {
         data = { ...data, inspection: [{ value: data.outcome.decision.inspectionNumber }] };
       }
       if (data.outcome.assessments) {
-        data.outcome.assessments.forEach((assessment) => {
+        for (const assessment of data.outcome.assessments) {
           if (assessment.locationType?.key) {
             data.assessmentLocation.push({ value: assessment.locationType.key });
           }
@@ -3104,7 +3106,7 @@ export class ComplaintService {
           if (assessment.legacyActions) {
             data.legacy.push({ actions: assessment.legacyActions });
           }
-        });
+        }
       }
       if (data.outcome.decision?.ipmAuthCategoryLongDescription) {
         data = { ...data, authCat: [{ value: data.outcome.decision.ipmAuthCategoryLongDescription }] };

@@ -15,7 +15,7 @@ import { selectOfficersByAgency } from "@store/reducers/officer";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM, DELETE_ANIMAL_OUTCOME } from "@apptypes/modal/modal-types";
 import { EditOutcome } from "./oucome-by-animal/edit-outcome";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { RootState } from "@/app/store/store";

@@ -26,7 +26,7 @@ import { CreatePreventionInput } from "@/app/types/app/complaint-outcomes/preven
 import { CreateNoteInput } from "@/app/types/app/complaint-outcomes/notes/create-note-input";
 import { UpdateNoteInput } from "@/app/types/app/complaint-outcomes/notes/update-note-input";
 import { DeleteNoteInput } from "@/app/types/app/complaint-outcomes/notes/delete-note-input";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { ReviewInput } from "@/app/types/app/complaint-outcomes/review-input";
 import { ReviewCompleteAction } from "@/app/types/app/complaint-outcomes/review-complete-action";
 import { EquipmentDetailsDto } from "@/app/types/app/complaint-outcomes/equipment-details";

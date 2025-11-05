@@ -6,7 +6,7 @@ import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role, coreRoles } from "../../enum/role.enum";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { User } from "../../auth/decorators/user.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
 

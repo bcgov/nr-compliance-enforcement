@@ -3,7 +3,7 @@ import { Action, createSelector, createSlice, PayloadAction, ThunkAction } from 
 import { RootState } from "../store";
 import { generateApiParameters, get } from "@/app/common/api";
 import config from "@/config";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 
 interface ParkState {
   parkCache: Record<string, Park>;

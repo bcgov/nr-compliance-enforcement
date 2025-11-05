@@ -1,12 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { CreateOfficeDto } from "./dto/create-office.dto";
 import { UpdateOfficeDto } from "./dto/update-office.dto";
 import { OfficeAssignmentDto } from "../../types/models/office/office-assignment-dto";
 import {
   getOffices,
   getCosGeoOrgUnits,
-  getAppUsers,
   createOffice,
   updateOffice,
   getOfficesByZone,

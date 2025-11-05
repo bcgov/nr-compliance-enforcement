@@ -3,7 +3,7 @@ import { AppThunk, RootState, store } from "@store/store";
 import { SsoToken } from "@apptypes/app/sso-token";
 import jwtDecode from "jwt-decode";
 import Profile from "@apptypes/app/profile";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import config from "@/config";
 import { generateApiParameters, get, patch, put } from "@common/api";
@@ -392,12 +392,15 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
 
       //Update user_id and name if the idir_username is different
       if (response.user_id !== idir_username) {
-        const updateUserIdParams = generateApiParameters(`${config.API_BASE_URL}/v1/app-user/${response.app_user_guid}`, {
-          user_id: idir_username,
-          first_name: given_name,
-          last_name: family_name,
-          coms_enrolled_ind: false,
-        });
+        const updateUserIdParams = generateApiParameters(
+          `${config.API_BASE_URL}/v1/app-user/${response.app_user_guid}`,
+          {
+            user_id: idir_username,
+            first_name: given_name,
+            last_name: family_name,
+            coms_enrolled_ind: false,
+          },
+        );
         await patch<AppUser>(dispatch, updateUserIdParams);
       }
 

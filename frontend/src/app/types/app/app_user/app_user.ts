@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { ReportedByCode } from "@apptypes/code-tables/reported-by-code";
 import { Agency } from "@apptypes/app/code-tables/agency";
 
@@ -85,4 +85,3 @@ export interface Delegate {
 export interface OfficeDto extends CosGeoOrgUnit {
   id: UUID;
 }
-

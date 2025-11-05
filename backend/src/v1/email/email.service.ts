@@ -215,7 +215,7 @@ export class EmailService {
       const senderName = `${family_name} ${given_name}`;
       const collaboratorAppUser = await this._appUserService.findByAppUserGuid(appUserGuid, token);
       const collaboratorUserRes = await this._cssService.getUserByGuid(
-        collaboratorAppUser.authUserGuid.replace(/-/g, ""),
+        collaboratorAppUser.authUserGuid.replaceAll("-", ""),
       );
       const collaborator = collaboratorUserRes[0];
       const { email, lastName, firstName } = collaborator;

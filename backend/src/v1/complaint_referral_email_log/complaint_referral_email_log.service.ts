@@ -3,7 +3,7 @@ import { Repository, In } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ComplaintReferralEmailLog } from "./entities/complaint_referral_email_log.entity";
 import { CreateComplaintReferralEmailLogDto } from "./dto/create-complaint_referral_email_log.dto";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 
 @Injectable()
 export class ComplaintReferralEmailLogService {

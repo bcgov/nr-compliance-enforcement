@@ -26,7 +26,7 @@ import { ACTION_TAKEN_ACTION_TYPES } from "../../types/constants";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 import { getAgenciesFromRoles } from "../../common/methods";
 import { AppUserComplaintXrefService } from "../app_user_complaint_xref/app_user_complaint_xref.service";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { SendCollaboratorEmalDto } from "../../v1/email/dto/send_collaborator_email.dto";
 import { User } from "../../auth/decorators/user.decorator";
 import { SectorComplaintDto } from "src/types/models/complaints/dtos/sector-complaint";

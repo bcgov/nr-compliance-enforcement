@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { ReviewCompleteAction } from "./review-complete-action";
 
 export interface ReviewInput {

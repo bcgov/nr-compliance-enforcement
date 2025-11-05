@@ -21,7 +21,7 @@ import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { getCaseFile, upsertDecisionOutcome } from "@/app/store/reducers/complaint-outcome-thunks";
 import { selectCaseId } from "@/app/store/reducers/complaint-outcome-selectors";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { getDropdownOption } from "@/app/common/methods";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";

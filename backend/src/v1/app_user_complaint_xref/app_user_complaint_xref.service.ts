@@ -7,7 +7,7 @@ import { ComplaintService } from "../complaint/complaint.service";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { REQUEST } from "@nestjs/core";
 import { AppUserComplaintXrefCodeEnum } from "../../enum/app_user_complaint_xref_code.enum";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { EmailService } from "../email/email.service";
 import { SendCollaboratorEmalDto } from "../email/dto/send_collaborator_email.dto";
 import { WebeocService } from "../../external_api/webeoc/webeoc.service";

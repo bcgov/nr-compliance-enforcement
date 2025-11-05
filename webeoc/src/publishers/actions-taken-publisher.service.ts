@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { connect, headers, JetStreamClient, JSONCodec } from "nats";
 import { STREAM_TOPICS } from "src/common/constants";
 import { ActionTaken } from "src/types/actions-taken/action-taken";

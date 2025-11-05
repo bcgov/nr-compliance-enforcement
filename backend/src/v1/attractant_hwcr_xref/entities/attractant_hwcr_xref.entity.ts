@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { AttractantCode } from "../../attractant_code/entities/attractant_code.entity";
 import { HwcrComplaint } from "../../hwcr_complaint/entities/hwcr_complaint.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
