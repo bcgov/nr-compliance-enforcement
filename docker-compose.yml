@@ -87,6 +87,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      migration-shared:
+        condition: service_completed_successfully
   migration-inspection:
     image: flyway/flyway:10-alpine
     container_name: migration-inspection
@@ -109,6 +111,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      migration-shared:
+        condition: service_completed_successfully
   migration-shared:
     image: flyway/flyway:10-alpine
     container_name: migration-shared
