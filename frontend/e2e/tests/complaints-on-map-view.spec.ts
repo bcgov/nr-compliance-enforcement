@@ -8,9 +8,7 @@ HWLC and Enforcement list screens
 */
 test.describe("Complaints on map tests", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
-  //const complaintTypes = ["#hwcr-tab", "#ers-tab"];
-  // When bug CE-2006 is addressed, the ERS tab should be added
-  const complaintTypes = ["#hwcr-tab"];
+  const complaintTypes = ["#hwcr-tab", "#ers-tab"];
 
   // perform the same test on each of the tabs (HWCR and ERS)
   for (const type of complaintTypes) {
@@ -107,13 +105,12 @@ test.describe("Complaints on map tests", () => {
       const markerCluster = page.locator(".marker-cluster");
       await expect(markerCluster.first()).toBeVisible();
       await markerCluster.first().click({ force: true });
-      const markerPoint = page.locator(".leaflet-marker-icon.map-marker svg");
-      await markerPoint.first().click({ force: true });
+      await page.locator(".leaflet-marker-icon.map-marker svg").first().click();
 
       // wait for the popup to load
       await expect(page.locator(".leaflet-popup")).toBeVisible();
       await expect(page.locator(".comp-summary-popup-location em")).toBeVisible();
-      await expect(page.locator(".comp-summary-popup-location em")).toContainText("Kelowna");
+      await expect(await page.locator(".comp-summary-popup-location em")).toContainText("Kelowna");
 
       // click the "view details" button to navigate to the complaint
 
