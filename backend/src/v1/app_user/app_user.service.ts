@@ -30,14 +30,12 @@ export class AppUserService {
     appUsers = appUsers.sort((a, b) => (a.lastName || "").localeCompare(b.lastName || ""));
 
     const roleMapping = await this.cssService.getUserRoleMapping();
-    this.logger.debug(`Role mapping fetched: ${JSON.stringify(roleMapping)}`);
 
     if (roleMapping) {
       let useGuid: string;
       appUsers = appUsers.map((user) => {
         useGuid = Object.keys(roleMapping).find((key) => key === user.authUserGuid);
         const userRoles = roleMapping[useGuid] ?? [];
-        this.logger.debug(`Roles for user ${user.userId} (${user.authUserGuid}): ${JSON.stringify(userRoles)}`);
 
         return {
           app_user_guid: user.appUserGuid,
