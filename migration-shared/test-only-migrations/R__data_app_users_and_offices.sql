@@ -34864,7 +34864,7 @@ SET agency_code_ref = 'COS'
 WHERE agency_code_ref IS NULL;
 
 
--- Delete any users that are in the complaint schema already as they will be migrated via the migration-complaint schema. This really only applies to test to support CE-1996
+-- Delete any users that are in the complaint schema already as they will be migrated via the migration-complaint schema. This really only applies to the test deployment to support CE-1996
 DO $$
 BEGIN
   -- Check if the complaint schema exists
@@ -34882,5 +34882,5 @@ BEGIN
     RETURN;
   END IF;
   
-  DELETE FROM app_user where auth_user_guid IN (select auth_user_guid from complaint.officer);
+  DELETE FROM app_user where user_id IN (select user_id from complaint.officer);
 END $$;
