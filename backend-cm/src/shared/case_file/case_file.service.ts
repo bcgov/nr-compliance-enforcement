@@ -115,7 +115,7 @@ export class CaseFileService {
         name: input.name,
         opened_utc_timestamp: new Date(),
         create_user_id: this.user.getIdirUsername(),
-        created_by_app_user_guid_ref: this.user.getUserGuid(),
+        created_by_app_user_guid_ref: input.createdByAppUserGuid,
       },
       include: {
         agency_code: true,

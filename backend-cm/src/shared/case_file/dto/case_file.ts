@@ -40,6 +40,9 @@ export class CaseFileCreateInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   activityIdentifier?: string;
+
+  @Field(() => String)
+  createdByAppUserGuid: string;
 }
 
 @InputType()

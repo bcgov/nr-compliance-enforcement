@@ -82,6 +82,9 @@ export class CreateInspectionInput {
   @Field(() => String)
   @IsOptional()
   locationAddress: string;
+
+  @Field(() => String)
+  createdByAppUserGuid: string;
 }
 
 @InputType()

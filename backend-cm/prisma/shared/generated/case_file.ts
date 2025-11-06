@@ -34,6 +34,9 @@ export class case_file {
   @ApiProperty({ type: String })
   name: string;
 
+  @ApiPropertyOptional({ type: String })
+  created_by_app_user_guid_ref?: string;
+
   @ApiProperty({ isArray: true, type: () => case_activity })
   case_activity: case_activity[];
 

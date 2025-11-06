@@ -24,6 +24,7 @@ input CreateInvestigationInput {
   locationAddress: String
   locationDescription: String
   name: String!
+  createdByAppUserGuid: String!
 }
 
 input UpdateInvestigationInput {

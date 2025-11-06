@@ -84,6 +84,9 @@ export class CreateInvestigationInput {
   @Field(() => String)
   @IsOptional()
   name: string;
+
+  @Field(() => String)
+  createdByAppUserGuid: string;
 }
 
 @InputType()

@@ -47,6 +47,7 @@ input CreateInspectionInput {
   locationGeometry: Point
   locationAddress: String
   locationDescription: String
+  createdByAppUserGuid: String!
 }
 
 input UpdateInspectionInput {
