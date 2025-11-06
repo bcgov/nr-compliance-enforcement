@@ -14,6 +14,7 @@ export class CaseFile {
   caseStatus: CaseStatusCode;
   description?: string;
   name: string;
+  createdByAppUserGuid?: string;
   activities: CaseActivity[];
 }
 
@@ -149,6 +150,10 @@ export const mapPrismaCaseFileToCaseFile = (mapper: Mapper) => {
     forMember(
       (dest) => dest.name,
       mapFrom((src) => src.name),
+    ),
+    forMember(
+      (dest) => dest.createdByAppUserGuid,
+      mapFrom((src) => src.created_by_app_user_guid_ref),
     ),
     forMember(
       (dest) => dest.activities,

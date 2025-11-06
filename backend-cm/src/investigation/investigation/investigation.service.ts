@@ -149,6 +149,7 @@ export class InvestigationService {
             name: input.name,
             investigation_opened_utc_timestamp: new Date(),
             create_user_id: this.user.getIdirUsername(),
+            created_by_app_user_guid_ref: this.user.getUserGuid(),
             create_utc_timestamp: new Date(),
           },
           include: {

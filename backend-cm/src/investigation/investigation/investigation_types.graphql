@@ -7,6 +7,7 @@ type Investigation {
   investigationStatus: InvestigationStatusCode
   openedTimestamp: Date
   caseIdentifier: String
+  createdByAppUserGuid: String
   locationGeometry: Point
   locationAddress: String
   locationDescription: String

@@ -30,6 +30,7 @@ model investigation {
   location_geometry_point            Unsupported("geometry")?
   location_address                   String?                      @db.VarChar(120)
   location_description               String?                      @db.VarChar(4000)
+  created_by_app_user_guid_ref       String?                      @db.Uuid
   investigation_status_code          investigation_status_code    @relation(fields: [investigation_status], references: [investigation_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_investigation__investigation_status")
   investigation_party                investigation_party[]
   officer_investigation_xref         officer_investigation_xref[]
