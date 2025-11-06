@@ -2655,7 +2655,7 @@ export class ComplaintService {
         const agencyTable = await this._codeTableService.getCodeTableByName("agency", token);
         const agency_code = agencyTable?.find((agency: any) => agency.agency === agency_code_ref)?.shortDescription;
 
-        assessment.assessmentActor = `${first_name}, ${last_name} (${agency_code})`;
+        assessment.assessmentActor = `${last_name}, ${first_name} (${agency_code})`;
 
         //Apply timezone and format date
         assessment.assessmentDate = _applyTimezone(assessment.assessmentDate, tz, "date");
