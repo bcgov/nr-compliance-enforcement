@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { AssessmentDto } from "./assessment/assessment";
 import { ReviewCompleteAction } from "./review-complete-action";
 import { PreventionDto } from "./prevention/prevention";

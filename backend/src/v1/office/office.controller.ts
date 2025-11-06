@@ -6,7 +6,8 @@ import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { UUID } from "crypto";
+import { Token } from "../../auth/decorators/token.decorator";
+import { UUID } from "node:crypto";
 import { OfficeAssignmentDto } from "../../types/models/office/office-assignment-dto";
 
 @ApiTags("office")
@@ -20,40 +21,39 @@ export class OfficeController {
 
   @Get("/offices-by-agency")
   @Roles(coreRoles)
-  async findOffices(): Promise<Array<OfficeAssignmentDto>> {
-    const result = await this.officeService.findOffices();
+  async findOffices(@Token() token: string): Promise<Array<OfficeAssignmentDto>> {
+    const result = await this.officeService.findOffices(token);
     return result;
   }
 
   @Get(":id")
   @Roles(coreRoles)
-  findOne(@Param("id") id: UUID) {
-    return this.officeService.findOne(id);
+  findOne(@Param("id") id: UUID, @Token() token: string) {
+    return this.officeService.findOne(id, token);
   }
 
   @Get("/by-zone/:zone_code")
   @Roles(coreRoles)
-  findOfficesByZone(@Param("zone_code") zone_code: string) {
-    return this.officeService.findOfficesByZone(zone_code);
+  findOfficesByZone(@Param("zone_code") zone_code: string, @Token() token: string) {
+    return this.officeService.findOfficesByZone(zone_code, token);
   }
 
   @Get("/by-geo-code/:code")
   @Roles(coreRoles)
-  findByGeoOrgCode(@Param("code") code: string) {
-    return this.officeService.findByGeoOrgCode(code);
+  findByGeoOrgCode(@Param("code") code: string, @Token() token: string) {
+    return this.officeService.findByGeoOrgCode(code, token);
   }
 
   @Post()
   @Roles(coreRoles)
-  create(@Body() createOfficeDto: CreateOfficeDto) {
-    return this.officeService.create(createOfficeDto);
+  create(@Body() createOfficeDto: CreateOfficeDto, @Token() token: string) {
+    return this.officeService.create(createOfficeDto, token);
   }
 
-  @HttpCode(501)
   @Patch(":id")
   @Roles(coreRoles)
-  update(@Param("id") id: string, @Body() updateOfficeDto: UpdateOfficeDto) {
-    return this.officeService.update(+id, updateOfficeDto);
+  update(@Param("id") id: UUID, @Body() updateOfficeDto: UpdateOfficeDto, @Token() token: string) {
+    return this.officeService.update(id, updateOfficeDto, token);
   }
 
   @HttpCode(501)

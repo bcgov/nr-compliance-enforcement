@@ -77,49 +77,22 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
       mapFrom((src) => src.reportedOn),
     ),
     forMember(
-      (dest) => dest.cos_geo_org_unit,
-      mapFrom((src) => {
-        const { area, zone, region } = src.organization;
-        return { area_code: area, zone_code: zone, region_code: region };
-      }),
-    ),
-    forMember(
       (dest) => dest.geo_organization_unit_code,
-      mapFrom((src) => {
-        const { area } = src.organization;
-        return { geo_organization_unit_code: area };
-      }),
+      mapFrom((src) => src.organization?.area || ""),
     ),
     forMember(
-      (dest) => dest.person_complaint_xref,
+      (dest) => dest.app_user_complaint_xref,
       mapFrom((src) => {
-        if (src.delegates) {
-          const items = src.delegates.map((item) => {
-            const {
-              xrefId,
-              isActive,
-              type,
-              person: { id, firstName, lastName, middleName1, middleName2 },
-            } = item;
-            let record = {
-              personComplaintXrefGuid: xrefId,
-              active_ind: isActive,
-              person_complaint_xref_code: {
-                person_complaint_xref_code: type,
-              },
-              person_guid: {
-                person_guid: id,
-                first_name: firstName,
-                middle_name_1: middleName1,
-                middle_name_2: middleName2,
-                last_name: lastName,
-              },
-            };
-
-            return record;
-          });
-          return items;
+        const { delegates } = src;
+        if (!delegates || !Array.isArray(delegates)) {
+          return [];
         }
+
+        return delegates.map((delegate) => ({
+          active_ind: delegate.isActive,
+          app_user_guid: delegate.appUserGuid,
+          app_user_complaint_xref_code: { app_user_complaint_xref_code: delegate.type },
+        }));
       }),
     ),
     forMember(
@@ -231,49 +204,22 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
       mapFrom((src) => src.reportedOn),
     ),
     forMember(
-      (dest) => dest.complaint_identifier.cos_geo_org_unit,
-      mapFrom((src) => {
-        const { area, zone, region } = src.organization;
-        return { area_code: area, zone_code: zone, region_code: region };
-      }),
-    ),
-    forMember(
       (dest) => dest.complaint_identifier.geo_organization_unit_code,
-      mapFrom((src) => {
-        const { area } = src.organization;
-        return { geo_organization_unit_code: area };
-      }),
+      mapFrom((src) => src.organization?.zone || ""),
     ),
     forMember(
-      (dest) => dest.complaint_identifier.person_complaint_xref,
+      (dest) => dest.complaint_identifier.app_user_complaint_xref,
       mapFrom((src) => {
-        if (src.delegates) {
-          const items = src.delegates.map((item) => {
-            const {
-              xrefId,
-              isActive,
-              type,
-              person: { id, firstName, lastName, middleName1, middleName2 },
-            } = item;
-            let record = {
-              personComplaintXrefGuid: xrefId,
-              active_ind: isActive,
-              person_complaint_xref_code: {
-                person_complaint_xref_code: type,
-              },
-              person_guid: {
-                person_guid: id,
-                first_name: firstName,
-                middle_name_1: middleName1,
-                middle_name_2: middleName2,
-                last_name: lastName,
-              },
-            };
-
-            return record;
-          });
-          return items;
+        const { delegates } = src;
+        if (!delegates || !Array.isArray(delegates)) {
+          return [];
         }
+
+        return delegates.map((delegate) => ({
+          active_ind: delegate.isActive,
+          app_user_guid: delegate.appUserGuid,
+          app_user_complaint_xref_code: { app_user_complaint_xref_code: delegate.type },
+        }));
       }),
     ),
     forMember(
@@ -431,49 +377,22 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (mapper: Mapper) =
       mapFrom((src) => src.reportedOn),
     ),
     forMember(
-      (dest) => dest.complaint_identifier.cos_geo_org_unit,
-      mapFrom((src) => {
-        const { area, zone, region } = src.organization;
-        return { area_code: area, zone_code: zone, region_code: region };
-      }),
-    ),
-    forMember(
       (dest) => dest.complaint_identifier.geo_organization_unit_code,
-      mapFrom((src) => {
-        const { area } = src.organization;
-        return { geo_organization_unit_code: area };
-      }),
+      mapFrom((src) => src.organization?.zone || ""),
     ),
     forMember(
-      (dest) => dest.complaint_identifier.person_complaint_xref,
+      (dest) => dest.complaint_identifier.app_user_complaint_xref,
       mapFrom((src) => {
-        if (src.delegates) {
-          const items = src.delegates.map((item) => {
-            const {
-              xrefId,
-              isActive,
-              type,
-              person: { id, firstName, lastName, middleName1, middleName2 },
-            } = item;
-            let record = {
-              personComplaintXrefGuid: xrefId,
-              active_ind: isActive,
-              person_complaint_xref_code: {
-                person_complaint_xref_code: type,
-              },
-              person_guid: {
-                person_guid: id,
-                first_name: firstName,
-                middle_name_1: middleName1,
-                middle_name_2: middleName2,
-                last_name: lastName,
-              },
-            };
-
-            return record;
-          });
-          return items;
+        const { delegates } = src;
+        if (!delegates || !Array.isArray(delegates)) {
+          return [];
         }
+
+        return delegates.map((delegate) => ({
+          active_ind: delegate.isActive,
+          app_user_guid: delegate.appUserGuid,
+          app_user_complaint_xref_code: { app_user_complaint_xref_code: delegate.type },
+        }));
       }),
     ),
     forMember(
@@ -604,17 +523,22 @@ export const mapGirComplaintDtoToGirComplaint = (mapper: Mapper) => {
       mapFrom((src) => src.reportedOn),
     ),
     forMember(
-      (dest) => dest.complaint_identifier.cos_geo_org_unit,
-      mapFrom((src) => {
-        const { area, zone, region } = src.organization;
-        return { area_code: area, zone_code: zone, region_code: region };
-      }),
+      (dest) => dest.complaint_identifier.geo_organization_unit_code,
+      mapFrom((src) => src.organization?.zone || ""),
     ),
     forMember(
-      (dest) => dest.complaint_identifier.geo_organization_unit_code,
+      (dest) => dest.complaint_identifier.app_user_complaint_xref,
       mapFrom((src) => {
-        const { area } = src.organization;
-        return { geo_organization_unit_code: area };
+        const { delegates } = src;
+        if (!delegates || !Array.isArray(delegates)) {
+          return [];
+        }
+
+        return delegates.map((delegate) => ({
+          active_ind: delegate.isActive,
+          app_user_guid: delegate.appUserGuid,
+          app_user_complaint_xref_code: { app_user_complaint_xref_code: delegate.type },
+        }));
       }),
     ),
     forMember(
@@ -723,17 +647,22 @@ export const mapSectorComplaintDtoToSectorComplaint = (mapper: Mapper) => {
       mapFrom((src) => src.reportedOn),
     ),
     forMember(
-      (dest) => dest.cos_geo_org_unit,
-      mapFrom((src) => {
-        const { area, zone, region } = src.organization;
-        return { area_code: area, zone_code: zone, region_code: region };
-      }),
+      (dest) => dest.geo_organization_unit_code,
+      mapFrom((src) => src.organization?.area || ""),
     ),
     forMember(
-      (dest) => dest.geo_organization_unit_code,
+      (dest) => dest.app_user_complaint_xref,
       mapFrom((src) => {
-        const { area } = src.organization;
-        return { geo_organization_unit_code: area };
+        const { delegates } = src;
+        if (!delegates || !Array.isArray(delegates)) {
+          return [];
+        }
+
+        return delegates.map((delegate) => ({
+          active_ind: delegate.isActive,
+          app_user_guid: delegate.appUserGuid,
+          app_user_complaint_xref_code: { app_user_complaint_xref_code: delegate.type },
+        }));
       }),
     ),
     forMember(

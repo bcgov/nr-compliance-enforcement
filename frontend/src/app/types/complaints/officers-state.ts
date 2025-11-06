@@ -1,5 +1,5 @@
-import { Officer } from "@apptypes/person/person";
+import { AppUser } from "@apptypes/app/app_user/app_user";
 
 export interface OfficerState {
-  officers: Officer[];
+  officers: AppUser[];
 }

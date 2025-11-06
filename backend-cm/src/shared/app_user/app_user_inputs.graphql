@@ -1,0 +1,23 @@
+input CreateAppUserInput {
+  authUserGuid: String
+  userId: String
+  firstName: String!
+  lastName: String!
+  agencyCode: String
+  officeGuid: String
+  parkAreaGuid: String
+  comsEnrolledIndicator: Boolean
+  deactivateIndicator: Boolean
+}
+
+input UpdateAppUserInput {
+  authUserGuid: String
+  userId: String
+  firstName: String
+  lastName: String
+  agencyCode: String
+  officeGuid: String
+  parkAreaGuid: String
+  comsEnrolledIndicator: Boolean
+  deactivateIndicator: Boolean
+}

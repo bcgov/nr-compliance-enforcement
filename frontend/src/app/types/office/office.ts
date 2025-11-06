@@ -1,5 +1,5 @@
 import { AgencyCode } from "@apptypes/code-tables/agency-code";
-import { CosGeoOrgUnit, Officer } from "@apptypes/person/person";
+import { CosGeoOrgUnit, AppUser } from "@apptypes/app/app_user/app_user";
 
 export interface Office {
   office_guid: string;
@@ -9,5 +9,5 @@ export interface Office {
   updateTimestamp: Date;
   cos_geo_org_unit: CosGeoOrgUnit;
   agency_code: AgencyCode;
-  officers: Officer[];
+  officers: AppUser[];
 }

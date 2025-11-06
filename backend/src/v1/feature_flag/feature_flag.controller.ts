@@ -2,7 +2,7 @@ import { Controller, Get, Body, Patch, Param, UseGuards } from "@nestjs/common";
 import { FeatureFlagService } from "./feature_flag.service";
 import { UpdateFeatureAgencyXrefDto } from "./dto/update-feature_agency_xref.dto";
 import { ApiTags } from "@nestjs/swagger";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role, coreRoles } from "../../enum/role.enum";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";

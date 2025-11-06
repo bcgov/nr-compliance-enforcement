@@ -300,9 +300,7 @@ const getFilters = (
   } else if (UserService.hasRole(Roles.PARKS)) {
     filters = { ...filters, area: defaultParkArea };
   } else if (currentOfficer && !UserService.hasRole(Roles.CEEB_COMPLIANCE_COORDINATOR)) {
-    const {
-      person: { firstName, lastName, id },
-    } = currentOfficer;
+    const { first_name: firstName, last_name: lastName, app_user_guid: id } = currentOfficer;
     const officer = { label: `${lastName}, ${firstName}`, value: id };
     filters = { ...filters, officer };
   }

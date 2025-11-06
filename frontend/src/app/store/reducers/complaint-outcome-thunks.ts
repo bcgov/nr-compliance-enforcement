@@ -15,7 +15,7 @@ import {
   setReviewComplete,
 } from "./complaint-outcomes";
 import { Assessment } from "@apptypes/outcomes/assessment";
-import { Officer } from "@apptypes/person/person";
+import { AppUser } from "@apptypes/app/app_user/app_user";
 import { AssessmentActionDto } from "@/app/types/app/complaint-outcomes/assessment/assessment-action";
 import { UpdateAssessmentInput } from "@/app/types/app/complaint-outcomes/assessment/update-assessment-input";
 import { CreateAssessmentInput } from "@/app/types/app/complaint-outcomes/assessment/create-assessment-input";
@@ -26,7 +26,7 @@ import { CreatePreventionInput } from "@/app/types/app/complaint-outcomes/preven
 import { CreateNoteInput } from "@/app/types/app/complaint-outcomes/notes/create-note-input";
 import { UpdateNoteInput } from "@/app/types/app/complaint-outcomes/notes/update-note-input";
 import { DeleteNoteInput } from "@/app/types/app/complaint-outcomes/notes/delete-note-input";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { ReviewInput } from "@/app/types/app/complaint-outcomes/review-input";
 import { ReviewCompleteAction } from "@/app/types/app/complaint-outcomes/review-complete-action";
 import { EquipmentDetailsDto } from "@/app/types/app/complaint-outcomes/equipment-details";
@@ -328,7 +328,7 @@ const updateAssessment =
     });
   };
 
-const parseAssessmentResponse = async (res: ComplaintOutcomeDto, officers: Officer[]): Promise<Assessment[] | null> =>
+const parseAssessmentResponse = async (res: ComplaintOutcomeDto, officers: AppUser[]): Promise<Assessment[] | null> =>
   res?.assessment?.map((assessment: AssessmentDto) => {
     const { actor, actionDate } = assessment.actions.map((action: { actor: any; date: any }) => {
       return { actor: action.actor, actionDate: action.date };
@@ -339,7 +339,7 @@ const parseAssessmentResponse = async (res: ComplaintOutcomeDto, officers: Offic
     let officerNames = officers
       .filter((person) => person.auth_user_guid === actor)
       .map((officer) => {
-        return `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`;
+        return `${officer.last_name}, ${officer.first_name}`;
       });
 
     if (officerNames?.length) {
@@ -562,7 +562,7 @@ export const deletePrevention =
 
 const parsePreventionResponse = async (
   res: ComplaintOutcomeDto,
-  officers: Officer[],
+  officers: AppUser[],
 ): Promise<Prevention[] | undefined | null> =>
   res?.prevention?.map((prevention: PreventionDto) => {
     const { actor, actionDate } = prevention.actions.map((action) => {
@@ -573,7 +573,7 @@ const parsePreventionResponse = async (
     let officerNames = officers
       .filter((person) => person.auth_user_guid === actor)
       .map((officer) => {
-        return `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`;
+        return `${officer.last_name}, ${officer.first_name}`;
       });
 
     if (officerNames?.length) {
@@ -724,7 +724,7 @@ export const deleteNote =
 
     if (currentNotes.find((note: Note) => note.id === id)) {
       const officer = officers.find((item) => item.user_id === idir);
-      const result = await dispatch(_deleteNote(id, officer ? officer.officer_guid : "", idir));
+      const result = await dispatch(_deleteNote(id, officer ? officer.app_user_guid : "", idir));
 
       if (result !== null) {
         dispatch(setComplaintOutcomeGuid(result.complaintOutcomeGuid));
@@ -1130,7 +1130,7 @@ export const deleteAnimalOutcome =
       };
 
     const officer = officers.find((item) => item.user_id === idir);
-    const result = await dispatch(_deleteAnimalOutcome(id, complaintId, officer ? officer.officer_guid : "", idir));
+    const result = await dispatch(_deleteAnimalOutcome(id, complaintId, officer ? officer.app_user_guid : "", idir));
 
     if (result) {
       const { complaintOutcomeGuid } = result;

@@ -3,8 +3,8 @@ import { AppThunk, RootState, store } from "@store/store";
 import { SsoToken } from "@apptypes/app/sso-token";
 import jwtDecode from "jwt-decode";
 import Profile from "@apptypes/app/profile";
-import { UUID } from "crypto";
-import { Officer } from "@apptypes/person/person";
+import { UUID } from "node:crypto";
+import { AppUser } from "@apptypes/app/app_user/app_user";
 import config from "@/config";
 import { generateApiParameters, get, patch, put } from "@common/api";
 import { AUTH_TOKEN, getUserAgency } from "@service/user-service";
@@ -152,9 +152,9 @@ export const userGuid = (state: RootState) => {
   return profile.idir;
 };
 
-export const personGuid = (state: RootState) => {
+export const appUserGuid = (state: RootState) => {
   const { profile } = state.app;
-  return profile.personGuid;
+  return profile.appUserGuid;
 };
 
 export const userId = (state: RootState) => {
@@ -386,27 +386,22 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       idir_user_guid_transformed = idir_user_guid as UUID;
 
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${idir_user_guid}`,
+        `${config.API_BASE_URL}/v1/app-user/find-by-auth-user-guid/${idir_user_guid}`,
       );
-      const response = await get<Officer>(dispatch, parameters);
+      const response = await get<AppUser>(dispatch, parameters);
 
-      //Update user_id and person name if the idir_username is different
+      //Update user_id and name if the idir_username is different
       if (response.user_id !== idir_username) {
-        const updateUserIdParams = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${response.officer_guid}`, {
-          user_id: idir_username,
-          coms_enrolled_ind: false,
-        });
-        await patch<Officer>(dispatch, updateUserIdParams);
-
-        // Also update related person name
-        const updatePersonParams = generateApiParameters(
-          `${config.API_BASE_URL}/v1/person/${response.person_guid.person_guid}`,
+        const updateUserIdParams = generateApiParameters(
+          `${config.API_BASE_URL}/v1/app-user/${response.app_user_guid}`,
           {
+            user_id: idir_username,
             first_name: given_name,
             last_name: family_name,
+            coms_enrolled_ind: false,
           },
         );
-        await patch<Officer>(dispatch, updatePersonParams);
+        await patch<AppUser>(dispatch, updateUserIdParams);
       }
 
       let office = "";
@@ -415,7 +410,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       let zone = "";
       let zoneDescription = "";
       let agency = response.agency_code_ref;
-      let personGuid = response.person_guid.person_guid;
+      let appUserGuid = response.app_user_guid;
       let comsEnrolledInd = response.coms_enrolled_ind;
       let parkAreaGuid = response.park_area_guid;
 
@@ -432,11 +427,15 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       }
 
       if (!comsEnrolledInd) {
-        const requestComsAccessParams = generateApiParameters(
-          `${config.API_BASE_URL}/v1/officer/request-coms-access/${response.officer_guid}`,
-        );
-        const res = await put<Officer>(dispatch, requestComsAccessParams);
-        comsEnrolledInd = res.coms_enrolled_ind;
+        try {
+          const requestComsAccessParams = generateApiParameters(
+            `${config.API_BASE_URL}/v1/app-user/request-coms-access/${response.app_user_guid}`,
+          );
+          const res = await put<AppUser>(dispatch, requestComsAccessParams);
+          comsEnrolledInd = res.coms_enrolled_ind;
+        } catch (error) {
+          console.error(error);
+        }
       }
 
       const profile: Profile = {
@@ -451,7 +450,7 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
         zone: zone,
         zoneDescription: zoneDescription,
         agency,
-        personGuid,
+        appUserGuid,
         comsEnrolledInd,
         parkAreaGuid,
       };
@@ -475,8 +474,8 @@ export const getOfficerDefaultZone = (): AppThunk => async (dispatch) => {
       const decoded: SsoToken = jwtDecode<SsoToken>(token);
       const { idir_username } = decoded;
 
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-userid/${idir_username}`);
-      const response = await get<Officer>(dispatch, parameters);
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/app-user/find-by-userid/${idir_username}`);
+      const response = await get<AppUser>(dispatch, parameters);
 
       if (response.office_guid !== null) {
         const {
@@ -588,7 +587,7 @@ const initialState: AppState = {
     zone: "",
     zoneDescription: "",
     agency: "",
-    personGuid: "",
+    appUserGuid: "",
     comsEnrolledInd: null,
     parkAreaGuid: null,
   },
@@ -645,7 +644,7 @@ const reducer = (state: AppState = initialState, action: any): AppState => {
         zone: payload.zone,
         zoneDescription: payload.zoneDescription,
         agency: payload.agency,
-        personGuid: payload.personGuid,
+        appUserGuid: payload.appUserGuid,
         comsEnrolledInd: payload.comsEnrolledInd,
         parkAreaGuid: payload.parkAreaGuid,
       };

@@ -1,9 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { FeatureCode } from "../../feature_code/entities/feature_code.entity";
 
-@Entity()
+@Entity("feature_agency_xref", { schema: "complaint" })
 export class FeatureAgencyXref {
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",

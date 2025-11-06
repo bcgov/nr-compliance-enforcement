@@ -1,7 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { Complaint } from "../../complaint/entities/complaint.entity";
-import { Person } from "../../person/entities/person.entity";
 
 export class LinkedComplaintXrefDto {
   @ApiProperty({
@@ -61,12 +60,7 @@ export class LinkedComplaintXrefDto {
 
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-    description: "The person who created the link between complaints",
+    description: "The app user who created the link between complaints",
   })
-  public person_guid: UUID;
-
-  @ApiProperty({
-    description: "The person who created the link",
-  })
-  public person: Person;
+  public app_user_guid: UUID;
 }

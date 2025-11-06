@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { ComplaintDto } from "./complaint";
 import { AttractantXrefDto } from "../attractant-ref";
 

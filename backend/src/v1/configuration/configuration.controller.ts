@@ -36,6 +36,7 @@ export class ConfigurationController {
           query:
             '{configurationCodes (configurationCode: "CDTABLEVER") {configurationCode configurationValue  activeIndicator}}',
         });
+
         let caseData = {};
         let complaintData = {};
         if (data) {
@@ -57,7 +58,11 @@ export class ConfigurationController {
 
       return result;
     } catch (err) {
-      this.logger.error(`Error calling configurationCode ${configurationCode}`, err);
+      this.logger.error(
+        `Error calling configurationCode ${configurationCode}: ${err?.message || "Unknown error"}`,
+        err?.stack || err,
+      );
+      throw err;
     }
   }
 }

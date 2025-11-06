@@ -1,0 +1,10 @@
+type Query {
+  offices(geoOrganizationUnitCodes: [String!], agencyCode: String): [Office]!
+  office(officeGuid: String, geoOrganizationUnitCode: String, agencyCode: String): Office
+  officesByZone(zoneCode: String!): [Office]!
+}
+
+type Mutation {
+  createOffice(input: CreateOfficeInput!): Office
+  updateOffice(officeGuid: String!, input: UpdateOfficeInput!): Office
+}

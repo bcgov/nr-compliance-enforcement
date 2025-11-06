@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 
 export interface ZoneAtAGlanceStats {
   total: number;
@@ -11,7 +11,7 @@ export interface OfficeStats {
   name: string;
   assigned: number;
   unassigned: number;
-  officers?: OfficerStats[];
+  appUsers?: OfficerStats[];
   officeGuid: UUID;
 }
 
@@ -19,5 +19,5 @@ export interface OfficerStats {
   name: string;
   hwcrAssigned: number;
   allegationAssigned: number;
-  officerGuid: UUID;
+  appUserGuid: UUID;
 }
