@@ -2651,11 +2651,11 @@ export class ComplaintService {
         assessment.assessmentDate = assessmentActions[0].date;
 
         const appUser = await this._appUserService.findByAuthUserGuid(assessment.assessmentActor, token);
-        const { firstName, lastName } = appUser;
+        const { first_name, last_name, agency_code_ref } = appUser;
         const agencyTable = await this._codeTableService.getCodeTableByName("agency", token);
-        const agency_code = agencyTable?.find((agency: any) => agency.agency === appUser.agencyCode)?.shortDescription;
+        const agency_code = agencyTable?.find((agency: any) => agency.agency === agency_code_ref)?.shortDescription;
 
-        assessment.assessmentActor = `${lastName}, ${firstName} (${agency_code})`;
+        assessment.assessmentActor = `${first_name}, ${last_name} (${agency_code})`;
 
         //Apply timezone and format date
         assessment.assessmentDate = _applyTimezone(assessment.assessmentDate, tz, "date");
@@ -2674,12 +2674,12 @@ export class ComplaintService {
           prevention.preventionActor = prevention.actions[0].actor;
           prevention.preventionDate = prevention.actions[0].date;
 
-          const { firstName, lastName } = await this._appUserService.findByAuthUserGuid(
+          const { first_name, last_name } = await this._appUserService.findByAuthUserGuid(
             prevention.preventionActor,
             token,
           );
 
-          prevention.preventionActor = `${lastName}, ${firstName}`;
+          prevention.preventionActor = `${last_name}, ${first_name}`;
 
           //Apply timezone and format date
           prevention.preventionDate = _applyTimezone(prevention.preventionDate, tz, "date");
@@ -2709,8 +2709,8 @@ export class ComplaintService {
         if (setByAction?.actor) {
           officerPromises.push(
             this._appUserService.findByAuthUserGuid(setByAction.actor, token).then((result) => {
-              const { firstName, lastName } = result;
-              equip.setByActor = `${lastName}, ${firstName}`;
+              const { first_name, last_name } = result;
+              equip.setByActor = `${last_name}, ${first_name}`;
               equip.setByDate = setByAction.date;
             }),
           );
@@ -2719,8 +2719,8 @@ export class ComplaintService {
         if (removedByAction?.actor) {
           officerPromises.push(
             this._appUserService.findByAuthUserGuid(removedByAction?.actor, token).then((result) => {
-              const { firstName, lastName } = result;
-              removedByAction.actor = `${lastName}, ${firstName}`;
+              const { first_name, last_name } = result;
+              removedByAction.actor = `${last_name}, ${first_name}`;
             }),
           );
         }
@@ -2780,8 +2780,8 @@ export class ComplaintService {
         if (animal.officer) {
           officerPromises.push(
             this._appUserService.findByAuthUserGuid(animal.officer, token).then((result) => {
-              const { firstName, lastName } = result;
-              animal.officer = `${lastName}, ${firstName}`;
+              const { first_name, last_name } = result;
+              animal.officer = `${last_name}, ${first_name}`;
             }),
           );
         }
@@ -2789,8 +2789,8 @@ export class ComplaintService {
         if (drugActor) {
           officerPromises.push(
             this._appUserService.findByAuthUserGuid(drugActor, token).then((result) => {
-              const { firstName, lastName } = result;
-              drugActor = `${lastName}, ${firstName}`;
+              const { first_name, last_name } = result;
+              drugActor = `${last_name}, ${first_name}`;
             }),
           );
         }
@@ -2831,9 +2831,9 @@ export class ComplaintService {
       let noteCount = 1;
       for (const note of notes) {
         //-- Convert Officer Guid to Name
-        const { firstName, lastName } = await this._appUserService.findByAuthUserGuid(note.actions[0].actor, token);
+        const { first_name, last_name } = await this._appUserService.findByAuthUserGuid(note.actions[0].actor, token);
 
-        note.actions[0].actor = lastName + ", " + firstName;
+        note.actions[0].actor = last_name + ", " + first_name;
         note.actions[0].date = _applyTimezone(note.actions[0].date, tz, "datetime");
         //give it a nice friendly number as nothing comes back from the GQL
         note.order = noteCount;
@@ -2850,11 +2850,11 @@ export class ComplaintService {
         caseFile.reviewComplete.activeIndicator = caseFile.reviewComplete.activeIndicator ? "Yes" : "No";
 
         //-- Convert Officer Guid to Name
-        const { firstName, lastName } = await this._appUserService.findByAuthUserGuid(
+        const { first_name, last_name } = await this._appUserService.findByAuthUserGuid(
           caseFile.reviewComplete.actor,
           token,
         );
-        caseFile.reviewComplete.actor = lastName + ", " + firstName;
+        caseFile.reviewComplete.actor = last_name + ", " + first_name;
         //File Review Date - No Action Array
         caseFile.reviewComplete.date = _applyTimezone(caseFile.reviewComplete.date, tz, "date");
       }

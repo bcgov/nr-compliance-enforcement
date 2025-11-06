@@ -140,10 +140,11 @@ export class EmailService {
       );
 
       let communityName = "";
-      if (complaint.organization?.zone) {
+      if (complaint.organization?.area) {
         try {
-          const cosGeoOrgUnits = await getCosGeoOrgUnits(token, complaint.organization.zone, undefined, true);
-          communityName = cosGeoOrgUnits[0]?.areaName || "";
+          const cosGeoOrgUnits = await getCosGeoOrgUnits(token);
+          const orgUnit = cosGeoOrgUnits.find((unit: any) => unit.areaCode === complaint.organization.area);
+          communityName = orgUnit?.areaName || "";
         } catch (error) {
           this.logger.error(`Failed to fetch community name from GraphQL: ${error}`);
           communityName = complaint.organization?.area || "";
@@ -215,7 +216,7 @@ export class EmailService {
       const senderName = `${family_name} ${given_name}`;
       const collaboratorAppUser = await this._appUserService.findByAppUserGuid(appUserGuid, token);
       const collaboratorUserRes = await this._cssService.getUserByGuid(
-        collaboratorAppUser.authUserGuid.replaceAll("-", ""),
+        collaboratorAppUser.auth_user_guid.replaceAll("-", ""),
       );
       const collaborator = collaboratorUserRes[0];
       const { email, lastName, firstName } = collaborator;
