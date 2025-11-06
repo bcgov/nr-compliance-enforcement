@@ -364,7 +364,7 @@ model event_verb_type_code {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model app_user {
   app_user_guid        String               @id(map: "PK_app_user") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  auth_user_guid       String?              @db.Uuid
+  auth_user_guid       String?              @unique @db.Uuid
   user_id              String?              @db.VarChar(32)
   first_name           String?              @db.VarChar(32)
   last_name            String?              @db.VarChar(32)
