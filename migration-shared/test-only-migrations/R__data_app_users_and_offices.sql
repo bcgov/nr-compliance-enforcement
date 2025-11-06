@@ -34863,3 +34863,24 @@ UPDATE app_user
 SET agency_code_ref = 'COS'
 WHERE agency_code_ref IS NULL;
 
+
+-- Delete any users that are in the complaint schema already as they will be migrated via the migration-complaint schema. This really only applies to test to support CE-1996
+DO $$
+BEGIN
+  -- Check if the complaint schema exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'complaint') THEN
+    RETURN;
+  END IF;
+  
+  -- Check if the officer table exists in the complaint schema
+  IF NOT EXISTS (
+    SELECT 1 
+    FROM information_schema.tables 
+    WHERE table_schema = 'complaint' 
+    AND table_name = 'officer'
+  ) THEN
+    RETURN;
+  END IF;
+  
+  DELETE FROM app_user where auth_user_guid IN (select auth_user_guid from complaint.officer);
+END $$;
