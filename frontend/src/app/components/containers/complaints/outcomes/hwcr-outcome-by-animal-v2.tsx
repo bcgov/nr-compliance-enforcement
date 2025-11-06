@@ -15,7 +15,7 @@ import { selectOfficersByAgency } from "@store/reducers/officer";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM, DELETE_ANIMAL_OUTCOME } from "@apptypes/modal/modal-types";
 import { EditOutcome } from "./oucome-by-animal/edit-outcome";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { RootState } from "@/app/store/store";
@@ -144,13 +144,11 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
 
     if (delegates && from(delegates).any()) {
       const assigned = delegates.find((item) => item.type === "ASSIGNEE");
-      if (assigned && assigned?.person !== null) {
-        const {
-          person: { id },
-        } = assigned;
+      if (assigned && assigned?.appUserGuid !== null) {
+        const appUserGuid = assigned.appUserGuid;
 
         if (officersInAgencyList) {
-          const officerAssigned: any = officersInAgencyList.filter((officer) => officer.person_guid.person_guid === id);
+          const officerAssigned: any = officersInAgencyList.filter((officer) => officer.app_user_guid === appUserGuid);
           if (officerAssigned.length === 1) {
             setAssignedOfficer(officerAssigned[0].auth_user_guid);
           }

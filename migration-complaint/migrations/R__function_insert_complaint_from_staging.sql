@@ -157,8 +157,13 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     FROM   complaint.insert_and_return_code( _webeoc_cos_reffered_by_lst, 'reprtdbycd' )
     INTO   _cos_reffered_by_lst;
     
-    SELECT *
-    FROM   complaint.insert_and_return_code( _webeoc_cos_area_community, 'geoorgutcd' )
+    -- Select from staging_metadata_mapping directly for the geo_organization_unit_code
+    -- If it doesn't exist, will return null instead of creating a new code. We will address
+    -- the missing code case in CE-568
+    SELECT live_data_value
+    FROM   complaint.staging_metadata_mapping
+    WHERE  staged_data_value = _webeoc_cos_area_community
+    AND    entity_code = 'geoorgutcd'
     INTO   _geo_organization_unit_code;
     
     -- Insert data into 'complaint' table

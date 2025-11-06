@@ -13,7 +13,7 @@ export interface ComplaintHeader {
   zone?: string;
   complaintAgency?: string;
   officerAssigned: string;
-  personGuid: string;
+  appUserGuid: string;  // Renamed from personGuid
   firstName?: string;
   lastName?: string;
   girType?: string;

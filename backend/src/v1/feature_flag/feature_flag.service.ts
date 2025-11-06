@@ -5,7 +5,7 @@ import { FeatureAgencyXref } from "./entities/feature_agency_xref.entity";
 import { DataSource, QueryRunner, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { REQUEST } from "@nestjs/core";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 
 @Injectable()
 export class FeatureFlagService {

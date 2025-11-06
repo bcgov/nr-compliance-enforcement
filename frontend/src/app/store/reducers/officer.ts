@@ -2,10 +2,10 @@ import { Action, createSlice, createSelector, ThunkAction } from "@reduxjs/toolk
 import { RootState, AppThunk } from "@store/store";
 import config from "@/config";
 import { OfficerState } from "@apptypes/complaints/officers-state";
-import { Officer } from "@apptypes/person/person";
-import { NewOfficer } from "@/app/types/person/new-officer";
-import { UUID } from "crypto";
-import { PersonComplaintXref } from "@apptypes/complaints/person-complaint-xref";
+import { AppUser } from "@apptypes/app/app_user/app_user";
+import { NewAppUser } from "@apptypes/app/app_user/new-app-user";
+import { UUID } from "node:crypto";
+import { AppUserComplaintXref } from "@apptypes/complaints/app-user-complaint-xref";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import {
   updateWildlifeComplaintByRow,
@@ -17,7 +17,7 @@ import {
 } from "./complaints";
 import { generateApiParameters, get, patch, post } from "@common/api";
 import { from } from "linq-to-typescript";
-import { NewPersonComplaintXref } from "@apptypes/api-params/new-person-complaint-xref";
+import { NewAppUserComplaintXref } from "@apptypes/api-params/new-app-user-complaint-xref";
 import Option from "@apptypes/app/option";
 import { toggleNotification } from "./app";
 import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
@@ -59,8 +59,8 @@ export const getOfficers =
   (zone?: string): AppThunk =>
   async (dispatch, getState) => {
     try {
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/`);
-      const response = await get<Array<Officer>>(dispatch, parameters);
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/app-user/`);
+      const response = await get<Array<AppUser>>(dispatch, parameters);
       const agencyTable = getState()?.codeTables?.agency as CodeTableState["agency"] | undefined;
 
       for (const officer of response) {
@@ -84,20 +84,22 @@ export const assignCurrentUserToComplaint =
   (userId: string, userGuid: UUID, complaint_identifier: string, complaint_type: string, isHeader: boolean): AppThunk =>
   async (dispatch) => {
     try {
-      let officerParams = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-auth-user-guid/${userGuid}`);
-      let officerResponse = await get<Officer>(dispatch, officerParams);
+      let appUserParams = generateApiParameters(
+        `${config.API_BASE_URL}/v1/app-user/find-by-auth-user-guid/${userGuid}`,
+      );
+      let appUserResponse = await get<AppUser>(dispatch, appUserParams);
 
-      if (officerResponse.auth_user_guid === undefined) {
-        officerParams = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-userid/${userId}`);
+      if (appUserResponse.auth_user_guid === undefined) {
+        appUserParams = generateApiParameters(`${config.API_BASE_URL}/v1/app-user/find-by-userid/${userId}`);
 
-        let officerByUserIdResponse = await get<Officer>(dispatch, officerParams);
-        const officerGuid = officerByUserIdResponse.officer_guid;
+        let appUserByUserIdResponse = await get<AppUser>(dispatch, appUserParams);
+        const appUserGuid = appUserByUserIdResponse.app_user_guid;
 
-        officerParams = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${officerGuid}`, {
+        appUserParams = generateApiParameters(`${config.API_BASE_URL}/v1/app-user/${appUserGuid}`, {
           auth_user_guid: userGuid,
         });
 
-        await patch<Officer>(dispatch, officerParams);
+        await patch<AppUser>(dispatch, appUserParams);
       }
 
       dispatch(
@@ -106,7 +108,7 @@ export const assignCurrentUserToComplaint =
           complaint_identifier,
           complaint_type,
           isHeader,
-          officerResponse.person_guid.person_guid as UUID,
+          appUserResponse.app_user_guid as UUID,
         ),
       );
     } catch (error) {
@@ -121,27 +123,25 @@ export const updateComplaintAssignee =
     complaint_identifier: string,
     complaint_type: string,
     isHeader: boolean,
-    person_guid?: UUID,
+    appUserGuid?: UUID,
   ): AppThunk =>
   async (dispatch) => {
     try {
       // add new person complaint record
       const payload = {
         active_ind: true,
-        person_guid: {
-          person_guid: person_guid,
-        },
+        app_user_guid: appUserGuid,
         complaint_identifier: complaint_identifier,
-        person_complaint_xref_code: "ASSIGNEE",
+        app_user_complaint_xref_code: "ASSIGNEE",
         create_user_id: currentUser,
-      } as NewPersonComplaintXref;
+      } as NewAppUserComplaintXref;
 
-      // assign a complaint to a person
-      let personComplaintXrefGuidParams = generateApiParameters(
-        `${config.API_BASE_URL}/v1/person-complaint-xref/${complaint_identifier}`,
+      // assign a complaint to an app user
+      let appUserComplaintXrefGuidParams = generateApiParameters(
+        `${config.API_BASE_URL}/v1/app-user-complaint-xref/${complaint_identifier}`,
         payload,
       );
-      await post<Array<PersonComplaintXref>>(dispatch, personComplaintXrefGuidParams);
+      await post<Array<AppUserComplaintXref>>(dispatch, appUserComplaintXrefGuidParams);
 
       if (!isHeader) {
         // thunk was called via the list view, get the latest version
@@ -172,7 +172,7 @@ export const updateComplaintAssignee =
 
 //-- assign a user to a complaint and return the result of the assignment
 export const assignComplaintToOfficer =
-  (id: string, personId: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (id: string, appUserId: string): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     const {
       app: {
@@ -181,17 +181,15 @@ export const assignComplaintToOfficer =
     } = getState();
 
     // assign a complaint to a person
-    let payload = generateApiParameters(`${config.API_BASE_URL}/v1/person-complaint-xref/${id}`, {
+    let payload = generateApiParameters(`${config.API_BASE_URL}/v1/app-user-complaint-xref/${id}`, {
       active_ind: true,
-      person_guid: {
-        person_guid: personId,
-      },
+      app_user_guid: appUserId,
       complaint_identifier: id,
-      person_complaint_xref_code: "ASSIGNEE",
+      app_user_complaint_xref_code: "ASSIGNEE",
       create_user_id: currentUser,
     });
 
-    const result = await post<Array<PersonComplaintXref>>(dispatch, payload);
+    const result = await post<Array<AppUserComplaintXref>>(dispatch, payload);
 
     if (result) {
       return "success";
@@ -201,7 +199,7 @@ export const assignComplaintToOfficer =
   };
 
 export const assignOfficerToOffice =
-  (personId: string, officeId: string): AppThunk =>
+  (appUserId: string, officeGuid: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       officers: { officers },
@@ -209,26 +207,16 @@ export const assignOfficerToOffice =
 
     try {
       const selectedOfficer = officers.find((item) => {
-        const { person_guid: person } = item;
-        const { person_guid: _personId } = person;
-
-        return personId === _personId;
+        return appUserId === item.app_user_guid;
       });
 
-      const { office_guid: office } = selectedOfficer || {};
-      let updatedOffice;
-      if (officeId) {
-        updatedOffice = { ...office, office_guid: officeId };
-      } else updatedOffice = null;
-
-      const update = { ...selectedOfficer, office_guid: updatedOffice };
+      const update = { ...selectedOfficer, office_guid: officeGuid };
       const { agency_code, ...updateWithoutAgencyCode } = update;
 
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${selectedOfficer?.officer_guid}`, {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/app-user/${selectedOfficer?.app_user_guid}`, {
         ...updateWithoutAgencyCode,
       });
-
-      const response = await patch<Array<Officer>>(dispatch, parameters);
+      const response = await patch<Array<AppUser>>(dispatch, parameters);
 
       if (response && from(response).any()) {
         dispatch(toggleNotification("success", "officer assigned"));
@@ -240,11 +228,11 @@ export const assignOfficerToOffice =
   };
 
 export const createOfficer =
-  (newOfficerData: NewOfficer): AppThunk =>
+  (newOfficerData: NewAppUser): AppThunk =>
   async (dispatch, getState) => {
     try {
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer`, newOfficerData);
-      const response = await post<Officer>(dispatch, parameters);
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/app-user`, newOfficerData);
+      const response = await post<AppUser>(dispatch, parameters);
       if (response) {
         ToggleSuccess("Officer created successfully");
         dispatch(getOfficers());
@@ -260,12 +248,12 @@ export const createOfficer =
 export const updateOfficer =
   (
     officerGuid: string,
-    updatedData: Partial<Officer>,
+    updatedData: Partial<AppUser>,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
     try {
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/${officerGuid}`, updatedData);
-      const response = await patch<Officer>(dispatch, parameters);
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/app-user/${officerGuid}`, updatedData);
+      const response = await patch<AppUser>(dispatch, parameters);
 
       if (response) {
         return "success";
@@ -279,7 +267,7 @@ export const updateOfficer =
 
 //-- selectors
 
-export const selectOfficers = (state: RootState): Officer[] | null => {
+export const selectOfficers = (state: RootState): AppUser[] | null => {
   const { officers: officerRoot } = state;
   const { officers } = officerRoot;
 
@@ -288,22 +276,18 @@ export const selectOfficers = (state: RootState): Officer[] | null => {
 
 export const searchOfficers =
   (input: string, agency: string, complaintType: string) =>
-  (state: RootState): Array<Officer> => {
+  (state: RootState): Array<AppUser> => {
     const {
       officers: { officers: items },
     } = state;
 
-    let results: Array<Officer> = [];
+    let results: Array<AppUser> = [];
     const searchInput = input.toLowerCase();
     const role = mapAgencyToRole(agency);
     //-- look for any officers that match firstname, lastname, or office
     if (input.length >= 2) {
       results = items.filter((officer) => {
-        const {
-          person_guid: { first_name: firstName, last_name: lastName },
-          office_guid,
-          user_roles,
-        } = officer;
+        const { first_name: firstName, last_name: lastName, office_guid, user_roles } = officer;
         // Safely handle office_guid and cos_geo_org_unit
         const fromAdminOffice = office_guid?.cos_geo_org_unit?.administrative_office_ind ?? undefined; // Will be undefined if cos_geo_org_unit is null or undefined
 
@@ -329,7 +313,7 @@ export const searchOfficers =
 // find officers that have an office in the given zone
 export const selectOfficersByZone =
   (zone?: string) =>
-  (state: RootState): Officer[] | null => {
+  (state: RootState): AppUser[] | null => {
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
 
@@ -357,7 +341,7 @@ const mapAgencyToRole = (agency: string): string => {
   return role;
 };
 
-export const filterOfficerByAgency = (agency: string, officers: Officer[]): Officer[] => {
+export const filterOfficerByAgency = (agency: string, officers: AppUser[]): AppUser[] => {
   const role = mapAgencyToRole(agency);
   const result = officers.filter((officer) => {
     const { office_guid, user_roles } = officer;
@@ -406,7 +390,7 @@ export const selectOfficersAndCollaboratorsByAgency = createSelector(
   (state: RootState) => state.officers.officers,
   (state: RootState) => state.complaints.complaintCollaborators as Collaborator[],
   (state: RootState, agency: string) => agency,
-  (officers, complaintCollaborators, agency): Officer[] => {
+  (officers, complaintCollaborators, agency): AppUser[] => {
     // First let's trim down to only the officers for a specific agency
     const officersByAgency = filterOfficerByAgency(agency, officers);
     const officerGuids = new Set(officersByAgency.map((officer) => officer.auth_user_guid));
@@ -418,7 +402,7 @@ export const selectOfficersAndCollaboratorsByAgency = createSelector(
         // Try to find the full officer data based on authUserGuid
         return officers.find((o) => o.auth_user_guid === c.authUserGuid);
       })
-      .filter((o): o is Officer => o !== undefined); // remove undefined so we can guarantee the return type
+      .filter((o): o is AppUser => o !== undefined); // remove undefined so we can guarantee the return type
 
     return [...officersByAgency, ...extraOfficersFromCollaborators];
   },
@@ -429,9 +413,9 @@ export const selectOfficerListByAgency = createSelector(
   (officers, complaint): Array<Option> => {
     if (complaint?.ownedBy) {
       const officerList = filterOfficerByAgency(complaint.ownedBy, officers || []);
-      const officerDropdown = officerList.map((officer: Officer) => ({
+      const officerDropdown = officerList.map((officer: AppUser) => ({
         value: officer.auth_user_guid,
-        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+        label: `${officer.last_name}, ${officer.first_name}`,
       }));
       return officerDropdown;
     }
@@ -445,9 +429,9 @@ export const selectOfficerAndCollaboratorListByAgency = createSelector(
     if (complaint?.ownedBy) {
       const officerList = filterOfficerByAgency(complaint.ownedBy, officers ?? []);
 
-      const officerOptions = officerList.map((officer: Officer) => ({
+      const officerOptions = officerList.map((officer: AppUser) => ({
         value: officer.auth_user_guid,
-        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+        label: `${officer.last_name}, ${officer.first_name}`,
       }));
 
       const collaboratorOptions = collaborators.map((collaborator: Collaborator) => ({
@@ -472,11 +456,11 @@ export const selectOfficersByAgencyDropdownUsingPersonGuid =
     const officerList = filterOfficerByAgency(agency, officers);
     const officerDropdown = officerList
       .filter(
-        (officer: Officer) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+        (officer: AppUser) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
       ) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR.
-      .map((officer: Officer) => ({
-        value: officer.person_guid.person_guid,
-        label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+      .map((officer: AppUser) => ({
+        value: officer.app_user_guid,
+        label: `${officer.last_name}, ${officer.first_name}`,
       }));
 
     return officerDropdown;
@@ -484,7 +468,7 @@ export const selectOfficersByAgencyDropdownUsingPersonGuid =
 
 export const selectOfficersByReportedBy =
   (reportedBy: string) =>
-  (state: RootState): Officer[] | null => {
+  (state: RootState): AppUser[] | null => {
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
 
@@ -497,7 +481,7 @@ export const selectOfficersByReportedBy =
 
 export const selectOfficersByZoneAgencyAndRole =
   (agency: string, zone?: string, park_area_guids?: string[]) =>
-  (state: RootState): Officer[] | null => {
+  (state: RootState): AppUser[] | null => {
     const { officers: officerRoot } = state;
     const { officers } = officerRoot;
 
@@ -543,13 +527,13 @@ export const selectOfficersByZoneAgencyAndRole =
 
 export const selectOfficerByIdir =
   (idir: string) =>
-  (state: RootState): Officer | null => {
+  (state: RootState): AppUser | null => {
     const {
       officers: { officers: data },
     } = state;
     const selected = data.find(({ user_id }) => user_id === idir);
 
-    if (selected?.person_guid) {
+    if (selected?.app_user_guid) {
       return selected;
     }
 
@@ -558,7 +542,7 @@ export const selectOfficerByIdir =
 
 export const selectOfficerByAuthUserGuid =
   (userGuid: string) =>
-  (state: RootState): Officer | null => {
+  (state: RootState): AppUser | null => {
     const {
       officers: { officers: data },
     } = state;
@@ -572,14 +556,14 @@ export const selectOfficerByAuthUserGuid =
   };
 
 export const selectOfficerByPersonGuid =
-  (personGuid: string | undefined) =>
-  (state: RootState): Officer | null => {
+  (appUserGuid: string | undefined) =>
+  (state: RootState): AppUser | null => {
     const {
       officers: { officers: data },
     } = state;
-    if (personGuid) {
-      const selected = data.find(({ person_guid }) => person_guid.person_guid === personGuid);
-      if (selected?.person_guid) {
+    if (appUserGuid) {
+      const selected = data.find(({ app_user_guid }) => app_user_guid === appUserGuid);
+      if (selected?.app_user_guid) {
         return selected;
       }
     }
@@ -590,37 +574,9 @@ export const selectOfficerByPersonGuid =
 export const selectCurrentOfficer = createSelector(
   (state: RootState) => state.app.profile.idir_username,
   (state: RootState) => state.officers.officers,
-  (idir, officers) => {
+  (idir, officers): AppUser | null => {
     const selected = officers.find(({ user_id }) => user_id === idir);
-
-    if (selected?.person_guid) {
-      const { person_guid: person, office_guid: office, officer_guid, user_id, auth_user_guid } = selected;
-      const { person_guid, first_name: firstName, last_name: lastName } = person;
-
-      const officerId = officer_guid as UUID;
-      const personId = person_guid as UUID;
-
-      const officerData = {
-        id: officerId,
-        userId: user_id,
-        authorizedUserId: auth_user_guid,
-        person: { id: personId, firstName, lastName },
-      };
-
-      // Add office details if officer has an office
-      if (office) {
-        const { office_guid, cos_geo_org_unit: location } = office;
-        const officeId = office_guid as UUID;
-        return {
-          ...officerData,
-          office: { ...location, id: officeId },
-        };
-      }
-
-      return officerData;
-    }
-
-    return null;
+    return selected || null;
   },
 );
 

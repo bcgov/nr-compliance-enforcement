@@ -5,7 +5,7 @@ import { ComplaintReferral } from "./entities/complaint_referral.entity";
 import { Complaint } from "./../complaint/entities/complaint.entity";
 import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { REQUEST } from "@nestjs/core";
-import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
+import { AppUserComplaintXrefService } from "../app_user_complaint_xref/app_user_complaint_xref.service";
 import { EmailService } from "../../v1/email/email.service";
 import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
 import { DocumentService } from "../../v1/document/document.service";
@@ -23,8 +23,8 @@ export class ComplaintReferralService {
   constructor(
     @Inject(REQUEST)
     private readonly request: Request,
-    @Inject(forwardRef(() => PersonComplaintXrefService))
-    private readonly _personService: PersonComplaintXrefService,
+    @Inject(forwardRef(() => AppUserComplaintXrefService))
+    private readonly _personService: AppUserComplaintXrefService,
     @Inject(EmailService)
     private readonly _emailService: EmailService,
     @Inject(FeatureFlagService)
@@ -77,8 +77,8 @@ export class ComplaintReferralService {
 
       await this.complaintRepository.update({ complaint_identifier: id }, updateData);
     }
-    // Clear the officer assigend to the complaint
-    this._personService.clearAssignedOfficer(createComplaintReferralDto.complaint_identifier);
+    // Clear the officer assigned to the complaint
+    this._personService.clearAssignedAppUser(createComplaintReferralDto.complaint_identifier);
 
     if (sendEmail) {
       const recipientList = await this._emailService.sendReferralEmail(

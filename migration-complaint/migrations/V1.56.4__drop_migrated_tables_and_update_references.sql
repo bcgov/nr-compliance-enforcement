@@ -1,0 +1,31 @@
+DROP FUNCTION IF EXISTS cos_geo_org_unit_flat_mvw_refresh () CASCADE;
+
+DROP MATERIALIZED VIEW IF EXISTS cos_geo_org_unit_flat_mvw CASCADE;
+
+DROP TABLE IF EXISTS app_user_team_xref_h CASCADE;
+
+DROP TABLE IF EXISTS app_user_team_xref CASCADE;
+
+DROP TABLE IF EXISTS app_user_h CASCADE;
+
+DROP TABLE IF EXISTS app_user CASCADE;
+
+DROP TABLE IF EXISTS team_h CASCADE;
+
+DROP TABLE IF EXISTS team CASCADE;
+
+DROP TABLE IF EXISTS team_code CASCADE;
+
+DROP TABLE IF EXISTS office_h CASCADE;
+
+DROP TABLE IF EXISTS office CASCADE;
+
+DROP TABLE IF EXISTS geo_org_unit_structure_h CASCADE;
+
+DROP TABLE IF EXISTS geo_org_unit_structure CASCADE;
+
+DROP TABLE IF EXISTS geo_organization_unit_code CASCADE;
+
+DROP TABLE IF EXISTS geo_org_unit_type_code CASCADE;
+
+DROP TABLE IF EXISTS app_user_team_xref_h CASCADE;

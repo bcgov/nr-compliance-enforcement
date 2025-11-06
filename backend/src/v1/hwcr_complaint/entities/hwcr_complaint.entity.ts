@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { Complaint } from "../../complaint/entities/complaint.entity";
 import { Entity, Column, OneToOne, JoinColumn, Unique, PrimaryGeneratedColumn, ManyToOne, OneToMany } from "typeorm";
 import { SpeciesCode } from "../../species_code/entities/species_code.entity";

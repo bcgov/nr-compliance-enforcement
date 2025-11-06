@@ -41,45 +41,48 @@ export class CodeTableController {
 
   @Get("/organization-by-agency/:agency")
   @Roles(coreRoles)
-  async getOrganizationsByAgency(@Param("agency") agency: string): Promise<OrganizationCodeTable[]> {
+  async getOrganizationsByAgency(
+    @Param("agency") agency: string,
+    @Token() token: string,
+  ): Promise<OrganizationCodeTable[]> {
     if (!AvailableAgencies.includes(agency)) {
       throw new NotFoundException();
     }
 
-    const result = await this.service.getOrganizationsByAgency(agency);
+    const result = await this.service.getOrganizationsByAgency(agency, token);
     return result;
   }
 
   @Get("/regions-by-agency/:agency")
   @Roles(coreRoles)
-  async getRegionsByAgency(@Param("agency") agency: string): Promise<Sector[]> {
+  async getRegionsByAgency(@Param("agency") agency: string, @Token() token: string): Promise<Sector[]> {
     if (!AvailableAgencies.includes(agency)) {
       throw new NotFoundException();
     }
 
-    const result = await this.service.getRegionsByAgency(agency);
+    const result = await this.service.getRegionsByAgency(agency, token);
     return result;
   }
 
   @Get("/zones-by-agency/:agency")
   @Roles(coreRoles)
-  async getZonesByAgency(@Param("agency") agency: string): Promise<Sector[]> {
+  async getZonesByAgency(@Param("agency") agency: string, @Token() token: string): Promise<Sector[]> {
     if (!AvailableAgencies.includes(agency)) {
       throw new NotFoundException();
     }
 
-    const result = await this.service.getZonesByAgency(agency);
+    const result = await this.service.getZonesByAgency(agency, token);
     return result;
   }
 
   @Get("/communities-by-agency/:agency")
   @Roles(coreRoles)
-  async getCommunitiesByAgency(@Param("agency") agency: string): Promise<Sector[]> {
+  async getCommunitiesByAgency(@Param("agency") agency: string, @Token() token: string): Promise<Sector[]> {
     if (!AvailableAgencies.includes(agency)) {
       throw new NotFoundException();
     }
 
-    const result = await this.service.getCommunitiesByAgency(agency);
+    const result = await this.service.getCommunitiesByAgency(agency, token);
     return result;
   }
 }

@@ -1,0 +1,4 @@
+type Query {
+  teams(teamCode: String, agencyCode: String): [Team]!
+  team(teamGuid: String!): Team
+}

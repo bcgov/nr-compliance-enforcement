@@ -11,21 +11,15 @@ import { ComplaintStatusCodeModule } from "./v1/complaint_status_code/complaint_
 import { ComplaintModule } from "./v1/complaint/complaint.module";
 import { ViolationCodeModule } from "./v1/violation_code/violation_code.module";
 import { AllegationComplaintModule } from "./v1/allegation_complaint/allegation_complaint.module";
-import { GeoOrgUnitStructureModule } from "./v1/geo_org_unit_structure/geo_org_unit_structure.module";
-import { GeoOrganizationUnitCodeModule } from "./v1/geo_organization_unit_code/geo_organization_unit_code.module";
-import { GeoOrgUnitTypeCodeModule } from "./v1/geo_org_unit_type_code/geo_org_unit_type_code.module";
-import { OfficeModule } from "./v1/office/office.module";
-import { PersonModule } from "./v1/person/person.module";
-import { OfficerModule } from "./v1/officer/officer.module";
+import { AppUserModule } from "./v1/app_user/app_user.module";
 import { SpeciesCodeModule } from "./v1/species_code/species_code.module";
 import { HwcrComplaintNatureCodeModule } from "./v1/hwcr_complaint_nature_code/hwcr_complaint_nature_code.module";
 import { AttractantCodeModule } from "./v1/attractant_code/attractant_code.module";
 import { HwcrComplaintModule } from "./v1/hwcr_complaint/hwcr_complaint.module";
 import { AttractantHwcrXrefModule } from "./v1/attractant_hwcr_xref/attractant_hwcr_xref.module";
-import { CosGeoOrgUnitModule } from "./v1/cos_geo_org_unit/cos_geo_org_unit.module";
 import { HTTPLoggerMiddleware } from "./middleware/req.res.logger";
-import { PersonComplaintXrefModule } from "./v1/person_complaint_xref/person_complaint_xref.module";
-import { PersonComplaintXrefCodeModule } from "./v1/person_complaint_xref_code/person_complaint_xref_code.module";
+import { AppUserComplaintXrefModule } from "./v1/app_user_complaint_xref/app_user_complaint_xref.module";
+import { AppUserComplaintXrefCodeModule } from "./v1/app_user_complaint_xref_code/app_user_complaint_xref_code.module";
 import { BcGeoCoderModule } from "./external_api/bc_geo_coder/bc_geo_coder.module";
 import { ConfigurationModule } from "./v1/configuration/configuration.module";
 import { ComplaintTypeCodeModule } from "./v1/complaint_type_code/complaint_type_code.module";
@@ -47,9 +41,6 @@ import { GirTypeCodeModule } from "./v1/gir_type_code/gir_type_code.module";
 import { GeneralIncidentComplaintModule } from "./v1/gir_complaint/gir_complaint.module";
 import { FeatureFlagModule } from "./v1/feature_flag/feature_flag.module";
 import { FeatureCodeModule } from "./v1/feature_code/feature_code.module";
-import { TeamModule } from "./v1/team/team.module";
-import { TeamCodeModule } from "./v1/team_code/team_code.module";
-import { OfficerTeamXrefModule } from "./v1/officer_team_xref/officer_team_xref.module";
 import { ComplaintMethodReceivedCodeModule } from "./v1/complaint_method_received_code/complaint_method_received_code.module";
 import { CompMthdRecvCdAgcyCdXrefModule } from "./v1/comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.module";
 import { LinkedComplaintXrefModule } from "./v1/linked_complaint_xref/linked_complaint_xref.module";
@@ -60,6 +51,8 @@ import { ChesModule } from "./external_api/ches/ches.module";
 import { EmailReferenceModule } from "./v1/email_reference/email_reference.module";
 import { EmailModule } from "./v1/email/email.module";
 import { ComplaintReferralEmailLogModule } from "./v1/complaint_referral_email_log/complaint_referral_email_log.module";
+import { OfficeModule } from "./v1/office/office.module";
+import { TeamModule } from "./v1/team/team.module";
 
 console.log("Var check - COMPLAINT_POSTGRESQL_HOST", process.env.COMPLAINT_POSTGRESQL_HOST);
 console.log("Var check - COMPLAINT_POSTGRESQL_DATABASE", process.env.COMPLAINT_POSTGRESQL_DATABASE);
@@ -97,20 +90,14 @@ if (process.env.COMPLAINT_POSTGRESQL_PASSWORD != null) {
     ComplaintModule,
     ViolationCodeModule,
     AllegationComplaintModule,
-    GeoOrgUnitStructureModule,
-    GeoOrganizationUnitCodeModule,
-    GeoOrgUnitTypeCodeModule,
-    OfficeModule,
-    PersonModule,
-    OfficerModule,
+    AppUserModule,
     SpeciesCodeModule,
     HwcrComplaintNatureCodeModule,
     AttractantCodeModule,
     HwcrComplaintModule,
     AttractantHwcrXrefModule,
-    CosGeoOrgUnitModule,
-    PersonComplaintXrefModule,
-    PersonComplaintXrefCodeModule,
+    AppUserComplaintXrefModule,
+    AppUserComplaintXrefCodeModule,
     BcGeoCoderModule,
     ConfigurationModule,
     ComplaintTypeCodeModule,
@@ -133,9 +120,6 @@ if (process.env.COMPLAINT_POSTGRESQL_PASSWORD != null) {
     GeneralIncidentComplaintModule,
     FeatureFlagModule,
     FeatureCodeModule,
-    TeamModule,
-    TeamCodeModule,
-    OfficerTeamXrefModule,
     ComplaintMethodReceivedCodeModule,
     CompMthdRecvCdAgcyCdXrefModule,
     LinkedComplaintXrefModule,
@@ -146,6 +130,8 @@ if (process.env.COMPLAINT_POSTGRESQL_PASSWORD != null) {
     EmailReferenceModule,
     EmailModule,
     ComplaintReferralEmailLogModule,
+    OfficeModule,
+    TeamModule,
   ],
   controllers: [AppController],
   providers: [AppService, ComplaintSequenceResetScheduler],
@@ -163,7 +149,7 @@ export class AppModule {
       "v1/configuration",
       "v1/complaint/search", //Note: these all have to be explict paths of the @Public decorator will fail breaking the webEOC integration.
       "v1/complaint/map/search",
-      "v1/complaint/:complaint_id/add-collaborator/:person_guid",
+      "v1/complaint/:complaint_id/add-collaborator/:app_user_guid",
       "v1/document/export-complaint",
     );
   }

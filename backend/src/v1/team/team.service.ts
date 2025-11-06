@@ -1,125 +1,114 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { Team } from "./entities/team.entity";
-import { DataSource, Repository } from "typeorm";
-import { InjectRepository } from "@nestjs/typeorm";
 import { CssService } from "../../external_api/css/css.service";
-import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
 import { Role } from "../../enum/role.enum";
 import { TeamUpdate } from "../../types/models/general/team-update";
-import { Officer } from "../officer/entities/officer.entity";
+import {
+  getTeams,
+  getTeamByGuid,
+  updateAppUser,
+  getAppUserTeamXref,
+  createAppUserTeamXref,
+  updateAppUserTeamXref,
+  deleteAppUserTeamXref,
+} from "../../external_api/shared_data";
 
 @Injectable()
 export class TeamService {
   private readonly logger = new Logger(TeamService.name);
 
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(@Inject(CssService) private readonly cssService: CssService) {}
 
-  @InjectRepository(Team)
-  private readonly teamRepository: Repository<Team>;
-  @InjectRepository(OfficerTeamXref)
-  private readonly officerTeamXrefRepository: Repository<OfficerTeamXref>;
-  @InjectRepository(Officer)
-  private readonly officerRepository: Repository<Officer>;
-
-  @Inject(CssService)
-  private readonly cssService: CssService;
-
-  async findAll(): Promise<Team[]> {
-    return this.teamRepository.find({
-      relations: {
-        team_code: true,
-      },
-      order: {
-        agency_code_ref: "ASC",
-        team_code: "ASC",
-      },
-    });
+  async findAll(token: string): Promise<any[]> {
+    const teams = await getTeams(token);
+    return teams;
   }
 
-  async findOne(id: any): Promise<Team> {
-    return this.teamRepository.findOneOrFail({
-      where: { team_guid: id },
-      relations: {
-        team_code: true,
-      },
-    });
+  async findOne(id: any, token: string): Promise<any> {
+    const team = await getTeamByGuid(token, id);
+
+    if (!team) {
+      throw new Error("Team not found");
+    }
+
+    return team;
   }
 
-  async findByTeamCodeAndAgencyCode(teamCode: any, agencyCode) {
-    return this.teamRepository.findOneOrFail({
-      where: { team_code: teamCode, agency_code_ref: agencyCode },
-      relations: {
-        team_code: true,
-      },
-    });
+  async findByTeamCodeAndAgencyCode(teamCode: any, agencyCode: string, token: string) {
+    const teams = await getTeams(token, teamCode, agencyCode);
+
+    if (teams.length === 0) {
+      throw new Error("Team not found");
+    }
+
+    return teams[0].teamGuid;
   }
 
-  async findUserIdir(firstName, lastName) {
+  async findUserIdir(firstName: string, lastName: string) {
     const userIdir = await this.cssService.getUserIdirByName(firstName, lastName);
     return userIdir;
   }
 
-  async findUserCurrentRoles(userIdir): Promise<{ name: string; composite: string }[]> {
+  async findUserCurrentRoles(userIdir: string): Promise<{ name: string; composite: string }[]> {
     const currentRoles = await this.cssService.getUserRoles(userIdir);
     return currentRoles;
   }
 
-  async findUserCurrentTeam(officerGuid) {
-    return await this.officerTeamXrefRepository.findOne({
-      where: { officer_guid: officerGuid },
-      relations: { team_guid: { team_code: true } },
-    });
+  async findUserCurrentTeam(appUserGuid: string, token: string) {
+    const teamXref = await getAppUserTeamXref(token, appUserGuid);
+
+    if (!teamXref) {
+      return null;
+    }
+
+    const team = await getTeamByGuid(token, teamXref.teamGuid);
+
+    return {
+      ...teamXref,
+      team_guid: team,
+    };
   }
 
-  async update(officerGuid, updateTeamData: TeamUpdate) {
+  async update(appUserGuid: string, updateTeamData: TeamUpdate, token: string) {
     let result = {
       team: false,
       roles: false,
     };
     const { teamCode, agencyCode, userIdir, roles: updateRoles, adminIdirUsername } = updateTeamData;
+
     try {
-      // Update the officers agency
-      await this.officerRepository.update({ officer_guid: officerGuid }, { agency_code_ref: agencyCode });
-      //Update team
-      //Assume one officer belong to one team for now
-      //If user's team is null -> remove any current team user is in
-      const officerTeamXref = await this.officerTeamXrefRepository.findOne({ where: { officer_guid: officerGuid } });
+      // Update the app user's agency
+      await updateAppUser(token, appUserGuid, { agencyCode });
+
+      // Get current team assignment
+      const currentTeamXref = await getAppUserTeamXref(token, appUserGuid);
+
+      // Handle team assignment
       if (!teamCode) {
-        if (officerTeamXref) {
-          const deleteResult = await this.officerTeamXrefRepository.delete(officerTeamXref.officer_team_xref_guid);
-          if (deleteResult.affected > 0) {
-            result.team = true;
-          } else result.team = false;
+        // Remove team assignment if teamCode is null
+        if (currentTeamXref) {
+          await deleteAppUserTeamXref(token, currentTeamXref.appUserTeamXrefGuid);
+          result.team = true;
         }
       } else {
-        const teamGuid = await this.findByTeamCodeAndAgencyCode(teamCode, agencyCode);
-        //set user's office_guid to null because CEEB user doesn't have an office
-        await this.officerRepository.update({ officer_guid: officerGuid }, { office_guid: null });
+        const teamGuid = await this.findByTeamCodeAndAgencyCode(teamCode, agencyCode, token);
+        // Set user's office_guid to null because CEEB user doesn't have an office
+        await updateAppUser(token, appUserGuid, { officeGuid: null });
 
-        if (officerTeamXref) {
-          const updateEnity = {
-            team_guid: teamGuid,
-            active_ind: true,
-            update_user_id: adminIdirUsername,
-          };
-          const updateResult = await this.officerTeamXrefRepository.update({ officer_guid: officerGuid }, updateEnity);
-          if (updateResult.affected > 0) {
-            result.team = true;
-          } else result.team = false;
+        if (currentTeamXref) {
+          // Update existing team assignment
+          await updateAppUserTeamXref(token, appUserGuid, {
+            teamGuid,
+            activeIndicator: true,
+          });
+          result.team = true;
         } else {
-          //Create new one
-          const newEntity = {
-            officer_guid: officerGuid,
-            team_guid: teamGuid,
-            active_ind: true,
-            create_user_id: adminIdirUsername,
-            update_user_id: adminIdirUsername,
-          };
-          const newRecord = this.officerTeamXrefRepository.create(newEntity);
-          const saveResult = await this.officerTeamXrefRepository.save(newRecord);
-          if (saveResult.officer_guid) {
-            result.team = true;
-          } else result.team = false;
+          // Create new team assignment
+          await createAppUserTeamXref(token, {
+            appUserGuid: appUserGuid,
+            teamGuid,
+            activeIndicator: true,
+          });
+          result.team = true;
         }
       }
 
