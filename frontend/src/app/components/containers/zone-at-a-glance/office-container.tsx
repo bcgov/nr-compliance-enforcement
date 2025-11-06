@@ -14,10 +14,6 @@ type Props = {
   allegationOpenComplaintsOfficeStat: OfficeStats;
 };
 export const OfficeContainer: FC<Props> = ({ hwcrOpenComplaintsOfficeStat, allegationOpenComplaintsOfficeStat }) => {
-  console.log("OFFICE CONTAINER!!!!");
-  console.log("hwcrOpenComplaintsOfficeStat", hwcrOpenComplaintsOfficeStat);
-  console.log("allegationOpenComplaintsOfficeStat", allegationOpenComplaintsOfficeStat);
-
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   const { getCollapseProps, getToggleProps, isExpanded } = useCollapse();

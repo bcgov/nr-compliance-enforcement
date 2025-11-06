@@ -211,7 +211,6 @@ export const assignOfficerToOffice =
       });
 
       const update = { ...selectedOfficer, office_guid: officeGuid };
-      console.log("update", update);
       const { agency_code, ...updateWithoutAgencyCode } = update;
 
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/app-user/${selectedOfficer?.app_user_guid}`, {
