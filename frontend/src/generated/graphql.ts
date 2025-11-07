@@ -39,6 +39,28 @@ export type AgencyCode = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type AppUser = {
+  __typename?: 'AppUser';
+  agencyCode?: Maybe<Scalars['String']['output']>;
+  appUserGuid?: Maybe<Scalars['String']['output']>;
+  authUserGuid?: Maybe<Scalars['String']['output']>;
+  comsEnrolledIndicator?: Maybe<Scalars['Boolean']['output']>;
+  deactivateIndicator?: Maybe<Scalars['Boolean']['output']>;
+  firstName?: Maybe<Scalars['String']['output']>;
+  lastName?: Maybe<Scalars['String']['output']>;
+  officeGuid?: Maybe<Scalars['String']['output']>;
+  parkAreaGuid?: Maybe<Scalars['String']['output']>;
+  userId?: Maybe<Scalars['String']['output']>;
+};
+
+export type AppUserTeamXref = {
+  __typename?: 'AppUserTeamXref';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  appUserGuid?: Maybe<Scalars['String']['output']>;
+  appUserTeamXrefGuid?: Maybe<Scalars['String']['output']>;
+  teamGuid?: Maybe<Scalars['String']['output']>;
+};
+
 export type Assessment = {
   __typename?: 'Assessment';
   actionJustificationActiveIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -235,6 +257,37 @@ export type ContactMethodInput = {
   value: Scalars['String']['input'];
 };
 
+export type CosGeoOrgUnit = {
+  __typename?: 'CosGeoOrgUnit';
+  administrativeOfficeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  areaCode?: Maybe<Scalars['String']['output']>;
+  areaName?: Maybe<Scalars['String']['output']>;
+  officeLocationCode?: Maybe<Scalars['String']['output']>;
+  officeLocationName?: Maybe<Scalars['String']['output']>;
+  regionCode?: Maybe<Scalars['String']['output']>;
+  regionName?: Maybe<Scalars['String']['output']>;
+  zoneCode?: Maybe<Scalars['String']['output']>;
+  zoneName?: Maybe<Scalars['String']['output']>;
+};
+
+export type CreateAppUserInput = {
+  agencyCode?: InputMaybe<Scalars['String']['input']>;
+  authUserGuid?: InputMaybe<Scalars['String']['input']>;
+  comsEnrolledIndicator?: InputMaybe<Scalars['Boolean']['input']>;
+  deactivateIndicator?: InputMaybe<Scalars['Boolean']['input']>;
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  officeGuid?: InputMaybe<Scalars['String']['input']>;
+  parkAreaGuid?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateAppUserTeamXrefInput = {
+  activeIndicator: Scalars['Boolean']['input'];
+  appUserGuid: Scalars['String']['input'];
+  teamGuid: Scalars['String']['input'];
+};
+
 export type CreateAssessmentInput = {
   assessment: AssessmentInput;
   complaintId?: InputMaybe<Scalars['String']['input']>;
@@ -333,6 +386,11 @@ export type CreateNoteInput = {
   createUserId: Scalars['String']['input'];
   note: Scalars['String']['input'];
   outcomeAgencyCode: Scalars['String']['input'];
+};
+
+export type CreateOfficeInput = {
+  agencyCode: Scalars['String']['input'];
+  geoOrganizationUnitCode: Scalars['String']['input'];
 };
 
 export type CreatePreventionInput = {
@@ -621,6 +679,26 @@ export type EventVerbTypeCode = {
   shortDescription: Scalars['String']['output'];
 };
 
+export type GeoOrgUnitTypeCode = {
+  __typename?: 'GeoOrgUnitTypeCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  geoOrgUnitTypeCode?: Maybe<Scalars['String']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type GeoOrganizationUnitCode = {
+  __typename?: 'GeoOrganizationUnitCode';
+  administrativeOfficeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  effectiveDate?: Maybe<Scalars['Date']['output']>;
+  expiryDate?: Maybe<Scalars['Date']['output']>;
+  geoOrgUnitTypeCode?: Maybe<Scalars['String']['output']>;
+  geoOrganizationUnitCode?: Maybe<Scalars['String']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type HWCROutcomeActionedByCode = {
   __typename?: 'HWCROutcomeActionedByCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -810,6 +888,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   addPartyToInspection: Inspection;
   addPartyToInvestigation: Investigation;
+  createAppUser?: Maybe<AppUser>;
+  createAppUserTeamXref?: Maybe<AppUserTeamXref>;
   createAssessment: ComplaintOutcome;
   createAuthorizationOutcome: ComplaintOutcome;
   createCaseActivity: CaseActivity;
@@ -820,6 +900,7 @@ export type Mutation = {
   createInspection: Inspection;
   createInvestigation: Investigation;
   createNote: ComplaintOutcome;
+  createOffice?: Maybe<Office>;
   createPark: Park;
   createParkArea: ParkArea;
   createParty: Party;
@@ -827,6 +908,7 @@ export type Mutation = {
   createPrevention: ComplaintOutcome;
   createReview: ComplaintOutcome;
   createWildlife: ComplaintOutcome;
+  deleteAppUserTeamXref?: Maybe<Scalars['Boolean']['output']>;
   deleteAuthorizationOutcome: ComplaintOutcome;
   deleteEquipment: Scalars['Boolean']['output'];
   deleteNote: ComplaintOutcome;
@@ -835,6 +917,8 @@ export type Mutation = {
   deletePerson: Person;
   deletePrevention: ComplaintOutcome;
   deleteWildlife: ComplaintOutcome;
+  updateAppUser?: Maybe<AppUser>;
+  updateAppUserTeamXref?: Maybe<AppUserTeamXref>;
   updateAssessment: ComplaintOutcome;
   updateAuthorizationOutcome: ComplaintOutcome;
   updateCaseFile: CaseFile;
@@ -843,6 +927,7 @@ export type Mutation = {
   updateInspection: Inspection;
   updateInvestigation: Investigation;
   updateNote: ComplaintOutcome;
+  updateOffice?: Maybe<Office>;
   updatePark: Park;
   updateParkArea: ParkArea;
   updateParty: Party;
@@ -862,6 +947,16 @@ export type MutationaddPartyToInspectionArgs = {
 export type MutationaddPartyToInvestigationArgs = {
   input: Array<InputMaybe<CreateInvestigationPartyInput>>;
   investigationGuid: Scalars['String']['input'];
+};
+
+
+export type MutationcreateAppUserArgs = {
+  input: CreateAppUserInput;
+};
+
+
+export type MutationcreateAppUserTeamXrefArgs = {
+  input: CreateAppUserTeamXrefInput;
 };
 
 
@@ -915,6 +1010,11 @@ export type MutationcreateNoteArgs = {
 };
 
 
+export type MutationcreateOfficeArgs = {
+  input: CreateOfficeInput;
+};
+
+
 export type MutationcreateParkArgs = {
   input: ParkInput;
 };
@@ -947,6 +1047,11 @@ export type MutationcreateReviewArgs = {
 
 export type MutationcreateWildlifeArgs = {
   input: CreateWildlifeInput;
+};
+
+
+export type MutationdeleteAppUserTeamXrefArgs = {
+  appUserTeamXrefGuid: Scalars['String']['input'];
 };
 
 
@@ -990,6 +1095,18 @@ export type MutationdeleteWildlifeArgs = {
 };
 
 
+export type MutationupdateAppUserArgs = {
+  appUserGuid: Scalars['String']['input'];
+  input: UpdateAppUserInput;
+};
+
+
+export type MutationupdateAppUserTeamXrefArgs = {
+  appUserGuid: Scalars['String']['input'];
+  input: UpdateAppUserTeamXrefInput;
+};
+
+
 export type MutationupdateAssessmentArgs = {
   input: UpdateAssessmentInput;
 };
@@ -1030,6 +1147,12 @@ export type MutationupdateInvestigationArgs = {
 
 export type MutationupdateNoteArgs = {
   input: UpdateNoteInput;
+};
+
+
+export type MutationupdateOfficeArgs = {
+  input: UpdateOfficeInput;
+  officeGuid: Scalars['String']['input'];
 };
 
 
@@ -1086,6 +1209,15 @@ export type Note = {
   id?: Maybe<Scalars['String']['output']>;
   note?: Maybe<Scalars['String']['output']>;
   outcomeAgencyCode?: Maybe<Scalars['String']['output']>;
+};
+
+export type Office = {
+  __typename?: 'Office';
+  agencyCode?: Maybe<Scalars['String']['output']>;
+  appUsers?: Maybe<Array<Maybe<AppUser>>>;
+  cosGeoOrgUnit?: Maybe<CosGeoOrgUnit>;
+  geoOrganizationUnitCode?: Maybe<Scalars['String']['output']>;
+  officeGuid?: Maybe<Scalars['String']['output']>;
 };
 
 export type OutcomeAgencyCode = {
@@ -1241,6 +1373,10 @@ export type Query = {
   HWCRPreventionActions: Array<Maybe<CaseFileAction>>;
   ageCodes: Array<Maybe<AgeCode>>;
   agencyCodes: Array<Maybe<AgencyCode>>;
+  appUser?: Maybe<AppUser>;
+  appUserTeamXref?: Maybe<AppUserTeamXref>;
+  appUserTeamXrefs: Array<Maybe<AppUserTeamXref>>;
+  appUsers: Array<Maybe<AppUser>>;
   caseFile?: Maybe<CaseFile>;
   caseFiles: Array<CaseFile>;
   caseFilesByActivityIds: Array<CaseFile>;
@@ -1250,6 +1386,7 @@ export type Query = {
   checkInvestigationNameExists: Scalars['Boolean']['output'];
   configurationCodes: Array<Maybe<Configuration>>;
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
+  cosGeoOrgUnits: Array<Maybe<CosGeoOrgUnit>>;
   dischargeCodes: Array<Maybe<DischargeCode>>;
   drugCodes: Array<Maybe<DrugCode>>;
   drugMethodCodes: Array<Maybe<DrugMethodCode>>;
@@ -1257,14 +1394,18 @@ export type Query = {
   earCodes: Array<Maybe<EarCode>>;
   equipmentCodes: Array<Maybe<EquipmentCode>>;
   equipmentStatusCodes: Array<Maybe<EquipmentStatusCode>>;
+  geoOrgUnitTypeCodes: Array<Maybe<GeoOrgUnitTypeCode>>;
+  geoOrganizationUnitCodes: Array<Maybe<GeoOrganizationUnitCode>>;
   getComplaintOutcome?: Maybe<ComplaintOutcome>;
   getComplaintOutcomeByComplaintId?: Maybe<ComplaintOutcome>;
   getComplaintOutcomesByComplaintId?: Maybe<Array<Maybe<ComplaintOutcome>>>;
   getComplaintOutcomesBySearchString?: Maybe<Array<Maybe<ComplaintOutcome>>>;
   getInspection?: Maybe<Inspection>;
   getInspections?: Maybe<Array<Maybe<Inspection>>>;
+  getInspectionsByParty?: Maybe<Array<Maybe<Inspection>>>;
   getInvestigation?: Maybe<Investigation>;
   getInvestigations?: Maybe<Array<Maybe<Investigation>>>;
+  getInvestigationsByParty?: Maybe<Array<Maybe<Investigation>>>;
   getLeadsByActionTaken?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByEquipment?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByOutcomeAnimal?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -1274,6 +1415,9 @@ export type Query = {
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
   nonComplianceCodes: Array<Maybe<NonComplianceCode>>;
+  office?: Maybe<Office>;
+  offices: Array<Maybe<Office>>;
+  officesByZone: Array<Maybe<Office>>;
   outcomeAgencyCodes: Array<Maybe<OutcomeAgencyCode>>;
   park?: Maybe<Park>;
   parkArea?: Maybe<ParkArea>;
@@ -1286,14 +1430,37 @@ export type Query = {
   person?: Maybe<Person>;
   scheduleCodes: Array<Maybe<ScheduleCode>>;
   scheduleSectorXrefs: Array<Maybe<ScheduleSectorXref>>;
+  searchAppUsers: Array<Maybe<AppUser>>;
   searchCaseFiles: CaseFileResult;
+  searchCosGeoOrgUnitsByNames: Array<Maybe<CosGeoOrgUnit>>;
   searchEvents: EventResult;
   searchInspections: InspectionResult;
   searchInvestigations: InvestigationResult;
   searchParties: PartyResult;
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
+  team?: Maybe<Team>;
+  teamCodes: Array<Maybe<TeamCode>>;
+  teams: Array<Maybe<Team>>;
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
+};
+
+
+export type QueryappUserArgs = {
+  appUserGuid?: InputMaybe<Scalars['String']['input']>;
+  authUserGuid?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryappUserTeamXrefArgs = {
+  appUserGuid: Scalars['String']['input'];
+};
+
+
+export type QueryappUsersArgs = {
+  agencyCode?: InputMaybe<Scalars['String']['input']>;
+  officeGuids?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -1338,6 +1505,13 @@ export type QueryconfigurationCodesArgs = {
 };
 
 
+export type QuerycosGeoOrgUnitsArgs = {
+  distinctOfficeLocations?: InputMaybe<Scalars['Boolean']['input']>;
+  regionCode?: InputMaybe<Scalars['String']['input']>;
+  zoneCode?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QuerygetComplaintOutcomeArgs = {
   complaintOutcomeGuid: Scalars['String']['input'];
 };
@@ -1369,6 +1543,12 @@ export type QuerygetInspectionsArgs = {
 };
 
 
+export type QuerygetInspectionsByPartyArgs = {
+  partyId?: InputMaybe<Scalars['String']['input']>;
+  partyType?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QuerygetInvestigationArgs = {
   investigationGuid?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1376,6 +1556,12 @@ export type QuerygetInvestigationArgs = {
 
 export type QuerygetInvestigationsArgs = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+export type QuerygetInvestigationsByPartyArgs = {
+  partyId?: InputMaybe<Scalars['String']['input']>;
+  partyType?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1405,6 +1591,24 @@ export type QuerygetParksByAreaArgs = {
 
 export type QueryinactionJustificationCodesArgs = {
   outcomeAgencyCode?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryofficeArgs = {
+  agencyCode?: InputMaybe<Scalars['String']['input']>;
+  geoOrganizationUnitCode?: InputMaybe<Scalars['String']['input']>;
+  officeGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryofficesArgs = {
+  agencyCode?: InputMaybe<Scalars['String']['input']>;
+  geoOrganizationUnitCodes?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+
+export type QueryofficesByZoneArgs = {
+  zoneCode: Scalars['String']['input'];
 };
 
 
@@ -1440,10 +1644,24 @@ export type QuerypersonArgs = {
 };
 
 
+export type QuerysearchAppUsersArgs = {
+  searchTerm: Scalars['String']['input'];
+};
+
+
 export type QuerysearchCaseFilesArgs = {
   filters?: InputMaybe<CaseFileFilters>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QuerysearchCosGeoOrgUnitsByNamesArgs = {
+  areaName?: InputMaybe<Scalars['String']['input']>;
+  distinctOfficeLocations?: InputMaybe<Scalars['Boolean']['input']>;
+  officeLocationName?: InputMaybe<Scalars['String']['input']>;
+  regionName?: InputMaybe<Scalars['String']['input']>;
+  zoneName?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1472,6 +1690,17 @@ export type QuerysearchPartiesArgs = {
   filters?: InputMaybe<PartyFilters>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryteamArgs = {
+  teamGuid: Scalars['String']['input'];
+};
+
+
+export type QueryteamsArgs = {
+  agencyCode?: InputMaybe<Scalars['String']['input']>;
+  teamCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ReviewActionInput = {
@@ -1528,6 +1757,23 @@ export type SexCode = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type Team = {
+  __typename?: 'Team';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  agencyCode?: Maybe<Scalars['String']['output']>;
+  teamCode?: Maybe<Scalars['String']['output']>;
+  teamGuid?: Maybe<Scalars['String']['output']>;
+};
+
+export type TeamCode = {
+  __typename?: 'TeamCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+  teamCode?: Maybe<Scalars['String']['output']>;
+};
+
 export type ThreatLevelCode = {
   __typename?: 'ThreatLevelCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -1535,6 +1781,23 @@ export type ThreatLevelCode = {
   longDescription?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
   threatLevelCode?: Maybe<Scalars['String']['output']>;
+};
+
+export type UpdateAppUserInput = {
+  agencyCode?: InputMaybe<Scalars['String']['input']>;
+  authUserGuid?: InputMaybe<Scalars['String']['input']>;
+  comsEnrolledIndicator?: InputMaybe<Scalars['Boolean']['input']>;
+  deactivateIndicator?: InputMaybe<Scalars['Boolean']['input']>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  officeGuid?: InputMaybe<Scalars['String']['input']>;
+  parkAreaGuid?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateAppUserTeamXrefInput = {
+  activeIndicator?: InputMaybe<Scalars['Boolean']['input']>;
+  teamGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateAssessmentInput = {
@@ -1593,6 +1856,11 @@ export type UpdateNoteInput = {
   id: Scalars['String']['input'];
   note: Scalars['String']['input'];
   updateUserId: Scalars['String']['input'];
+};
+
+export type UpdateOfficeInput = {
+  agencyCode?: InputMaybe<Scalars['String']['input']>;
+  geoOrganizationUnitCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdatePreventionInput = {
