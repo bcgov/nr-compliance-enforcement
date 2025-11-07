@@ -1,4 +1,5 @@
 import { case_activity } from "./case_activity";
+import { app_user } from "./app_user";
 import { agency_code } from "./agency_code";
 import { case_status_code } from "./case_status_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -35,10 +36,13 @@ export class case_file {
   name: string;
 
   @ApiPropertyOptional({ type: String })
-  created_by_app_user_guid_ref?: string;
+  created_by_app_user_guid?: string;
 
   @ApiProperty({ isArray: true, type: () => case_activity })
   case_activity: case_activity[];
+
+  @ApiPropertyOptional({ type: () => app_user })
+  app_user?: app_user;
 
   @ApiProperty({ type: () => agency_code })
   agency_code: agency_code;

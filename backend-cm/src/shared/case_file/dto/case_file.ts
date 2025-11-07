@@ -156,7 +156,7 @@ export const mapPrismaCaseFileToCaseFile = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.createdByAppUserGuid,
-      mapFrom((src) => src.created_by_app_user_guid_ref),
+      mapFrom((src) => src.created_by_app_user_guid),
     ),
     forMember(
       (dest) => dest.activities,
