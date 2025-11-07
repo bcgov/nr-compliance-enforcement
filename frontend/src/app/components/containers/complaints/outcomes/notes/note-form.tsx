@@ -4,7 +4,7 @@ import { ValidationTextArea } from "@common/validation-textarea";
 import { CompSelect } from "@components/common/comp-select";
 import DatePicker from "react-datepicker";
 import Option from "@apptypes/app/option";
-import { OfficerDto } from "@apptypes/app/people/officer";
+import { AppUser } from "@apptypes/app/app_user/app_user";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
@@ -18,7 +18,7 @@ type props = {
   id: string;
   complaintType: string;
   note?: Note;
-  currentOfficer: OfficerDto | null;
+  currentOfficer: AppUser | null;
   mode: "create" | "update";
   handleCancel: Function;
 };
@@ -37,11 +37,8 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
 
   useEffect(() => {
     if (currentOfficer) {
-      const {
-        authorizedUserId,
-        person: { firstName, lastName },
-      } = currentOfficer;
-      setDefaultOfficer({ label: `${lastName}, ${firstName}`, value: authorizedUserId });
+      const { auth_user_guid, first_name, last_name } = currentOfficer;
+      setDefaultOfficer({ label: `${last_name}, ${first_name}`, value: auth_user_guid });
     } else {
       setDefaultOfficer({ label: "Unknown", value: "" });
     }

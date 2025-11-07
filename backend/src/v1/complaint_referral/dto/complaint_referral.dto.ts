@@ -1,7 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { Complaint } from "../../complaint/entities/complaint.entity";
-import { Officer } from "../../officer/entities/officer.entity";
 
 export class ComplaintReferralDto {
   @ApiProperty({
@@ -61,9 +60,9 @@ export class ComplaintReferralDto {
 
   @ApiProperty({
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
-    description: "",
+    description: "The app user who made the referral",
   })
-  public officer_guid: Officer;
+  public app_user_guid_ref: UUID;
 
   @ApiProperty({
     example: "2003-04-12 04:05:06",

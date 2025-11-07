@@ -1,0 +1,9 @@
+input CreateOfficeInput {
+  geoOrganizationUnitCode: String!
+  agencyCode: String!
+}
+
+input UpdateOfficeInput {
+  geoOrganizationUnitCode: String
+  agencyCode: String
+}

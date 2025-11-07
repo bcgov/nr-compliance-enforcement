@@ -25,11 +25,8 @@ import BaseCodeTable, {
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
-import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
-import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
-import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
+import { AppUserComplaintXrefCode } from "../app_user_complaint_xref_code/entities/app_user_complaint_xref_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
-import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { Justification } from "src/types/models/code-tables/justification";
@@ -44,14 +41,22 @@ import { Drug } from "src/types/models/code-tables/drug";
 import { DrugMethod } from "src/types/models/code-tables/drug-method";
 import { DrugRemainingOutcome } from "src/types/models/code-tables/drug-remaining-outcome";
 import { WildlifeComplaintOutcome } from "src/types/models/code-tables/wildlfe-complaint-outcome";
-import { get } from "../../external_api/shared_data";
+import {
+  get,
+  getGeoOrgUnitTypeCodes,
+  getGeoOrganizationUnitCodes,
+  getTeamCodes,
+  getCosGeoOrgUnits,
+  getCosGeoOrgUnitRegions,
+  getCosGeoOrgUnitZones,
+  getCosGeoOrgUnitCommunities,
+} from "../../external_api/shared_data";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 import { Schedule } from "src/types/models/code-tables/schedule";
 import { SectorCode } from "src/types/models/code-tables/sector-code";
 import { Discharge } from "src/types/models/code-tables/discharge";
 import { NonCompliance } from "src/types/models/code-tables/non-compliance";
 import { DecisionType } from "src/types/models/code-tables/decision-type";
-import { TeamCode } from "../team_code/entities/team_code.entity";
 import { TeamType } from "src/types/models/code-tables/team-type";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { ComplaintMethodReceivedType } from "src/types/models/code-tables/complaint-method-received-type";
@@ -72,26 +77,18 @@ export class CodeTableService {
   private readonly _complaintStatusRepository: Repository<ComplaintStatusCode>;
   @InjectRepository(HwcrComplaintNatureCode)
   private readonly _natureOfComplaintRepository: Repository<HwcrComplaintNatureCode>;
-  @InjectRepository(GeoOrgUnitTypeCode)
-  private readonly _organizationUnitTypeRepository: Repository<GeoOrgUnitTypeCode>;
-  @InjectRepository(GeoOrganizationUnitCode)
-  private readonly _organizationUnitRepository: Repository<GeoOrganizationUnitCode>;
-  @InjectRepository(PersonComplaintXrefCode)
-  private readonly _personComplaintTypeRepository: Repository<PersonComplaintXrefCode>;
+  @InjectRepository(AppUserComplaintXrefCode)
+  private readonly _appUserComplaintXrefCodeRepository: Repository<AppUserComplaintXrefCode>;
   @InjectRepository(SpeciesCode)
   private readonly _speciesRepository: Repository<SpeciesCode>;
   @InjectRepository(ViolationAgencyXref)
   private readonly _violationAgencyXrefRepository: Repository<ViolationAgencyXref>;
-  @InjectRepository(CosGeoOrgUnit)
-  private readonly _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
   @InjectRepository(ComplaintTypeCode)
   private readonly _complaintTypetRepository: Repository<ComplaintTypeCode>;
   @InjectRepository(GirTypeCode)
   private readonly _girTypeCodeRepository: Repository<GirTypeCode>;
   @InjectRepository(ReportedByCode)
   private readonly _reportedByRepository: Repository<ReportedByCode>;
-  @InjectRepository(TeamCode)
-  private readonly _teamCodeRepository: Repository<TeamCode>;
   @InjectRepository(CompMthdRecvCdAgcyCdXref)
   private readonly _compMthdRecvCdAgcyCdXrefRepository: Repository<CompMthdRecvCdAgcyCdXref>;
   @InjectRepository(EmailReference)
@@ -185,15 +182,15 @@ export class CodeTableService {
         return results;
       }
       case "organization-unit-type": {
-        const data = await this._organizationUnitTypeRepository.find({ order: { display_order: "ASC" } });
+        const data = await getGeoOrgUnitTypeCodes(token);
         let results = data.map(
-          ({ geo_org_unit_type_code, short_description, long_description, display_order, active_ind }) => {
+          ({ geoOrgUnitTypeCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
             let table: OrganizationUnitType = {
-              organizationUnitType: geo_org_unit_type_code,
-              shortDescription: short_description,
-              longDescription: long_description,
-              displayOrder: display_order,
-              isActive: active_ind,
+              organizationUnitType: geoOrgUnitTypeCode,
+              shortDescription: shortDescription,
+              longDescription: longDescription,
+              displayOrder: displayOrder,
+              isActive: activeIndicator,
             };
             return table;
           },
@@ -201,45 +198,31 @@ export class CodeTableService {
         return results;
       }
       case "organization-unit": {
-        let builder: SelectQueryBuilder<GeoOrganizationUnitCode>;
-        builder = this._organizationUnitRepository
-          .createQueryBuilder("organization_unit")
-          .leftJoinAndSelect("organization_unit.geo_org_unit_type_code", "organization_unit_type")
-          .orderBy("organization_unit.long_description", "ASC");
+        const data = await getGeoOrganizationUnitCodes(token);
 
-        const data = await builder.getMany();
+        let results = data.map(({ geoOrganizationUnitCode, shortDescription, longDescription, geoOrgUnitTypeCode }) => {
+          let table: OrganizationUnit = {
+            organizationUnit: geoOrganizationUnitCode,
+            shortDescription: shortDescription,
+            longDescription: longDescription,
+          };
 
-        let results = data.map(
-          ({
-            geo_organization_unit_code,
-            short_description,
-            long_description,
-            geo_org_unit_type_code: organizationUnitType,
-          }) => {
-            let table: OrganizationUnit = {
-              organizationUnit: geo_organization_unit_code,
-              shortDescription: short_description,
-              longDescription: long_description,
+          if (geoOrgUnitTypeCode) {
+            return {
+              ...table,
+              organizationUnitType: geoOrgUnitTypeCode,
             };
-
-            if (organizationUnitType) {
-              const { geo_org_unit_type_code } = organizationUnitType;
-              return {
-                ...table,
-                organizationUnitType: geo_org_unit_type_code,
-              };
-            }
-            return table;
-          },
-        );
+          }
+          return table;
+        });
         return results;
       }
       case "person-complaint": {
-        const data = await this._personComplaintTypeRepository.find({ order: { display_order: "ASC" } });
+        const data = await this._appUserComplaintXrefCodeRepository.find({ order: { display_order: "ASC" } });
         let results = data.map(
-          ({ person_complaint_xref_code, short_description, long_description, display_order, active_ind }) => {
+          ({ app_user_complaint_xref_code, short_description, long_description, display_order, active_ind }) => {
             let table: PersonComplaintType = {
-              personComplaintType: person_complaint_xref_code,
+              personComplaintType: app_user_complaint_xref_code,
               shortDescription: short_description,
               longDescription: long_description,
               displayOrder: display_order,
@@ -763,15 +746,14 @@ export class CodeTableService {
         return results;
       }
       case "team": {
-        const data = await this._teamCodeRepository.find({ order: { display_order: "ASC" } });
-        let results = data.map(({ team_code, short_description, long_description, display_order, active_ind }) => {
+        const data = await getTeamCodes(token);
+        let results = data.map(({ teamCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
           let table: TeamType = {
-            team: team_code,
-
-            shortDescription: short_description,
-            longDescription: long_description,
-            displayOrder: display_order,
-            isActive: active_ind,
+            team: teamCode,
+            shortDescription: shortDescription,
+            longDescription: longDescription,
+            displayOrder: displayOrder,
+            isActive: activeIndicator,
           };
           return table;
         });
@@ -902,29 +884,20 @@ export class CodeTableService {
     return results;
   };
 
-  getOrganizationsByAgency = async (agency: string): Promise<OrganizationCodeTable[]> => {
-    const data = await this._cosOrganizationUnitRepository.find();
+  getOrganizationsByAgency = async (agency: string, token: string): Promise<OrganizationCodeTable[]> => {
+    const data = await getCosGeoOrgUnits(token);
 
     const results = data.map(
-      ({
-        area_code: area,
-        area_name: areaName,
-        office_location_code: officeLocation,
-        office_location_name: officeLocationName,
-        region_name: regionName,
-        region_code: region,
-        zone_name: zoneName,
-        zone_code: zone,
-      }) => {
+      ({ areaCode, areaName, officeLocationCode, officeLocationName, regionName, regionCode, zoneName, zoneCode }) => {
         let record: OrganizationCodeTable = {
-          area,
-          areaName,
-          officeLocation,
-          officeLocationName,
-          regionName,
-          region,
-          zone,
-          zoneName,
+          area: areaCode,
+          areaName: areaName,
+          officeLocation: officeLocationCode,
+          officeLocationName: officeLocationName,
+          regionName: regionName,
+          region: regionCode,
+          zone: zoneCode,
+          zoneName: zoneName,
         };
 
         return record;
@@ -934,15 +907,10 @@ export class CodeTableService {
     return results;
   };
 
-  getRegionsByAgency = async (agency: string): Promise<Array<Sector>> => {
-    const data = await this._cosOrganizationUnitRepository
-      .createQueryBuilder("cos_geo_org_unit")
-      .select(["region_name", "region_code"])
-      .distinct(true)
-      .orderBy("cos_geo_org_unit.region_name", "ASC")
-      .getRawMany();
+  getRegionsByAgency = async (agency: string, token: string): Promise<Array<Sector>> => {
+    const data = await getCosGeoOrgUnitRegions(token);
 
-    const results = data.map(({ region_name: name, region_code: code }) => {
+    const results = data.map(({ code, name }) => {
       let record: Sector = {
         code,
         name,
@@ -953,15 +921,10 @@ export class CodeTableService {
     return results;
   };
 
-  getZonesByAgency = async (agency: string): Promise<Array<Zone>> => {
-    const data = await this._cosOrganizationUnitRepository
-      .createQueryBuilder("cos_geo_org_unit")
-      .select(["zone_name", "zone_code", "region_code"])
-      .distinct(true)
-      .orderBy("cos_geo_org_unit.zone_name", "ASC")
-      .getRawMany();
+  getZonesByAgency = async (agency: string, token: string): Promise<Array<Zone>> => {
+    const data = await getCosGeoOrgUnitZones(token);
 
-    const results = data.map(({ zone_name: name, zone_code: code, region_code: region }) => {
+    const results = data.map(({ code, name, region }) => {
       let record: Zone = {
         code,
         name,
@@ -973,16 +936,10 @@ export class CodeTableService {
     return results;
   };
 
-  getCommunitiesByAgency = async (agency: string): Promise<Array<Community>> => {
-    const data = await this._cosOrganizationUnitRepository
-      .createQueryBuilder("cos_geo_org_unit")
-      .select(["area_name", "area_code", "zone_code", "region_code"])
-      .where("area_code IS NOT NULL") //added to exclude office locations that don't have areas/communities e.g. COSHQ
-      .distinct(true)
-      .orderBy("cos_geo_org_unit.area_name", "ASC")
-      .getRawMany();
+  getCommunitiesByAgency = async (agency: string, token: string): Promise<Array<Community>> => {
+    const data = await getCosGeoOrgUnitCommunities(token);
 
-    const results = data.map(({ area_name: name, area_code: code, zone_code: zone, region_code: region }) => {
+    const results = data.map(({ code, name, zone, region }) => {
       let record: Community = {
         code,
         name,

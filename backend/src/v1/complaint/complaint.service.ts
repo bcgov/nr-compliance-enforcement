@@ -4,7 +4,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Brackets, DataSource, In, QueryRunner, Repository, SelectQueryBuilder } from "typeorm";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { caseFileQueryFields, get } from "../../external_api/shared_data";
 import Supercluster, { PointFeature } from "supercluster";
 import { GeoJsonProperties } from "geojson";
 
@@ -28,8 +27,6 @@ import { Complaint } from "./entities/complaint.entity";
 import { UpdateComplaintDto } from "../../types/models/complaints/dtos/update-complaint";
 
 import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
-import { Officer } from "../officer/entities/officer.entity";
-import { Office } from "../office/entities/office.entity";
 
 import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { CodeTableService } from "../code-table/code-table.service";
@@ -54,14 +51,13 @@ import { getIdirFromRequest } from "../../common/get-idir-from-request";
 import { MapSearchResults } from "../../types/models/complaints/map-search-results";
 import {
   mapComplaintDtoToComplaintTable,
-  mapDelegateDtoToPersonComplaintXrefTable,
+  mapDelegateDtoToAppUserComplaintXrefTable,
 } from "../../middleware/maps/dto-to-table-map";
-import { DelegateDto } from "../../types/models/people/delegate";
-import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
+import { DelegateDto } from "../../types/models/app_user/delegate";
+import { AppUserComplaintXrefService } from "../app_user_complaint_xref/app_user_complaint_xref.service";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
-import { PersonComplaintXrefTable } from "../../types/tables/person-complaint-xref.table";
+import { AppUserComplaintXrefTable } from "../../types/tables/app-user-complaint-xref.table";
 import { OfficeStats, OfficerStats, ZoneAtAGlanceStats } from "../../types/zone_at_a_glance/zone_at_a_glance_stats";
-import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { UUID, randomUUID } from "crypto";
 
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
@@ -74,7 +70,18 @@ import { WildlifeReportData } from "src/types/models/reports/complaints/wildlife
 import { AllegationReportData } from "src/types/models/reports/complaints/allegation-report-data";
 import { RelatedDataDto } from "src/types/models/complaints/dtos/related-data";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
-import { OfficerService } from "../officer/officer.service";
+import { AppUserService } from "../app_user/app_user.service";
+import {
+  caseFileQueryFields,
+  get,
+  getCosGeoOrgUnits,
+  searchCosGeoOrgUnitsByNames,
+  getAppUsers,
+  getAppUserByUserId,
+  getOfficeByGuid,
+  getOfficeByGeoCode,
+  searchAppUsers,
+} from "../../external_api/shared_data";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
 import { Attachment, AttachmentType } from "../../types/models/general/attachment";
@@ -108,14 +115,8 @@ export class ComplaintService {
   private readonly _complaintReferralRepository: Repository<ComplaintReferral>;
   @InjectRepository(ActionTaken)
   private readonly _actionTakenRepository: Repository<ActionTaken>;
-  @InjectRepository(Officer)
-  private readonly _officertRepository: Repository<Officer>;
-  @InjectRepository(Office)
-  private readonly _officeRepository: Repository<Office>;
   @InjectRepository(SpeciesCode)
   private readonly _speciesRepository: Repository<SpeciesCode>;
-  @InjectRepository(CosGeoOrgUnit)
-  private readonly _cosOrganizationUnitRepository: Repository<CosGeoOrgUnit>;
 
   constructor(
     @Inject(REQUEST)
@@ -123,10 +124,10 @@ export class ComplaintService {
     @InjectMapper() mapper,
     private readonly _codeTableService: CodeTableService,
     private readonly _compliantUpdatesService: ComplaintUpdatesService,
-    private readonly _personService: PersonComplaintXrefService,
+    private readonly _appUserComplaintXrefService: AppUserComplaintXrefService,
     private readonly _attractantService: AttractantHwcrXrefService,
     private readonly _compMthdRecvCdAgcyCdXrefService: CompMthdRecvCdAgcyCdXrefService,
-    private readonly _officerService: OfficerService,
+    private readonly _appUserService: AppUserService,
     private readonly _linkedComplaintsXrefService: LinkedComplaintXrefService,
     private readonly dataSource: DataSource,
     private readonly eventPublisherService: EventPublisherService,
@@ -147,28 +148,27 @@ export class ComplaintService {
     mapAllegationComplaintDtoToAllegationComplaint(mapper);
     mapSectorComplaintDtoToSectorComplaint(mapper);
     mapComplaintDtoToComplaintTable(mapper);
-    mapDelegateDtoToPersonComplaintXrefTable(mapper);
+    mapDelegateDtoToAppUserComplaintXrefTable(mapper);
     mapAttractantXrefDtoToAttractantHwcrXref(mapper);
   }
 
-  private readonly _getAgencyByUser = async (): Promise<string> => {
+  private readonly _getAgencyByUser = async (token: string): Promise<string> => {
     const idir = getIdirFromRequest(this.request);
 
-    const builder = this._officertRepository
-      .createQueryBuilder("officer")
-      .leftJoinAndSelect("officer.office_guid", "office")
-      .where("officer.user_id = :idir", { idir });
+    const appUser = await getAppUserByUserId(token, idir);
 
-    const result = await builder.getOne();
-    //-- pull the user's agency from the query results and return the agency code
-    if (result.office_guid?.agency_code_ref) {
-      const {
-        office_guid: { agency_code_ref },
-      } = result;
-      return agency_code_ref;
-    } else {
+    if (!appUser) {
       return null;
     }
+
+    if (appUser.officeGuid) {
+      const office = await getOfficeByGuid(token, appUser.officeGuid);
+      if (office?.agencyCode) {
+        return office.agencyCode;
+      }
+    }
+
+    return null;
   };
 
   private _getSortTable = (column: string): string => {
@@ -177,19 +177,117 @@ export class ComplaintService {
       case "hwcr_complaint_nature_code":
         return "wildlife";
       case "last_name":
-        return "person";
+        // last_name sorting is handled via GraphQL API in applyLastNameSort method
+        return "complaint";
       case "gir_type_code":
         return "general";
       case "violation_code":
       case "in_progress_ind":
         return "allegation";
       case "area_name":
-        return "cos_organization";
+        // Since this column exists in the shared schema, sort is handled in the search method.
+        return "complaint";
       case "complaint_identifier":
       default:
         return "complaint";
     }
   };
+
+  // Fetches geo org units from GraphQL and returns a map of areaCode sorted by area_name
+  private async getAreaNameSortMap(token: string): Promise<Map<string, number>> {
+    try {
+      const cosGeoOrgUnits = await getCosGeoOrgUnits(token);
+
+      const sorted = [...cosGeoOrgUnits].sort((a, b) => {
+        const areaA = (a.areaName || "").toLowerCase();
+        const areaB = (b.areaName || "").toLowerCase();
+        return areaA.localeCompare(areaB);
+      });
+
+      const sortMap = new Map<string, number>();
+      for (const [index, unit] of sorted.entries()) {
+        if (unit.areaCode) {
+          sortMap.set(unit.areaCode, index);
+        }
+      }
+
+      return sortMap;
+    } catch (error) {
+      this.logger.error(`Error building area name sort map: ${error}`);
+      return new Map();
+    }
+  }
+
+  // Applies area_name sorting to a query builder using a CASE statement
+  private applyAreaNameSort(
+    builder: SelectQueryBuilder<any>,
+    sortMap: Map<string, number>,
+    orderBy: "ASC" | "DESC",
+  ): void {
+    if (sortMap.size === 0) {
+      builder.orderBy("complaint.complaint_identifier", orderBy);
+      return;
+    }
+
+    let caseStatement = "(CASE complaint.geo_organization_unit_code ";
+
+    for (const [areaCode, position] of sortMap) {
+      caseStatement += `WHEN '${areaCode.replaceAll("'", "''")}' THEN ${position} `;
+    }
+    caseStatement += "ELSE 9999 END)";
+
+    builder.addSelect(caseStatement, "area_sort_order");
+    builder.orderBy("area_sort_order", orderBy);
+    builder.addOrderBy("complaint.incident_reported_utc_timestmp", "DESC");
+  }
+
+  // Fetches app users from GraphQL and returns a map of app_user_guid sorted by last_name
+  private async getLastNameSortMap(token: string): Promise<Map<string, number>> {
+    try {
+      const appUsers = await getAppUsers(token);
+
+      const sorted = [...appUsers].sort((a, b) => {
+        const lastNameA = (a.lastName || "").toLowerCase();
+        const lastNameB = (b.lastName || "").toLowerCase();
+        return lastNameA.localeCompare(lastNameB);
+      });
+
+      const sortMap = new Map<string, number>();
+      for (const [index, user] of sorted.entries()) {
+        if (user.appUserGuid) {
+          sortMap.set(user.appUserGuid, index);
+        }
+      }
+
+      return sortMap;
+    } catch (error) {
+      this.logger.error(`Error building last name sort map: ${error}`);
+      return new Map();
+    }
+  }
+
+  // Applies last_name sorting to a query builder using a CASE statement
+  private applyLastNameSort(
+    builder: SelectQueryBuilder<any>,
+    sortMap: Map<string, number>,
+    orderBy: "ASC" | "DESC",
+  ): void {
+    if (sortMap.size === 0) {
+      builder.orderBy("complaint.complaint_identifier", orderBy);
+      return;
+    }
+
+    let caseStatement = "(CASE delegate.app_user_guid_ref ";
+
+    for (const [appUserGuid, position] of sortMap) {
+      caseStatement += `WHEN '${appUserGuid.replaceAll("'", "''")}' THEN ${position} `;
+    }
+    caseStatement += "ELSE 9999 END)";
+
+    builder.addSelect(caseStatement, "last_name_sort_order");
+    builder.orderBy("last_name_sort_order", orderBy);
+    builder.addOrderBy("complaint.incident_reported_utc_timestmp", "DESC");
+  }
 
   private readonly _generateMapQueryBuilder = (
     type: COMPLAINT_TYPE,
@@ -265,14 +363,10 @@ export class ComplaintService {
       .leftJoin("complaint.complaint_update", "complaint_update")
       .leftJoin("complaint.action_taken", "action_taken")
       .leftJoin("complaint.linked_complaint_xref", "linked_complaint")
-      .leftJoin("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
-      .leftJoin("delegate.person_complaint_xref_code", "delegate_code")
-      .leftJoin("delegate.person_guid", "person", "delegate.active_ind = true")
+      .leftJoin("complaint.app_user_complaint_xref", "delegate", "delegate.active_ind = true")
+      .leftJoin("delegate.app_user_complaint_xref_code", "delegate_code")
       .leftJoin("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
       .leftJoin("method_xref.complaint_method_received_code", "method_code");
-    if (includeCosOrganization) {
-      builder.leftJoin("complaint.cos_geo_org_unit", "cos_organization");
-    }
     return builder;
   };
 
@@ -378,16 +472,14 @@ export class ComplaintService {
       .leftJoin("complaint.action_taken", "action_taken")
       .addSelect(["action_taken.action_details_txt", "action_taken.complaint_identifier"])
       .leftJoinAndSelect("complaint.linked_complaint_xref", "linked_complaint")
-      .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
-      .leftJoinAndSelect("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
-      .leftJoinAndSelect("delegate.person_complaint_xref_code", "delegate_code")
-      .leftJoinAndSelect("delegate.person_guid", "person", "delegate.active_ind = true")
+      .leftJoinAndSelect("complaint.app_user_complaint_xref", "delegate", "delegate.active_ind = true")
+      .leftJoinAndSelect("delegate.app_user_complaint_xref_code", "delegate_code")
       .leftJoinAndSelect("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
       .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code");
     return builder;
   };
 
-  private _applyFilters(
+  private async _applyFilters(
     builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>,
     {
       agency,
@@ -407,7 +499,8 @@ export class ComplaintService {
       complaintMethod,
     }: ComplaintFilterParameters,
     complaintType: COMPLAINT_TYPE,
-  ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> {
+    token: string,
+  ): Promise<SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>> {
     if (agency) {
       builder.andWhere("complaint.owned_by_agency_code_ref = :Agency", {
         Agency: agency,
@@ -420,22 +513,35 @@ export class ComplaintService {
       });
     }
 
-    if (community) {
-      builder.andWhere("cos_organization.area_code = :Community", {
-        Community: community,
-      });
-    }
+    if (community || zone || region) {
+      try {
+        // Fetch geo organization unit codes for zone/region/community filtering from GraphQL
+        const cosGeoOrgUnits = await getCosGeoOrgUnits(token, zone, region);
 
-    if (zone) {
-      builder.andWhere("cos_organization.zone_code = :Zone", {
-        Zone: zone,
-      });
-    }
+        if (cosGeoOrgUnits && cosGeoOrgUnits.length > 0) {
+          let filteredUnits = cosGeoOrgUnits;
 
-    if (region) {
-      builder.andWhere("cos_organization.region_code = :Region", {
-        Region: region,
-      });
+          if (community) {
+            filteredUnits = filteredUnits.filter((unit) => unit.areaCode === community);
+          }
+
+          if (zone) {
+            filteredUnits = filteredUnits.filter((unit) => unit.zoneCode === zone);
+          }
+
+          if (region) {
+            filteredUnits = filteredUnits.filter((unit) => unit.regionCode === region);
+          }
+
+          const geoCodes = [...new Set(filteredUnits.map((unit) => unit.areaCode))];
+          builder.andWhere("complaint.geo_organization_unit_code IN (:...geoCodes)", { geoCodes });
+        } else {
+          this.logger.error(`No geo organization units found for filtering ${zone} ${region} ${community}`);
+          builder.andWhere("1 = 0"); // no results
+        }
+      } catch (error) {
+        this.logger.error(`Error fetching geo organization units for filtering: ${error}`);
+      }
     }
 
     if (park) {
@@ -465,11 +571,11 @@ export class ComplaintService {
       builder.andWhere("delegate.complaint_identifier IS NULL");
     } else if (officerAssigned) {
       builder
-        .andWhere("delegate.person_complaint_xref_code = :Assignee", {
+        .andWhere("delegate.app_user_complaint_xref_code = :Assignee", {
           Assignee: "ASSIGNEE",
         })
-        .andWhere("delegate.person_guid = :PersonGuid", {
-          PersonGuid: officerAssigned,
+        .andWhere("delegate.app_user_guid = :AppUserGuid", {
+          AppUserGuid: officerAssigned,
         });
     }
 
@@ -524,23 +630,58 @@ export class ComplaintService {
     token?: string,
   ): Promise<SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>> {
     let caseSearchData = [];
-    if (token && (complaintType === "ERS" || complaintType === "HWCR")) {
-      // Search CM for any case files that may match based on authorization id
-      const { data, errors } = await get(token, {
-        query: `{getComplaintOutcomesBySearchString (complaintType: "${complaintType}" ,searchString: "${query}")
-        {
-          complaintId,
-          complaintOutcomeGuid
-        }
-      }`,
-      });
+    let orgGeoCodes: string[] = [];
+    let appUserGuids: string[] = [];
 
-      if (errors) {
-        this.logger.error("GraphQL errors:", errors);
-        throw new Error("GraphQL errors occurred");
+    // Search for organizations via GraphQL
+    if (token) {
+      try {
+        const orgUnits = await searchCosGeoOrgUnitsByNames(
+          token,
+          query, // zone
+          query, // region
+          query, // area
+          query, // office
+          true,
+        );
+
+        if (orgUnits && orgUnits.length > 0) {
+          orgGeoCodes = [...new Set(orgUnits.map((unit: any) => unit.areaCode))].filter(
+            (code): code is string => typeof code === "string",
+          );
+        }
+      } catch (error) {
+        this.logger.error(`Error searching organization names: ${error}`);
       }
 
-      caseSearchData = data.getComplaintOutcomesBySearchString;
+      // Search GraphQL for app users by name
+      try {
+        const matchingUsers = await searchAppUsers(token, query);
+        if (matchingUsers && matchingUsers.length > 0) {
+          appUserGuids = matchingUsers.map((user: any) => user.appUserGuid);
+        }
+      } catch (error) {
+        this.logger.error(`Error searching app_users by name: ${error}`);
+      }
+
+      // Search CM for any case files that may match based on authorization id
+      if (complaintType === "ERS" || complaintType === "HWCR") {
+        const { data, errors } = await get(token, {
+          query: `{getComplaintOutcomesBySearchString (complaintType: "${complaintType}" ,searchString: "${query}")
+          {
+            complaintId,
+            complaintOutcomeGuid
+          }
+        }`,
+        });
+
+        if (errors) {
+          this.logger.error("GraphQL errors:", errors);
+          throw new Error("GraphQL errors occurred");
+        }
+
+        caseSearchData = data.getComplaintOutcomesBySearchString;
+      }
     }
 
     builder.andWhere(
@@ -593,18 +734,10 @@ export class ComplaintService {
           query: `%${query}%`,
         });
 
-        qb.orWhere("cos_organization.region_name ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("cos_organization.area_name ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("cos_organization.zone_name ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("cos_organization.offloc_name ILIKE :query", {
-          query: `%${query}%`,
-        });
+        // Filter by organization codes from search results
+        if (orgGeoCodes.length > 0) {
+          qb.orWhere("complaint.geo_organization_unit_code IN (:...orgGeoCodes)", { orgGeoCodes });
+        }
 
         switch (complaintType) {
           case "ERS": {
@@ -664,12 +797,11 @@ export class ComplaintService {
           });
         }
 
-        qb.orWhere("person.first_name ILIKE :query", {
-          query: `%${query}%`,
-        });
-        qb.orWhere("person.last_name ILIKE :query", {
-          query: `%${query}%`,
-        });
+        // Filter complaints by app_users found in name search
+        if (appUserGuids.length > 0) {
+          qb.orWhere("delegate.app_user_guid_ref IN (:...appUserGuids)", { appUserGuids });
+        }
+
         qb.orWhere("complaint_update.upd_detail_text ILIKE :query", {
           query: `%${query}%`,
         });
@@ -682,8 +814,12 @@ export class ComplaintService {
     return builder;
   }
 
-  private readonly _getTotalComplaintsByZone = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<number> => {
-    const agency = await this._getAgencyByUser();
+  private readonly _getTotalComplaintsByZone = async (
+    complaintType: COMPLAINT_TYPE,
+    zone: string,
+    token: string,
+  ): Promise<number> => {
+    const agency = await this._getAgencyByUser(token);
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
 
     switch (complaintType) {
@@ -701,13 +837,21 @@ export class ComplaintService {
       }
     }
 
-    builder
-      .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
-      .where("area_code.zone_code = :zone", { zone })
-      .andWhere("complaint.complaint_status_code = :status", {
-        status: "OPEN",
-      })
-      .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    // Get area codes for the zone from GraphQL
+    try {
+      const cosGeoOrgUnits = await getCosGeoOrgUnits(token, zone);
+      const geoCodes = [...new Set(cosGeoOrgUnits.map((unit: any) => unit.areaCode))];
+
+      builder
+        .where("complaint.geo_organization_unit_code IN (:...geoCodes)", { geoCodes })
+        .andWhere("complaint.complaint_status_code = :status", {
+          status: "OPEN",
+        })
+        .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    } catch (error) {
+      this.logger.error(`Error fetching area codes for zone ${zone}: ${error}`);
+      throw error;
+    }
 
     const result = await builder.getCount();
 
@@ -717,8 +861,9 @@ export class ComplaintService {
   private readonly _getTotalComplaintsByOffice = async (
     complaintType: COMPLAINT_TYPE,
     office: string,
+    token: string,
   ): Promise<number> => {
-    const agency = await this._getAgencyByUser();
+    const agency = await this._getAgencyByUser(token);
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
 
     switch (complaintType) {
@@ -737,13 +882,23 @@ export class ComplaintService {
       }
     }
 
-    builder
-      .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
-      .where("area_code.offloc_code = :office", { office })
-      .andWhere("complaint.complaint_status_code = :status", {
-        status: "OPEN",
-      })
-      .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    // Get area codes for the office location from GraphQL
+    try {
+      const cosGeoOrgUnits = await getCosGeoOrgUnits(token);
+      const matchingUnits = cosGeoOrgUnits.filter((unit: any) => unit.officeLocationCode === office);
+
+      const geoCodes = [...new Set(matchingUnits.map((unit: any) => unit.areaCode))];
+
+      builder
+        .where("complaint.geo_organization_unit_code IN (:...geoCodes)", { geoCodes })
+        .andWhere("complaint.complaint_status_code = :status", {
+          status: "OPEN",
+        })
+        .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    } catch (error) {
+      this.logger.error(`Error fetching area codes for office ${office}: ${error}`);
+      throw error;
+    }
 
     return await builder.getCount();
   };
@@ -751,8 +906,9 @@ export class ComplaintService {
   private readonly _getTotalAssignedComplaintsByZone = async (
     complaintType: COMPLAINT_TYPE,
     zone: string,
+    token: string,
   ): Promise<number> => {
-    const agency = await this._getAgencyByUser();
+    const agency = await this._getAgencyByUser(token);
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
 
     switch (complaintType) {
@@ -771,18 +927,26 @@ export class ComplaintService {
       }
     }
 
-    builder
-      .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
-      .innerJoinAndSelect(
-        "complaint.person_complaint_xref",
-        "person_complaint_xref",
-        "person_complaint_xref.active_ind = true",
-      )
-      .where("area_code.zone_code = :zone", { zone })
-      .andWhere("complaint.complaint_status_code = :status", {
-        status: "OPEN",
-      })
-      .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    // Get area codes for the zone from GraphQL
+    try {
+      const cosGeoOrgUnits = await getCosGeoOrgUnits(token, zone);
+      const geoCodes = [...new Set(cosGeoOrgUnits.map((unit: any) => unit.areaCode))];
+
+      builder
+        .innerJoinAndSelect(
+          "complaint.app_user_complaint_xref",
+          "app_user_complaint_xref",
+          "app_user_complaint_xref.active_ind = true",
+        )
+        .where("complaint.geo_organization_unit_code IN (:...geoCodes)", { geoCodes })
+        .andWhere("complaint.complaint_status_code = :status", {
+          status: "OPEN",
+        })
+        .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    } catch (error) {
+      this.logger.error(`Error fetching area codes for zone ${zone}: ${error}`);
+      throw error;
+    }
 
     const result = await builder.getCount();
 
@@ -792,8 +956,9 @@ export class ComplaintService {
   private readonly _getTotalAssignedComplaintsByOffice = async (
     complaintType: COMPLAINT_TYPE,
     office: string,
+    token: string,
   ): Promise<number> => {
-    const agency = await this._getAgencyByUser();
+    const agency = await this._getAgencyByUser(token);
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
 
     switch (complaintType) {
@@ -812,74 +977,79 @@ export class ComplaintService {
       }
     }
 
-    builder
-      .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
-      .innerJoinAndSelect("complaint.person_complaint_xref", "person")
-      .where("area_code.offloc_code = :office", { office })
-      .andWhere("complaint.complaint_status_code = :status", {
-        status: "OPEN",
-      })
-      .andWhere("person.active_ind = true")
-      .andWhere("person.person_complaint_xref_code = :assignee", { assignee: "ASSIGNEE" })
-      .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    // Get area codes for the office location from GraphQL
+    try {
+      const cosGeoOrgUnits = await getCosGeoOrgUnits(token);
+      const matchingUnits = cosGeoOrgUnits.filter((unit: any) => unit.officeLocationCode === office);
+
+      const geoCodes = [...new Set(matchingUnits.map((unit: any) => unit.areaCode))];
+
+      builder
+        .innerJoinAndSelect("complaint.app_user_complaint_xref", "app_user_xref")
+        .where("complaint.geo_organization_unit_code IN (:...geoCodes)", { geoCodes })
+        .andWhere("complaint.complaint_status_code = :status", {
+          status: "OPEN",
+        })
+        .andWhere("app_user_xref.active_ind = true")
+        .andWhere("app_user_xref.app_user_complaint_xref_code = :assignee", { assignee: "ASSIGNEE" })
+        .andWhere("complaint.owned_by_agency_code_ref = :agency", { agency: agency });
+    } catch (error) {
+      this.logger.error(`Error fetching area codes for office ${office}: ${error}`);
+      throw error;
+    }
 
     const result = await builder.getCount();
 
     return result;
   };
 
-  private readonly _getOfficeIdByOrganizationUnitCode = async (code: string): Promise<UUID> => {
+  private readonly _getOfficeIdByOrganizationUnitCode = async (code: string, token: string): Promise<UUID> => {
     try {
-      const agency = await this._getAgencyByUser();
-      const officeGuidQuery = await this._officeRepository
-        .createQueryBuilder("office")
-        .where("office.geo_organization_unit_code = :code", { code })
-        .andWhere("office.agency_code_ref = :agency", { agency: agency });
-
-      const office = await officeGuidQuery.getOne();
+      const agency = await this._getAgencyByUser(token);
+      const office = await getOfficeByGeoCode(token, code, agency);
 
       if (office) {
-        return office.office_guid;
+        return office.officeGuid as UUID;
       }
     } catch (error) {}
   };
 
-  private _getOfficersByOffice = async (complaintType: COMPLAINT_TYPE, officeGuid: string): Promise<OfficerStats[]> => {
+  private readonly _getAppUsersByOffice = async (
+    complaintType: COMPLAINT_TYPE,
+    officeGuid: string,
+    token: string,
+  ): Promise<OfficerStats[]> => {
     let results: Array<OfficerStats> = [];
 
     try {
-      const query = await this._officertRepository
-        .createQueryBuilder("officers")
-        .leftJoinAndSelect("officers.person_guid", "person")
-        .where("officers.office_guid = :officeGuid", { officeGuid });
+      const usersInOffice = await getAppUsers(token, [officeGuid]);
 
-      const officers = await query.getMany();
-
-      for (const officer of officers) {
-        const { person_guid: person, officer_guid: officerId } = officer;
-        const { first_name, last_name } = person;
-
-        const assigned = await this._getTotalAssignedComplaintsByOfficer(complaintType, officerId);
+      for (const appUser of usersInOffice) {
+        const assigned = await this._getTotalAssignedComplaintsByAppUser(complaintType, appUser.appUserGuid, token);
 
         let record = {
-          name: `${last_name}, ${first_name}`,
+          name: `${appUser.lastName}, ${appUser.firstName}`,
           hwcrAssigned: complaintType === "HWCR" ? assigned : 0,
           allegationAssigned: complaintType === "ERS" ? assigned : 0,
-          officerGuid: officerId,
+          appUserGuid: appUser.appUserGuid,
         };
 
         results = [...results, record];
       }
 
       return results;
-    } catch (error) {}
+    } catch (error) {
+      this.logger.error(`Error fetching app users by office ${officeGuid}: ${error}`);
+      throw error;
+    }
   };
 
-  private readonly _getTotalAssignedComplaintsByOfficer = async (
+  private readonly _getTotalAssignedComplaintsByAppUser = async (
     complaintType: string,
-    officerId: string,
+    appUserGuid: string,
+    token: string,
   ): Promise<number> => {
-    const agency = await this._getAgencyByUser();
+    const agency = await this._getAgencyByUser(token);
     let builder: SelectQueryBuilder<HwcrComplaint | AllegationComplaint>;
 
     try {
@@ -900,13 +1070,10 @@ export class ComplaintService {
       }
 
       builder
-        .leftJoinAndSelect("complaint.cos_geo_org_unit", "area_code")
-        .leftJoinAndSelect("complaint.person_complaint_xref", "person_complaint_xref")
-        .leftJoinAndSelect("person_complaint_xref.person_guid", "person")
-        .leftJoinAndSelect("person.officer", "officer")
-        .where("person_complaint_xref.active_ind = true")
-        .andWhere("person_complaint_xref.person_complaint_xref_code = :assignee", { assignee: "ASSIGNEE" })
-        .andWhere("officer.officer_guid = :officerId", { officerId })
+        .leftJoinAndSelect("complaint.app_user_complaint_xref", "app_user_complaint_xref")
+        .where("app_user_complaint_xref.active_ind = true")
+        .andWhere("app_user_complaint_xref.app_user_complaint_xref_code = :assignee", { assignee: "ASSIGNEE" })
+        .andWhere("app_user_complaint_xref.app_user_guid_ref = :appUserGuid", { appUserGuid })
         .andWhere("complaint.complaint_status_code = :status", {
           status: "OPEN",
         })
@@ -914,37 +1081,41 @@ export class ComplaintService {
 
       return builder.getCount();
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(`Error getting total assigned complaints for app user ${appUserGuid}: ${error}`);
+      throw error;
     }
   };
 
-  private _getComplaintsByOffice = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<OfficeStats[]> => {
+  private readonly _getComplaintsByOffice = async (
+    complaintType: COMPLAINT_TYPE,
+    zone: string,
+    token: string,
+  ): Promise<OfficeStats[]> => {
     let results: OfficeStats[] = [];
 
-    const officeQuery = await this._cosOrganizationUnitRepository
-      .createQueryBuilder("cos_geo_org_unit")
-      .where("cos_geo_org_unit.zone_code = :zone", { zone })
-      .distinctOn(["cos_geo_org_unit.offloc_code"])
-      .orderBy("cos_geo_org_unit.offloc_code");
+    const cosGeoOrgUnits = await getCosGeoOrgUnits(token, zone, undefined, true);
 
-    const offices = await officeQuery.getMany();
+    const officeLocationsInZone = cosGeoOrgUnits.map((unit) => ({
+      code: unit.officeLocationCode,
+      name: unit.officeLocationName,
+    }));
 
-    for (const office of offices) {
-      const { office_location_code: code, office_location_name: name } = office;
+    for (const officeLocation of officeLocationsInZone) {
+      const { code, name } = officeLocation;
 
-      const total = await this._getTotalComplaintsByOffice(complaintType, code);
-      const assigned = await this._getTotalAssignedComplaintsByOffice(complaintType, code);
+      const total = await this._getTotalComplaintsByOffice(complaintType, code, token);
+      const assigned = await this._getTotalAssignedComplaintsByOffice(complaintType, code, token);
       const unassigned = total - assigned;
 
-      const officeGuid = await this._getOfficeIdByOrganizationUnitCode(code);
-      const officers = await this._getOfficersByOffice(complaintType, officeGuid);
+      const officeGuid = await this._getOfficeIdByOrganizationUnitCode(code, token);
+      const appUsers = await this._getAppUsersByOffice(complaintType, officeGuid, token);
 
       const record: OfficeStats = {
         name,
         assigned,
         unassigned,
         officeGuid,
-        officers,
+        appUsers,
       };
 
       results = [...results, record];
@@ -1099,6 +1270,7 @@ export class ComplaintService {
     id: string,
     complaintType?: COMPLAINT_TYPE,
     req?: any,
+    token?: string,
   ): Promise<
     ComplaintDto | WildlifeComplaintDto | AllegationComplaintDto | GeneralIncidentComplaintDto | SectorComplaintDto
   > => {
@@ -1124,17 +1296,9 @@ export class ComplaintService {
           ])
           .leftJoin("complaint.reported_by_code", "reported_by")
           .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
-          .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
-          .leftJoinAndSelect("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
-          .leftJoinAndSelect("delegate.person_complaint_xref_code", "delegate_code")
-          .leftJoinAndSelect("delegate.person_guid", "person", "delegate.active_ind = true")
-          .addSelect([
-            "person.person_guid",
-            "person.first_name",
-            "person.middle_name_1",
-            "person.middle_name_2",
-            "person.last_name",
-          ])
+          .leftJoinAndSelect("complaint.app_user_complaint_xref", "delegate", "delegate.active_ind = true")
+          .leftJoinAndSelect("delegate.app_user_complaint_xref_code", "delegate_code")
+          .addSelect(["delegate.app_user_guid"])
           .leftJoinAndSelect("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
           .leftJoinAndSelect("method_xref.complaint_method_received_code", "method_code");
       }
@@ -1150,18 +1314,22 @@ export class ComplaintService {
               throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
             }
           }
-          return this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
+          const complaint = this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
             result as AllegationComplaint,
             "AllegationComplaint",
             "AllegationComplaintDto",
           );
+          await this.setOrganization([complaint], token);
+          return complaint;
         }
         case "GIR": {
-          return this.mapper.map<GirComplaint, GeneralIncidentComplaintDto>(
+          const complaint = this.mapper.map<GirComplaint, GeneralIncidentComplaintDto>(
             result as GirComplaint,
             "GirComplaint",
             "GeneralIncidentComplaintDto",
           );
+          await this.setOrganization([complaint], token);
+          return complaint;
         }
         case "HWCR": {
           const hwcr = this.mapper.map<HwcrComplaint, WildlifeComplaintDto>(
@@ -1169,6 +1337,7 @@ export class ComplaintService {
             "HwcrComplaint",
             "WildlifeComplaintDto",
           );
+          await this.setOrganization([hwcr], token);
           return hwcr;
         }
         case "SECTOR": {
@@ -1178,10 +1347,13 @@ export class ComplaintService {
             "SectorComplaintDto",
           );
           await this.setSectorComplaintIssueType([sector]);
+          await this.setOrganization([sector], token);
           return sector;
         }
         default: {
-          return this.mapper.map<Complaint, ComplaintDto>(result as Complaint, "Complaint", "ComplaintDto");
+          const complaint = this.mapper.map<Complaint, ComplaintDto>(result as Complaint, "Complaint", "ComplaintDto");
+          await this.setOrganization([complaint], token);
+          return complaint;
         }
       }
     } catch (error) {
@@ -1189,7 +1361,7 @@ export class ComplaintService {
     }
   };
 
-  getSectorComplaintsByIds = async (ids: string[]): Promise<SectorComplaintDto[]> => {
+  getSectorComplaintsByIds = async (ids: string[], token: string): Promise<SectorComplaintDto[]> => {
     let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
 
     try {
@@ -1203,6 +1375,7 @@ export class ComplaintService {
         "SectorComplaintDto",
       );
       await this.setSectorComplaintIssueType(sectorComplaints);
+      await this.setOrganization(sectorComplaints, token);
       return sectorComplaints;
     } catch (error) {
       this.logger.error(error);
@@ -1288,7 +1461,7 @@ export class ComplaintService {
 
       //-- apply filters if used
       if (Object.keys(filters).length !== 0) {
-        builder = this._applyFilters(builder, filters as ComplaintFilterParameters, filterComplaintType);
+        builder = await this._applyFilters(builder, filters as ComplaintFilterParameters, filterComplaintType, token);
       }
       builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
@@ -1345,12 +1518,22 @@ export class ComplaintService {
 
       //-- apply sort if provided
       if (sortBy && orderBy) {
-        builder
-          .orderBy(sortString, orderBy, "NULLS LAST")
-          .addOrderBy(
-            "complaint.incident_reported_utc_timestmp",
-            sortBy === "incident_reported_utc_timestmp" ? orderBy : "DESC",
-          );
+        // Special handling for area_name sort since it's source is the GraphQL API
+        if (sortBy === "area_name") {
+          const areaSortMap = await this.getAreaNameSortMap(token);
+          this.applyAreaNameSort(builder, areaSortMap, orderBy);
+        } else if (sortBy === "last_name") {
+          // Special handling for last_name sort since it's source is the GraphQL API
+          const lastNameSortMap = await this.getLastNameSortMap(token);
+          this.applyLastNameSort(builder, lastNameSortMap, orderBy);
+        } else {
+          builder
+            .orderBy(sortString, orderBy, "NULLS LAST")
+            .addOrderBy(
+              "complaint.incident_reported_utc_timestmp",
+              sortBy === "incident_reported_utc_timestmp" ? orderBy : "DESC",
+            );
+        }
       }
 
       //-- search and count
@@ -1378,7 +1561,7 @@ export class ComplaintService {
           }
 
           // inject the authorization id onto each complaint
-          items.forEach((item) => {
+          for (const item of items) {
             const complaintOutcome = data.getComplaintOutcomesByComplaintId.find(
               (file) => file.complaintId === item.id,
             );
@@ -1388,8 +1571,9 @@ export class ComplaintService {
                   ? "UA" + complaintOutcome.authorization.value
                   : complaintOutcome.authorization.value;
             }
-          });
+          }
 
+          await this.setOrganization(items, token);
           results.complaints = items;
           break;
         }
@@ -1399,6 +1583,7 @@ export class ComplaintService {
             "GirComplaint",
             "GeneralIncidentComplaintDto",
           );
+          await this.setOrganization(items, token);
           results.complaints = items;
           break;
         }
@@ -1409,6 +1594,7 @@ export class ComplaintService {
             "WildlifeComplaintDto",
           );
 
+          await this.setOrganization(items, token);
           results.complaints = items;
           break;
         }
@@ -1441,6 +1627,7 @@ export class ComplaintService {
             "SectorComplaintDto",
           );
           await this.setSectorComplaintIssueType(items);
+          await this.setOrganization(items, token);
           results.complaints = items;
           break;
         }
@@ -1509,6 +1696,56 @@ export class ComplaintService {
     }
   };
 
+  setOrganization = async <
+    T extends {
+      organization?: { area: string; areaName: string; zone: string; region: string; officeLocation?: string };
+    },
+  >(
+    complaints: T[],
+    token: string,
+  ): Promise<void> => {
+    try {
+      const areaCodes = [
+        ...new Set(complaints.map((c) => c.organization?.area).filter((area) => area && area.trim() !== "")),
+      ];
+
+      // Get org data from GraphQL
+      const orgUnits = await getCosGeoOrgUnits(token);
+
+      // Create a map of area code to org data
+      const orgDataMap = new Map();
+
+      for (const areaCode of areaCodes) {
+        const orgUnit = orgUnits.find((unit: any) => unit.areaCode === areaCode);
+        if (orgUnit) {
+          orgDataMap.set(areaCode, {
+            region: orgUnit.regionCode || "",
+            area: orgUnit.areaCode || "",
+            areaName: orgUnit.areaName || "",
+            officeLocation: orgUnit.officeLocationCode || "",
+            zone: orgUnit.zoneCode || "",
+          });
+        }
+      }
+
+      // Add organization data to each complaint based on area code
+      for (const complaint of complaints) {
+        if (complaint.organization?.area) {
+          const orgData = orgDataMap.get(complaint.organization.area);
+          if (orgData) {
+            complaint.organization.area = orgData.area;
+            complaint.organization.areaName = orgData.areaName;
+            complaint.organization.zone = orgData.zone;
+            complaint.organization.region = orgData.region;
+            complaint.organization.officeLocation = orgData.officeLocation;
+          }
+        }
+      }
+    } catch (error) {
+      this.logger.error(`Error adding organization data to complaints: ${error}`);
+    }
+  };
+
   findRelatedDataById = async (id: string): Promise<RelatedDataDto> => {
     try {
       const updates = await this._compliantUpdatesService.findByComplaintId(id);
@@ -1554,7 +1791,7 @@ export class ComplaintService {
 
       //-- apply filters if used
       if (Object.keys(filters).length !== 0) {
-        builder = this._applyFilters(builder, filters as ComplaintFilterParameters, filterComplaintType);
+        builder = await this._applyFilters(builder, filters as ComplaintFilterParameters, filterComplaintType, token);
       }
 
       //-- apply search
@@ -1733,9 +1970,9 @@ export class ComplaintService {
           }
         }
 
-        clusters.forEach((cluster) => {
+        for (const cluster of clusters) {
           cluster.properties.zoom = index.getClusterExpansionZoom(cluster.properties.cluster_id);
-        });
+        }
 
         // set the results
         results.clusters = clusters;
@@ -1909,34 +2146,34 @@ export class ComplaintService {
         if (hasAssignees(delegates)) {
           const assignee = delegates.find((item) => item.type === "ASSIGNEE" && item.isActive);
           if (assignee) {
-            const converted = this.mapper.map<DelegateDto, PersonComplaintXrefTable>(
+            const converted = this.mapper.map<DelegateDto, AppUserComplaintXrefTable>(
               assignee,
               "DelegateDto",
-              "PersonComplaintXrefTable",
+              "AppUserComplaintXrefTable",
             );
             converted.create_user_id = idir;
             converted.complaint_identifier = id;
 
-            await this._personService.assignNewOfficer(id, converted as any);
+            await this._appUserComplaintXrefService.assignNewAppUser(id, converted as any);
           } else {
             //-- the complaint has no assigned officer
             const unassigned = delegates.filter(({ isActive }) => !isActive);
-            unassigned.forEach((officer) => {
-              const converted = this.mapper.map<DelegateDto, PersonComplaintXrefTable>(
+            for (const officer of unassigned) {
+              const converted = this.mapper.map<DelegateDto, AppUserComplaintXrefTable>(
                 officer,
                 "DelegateDto",
-                "PersonComplaintXrefTable",
+                "AppUserComplaintXrefTable",
               );
 
               converted.create_user_id = idir;
               converted.update_user_id = idir;
               converted.complaint_identifier = id;
 
-              this._personService.assignNewOfficer(id, converted as any);
-            });
+              this._appUserComplaintXrefService.assignNewAppUser(id, converted as any);
+            }
           }
         } else {
-          await this._personService.unAssignOfficer(id);
+          await this._appUserComplaintXrefService.unAssignAppUser(id);
         }
 
         //-- apply complaint specific updates
@@ -2073,30 +2310,26 @@ export class ComplaintService {
       await this.complaintsRepository.save(complaint);
 
       //-- if there are any asignees apply them to the complaint
-      if (entity.person_complaint_xref) {
-        const { person_complaint_xref } = entity;
+      if (entity.app_user_complaint_xref) {
+        const { app_user_complaint_xref } = entity;
 
-        const selectedAssignee = person_complaint_xref.find(
-          ({ person_complaint_xref_code: { person_complaint_xref_code }, active_ind }) =>
-            person_complaint_xref_code === "ASSIGNEE" && active_ind,
+        const selectedAssignee = app_user_complaint_xref.find(
+          ({ app_user_complaint_xref_code: { app_user_complaint_xref_code }, active_ind }) =>
+            app_user_complaint_xref_code === "ASSIGNEE" && active_ind,
         );
 
         if (selectedAssignee) {
-          const {
-            person_guid: { person_guid: id },
-          } = selectedAssignee;
+          const { app_user_guid: id } = selectedAssignee;
 
           const assignee = {
             active_ind: true,
-            person_guid: {
-              person_guid: id,
-            },
+            app_user_guid: id,
             complaint_identifier: complaintId,
-            person_complaint_xref_code: "ASSIGNEE",
+            app_user_complaint_xref_code: "ASSIGNEE",
             create_user_id: idir,
           } as any;
 
-          this._personService.assignNewOfficer(complaintId, assignee);
+          this._appUserComplaintXrefService.assignNewAppUser(complaintId, assignee);
         }
       }
 
@@ -2155,7 +2388,7 @@ export class ComplaintService {
           await this._wildlifeComplaintRepository.save(newWildlife);
 
           if (attractants) {
-            attractants.forEach(({ attractant }) => {
+            for (const { attractant } of attractants) {
               const record = {
                 hwcr_complaint_guid: hwcrId,
                 attractant_code: attractant,
@@ -2164,7 +2397,7 @@ export class ComplaintService {
               } as any;
 
               this._attractantService.create(queryRunner, record);
-            });
+            }
           }
 
           break;
@@ -2188,14 +2421,18 @@ export class ComplaintService {
     }
   };
 
-  getZoneAtAGlanceStatistics = async (complaintType: COMPLAINT_TYPE, zone: string): Promise<ZoneAtAGlanceStats> => {
+  getZoneAtAGlanceStatistics = async (
+    complaintType: COMPLAINT_TYPE,
+    zone: string,
+    token: string,
+  ): Promise<ZoneAtAGlanceStats> => {
     let results: ZoneAtAGlanceStats = { total: 0, assigned: 0, unassigned: 0 };
 
-    const total = await this._getTotalComplaintsByZone(complaintType, zone);
-    const assigned = await this._getTotalAssignedComplaintsByZone(complaintType, zone);
+    const total = await this._getTotalComplaintsByZone(complaintType, zone, token);
+    const assigned = await this._getTotalAssignedComplaintsByZone(complaintType, zone, token);
     const unassigned = total - assigned;
 
-    const offices = (await this._getComplaintsByOffice(complaintType, zone)).filter((office) => {
+    const offices = (await this._getComplaintsByOffice(complaintType, zone, token)).filter((office) => {
       return office.name !== "COS HQ";
     });
 
@@ -2271,48 +2508,52 @@ export class ComplaintService {
         where: {
           complaint_identifier: id,
         },
-        relations: {
-          officer_guid: {
-            person_guid: true,
-          },
-        },
         select: {
           referred_by_agency_code_ref: true,
           referred_to_agency_code_ref: true,
-          officer_guid: {
-            officer_guid: true,
-            person_guid: {
-              last_name: true,
-              first_name: true,
-            },
-          },
+          app_user_guid_ref: true,
           referral_date: true,
           referral_reason: true,
         },
       });
 
-      const referrals = referralsResult?.map((item) => {
-        const standardTz = "America/Vancouver";
-        const zonedReferralDate = toZonedTime(item.referral_date, standardTz);
-        const updateOn = format(zonedReferralDate, "yyyy-MM-dd HH:mm");
-        const record: ComplaintUpdateDto = {
-          sequenceId: null,
-          updateOn,
-          updateTime: zonedReferralDate,
-          updateType: ComplaintUpdateType.REFERRAL,
-          referral: {
-            previousAgency: item.referred_by_agency_code_ref,
-            newAgency: item.referred_to_agency_code_ref,
-            referredBy: {
-              officerGuid: item.officer_guid.officer_guid,
-              lastName: item.officer_guid.person_guid.last_name,
-              firstName: item.officer_guid.person_guid.first_name,
+      const referrals = await Promise.all(
+        referralsResult?.map(async (item) => {
+          const standardTz = "America/Vancouver";
+          const zonedReferralDate = toZonedTime(item.referral_date, standardTz);
+          const updateOn = format(zonedReferralDate, "yyyy-MM-dd HH:mm");
+
+          let lastName = "";
+          let firstName = "";
+          try {
+            const appUser = await this._appUserService.findOne(item.app_user_guid_ref, token);
+            if (appUser) {
+              lastName = appUser.lastName || "";
+              firstName = appUser.firstName || "";
+            }
+          } catch (error) {
+            this.logger.error(`Failed to fetch app user ${item.app_user_guid_ref} for referral: ${error}`);
+          }
+
+          const record: ComplaintUpdateDto = {
+            sequenceId: null,
+            updateOn,
+            updateTime: zonedReferralDate,
+            updateType: ComplaintUpdateType.REFERRAL,
+            referral: {
+              previousAgency: item.referred_by_agency_code_ref,
+              newAgency: item.referred_to_agency_code_ref,
+              referredBy: {
+                appUserGuid: item.app_user_guid_ref,
+                lastName,
+                firstName,
+              },
+              referralReason: item.referral_reason,
             },
-            referralReason: item.referral_reason,
-          },
-        };
-        return record;
-      });
+          };
+          return record;
+        }) || [],
+      );
 
       const actionTakenresult = await this._actionTakenRepository.find({
         where: {
@@ -2409,12 +2650,10 @@ export class ComplaintService {
         assessment.assessmentActor = assessmentActions[0].actor;
         assessment.assessmentDate = assessmentActions[0].date;
 
-        const officer = await this._officerService.findByAuthUserGuid(assessment.assessmentActor);
-        const { first_name, last_name } = officer.person_guid;
+        const appUser = await this._appUserService.findByAuthUserGuid(assessment.assessmentActor, token);
+        const { first_name, last_name, agency_code_ref } = appUser;
         const agencyTable = await this._codeTableService.getCodeTableByName("agency", token);
-        const agency_code = agencyTable?.find(
-          (agency: any) => agency.agency === officer.agency_code_ref,
-        )?.shortDescription;
+        const agency_code = agencyTable?.find((agency: any) => agency.agency === agency_code_ref)?.shortDescription;
 
         assessment.assessmentActor = `${last_name}, ${first_name} (${agency_code})`;
 
@@ -2435,8 +2674,10 @@ export class ComplaintService {
           prevention.preventionActor = prevention.actions[0].actor;
           prevention.preventionDate = prevention.actions[0].date;
 
-          const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(prevention.preventionActor))
-            .person_guid;
+          const { first_name, last_name } = await this._appUserService.findByAuthUserGuid(
+            prevention.preventionActor,
+            token,
+          );
 
           prevention.preventionActor = `${last_name}, ${first_name}`;
 
@@ -2467,8 +2708,8 @@ export class ComplaintService {
 
         if (setByAction?.actor) {
           officerPromises.push(
-            this._officerService.findByAuthUserGuid(setByAction.actor).then((result) => {
-              const { first_name, last_name } = result.person_guid;
+            this._appUserService.findByAuthUserGuid(setByAction.actor, token).then((result) => {
+              const { first_name, last_name } = result;
               equip.setByActor = `${last_name}, ${first_name}`;
               equip.setByDate = setByAction.date;
             }),
@@ -2477,8 +2718,8 @@ export class ComplaintService {
 
         if (removedByAction?.actor) {
           officerPromises.push(
-            this._officerService.findByAuthUserGuid(removedByAction?.actor).then((result) => {
-              const { first_name, last_name } = result.person_guid;
+            this._appUserService.findByAuthUserGuid(removedByAction?.actor, token).then((result) => {
+              const { first_name, last_name } = result;
               removedByAction.actor = `${last_name}, ${first_name}`;
             }),
           );
@@ -2538,8 +2779,8 @@ export class ComplaintService {
 
         if (animal.officer) {
           officerPromises.push(
-            this._officerService.findByAuthUserGuid(animal.officer).then((result) => {
-              const { first_name, last_name } = result.person_guid;
+            this._appUserService.findByAuthUserGuid(animal.officer, token).then((result) => {
+              const { first_name, last_name } = result;
               animal.officer = `${last_name}, ${first_name}`;
             }),
           );
@@ -2547,8 +2788,8 @@ export class ComplaintService {
 
         if (drugActor) {
           officerPromises.push(
-            this._officerService.findByAuthUserGuid(drugActor).then((result) => {
-              const { first_name, last_name } = result.person_guid;
+            this._appUserService.findByAuthUserGuid(drugActor, token).then((result) => {
+              const { first_name, last_name } = result;
               drugActor = `${last_name}, ${first_name}`;
             }),
           );
@@ -2566,10 +2807,12 @@ export class ComplaintService {
         }
 
         //add the officer/drug onto each drug row
-        animal.drugs?.forEach((drug) => {
-          drug.officer = drugActor;
-          drug.date = drugDate;
-        });
+        if (animal.drugs) {
+          for (const drug of animal.drugs) {
+            drug.officer = drugActor;
+            drug.date = drugDate;
+          }
+        }
 
         if (animal.tags?.length > 0) {
           animal.tags = animal.tags
@@ -2588,8 +2831,7 @@ export class ComplaintService {
       let noteCount = 1;
       for (const note of notes) {
         //-- Convert Officer Guid to Name
-        const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(note.actions[0].actor))
-          .person_guid;
+        const { first_name, last_name } = await this._appUserService.findByAuthUserGuid(note.actions[0].actor, token);
 
         note.actions[0].actor = last_name + ", " + first_name;
         note.actions[0].date = _applyTimezone(note.actions[0].date, tz, "datetime");
@@ -2608,8 +2850,10 @@ export class ComplaintService {
         caseFile.reviewComplete.activeIndicator = caseFile.reviewComplete.activeIndicator ? "Yes" : "No";
 
         //-- Convert Officer Guid to Name
-        const { first_name, last_name } = (await this._officerService.findByAuthUserGuid(caseFile.reviewComplete.actor))
-          .person_guid;
+        const { first_name, last_name } = await this._appUserService.findByAuthUserGuid(
+          caseFile.reviewComplete.actor,
+          token,
+        );
         caseFile.reviewComplete.actor = last_name + ", " + first_name;
         //File Review Date - No Action Array
         caseFile.reviewComplete.date = _applyTimezone(caseFile.reviewComplete.date, tz, "date");
@@ -2702,14 +2946,14 @@ export class ComplaintService {
 
       if (outcomeData.getComplaintOutcomeByComplaintId?.assessment?.length > 0) {
         hasOutcome = true;
-        await outcomeData.getComplaintOutcomeByComplaintId.assessment.forEach(async (assessment, index) => {
+        for (const [index, assessment] of outcomeData.getComplaintOutcomeByComplaintId.assessment.entries()) {
           const assessmentActions = [
             ...(Array.isArray(assessment?.actions) ? assessment.actions : []),
             ...(Array.isArray(assessment?.cat1Actions) ? assessment.cat1Actions : []),
           ];
 
           await _applyAssessmentData(assessment, assessmentActions, index);
-        });
+        }
       }
 
       if (prevention) {
@@ -2784,17 +3028,9 @@ export class ComplaintService {
           .leftJoin("complaint.reported_by_code", "reported_by")
           .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
           .leftJoinAndSelect("complaint.linked_complaint_xref", "linked_complaint")
-          .leftJoinAndSelect("complaint.cos_geo_org_unit", "cos_organization")
-          .leftJoinAndSelect("complaint.person_complaint_xref", "delegate", "delegate.active_ind = true")
-          .leftJoinAndSelect("delegate.person_complaint_xref_code", "delegate_code")
-          .leftJoinAndSelect("delegate.person_guid", "person", "delegate.active_ind = true")
-          .addSelect([
-            "person.person_guid",
-            "person.first_name",
-            "person.middle_name_1",
-            "person.middle_name_2",
-            "person.last_name",
-          ]);
+          .leftJoinAndSelect("complaint.app_user_complaint_xref", "delegate", "delegate.active_ind = true")
+          .leftJoinAndSelect("delegate.app_user_complaint_xref_code", "delegate_code")
+          .addSelect(["delegate.app_user_guid"]);
       }
 
       builder.where("complaint.complaint_identifier = :id", { id });
@@ -2835,6 +3071,37 @@ export class ComplaintService {
 
       //-- get case data
       data.outcome = await _getCaseData(id, token, tz);
+
+      //-- get officer assigned and organization data from GraphQL
+      if (data.officerAssigned && data.officerAssigned !== "Not Assigned") {
+        try {
+          const appUser = await this._appUserService.findOne(data.officerAssigned, token);
+          if (appUser) {
+            data.officerAssigned = `${appUser.last_name}, ${appUser.first_name}`;
+          }
+        } catch (error) {
+          this.logger.error(`Failed to fetch app user ${data.officerAssigned} for report: ${error}`);
+          data.officerAssigned = "Not Assigned";
+        }
+      }
+
+      //-- get community, office, zone, and region from GraphQL
+      if (data.zone) {
+        try {
+          const cosGeoOrgUnits = await getCosGeoOrgUnits(token);
+
+          const orgUnit = cosGeoOrgUnits.find((unit: any) => unit.areaCode === data.zone);
+
+          if (orgUnit) {
+            data.community = orgUnit.areaName || "";
+            data.office = orgUnit.officeLocationName || "";
+            data.zone = orgUnit.zoneName || "";
+            data.region = orgUnit.regionName || "";
+          }
+        } catch (error) {
+          this.logger.error(`Failed to fetch organization data for report: ${error}`);
+        }
+      }
 
       //-- get park data
       data.park = await _getParkData(data.parkGuid, token, tz);
@@ -2877,7 +3144,7 @@ export class ComplaintService {
         data = { ...data, inspection: [{ value: data.outcome.decision.inspectionNumber }] };
       }
       if (data.outcome.assessments) {
-        data.outcome.assessments.forEach((assessment) => {
+        for (const assessment of data.outcome.assessments) {
           if (assessment.locationType?.key) {
             data.assessmentLocation.push({ value: assessment.locationType.key });
           }
@@ -2890,7 +3157,7 @@ export class ComplaintService {
           if (assessment.legacyActions) {
             data.legacy.push({ actions: assessment.legacyActions });
           }
-        });
+        }
       }
       if (data.outcome.decision?.ipmAuthCategoryLongDescription) {
         data = { ...data, authCat: [{ value: data.outcome.decision.ipmAuthCategoryLongDescription }] };

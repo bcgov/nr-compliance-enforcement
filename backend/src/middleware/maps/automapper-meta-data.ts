@@ -1,21 +1,12 @@
 import { PojosMetadataMap } from "@automapper/pojos";
 
 //-- entities
-import { CosGeoOrgUnit } from "../../v1/cos_geo_org_unit/entities/cos_geo_org_unit.entity";
-import { PersonComplaintXref } from "../../v1/person_complaint_xref/entities/person_complaint_xref.entity";
-import { Person } from "../../v1/person/entities/person.entity";
+import { AppUserComplaintXref } from "../../v1/app_user_complaint_xref/entities/app_user_complaint_xref.entity";
 import { Complaint } from "../../v1/complaint/entities/complaint.entity";
 
 //-- models
-import {
-  Attractant,
-  NatureOfComplaint,
-  OrganizationCodeTable,
-  Species,
-  Violation,
-  ReportedBy,
-} from "../../types/models/code-tables";
-import { DelegateDto } from "../../types/models/people/delegate";
+import { Attractant, NatureOfComplaint, Species, Violation, ReportedBy } from "../../types/models/code-tables";
+import { DelegateDto } from "../../types/models/app_user/delegate";
 import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { HwcrComplaint } from "../../v1/hwcr_complaint/entities/hwcr_complaint.entity";
 import { AttractantCode } from "../../v1/attractant_code/entities/attractant_code.entity";
@@ -29,56 +20,24 @@ import { AllegationComplaint } from "../../v1/allegation_complaint/entities/alle
 import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
 import { ReportedByCode } from "src/v1/reported_by_code/entities/reported_by_code.entity";
 
-const createOrganizationMetaData = () => {
-  PojosMetadataMap.create<CosGeoOrgUnit>("CosGeoOrgUnit", {
-    region_code: String,
-    zone_code: String,
-    area_code: String,
-    office_location_code: String,
-    region_name: String,
-    zone_name: String,
-    area_name: String,
-    office_location_name: String,
-  });
-
-  PojosMetadataMap.create<OrganizationCodeTable>("OrganizationCodeTable", {
-    areaName: String,
-    officeLocationName: String,
-    regionName: String,
-    zoneName: String,
-    area: String,
-    officeLocation: String,
-    region: String,
-    zone: String,
-  });
-};
-
 const createDelegateMetadata = () => {
-  PojosMetadataMap.create<Person>("Person", {
-    person_guid: Object,
-    first_name: String,
-    middle_name_1: String,
-    middle_name_2: String,
-    last_name: String,
-  });
-
-  PojosMetadataMap.create<PersonComplaintXref>("PersonComplaintXref", {
-    personComplaintXrefGuid: String,
+  PojosMetadataMap.create<AppUserComplaintXref>("AppUserComplaintXref", {
+    appUserComplaintXrefGuid: String,
     active_ind: Boolean,
-    person_guid: Person,
+    app_user_guid: String,
+    app_user_complaint_xref_code: String,
   });
 
   PojosMetadataMap.create<DelegateDto>("Delegate", {
     xrefId: String,
     isActive: Boolean,
     type: String,
-    person: Object,
+    appUserGuid: String,
   });
 };
 
 export const createComplaintMetaData = () => {
   createDelegateMetadata();
-  createOrganizationMetaData();
   createReportedByCodeMetaData();
 
   PojosMetadataMap.create<Complaint>("Complaint", {
@@ -100,8 +59,7 @@ export const createComplaintMetaData = () => {
     incident_reported_utc_timestmp: Date,
     incident_utc_datetime: Date,
     update_utc_timestamp: Date,
-    cos_geo_org_unit: Object,
-    person_complaint_xref: Object,
+    app_user_complaint_xref: Object,
     park_guid: String,
     complaint_type_code: Object,
   });

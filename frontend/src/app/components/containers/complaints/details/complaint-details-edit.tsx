@@ -31,7 +31,7 @@ import {
   selectPrivacyDropdown,
 } from "@store/reducers/code-table";
 import { useSelector } from "react-redux";
-import { Officer } from "@apptypes/person/person";
+import { AppUser, Delegate } from "@apptypes/app/app_user/app_user";
 import Option from "@apptypes/app/option";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { ComplaintSuspectWitness } from "@apptypes/complaints/details/complaint-suspect-witness-details";
@@ -59,8 +59,7 @@ import { Complaint } from "@apptypes/app/complaints/complaint";
 import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
 import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
-import { UUID } from "crypto";
-import { Delegate } from "@apptypes/app/people/delegate";
+import { UUID } from "node:crypto";
 import { AttractantXref } from "@apptypes/app/complaints/attractant-xref";
 import { Button, Card } from "react-bootstrap";
 import { HWCROutcomeReport } from "@components/containers/complaints/outcomes/hwcr-outcome-report";
@@ -164,7 +163,7 @@ export const ComplaintDetailsEdit: FC = () => {
     parkGuid,
   } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
-  const { personGuid, natureOfComplaintCode, speciesCode, violationTypeCode, status } = useAppSelector(
+  const { appUserGuid, natureOfComplaintCode, speciesCode, violationTypeCode, status } = useAppSelector(
     selectComplaintHeader(complaintType),
   );
 
@@ -205,12 +204,12 @@ export const ComplaintDetailsEdit: FC = () => {
     officersInAgencyList !== null
       ? officersInAgencyList
           .filter(
-            (officer: Officer) =>
+            (officer: AppUser) =>
               complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
           ) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR
-          .map((officer: Officer) => ({
-            value: officer.person_guid.person_guid,
-            label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+          .map((officer: AppUser) => ({
+            value: officer.app_user_guid,
+            label: `${officer.last_name}, ${officer.first_name}`,
           }))
       : [];
 
@@ -413,7 +412,7 @@ export const ComplaintDetailsEdit: FC = () => {
     return from(delegates).any(({ type, isActive }) => type === "ASSIGNEE" && isActive);
   };
 
-  const selectedAssignedOfficer = getSelectedOfficer(assignableOfficers, personGuid, complaintUpdate);
+  const selectedAssignedOfficer = getSelectedOfficer(assignableOfficers, appUserGuid, complaintUpdate);
 
   const selectedAttractants = attractantCodes.filter((option) =>
     attractants?.some((attractant) => attractant.code === option.value),
@@ -536,12 +535,11 @@ export const ComplaintDetailsEdit: FC = () => {
       //-- if the selected officer is not unassigned add the officer to the delegates collection
       if (value !== "Unassigned") {
         //-- get the new officer from state
-        const officer = officerList?.find(({ person_guid: { person_guid: id } }) => {
+        const officer = officerList?.find(({ app_user_guid: id }) => {
           return id === value;
         });
 
-        const { person_guid: person } = officer as any;
-        const { person_guid: id, first_name, last_name, middle_name_1, middle_name_2 } = person;
+        if (!officer) return;
 
         //-- if there's already an assignee mark the officer as inactive
         if (from(delegates).any() && from(delegates).any((item) => item.type === "ASSIGNEE")) {
@@ -555,13 +553,7 @@ export const ComplaintDetailsEdit: FC = () => {
         let delegate: Delegate = {
           isActive: true,
           type: "ASSIGNEE",
-          person: {
-            id: id as UUID,
-            firstName: first_name,
-            middleName1: middle_name_1,
-            middleName2: middle_name_2,
-            lastName: last_name,
-          },
+          appUserGuid: officer.app_user_guid as UUID,
         };
 
         updatedDelegates = [...updatedDelegates, ...existing, delegate];

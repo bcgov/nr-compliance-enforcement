@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 
 export default interface Profile {
   givenName: string;
@@ -12,7 +12,7 @@ export default interface Profile {
   zone: string;
   zoneDescription: string;
   agency: string;
-  personGuid: string;
+  appUserGuid: string;
   comsEnrolledInd: boolean | null;
   parkAreaGuid: string | null;
 }

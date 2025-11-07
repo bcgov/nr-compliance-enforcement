@@ -9,7 +9,8 @@ export interface OfficeStats {
   name: string;
   assigned: number;
   unassigned: number;
-  officers: OfficerStats[];
+  appUsers: OfficerStats[]; // Renamed from officers
+  officeGuid?: string;
 }
 
 export interface OfficerStats {

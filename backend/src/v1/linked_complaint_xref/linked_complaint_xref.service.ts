@@ -7,17 +7,14 @@ import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity"
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { Complaint } from "../complaint/entities/complaint.entity";
-import { Officer } from "../officer/entities/officer.entity";
 import { REQUEST } from "@nestjs/core";
-import { getIdirFromRequest } from "../../common/get-idir-from-request";
+import { getIdirFromRequest, getUserAuthGuidFromRequest } from "../../common/get-idir-from-request";
+import { getAppUserByAuthUserGuid } from "../../external_api/shared_data";
 
 @Injectable({ scope: Scope.REQUEST })
 export class LinkedComplaintXrefService {
   @InjectRepository(LinkedComplaintXref)
   private readonly linkedComplaintXrefRepository: Repository<LinkedComplaintXref>;
-
-  @InjectRepository(Officer)
-  private readonly officerRepository: Repository<Officer>;
 
   private readonly logger = new Logger(LinkedComplaintXrefService.name);
 
@@ -196,16 +193,13 @@ export class LinkedComplaintXrefService {
     try {
       const idir = getIdirFromRequest(this.request);
 
-      const officer = await this.officerRepository.findOne({
-        where: { auth_user_guid: user.auth_user_guid },
-        relations: ["person_guid"],
-      });
+      const authUserGuid = getUserAuthGuidFromRequest(this.request);
 
-      if (!officer?.person_guid) {
-        throw new Error("Officer not found");
+      const appUser = await getAppUserByAuthUserGuid(token, authUserGuid);
+
+      if (!appUser) {
+        throw new Error("App user not found");
       }
-
-      const person_guid = officer.person_guid.person_guid;
 
       const existingLink = await this.linkedComplaintXrefRepository.findOne({
         where: {
@@ -220,7 +214,7 @@ export class LinkedComplaintXrefService {
           existingLink.link_type = linkType;
           existingLink.update_user_id = idir;
           existingLink.update_utc_timestamp = new Date();
-          existingLink.person_guid = person_guid;
+          existingLink.app_user_guid = appUser.appUserGuid;
           return await this.linkedComplaintXrefRepository.save(existingLink);
         }
         return existingLink;
@@ -235,7 +229,7 @@ export class LinkedComplaintXrefService {
         create_utc_timestamp: new Date(),
         update_user_id: idir,
         update_utc_timestamp: new Date(),
-        person_guid: person_guid,
+        app_user_guid: appUser.appUserGuid,
       });
 
       return await this.linkedComplaintXrefRepository.save(newLink);

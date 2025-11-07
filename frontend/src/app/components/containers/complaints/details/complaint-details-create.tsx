@@ -27,8 +27,8 @@ import {
   selectSpeciesCodeDropdown,
   selectViolationCodeDropdown,
 } from "@store/reducers/code-table";
-import { Officer } from "@apptypes/person/person";
 import { selectOfficersByAgency } from "@store/reducers/officer";
+import { AppUser, Delegate } from "@apptypes/app/app_user/app_user";
 import { CreateComplaintHeader } from "./create-complaint-header";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { createComplaint, selectComplaintDetails, setComplaint } from "@store/reducers/complaints";
@@ -43,8 +43,7 @@ import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
 import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 import { Complaint } from "@apptypes/app/complaints/complaint";
-import { Delegate } from "@apptypes/app/people/delegate";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { AttractantXref } from "@apptypes/app/complaints/attractant-xref";
 import { ComplaintAlias } from "@apptypes/app/aliases";
 import AttachmentEnum from "@constants/attachment-enum";
@@ -151,11 +150,11 @@ export const CreateComplaint: FC = () => {
     if (officerList) {
       const initialAssignableOfficers = officerList
         .filter(
-          (officer: Officer) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+          (officer: AppUser) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
         ) // Filter out officers with the specified role
-        .map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+        .map((officer: AppUser) => ({
+          value: officer.app_user_guid,
+          label: `${officer.last_name}, ${officer.first_name}`,
         }));
 
       setAssignableOfficers(initialAssignableOfficers);
@@ -330,12 +329,11 @@ export const CreateComplaint: FC = () => {
 
       if (value !== "Unassigned") {
         //-- get the new officer from state
-        const officer = officerList?.find(({ person_guid: { person_guid: id } }) => {
+        const officer = officerList?.find(({ app_user_guid: id }) => {
           return id === value;
         });
 
-        const { person_guid: person } = officer as any;
-        const { person_guid: id, first_name, last_name, middle_name_1, middle_name_2 } = person;
+        if (!officer) return;
 
         //-- if there's already an assignee mark the officer as inactive
         if (from(delegates).any() && from(delegates).any((item) => item.type === "ASSIGNEE")) {
@@ -349,13 +347,7 @@ export const CreateComplaint: FC = () => {
         let delegate: Delegate = {
           isActive: true,
           type: "ASSIGNEE",
-          person: {
-            id: id as UUID,
-            firstName: first_name,
-            middleName1: middle_name_1,
-            middleName2: middle_name_2,
-            lastName: last_name,
-          },
+          appUserGuid: officer.app_user_guid as UUID,
         };
 
         updatedDelegates = [...updatedDelegates, ...existing, delegate];
