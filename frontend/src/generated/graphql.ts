@@ -923,6 +923,8 @@ export type Mutation = {
   deletePerson: Person;
   deletePrevention: ComplaintOutcome;
   deleteWildlife: ComplaintOutcome;
+  removePartyFromInspection: Inspection;
+  removePartyFromInvestigation: Investigation;
   updateAppUser?: Maybe<AppUser>;
   updateAppUserTeamXref?: Maybe<AppUserTeamXref>;
   updateAssessment: ComplaintOutcome;
@@ -1098,6 +1100,18 @@ export type MutationdeletePreventionArgs = {
 
 export type MutationdeleteWildlifeArgs = {
   input: DeleteWildlifeInput;
+};
+
+
+export type MutationremovePartyFromInspectionArgs = {
+  inspectionGuid: Scalars['String']['input'];
+  partyIdentifier: Scalars['String']['input'];
+};
+
+
+export type MutationremovePartyFromInvestigationArgs = {
+  investigationGuid: Scalars['String']['input'];
+  partyIdentifier: Scalars['String']['input'];
 };
 
 
