@@ -1,6 +1,6 @@
 import { Investigation } from "@/generated/graphql";
 import { FC } from "react";
-import { Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
 import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
@@ -9,8 +9,7 @@ import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
 import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
-
-
+import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -31,10 +30,16 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   const agencyText = leadAgencyOptions.find((option: Option) => option.value === investigationData?.leadAgency);
   const leadAgency = agencyText ? agencyText.label : "Unknown";
 
-  const dateLogged = investigationData?.openedTimestamp ? new Date(investigationData.openedTimestamp).toString() : undefined;
-  const lastUpdated = investigationData?.openedTimestamp ? new Date(investigationData.openedTimestamp).toString() : undefined;
+  const dateLogged = investigationData?.openedTimestamp
+    ? new Date(investigationData.openedTimestamp).toString()
+    : undefined;
+  const lastUpdated = investigationData?.openedTimestamp
+    ? new Date(investigationData.openedTimestamp).toString()
+    : undefined;
   const officerAssigned = "Not Assigned";
-  const createdBy = "Unknown";
+
+  const createdByUser = useAppSelector(selectOfficerByAppUserGuid(investigationData?.createdByAppUserGuid));
+  const createdBy = createdByUser?.user_id || "Unknown";
 
   const editButtonClick = () => {
     navigate(`/investigation/${investigationGuid}/edit`);
@@ -173,13 +178,15 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                   </div>
                 </div>
               )}
-              {investigationData.locationAddress && (<div>
-                <dt>Location/address</dt>
+              {investigationData.locationAddress && (
+                <div>
+                  <dt>Location/address</dt>
                   <dd id="comp-details-location">{investigationData.locationAddress}</dd>
                 </div>
               )}
-              {investigationData.locationDescription && (<div>
-                <dt>Location description</dt>
+              {investigationData.locationDescription && (
+                <div>
+                  <dt>Location description</dt>
                   <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
                 </div>
               )}
@@ -188,14 +195,22 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                   <div className="col-12">
                     <div className="form-group">
                       <CompLocationInfo
-                        xCoordinate={investigationData.locationGeometry.coordinates?.[0] === 0 ? "" : investigationData.locationGeometry.coordinates?.[0].toString() ?? ""}
-                        yCoordinate={investigationData.locationGeometry.coordinates?.[1] === 0 ? "" : investigationData.locationGeometry.coordinates?.[1].toString() ?? ""}
+                        xCoordinate={
+                          investigationData.locationGeometry.coordinates?.[0] === 0
+                            ? ""
+                            : (investigationData.locationGeometry.coordinates?.[0].toString() ?? "")
+                        }
+                        yCoordinate={
+                          investigationData.locationGeometry.coordinates?.[1] === 0
+                            ? ""
+                            : (investigationData.locationGeometry.coordinates?.[1].toString() ?? "")
+                        }
                       />
                     </div>
                   </div>
                 </div>
               )}
-            {investigationData?.locationGeometry?.coordinates && (
+              {investigationData?.locationGeometry?.coordinates && (
                 <MapObjectLocation
                   map_object_type={MapObjectType.Investigation}
                   locationCoordinates={{
@@ -204,7 +219,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                   }}
                   draggable={false}
                 />
-            )}
+              )}
             </div>
           )}
         </div>

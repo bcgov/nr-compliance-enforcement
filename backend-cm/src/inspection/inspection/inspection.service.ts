@@ -261,6 +261,7 @@ export class InspectionService {
             name: input.name,
             inspection_opened_utc_timestamp: new Date(),
             create_user_id: this.user.getIdirUsername(),
+            created_by_app_user_guid_ref: input.createdByAppUserGuid,
             create_utc_timestamp: new Date(),
           },
           include: {
