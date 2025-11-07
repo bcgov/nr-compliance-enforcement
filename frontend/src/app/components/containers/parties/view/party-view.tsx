@@ -278,7 +278,7 @@ export const PartyView: FC = () => {
                 <h4>Associated cases and activities</h4>
                 <div className="party-details-item">
                   {partyRelations
-                    .sort((left, right) => (left.caseName ?? "").localeCompare(right.caseName ?? ""))
+                    .toSorted((left, right) => (left.caseName ?? "").localeCompare(right.caseName ?? ""))
                     .map((partyRelation) => (
                       <>
                         <p key={partyRelation.caseId}>
