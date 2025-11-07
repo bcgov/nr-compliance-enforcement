@@ -37,7 +37,6 @@ const REMOVE_PARTY_FROM_INSPECTION_MUTATION = gql`
 
 export const InspectionSummary: FC<InspectionPartiesProps> = ({ inspectionGuid, inspectionData }) => {
   const dispatch = useAppDispatch();
-  const queryClient = useQueryClient();
 
   const removePartyMutation = useGraphQLMutation(REMOVE_PARTY_FROM_INSPECTION_MUTATION, {
     onSuccess: () => {

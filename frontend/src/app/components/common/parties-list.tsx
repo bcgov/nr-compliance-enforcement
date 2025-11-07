@@ -57,7 +57,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty }) => {
                               }
                             >
                               <i className="bi bi-trash me-2" />
-                              Remove
+                              {/* */}Remove
                             </Dropdown.Item>
                           </Dropdown.Menu>
                         </Dropdown>
@@ -102,7 +102,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty }) => {
                               onClick={() => onRemoveParty(party.partyIdentifier, party.business?.name || "")}
                             >
                               <i className="bi bi-trash me-2" />
-                              Remove
+                              {/* */}Remove
                             </Dropdown.Item>
                           </Dropdown.Menu>
                         </Dropdown>

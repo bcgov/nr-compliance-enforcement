@@ -37,7 +37,6 @@ const REMOVE_PARTY_FROM_INVESTIGATION_MUTATION = gql`
 
 export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigationGuid, investigationData }) => {
   const dispatch = useAppDispatch();
-  const queryClient = useQueryClient();
 
   const removePartyMutation = useGraphQLMutation(REMOVE_PARTY_FROM_INVESTIGATION_MUTATION, {
     onSuccess: () => {
