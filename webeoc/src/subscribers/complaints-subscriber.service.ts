@@ -42,7 +42,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
       ],
       storage: StorageType.Memory,
       max_age: 10 * 60 * 60 * 1e9, // 10 minutes in nanoseconds
-      duplicateWindow: 10 * 60 * 1e9, // 10 minutes in nanoseconds
+      duplicate_window: 10 * 60 * 1e9, // 10 minutes in nanoseconds
     };
 
     try {

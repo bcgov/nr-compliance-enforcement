@@ -16,6 +16,7 @@ export class Inspection {
   inspectionStatus: InspectionStatusCode;
   openedTimestamp: Date;
   name: string;
+  createdByAppUserGuid?: string;
   locationGeometry?: Point;
   locationAddress?: string;
   locationDescription?: string;
@@ -81,6 +82,9 @@ export class CreateInspectionInput {
   @Field(() => String)
   @IsOptional()
   locationAddress: string;
+
+  @Field(() => String)
+  createdByAppUserGuid: string;
 }
 
 @InputType()
@@ -139,6 +143,10 @@ export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
     forMember(
       (dest) => dest.name,
       mapFrom((src) => src.name),
+    ),
+    forMember(
+      (dest) => dest.createdByAppUserGuid,
+      mapFrom((src) => src.created_by_app_user_guid_ref),
     ),
     forMember(
       (dest) => dest.locationDescription,

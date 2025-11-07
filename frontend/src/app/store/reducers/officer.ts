@@ -555,20 +555,19 @@ export const selectOfficerByAuthUserGuid =
     return null;
   };
 
-export const selectOfficerByPersonGuid =
-  (appUserGuid: string | undefined) =>
+export const selectOfficerByAppUserGuid =
+  (appUserGuid: string | undefined | null) =>
   (state: RootState): AppUser | null => {
+    if (!appUserGuid) {
+      return null;
+    }
+
     const {
       officers: { officers: data },
     } = state;
-    if (appUserGuid) {
-      const selected = data.find(({ app_user_guid }) => app_user_guid === appUserGuid);
-      if (selected?.app_user_guid) {
-        return selected;
-      }
-    }
 
-    return null;
+    const selected = data.find(({ app_user_guid }) => app_user_guid === appUserGuid);
+    return selected || null;
   };
 
 export const selectCurrentOfficer = createSelector(

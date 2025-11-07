@@ -40,6 +40,9 @@ export class inspection {
   @ApiPropertyOptional({ type: String })
   location_description?: string;
 
+  @ApiPropertyOptional({ type: String })
+  created_by_app_user_guid_ref?: string;
+
   @ApiProperty({ type: () => inspection_status_code })
   inspection_status_code: inspection_status_code;
 

@@ -16,6 +16,7 @@ export class Investigation {
   investigationStatus: InvestigationStatusCode;
   openedTimestamp: Date;
   caseIdentifier: string;
+  createdByAppUserGuid?: string;
   locationGeometry?: Point;
   locationAddress?: string;
   locationDescription?: string;
@@ -75,7 +76,7 @@ export class CreateInvestigationInput {
   @Field(() => String)
   @IsOptional()
   locationDescription: string;
-  
+
   @Field(() => String)
   @IsOptional()
   locationAddress: string;
@@ -83,6 +84,9 @@ export class CreateInvestigationInput {
   @Field(() => String)
   @IsOptional()
   name: string;
+
+  @Field(() => String)
+  createdByAppUserGuid: string;
 }
 
 @InputType()
@@ -155,6 +159,10 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.name,
       mapFrom((src) => src.name),
+    ),
+    forMember(
+      (dest) => dest.createdByAppUserGuid,
+      mapFrom((src) => src.created_by_app_user_guid_ref),
     ),
     forMember(
       (dest) => dest.parties,

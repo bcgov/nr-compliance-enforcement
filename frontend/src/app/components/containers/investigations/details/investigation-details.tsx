@@ -20,6 +20,7 @@ const GET_INVESTIGATION = gql`
       name
       description
       openedTimestamp
+      createdByAppUserGuid
       investigationStatus {
         investigationStatusCode
         shortDescription

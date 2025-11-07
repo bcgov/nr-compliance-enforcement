@@ -9,6 +9,7 @@ import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
 import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
+import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 
 interface InspectionSummaryProps {
   inspectionData?: Inspection;
@@ -32,7 +33,9 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
   const dateLogged = inspectionData?.openedTimestamp ? new Date(inspectionData.openedTimestamp).toString() : undefined;
   const lastUpdated = inspectionData?.openedTimestamp ? new Date(inspectionData.openedTimestamp).toString() : undefined;
   const officerAssigned = "Not Assigned";
-  const createdBy = "Unknown";
+
+  const createdByUser = useAppSelector(selectOfficerByAppUserGuid(inspectionData?.createdByAppUserGuid));
+  const createdBy = createdByUser?.user_id || "Unknown";
 
   const editButtonClick = () => {
     navigate(`/inspection/${inspectionGuid}/edit`);

@@ -143,6 +143,7 @@ export type CaseFile = {
   activities?: Maybe<Array<Maybe<CaseActivity>>>;
   caseIdentifier?: Maybe<Scalars['String']['output']>;
   caseStatus?: Maybe<CaseStatusCode>;
+  createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   leadAgency?: Maybe<AgencyCode>;
   name?: Maybe<Scalars['String']['output']>;
@@ -167,6 +168,7 @@ export type CaseFileCreateInput = {
   activityIdentifier?: InputMaybe<Scalars['String']['input']>;
   activityType?: InputMaybe<Scalars['String']['input']>;
   caseStatus: Scalars['String']['input'];
+  createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -325,6 +327,7 @@ export type CreateInspectionBusinessInput = {
 
 export type CreateInspectionInput = {
   caseIdentifier: Scalars['String']['input'];
+  createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   inspectionStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
@@ -356,6 +359,7 @@ export type CreateInvestigationBusinessInput = {
 
 export type CreateInvestigationInput = {
   caseIdentifier: Scalars['String']['input'];
+  createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
@@ -738,6 +742,7 @@ export type InactionJustificationType = {
 
 export type Inspection = {
   __typename?: 'Inspection';
+  createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   inspectionGuid?: Maybe<Scalars['String']['output']>;
   inspectionStatus?: Maybe<InspectionStatusCode>;
@@ -807,6 +812,7 @@ export type InspectionStatusCode = {
 export type Investigation = {
   __typename?: 'Investigation';
   caseIdentifier?: Maybe<Scalars['String']['output']>;
+  createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
   investigationStatus?: Maybe<InvestigationStatusCode>;
@@ -917,8 +923,6 @@ export type Mutation = {
   deletePerson: Person;
   deletePrevention: ComplaintOutcome;
   deleteWildlife: ComplaintOutcome;
-  removePartyFromInspection: Inspection;
-  removePartyFromInvestigation: Investigation;
   updateAppUser?: Maybe<AppUser>;
   updateAppUserTeamXref?: Maybe<AppUserTeamXref>;
   updateAssessment: ComplaintOutcome;
@@ -1094,18 +1098,6 @@ export type MutationdeletePreventionArgs = {
 
 export type MutationdeleteWildlifeArgs = {
   input: DeleteWildlifeInput;
-};
-
-
-export type MutationremovePartyFromInspectionArgs = {
-  inspectionGuid: Scalars['String']['input'];
-  partyIdentifier: Scalars['String']['input'];
-};
-
-
-export type MutationremovePartyFromInvestigationArgs = {
-  investigationGuid: Scalars['String']['input'];
-  partyIdentifier: Scalars['String']['input'];
 };
 
 
