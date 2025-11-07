@@ -233,7 +233,7 @@ services:
     user: root
     working_dir: "/app"
     environment:
-      WEBEOC_STREAM_NAME: nats_durable_events
+      WEBEOC_STREAM_NAME: nats_durable_complaints
   backend-cm:
     container_name: backend-cm
     entrypoint: sh -c "npm i && npm run prisma-generate-complaint-outcome && \
