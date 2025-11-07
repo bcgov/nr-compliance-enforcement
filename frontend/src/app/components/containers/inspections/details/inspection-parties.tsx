@@ -8,7 +8,6 @@ import { Button } from "react-bootstrap";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { useQueryClient } from "@tanstack/react-query";
 
 interface InspectionPartiesProps {
   inspectionGuid: string;
