@@ -1,6 +1,6 @@
 import { InspectionParty, InvestigationParty } from "@/generated/graphql";
 import React from "react";
-import { Accordion, Badge, Button, ListGroup } from "react-bootstrap";
+import { Accordion, Badge, Dropdown, ListGroup } from "react-bootstrap";
 
 // Can we genercize this in the future?
 interface Props {
@@ -38,16 +38,29 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty }) => {
                     <div className="d-flex align-items-center gap-2">
                       <Badge bg="species-badge comp-species-badge">Witness</Badge>
                       {onRemoveParty && (
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() =>
-                            onRemoveParty(party.partyIdentifier, `${party.person?.firstName} ${party.person?.lastName}`)
-                          }
-                          title="Remove party"
-                        >
-                          <i className="bi bi-trash" />
-                        </Button>
+                        <Dropdown>
+                          <Dropdown.Toggle
+                            variant="link"
+                            className="p-0"
+                            bsPrefix="dropdown-toggle-no-caret"
+                          >
+                            <i className="bi bi-three-dots-vertical" />
+                          </Dropdown.Toggle>
+
+                          <Dropdown.Menu>
+                            <Dropdown.Item
+                              onClick={() =>
+                                onRemoveParty(
+                                  party.partyIdentifier,
+                                  `${party.person?.firstName} ${party.person?.lastName}`,
+                                )
+                              }
+                            >
+                              <i className="bi bi-trash me-2" />
+                              Remove
+                            </Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
                       )}
                     </div>
                   </ListGroup.Item>
@@ -75,14 +88,24 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty }) => {
                     <div className="d-flex align-items-center gap-2">
                       <Badge bg="species-badge comp-species-badge">Subject of complaint</Badge>
                       {onRemoveParty && (
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() => onRemoveParty(party.partyIdentifier, party.business?.name || "")}
-                          title="Remove party"
-                        >
-                          <i className="bi bi-trash" />
-                        </Button>
+                        <Dropdown>
+                          <Dropdown.Toggle
+                            variant="link"
+                            className="p-0"
+                            bsPrefix="dropdown-toggle-no-caret"
+                          >
+                            <i className="bi bi-three-dots-vertical" />
+                          </Dropdown.Toggle>
+
+                          <Dropdown.Menu>
+                            <Dropdown.Item
+                              onClick={() => onRemoveParty(party.partyIdentifier, party.business?.name || "")}
+                            >
+                              <i className="bi bi-trash me-2" />
+                              Remove
+                            </Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
                       )}
                     </div>
                   </ListGroup.Item>

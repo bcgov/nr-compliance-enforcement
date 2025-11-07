@@ -42,7 +42,6 @@ export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigat
   const removePartyMutation = useGraphQLMutation(REMOVE_PARTY_FROM_INVESTIGATION_MUTATION, {
     onSuccess: () => {
       ToggleSuccess("Party removed successfully");
-      queryClient.invalidateQueries({ queryKey: ["getInvestigation", investigationGuid] });
     },
     onError: (error: any) => {
       console.error("Error removing party:", error);

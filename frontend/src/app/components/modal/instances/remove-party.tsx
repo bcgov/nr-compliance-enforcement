@@ -36,7 +36,7 @@ export const RemovePartyModal: FC<RemovePartyProps> = ({ close, submit }) => {
           No, go back
         </Button>
         <Button
-          variant="danger"
+          variant="primary"
           onClick={handleConfirm}
         >
           Yes, remove party

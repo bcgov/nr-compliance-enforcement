@@ -42,7 +42,6 @@ export const InspectionSummary: FC<InspectionPartiesProps> = ({ inspectionGuid, 
   const removePartyMutation = useGraphQLMutation(REMOVE_PARTY_FROM_INSPECTION_MUTATION, {
     onSuccess: () => {
       ToggleSuccess("Party removed successfully");
-      queryClient.invalidateQueries({ queryKey: ["getInspection", inspectionGuid] });
     },
     onError: (error: any) => {
       console.error("Error removing party:", error);
