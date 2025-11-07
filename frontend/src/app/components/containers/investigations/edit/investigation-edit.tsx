@@ -15,7 +15,7 @@ import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { useRequest as GraphQLRequest } from "@/app/graphql/client";
 import { ToggleError, ToggleSuccess } from "@common/toast";
-import { openModal } from "@store/reducers/app";
+import { openModal, appUserGuid } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CreateInvestigationInput, UpdateInvestigationInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
@@ -104,6 +104,7 @@ const InvestigationEdit: FC = () => {
 
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
+  const currentAppUserGuid = useAppSelector(appUserGuid);
 
   const { data: investigationData, isLoading } = useGraphQLQuery(GET_INVESTIGATION, {
     queryKey: ["getInvestigation", id],
@@ -185,6 +186,7 @@ const InvestigationEdit: FC = () => {
           locationAddress: value.locationAddress,
           locationDescription: value.locationDescription,
           locationGeometry: value.locationGeometry,
+          createdByAppUserGuid: currentAppUserGuid || "",
         };
 
         createInvestigationMutation.mutate({ input: createInput });

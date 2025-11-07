@@ -5,7 +5,7 @@ import {
   assignOfficerToOffice,
   createOfficer,
   getOfficers,
-  selectOfficerByPersonGuid,
+  selectOfficerByAppUserGuid,
   updateOfficer as updateOfficerReducer,
 } from "@store/reducers/officer";
 import { CompSelect } from "@components/common/comp-select";
@@ -57,7 +57,7 @@ export const EditUser: FC<EditUserProps> = ({
   setOfficer,
 }) => {
   const dispatch = useAppDispatch();
-  const officerData = useAppSelector(selectOfficerByPersonGuid(officer.value));
+  const officerData = useAppSelector(selectOfficerByAppUserGuid(officer.value));
   const notification = useAppSelector(selectNotification);
   const teams = useAppSelector(selectTeamDropdown);
   const agency = useAppSelector(selectAgencySectorDropdown);

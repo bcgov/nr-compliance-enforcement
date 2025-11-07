@@ -30,6 +30,7 @@ model inspection {
   location_geometry_point         Unsupported("geometry")?
   location_address                String?                   @db.VarChar(120)
   location_description            String?                   @db.VarChar(4000)
+  created_by_app_user_guid_ref    String?                   @db.Uuid
   inspection_status_code          inspection_status_code    @relation(fields: [inspection_status], references: [inspection_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_inspection__inspection_status")
   inspection_party                inspection_party[]
   officer_inspection_xref         officer_inspection_xref[]
