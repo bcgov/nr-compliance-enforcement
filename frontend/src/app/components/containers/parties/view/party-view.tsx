@@ -126,7 +126,7 @@ export const PartyView: FC = () => {
     return result;
   };
 
-  const getPartyRelations = (
+  const GetPartyRelations = (
     partyId: string,
     partyType: string,
   ): {
@@ -211,7 +211,7 @@ export const PartyView: FC = () => {
     return { partyRelations, isInspectionLoading, isInvestigationLoading, isCaseLoading };
   };
 
-  const { partyRelations, isInspectionLoading, isInvestigationLoading, isCaseLoading } = getPartyRelations(
+  const { partyRelations, isInspectionLoading, isInvestigationLoading, isCaseLoading } = GetPartyRelations(
     partyId ?? "",
     partyType ?? "",
   );
@@ -287,7 +287,7 @@ export const PartyView: FC = () => {
                           </b>
                         </p>
                         {partyRelation.activities
-                          ?.sort((left, right) => (left.name ?? "").localeCompare(right.name ?? ""))
+                          ?.toSorted((left, right) => (left.name ?? "").localeCompare(right.name ?? ""))
                           .map((activity) => (
                             <p key={activity.id}>
                               &nbsp;&nbsp;&nbsp;&nbsp;
