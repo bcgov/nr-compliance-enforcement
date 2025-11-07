@@ -1,7 +1,7 @@
 import { FC, memo, useState, useMemo } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
-import { selectModalData, isLoading } from "@store/reducers/app";
+import { selectModalData, isLoading, appUserGuid } from "@store/reducers/app";
 import Option from "@apptypes/app/option";
 import { gql } from "graphql-request";
 import { useForm } from "@tanstack/react-form";
@@ -76,6 +76,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
+  const currentAppUserGuid = useAppSelector(appUserGuid);
 
   // Vars
   const { title, complaint_identifier, agency_code } = modalData;
@@ -89,7 +90,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
       name: "",
       description: "",
     }),
-    []
+    [],
   );
 
   const form = useForm({
@@ -103,6 +104,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           activityIdentifier: complaint_identifier,
           description: value.description,
           name: value.name,
+          createdByAppUserGuid: currentAppUserGuid || "",
         };
         createCaseMutation.mutate({ input: createInput });
       }
@@ -224,80 +226,85 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           </div>
 
           {createOrAddOption === "create" && (
-            <form onSubmit={(e) => { e.preventDefault(); form.handleSubmit(); }}>
-                <FormField
-                  form={form}
-                  name="name"
-                  label="Case ID *"
-                  validators={{
-                    onChange: z.string().min(1, "Case ID is required").max(100, "Case ID must be 100 characters or less"),
-                    onChangeAsyncDebounceMs: 500,
-                    onChangeAsync: async ({ value }: { value: string }) => {
-                      if (!value || value.length < 1) return "Case ID is required";
-                      if (!agency_code) return undefined;
-                      const result: { checkCaseNameExists: boolean } = await GraphQLRequest(
-                        CHECK_CASE_NAME_EXISTS,
-                        {
-                          name: value,
-                          leadAgency: agency_code,
-                          excludeCaseIdentifier: undefined,
-                        }
-                      );
-                      if (result.checkCaseNameExists) {
-                        return "This Case ID is already in use for this agency. Please choose a different Case ID.";
-                      }
-                      return undefined;
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                form.handleSubmit();
+              }}
+            >
+              <FormField
+                form={form}
+                name="name"
+                label="Case ID *"
+                validators={{
+                  onChange: z.string().min(1, "Case ID is required").max(100, "Case ID must be 100 characters or less"),
+                  onChangeAsyncDebounceMs: 500,
+                  onChangeAsync: async ({ value }: { value: string }) => {
+                    if (!value || value.length < 1) return "Case ID is required";
+                    if (!agency_code) return undefined;
+                    const result: { checkCaseNameExists: boolean } = await GraphQLRequest(CHECK_CASE_NAME_EXISTS, {
+                      name: value,
+                      leadAgency: agency_code,
+                      excludeCaseIdentifier: undefined,
+                    });
+                    if (result.checkCaseNameExists) {
+                      return "This Case ID is already in use for this agency. Please choose a different Case ID.";
                     }
-                  }}
-                  render={(field) => (
-                    <div
-                      className="comp-details-input"
-                      style={{ width: "100%" }}
-                    >
-                      <CompInput
-                        id="display-name"
-                        divid="display-name-value"
-                        type="input"
-                        inputClass="comp-form-control"
-                        error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
-                        maxLength={120}
-                        onChange={(evt: any) => field.handleChange(evt.target.value)}
-                        value={field.state.value}
-                        placeholder="Enter Case ID"
-                      />
-                    </div>
-                  )}
-                />
-                <FormField
-                  form={form}
-                  name="description"
-                  label="Case description"
-                  validators={{
-                    onChange: z.string().max(4000, "Description must be 4000 characters or less"),
-                  }}
-                  render={(field) => (
-                    <div
-                      className="comp-details-input"
-                      style={{ width: "100%" }}
-                    >
-                      <textarea
-                        id="case-description"
-                        className="comp-form-control comp-details-input"
-                        rows={2}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        value={field.state.value}
-                        placeholder="Enter case description..."
-                        maxLength={4000}
-                        style={{ borderColor: field.state.meta.errors?.[0] ? '#dc3545' : '' }}
-                      />
-                      {field.state.meta.errors.length > 0 && (
-                        <div className="error-message" style={{ color: '#dc3545' }}>
-                          {field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                />
+                    return undefined;
+                  },
+                }}
+                render={(field) => (
+                  <div
+                    className="comp-details-input"
+                    style={{ width: "100%" }}
+                  >
+                    <CompInput
+                      id="display-name"
+                      divid="display-name-value"
+                      type="input"
+                      inputClass="comp-form-control"
+                      error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                      maxLength={120}
+                      onChange={(evt: any) => field.handleChange(evt.target.value)}
+                      value={field.state.value}
+                      placeholder="Enter Case ID"
+                    />
+                  </div>
+                )}
+              />
+              <FormField
+                form={form}
+                name="description"
+                label="Case description"
+                validators={{
+                  onChange: z.string().max(4000, "Description must be 4000 characters or less"),
+                }}
+                render={(field) => (
+                  <div
+                    className="comp-details-input"
+                    style={{ width: "100%" }}
+                  >
+                    <textarea
+                      id="case-description"
+                      className="comp-form-control comp-details-input"
+                      rows={2}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      value={field.state.value}
+                      placeholder="Enter case description..."
+                      maxLength={4000}
+                      style={{ borderColor: field.state.meta.errors?.[0] ? "#dc3545" : "" }}
+                    />
+                    {field.state.meta.errors.length > 0 && (
+                      <div
+                        className="error-message"
+                        style={{ color: "#dc3545" }}
+                      >
+                        {field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                      </div>
+                    )}
+                  </div>
+                )}
+              />
             </form>
           )}
           {createOrAddOption === "add" && (

@@ -40,6 +40,9 @@ export class investigation {
   @ApiPropertyOptional({ type: String })
   location_description?: string;
 
+  @ApiPropertyOptional({ type: String })
+  created_by_app_user_guid_ref?: string;
+
   @ApiProperty({ type: () => investigation_status_code })
   investigation_status_code: investigation_status_code;
 

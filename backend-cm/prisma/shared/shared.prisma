@@ -183,19 +183,21 @@ model case_activity_type_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model case_file {
-  case_file_guid       String           @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  lead_agency          String           @db.VarChar(10)
-  case_status          String           @db.VarChar(10)
-  opened_utc_timestamp DateTime         @default(now()) @db.Timestamp(6)
-  create_user_id       String           @db.VarChar(32)
-  create_utc_timestamp DateTime         @default(now()) @db.Timestamp(6)
-  update_user_id       String?          @db.VarChar(32)
-  update_utc_timestamp DateTime?        @db.Timestamp(6)
-  description          String?
-  name                 String           @default("") @db.VarChar(100)
-  case_activity        case_activity[]
-  agency_code          agency_code      @relation(fields: [lead_agency], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_case_file__agency_code")
-  case_status_code     case_status_code @relation(fields: [case_status], references: [case_status_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_case_file__case_status_code")
+  case_file_guid           String           @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  lead_agency              String           @db.VarChar(10)
+  case_status              String           @db.VarChar(10)
+  opened_utc_timestamp     DateTime         @default(now()) @db.Timestamp(6)
+  create_user_id           String           @db.VarChar(32)
+  create_utc_timestamp     DateTime         @default(now()) @db.Timestamp(6)
+  update_user_id           String?          @db.VarChar(32)
+  update_utc_timestamp     DateTime?        @db.Timestamp(6)
+  description              String?
+  name                     String           @default("") @db.VarChar(100)
+  created_by_app_user_guid String?          @db.Uuid
+  case_activity            case_activity[]
+  app_user                 app_user?        @relation(fields: [created_by_app_user_guid], references: [app_user_guid], onDelete: NoAction, onUpdate: NoAction)
+  agency_code              agency_code      @relation(fields: [lead_agency], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_case_file__agency_code")
+  case_status_code         case_status_code @relation(fields: [case_status], references: [case_status_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_case_file__case_status_code")
 
   @@unique([name, lead_agency], map: "uq_case_file_name_agency")
 }
@@ -380,6 +382,7 @@ model app_user {
   agency_code          agency_code?         @relation(fields: [agency_code_ref], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "app_user_agency_code_fk")
   office               office?              @relation(fields: [office_guid], references: [office_guid], onDelete: NoAction, onUpdate: NoAction, map: "app_user_office_fk")
   app_user_team_xref   app_user_team_xref[]
+  case_file            case_file[]
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments

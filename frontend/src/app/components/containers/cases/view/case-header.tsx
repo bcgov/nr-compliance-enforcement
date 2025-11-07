@@ -5,6 +5,8 @@ import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@co
 import { CaseFile } from "@/generated/graphql";
 import { ActionMenu } from "@/app/components/common/action-menu";
 import { CaseTabs } from "./case-tabs";
+import { useAppSelector } from "@/app/hooks/hooks";
+import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 
 interface CaseHeaderProps {
   caseData?: CaseFile;
@@ -17,7 +19,10 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
   const dateLogged = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
   const lastUpdated = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
   const officerAssigned = "Not Assigned";
-  const createdBy = "Unknown";
+
+  const createdByUser = useAppSelector(selectOfficerByAppUserGuid(caseData?.createdByAppUserGuid));
+  const createdBy = createdByUser?.user_id || "Unknown";
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -58,7 +63,8 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
                   style={{ fontSize: "xx-large" }}
                 ></i>{" "}
                 &nbsp;
-                <span>Case </span>{caseId}
+                <span>Case </span>
+                {caseId}
               </h1>
             </div>
 
