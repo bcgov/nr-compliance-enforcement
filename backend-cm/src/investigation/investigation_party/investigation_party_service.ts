@@ -85,4 +85,37 @@ export class InvestigationPartyService {
 
     return await this.investigationService.findOne(investigationGuid);
   }
+
+  async remove(investigationGuid: string, partyIdentifier: string): Promise<Investigation> {
+    await this.prisma.$transaction(async (tx) => {
+      try {
+        const investigationParty = await tx.investigation_party.findFirst({
+          where: {
+            investigation_party_guid: partyIdentifier,
+            investigation_guid: investigationGuid,
+          },
+        });
+
+        if (!investigationParty) {
+          throw new Error("Party not found for this investigation.");
+        }
+
+        await tx.investigation_party.update({
+          where: {
+            investigation_party_guid: partyIdentifier,
+          },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
+      } catch (error) {
+        this.logger.error("Error removing investigation party:", error);
+        throw error;
+      }
+    });
+
+    return await this.investigationService.findOne(investigationGuid);
+  }
 }

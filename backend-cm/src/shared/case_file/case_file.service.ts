@@ -99,7 +99,7 @@ export class CaseFileService {
     if (!caseActivityXrefRecords || caseActivityXrefRecords.length === 0) {
       return [];
     }
-    
+
     const caseFileGuids = caseActivityXrefRecords.map((record) => record.case_file_guid);
     const uniqueCaseFileGuids = [...new Set(caseFileGuids)];
 
