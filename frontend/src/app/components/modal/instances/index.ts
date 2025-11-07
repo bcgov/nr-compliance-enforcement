@@ -9,7 +9,6 @@ import { ToggleDeactivateModal } from "@/app/components/modal/instances/toggle-d
 import { ReferComplaintModal } from "@/app/components/modal/instances/refer-complaint-modal";
 import { ManageCollaboratorsModal } from "./manage-collaborators-modal";
 import { LinkComplaintModal } from "./link-complaint-modal";
-import { RemovePartyModal } from "./remove-party";
 
 export {
   SampleModal,
@@ -23,5 +22,6 @@ export {
   ReferComplaintModal,
   ManageCollaboratorsModal,
   LinkComplaintModal,
-  RemovePartyModal,
 };
+
+export { RemovePartyModal } from "./remove-party";
