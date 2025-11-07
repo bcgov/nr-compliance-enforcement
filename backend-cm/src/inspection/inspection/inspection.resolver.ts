@@ -71,10 +71,9 @@ export class InspectionResolver {
   @Roles(coreRoles)
   async findManyByParty(@Args("partyId") partyId: string, @Args("partyType") partyType: string) {
     try {
-      const result = await this.inspectionService.findManyByParty(partyId, partyType);
-      return result;
+      return await this.inspectionService.findManyByParty(partyId, partyType);
     } catch (error) {
-      this.logger.error("error: ", error);
+      this.logger.error(error);
       throw new GraphQLError("Error fetching inspections by party IDs from inspection schema", {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
