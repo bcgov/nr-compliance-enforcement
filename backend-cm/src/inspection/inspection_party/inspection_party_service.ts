@@ -85,4 +85,37 @@ export class InspectionPartyService {
 
     return await this.inspectionService.findOne(inspectionGuid);
   }
+
+  async remove(inspectionGuid: string, partyIdentifier: string): Promise<Inspection> {
+    await this.prisma.$transaction(async (tx) => {
+      try {
+        const inspectionParty = await tx.inspection_party.findFirst({
+          where: {
+            inspection_party_guid: partyIdentifier,
+            inspection_guid: inspectionGuid,
+          },
+        });
+
+        if (!inspectionParty) {
+          throw new Error("Party not found for this inspection.");
+        }
+
+        await tx.inspection_party.update({
+          where: {
+            inspection_party_guid: partyIdentifier,
+          },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
+      } catch (error) {
+        this.logger.error("Error removing inspection party:", error);
+        throw error;
+      }
+    });
+
+    return await this.inspectionService.findOne(inspectionGuid);
+  }
 }
