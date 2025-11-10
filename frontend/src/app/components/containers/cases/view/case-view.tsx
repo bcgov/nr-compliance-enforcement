@@ -127,6 +127,8 @@ export const CaseView: FC = () => {
   useEffect(() => {
     if (linkedComplaintIds && linkedComplaintIds.length > 0) {
       dispatch(getCaseFileComplaints(linkedComplaintIds as string[]));
+    } else if (linkedComplaintIds?.length === 0) {
+      dispatch(setCaseFileComplaints([]));
     }
   }, [dispatch, caseData]);
   const linkedComplaints = useAppSelector(selectCaseFileComplaints) ?? undefined;
@@ -170,7 +172,11 @@ export const CaseView: FC = () => {
         return (
           <div className="container-fluid px-5 py-3">
             <div className="row g-3">
-              <ComplaintColumn complaints={linkedComplaints} />
+              <ComplaintColumn
+                complaints={linkedComplaints}
+                caseName={caseData?.name ?? undefined}
+                caseIdentifier={id}
+              />
               <InspectionColumn
                 inspections={inspectionsData?.getInspections}
                 isLoading={inspectionsLoading && linkedInspectionIds && linkedInspectionIds.length > 0}

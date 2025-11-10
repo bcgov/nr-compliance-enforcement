@@ -2,7 +2,11 @@ import { Injectable, Logger } from "@nestjs/common";
 import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { CaseActivity, CaseActivityCreateInput } from "src/shared/case_activity/dto/case_activity";
+import {
+  CaseActivity,
+  CaseActivityCreateInput,
+  CaseActivityRemoveInput,
+} from "src/shared/case_activity/dto/case_activity";
 import { UserService } from "src/common/user.service";
 import { case_activity } from "prisma/shared/generated/case_activity";
 import { ActivityTypeToEventEntity, EVENT_STREAM_NAME } from "src/common/nats_constants";
@@ -53,6 +57,54 @@ export class CaseActivityService {
     } catch (activityError) {
       this.logger.error("Error creating case activity:", activityError);
       throw new Error(`Failed to create case activity. Error: ${activityError}`);
+    }
+  }
+
+  async remove(input: CaseActivityRemoveInput): Promise<CaseActivity | null> {
+    const activityToDelete = await this.prisma.case_activity.findFirst({
+      where: {
+        case_file_guid: input.caseFileGuid,
+        activity_identifier_ref: input.activityIdentifier,
+      },
+    });
+
+    if (!activityToDelete) {
+      throw new Error("Activity not found in case");
+    }
+    await this.prisma.case_activity.delete({
+      where: {
+        case_activity_guid: activityToDelete.case_activity_guid,
+      },
+    });
+
+    // Publish the event
+    const sourceEntityType = ActivityTypeToEventEntity[activityToDelete.activity_type];
+    const eventTopic = `${EVENT_STREAM_NAME}.${sourceEntityType.toLowerCase()}.removed_from_case`;
+    try {
+      const event: EventCreateInput = {
+        eventVerbTypeCode: "REMOVED",
+        sourceId: input.activityIdentifier,
+        sourceEntityTypeCode: sourceEntityType,
+        actorId: this.user.getUserGuid(),
+        actorEntityTypeCode: "USER",
+        targetId: input.caseFileGuid,
+        targetEntityTypeCode: "CASE",
+        content: null,
+      };
+      this.eventPublisher.publishEvent(event, eventTopic);
+    } catch (error) {
+      this.logger.error(`Error publishing event ${eventTopic}`, error);
+    }
+
+    try {
+      return this.mapper.map<case_activity, CaseActivity>(
+        activityToDelete as case_activity,
+        "case_activity",
+        "CaseActivity",
+      );
+    } catch (activityError) {
+      this.logger.error("Error removing case activity:", activityError);
+      throw new Error(`Failed to remove case activity. Error: ${activityError}`);
     }
   }
 }

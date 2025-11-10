@@ -6,12 +6,16 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { complaintTypeToName } from "@apptypes/app/complaint-types";
 import { ActivityCard } from "./activity-card";
+import { ActivityActionMenu } from "./activity-action-menu";
+import { CASE_ACTIVITY_TYPES } from "@constants/case-activity-types";
 
 interface ComplaintCardProps {
   item: SectorComplaint;
+  caseName?: string;
+  caseIdentifier?: string;
 }
 
-export const ComplaintCard: FC<ComplaintCardProps> = ({ item: complaint }) => {
+export const ComplaintCard: FC<ComplaintCardProps> = ({ item: complaint, caseName, caseIdentifier }) => {
   const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
   const natureOfComplaints = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.NATURE_OF_COMPLAINT));
@@ -113,6 +117,14 @@ export const ComplaintCard: FC<ComplaintCardProps> = ({ item: complaint }) => {
           <div>{issueType}</div>
         </div>
       </div>
+      {caseIdentifier && (
+        <ActivityActionMenu
+          activityId={complaint?.id}
+          caseName={caseName}
+          caseIdentifier={caseIdentifier}
+          activityType={CASE_ACTIVITY_TYPES.COMPLAINT}
+        />
+      )}
     </ActivityCard>
   );
 };

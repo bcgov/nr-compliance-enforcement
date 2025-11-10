@@ -10,9 +10,16 @@ import { useParams } from "react-router-dom";
 interface ComplaintColumnProps {
   complaints?: Complaint[];
   isLoading?: boolean;
+  caseName?: string;
+  caseIdentifier: string;
 }
 
-export const ComplaintColumn: FC<ComplaintColumnProps> = ({ complaints, isLoading = false }) => {
+export const ComplaintColumn: FC<ComplaintColumnProps> = ({
+  complaints,
+  isLoading = false,
+  caseName,
+  caseIdentifier,
+}) => {
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id?: string }>();
 
@@ -41,6 +48,8 @@ export const ComplaintColumn: FC<ComplaintColumnProps> = ({ complaints, isLoadin
       isLoading={isLoading}
       loadingText="Loading complaints..."
       onAddClick={handleAddComplaint}
+      caseName={caseName}
+      caseIdentifier={caseIdentifier}
     />
   );
 };
