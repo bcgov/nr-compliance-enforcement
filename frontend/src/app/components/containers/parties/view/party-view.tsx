@@ -7,17 +7,22 @@ import { Party, Investigation, Inspection, CaseFile } from "@/generated/graphql"
 import { Button } from "react-bootstrap";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { PartyTypes } from "@/app/constants/party-types";
+import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
+import { useAppSelector } from "@/app/hooks/hooks";
+import Option from "@apptypes/app/option";
 
 type PartyRelation = {
   caseId?: string | null;
   caseName?: string | null;
   activities?: PartyActivity[] | null;
+  leadAgency?: string | null;
 };
 
 type PartyActivity = {
   id?: string | null;
   name?: string | null;
   activityType?: string | null;
+  leadAgency?: string | null;
 };
 
 const GET_PARTY = gql`
@@ -94,6 +99,7 @@ export type PartyParams = {
 export const PartyView: FC = () => {
   const { id = "" } = useParams<PartyParams>();
   const navigate = useNavigate();
+  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -180,6 +186,9 @@ export const PartyView: FC = () => {
       partyRelation.caseId = uniqueCaseId;
       partyRelation.caseName = currentCase?.name;
       partyRelation.activities = [];
+      partyRelation.leadAgency = leadAgencyOptions.find(
+        (option: Option) => option.value === currentCase?.leadAgency?.agencyCode,
+      )?.label;
 
       for (let caseActivity of currentCase?.activities ?? []) {
         const currenInvestigation = relatedInvestigations?.find(
@@ -191,6 +200,8 @@ export const PartyView: FC = () => {
             id: currenInvestigation.investigationGuid,
             name: currenInvestigation.name,
             activityType: CaseActivities.INVESTIGATION,
+            leadAgency: leadAgencyOptions.find((option: Option) => option.value === currenInvestigation?.leadAgency)
+              ?.label,
           });
         }
 
@@ -202,6 +213,8 @@ export const PartyView: FC = () => {
             id: currenInspection.inspectionGuid,
             name: currenInspection.name,
             activityType: CaseActivities.INSPECTION,
+            leadAgency: leadAgencyOptions.find((option: Option) => option.value === currenInspection?.leadAgency)
+              ?.label,
           });
         }
       }
@@ -285,6 +298,9 @@ export const PartyView: FC = () => {
                           <b>
                             <Link to={`/case/${partyRelation.caseId}`}>{partyRelation.caseName}</Link>
                           </b>
+                          <span style={{ marginLeft: "0.8em" }}></span>
+                          <i className="bi bi-building"></i>
+                          <span style={{ marginLeft: "0.2em" }}>{partyRelation.leadAgency} </span>
                         </p>
                         {partyRelation.activities
                           ?.toSorted((left, right) => (left.name ?? "").localeCompare(right.name ?? ""))
@@ -296,6 +312,9 @@ export const PartyView: FC = () => {
                               >
                                 {activity.name}
                               </Link>
+                              <span style={{ marginLeft: "0.8em" }}></span>
+                              <i className="bi bi-building"></i>
+                              <span style={{ marginLeft: "0.2em" }}>{activity.leadAgency} </span>
                             </p>
                           ))}
                       </>
