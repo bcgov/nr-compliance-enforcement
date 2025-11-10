@@ -299,7 +299,7 @@ export const PartyView: FC = () => {
                             <Link to={`/case/${partyRelation.caseId}`}>{partyRelation.caseName}</Link>
                           </b>
                           <span style={{ marginLeft: "0.8em" }}></span>
-                          <i className="bi bi-building"></i>
+                          <i className="bi-building bi"></i>
                           <span style={{ marginLeft: "0.2em" }}>{partyRelation.leadAgency} </span>
                         </p>
                         {partyRelation.activities
