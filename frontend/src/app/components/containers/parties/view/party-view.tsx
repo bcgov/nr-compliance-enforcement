@@ -194,13 +194,13 @@ export const PartyView: FC = () => {
           });
         }
 
-        const currenInvespection = relatedInspections?.find(
+        const currenInspection = relatedInspections?.find(
           (relatedInspection) => relatedInspection.inspectionGuid === caseActivity?.activityIdentifier,
         );
-        if (currenInvespection) {
+        if (currenInspection) {
           partyRelation.activities.push({
-            id: currenInvespection.inspectionGuid,
-            name: currenInvespection.name,
+            id: currenInspection.inspectionGuid,
+            name: currenInspection.name,
             activityType: CaseActivities.INSPECTION,
           });
         }
