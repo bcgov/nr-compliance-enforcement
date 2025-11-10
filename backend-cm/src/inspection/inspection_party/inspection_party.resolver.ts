@@ -26,4 +26,20 @@ export class InspectionPartyResolver {
       });
     }
   }
+
+  @Mutation("removePartyFromInspection")
+  @Roles(coreRoles)
+  async remove(@Args("inspectionGuid") inspectionGuid: string, @Args("partyIdentifier") partyIdentifier: string) {
+    try {
+      return await this.inspectionPartyService.remove(inspectionGuid, partyIdentifier);
+    } catch (error) {
+      this.logger.error("Remove inspection party error:", error);
+      throw new GraphQLError("Error removing party from inspection", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+          originalError: error.message,
+        },
+      });
+    }
+  }
 }

@@ -15,6 +15,7 @@ import {
   ADD_COMPLAINT_TO_CASE,
   CREATE_ADD_CASE,
   ADD_PARTY,
+  REMOVE_PARTY,
 } from "@apptypes/modal/modal-types";
 
 import {
@@ -28,6 +29,7 @@ import {
   ToggleDeactivateModal,
   ReferComplaintModal,
   ManageCollaboratorsModal,
+  RemovePartyModal,
 } from "./instances";
 import { CancelConfirmModal } from "./instances/cancel-confirm-modal";
 import { MapModal } from "@/app/components/modal/instances/map-modal";
@@ -53,4 +55,5 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [ADD_COMPLAINT_TO_CASE]: AddComplaintToCaseModal,
   [CREATE_ADD_CASE]: CreateAddCaseModal,
   [ADD_PARTY]: AddPartyModal,
+  [REMOVE_PARTY]: RemovePartyModal,
 };

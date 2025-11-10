@@ -24,6 +24,7 @@ const GET_INSPECTION = gql`
         longDescription
       }
       parties {
+        partyIdentifier
         person {
           firstName
           lastName

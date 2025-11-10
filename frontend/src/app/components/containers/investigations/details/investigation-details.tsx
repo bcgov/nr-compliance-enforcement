@@ -27,6 +27,7 @@ const GET_INVESTIGATION = gql`
         longDescription
       }
       parties {
+        partyIdentifier
         person {
           firstName
           lastName
