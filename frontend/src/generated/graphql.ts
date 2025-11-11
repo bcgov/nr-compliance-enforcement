@@ -129,6 +129,11 @@ export type CaseActivityCreateInput = {
   eventContent?: InputMaybe<Scalars['JSONObject']['input']>;
 };
 
+export type CaseActivityRemoveInput = {
+  activityIdentifier: Scalars['String']['input'];
+  caseFileGuid: Scalars['String']['input'];
+};
+
 export type CaseActivityTypeCode = {
   __typename?: 'CaseActivityTypeCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -923,6 +928,7 @@ export type Mutation = {
   deletePerson: Person;
   deletePrevention: ComplaintOutcome;
   deleteWildlife: ComplaintOutcome;
+  removeCaseActivity: CaseActivity;
   removePartyFromInspection: Inspection;
   removePartyFromInvestigation: Investigation;
   updateAppUser?: Maybe<AppUser>;
@@ -1100,6 +1106,11 @@ export type MutationdeletePreventionArgs = {
 
 export type MutationdeleteWildlifeArgs = {
   input: DeleteWildlifeInput;
+};
+
+
+export type MutationremoveCaseActivityArgs = {
+  input: CaseActivityRemoveInput;
 };
 
 
