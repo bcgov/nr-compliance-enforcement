@@ -1422,8 +1422,10 @@ export type Query = {
   getComplaintOutcomesBySearchString?: Maybe<Array<Maybe<ComplaintOutcome>>>;
   getInspection?: Maybe<Inspection>;
   getInspections?: Maybe<Array<Maybe<Inspection>>>;
+  getInspectionsByParty?: Maybe<Array<Maybe<Inspection>>>;
   getInvestigation?: Maybe<Investigation>;
   getInvestigations?: Maybe<Array<Maybe<Investigation>>>;
+  getInvestigationsByParty?: Maybe<Array<Maybe<Investigation>>>;
   getLeadsByActionTaken?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByEquipment?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByOutcomeAnimal?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -1561,6 +1563,12 @@ export type QuerygetInspectionsArgs = {
 };
 
 
+export type QuerygetInspectionsByPartyArgs = {
+  partyId?: InputMaybe<Scalars['String']['input']>;
+  partyType?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QuerygetInvestigationArgs = {
   investigationGuid?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1568,6 +1576,12 @@ export type QuerygetInvestigationArgs = {
 
 export type QuerygetInvestigationsArgs = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+export type QuerygetInvestigationsByPartyArgs = {
+  partyId?: InputMaybe<Scalars['String']['input']>;
+  partyType?: InputMaybe<Scalars['String']['input']>;
 };
 
 
