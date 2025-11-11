@@ -30,6 +30,7 @@ const GET_CASE_FILE = gql`
       name
       openedTimestamp
       description
+      createdByAppUserGuid
       caseStatus {
         caseStatusCode
         shortDescription

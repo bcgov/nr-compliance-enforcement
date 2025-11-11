@@ -20,12 +20,14 @@ const GET_INVESTIGATION = gql`
       name
       description
       openedTimestamp
+      createdByAppUserGuid
       investigationStatus {
         investigationStatusCode
         shortDescription
         longDescription
       }
       parties {
+        partyIdentifier
         person {
           firstName
           lastName

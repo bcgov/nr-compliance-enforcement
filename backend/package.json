@@ -1,6 +1,6 @@
 {
   "name": "nr-compliance-enforcement",
-  "version": "2.0.125",
+  "version": "2.0.127",
   "description": "BCGov devops quickstart. For reference, testing and new projects.",
   "main": "index.js",
   "scripts": {
@@ -90,7 +90,7 @@
     "rxjs": "^7.8.0",
     "supercluster": "^7.1.5",
     "swagger-ui-express": "^4.6.0",
-    "typeorm": "^0.3.14",
+    "typeorm": "^0.3.27",
     "winston": "^3.9.0"
   },
   "devDependencies": {

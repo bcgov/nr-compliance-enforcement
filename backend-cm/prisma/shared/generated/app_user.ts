@@ -1,6 +1,7 @@
 import { agency_code } from "./agency_code";
 import { office } from "./office";
 import { app_user_team_xref } from "./app_user_team_xref";
+import { case_file } from "./case_file";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class app_user {
@@ -54,4 +55,7 @@ export class app_user {
 
   @ApiProperty({ isArray: true, type: () => app_user_team_xref })
   app_user_team_xref: app_user_team_xref[];
+
+  @ApiProperty({ isArray: true, type: () => case_file })
+  case_file: case_file[];
 }

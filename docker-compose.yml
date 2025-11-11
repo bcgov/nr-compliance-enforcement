@@ -234,6 +234,8 @@ services:
       - ./webeoc/logs:/mnt/data # this is just for the developer webeoc logging
     user: root
     working_dir: "/app"
+    environment:
+      WEBEOC_STREAM_NAME: nats_durable_complaints
   backend-cm:
     container_name: backend-cm
     entrypoint: sh -c "npm i && npm run prisma-generate-complaint-outcome && \

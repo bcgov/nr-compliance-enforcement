@@ -7,6 +7,7 @@ type CaseFile {
   openedTimestamp: Date
   description: String
   name: String
+  createdByAppUserGuid: String
   activities: [CaseActivity]
 }
 
@@ -31,6 +32,7 @@ input CaseFileCreateInput {
   name: String!
   activityIdentifier: String
   activityType: String
+  createdByAppUserGuid: String!
 }
 
 input CaseFileUpdateInput {

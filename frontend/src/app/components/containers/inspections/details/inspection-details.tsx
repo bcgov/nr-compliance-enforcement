@@ -17,12 +17,14 @@ const GET_INSPECTION = gql`
       name
       description
       openedTimestamp
+      createdByAppUserGuid
       inspectionStatus {
         inspectionStatusCode
         shortDescription
         longDescription
       }
       parties {
+        partyIdentifier
         person {
           firstName
           lastName
