@@ -102,6 +102,7 @@ export class ContinuationReportService {
           },
         });
       } catch (error) {
+        this.logger.error("Error creating Continuation Report:", error);
         throw error;
       }
     }

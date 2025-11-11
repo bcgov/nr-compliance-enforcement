@@ -6,7 +6,7 @@ interface MenuBarProps {
   editor: ReturnType<typeof useEditor>;
 }
 
-export function MenuBarEditor({ editor }: MenuBarProps) {
+export function MenuBarEditor({ editor }: Readonly<MenuBarProps>) {
   if (!editor) return null;
 
   return (

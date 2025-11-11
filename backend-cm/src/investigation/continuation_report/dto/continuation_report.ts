@@ -1,23 +1,18 @@
-import { createMap, forMember, mapFrom, Mapper, mapWith } from "@automapper/core";
+import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 
 import { continuation_report } from "../../../../prisma/investigation/generated/continuation_report";
-import { InvestigationStatusCode } from "../../investigation_status_code/dto/investigation_status_code";
-import { Field, InputType, ObjectType } from "@nestjs/graphql";
-import { PaginatedResult } from "src/common/pagination.utility";
-import { PageInfo } from "src/shared/case_file/dto/case_file";
+import { Field, InputType } from "@nestjs/graphql";
 import { IsOptional } from "class-validator";
-import { Point, PointScalar } from "src/common/custom_scalars";
-import { InvestigationParty } from "src/investigation/investigation_party/dto/investigation_party";
 
 export class ContinuationReport {
-  continuationReportGuid: String;
-  investigationGuid: String;
-  contentJson: String;
-  contentText: String;
+  continuationReportGuid: string;
+  investigationGuid: string;
+  contentJson: string;
+  contentText: string;
   actionedTimestamp: Date;
   reportedTimestamp: Date;
-  actionedAppUserGuidRef: String;
-  reportedAppUserGuidRef: String;
+  actionedAppUserGuidRef: string;
+  reportedAppUserGuidRef: string;
 }
 
 @InputType()

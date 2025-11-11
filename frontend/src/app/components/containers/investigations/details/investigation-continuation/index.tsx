@@ -117,7 +117,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   });
 
   const assignableOfficers: Option[] =
-    officersInAgencyList !== null
+    officersInAgencyList && officersInAgencyList.length > 0
       ? officersInAgencyList.map((officer: AppUser) => ({
           value: officer.app_user_guid,
           label: `${officer.last_name}, ${officer.first_name}`,
@@ -200,9 +200,9 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
 
           {/* Date actioned */}
           <div className="mt-3 comp-details-form-row w-50">
-            <label>
+            <div>
               Date/time actioned<span className="required-ind">*</span>
-            </label>
+            </div>
             <div className="comp-details-edit-input">
               <DatePicker
                 id="complaint-actioned-time"
@@ -226,9 +226,9 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
             className="comp-details-form-row"
             id="officer-assigned-pair-id"
           >
-            <label id="officer-assigned-select-label-id">
+            <div id="officer-assigned-select-label-id">
               Officer<span className="required-ind">*</span>
-            </label>
+            </div>
             <CompSelect
               id="officer-assigned-select-id"
               showInactive={false}
