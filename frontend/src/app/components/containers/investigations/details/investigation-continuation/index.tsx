@@ -151,7 +151,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
     refetch();
   };
 
-  const reports = data?.getContinuationReports;
+  const reports = data?.getContinuationReports ?? [];
 
   let groups: any;
   if (reports) {
@@ -200,7 +200,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
 
           {/* Date actioned */}
           <div className="mt-3 comp-details-form-row w-50">
-            <div>
+            <div className="col-4">
               Date/time actioned<span className="required-ind">*</span>
             </div>
             <div className="comp-details-edit-input">
@@ -223,10 +223,13 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
 
           {/* Officer assigned */}
           <div
-            className="comp-details-form-row"
+            className="comp-details-form-row w-50"
             id="officer-assigned-pair-id"
           >
-            <div id="officer-assigned-select-label-id">
+            <div
+              className="col-4"
+              id="officer-assigned-select-label-id"
+            >
               Officer<span className="required-ind">*</span>
             </div>
             <CompSelect
@@ -234,7 +237,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
               showInactive={false}
               classNamePrefix="comp-select"
               onChange={(e) => handleAssignedOfficerChange(e)}
-              className="comp-details-input w-50"
+              className="comp-details-input w-100"
               options={assignableOfficers}
               placeholder="Select"
               enableValidation={false}
@@ -277,7 +280,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
           </div>
 
           <div className="space-y-2 max-h-screen overflow-y-auto">
-            {reports && reports.length === 0 ? (
+            {reports?.length === 0 ? (
               <p className="text-gray-500">There are no reports yet.</p>
             ) : (
               <div className="mt-4">
