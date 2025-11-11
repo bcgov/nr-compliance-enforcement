@@ -105,6 +105,61 @@ export class InspectionService {
     }
   }
 
+  async findManyByParty(partyId: string, partyType: string): Promise<Inspection[]> {
+    if (!partyId || !partyType) {
+      return [];
+    }
+
+    let prismaParties = null;
+
+    if (partyType == "Person") {
+      prismaParties = await this.prisma.inspection_person.findMany({
+        where: {
+          person_guid_ref: partyId,
+          active_ind: true,
+        },
+        include: {
+          inspection_party: {
+            include: {
+              inspection: true,
+            },
+          },
+        },
+      });
+    } else if (partyType == "Business") {
+      prismaParties = await this.prisma.inspection_business.findMany({
+        where: {
+          business_guid_ref: partyId,
+          active_ind: true,
+        },
+        include: {
+          inspection_party: {
+            include: {
+              inspection: true,
+            },
+            where: {
+              active_ind: true,
+            },
+          },
+        },
+      });
+    }
+    const prismaInspections = prismaParties.map((party) => {
+      return party.inspection_party?.inspection;
+    });
+
+    try {
+      return this.mapper.mapArray<inspection, Inspection>(
+        prismaInspections as Array<inspection>,
+        "inspection",
+        "Inspection",
+      );
+    } catch (error) {
+      this.logger.error("Error fetching inspections by Party IDs:", error);
+      throw error;
+    }
+  }
+
   async search(page: number = 1, pageSize: number = 25, filters?: InspectionFilters): Promise<InspectionResult> {
     const where: any = {};
 

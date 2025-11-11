@@ -71,6 +71,22 @@ export class InvestigationResolver {
     }
   }
 
+  @Query("getInvestigationsByParty")
+  @Roles(coreRoles)
+  async findManyByParty(@Args("partyId") partyId: string, @Args("partyType") partyType: string) {
+    try {
+      const result = await this.investigationService.findManyByParty(partyId, partyType);
+      return result;
+    } catch (error) {
+      this.logger.error("error: ", error);
+      throw new GraphQLError("Error fetching investigations by party IDs from investigation schema", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
+  }
+
   @Query("searchInvestigations")
   @Roles(coreRoles)
   async search(
