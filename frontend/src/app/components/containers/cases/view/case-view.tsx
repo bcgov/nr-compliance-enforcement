@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { CaseHeader } from "./case-header";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
-import { CaseFile, Inspection, Investigation } from "@/generated/graphql";
+import { CaseFile, Inspection, Investigation, CaseActivity } from "@/generated/graphql";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import {
@@ -108,20 +108,22 @@ export const CaseView: FC = () => {
   const caseData = data?.caseFile;
 
   const linkedComplaintIds = caseData?.activities
-    ?.filter((activity) => activity?.activityType?.caseActivityTypeCode === "COMP")
-    .map((item) => {
+    ?.filter((activity: CaseActivity | null | undefined) => activity?.activityType?.caseActivityTypeCode === "COMP")
+    .map((item: CaseActivity | null | undefined) => {
       return item?.activityIdentifier;
     });
 
   const linkedInvestigationIds = caseData?.activities
-    ?.filter((activity) => activity?.activityType?.caseActivityTypeCode === "INVSTGTN")
-    .map((item) => {
+    ?.filter((activity: CaseActivity | null | undefined) => activity?.activityType?.caseActivityTypeCode === "INVSTGTN")
+    .map((item: CaseActivity | null | undefined) => {
       return item?.activityIdentifier;
     });
 
   const linkedInspectionIds = caseData?.activities
-    ?.filter((activity) => activity?.activityType?.caseActivityTypeCode === "INSPECTION")
-    .map((item) => {
+    ?.filter(
+      (activity: CaseActivity | null | undefined) => activity?.activityType?.caseActivityTypeCode === "INSPECTION",
+    )
+    .map((item: CaseActivity | null | undefined) => {
       return item?.activityIdentifier;
     });
 

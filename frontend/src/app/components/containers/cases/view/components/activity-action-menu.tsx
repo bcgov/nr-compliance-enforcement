@@ -6,6 +6,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { FC, useCallback } from "react";
 import { gql } from "graphql-request";
+import { CaseActivityType } from "@/app/constants/case-activity-types";
 
 const REMOVE_ACTIVITY_FROM_CASE_MUTATION = gql`
   mutation RemoveCaseActivity($input: CaseActivityRemoveInput!) {
@@ -21,9 +22,10 @@ type ActivityActionMenuProps = {
   activityId: string;
   caseName?: string;
   caseIdentifier: string;
+  activityType: CaseActivityType;
 };
 
-export const ActivityActionMenu: FC<ActivityActionMenuProps> = ({ activityId, caseName, caseIdentifier }) => {
+export const ActivityActionMenu: FC<ActivityActionMenuProps> = ({ activityId, caseName, caseIdentifier, activityType }) => {
   const dispatch = useAppDispatch();
 
   const removeActivityFromCaseMutation = useGraphQLMutation(REMOVE_ACTIVITY_FROM_CASE_MUTATION, {
