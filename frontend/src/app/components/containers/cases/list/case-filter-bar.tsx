@@ -74,7 +74,6 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
       <span>Filters</span>
     </Button>
   );
-  console.log(searchValues);
 
   return (
     <div className="comp-filter-bar">
