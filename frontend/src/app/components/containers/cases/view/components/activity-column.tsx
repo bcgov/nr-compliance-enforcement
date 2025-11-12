@@ -11,6 +11,8 @@ interface ActivityColumnProps {
   disableBorder?: boolean;
   onAddClick?: () => void;
   keyProperty?: string;
+  caseName?: string;
+  caseIdentifier?: string;
 }
 
 export const ActivityColumn: FC<ActivityColumnProps> = ({
@@ -23,6 +25,8 @@ export const ActivityColumn: FC<ActivityColumnProps> = ({
   disableBorder = false,
   onAddClick,
   keyProperty = "id",
+  caseName,
+  caseIdentifier,
 }) => {
   const [showBorder, setShowBorder] = useState(true);
 
@@ -65,6 +69,8 @@ export const ActivityColumn: FC<ActivityColumnProps> = ({
             <ItemComponent
               key={item[keyProperty]}
               item={item}
+              caseName={caseName}
+              caseIdentifier={caseIdentifier}
             />
           ))
         )}

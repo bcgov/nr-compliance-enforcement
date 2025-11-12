@@ -15,3 +15,8 @@ input CaseActivityCreateInput {
   activityIdentifier: String!
   eventContent: JSONObject
 }
+
+input CaseActivityRemoveInput {
+  caseFileGuid: String!
+  activityIdentifier: String!
+}
