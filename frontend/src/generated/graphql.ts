@@ -259,6 +259,28 @@ export type ContactMethodInput = {
   value: Scalars['String']['input'];
 };
 
+export type ContinuationReport = {
+  __typename?: 'ContinuationReport';
+  actionedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
+  actionedTimestamp?: Maybe<Scalars['Date']['output']>;
+  contentJson?: Maybe<Scalars['String']['output']>;
+  continuationReportGuid?: Maybe<Scalars['String']['output']>;
+  investigationGuid?: Maybe<Scalars['String']['output']>;
+  reportedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
+  reportedTimestamp?: Maybe<Scalars['Date']['output']>;
+};
+
+export type ContinuationReportInput = {
+  actionedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
+  actionedTimestamp?: InputMaybe<Scalars['Date']['input']>;
+  contentJson?: InputMaybe<Scalars['String']['input']>;
+  contentText?: InputMaybe<Scalars['String']['input']>;
+  continuationReportGuid?: InputMaybe<Scalars['String']['input']>;
+  investigationGuid?: InputMaybe<Scalars['String']['input']>;
+  reportedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
+  reportedTimestamp?: InputMaybe<Scalars['Date']['input']>;
+};
+
 export type CosGeoOrgUnit = {
   __typename?: 'CosGeoOrgUnit';
   administrativeOfficeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -925,6 +947,7 @@ export type Mutation = {
   deleteWildlife: ComplaintOutcome;
   removePartyFromInspection: Inspection;
   removePartyFromInvestigation: Investigation;
+  saveContinuationReport: ContinuationReport;
   updateAppUser?: Maybe<AppUser>;
   updateAppUserTeamXref?: Maybe<AppUserTeamXref>;
   updateAssessment: ComplaintOutcome;
@@ -1112,6 +1135,11 @@ export type MutationremovePartyFromInspectionArgs = {
 export type MutationremovePartyFromInvestigationArgs = {
   investigationGuid: Scalars['String']['input'];
   partyIdentifier: Scalars['String']['input'];
+};
+
+
+export type MutationsaveContinuationReportArgs = {
+  input: ContinuationReportInput;
 };
 
 
@@ -1420,6 +1448,8 @@ export type Query = {
   getComplaintOutcomeByComplaintId?: Maybe<ComplaintOutcome>;
   getComplaintOutcomesByComplaintId?: Maybe<Array<Maybe<ComplaintOutcome>>>;
   getComplaintOutcomesBySearchString?: Maybe<Array<Maybe<ComplaintOutcome>>>;
+  getContinuationReport?: Maybe<ContinuationReport>;
+  getContinuationReports?: Maybe<Array<ContinuationReport>>;
   getInspection?: Maybe<Inspection>;
   getInspections?: Maybe<Array<Maybe<Inspection>>>;
   getInspectionsByParty?: Maybe<Array<Maybe<Inspection>>>;
@@ -1452,6 +1482,7 @@ export type Query = {
   scheduleSectorXrefs: Array<Maybe<ScheduleSectorXref>>;
   searchAppUsers: Array<Maybe<AppUser>>;
   searchCaseFiles: CaseFileResult;
+  searchContinuationReports?: Maybe<Array<ContinuationReport>>;
   searchCosGeoOrgUnitsByNames: Array<Maybe<CosGeoOrgUnit>>;
   searchEvents: EventResult;
   searchInspections: InspectionResult;
@@ -1550,6 +1581,16 @@ export type QuerygetComplaintOutcomesByComplaintIdArgs = {
 export type QuerygetComplaintOutcomesBySearchStringArgs = {
   complaintType: Scalars['String']['input'];
   searchString: Scalars['String']['input'];
+};
+
+
+export type QuerygetContinuationReportArgs = {
+  continuationReportGuid: Scalars['String']['input'];
+};
+
+
+export type QuerygetContinuationReportsArgs = {
+  investigationGuid: Scalars['String']['input'];
 };
 
 
@@ -1673,6 +1714,11 @@ export type QuerysearchCaseFilesArgs = {
   filters?: InputMaybe<CaseFileFilters>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QuerysearchContinuationReportsArgs = {
+  searchString: Scalars['String']['input'];
 };
 
 

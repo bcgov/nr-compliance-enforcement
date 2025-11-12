@@ -65,6 +65,7 @@ import { CosGeoOrgUnitModule } from "./shared/cos_geo_org_unit/cos_geo_org_unit.
 import { AppUserModule } from "./shared/app_user/app_user.module";
 import { AppUserTeamXrefModule } from "./shared/app_user_team_xref/app_user_team_xref.module";
 import { InspectionPartyModule } from "./inspection/inspection_party/inspection_party.module";
+import { ContinuationReportModule } from "src/investigation/continuation_report/continuation_report.module";
 
 @Module({
   imports: [
@@ -130,6 +131,7 @@ import { InspectionPartyModule } from "./inspection/inspection_party/inspection_
     AppUserModule,
     AppUserTeamXrefModule,
     InspectionPartyModule,
+    ContinuationReportModule,
   ],
   controllers: [AppController],
   providers: [AppService, ImportCommand, DateScalar, JSONObjectScalar, PointScalar],
