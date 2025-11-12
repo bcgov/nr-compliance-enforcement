@@ -264,6 +264,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
               id="outcome-save-button"
               title="Save Outcome"
               onClick={handleSave}
+              disabled={!plainText || !selectedActionedDateTime || !selectedOfficer}
             >
               Save
             </Button>
