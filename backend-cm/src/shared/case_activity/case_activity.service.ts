@@ -61,24 +61,29 @@ export class CaseActivityService {
   }
 
   async remove(input: CaseActivityRemoveInput): Promise<CaseActivity | null> {
-    const activityToDelete = await this.prisma.case_activity.findFirst({
+    const utc_expiry_timestamp = new Date();
+    const activityToExpire = await this.prisma.case_activity.findFirst({
       where: {
         case_file_guid: input.caseFileGuid,
         activity_identifier_ref: input.activityIdentifier,
+        expiry_utc_timestamp: null,
       },
     });
 
-    if (!activityToDelete) {
+    if (!activityToExpire) {
       throw new Error("Activity not found in case");
     }
-    await this.prisma.case_activity.delete({
+    await this.prisma.case_activity.update({
       where: {
-        case_activity_guid: activityToDelete.case_activity_guid,
+        case_activity_guid: activityToExpire.case_activity_guid,
+      },
+      data: {
+        expiry_utc_timestamp: utc_expiry_timestamp,
       },
     });
 
     // Publish the event
-    const sourceEntityType = ActivityTypeToEventEntity[activityToDelete.activity_type];
+    const sourceEntityType = ActivityTypeToEventEntity[activityToExpire.activity_type];
     const eventTopic = `${EVENT_STREAM_NAME}.${sourceEntityType.toLowerCase()}.removed_from_case`;
     try {
       const event: EventCreateInput = {
@@ -98,7 +103,7 @@ export class CaseActivityService {
 
     try {
       return this.mapper.map<case_activity, CaseActivity>(
-        activityToDelete as case_activity,
+        activityToExpire as case_activity,
         "case_activity",
         "CaseActivity",
       );

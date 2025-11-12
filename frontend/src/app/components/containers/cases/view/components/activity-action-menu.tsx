@@ -25,7 +25,12 @@ type ActivityActionMenuProps = {
   activityType: CaseActivityType;
 };
 
-export const ActivityActionMenu: FC<ActivityActionMenuProps> = ({ activityId, caseName, caseIdentifier, activityType }) => {
+export const ActivityActionMenu: FC<ActivityActionMenuProps> = ({
+  activityId,
+  caseName,
+  caseIdentifier,
+  activityType,
+}) => {
   const dispatch = useAppDispatch();
 
   const removeActivityFromCaseMutation = useGraphQLMutation(REMOVE_ACTIVITY_FROM_CASE_MUTATION, {
@@ -65,9 +70,9 @@ export const ActivityActionMenu: FC<ActivityActionMenuProps> = ({ activityId, ca
       <div className="comp-actions">
         <Dropdown>
           <Dropdown.Toggle
-            aria-label="Actions Menu"
-            variant="outline-primary"
-            className="icon-btn"
+            variant="link"
+            className="p-0"
+            bsPrefix="dropdown-toggle-no-caret"
             id="dropdown-basic"
           >
             <i className="bi bi-three-dots-vertical"></i>

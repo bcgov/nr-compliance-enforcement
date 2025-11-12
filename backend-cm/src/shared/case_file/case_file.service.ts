@@ -42,6 +42,9 @@ export class CaseFileService {
           include: {
             case_activity_type_code: true,
           },
+          where: {
+            expiry_utc_timestamp: null,
+          },
         },
       },
     });
@@ -71,6 +74,9 @@ export class CaseFileService {
           include: {
             case_activity_type_code: true,
           },
+          where: {
+            expiry_utc_timestamp: null,
+          },
         },
       },
     });
@@ -93,6 +99,7 @@ export class CaseFileService {
         activity_identifier_ref: {
           in: activityIdentifiers,
         },
+        expiry_utc_timestamp: null,
       },
     });
 
