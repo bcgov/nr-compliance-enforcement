@@ -1,0 +1,22 @@
+scalar Point
+
+type ContinuationReport {
+  continuationReportGuid: String
+  investigationGuid: String
+  contentJson: String
+  actionedTimestamp: Date
+  reportedTimestamp: Date
+  actionedAppUserGuidRef: String
+  reportedAppUserGuidRef: String
+}
+
+input ContinuationReportInput {
+  investigationGuid: String
+  continuationReportGuid: String
+  contentJson: String
+  contentText: String
+  actionedTimestamp: Date
+  reportedTimestamp: Date
+  actionedAppUserGuidRef: String
+  reportedAppUserGuidRef: String
+}

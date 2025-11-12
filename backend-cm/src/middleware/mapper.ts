@@ -33,6 +33,7 @@ import { mapPrismaAppUserTeamXrefToAppUserTeamXref } from "../shared/app_user_te
 import { mapPrismaBusinessToInspectionBusiness } from "../inspection/inspection_business/dto/inspection_business";
 import { mapPrismaPersonToInspectionPerson } from "../inspection/inspection_person/dto/inspection_person";
 import { mapPrismaPartyToInspectionParty } from "../inspection/inspection_party/dto/inspection_party";
+import { mapPrismaContinuationReportToContinuationReport } from "src/investigation/continuation_report/dto/continuation_report";
 
 export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToContactMethod(mapper);
@@ -69,4 +70,5 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaBusinessToInspectionBusiness(mapper);
   mapPrismaPersonToInspectionPerson(mapper);
   mapPrismaPartyToInspectionParty(mapper);
+  mapPrismaContinuationReportToContinuationReport(mapper);
 };
