@@ -296,6 +296,7 @@ export const PartyView: FC = () => {
                       <>
                         <p key={partyRelation.caseId}>
                           <b>
+                            Case:&nbsp;&nbsp;
                             <Link to={`/case/${partyRelation.caseId}`}>{partyRelation.caseName}</Link>
                           </b>
                           <span style={{ marginLeft: "0.8em" }}></span>
@@ -307,6 +308,8 @@ export const PartyView: FC = () => {
                           .map((activity) => (
                             <p key={activity.id}>
                               &nbsp;&nbsp;&nbsp;&nbsp;
+                              {`${activity.activityType === CaseActivities.INVESTIGATION ? "Investigation" : "Inspection"}`}
+                              : &nbsp;&nbsp;
                               <Link
                                 to={`/${activity.activityType === CaseActivities.INVESTIGATION ? "investigation" : "inspection"}/${activity.id}`}
                               >
