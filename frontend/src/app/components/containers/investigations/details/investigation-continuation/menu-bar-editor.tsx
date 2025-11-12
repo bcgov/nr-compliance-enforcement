@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, ToggleButton } from "react-bootstrap";
-import { useEditor } from "@tiptap/react";
-import "./styles.scss";
+import { useEditor, useEditorState } from "@tiptap/react";
+import "@assets/sass/investigation-continuation.scss";
 
 interface MenuBarProps {
   editor: ReturnType<typeof useEditor>;
@@ -8,6 +8,23 @@ interface MenuBarProps {
 
 export function MenuBarEditor({ editor }: Readonly<MenuBarProps>) {
   if (!editor) return null;
+
+  const editorState = useEditorState({
+    editor,
+    selector: (ctx) => {
+      return {
+        isBold: ctx.editor.isActive("bold") ?? false,
+        isItalic: ctx.editor.isActive("italic") ?? false,
+        isStrike: ctx.editor.isActive("strike") ?? false,
+        isUnderline: ctx.editor.isActive("underline") ?? false,
+        isCode: ctx.editor.isActive("code") ?? false,
+        isHeading1: ctx.editor.isActive("heading", { level: 1 }) ?? false,
+        isHeading2: ctx.editor.isActive("heading", { level: 2 }) ?? false,
+        isBulletList: ctx.editor.isActive("bulletList") ?? false,
+        isOrderedList: ctx.editor.isActive("orderedList") ?? false,
+      };
+    },
+  });
 
   return (
     <ButtonGroup
@@ -19,13 +36,13 @@ export function MenuBarEditor({ editor }: Readonly<MenuBarProps>) {
         className="menu-editor-button"
         type="checkbox"
         variant="none"
-        checked={editor.isActive("bold")}
+        checked={editorState.isBold}
         onClick={() => editor.chain().focus().toggleBold().run()}
         title="Bold"
         id={""}
         value={""}
       >
-        <i className={`bi bi-type-bold ${editor.isActive("bold") ? "menu-icon-active" : "menu-icon"}`}></i>
+        <i className={`bi bi-type-bold ${editorState.isBold ? "menu-icon-active" : "menu-icon"}`}></i>
       </ToggleButton>
 
       {/* Italic */}
@@ -39,7 +56,7 @@ export function MenuBarEditor({ editor }: Readonly<MenuBarProps>) {
         id=""
         value={""}
       >
-        <i className={`bi bi-type-italic ${editor.isActive("italic") ? "menu-icon-active" : "menu-icon"}`}></i>
+        <i className={`bi bi-type-italic ${editorState.isItalic ? "menu-icon-active" : "menu-icon"}`}></i>
       </ToggleButton>
 
       {/* Underline */}
@@ -53,7 +70,7 @@ export function MenuBarEditor({ editor }: Readonly<MenuBarProps>) {
         id=""
         value={""}
       >
-        <i className={`bi bi-type-underline ${editor.isActive("underline") ? "menu-icon-active" : "menu-icon"}`}></i>
+        <i className={`bi bi-type-underline ${editorState.isUnderline ? "menu-icon-active" : "menu-icon"}`}></i>
       </ToggleButton>
 
       <ToggleButton
@@ -66,7 +83,7 @@ export function MenuBarEditor({ editor }: Readonly<MenuBarProps>) {
         id=""
         value={""}
       >
-        <i className={`bi bi-type-strikethrough ${editor.isActive("strike") ? "menu-icon-active" : "menu-icon"}`}></i>
+        <i className={`bi bi-type-strikethrough ${editorState.isStrike ? "menu-icon-active" : "menu-icon"}`}></i>
       </ToggleButton>
 
       <div className="border-end mx-1" />
@@ -82,9 +99,7 @@ export function MenuBarEditor({ editor }: Readonly<MenuBarProps>) {
         id=""
         value=""
       >
-        <i
-          className={`bi bi-type-h1 ${editor.isActive("heading", { level: 1 }) ? "menu-icon-active" : "menu-icon"}`}
-        ></i>
+        <i className={`bi bi-type-h1 ${editorState.isHeading1 ? "menu-icon-active" : "menu-icon"}`}></i>
       </ToggleButton>
 
       {/* Heading 2 */}
@@ -98,9 +113,7 @@ export function MenuBarEditor({ editor }: Readonly<MenuBarProps>) {
         id=""
         value={""}
       >
-        <i
-          className={`bi bi-type-h2 ${editor.isActive("heading", { level: 2 }) ? "menu-icon-active" : "menu-icon"}`}
-        ></i>
+        <i className={`bi bi-type-h2 ${editorState.isHeading2 ? "menu-icon-active" : "menu-icon"}`}></i>
       </ToggleButton>
 
       <div className="border-end" />
@@ -116,7 +129,7 @@ export function MenuBarEditor({ editor }: Readonly<MenuBarProps>) {
         id=""
         value={""}
       >
-        <i className={`bi bi-list-ul mx-2 ${editor.isActive("bulletList") ? "menu-icon-active" : "menu-icon"}`}></i>
+        <i className={`bi bi-list-ul mx-2 ${editorState.isBulletList ? "menu-icon-active" : "menu-icon"}`}></i>
       </ToggleButton>
 
       {/* Ordered List */}
@@ -130,7 +143,7 @@ export function MenuBarEditor({ editor }: Readonly<MenuBarProps>) {
         id=""
         value={""}
       >
-        <i className={`bi bi-list-ol ${editor.isActive("orderedList") ? "menu-icon-active" : "menu-icon"}`}></i>
+        <i className={`bi bi-list-ol ${editorState.isOrderedList ? "menu-icon-active" : "menu-icon"}`}></i>
       </ToggleButton>
 
       <div className="border-end mx-1" />
@@ -144,7 +157,7 @@ export function MenuBarEditor({ editor }: Readonly<MenuBarProps>) {
         id=""
         value={""}
       >
-        <i className={`bi bi-eraser mx-2 ${editor.isActive("clear") ? "menu-icon-active" : "menu-icon"}`}></i>
+        <i className={`bi bi-eraser mx-2 menu-icon`}></i>
       </Button>
     </ButtonGroup>
   );

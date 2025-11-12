@@ -11,7 +11,6 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ReportRenderer } from "./report-renderer";
 import { MenuBarEditor } from "./menu-bar-editor";
-import "./styles.scss";
 import SearchInput from "@/app/components/common/search-input";
 import { startOfDay } from "date-fns";
 import { formatDate, formatDateTime, formatTime } from "@common/methods";
@@ -23,7 +22,8 @@ import { AppUser } from "@apptypes/app/app_user/app_user";
 import { RootState } from "@/app/store/store";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { appUserGuid } from "@store/reducers/app";
+import { appUserGuid, profileDisplayName } from "@store/reducers/app";
+import "@assets/sass/investigation-continuation.scss";
 
 const SAVE_REPORT_MUTATION = gql`
   mutation SaveContinuationReport($input: ContinuationReportInput!) {
@@ -76,12 +76,16 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   const leadAgency = investigationData?.leadAgency ?? "COS";
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
   const reportedUserGuid = useAppSelector(appUserGuid);
+  const reportedUserName = useAppSelector(profileDisplayName);
 
   //States
   const [search, setSearch] = useState("");
   const [activeKey, setActiveKey] = useState<string>("0");
   const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date>();
-  const [selectedOfficer, setSelectedOfficer] = useState<Option | null>(null);
+  const [selectedOfficer, setSelectedOfficer] = useState<Option | null>({
+    value: reportedUserGuid,
+    label: reportedUserName,
+  });
   const [plainText, setPlainText] = useState<string>("");
 
   // Tiptap editor setup
