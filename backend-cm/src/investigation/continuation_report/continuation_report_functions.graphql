@@ -1,0 +1,9 @@
+type Query {
+  getContinuationReport(continuationReportGuid: String!): ContinuationReport
+  getContinuationReports(investigationGuid: String!): [ContinuationReport!]
+  searchContinuationReports(searchString: String!): [ContinuationReport!]
+}
+
+type Mutation {
+  saveContinuationReport(input: ContinuationReportInput!): ContinuationReport!
+}
