@@ -7,9 +7,11 @@ type Inspection {
   inspectionStatus: InspectionStatusCode
   openedTimestamp: Date
   name: String
+  createdByAppUserGuid: String
   locationGeometry: Point
   locationAddress: String
   locationDescription: String
+  parties: [InspectionParty]
 }
 
 type PageInfo {
@@ -45,6 +47,7 @@ input CreateInspectionInput {
   locationGeometry: Point
   locationAddress: String
   locationDescription: String
+  createdByAppUserGuid: String!
 }
 
 input UpdateInspectionInput {

@@ -56,9 +56,9 @@ export const HWCRFileReview: FC = () => {
         const officer = officers.filter((person) => person.auth_user_guid === reviewCompleteAction.actor);
         if (officer.length > 0) {
           const {
-            person_guid: { first_name: givenName, last_name: surName },
+            first_name, last_name
           } = officer[0];
-          displayName = `${surName}, ${givenName}`;
+          displayName = `${last_name}, ${first_name}`;
           setOfficerName(displayName);
           setReviewCompleteDate(reviewCompleteAction.date);
         }

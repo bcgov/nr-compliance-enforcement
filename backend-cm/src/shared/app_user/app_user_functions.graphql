@@ -1,0 +1,10 @@
+type Query {
+  appUsers(officeGuids: [String!], agencyCode: String): [AppUser]!
+  appUser(appUserGuid: String, userId: String, authUserGuid: String): AppUser
+  searchAppUsers(searchTerm: String!): [AppUser]!
+}
+
+type Mutation {
+  createAppUser(input: CreateAppUserInput!): AppUser
+  updateAppUser(appUserGuid: String!, input: UpdateAppUserInput!): AppUser
+}

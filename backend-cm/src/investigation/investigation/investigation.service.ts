@@ -125,6 +125,61 @@ export class InvestigationService {
     }
   }
 
+  async findManyByParty(partyId: string, partyType: string): Promise<Investigation[]> {
+    if (!partyId || !partyType) {
+      return [];
+    }
+
+    let prismaParties = null;
+
+    if (partyType == "Person") {
+      prismaParties = await this.prisma.investigation_person.findMany({
+        where: {
+          person_guid_ref: partyId,
+          active_ind: true,
+        },
+        include: {
+          investigation_party: {
+            include: {
+              investigation: true,
+            },
+          },
+        },
+      });
+    } else if (partyType == "Business") {
+      prismaParties = await this.prisma.investigation_business.findMany({
+        where: {
+          business_guid_ref: partyId,
+          active_ind: true,
+        },
+        include: {
+          investigation_party: {
+            include: {
+              investigation: true,
+            },
+            where: {
+              active_ind: true,
+            },
+          },
+        },
+      });
+    }
+    const prismaInvestigations = prismaParties.map((party) => {
+      return party.investigation_party?.investigation;
+    });
+
+    try {
+      return this.mapper.mapArray<investigation, Investigation>(
+        prismaInvestigations as Array<investigation>,
+        "investigation",
+        "Investigation",
+      );
+    } catch (error) {
+      this.logger.error("Error fetching investigations by Party IDs:", error);
+      throw error;
+    }
+  }
+
   async create(input: CreateInvestigationInput): Promise<Investigation> {
     // Verify case file exists
     const caseFile = await this.shared.case_file.findUnique({
@@ -149,6 +204,7 @@ export class InvestigationService {
             name: input.name,
             investigation_opened_utc_timestamp: new Date(),
             create_user_id: this.user.getIdirUsername(),
+            created_by_app_user_guid_ref: input.createdByAppUserGuid,
             create_utc_timestamp: new Date(),
           },
           include: {

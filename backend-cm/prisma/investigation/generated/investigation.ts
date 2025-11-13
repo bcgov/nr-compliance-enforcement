@@ -1,3 +1,4 @@
+import { continuation_report } from "./continuation_report";
 import { investigation_status_code } from "./investigation_status_code";
 import { investigation_party } from "./investigation_party";
 import { officer_investigation_xref } from "./officer_investigation_xref";
@@ -39,6 +40,12 @@ export class investigation {
 
   @ApiPropertyOptional({ type: String })
   location_description?: string;
+
+  @ApiPropertyOptional({ type: String })
+  created_by_app_user_guid_ref?: string;
+
+  @ApiProperty({ isArray: true, type: () => continuation_report })
+  continuation_report: continuation_report[];
 
   @ApiProperty({ type: () => investigation_status_code })
   investigation_status_code: investigation_status_code;

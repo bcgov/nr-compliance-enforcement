@@ -41,6 +41,23 @@ export class InspectionService {
       },
       include: {
         inspection_status_code: true,
+        inspection_party: {
+          include: {
+            inspection_person: {
+              where: {
+                active_ind: true,
+              },
+            },
+            inspection_business: {
+              where: {
+                active_ind: true,
+              },
+            },
+          },
+          where: {
+            active_ind: true,
+          },
+        },
       },
     });
 
@@ -84,6 +101,61 @@ export class InspectionService {
       );
     } catch (error) {
       this.logger.error("Error fetching inspections by IDs:", error);
+      throw error;
+    }
+  }
+
+  async findManyByParty(partyId: string, partyType: string): Promise<Inspection[]> {
+    if (!partyId || !partyType) {
+      return [];
+    }
+
+    let prismaParties = null;
+
+    if (partyType == "Person") {
+      prismaParties = await this.prisma.inspection_person.findMany({
+        where: {
+          person_guid_ref: partyId,
+          active_ind: true,
+        },
+        include: {
+          inspection_party: {
+            include: {
+              inspection: true,
+            },
+          },
+        },
+      });
+    } else if (partyType == "Business") {
+      prismaParties = await this.prisma.inspection_business.findMany({
+        where: {
+          business_guid_ref: partyId,
+          active_ind: true,
+        },
+        include: {
+          inspection_party: {
+            include: {
+              inspection: true,
+            },
+            where: {
+              active_ind: true,
+            },
+          },
+        },
+      });
+    }
+    const prismaInspections = prismaParties.map((party) => {
+      return party.inspection_party?.inspection;
+    });
+
+    try {
+      return this.mapper.mapArray<inspection, Inspection>(
+        prismaInspections as Array<inspection>,
+        "inspection",
+        "Inspection",
+      );
+    } catch (error) {
+      this.logger.error("Error fetching inspections by Party IDs:", error);
       throw error;
     }
   }
@@ -189,6 +261,7 @@ export class InspectionService {
             name: input.name,
             inspection_opened_utc_timestamp: new Date(),
             create_user_id: this.user.getIdirUsername(),
+            created_by_app_user_guid_ref: input.createdByAppUserGuid,
             create_utc_timestamp: new Date(),
           },
           include: {
@@ -364,10 +437,7 @@ export class InspectionService {
         await this.prisma.$executeRawUnsafe(query);
       }
     } catch (error) {
-      this.logger.error(
-        `Error updating location geometry point for inspection with guid ${inspectionGuid}:`,
-        error,
-      );
+      this.logger.error(`Error updating location geometry point for inspection with guid ${inspectionGuid}:`, error);
       throw error;
     }
   }

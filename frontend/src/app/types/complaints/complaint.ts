@@ -1,7 +1,7 @@
 import { AgencyCode } from "@apptypes/code-tables/agency-code";
 import { GeoOrganizationUnitCode } from "@apptypes/code-tables/geo-organization-unit-code";
 import { ReportedByCode } from "@apptypes/code-tables/reported-by-code";
-import { PersonComplaintXref } from "./person-complaint-xref";
+import { AppUserComplaintXref } from "./app-user-complaint-xref";
 
 export interface Complaint {
   complaint_identifier: string;
@@ -32,7 +32,7 @@ export interface Complaint {
     area_code: string;
     region_code: string;
   };
-  person_complaint_xref: PersonComplaintXref[];
+  app_user_complaint_xref: AppUserComplaintXref[];
   reported_by_other_text: string;
 }
 

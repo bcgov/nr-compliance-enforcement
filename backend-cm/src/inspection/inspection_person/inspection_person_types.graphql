@@ -1,0 +1,17 @@
+type InspectionPerson {
+  personGuid: String!
+  partyGuid: String!
+  personReference: String
+  firstName: String!
+  middleName: String
+  middleName2: String
+  lastName: String!
+}
+
+input CreateInspectionPersonInput {
+  firstName: String!
+  middleName: String
+  middleName2: String
+  lastName: String!
+  personReference: String
+}

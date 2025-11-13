@@ -30,6 +30,15 @@ export class CaseActivityCreateInput {
   };
 }
 
+@InputType()
+export class CaseActivityRemoveInput {
+  @Field(() => String)
+  caseFileGuid: string;
+
+  @Field(() => String)
+  activityIdentifier: string;
+}
+
 export const mapPrismaCaseActivityToCaseActivity = (mapper: Mapper) => {
   createMap<case_activity, CaseActivity>(
     mapper,

@@ -1,0 +1,4 @@
+type Mutation {
+  addPartyToInspection(inspectionGuid: String!, input: [CreateInspectionPartyInput]!): Inspection!
+  removePartyFromInspection(inspectionGuid: String!, partyIdentifier: String!): Inspection!
+}

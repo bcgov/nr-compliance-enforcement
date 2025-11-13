@@ -4,35 +4,30 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 
+jest.mock("../../external_api/shared_data", () => {
+  const { createSharedDataMocks } = require("../../../test/mocks/external_api/mock-shared-data");
+  return createSharedDataMocks();
+});
+
+import { resetSharedDataMocks } from "../../../test/mocks/external_api/mock-shared-data";
 import {
   MockAttractantCodeTableRepository,
   MockComplaintStatusCodeTableRepository,
   MockNatureOfComplaintCodeTableRepository,
-  MockOrganizationUnitCodeTableRepository,
-  MockOrganizationUnitTypeCodeTableRepository,
   MockPersonComplaintCodeTableRepository,
   MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
-  MockCosOrganizationUnitCodeTableRepository,
   MockComplaintTypeCodeTableRepository,
-  MockCommunityCodeTableServiceRepository,
-  MockZoneCodeTableServiceRepository,
-  MockRegionCodeTableServiceRepository,
   MockReportedByCodeTableRepository,
   MockGirTypeCodeRepository,
-  MockTeamCodeRepository,
   MockCompMthdRecvCdAgcyCdXrefRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
-import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
-import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
-import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
+import { AppUserComplaintXrefCode } from "../app_user_complaint_xref_code/entities/app_user_complaint_xref_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
-import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
-import { TeamCode } from "../team_code/entities/team_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
 import { EmailReference } from "../email_reference/entities/email_reference.entity";
@@ -41,6 +36,8 @@ describe("Testing: CodeTable Service", () => {
   let service: CodeTableService;
 
   beforeEach(async () => {
+    resetSharedDataMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CodeTableService,
@@ -57,15 +54,7 @@ describe("Testing: CodeTable Service", () => {
           useFactory: MockNatureOfComplaintCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(GeoOrgUnitTypeCode),
-          useFactory: MockOrganizationUnitTypeCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(GeoOrganizationUnitCode),
-          useFactory: MockOrganizationUnitCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(PersonComplaintXrefCode),
+          provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
         },
         {
@@ -75,10 +64,6 @@ describe("Testing: CodeTable Service", () => {
         {
           provide: getRepositoryToken(ViolationAgencyXref),
           useFactory: MockViolationsCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(CosGeoOrgUnit),
-          useFactory: MockCosOrganizationUnitCodeTableRepository,
         },
         {
           provide: getRepositoryToken(ComplaintTypeCode),
@@ -91,10 +76,6 @@ describe("Testing: CodeTable Service", () => {
         {
           provide: getRepositoryToken(GirTypeCode),
           useFactory: MockGirTypeCodeRepository,
-        },
-        {
-          provide: getRepositoryToken(TeamCode),
-          useFactory: MockTeamCodeRepository,
         },
         {
           provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
@@ -119,7 +100,7 @@ describe("Testing: CodeTable Service", () => {
     const _tableName = "reported-by";
 
     //-- act
-    const results = await service.getCodeTableByName(_tableName);
+    const results = await service.getCodeTableByName(_tableName, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);
@@ -132,7 +113,7 @@ describe("Testing: CodeTable Service", () => {
     const _tableName = "attractant";
 
     //-- act
-    const results = await service.getCodeTableByName(_tableName);
+    const results = await service.getCodeTableByName(_tableName, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);
@@ -145,7 +126,7 @@ describe("Testing: CodeTable Service", () => {
     const _tableName = "complaint-status";
 
     //-- act
-    const results = await service.getCodeTableByName(_tableName);
+    const results = await service.getCodeTableByName(_tableName, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);
@@ -158,7 +139,7 @@ describe("Testing: CodeTable Service", () => {
     const _tableName = "nature-of-complaint";
 
     //-- act
-    const results = await service.getCodeTableByName(_tableName);
+    const results = await service.getCodeTableByName(_tableName, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);
@@ -171,7 +152,7 @@ describe("Testing: CodeTable Service", () => {
     const _tableName = "organization-unit-type";
 
     //-- act
-    const results = await service.getCodeTableByName(_tableName);
+    const results = await service.getCodeTableByName(_tableName, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);
@@ -184,7 +165,7 @@ describe("Testing: CodeTable Service", () => {
     const _tableName = "organization-unit";
 
     //-- act
-    const results = await service.getCodeTableByName(_tableName);
+    const results = await service.getCodeTableByName(_tableName, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);
@@ -197,7 +178,7 @@ describe("Testing: CodeTable Service", () => {
     const _tableName = "person-complaint";
 
     //-- act
-    const results = await service.getCodeTableByName(_tableName);
+    const results = await service.getCodeTableByName(_tableName, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);
@@ -210,7 +191,7 @@ describe("Testing: CodeTable Service", () => {
     const _tableName = "species";
 
     //-- act
-    const results = await service.getCodeTableByName(_tableName);
+    const results = await service.getCodeTableByName(_tableName, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);
@@ -223,7 +204,7 @@ describe("Testing: CodeTable Service", () => {
     const _tableName = "violation";
 
     //-- act
-    const results = await service.getCodeTableByName(_tableName);
+    const results = await service.getCodeTableByName(_tableName, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);
@@ -236,7 +217,7 @@ describe("Testing: CodeTable Service", () => {
     const _agency = "cos";
 
     //-- act
-    const results = await service.getOrganizationsByAgency(_agency);
+    const results = await service.getOrganizationsByAgency(_agency, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);
@@ -249,7 +230,7 @@ describe("Testing: CodeTable Service", () => {
     const _tableName = "complaint-type";
 
     //-- act
-    const results = await service.getCodeTableByName(_tableName);
+    const results = await service.getCodeTableByName(_tableName, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);
@@ -262,6 +243,8 @@ describe("Testing: CodeTable service", () => {
   let service: CodeTableService;
 
   beforeEach(async () => {
+    resetSharedDataMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CodeTableService,
@@ -278,15 +261,7 @@ describe("Testing: CodeTable service", () => {
           useFactory: MockNatureOfComplaintCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(GeoOrgUnitTypeCode),
-          useFactory: MockOrganizationUnitTypeCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(GeoOrganizationUnitCode),
-          useFactory: MockOrganizationUnitCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(PersonComplaintXrefCode),
+          provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
         },
         {
@@ -298,8 +273,8 @@ describe("Testing: CodeTable service", () => {
           useFactory: MockViolationsCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(CosGeoOrgUnit),
-          useFactory: MockRegionCodeTableServiceRepository,
+          provide: getRepositoryToken(ComplaintTypeCode),
+          useFactory: MockComplaintStatusCodeTableRepository,
         },
         {
           provide: getRepositoryToken(ComplaintTypeCode),
@@ -312,10 +287,6 @@ describe("Testing: CodeTable service", () => {
         {
           provide: getRepositoryToken(GirTypeCode),
           useFactory: MockGirTypeCodeRepository,
-        },
-        {
-          provide: getRepositoryToken(TeamCode),
-          useFactory: MockTeamCodeRepository,
         },
         {
           provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
@@ -340,7 +311,7 @@ describe("Testing: CodeTable service", () => {
     const _agency = "cos";
 
     //-- act
-    const results = await service.getRegionsByAgency(_agency);
+    const results = await service.getRegionsByAgency(_agency, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);
@@ -353,6 +324,8 @@ describe("Testing: CodeTable service", () => {
   let service: CodeTableService;
 
   beforeEach(async () => {
+    resetSharedDataMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CodeTableService,
@@ -369,15 +342,7 @@ describe("Testing: CodeTable service", () => {
           useFactory: MockNatureOfComplaintCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(GeoOrgUnitTypeCode),
-          useFactory: MockOrganizationUnitTypeCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(GeoOrganizationUnitCode),
-          useFactory: MockOrganizationUnitCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(PersonComplaintXrefCode),
+          provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
         },
         {
@@ -389,8 +354,8 @@ describe("Testing: CodeTable service", () => {
           useFactory: MockViolationsCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(CosGeoOrgUnit),
-          useFactory: MockZoneCodeTableServiceRepository,
+          provide: getRepositoryToken(ComplaintTypeCode),
+          useFactory: MockComplaintTypeCodeTableRepository,
         },
         {
           provide: getRepositoryToken(ComplaintTypeCode),
@@ -403,10 +368,6 @@ describe("Testing: CodeTable service", () => {
         {
           provide: getRepositoryToken(GirTypeCode),
           useFactory: MockGirTypeCodeRepository,
-        },
-        {
-          provide: getRepositoryToken(TeamCode),
-          useFactory: MockTeamCodeRepository,
         },
         {
           provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
@@ -431,7 +392,7 @@ describe("Testing: CodeTable service", () => {
     const _agency = "cos";
 
     //-- act
-    const results = await service.getZonesByAgency(_agency);
+    const results = await service.getZonesByAgency(_agency, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);
@@ -444,6 +405,8 @@ describe("Testing: CodeTable service", () => {
   let service: CodeTableService;
 
   beforeEach(async () => {
+    resetSharedDataMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CodeTableService,
@@ -460,15 +423,7 @@ describe("Testing: CodeTable service", () => {
           useFactory: MockNatureOfComplaintCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(GeoOrgUnitTypeCode),
-          useFactory: MockOrganizationUnitTypeCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(GeoOrganizationUnitCode),
-          useFactory: MockOrganizationUnitCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(PersonComplaintXrefCode),
+          provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
         },
         {
@@ -480,8 +435,8 @@ describe("Testing: CodeTable service", () => {
           useFactory: MockViolationsCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(CosGeoOrgUnit),
-          useFactory: MockCommunityCodeTableServiceRepository,
+          provide: getRepositoryToken(ComplaintTypeCode),
+          useFactory: MockComplaintTypeCodeTableRepository,
         },
         {
           provide: getRepositoryToken(ComplaintTypeCode),
@@ -494,10 +449,6 @@ describe("Testing: CodeTable service", () => {
         {
           provide: getRepositoryToken(GirTypeCode),
           useFactory: MockGirTypeCodeRepository,
-        },
-        {
-          provide: getRepositoryToken(TeamCode),
-          useFactory: MockTeamCodeRepository,
         },
         {
           provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
@@ -522,7 +473,7 @@ describe("Testing: CodeTable service", () => {
     const _agency = "cos";
 
     //-- act
-    const results = await service.getCommunitiesByAgency(_agency);
+    const results = await service.getCommunitiesByAgency(_agency, "mock-token");
 
     //-- assert
     expect(results).not.toBe(null);

@@ -5,52 +5,46 @@ import { DataSource } from "typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
 import { ComplaintReferral } from "./entities/complaint_referral.entity";
 import { Complaint } from "../complaint/entities/complaint.entity";
-import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
+import { AppUserComplaintXrefService } from "../app_user_complaint_xref/app_user_complaint_xref.service";
 import { REQUEST } from "@nestjs/core";
 import { ComplaintService } from "../complaint/complaint.service";
 import { AutomapperModule, getMapperToken } from "@automapper/nestjs";
-import { PersonComplaintXref } from "../person_complaint_xref/entities/person_complaint_xref.entity";
+import { AppUserComplaintXref } from "../app_user_complaint_xref/entities/app_user_complaint_xref.entity";
 import { pojos } from "@automapper/pojos";
 import { createMapper } from "@automapper/core";
 import { CodeTableService } from "../code-table/code-table.service";
 import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
 import { AttractantHwcrXrefService } from "../attractant_hwcr_xref/attractant_hwcr_xref.service";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
-import { OfficerService } from "../officer/officer.service";
+import { AppUserService } from "../app_user/app_user.service";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
+
+jest.mock("../../external_api/shared_data", () => {
+  const { createSharedDataMocks } = require("../../../test/mocks/external_api/mock-shared-data");
+  return createSharedDataMocks();
+});
+
+import { resetSharedDataMocks } from "../../../test/mocks/external_api/mock-shared-data";
 import { ComplaintUpdate } from "../complaint_updates/entities/complaint_updates.entity";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { AttractantCode } from "../attractant_code/entities/attractant_code.entity";
 import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint_status_code.entity";
 import { Configuration } from "../configuration/entities/configuration.entity";
-import { Person } from "../person/entities/person.entity";
 import { LinkedComplaintXref } from "../linked_complaint_xref/entities/linked_complaint_xref.entity";
-import { Team } from "../team/entities/team.entity";
-import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
 import { AllegationComplaint } from "../allegation_complaint/entities/allegation_complaint.entity";
 import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
-import { Officer } from "../officer/entities/officer.entity";
-import { Office } from "../office/entities/office.entity";
-import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
-import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
-import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
+import { AppUserComplaintXrefCode } from "../app_user_complaint_xref_code/entities/app_user_complaint_xref_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
-import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
-import { TeamCode } from "../team_code/entities/team_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { AttractantHwcrXref } from "../attractant_hwcr_xref/entities/attractant_hwcr_xref.entity";
-import { PersonService } from "../person/person.service";
-import { OfficeService } from "../office/office.service";
-import { TeamService } from "../team/team.service";
 import { ConfigurationService } from "../configuration/configuration.service";
-import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
 import { CssService } from "../../external_api/css/css.service";
 import { CacheModule } from "@nestjs/cache-manager";
 import { EmailService } from "../../v1/email/email.service";
@@ -65,6 +59,8 @@ describe("ComplaintReferralService", () => {
   let service: ComplaintReferralService;
 
   beforeEach(async () => {
+    resetSharedDataMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [AutomapperModule, CacheModule.register()],
       providers: [
@@ -78,7 +74,10 @@ describe("ComplaintReferralService", () => {
         CodeTableService,
         ComplaintReferralEmailLogService,
         ComplaintUpdatesService,
-        PersonComplaintXrefService,
+        {
+          provide: AppUserComplaintXrefService,
+          useValue: {},
+        },
         {
           provide: getRepositoryToken(ComplaintUpdate),
           useValue: {},
@@ -92,7 +91,7 @@ describe("ComplaintReferralService", () => {
           useValue: {},
         },
         {
-          provide: getRepositoryToken(PersonComplaintXref),
+          provide: getRepositoryToken(AppUserComplaintXref),
           useValue: {},
         },
         {
@@ -108,19 +107,7 @@ describe("ComplaintReferralService", () => {
           useValue: {},
         },
         {
-          provide: getRepositoryToken(Person),
-          useValue: {},
-        },
-        {
           provide: getRepositoryToken(LinkedComplaintXref),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(Team),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(OfficerTeamXref),
           useValue: {},
         },
         {
@@ -136,27 +123,11 @@ describe("ComplaintReferralService", () => {
           useValue: {},
         },
         {
-          provide: getRepositoryToken(Officer),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(Office),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(GeoOrgUnitTypeCode),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(GeoOrganizationUnitCode),
-          useValue: {},
-        },
-        {
           provide: getRepositoryToken(HwcrComplaintNatureCode),
           useValue: {},
         },
         {
-          provide: getRepositoryToken(PersonComplaintXrefCode),
+          provide: getRepositoryToken(AppUserComplaintXrefCode),
           useValue: {},
         },
         {
@@ -165,10 +136,6 @@ describe("ComplaintReferralService", () => {
         },
         {
           provide: getRepositoryToken(ViolationAgencyXref),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(CosGeoOrgUnit),
           useValue: {},
         },
         {
@@ -181,10 +148,6 @@ describe("ComplaintReferralService", () => {
         },
         {
           provide: getRepositoryToken(ReportedByCode),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(TeamCode),
           useValue: {},
         },
         {
@@ -204,12 +167,8 @@ describe("ComplaintReferralService", () => {
           useValue: {},
         },
         AttractantHwcrXrefService,
-        PersonService,
-        OfficeService,
         CompMthdRecvCdAgcyCdXrefService,
-        OfficerService,
-        OfficerTeamXrefService,
-        TeamService,
+        AppUserService,
         WebeocService,
         ConfigurationService,
         CssService,

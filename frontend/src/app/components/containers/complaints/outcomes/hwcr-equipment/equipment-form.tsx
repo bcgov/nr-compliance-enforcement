@@ -101,13 +101,13 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   useEffect(() => {
     if (assignedOfficer && officersInAgencyList) {
       const officerAssigned: any = officersInAgencyList
-        .filter((person: any) => {
-          const personGuid = person.person_guid?.person_guid ?? person.personGuid;
-          return personGuid === assignedOfficer;
+        .filter((appUser: any) => {
+          const appUserGuid = appUser.app_user_guid ?? appUser.appUserGuid;
+          return appUserGuid === assignedOfficer;
         })
         .map((item: any) => {
-          const firstName = item.person_guid?.first_name ?? item.firstName;
-          const lastName = item.person_guid?.last_name ?? item.lastName;
+          const firstName = item.first_name ?? item.firstName;
+          const lastName = item.last_name ?? item.lastName;
           const authUserGuid = item.auth_user_guid ?? item.authUserGuid;
 
           return {

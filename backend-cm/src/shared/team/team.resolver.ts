@@ -1,0 +1,24 @@
+import { Resolver, Query, Args } from "@nestjs/graphql";
+import { TeamService } from "./team.service";
+import { JwtRoleGuard } from "../../auth/jwtrole.guard";
+import { UseGuards } from "@nestjs/common";
+import { coreRoles } from "../../enum/role.enum";
+import { Roles } from "../../auth/decorators/roles.decorator";
+
+@UseGuards(JwtRoleGuard)
+@Resolver("Team")
+export class TeamResolver {
+  constructor(private readonly teamService: TeamService) {}
+
+  @Query("teams")
+  @Roles(coreRoles)
+  findAll(@Args("teamCode") teamCode?: string, @Args("agencyCode") agencyCode?: string) {
+    return this.teamService.findAll(teamCode, agencyCode);
+  }
+
+  @Query("team")
+  @Roles(coreRoles)
+  findOne(@Args("teamGuid") teamGuid: string) {
+    return this.teamService.findOne(teamGuid);
+  }
+}

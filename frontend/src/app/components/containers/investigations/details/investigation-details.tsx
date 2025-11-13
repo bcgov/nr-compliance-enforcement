@@ -20,12 +20,14 @@ const GET_INVESTIGATION = gql`
       name
       description
       openedTimestamp
+      createdByAppUserGuid
       investigationStatus {
         investigationStatusCode
         shortDescription
         longDescription
       }
       parties {
+        partyIdentifier
         person {
           firstName
           lastName
@@ -92,7 +94,7 @@ export const InvestigationDetails: FC = () => {
       case "documents":
         return <InvestigationDocumentation />;
       case "continuation":
-        return <InvestigationContinuation />;
+        return <InvestigationContinuation investigationData={investigationData} />;
       case "admin":
         return <InvestigationAdministration />;
     }

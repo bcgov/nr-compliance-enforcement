@@ -1,0 +1,15 @@
+type InspectionParty {
+  partyIdentifier: String!
+  partyTypeCode: String!
+  inspectionGuid: String!
+  partyReference: String
+  person: InspectionPerson
+  business: InspectionBusiness
+}
+
+input CreateInspectionPartyInput {
+  partyTypeCode: String!
+  partyReference: String
+  person: CreateInspectionPersonInput
+  business: CreateInspectionBusinessInput
+}

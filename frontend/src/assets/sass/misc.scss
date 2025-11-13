@@ -375,6 +375,7 @@
 
 .comp-tooltip,
 .comp-tooltip-dark {
+  --bs-tooltip-max-width: 100%;
   position: fixed;
   z-index: 9000 !important;
 }

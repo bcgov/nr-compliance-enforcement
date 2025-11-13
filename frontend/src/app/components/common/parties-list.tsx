@@ -1,14 +1,15 @@
-import { InvestigationParty } from "@/generated/graphql";
+import { InspectionParty, InvestigationParty } from "@/generated/graphql";
 import React from "react";
-import { Accordion, Badge, ListGroup } from "react-bootstrap";
+import { Accordion, Badge, Dropdown, ListGroup } from "react-bootstrap";
 
 // Can we genercize this in the future?
 interface Props {
-  companies: InvestigationParty[];
-  people: InvestigationParty[];
+  companies: InvestigationParty[] | InspectionParty[];
+  people: InvestigationParty[] | InspectionParty[];
+  onRemoveParty?: (partyIdentifier: string, partyName: string) => void;
 }
 
-const PartiesList: React.FC<Props> = ({ companies, people }) => {
+const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty }) => {
   return (
     <>
       {people.length === 0 && companies.length === 0 && <div className="mt-3">No parties to display</div>}
@@ -34,7 +35,34 @@ const PartiesList: React.FC<Props> = ({ companies, people }) => {
                       <strong>{`${party.person?.lastName}, ${party.person?.firstName} | `}</strong>
                       <span className="text-muted">{`24, Male`}</span>
                     </div>
-                    <Badge bg="species-badge comp-species-badge">Witness</Badge>
+                    <div className="d-flex align-items-center gap-2">
+                      <Badge bg="species-badge comp-species-badge">Witness</Badge>
+                      {onRemoveParty && (
+                        <Dropdown>
+                          <Dropdown.Toggle
+                            variant="link"
+                            className="p-0"
+                            bsPrefix="dropdown-toggle-no-caret"
+                          >
+                            <i className="bi bi-three-dots-vertical" />
+                          </Dropdown.Toggle>
+
+                          <Dropdown.Menu>
+                            <Dropdown.Item
+                              onClick={() =>
+                                onRemoveParty(
+                                  party.partyIdentifier,
+                                  `${party.person?.firstName} ${party.person?.lastName}`,
+                                )
+                              }
+                            >
+                              <i className="bi bi-trash me-2" />
+                              {/* */}Remove
+                            </Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      )}
+                    </div>
                   </ListGroup.Item>
                 ))}
               </ListGroup>
@@ -57,7 +85,29 @@ const PartiesList: React.FC<Props> = ({ companies, people }) => {
                     <div>
                       <strong>{party.business?.name}</strong>
                     </div>
-                    <Badge bg="species-badge comp-species-badge">Subject of complaint</Badge>
+                    <div className="d-flex align-items-center gap-2">
+                      <Badge bg="species-badge comp-species-badge">Subject of complaint</Badge>
+                      {onRemoveParty && (
+                        <Dropdown>
+                          <Dropdown.Toggle
+                            variant="link"
+                            className="p-0"
+                            bsPrefix="dropdown-toggle-no-caret"
+                          >
+                            <i className="bi bi-three-dots-vertical" />
+                          </Dropdown.Toggle>
+
+                          <Dropdown.Menu>
+                            <Dropdown.Item
+                              onClick={() => onRemoveParty(party.partyIdentifier, party.business?.name || "")}
+                            >
+                              <i className="bi bi-trash me-2" />
+                              {/* */}Remove
+                            </Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      )}
+                    </div>
                   </ListGroup.Item>
                 ))}
               </ListGroup>

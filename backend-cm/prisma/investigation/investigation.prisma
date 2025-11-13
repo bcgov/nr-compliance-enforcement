@@ -30,6 +30,8 @@ model investigation {
   location_geometry_point            Unsupported("geometry")?
   location_address                   String?                      @db.VarChar(120)
   location_description               String?                      @db.VarChar(4000)
+  created_by_app_user_guid_ref       String?                      @db.Uuid
+  continuation_report                continuation_report[]
   investigation_status_code          investigation_status_code    @relation(fields: [investigation_status], references: [investigation_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_investigation__investigation_status")
   investigation_party                investigation_party[]
   officer_investigation_xref         officer_investigation_xref[]
@@ -211,4 +213,21 @@ model investigation_person_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+}
+
+model continuation_report {
+  continuation_report_guid   String        @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_guid         String        @db.Uuid
+  content_json               Json
+  content_text               String?
+  actioned_utc_timestamp     DateTime?     @db.Timestamp(6)
+  actioned_app_user_guid_ref String?       @db.Uuid
+  reported_utc_timestamp     DateTime?     @db.Timestamp(6)
+  reported_app_user_guid_ref String?       @db.Uuid
+  active_ind                 Boolean       @default(true)
+  create_user_id             String        @db.VarChar(32)
+  create_utc_timestamp       DateTime      @default(now()) @db.Timestamp(6)
+  update_user_id             String?       @db.VarChar(32)
+  update_utc_timestamp       DateTime?     @db.Timestamp(6)
+  investigation              investigation @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
 }

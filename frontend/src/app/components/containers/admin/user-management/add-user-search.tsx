@@ -4,7 +4,7 @@ import { useAppDispatch } from "@hooks/hooks";
 import Option from "@apptypes/app/option";
 import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
-import { CssUser, Officer } from "@apptypes/person/person";
+import { CssUser, AppUser } from "@apptypes/app/app_user/app_user";
 import { CompInput } from "@/app/components/common/comp-input";
 import "@assets/sass/user-management.scss";
 
@@ -32,9 +32,9 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
   const [emailInput, setEmailInput] = useState<string>("");
   const [userStatus, setUserStatus] = useState<number>();
 
-  const getCssUserDetails = async (email: string): Promise<Officer | CssUser | null> => {
-    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/officer/find-by-email/${email}`);
-    const response = await get<Officer | CssUser | null>(dispatch, parameters);
+  const getCssUserDetails = async (email: string): Promise<AppUser | CssUser | null> => {
+    const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/app-user/find-by-email/${email}`);
+    const response = await get<AppUser | CssUser | null>(dispatch, parameters);
     return response;
   };
 
@@ -46,8 +46,8 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
     if (emailInput !== "") {
       const userDetails = await getCssUserDetails(emailInput);
       if (userDetails) {
-        if ((userDetails as Officer).officer_guid) {
-          setOfficer({ value: (userDetails as Officer).person_guid.person_guid, label: "" });
+        if ((userDetails as AppUser).app_user_guid) {
+          setOfficer({ value: (userDetails as AppUser).app_user_guid, label: "" });
           setUserStatus(UserStatus.inNatCom);
         } else if ((userDetails as CssUser).username) {
           setNewUser(userDetails as CssUser);

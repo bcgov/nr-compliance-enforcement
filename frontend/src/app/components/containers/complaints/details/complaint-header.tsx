@@ -14,7 +14,7 @@ import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@co
 
 import { Badge, Button, Dropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 
-import { isFeatureActive, openModal, personGuid } from "@store/reducers/app";
+import { isFeatureActive, openModal, appUserGuid } from "@store/reducers/app";
 import {
   ASSIGN_OFFICER,
   CHANGE_STATUS,
@@ -66,7 +66,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const showComplaintReferrals = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_REFERRALS));
   const showComplaintCollaboration = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_COLLABORATION));
   const showCreateAddCase = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
-  const userPersonGuid = useAppSelector(personGuid);
+  const userGuid = useAppSelector(appUserGuid);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const collaborators = useAppSelector(selectActiveComplaintCollaborators);
   const userAgency = getUserAgency();
@@ -77,8 +77,8 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
   const [userIsCollaborator, setUserIsCollaborator] = useState<boolean>(false);
   useEffect(() => {
-    setUserIsCollaborator(collaborators.some((c) => c.personGuid === userPersonGuid));
-  }, [collaborators, userPersonGuid]);
+    setUserIsCollaborator(collaborators.some((c) => c.appUserGuid === userGuid));
+  }, [collaborators, userGuid]);
   useEffect(() => {
     dispatch(getComplaintCollaboratorsByComplaintId(id));
   }, [id, dispatch]);
@@ -225,7 +225,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const collaboratorsTooltipOverlay = () => (
     <OverlayTrigger
       key={`${id}-collab-tooltip`}
-      placement="right"
+      placement="bottom"
       trigger={["hover", "click"]}
       overlay={
         <Tooltip
@@ -236,9 +236,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
             return (
               <div
                 className="d-flex justify-content-start"
-                key={`${c.personComplaintXrefGuid}`}
+                key={`${c.appUserComplaintXrefGuid}`}
               >
-                {c.lastName}, {c.firstName} |{" "}
+                {c.lastName}, {c.firstName}
+                <span className="mx-1">|</span>
                 <span className="fw-bold">
                   {agencyCodes?.find(({ agency }) => agency === c.collaboratorAgency)?.shortDescription}
                 </span>
@@ -491,7 +492,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           <div className="banner-content">
             {/* 
               Once there are three agencies passing complaints between each other, this logic for complaintAgency
-              will need to be updated to pull the agency off of the collaborator person_complaint_xref records
+              will need to be updated to pull the agency off of the collaborator app_user_complaint_xref records
               creator, but for now the owning agency is sufficient.
             */}
             {complaintAgency && (

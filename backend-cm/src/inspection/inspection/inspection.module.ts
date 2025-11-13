@@ -23,5 +23,6 @@ import { CaseActivityModule } from "src/shared/case_activity/case_activity.modul
     CaseActivityModule,
   ],
   providers: [InspectionResolver, InspectionService, CaseFileService],
+  exports: [InspectionService],
 })
 export class InspectionModule {}

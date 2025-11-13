@@ -1,0 +1,10 @@
+type Query {
+  cosGeoOrgUnits(zoneCode: String, regionCode: String, distinctOfficeLocations: Boolean): [CosGeoOrgUnit]!
+  searchCosGeoOrgUnitsByNames(
+    regionName: String
+    zoneName: String
+    areaName: String
+    officeLocationName: String
+    distinctOfficeLocations: Boolean
+  ): [CosGeoOrgUnit]!
+}

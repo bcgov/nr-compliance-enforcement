@@ -1,0 +1,10 @@
+input CreateAppUserTeamXrefInput {
+  appUserGuid: String!
+  teamGuid: String!
+  activeIndicator: Boolean!
+}
+
+input UpdateAppUserTeamXrefInput {
+  teamGuid: String
+  activeIndicator: Boolean
+}

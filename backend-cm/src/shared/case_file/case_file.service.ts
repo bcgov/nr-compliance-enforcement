@@ -42,6 +42,9 @@ export class CaseFileService {
           include: {
             case_activity_type_code: true,
           },
+          where: {
+            expiry_utc_timestamp: null,
+          },
         },
       },
     });
@@ -71,6 +74,9 @@ export class CaseFileService {
           include: {
             case_activity_type_code: true,
           },
+          where: {
+            expiry_utc_timestamp: null,
+          },
         },
       },
     });
@@ -93,13 +99,14 @@ export class CaseFileService {
         activity_identifier_ref: {
           in: activityIdentifiers,
         },
+        expiry_utc_timestamp: null,
       },
     });
 
     if (!caseActivityXrefRecords || caseActivityXrefRecords.length === 0) {
       return [];
     }
-    
+
     const caseFileGuids = caseActivityXrefRecords.map((record) => record.case_file_guid);
     const uniqueCaseFileGuids = [...new Set(caseFileGuids)];
 
@@ -115,6 +122,7 @@ export class CaseFileService {
         name: input.name,
         opened_utc_timestamp: new Date(),
         create_user_id: this.user.getIdirUsername(),
+        created_by_app_user_guid: input.createdByAppUserGuid,
       },
       include: {
         agency_code: true,

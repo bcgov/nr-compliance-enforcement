@@ -29,7 +29,7 @@ export class BcGeoCoderService {
       apiUrl = `${process.env.BC_GEOCODER_API_URL}/addresses.json?addressString=${addressString}&locationDescriptor=any&maxResults=${maxResults}&interpolation=adaptive&echo=true&brief=false&autoComplete=true&setBack=0&outputSRS=4326&minScore=90&provinceCode=BC`;
     }
     if (apiUrl) {
-      const apiKey = process.env.BC_GEOCODER_API_URL;
+      const apiKey = process.env.BC_GEOCODER_API_KEY;
 
       const headers = {
         apikey: apiKey,

@@ -1,0 +1,10 @@
+type Query {
+  appUserTeamXrefs: [AppUserTeamXref]!
+  appUserTeamXref(appUserGuid: String!): AppUserTeamXref
+}
+
+type Mutation {
+  createAppUserTeamXref(input: CreateAppUserTeamXrefInput!): AppUserTeamXref
+  updateAppUserTeamXref(appUserGuid: String!, input: UpdateAppUserTeamXrefInput!): AppUserTeamXref
+  deleteAppUserTeamXref(appUserTeamXrefGuid: String!): Boolean
+}
